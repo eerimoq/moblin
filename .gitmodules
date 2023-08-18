@@ -1,0 +1,3 @@
+[submodule "livego"]
+	path = livego
+	url = git@github.com:eerimoq/livego.git
