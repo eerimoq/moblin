@@ -68,7 +68,6 @@ final class Model: ObservableObject {
     }()
 
     func config(settings: Settings) {
-        print("model config")
         self.settings = settings
         rtmpStream = RTMPStream(connection: rtmpConnection)
         rtmpStream.videoOrientation = .landscapeRight
