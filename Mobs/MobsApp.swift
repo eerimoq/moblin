@@ -4,11 +4,20 @@ import SwiftUI
 @main
 struct MobsApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @StateObject private var settings = Settings()
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-    }
+            ContentView(settings: settings)
+                .task {
+                do {
+                    try await settings.load()
+                    print("Settings loaded")
+                } catch {
+                    fatalError(error.localizedDescription)
+                }
+            }
+        }
     }
 }
 

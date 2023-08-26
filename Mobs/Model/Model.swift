@@ -44,6 +44,7 @@ final class Model: ObservableObject {
     @AppStorage("isChatOn") var isChatOn = true
     @AppStorage("isViewersOn") var isViewersOn = true
     @AppStorage("isUptimeOn") var isUptimeOn = true
+    private var settings: Settings? = nil
     
     var selectedScene: String = "Back"
     
@@ -66,7 +67,9 @@ final class Model: ObservableObject {
         return pubSub
     }()
 
-    func config() {
+    func config(settings: Settings) {
+        print("model config")
+        self.settings = settings
         rtmpStream = RTMPStream(connection: rtmpConnection)
         rtmpStream.videoOrientation = .landscapeRight
         rtmpStream.sessionPreset = .hd1280x720

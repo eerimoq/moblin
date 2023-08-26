@@ -89,7 +89,7 @@ struct TrailingOverlayView: View {
     }
 }
 
-struct VideoOverlayView: View {
+struct StreamOverlayView: View {
     @ObservedObject var model: Model
 
     var body: some View {

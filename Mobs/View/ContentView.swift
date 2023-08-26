@@ -91,17 +91,17 @@ struct ZoomSlider: View {
 struct ContentView: View {
     @ObservedObject var model = Model()
 
-    private var videoView: VideoView!
-    private var videoOverlayView: VideoOverlayView!
+    private var videoView: StreamView!
+    private var videoOverlayView: StreamOverlayView!
     @State private var mutedImage = "mic.fill"
     @State private var recordingImage = "record.circle"
     @State private var flashLightImage = "lightbulb"
     @State private var action: Int? = 0
 
-    init() {
-        model.config()
-        videoView = VideoView(rtmpStream: $model.rtmpStream)
-        videoOverlayView = VideoOverlayView(model: model)
+    init(settings: Settings) {
+        model.config(settings: settings)
+        videoView = StreamView(rtmpStream: $model.rtmpStream)
+        videoOverlayView = StreamOverlayView(model: model)
     }
 
     var body: some View {
@@ -117,12 +117,24 @@ struct ContentView: View {
                         Battery()
                         Spacer()
                         HStack {
+                            GenericButton(image: "ellipsis", action: {
+                            })
                             Button(action: {
                                 print("Settings")
                             }, label: {
                                 NavigationLink(destination: SettingsView(model: self.model)) {
                                     ButtonImage(image: "gearshape")
                                 }
+                            })
+                        }
+                        HStack {
+                            GenericButton(image: "figure.wave", action: {
+                            })
+                            GenericButton(image: "hand.thumbsup.fill", action: {
+                            })
+                        }
+                        HStack {
+                            GenericButton(image: "music.note", action: {
                             })
                             GenericButton(image: mutedImage, action: {
                                 if mutedImage == "mic.slash.fill" {
@@ -176,6 +188,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ContentView(settings: Settings())
     }
 }

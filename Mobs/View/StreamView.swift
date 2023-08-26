@@ -2,7 +2,7 @@ import Foundation
 import HaishinKit
 import SwiftUI
 
-struct VideoView: UIViewRepresentable {
+struct StreamView: UIViewRepresentable {
     var mthkView = MTHKView(frame: .zero)
 
     @Binding var rtmpStream: RTMPStream
