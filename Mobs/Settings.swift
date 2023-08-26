@@ -1,39 +1,39 @@
 import SwiftUI
 
 struct SettingsConnection: Codable {
-    var name: String = ""
-    var rtmpUrl: String = ""
-    var twitchChannelName: String = ""
-    var twitchChannelId: String = ""
+    var name: String
+    var rtmpUrl: String
+    var twitchChannelName: String
+    var twitchChannelId: String
 }
 
 struct SettingsSceneWidget: Codable {
-    var name: String = ""
-    var x: Int = 0
-    var y: Int = 0
-    var w: Int = 0
-    var h: Int = 0
+    var name: String
+    var x: Int
+    var y: Int
+    var w: Int
+    var h: Int
 }
 
 struct SettingsScene: Codable {
-    var name: String = ""
-    var widgets: [SettingsSceneWidget] = []
+    var name: String
+    var widgets: [SettingsSceneWidget]
 }
 
 struct SettingsWidgetText: Codable {
-    var formatString: String = ""
+    var formatString: String
 }
 
 struct SettingsWidgetImage: Codable {
-    var url: String = ""
+    var url: String
 }
 
 struct SettingsWidgetVideo: Codable {
-    var url: String = ""
+    var url: String
 }
 
 struct SettingsWidgetCamera: Codable {
-    var direction: String = ""
+    var direction: String
 }
 
 struct SettingsWidgetChat: Codable {
@@ -43,7 +43,7 @@ struct SettingsWidgetRecording: Codable {
 }
 
 struct SettingsWidgetWebview: Codable {
-    var url: String = ""
+    var url: String
 }
 
 enum SettingsWidgetType: Codable {
@@ -57,24 +57,25 @@ enum SettingsWidgetType: Codable {
 }
 
 struct SettingsWidget: Codable {
-    var name: String = ""
+    var name: String
+    var type: SettingsWidgetType
 }
 
 struct SettingsVariableText: Codable {
-    var value: String = ""
+    var value: String
 }
 
 struct SettingsVariableHttp: Codable {
-    var url: String = ""
+    var url: String
 }
 
 struct SettingsVariableTwitchPubSub: Codable {
-    var pattern: String = ""
+    var pattern: String
 }
 
 struct SettingsVariableTextWebsocket: Codable {
-    var url: String = ""
-    var pattern: String = ""
+    var url: String
+    var pattern: String
 }
 
 enum SettingsVariableType: Codable {
@@ -85,8 +86,8 @@ enum SettingsVariableType: Codable {
 }
 
 struct SettingsVariable: Codable {
-    var name: String = ""
-    var type: SettingsVariableType? = nil
+    var name: String
+    var type: SettingsVariableType
 }
 
 struct Database: Codable {
