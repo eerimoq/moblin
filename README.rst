@@ -3,7 +3,7 @@ MOBS
 
 An iOS app for IRL streaming.
 
-🚧🚧🚧 UNDER CONSTRUCTION 🚧🚧🚧
+🚧 🚧 🚧 UNDER CONSTRUCTION 🚧 🚧 🚧
 
 This project is **not** part of `OBS`_. It's just the name that is
 inspired by it.
