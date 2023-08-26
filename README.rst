@@ -13,7 +13,7 @@ inspired by it.
 Testing with local streaming server
 ===================================
 
-#. Start streaming server.
+#. Start streaming server. You must have `go`_ installed.
 
    .. code-block::
 
@@ -34,37 +34,35 @@ Testing with local streaming server
 
       $ vlc rtmp://localhost:1935/live/movie
 
-Ideas
-=====
+Ideas/plan
+==========
 
-- Show latency, bitrate, resolution, protocol, ...
+- Buffering for short disconnections. Show as picture in picture or
+  other layout once reconnected. Possible a record button.
 
 - Built-in support for commonly used streaming platforms (Twitch,
   Youtube, etc.).
 
   - Show number of viewers, chat, title, uptime, etc.
 
-- LIDAR, altitude, geolocation.
-
-- Picture in picture.
-
-- Record to disk in different resolution than stream.
-
-- Energy efficient.
-
-- Streamlabs integration.
-
 - Subscription and donation notifications. Both visually and with
   sound.
 
-- Buffering for short disconnections. Show as picture in picture or
-  other layout once reconnected. Possible a record button.
+- Geolocation.
 
 - Play music and short sound samples.
 
-- Filters.
+- Show latency, bitrate, resolution, protocol, ...
 
-- Two-way video and/or audio.
+- Streamlabs integration.
+
+- Filters/effects.
+
+- Energy efficient.
+
+- Record to disk in different resolution than stream.
+
+- LIDAR, altitude.
 
 Resources
 =========
@@ -106,4 +104,5 @@ Viewer count. Set channel id (123668195) in settings.
    /
 
 .. _OBS: https://obsproject.com
-   
+
+.. _go: https://go.dev
