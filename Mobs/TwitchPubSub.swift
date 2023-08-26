@@ -46,13 +46,15 @@ func decodeMessage(message: String) throws -> Message {
 func decodeMessageViewCount(message: String) throws -> MessageViewCount {
     return try JSONDecoder().decode(MessageViewCount.self, from: message.data(using: String.Encoding.utf8)!)
 }
-
-public final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
+ 
+final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     private var webSocket: URLSessionWebSocketTask?
     private var channelId: String?
+    private var model: Model?
 
-    public func start(channelId: String) {
+    func start(channelId: String, model: Model) {
         self.channelId = channelId
+        self.model = model
         let session = URLSession(configuration: .default,
                                  delegate: self,
                                  delegateQueue: OperationQueue())
@@ -76,6 +78,11 @@ public final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
                 if type == "viewcount" {
                     let message = try decodeMessageViewCount(message: message.data.message)
                     print("Viewers:", message.viewers)
+                    Task.detached(operation: {
+                        await MainActor.run {
+                            self.model!.viewers = "\(message.viewers)"
+                        }
+                    })
                 } else {
                     print("Unsupported message type:", type)
                 }
@@ -107,7 +114,7 @@ public final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         }
     }
 
-    public func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol proto: String?) {
+    func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol proto: String?) {
         print("Connected to PubSub server")
         sendMessage(message: "{\"type\":\"PING\"}")
         sendMessage(message: "{\"type\":\"LISTEN\",\"data\":{\"topics\":[\"video-playback-by-id.\(self.channelId!)\"]}}")
@@ -123,7 +130,7 @@ public final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         }
     }
 
-    public func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
+    func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
         print("Disconnect from Server:", reason ?? "unknown")
     }
 

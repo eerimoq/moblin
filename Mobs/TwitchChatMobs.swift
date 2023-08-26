@@ -1,19 +1,23 @@
 import Foundation
 import TwitchChat
 
-public final class TwitchChatMobs {
+final class TwitchChatMobs {
     private var twitchChat: TwitchChat?
     private var channelName: String
+    private var model: Model
 
-    public init(channelName: String){
+    init(channelName: String, model: Model){
         self.channelName = channelName
+        self.model = model
     }
 
-    public func start() {
+    func start() {
         twitchChat = TwitchChat(token: "SCHMOOPIIE", nick: "justinfan67420", name: channelName)
         Task.detached {
             for try await message in self.twitchChat!.messages {
-                print(self.channelName, "'s chat: ", message.text, separator: "")
+                await MainActor.run {
+                    self.model.chatText = "\(message.sender): \(message.text)"
+                }
             }
         }
     }

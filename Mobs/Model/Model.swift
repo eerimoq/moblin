@@ -41,10 +41,9 @@ final class Model: ObservableObject {
     @AppStorage("widgetChatChannelName") var widgetChatChannelName: String = "jinnytty"
     @AppStorage("widgetWebviewUrl") var widgetWebviewUrl: String = "https://foo.com/index.html"
     @AppStorage("widgetSelectedKind")  var widgetSelectedKind = "Text"
-    @AppStorage("isChatOn") var isChatOn = true
-    @AppStorage("isViewersOn") var isViewersOn = true
-    @AppStorage("isUptimeOn") var isUptimeOn = true
-    private var settings: Settings? = nil
+    var settings: Settings = Settings()
+    @Published var chatText = ""
+    @Published var viewers = "-"
     
     var selectedScene: String = "Back"
     
@@ -55,17 +54,8 @@ final class Model: ObservableObject {
         }
     }
 
-    private var twitchChat: TwitchChatMobs = {
-        let twitchChat = TwitchChatMobs(channelName: defaultConfig.twitchChatChannel)
-        twitchChat.start()
-        return twitchChat
-    }()
-
-    private var twitchPubSub: TwitchPubSub = {
-        let pubSub = TwitchPubSub()
-        pubSub.start(channelId: defaultConfig.twitchChannelId)
-        return pubSub
-    }()
+    private var twitchChat: TwitchChatMobs?
+    private var twitchPubSub: TwitchPubSub?
 
     func config(settings: Settings) {
         self.settings = settings
@@ -74,6 +64,10 @@ final class Model: ObservableObject {
         rtmpStream.sessionPreset = .hd1280x720
         rtmpStream.mixer.recorder.delegate = self
         checkDeviceAuthorization()
+        self.twitchChat = TwitchChatMobs(channelName: defaultConfig.twitchChatChannel, model: self)
+        self.twitchChat!.start()
+        self.twitchPubSub = TwitchPubSub()
+        self.twitchPubSub!.start(channelId: defaultConfig.twitchChannelId, model: self)
     }
 
     func checkDeviceAuthorization() {

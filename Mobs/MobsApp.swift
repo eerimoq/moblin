@@ -4,11 +4,11 @@ import SwiftUI
 @main
 struct MobsApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    @StateObject private var settings: Settings = {
+    private var settings: Settings = {
         let settings = Settings()
         settings.load()
         // ToDo: Remove. Just for testing.
-        settings.store()
+        //settings.store()
         return settings
     }()
 

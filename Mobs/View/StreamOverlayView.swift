@@ -53,9 +53,22 @@ struct LeadingOverlayView: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            TextView(text: model.fps)
-            TextView(text: "Viewers: 3023")
+            if model.settings.database.viewers {
+                HStack {
+                    Image(systemName: "person.2.fill")
+                    TextView(text: model.viewers)
+                }
+            }
+            if model.settings.database.uptime {
+                HStack {
+                    Image(systemName: "deskclock.fill")
+                    TextView(text: "0:35:12")
+                }
+            }
             Spacer()
+            if model.settings.database.chat {
+                TextView(text: model.chatText)
+            }
         }
     }
 }
@@ -65,6 +78,7 @@ struct TrailingOverlayView: View {
 
     var body: some View {
         VStack(alignment: .trailing) {
+            TextView(text: model.fps)
             Spacer()
             Variable(name: "Earnings", value: "10.32")
             Picker("Selected scene", selection: Binding(get: {

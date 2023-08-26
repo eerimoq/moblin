@@ -100,12 +100,13 @@ struct Database: Codable {
     var uptime: Bool = false
 }
 
-class Settings: ObservableObject {
-    @Published var database = Database()
+class Settings {
+    var database = Database()
     @AppStorage("settings") var storage = ""
 
     func load() {
         do {
+            print("Load settings.")
             print(storage)
             self.database = try JSONDecoder().decode(Database.self, from: storage.data(using: .utf8)!)
         } catch {
@@ -114,6 +115,7 @@ class Settings: ObservableObject {
     }
 
     func store() {
+        print("Store settings.")
         do {
             self.storage = String(decoding: try JSONEncoder().encode(self.database), as: UTF8.self)
         } catch {
