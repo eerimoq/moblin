@@ -4,19 +4,15 @@ import SwiftUI
 @main
 struct MobsApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    @StateObject private var settings = Settings()
+    @StateObject private var settings: Settings = {
+        let settings = Settings()
+        settings.load()
+        return settings
+    }()
 
     var body: some Scene {
         WindowGroup {
             ContentView(settings: settings)
-                .task {
-                do {
-                    try await settings.load()
-                    print("Settings loaded")
-                } catch {
-                    fatalError(error.localizedDescription)
-                }
-            }
         }
     }
 }

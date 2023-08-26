@@ -6,34 +6,18 @@ struct Database: Codable {
 }
 
 class Settings: ObservableObject {
-    @Published var database: Database? = nil
+    @Published var database = Database()
+    @AppStorage("settings") var storage = ""
 
-    private static func fileURL() throws -> URL {
-        try FileManager.default.url(for: .documentDirectory,
-                                    in: .userDomainMask,
-                                    appropriateFor: nil,
-                                    create: false)
-        .appendingPathComponent("settings.data")
-
-    }
-    
-    func load() async throws {
-        let task = Task<Database?, Error> {
-            let fileURL = try Self.fileURL()
-            guard let data = try? Data(contentsOf: fileURL) else {
-                return nil
-            }
-            return try JSONDecoder().decode(Database.self, from: data)
+    func load() {
+        do {
+            self.database = try JSONDecoder().decode(Database.self, from: storage.data(using: .utf8)!)
+        } catch {
+            print("Failed to load settings.")
         }
-        self.database = try await task.value
     }
 
-    func save(database: Database) async throws {
-        let task = Task {
-            let data = try JSONEncoder().encode(database)
-            let fileURL = try Self.fileURL()
-            try data.write(to: fileURL)
-        }
-        _ = try await task.value
+    func save(database: Database) throws {
+        self.storage = String(decoding: try JSONEncoder().encode(database), as: UTF8.self)
     }
 }
