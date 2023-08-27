@@ -10,27 +10,29 @@ struct WidgetSettingsView: View {
         self.model = model
     }
 
-    func getType() -> String {
-        self.model.settings.database.widgets[self.index].type
+    var widget: SettingsWidget {
+        get {
+            model.settings.database.widgets[self.index]
+        }
     }
     
     var body: some View {
         Form {
             Section("Name") {
                 TextField("", text: Binding(get: {
-                    self.model.settings.database.widgets[self.index].name
+                    widget.name
                 }, set: { value in
-                    self.model.settings.database.widgets[self.index].name = value
-                    self.model.settings.store()
+                    widget.name = value
+                    self.model.store()
                     self.model.numberOfWidgets += 0
                 }))
             }
             Section("Type") {
                 Picker("", selection: Binding(get: {
-                    self.model.settings.database.widgets[self.index].type
+                    widget.type
                 }, set: { value in
-                    self.model.settings.database.widgets[self.index].type = value
-                    self.model.settings.store()
+                    widget.type = value
+                    self.model.store()
                     self.model.numberOfWidgets += 0
                 })) {
                     ForEach(types, id: \.self) {
@@ -40,51 +42,54 @@ struct WidgetSettingsView: View {
                 .pickerStyle(.inline)
                 .labelsHidden()
             }
-            if self.getType() == "Text" {
+            switch widget.type {
+            case "Text" :
                 Section("Format string") {
                     TextField("", text: Binding(get: {
-                        self.model.settings.database.widgets[self.index].text.formatString
+                        widget.text.formatString
                     }, set: { value in
-                        self.model.settings.database.widgets[self.index].text.formatString = value
-                        self.model.settings.store()
+                        widget.text.formatString = value
+                        self.model.store()
                     }))
                 }
-            } else if self.getType() == "Image" {
+            case "Image":
                 Section("URL") {
                     TextField("", text: Binding(get: {
-                        self.model.settings.database.widgets[self.index].image.url
+                        widget.image.url
                     }, set: { value in
-                        self.model.settings.database.widgets[self.index].image.url = value
-                        self.model.settings.store()
+                        widget.image.url = value
+                        self.model.store()
                     }))
                 }
-            } else if self.getType() == "Video" {
+            case "Video":
                 Section("URL") {
                     TextField("", text: Binding(get: {
-                        self.model.settings.database.widgets[self.index].video.url
+                        widget.video.url
                     }, set: { value in
-                        self.model.settings.database.widgets[self.index].video.url = value
-                        self.model.settings.store()
+                        widget.video.url = value
+                        self.model.store()
                     }))
                 }
-            } else if self.getType() == "Camera" {
+            case "Camera":
                 Section("Direction") {
                     TextField("", text: Binding(get: {
-                        self.model.settings.database.widgets[self.index].camera.direction
+                        widget.camera.direction
                     }, set: { value in
-                        self.model.settings.database.widgets[self.index].camera.direction = value
-                        self.model.settings.store()
+                        widget.camera.direction = value
+                        self.model.store()
                     }))
                 }
-            } else if self.getType() == "Webview" {
+            case "Webview":
                 Section("URL") {
                     TextField("", text: Binding(get: {
-                        self.model.settings.database.widgets[self.index].webview.url
+                        widget.webview.url
                     }, set: { value in
-                        self.model.settings.database.widgets[self.index].webview.url = value
-                        self.model.settings.store()
+                        widget.webview.url = value
+                        self.model.store()
                     }))
                 }
+            default:
+                EmptyView()
             }
         }
         .navigationTitle("Widget")

@@ -38,14 +38,20 @@ struct SceneSettingsView: View {
         self.model = model
     }
     
+    var scene: SettingsScene {
+        get {
+            model.settings.database.scenes[self.index]
+        }
+    }
+    
     var body: some View {
         Form {
             Section("Name") {
                 TextField("", text: Binding(get: {
-                    self.model.settings.database.scenes[self.index].name
+                    scene.name
                 }, set: { value in
-                    self.model.settings.database.scenes[self.index].name = value
-                    self.model.settings.store()
+                    scene.name = value
+                    self.model.store()
                     self.model.numberOfScenes += 0
                 }))
             }

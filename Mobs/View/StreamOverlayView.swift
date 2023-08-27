@@ -64,16 +64,22 @@ struct Variable: View {
 struct LeadingOverlayView: View {
     @ObservedObject var model: Model
 
+    var database: Database {
+        get {
+            model.settings.database
+        }
+    }
+    
     var body: some View {
         VStack(alignment: .leading) {
-            if model.settings.database.viewers {
+            if database.viewers {
                 IconAndText(image: "person.2.fill", text: model.viewers)
             }
-            if model.settings.database.uptime {
+            if database.uptime {
                 IconAndText(image: "deskclock.fill", text: model.uptime)
             }
             Spacer()
-            if model.settings.database.chat {
+            if database.chat {
                 Image(systemName: "message.fill")
                     .frame(width: 12, height: 12)
                 TextView(text: model.chatText)
@@ -85,6 +91,12 @@ struct LeadingOverlayView: View {
 struct TrailingOverlayView: View {
     @ObservedObject var model: Model
 
+    var database: Database {
+        get {
+            model.settings.database
+        }
+    }
+    
     var body: some View {
         VStack(alignment: .trailing) {
             TextView(text: model.fps)
@@ -95,12 +107,12 @@ struct TrailingOverlayView: View {
             }, set: { (scene) in
                 model.selectedScene = scene
             })) {
-                ForEach(model.settings.database.scenes.filter({scene in scene.enabled}).map({scene in scene.name}), id: \.self) {
+                ForEach(database.scenes.filter({scene in scene.enabled}).map({scene in scene.name}), id: \.self) {
                     Text($0)
                 }
             }
             .pickerStyle(.segmented)
-            .frame(width: CGFloat(50 * model.settings.database.scenes.filter({scene in scene.enabled}).count))
+            .frame(width: CGFloat(50 * database.scenes.filter({scene in scene.enabled}).count))
             .colorInvert()
             .cornerRadius(10)
             .overlay(

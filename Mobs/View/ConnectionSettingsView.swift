@@ -9,39 +9,45 @@ struct ConnectionSettingsView: View {
         self.model = model
     }
     
+    var connection: SettingsConnection {
+        get {
+            model.settings.database.connections[self.index]
+        }
+    }
+    
     var body: some View {
         Form {
             Section("Name") {
                 TextField("", text: Binding(get: {
-                    self.model.settings.database.connections[self.index].name
+                    connection.name
                 }, set: { value in
-                    self.model.settings.database.connections[self.index].name = value
-                    self.model.settings.store()
+                    connection.name = value
+                    self.model.store()
                     self.model.numberOfConnections += 0
                 }))
             }
             Section("RTMP URL") {
                 TextField("", text: Binding(get: {
-                    self.model.settings.database.connections[self.index].rtmpUrl
+                    connection.rtmpUrl
                 }, set: { value in
-                    self.model.settings.database.connections[self.index].rtmpUrl = value
-                    self.model.settings.store()
+                    connection.rtmpUrl = value
+                    self.model.store()
                 }))
             }
             Section("Twitch channel name") {
                 TextField("", text: Binding(get: {
-                    self.model.settings.database.connections[self.index].twitchChannelName
+                    connection.twitchChannelName
                 }, set: { value in
-                    self.model.settings.database.connections[self.index].twitchChannelName = value
-                    self.model.settings.store()
+                    connection.twitchChannelName = value
+                    self.model.store()
                 }))
             }
             Section("Twitch channel id") {
                 TextField("", text: Binding(get: {
-                    self.model.settings.database.connections[self.index].twitchChannelId
+                    connection.twitchChannelId
                 }, set: { value in
-                    self.model.settings.database.connections[self.index].twitchChannelId = value
-                    self.model.settings.store()
+                    connection.twitchChannelId = value
+                    self.model.store()
                 }))
             }
         }

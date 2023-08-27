@@ -52,6 +52,10 @@ final class Model: ObservableObject {
     private var twitchChat: TwitchChatMobs?
     private var twitchPubSub: TwitchPubSub?
     
+    func store() {
+        settings.store()
+    }
+    
     func config(settings: Settings) {
         self.settings = settings
         self.numberOfScenes = settings.database.scenes.count

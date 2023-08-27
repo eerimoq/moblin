@@ -3,6 +3,12 @@ import SwiftUI
 struct SettingsView: View {
     @ObservedObject var model: Model
     
+    var database: Database {
+        get {
+            database
+        }
+    }
+    
     var body: some View {
         Form {
             NavigationLink(destination: ConnectionsSettingsView(model: self.model)) {
@@ -12,21 +18,21 @@ struct SettingsView: View {
                 Text("Scenes")
             }
             Toggle("Chat", isOn: Binding(get: {
-                model.settings.database.chat
+                database.chat
             }, set: { value in
-                model.settings.database.chat = value
+                database.chat = value
                 model.settings.store()
             }))
             Toggle("Viewers", isOn: Binding(get: {
-                model.settings.database.viewers
+                database.viewers
             }, set: { value in
-                model.settings.database.viewers = value
+                database.viewers = value
                 model.settings.store()
             }))
             Toggle("Uptime", isOn: Binding(get: {
-                model.settings.database.uptime
+                database.uptime
             }, set: { value in
-                model.settings.database.uptime = value
+                database.uptime = value
                 model.settings.store()
             }))
         }

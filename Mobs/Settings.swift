@@ -1,15 +1,19 @@
 import SwiftUI
 
-struct SettingsConnection: Codable {
+class SettingsConnection: Codable {
     var name: String
     var id: UUID = UUID()
     var enabled: Bool = true
     var rtmpUrl: String = "rtmp://"
     var twitchChannelName: String = ""
     var twitchChannelId: String = ""
+    
+    init(name: String) {
+        self.name = name
+    }
 }
 
-struct SettingsSceneWidget: Codable {
+class SettingsSceneWidget: Codable {
     var id: UUID
     var x: Int = 0
     var y: Int = 0
@@ -17,40 +21,44 @@ struct SettingsSceneWidget: Codable {
     var h: Int = 10
 }
 
-struct SettingsScene: Codable {
+class SettingsScene: Codable {
     var name: String
     var id: UUID = UUID()
     var enabled: Bool = true
     var widgets: [SettingsSceneWidget] = []
+    
+    init(name: String) {
+        self.name = name
+    }
 }
 
-struct SettingsWidgetText: Codable {
+class SettingsWidgetText: Codable {
     var formatString: String = "Sub goal: {subs} / 10"
 }
 
-struct SettingsWidgetImage: Codable {
+class SettingsWidgetImage: Codable {
     var url: String = "https://"
 }
 
-struct SettingsWidgetVideo: Codable {
+class SettingsWidgetVideo: Codable {
     var url: String = "https://"
 }
 
-struct SettingsWidgetCamera: Codable {
+class SettingsWidgetCamera: Codable {
     var direction: String = "Back"
 }
 
-struct SettingsWidgetChat: Codable {
+class SettingsWidgetChat: Codable {
 }
 
-struct SettingsWidgetRecording: Codable {
+class SettingsWidgetRecording: Codable {
 }
 
-struct SettingsWidgetWebview: Codable {
+class SettingsWidgetWebview: Codable {
     var url: String = "https://"
 }
 
-struct SettingsWidget: Codable {
+class SettingsWidget: Codable {
     var name: String
     var id: UUID = UUID()
     var type: String = "Text"
@@ -61,26 +69,30 @@ struct SettingsWidget: Codable {
     var chat: SettingsWidgetChat = SettingsWidgetChat()
     var recording: SettingsWidgetRecording = SettingsWidgetRecording()
     var webview: SettingsWidgetWebview = SettingsWidgetWebview()
+    
+    init(name: String) {
+        self.name = name
+    }
 }
 
-struct SettingsVariableText: Codable {
+class SettingsVariableText: Codable {
     var value: String = "15.0"
 }
 
-struct SettingsVariableHttp: Codable {
+class SettingsVariableHttp: Codable {
     var url: String = "https://"
 }
 
-struct SettingsVariableTwitchPubSub: Codable {
+class SettingsVariableTwitchPubSub: Codable {
     var pattern: String = ""
 }
 
-struct SettingsVariableTextWebsocket: Codable {
+class SettingsVariableTextWebsocket: Codable {
     var url: String = "https://"
     var pattern: String = ""
 }
 
-struct SettingsVariable: Codable {
+class SettingsVariable: Codable {
     var name: String
     var id: UUID = UUID()
     var type: String = "Text"
@@ -88,9 +100,13 @@ struct SettingsVariable: Codable {
     var http: SettingsVariableHttp = SettingsVariableHttp()
     var twitchPubSub: SettingsVariableTwitchPubSub = SettingsVariableTwitchPubSub()
     var websocket: SettingsVariableTextWebsocket = SettingsVariableTextWebsocket()
+    
+    init(name: String) {
+        self.name = name
+    }
 }
 
-struct Database: Codable {
+class Database: Codable {
     var connections: [SettingsConnection] = []
     var scenes: [SettingsScene] = []
     var widgets: [SettingsWidget] = []
@@ -111,7 +127,13 @@ class Settings: ObservableObject {
             print("Failed to load settings.")
         }
         if database.connections.isEmpty {
-            database.connections.append(SettingsConnection(name: "Default", id: UUID(), enabled: true, rtmpUrl: "rtmp://192.168.202.169:1935/live/1234", twitchChannelName: "jinnytty", twitchChannelId: "59965916"))
+            let connection = SettingsConnection(name: "Default")
+            connection.id = UUID()
+            connection.enabled = true
+            connection.rtmpUrl = "rtmp://192.168.202.169:1935/live/1234"
+            connection.twitchChannelName = "jinnytty"
+            connection.twitchChannelId = "59965916"
+            database.connections.append(connection)
             self.store()
         }
     }
