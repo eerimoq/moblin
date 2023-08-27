@@ -45,11 +45,9 @@ struct SceneSettingsView: View {
                     self.model.settings.database.scenes[self.index].name
                 }, set: { value in
                     self.model.settings.database.scenes[self.index].name = value
+                    self.model.settings.store()
+                    self.model.numberOfScenes += 0
                 }))
-                    .onSubmit {
-                        self.model.settings.store()
-                        self.model.numberOfScenes += 0
-                    }
             }
             Section("Widgets") {
                 List {

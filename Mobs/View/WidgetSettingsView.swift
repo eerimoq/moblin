@@ -21,11 +21,9 @@ struct WidgetSettingsView: View {
                     self.model.settings.database.widgets[self.index].name
                 }, set: { value in
                     self.model.settings.database.widgets[self.index].name = value
-                }))
-                .onSubmit {
                     self.model.settings.store()
                     self.model.numberOfWidgets += 0
-                }
+                }))
             }
             Section("Type") {
                 Picker("", selection: Binding(get: {
@@ -48,10 +46,8 @@ struct WidgetSettingsView: View {
                         self.model.settings.database.widgets[self.index].text.formatString
                     }, set: { value in
                         self.model.settings.database.widgets[self.index].text.formatString = value
-                    }))
-                    .onSubmit {
                         self.model.settings.store()
-                    }
+                    }))
                 }
             } else if self.getType() == "Image" {
                 Section("URL") {
@@ -59,10 +55,8 @@ struct WidgetSettingsView: View {
                         self.model.settings.database.widgets[self.index].image.url
                     }, set: { value in
                         self.model.settings.database.widgets[self.index].image.url = value
-                    }))
-                    .onSubmit {
                         self.model.settings.store()
-                    }
+                    }))
                 }
             } else if self.getType() == "Video" {
                 Section("URL") {
@@ -70,10 +64,8 @@ struct WidgetSettingsView: View {
                         self.model.settings.database.widgets[self.index].video.url
                     }, set: { value in
                         self.model.settings.database.widgets[self.index].video.url = value
-                    }))
-                    .onSubmit {
                         self.model.settings.store()
-                    }
+                    }))
                 }
             } else if self.getType() == "Camera" {
                 Section("Direction") {
@@ -81,10 +73,8 @@ struct WidgetSettingsView: View {
                         self.model.settings.database.widgets[self.index].camera.direction
                     }, set: { value in
                         self.model.settings.database.widgets[self.index].camera.direction = value
-                    }))
-                    .onSubmit {
                         self.model.settings.store()
-                    }
+                    }))
                 }
             } else if self.getType() == "Webview" {
                 Section("URL") {
@@ -92,10 +82,8 @@ struct WidgetSettingsView: View {
                         self.model.settings.database.widgets[self.index].webview.url
                     }, set: { value in
                         self.model.settings.database.widgets[self.index].webview.url = value
-                    }))
-                    .onSubmit {
                         self.model.settings.store()
-                    }
+                    }))
                 }
             }
         }

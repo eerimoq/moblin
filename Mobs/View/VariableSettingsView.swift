@@ -3,11 +3,15 @@ import SwiftUI
 struct VariableSettingsView: View {
     private var index: Int
     @ObservedObject var model: Model
-    let kinds = ["Text", "HTTP", "Twitch PubSub", "Websocket"]
+    let types = ["Text", "HTTP", "Twitch PubSub", "Websocket"]
     
     init(index: Int, model: Model) {
         self.index = index
         self.model = model
+    }
+    
+    func getType() -> String {
+        self.model.settings.database.variables[self.index].type
     }
     
     var body: some View {
@@ -17,39 +21,68 @@ struct VariableSettingsView: View {
                     self.model.settings.database.variables[self.index].name
                 }, set: { value in
                     self.model.settings.database.variables[self.index].name = value
+                    self.model.settings.store()
+                    self.model.numberOfVariables += 0
                 }))
-                    .onSubmit {
-                        self.model.settings.store()
-                        self.model.numberOfVariables += 0
-                    }
             }
-            Section("Kind") {
-                Picker("", selection: $model.variableSelectedKind) {
-                    ForEach(kinds, id: \.self) {
+            Section("Type") {
+                Picker("", selection: Binding(get: {
+                    self.model.settings.database.variables[self.index].type
+                }, set: { value in
+                    self.model.settings.database.variables[self.index].type = value
+                    self.model.settings.store()
+                    self.model.numberOfVariables += 0
+                })) {
+                    ForEach(types, id: \.self) {
                         Text($0)
                     }
                 }
                 .pickerStyle(.inline)
                 .labelsHidden()
             }
-            if self.model.variableSelectedKind == "Text" {
+            if self.getType() == "Text" {
                 Section("Value") {
-                    TextField("", text: $model.textVariableValue)
+                    TextField("", text: Binding(get: {
+                        self.model.settings.database.variables[self.index].text.value
+                    }, set: { value in
+                        self.model.settings.database.variables[self.index].text.value = value
+                        self.model.settings.store()
+                    }))
                 }
-            } else if self.model.variableSelectedKind == "HTTP" {
+            } else if self.getType() == "HTTP" {
                 Section("URL") {
-                    TextField("", text: $model.httpUrlVariableValue)
+                    TextField("", text: Binding(get: {
+                        self.model.settings.database.variables[self.index].http.url
+                    }, set: { value in
+                        self.model.settings.database.variables[self.index].http.url = value
+                        self.model.settings.store()
+                    }))
                 }
-            } else if self.model.variableSelectedKind == "Twitch PubSub" {
+            } else if self.getType() == "Twitch PubSub" {
                 Section("Pattern") {
-                    TextField("", text: $model.twitchPubSubVariableValue)
+                    TextField("", text: Binding(get: {
+                        self.model.settings.database.variables[self.index].twitchPubSub.pattern
+                    }, set: { value in
+                        self.model.settings.database.variables[self.index].twitchPubSub.pattern = value
+                        self.model.settings.store()
+                    }))
                 }
-            } else if self.model.variableSelectedKind == "Websocket" {
+            } else if self.getType() == "Websocket" {
                 Section("URL") {
-                    TextField("", text: $model.websocketUrlVariableValue)
+                    TextField("", text: Binding(get: {
+                        self.model.settings.database.variables[self.index].websocket.url
+                    }, set: { value in
+                        self.model.settings.database.variables[self.index].websocket.url = value
+                        self.model.settings.store()
+                    }))
                 }
                 Section("Pattern") {
-                    TextField("", text: $model.websocketPatternVariableValue)
+                    TextField("", text: Binding(get: {
+                        self.model.settings.database.variables[self.index].websocket.pattern
+                    }, set: { value in
+                        self.model.settings.database.variables[self.index].websocket.pattern = value
+                        self.model.settings.store()
+                    }))
                 }
             }
         }

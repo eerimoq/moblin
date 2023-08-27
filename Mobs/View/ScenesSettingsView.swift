@@ -20,8 +20,8 @@ struct ScenesSettingsView: View {
                     self.model.settings.store()
                     self.model.numberOfScenes -= 1
                 })
-                AddButtonView(action: {
-                    self.model.settings.database.scenes.append(SettingsScene(name: ""))
+                CreateButtonView(action: {
+                    self.model.settings.database.scenes.append(SettingsScene(name: "My scene"))
                     self.model.settings.store()
                     self.model.numberOfScenes += 1
                 })
@@ -36,8 +36,8 @@ struct ScenesSettingsView: View {
                     self.model.settings.store()
                     self.model.numberOfWidgets -= 1
                 })
-                AddButtonView(action: {
-                    self.model.settings.database.widgets.append(SettingsWidget(name: ""))
+                CreateButtonView(action: {
+                    self.model.settings.database.widgets.append(SettingsWidget(name: "My widget"))
                     self.model.settings.store()
                     self.model.numberOfWidgets += 1
                 })
@@ -52,8 +52,8 @@ struct ScenesSettingsView: View {
                     self.model.settings.store()
                     self.model.numberOfVariables -= 1
                 })
-                AddButtonView(action: {
-                    self.model.settings.database.variables.append(SettingsVariable(name: ""))
+                CreateButtonView(action: {
+                    self.model.settings.database.variables.append(SettingsVariable(name: "My variable"))
                     self.model.settings.store()
                     self.model.numberOfVariables += 1
                 })

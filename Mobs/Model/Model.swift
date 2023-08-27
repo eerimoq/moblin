@@ -33,7 +33,6 @@ final class Model: ObservableObject {
     @AppStorage("twitchPubSubVariableValue") var twitchPubSubVariableValue: String = ""
     @AppStorage("websocketUrlVariableValue") var websocketUrlVariableValue: String = "wss://foo.com/ws"
     @AppStorage("websocketPatternVariableValue") var websocketPatternVariableValue: String = ".data"
-    @AppStorage("variableSelectedKind") var variableSelectedKind = "Text"
     @Published var settings: Settings = Settings()
     @Published var chatText = ""
     @Published var viewers = "-"

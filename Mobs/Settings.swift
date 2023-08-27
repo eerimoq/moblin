@@ -63,33 +63,30 @@ struct SettingsWidget: Codable {
 }
 
 struct SettingsVariableText: Codable {
-    var value: String = ""
+    var value: String = "15.0"
 }
 
 struct SettingsVariableHttp: Codable {
-    var url: String
+    var url: String = "https://"
 }
 
 struct SettingsVariableTwitchPubSub: Codable {
-    var pattern: String
+    var pattern: String = ""
 }
 
 struct SettingsVariableTextWebsocket: Codable {
-    var url: String
-    var pattern: String
-}
-
-enum SettingsVariableType: Codable {
-    case text(SettingsVariableText)
-    case http(SettingsVariableHttp)
-    case twitchPubSub(SettingsVariableTwitchPubSub)
-    case websocket(SettingsVariableTextWebsocket)
+    var url: String = "https://"
+    var pattern: String = ""
 }
 
 struct SettingsVariable: Codable {
     var name: String
     var id: UUID = UUID()
-    var type: SettingsVariableType = .text(SettingsVariableText())
+    var type: String = "Text"
+    var text: SettingsVariableText = SettingsVariableText()
+    var http: SettingsVariableHttp = SettingsVariableHttp()
+    var twitchPubSub: SettingsVariableTwitchPubSub = SettingsVariableTwitchPubSub()
+    var websocket: SettingsVariableTextWebsocket = SettingsVariableTextWebsocket()
 }
 
 struct Database: Codable {
