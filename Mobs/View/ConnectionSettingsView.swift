@@ -1,40 +1,48 @@
 import SwiftUI
 
 struct ConnectionSettingsView: View {
-    @AppStorage("connectionName") var name: String = ""
-    @AppStorage("uri") var url: String = defaultConfig.uri
-    @AppStorage("streamName") var streamName: String = defaultConfig.streamName
-    @AppStorage("twitchChatChannel") var twitchChatChannel: String = defaultConfig.twitchChatChannel
-    @AppStorage("twitchChannelId") var twitchChannelId: String = defaultConfig.twitchChannelId
+    private var index: Int
+    @ObservedObject private var model: Model
+    
+    init(index: Int, model: Model) {
+        self.index = index
+        self.model = model
+    }
     
     var body: some View {
         Form {
             Section("Name") {
-                TextField("", text: $name)
+                TextField("", text: Binding(get: {
+                    self.model.settings.database.connections[self.index].name
+                }, set: { value in
+                    self.model.settings.database.connections[self.index].name = value
+                    self.model.settings.store()
+                    self.model.numberOfConnections += 0
+                }))
             }
             Section("RTMP URL") {
-                TextField(defaultConfig.uri, text: $url)
-                    .onSubmit {
-                        print(self.url)
-                    }
-            }
-            Section("RTMP stream name") {
-                TextField(defaultConfig.streamName, text: $streamName)
-                    .onSubmit {
-                        print(self.url)
-                    }
+                TextField("", text: Binding(get: {
+                    self.model.settings.database.connections[self.index].rtmpUrl
+                }, set: { value in
+                    self.model.settings.database.connections[self.index].rtmpUrl = value
+                    self.model.settings.store()
+                }))
             }
             Section("Twitch channel name") {
-                TextField(defaultConfig.twitchChatChannel, text: $twitchChatChannel)
-                    .onSubmit {
-                        print(self.twitchChatChannel)
-                    }
+                TextField("", text: Binding(get: {
+                    self.model.settings.database.connections[self.index].twitchChannelName
+                }, set: { value in
+                    self.model.settings.database.connections[self.index].twitchChannelName = value
+                    self.model.settings.store()
+                }))
             }
             Section("Twitch channel id") {
-                TextField(defaultConfig.twitchChannelId, text: $twitchChannelId)
-                    .onSubmit {
-                        print(self.twitchChannelId)
-                    }
+                TextField("", text: Binding(get: {
+                    self.model.settings.database.connections[self.index].twitchChannelId
+                }, set: { value in
+                    self.model.settings.database.connections[self.index].twitchChannelId = value
+                    self.model.settings.store()
+                }))
             }
         }
         .navigationTitle("Connection")
@@ -43,6 +51,6 @@ struct ConnectionSettingsView: View {
 
 struct ConnectionSettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        ConnectionSettingsView(name: "Test")
+        ConnectionSettingsView(index: 0, model: Model())
     }
 }

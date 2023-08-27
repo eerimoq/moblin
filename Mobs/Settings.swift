@@ -2,10 +2,11 @@ import SwiftUI
 
 struct SettingsConnection: Codable {
     var name: String
-    var id: UUID
-    var rtmpUrl: String
-    var twitchChannelName: String
-    var twitchChannelId: String
+    var id: UUID = UUID()
+    var enabled: Bool = true
+    var rtmpUrl: String = "rtmp://"
+    var twitchChannelName: String = ""
+    var twitchChannelId: String = ""
 }
 
 struct SettingsSceneWidget: Codable {
@@ -108,6 +109,10 @@ class Settings: ObservableObject {
             self.database = try JSONDecoder().decode(Database.self, from: storage.data(using: .utf8)!)
         } catch {
             print("Failed to load settings.")
+        }
+        if database.connections.isEmpty {
+            database.connections.append(SettingsConnection(name: "Default", id: UUID(), enabled: true, rtmpUrl: "rtmp://192.168.202.169:1935/live/1234", twitchChannelName: "jinnytty", twitchChannelId: "59965916"))
+            self.store()
         }
     }
 

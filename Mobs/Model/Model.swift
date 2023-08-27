@@ -23,6 +23,7 @@ final class Model: ObservableObject {
     @Published var numberOfScenes = 0
     @Published var numberOfWidgets = 0
     @Published var numberOfVariables = 0
+    @Published var numberOfConnections = 0
     var widgets = ["Sub goal", "Earnings", "Chat", "Back camera", "Front camera", "Recording"]
     @Published var connections = ["Home", "Twitch"]
     @AppStorage("isConnectionOn") var isConnectionOn = true
@@ -56,15 +57,16 @@ final class Model: ObservableObject {
         self.numberOfScenes = settings.database.scenes.count
         self.numberOfWidgets = settings.database.widgets.count
         self.numberOfVariables = settings.database.variables.count
+        self.numberOfConnections = settings.database.connections.count
         rtmpStream = RTMPStream(connection: rtmpConnection)
         rtmpStream.videoOrientation = .landscapeRight
         rtmpStream.sessionPreset = .hd1280x720
         rtmpStream.mixer.recorder.delegate = self
         checkDeviceAuthorization()
-        self.twitchChat = TwitchChatMobs(channelName: defaultConfig.twitchChatChannel, model: self)
+        self.twitchChat = TwitchChatMobs(channelName: settings.database.connections[0].twitchChannelName, model: self)
         self.twitchChat!.start()
         self.twitchPubSub = TwitchPubSub()
-        self.twitchPubSub!.start(channelId: defaultConfig.twitchChannelId, model: self)
+        self.twitchPubSub!.start(channelId: settings.database.connections[0].twitchChannelName, model: self)
         updateTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             self.updateUptime()
         })
@@ -134,9 +136,26 @@ final class Model: ObservableObject {
         UIApplication.shared.isIdleTimerDisabled = true
         rtmpConnection.addEventListener(.rtmpStatus, selector: #selector(rtmpStatusHandler), observer: self)
         rtmpConnection.addEventListener(.ioError, selector: #selector(rtmpErrorHandler), observer: self)
-        rtmpConnection.connect(defaultConfig.uri)
+        rtmpConnection.connect(rtmpUri())
     }
 
+    func rtmpUri() -> String {
+        var url = URL(string: self.settings.database.connections[0].rtmpUrl)!
+        var components = url.pathComponents
+        components.removeFirst()
+        components.removeLast()
+        var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+        let path = components.joined(separator: "/")
+        urlComponents.path = "/\(path)"
+        url = urlComponents.url!
+        return "\(url)"
+    }
+    
+    func rtmpStreamName() -> String {
+        let parts = self.settings.database.connections[0].rtmpUrl.split(separator: "/")
+        return String(parts[parts.count - 1])
+    }
+    
     func stopPublish() {
         UIApplication.shared.isIdleTimerDisabled = false
         rtmpConnection.close()
@@ -176,7 +195,7 @@ final class Model: ObservableObject {
         switch code {
         case RTMPConnection.Code.connectSuccess.rawValue:
             retryCount = 0
-            rtmpStream.publish(defaultConfig.streamName)
+            rtmpStream.publish(rtmpStreamName())
             startDate = Date()
             updateUptime()
         case RTMPConnection.Code.connectFailed.rawValue, RTMPConnection.Code.connectClosed.rawValue:
@@ -186,7 +205,7 @@ final class Model: ObservableObject {
                 return
             }
             Thread.sleep(forTimeInterval: pow(2.0, Double(retryCount)))
-            rtmpConnection.connect(defaultConfig.uri)
+            rtmpConnection.connect(rtmpUri())
             retryCount += 1
         default:
             break
@@ -195,7 +214,7 @@ final class Model: ObservableObject {
 
     @objc
     private func rtmpErrorHandler(_ notification: Notification) {
-        rtmpConnection.connect(defaultConfig.uri)
+        rtmpConnection.connect(rtmpUri())
     }
 }
 
