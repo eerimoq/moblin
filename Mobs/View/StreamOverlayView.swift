@@ -69,7 +69,7 @@ struct LeadingOverlayView: View {
             model.settings.database
         }
     }
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             if database.viewers {
@@ -96,7 +96,7 @@ struct TrailingOverlayView: View {
             model.settings.database
         }
     }
-    
+
     var body: some View {
         VStack(alignment: .trailing) {
             TextView(text: model.fps)

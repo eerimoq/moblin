@@ -4,7 +4,7 @@ struct WidgetSettingsView: View {
     private var index: Int
     @ObservedObject var model: Model
     let types = ["Text", "Image", "Video", "Camera", "Chat", "Recording", "Webview"]
-    
+
     init(index: Int, model: Model) {
         self.index = index
         self.model = model
@@ -15,7 +15,7 @@ struct WidgetSettingsView: View {
             model.settings.database.widgets[self.index]
         }
     }
-    
+
     var body: some View {
         Form {
             Section("Name") {

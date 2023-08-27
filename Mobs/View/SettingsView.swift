@@ -2,13 +2,13 @@ import SwiftUI
 
 struct SettingsView: View {
     @ObservedObject var model: Model
-    
+
     var database: Database {
         get {
             model.settings.database
         }
     }
-    
+
     var body: some View {
         Form {
             NavigationLink(destination: ConnectionsSettingsView(model: self.model)) {

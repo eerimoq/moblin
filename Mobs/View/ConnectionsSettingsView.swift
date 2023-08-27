@@ -2,13 +2,13 @@ import SwiftUI
 
 struct ConnectionsSettingsView: View {
     @ObservedObject var model: Model
-    
+
     var database: Database {
         get {
             model.settings.database
         }
     }
-     
+
     var body: some View {
         VStack {
             Form {

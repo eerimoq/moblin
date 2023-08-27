@@ -7,7 +7,7 @@ class SettingsConnection: Codable {
     var rtmpUrl: String = "rtmp://"
     var twitchChannelName: String = ""
     var twitchChannelId: String = ""
-    
+
     init(name: String) {
         self.name = name
     }
@@ -26,7 +26,7 @@ class SettingsScene: Codable {
     var id: UUID = UUID()
     var enabled: Bool = true
     var widgets: [SettingsSceneWidget] = []
-    
+
     init(name: String) {
         self.name = name
     }
@@ -69,7 +69,7 @@ class SettingsWidget: Codable {
     var chat: SettingsWidgetChat = SettingsWidgetChat()
     var recording: SettingsWidgetRecording = SettingsWidgetRecording()
     var webview: SettingsWidgetWebview = SettingsWidgetWebview()
-    
+
     init(name: String) {
         self.name = name
     }
@@ -100,7 +100,7 @@ class SettingsVariable: Codable {
     var http: SettingsVariableHttp = SettingsVariableHttp()
     var twitchPubSub: SettingsVariableTwitchPubSub = SettingsVariableTwitchPubSub()
     var websocket: SettingsVariableTextWebsocket = SettingsVariableTextWebsocket()
-    
+
     init(name: String) {
         self.name = name
     }

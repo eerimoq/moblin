@@ -4,18 +4,18 @@ struct VariableSettingsView: View {
     private var index: Int
     @ObservedObject var model: Model
     let types = ["Text", "HTTP", "Twitch PubSub", "Websocket"]
-    
+
     init(index: Int, model: Model) {
         self.index = index
         self.model = model
     }
-    
+
     var variable: SettingsVariable {
         get {
             model.settings.database.variables[self.index]
         }
     }
-    
+
     var body: some View {
         Form {
             Section("Name") {

@@ -46,7 +46,7 @@ func decodeMessage(message: String) throws -> Message {
 func decodeMessageViewCount(message: String) throws -> MessageViewCount {
     return try JSONDecoder().decode(MessageViewCount.self, from: message.data(using: String.Encoding.utf8)!)
 }
- 
+
 final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     private var webSocket: URLSessionWebSocketTask?
     private var channelId: String?

@@ -3,18 +3,18 @@ import SwiftUI
 struct ConnectionSettingsView: View {
     private var index: Int
     @ObservedObject private var model: Model
-    
+
     init(index: Int, model: Model) {
         self.index = index
         self.model = model
     }
-    
+
     var connection: SettingsConnection {
         get {
             model.settings.database.connections[self.index]
         }
     }
-    
+
     var body: some View {
         Form {
             Section("Name") {

@@ -8,7 +8,7 @@ import TwitchChat
 
 final class Model: ObservableObject {
     let maxRetryCount: Int = 5
-    
+
     private var rtmpConnection = RTMPConnection()
     @Published var rtmpStream: RTMPStream!
     @Published var currentPosition: AVCaptureDevice.Position = .back
@@ -19,7 +19,7 @@ final class Model: ObservableObject {
     var subscriptions = Set<AnyCancellable>()
     var startDate: Date? = nil
     @Published var uptime: String = ""
-    
+
     @Published var numberOfScenes = 0
     @Published var numberOfWidgets = 0
     @Published var numberOfVariables = 0
@@ -30,32 +30,32 @@ final class Model: ObservableObject {
     var settings: Settings = Settings()
     @Published var chatText = ""
     @Published var viewers = ""
-    
+
     var selectedScene: String = "Main"
-    
+
     var uptimeFormatter: DateComponentsFormatter {
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.hour, .minute, .second]
         formatter.zeroFormattingBehavior = .pad
         return formatter
     }
-    
+
     var updateTimer: Timer? = nil
-    
+
     var frameRate: String = "30.0" {
         willSet {
             rtmpStream.frameRate = Float64(newValue) ?? 30.0
             objectWillChange.send()
         }
     }
-    
+
     private var twitchChat: TwitchChatMobs?
     private var twitchPubSub: TwitchPubSub?
-    
+
     func store() {
         settings.store()
     }
-    
+
     func config(settings: Settings) {
         self.settings = settings
         self.numberOfScenes = settings.database.scenes.count
@@ -75,7 +75,7 @@ final class Model: ObservableObject {
             self.updateUptime()
         })
     }
-    
+
     func updateUptime() {
         DispatchQueue.main.async {
             if self.startDate == nil {
@@ -86,7 +86,7 @@ final class Model: ObservableObject {
             }
         }
     }
-    
+
     func checkDeviceAuthorization() {
         let requiredAccessLevel: PHAccessLevel = .readWrite
         PHPhotoLibrary.requestAuthorization(for: requiredAccessLevel) { authorizationStatus in
@@ -154,12 +154,12 @@ final class Model: ObservableObject {
         url = urlComponents.url!
         return "\(url)"
     }
-    
+
     func rtmpStreamName() -> String {
         let parts = self.settings.database.connections[0].rtmpUrl.split(separator: "/")
         return String(parts[parts.count - 1])
     }
-    
+
     func stopPublish() {
         UIApplication.shared.isIdleTimerDisabled = false
         rtmpConnection.close()
@@ -172,11 +172,11 @@ final class Model: ObservableObject {
     func toggleLight() {
         rtmpStream.torch.toggle()
     }
-    
+
     func toggleMute() {
         rtmpStream.hasAudio.toggle();
     }
-    
+
     func setBackCameraZoomLevel(level: CGFloat) {
         guard let device = rtmpStream.videoCapture(for: 0)?.device, 1 <= level && level < device.activeFormat.videoMaxZoomFactor else {
             return

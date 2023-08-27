@@ -8,7 +8,7 @@ struct ScenesSettingsView: View {
             model.settings.database
         }
     }
-    
+
     var body: some View {
         Form {
             Section {
