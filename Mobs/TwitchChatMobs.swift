@@ -1,16 +1,6 @@
 import Foundation
 import TwitchChat
 
-extension String {
-    func trunc(length: Int) -> String {
-        if (self.count <= length) {
-          return self
-        }
-        return self.prefix(length - 1) + "…"
-      }
-
-}
-
 final class TwitchChatMobs {
     private var twitchChat: TwitchChat?
     private var channelName: String
