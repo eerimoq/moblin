@@ -77,7 +77,6 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
                 let type = try getMessageType(message: message.data.message)
                 if type == "viewcount" {
                     let message = try decodeMessageViewCount(message: message.data.message)
-                    print("Viewers:", message.viewers)
                     Task.detached(operation: {
                         await MainActor.run {
                             self.model!.viewers = "\(message.viewers)"
