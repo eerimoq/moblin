@@ -88,14 +88,21 @@ struct ZoomSlider: View {
     }
 }
 
+var mutedImageOn = "mic.slash.fill"
+var mutedImageOff = "mic.fill"
+var recordingImageOn = "record.circle.fill"
+var recordingImageOff = "record.circle"
+var flashImageOn = "lightbulb.fill"
+var flashImageOff = "lightbulb"
+
 struct ContentView: View {
     @ObservedObject var model = Model()
 
     private var videoView: StreamView!
     private var videoOverlayView: StreamOverlayView!
-    @State private var mutedImage = "mic.fill"
-    @State private var recordingImage = "record.circle"
-    @State private var flashLightImage = "lightbulb"
+    @State private var mutedImage = mutedImageOff
+    @State private var recordingImage = recordingImageOff
+    @State private var flashLightImage = flashImageOff
     @State private var action: Int? = 0
 
     init(settings: Settings) {
@@ -138,36 +145,34 @@ struct ContentView: View {
                             })
                             GenericButton(image: mutedImage, action: {
                                 model.toggleMute()
-                                if mutedImage == "mic.slash.fill" {
-                                    mutedImage = "mic.fill"
+                                if mutedImage == mutedImageOn {
+                                    mutedImage = mutedImageOff
                                 } else {
-                                    mutedImage = "mic.slash.fill"
+                                    mutedImage = mutedImageOn
                                 }
                             })
                         }
                         HStack {
                             GenericButton(image: recordingImage, action: {
-                                if recordingImage == "record.circle" {
-                                    recordingImage = "record.circle.fill"
+                                if recordingImage == recordingImageOff {
+                                    recordingImage = recordingImageOn
                                 } else {
-                                    recordingImage = "record.circle"
+                                    recordingImage = recordingImageOff
                                 }
                             })
                             GenericButton(image: flashLightImage, action: {
                                 model.toggleLight()
-                                if flashLightImage == "lightbulb" {
-                                    flashLightImage = "lightbulb.fill"
+                                if flashLightImage == flashImageOff {
+                                    flashLightImage = flashImageOn
                                 } else {
-                                    flashLightImage = "lightbulb"
+                                    flashLightImage = flashImageOff
                                 }
                             })
                         }
                         ZoomSlider(label: "B", onChange: { (level) in
-                            print("back zoom level:", level)
                             model.setBackCameraZoomLevel(level: level)
                         })
                         ZoomSlider(label: "F", onChange: { (level) in
-                            print("front zoom level:", level)
                         })
                         StreamButton(model: self.model)
                     }

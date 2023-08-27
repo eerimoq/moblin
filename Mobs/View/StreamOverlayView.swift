@@ -2,6 +2,19 @@ import Combine
 import Foundation
 import SwiftUI
 
+struct IconAndText: View {
+    var image: String
+    var text: String
+
+    var body: some View {
+        HStack {
+            Image(systemName: self.image)
+                .frame(width: 12, height: 12)
+            TextView(text: self.text)
+        }
+    }
+}
+
 struct TextView: View {
     var text: String
     init(text: String) {
@@ -54,16 +67,10 @@ struct LeadingOverlayView: View {
     var body: some View {
         VStack(alignment: .leading) {
             if model.settings.database.viewers {
-                HStack {
-                    Image(systemName: "person.2.fill")
-                    TextView(text: model.viewers)
-                }
+                IconAndText(image: "person.2.fill", text: model.viewers)
             }
             if model.settings.database.uptime {
-                HStack {
-                    Image(systemName: "deskclock.fill")
-                    TextView(text: model.uptime)
-                }
+                IconAndText(image: "deskclock.fill", text: model.uptime)
             }
             Spacer()
             if model.settings.database.chat {
@@ -81,18 +88,17 @@ struct TrailingOverlayView: View {
             TextView(text: model.fps)
             Spacer()
             Variable(name: "Earnings", value: "10.32")
-            Picker("Selected scene", selection: Binding(get: {
+            Picker("", selection: Binding(get: {
                 model.selectedScene
             }, set: { (scene) in
-                print("Selected scene:", scene)
                 model.selectedScene = scene
             })) {
-                ForEach(model.settings.database.scenes.map({scene in scene.name}), id: \.self) {
+                ForEach(model.settings.database.scenes.filter({scene in scene.enabled}).map({scene in scene.name}), id: \.self) {
                     Text($0)
                 }
             }
             .pickerStyle(.segmented)
-            .frame(width: CGFloat(50 * model.numberOfScenes))
+            .frame(width: CGFloat(50 * model.settings.database.scenes.filter({scene in scene.enabled}).count))
             .colorInvert()
             .cornerRadius(10)
             .overlay(
