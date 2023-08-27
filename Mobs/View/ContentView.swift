@@ -137,6 +137,7 @@ struct ContentView: View {
                             GenericButton(image: "music.note", action: {
                             })
                             GenericButton(image: mutedImage, action: {
+                                model.toggleMute()
                                 if mutedImage == "mic.slash.fill" {
                                     mutedImage = "mic.fill"
                                 } else {

@@ -8,7 +8,6 @@ import TwitchChat
 
 final class Model: ObservableObject {
     let maxRetryCount: Int = 5
-    var name = ""
 
     private var rtmpConnection = RTMPConnection()
     @Published var rtmpStream: RTMPStream!
@@ -23,16 +22,8 @@ final class Model: ObservableObject {
     @Published var numberOfWidgets = 0
     @Published var numberOfVariables = 0
     @Published var widgets = ["Sub goal", "Earnings", "Chat", "Back camera", "Front camera", "Recording"]
-    @Published var variables = ["subGoal", "earnings"]
     @Published var connections = ["Home", "Twitch"]
     @AppStorage("isConnectionOn") var isConnectionOn = true
-    var sceneWidgets = ["Sub goal", "Earnings", "Chat", "Front camera", "Back camera"]
-    @AppStorage("variableName") var variableName: String = "earnings"
-    @AppStorage("textVariableValue") var textVariableValue: String = "10.0"
-    @AppStorage("httpUrlVariableValue") var httpUrlVariableValue: String = "https://foo.com"
-    @AppStorage("twitchPubSubVariableValue") var twitchPubSubVariableValue: String = ""
-    @AppStorage("websocketUrlVariableValue") var websocketUrlVariableValue: String = "wss://foo.com/ws"
-    @AppStorage("websocketPatternVariableValue") var websocketPatternVariableValue: String = ".data"
     @Published var settings: Settings = Settings()
     @Published var chatText = ""
     @Published var viewers = "-"
@@ -131,7 +122,11 @@ final class Model: ObservableObject {
     func toggleLight() {
         rtmpStream.torch.toggle()
     }
-
+    
+    func toggleMute() {
+        rtmpStream.hasAudio.toggle();
+    }
+    
     func setBackCameraZoomLevel(level: CGFloat) {
         guard let device = rtmpStream.videoCapture(for: 0)?.device, 1 <= level && level < device.activeFormat.videoMaxZoomFactor else {
             return
