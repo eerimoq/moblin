@@ -31,21 +31,21 @@ struct SceneSettingsView: View {
     @State private var draggingItem: String? = nil
     
     var body: some View {
-        VStack {
-            Form {
-                Section("Name") {
-                    TextField("", text: $model.sceneName)
+        Form {
+            Section("Name") {
+                TextField("", text: $model.sceneName)
+            }
+            Section("Widgets") {
+                List {
+                    ForEach($model.sceneWidgets, id: \.self, editActions: .move) { $widget in
+                        Text(widget)
+                    }.onDelete(perform: { offsets in
+                        print("delete")
+                    })
                 }
-                Section("Widgets") {
-                    List {
-                        ForEach($model.sceneWidgets, id: \.self, editActions: .move) { $widget in
-                            Text(widget)
-                        }.onDelete(perform: { offsets in
-                            print("delete")
-                        })
-                    }
-                    AddButtonView()
-                }
+                AddButtonView(action: {
+                    print("Add widget")
+                })
             }
         }
         .navigationTitle("Scene")

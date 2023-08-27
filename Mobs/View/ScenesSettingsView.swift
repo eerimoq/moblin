@@ -11,9 +11,11 @@ struct ScenesSettingsView: View {
                         Toggle(scene, isOn: $model.isSceneOn)
                     }
                 }.onDelete(perform: { offsets in
-                    print("delete scene")
+                    self.model.scenes.remove(atOffsets: offsets)
                 })
-                CreateButtonView()
+                AddButtonView(action: {
+                    self.model.scenes.append("")
+                })
             }
             Section("Widgets") {
                 ForEach(self.model.widgets, id: \.self) { widget in
@@ -21,9 +23,11 @@ struct ScenesSettingsView: View {
                        Text(widget)
                     }
                 }.onDelete(perform: { offsets in
-                    print("delete widget")
+                    self.model.widgets.remove(atOffsets: offsets)
                 })
-                CreateButtonView()
+                AddButtonView(action: {
+                    self.model.widgets.append("")
+                })
             }
             Section("Variables") {
                 ForEach(self.model.variables, id: \.self) { variable in
@@ -31,9 +35,11 @@ struct ScenesSettingsView: View {
                         Text(variable)
                     }
                 }.onDelete(perform: { offsets in
-                    print("delete variable")
+                    self.model.variables.remove(atOffsets: offsets)
                 })
-                CreateButtonView()
+                AddButtonView(action: {
+                    self.model.variables.append("")
+                })
             }
         }
         .navigationTitle("Scenes")

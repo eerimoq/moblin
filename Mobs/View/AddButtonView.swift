@@ -1,10 +1,10 @@
 import SwiftUI
 
 struct AddButtonView: View {
+    var action: () -> Void
+    
     var body: some View {
-        Button(action: {
-            print("Add")
-        }, label: {
+        Button(action: self.action, label: {
             HStack {
                 Spacer()
                 Text("Add")
@@ -16,6 +16,6 @@ struct AddButtonView: View {
 
 struct AddButtonView_Previews: PreviewProvider {
     static var previews: some View {
-        AddButtonView()
+        AddButtonView(action: {})
     }
 }

@@ -18,10 +18,10 @@ final class Model: ObservableObject {
     private var nc = NotificationCenter.default
     var subscriptions = Set<AnyCancellable>()
     
-    var scenes = ["Back", "Front", "Back and front", "Play recording"]
-    var widgets = ["Sub goal", "Earnings", "Chat", "Back camera", "Front camera", "Recording"]
-    var variables = ["subGoal", "earnings"]
-    var connections = ["Home", "Twitch"]
+    @Published var scenes = ["Back", "Front", "Back and front", "Play recording"]
+    @Published var widgets = ["Sub goal", "Earnings", "Chat", "Back camera", "Front camera", "Recording"]
+    @Published var variables = ["subGoal", "earnings"]
+    @Published var connections = ["Home", "Twitch"]
     @AppStorage("isConnectionOn") var isConnectionOn = true
     var sceneWidgets = ["Sub goal", "Earnings", "Chat", "Front camera", "Back camera"]
     @AppStorage("variableName") var variableName: String = "earnings"
