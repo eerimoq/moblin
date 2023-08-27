@@ -1,46 +1,101 @@
 import SwiftUI
 
 struct WidgetSettingsView: View {
+    private var index: Int
     @ObservedObject var model: Model
-    let kinds = ["Text", "Image", "Video", "Camera", "Chat", "Recording", "Webview"]
+    let types = ["Text", "Image", "Video", "Camera", "Chat", "Recording", "Webview"]
+    
+    init(index: Int, model: Model) {
+        self.index = index
+        self.model = model
+    }
+
+    func getType() -> String {
+        self.model.settings.database.widgets[self.index].type
+    }
     
     var body: some View {
         Form {
             Section("Name") {
-                TextField("", text: $model.widgetName)
+                TextField("", text: Binding(get: {
+                    self.model.settings.database.widgets[self.index].name
+                }, set: { value in
+                    self.model.settings.database.widgets[self.index].name = value
+                }))
+                .onSubmit {
+                    self.model.settings.store()
+                    self.model.numberOfWidgets += 0
+                }
             }
-            Section("Kind") {
-                Picker("", selection: $model.widgetSelectedKind) {
-                    ForEach(kinds, id: \.self) {
+            Section("Type") {
+                Picker("", selection: Binding(get: {
+                    self.model.settings.database.widgets[self.index].type
+                }, set: { value in
+                    self.model.settings.database.widgets[self.index].type = value
+                    self.model.settings.store()
+                    self.model.numberOfWidgets += 0
+                })) {
+                    ForEach(types, id: \.self) {
                         Text($0)
                     }
                 }
                 .pickerStyle(.inline)
                 .labelsHidden()
             }
-            if self.model.widgetSelectedKind == "Text" {
+            if self.getType() == "Text" {
                 Section("Format string") {
-                    TextField("", text: $model.widgetTextFormatString)
+                    TextField("", text: Binding(get: {
+                        self.model.settings.database.widgets[self.index].text.formatString
+                    }, set: { value in
+                        self.model.settings.database.widgets[self.index].text.formatString = value
+                    }))
+                    .onSubmit {
+                        self.model.settings.store()
+                    }
                 }
-            } else if self.model.widgetSelectedKind == "Image" {
+            } else if self.getType() == "Image" {
                 Section("URL") {
-                    TextField("", text: $model.widgetImageUrl)
+                    TextField("", text: Binding(get: {
+                        self.model.settings.database.widgets[self.index].image.url
+                    }, set: { value in
+                        self.model.settings.database.widgets[self.index].image.url = value
+                    }))
+                    .onSubmit {
+                        self.model.settings.store()
+                    }
                 }
-            } else if self.model.widgetSelectedKind == "Video" {
+            } else if self.getType() == "Video" {
                 Section("URL") {
-                    TextField("", text: $model.widgetVideoUrl)
+                    TextField("", text: Binding(get: {
+                        self.model.settings.database.widgets[self.index].video.url
+                    }, set: { value in
+                        self.model.settings.database.widgets[self.index].video.url = value
+                    }))
+                    .onSubmit {
+                        self.model.settings.store()
+                    }
                 }
-            } else if self.model.widgetSelectedKind == "Camera" {
+            } else if self.getType() == "Camera" {
                 Section("Direction") {
-                    TextField("", text: $model.widgetCameraDirection)
+                    TextField("", text: Binding(get: {
+                        self.model.settings.database.widgets[self.index].camera.direction
+                    }, set: { value in
+                        self.model.settings.database.widgets[self.index].camera.direction = value
+                    }))
+                    .onSubmit {
+                        self.model.settings.store()
+                    }
                 }
-            } else if self.model.widgetSelectedKind == "Chat" {
-                Section("Channel name") {
-                    TextField("", text: $model.widgetChatChannelName)
-                }
-            } else if self.model.widgetSelectedKind == "Webview" {
+            } else if self.getType() == "Webview" {
                 Section("URL") {
-                    TextField("", text: $model.widgetWebviewUrl)
+                    TextField("", text: Binding(get: {
+                        self.model.settings.database.widgets[self.index].webview.url
+                    }, set: { value in
+                        self.model.settings.database.widgets[self.index].webview.url = value
+                    }))
+                    .onSubmit {
+                        self.model.settings.store()
+                    }
                 }
             }
         }
@@ -50,6 +105,6 @@ struct WidgetSettingsView: View {
 
 struct WidgetSettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        WidgetSettingsView(model: Model())
+        WidgetSettingsView(index: 0, model: Model())
     }
 }

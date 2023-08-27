@@ -13,10 +13,6 @@ struct ConnectionsSettingsView: View {
                 }.onDelete(perform: { offsets in
                     print("delete connection")
                 })
-                
-                //CreateButtonView(action: {
-                //    print("Create connection")
-                //})
             }
             NavigationLink {
                 EmptyView()

@@ -2,38 +2,41 @@ import SwiftUI
 
 struct SettingsConnection: Codable {
     var name: String
+    var id: UUID
     var rtmpUrl: String
     var twitchChannelName: String
     var twitchChannelId: String
 }
 
 struct SettingsSceneWidget: Codable {
-    var name: String
-    var x: Int
-    var y: Int
-    var w: Int
-    var h: Int
+    var id: UUID
+    var x: Int = 0
+    var y: Int = 0
+    var w: Int = 10
+    var h: Int = 10
 }
 
 struct SettingsScene: Codable {
     var name: String
-    var widgets: [SettingsSceneWidget]
+    var id: UUID = UUID()
+    var enabled: Bool = true
+    var widgets: [SettingsSceneWidget] = []
 }
 
 struct SettingsWidgetText: Codable {
-    var formatString: String
+    var formatString: String = "Sub goal: {subs} / 10"
 }
 
 struct SettingsWidgetImage: Codable {
-    var url: String
+    var url: String = "https://"
 }
 
 struct SettingsWidgetVideo: Codable {
-    var url: String
+    var url: String = "https://"
 }
 
 struct SettingsWidgetCamera: Codable {
-    var direction: String
+    var direction: String = "Back"
 }
 
 struct SettingsWidgetChat: Codable {
@@ -43,26 +46,24 @@ struct SettingsWidgetRecording: Codable {
 }
 
 struct SettingsWidgetWebview: Codable {
-    var url: String
-}
-
-enum SettingsWidgetType: Codable {
-    case text(SettingsWidgetText)
-    case image(SettingsWidgetImage)
-    case video(SettingsWidgetVideo)
-    case camera(SettingsWidgetCamera)
-    case chat(SettingsWidgetChat)
-    case recording(SettingsWidgetRecording)
-    case webview(SettingsWidgetWebview)
+    var url: String = "https://"
 }
 
 struct SettingsWidget: Codable {
     var name: String
-    var type: SettingsWidgetType
+    var id: UUID = UUID()
+    var type: String = "Text"
+    var text: SettingsWidgetText = SettingsWidgetText()
+    var image: SettingsWidgetImage = SettingsWidgetImage()
+    var video: SettingsWidgetVideo = SettingsWidgetVideo()
+    var camera: SettingsWidgetCamera = SettingsWidgetCamera()
+    var chat: SettingsWidgetChat = SettingsWidgetChat()
+    var recording: SettingsWidgetRecording = SettingsWidgetRecording()
+    var webview: SettingsWidgetWebview = SettingsWidgetWebview()
 }
 
 struct SettingsVariableText: Codable {
-    var value: String
+    var value: String = ""
 }
 
 struct SettingsVariableHttp: Codable {
@@ -87,7 +88,8 @@ enum SettingsVariableType: Codable {
 
 struct SettingsVariable: Codable {
     var name: String
-    var type: SettingsVariableType
+    var id: UUID = UUID()
+    var type: SettingsVariableType = .text(SettingsVariableText())
 }
 
 struct Database: Codable {
@@ -100,8 +102,8 @@ struct Database: Codable {
     var uptime: Bool = false
 }
 
-class Settings {
-    var database = Database()
+class Settings: ObservableObject {
+    @Published var database = Database()
     @AppStorage("settings") var storage = ""
 
     func load() {

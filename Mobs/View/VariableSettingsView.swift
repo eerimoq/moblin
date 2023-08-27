@@ -1,13 +1,27 @@
 import SwiftUI
 
 struct VariableSettingsView: View {
+    private var index: Int
     @ObservedObject var model: Model
     let kinds = ["Text", "HTTP", "Twitch PubSub", "Websocket"]
+    
+    init(index: Int, model: Model) {
+        self.index = index
+        self.model = model
+    }
     
     var body: some View {
         Form {
             Section("Name") {
-                TextField("", text: $model.variableName)
+                TextField("", text: Binding(get: {
+                    self.model.settings.database.variables[self.index].name
+                }, set: { value in
+                    self.model.settings.database.variables[self.index].name = value
+                }))
+                    .onSubmit {
+                        self.model.settings.store()
+                        self.model.numberOfVariables += 0
+                    }
             }
             Section("Kind") {
                 Picker("", selection: $model.variableSelectedKind) {
@@ -45,6 +59,6 @@ struct VariableSettingsView: View {
 
 struct VariableSettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        VariableSettingsView(model: Model())
+        VariableSettingsView(index: 0, model: Model())
     }
 }

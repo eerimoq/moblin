@@ -27,25 +27,70 @@ struct DragRelocateDelegate: DropDelegate {
 }
 
 struct SceneSettingsView: View {
-    @ObservedObject var model: Model
-    @State private var draggingItem: String? = nil
+    private var index: Int
+    @ObservedObject private var model: Model
+    @State var widgets: [String] = []
+    @State private var showingAdd = false
+    @State private var selected = "Sub goal"
+    
+    init(index: Int, model: Model) {
+        self.index = index
+        self.model = model
+    }
     
     var body: some View {
         Form {
             Section("Name") {
-                TextField("", text: $model.sceneName)
+                TextField("", text: Binding(get: {
+                    self.model.settings.database.scenes[self.index].name
+                }, set: { value in
+                    self.model.settings.database.scenes[self.index].name = value
+                }))
+                    .onSubmit {
+                        self.model.settings.store()
+                        self.model.numberOfScenes += 0
+                    }
             }
             Section("Widgets") {
                 List {
-                    ForEach($model.sceneWidgets, id: \.self, editActions: .move) { $widget in
+                    ForEach($widgets, id: \.self, editActions: .move) { $widget in
                         Text(widget)
                     }.onDelete(perform: { offsets in
                         print("delete")
                     })
                 }
                 AddButtonView(action: {
-                    print("Add widget")
-                })
+                    showingAdd = true
+                }).popover(isPresented: $showingAdd) {
+                    VStack {
+                        Form {
+                            Section("Name") {
+                                Picker("", selection: $selected) {
+                                    ForEach(model.widgets, id: \.self) {
+                                        Text($0)
+                                    }
+                                }
+                                .pickerStyle(.inline)
+                                .labelsHidden()
+                            }
+                        }
+                        HStack {
+                            Spacer()
+                            Button(action: {
+                                showingAdd = false
+                            }, label: {
+                                Text("Cancel")
+                            })
+                            Spacer()
+                            Button(action: {
+                                showingAdd = false
+                            }, label: {
+                                Text("Done")
+                            })
+                            Spacer()
+                        }
+                    }
+                }
             }
         }
         .navigationTitle("Scene")
@@ -54,6 +99,6 @@ struct SceneSettingsView: View {
 
 struct SceneSettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SceneSettingsView(model: Model())
+        SceneSettingsView(index: 0, model: Model())
     }
 }

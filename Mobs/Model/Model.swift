@@ -8,6 +8,7 @@ import TwitchChat
 
 final class Model: ObservableObject {
     let maxRetryCount: Int = 5
+    var name = ""
 
     private var rtmpConnection = RTMPConnection()
     @Published var rtmpStream: RTMPStream!
@@ -18,7 +19,9 @@ final class Model: ObservableObject {
     private var nc = NotificationCenter.default
     var subscriptions = Set<AnyCancellable>()
     
-    @Published var scenes = ["Back", "Front", "Back and front", "Play recording"]
+    @Published var numberOfScenes = 0
+    @Published var numberOfWidgets = 0
+    @Published var numberOfVariables = 0
     @Published var widgets = ["Sub goal", "Earnings", "Chat", "Back camera", "Front camera", "Recording"]
     @Published var variables = ["subGoal", "earnings"]
     @Published var connections = ["Home", "Twitch"]
@@ -41,7 +44,7 @@ final class Model: ObservableObject {
     @AppStorage("widgetChatChannelName") var widgetChatChannelName: String = "jinnytty"
     @AppStorage("widgetWebviewUrl") var widgetWebviewUrl: String = "https://foo.com/index.html"
     @AppStorage("widgetSelectedKind")  var widgetSelectedKind = "Text"
-    var settings: Settings = Settings()
+    @Published var settings: Settings = Settings()
     @Published var chatText = ""
     @Published var viewers = "-"
     
@@ -59,6 +62,9 @@ final class Model: ObservableObject {
 
     func config(settings: Settings) {
         self.settings = settings
+        self.numberOfScenes = settings.database.scenes.count
+        self.numberOfWidgets = settings.database.widgets.count
+        self.numberOfVariables = settings.database.variables.count
         rtmpStream = RTMPStream(connection: rtmpConnection)
         rtmpStream.videoOrientation = .landscapeRight
         rtmpStream.sessionPreset = .hd1280x720

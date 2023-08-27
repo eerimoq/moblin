@@ -87,12 +87,12 @@ struct TrailingOverlayView: View {
                 print("Selected scene:", scene)
                 model.selectedScene = scene
             })) {
-                ForEach(model.scenes, id: \.self) {
+                ForEach(model.settings.database.scenes.map({scene in scene.name}), id: \.self) {
                     Text($0)
                 }
             }
             .pickerStyle(.segmented)
-            .frame(width: CGFloat(50 * model.scenes.count))
+            .frame(width: CGFloat(50 * model.numberOfScenes))
             .colorInvert()
             .cornerRadius(10)
             .overlay(
