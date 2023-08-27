@@ -5,7 +5,7 @@ struct SettingsView: View {
     
     var database: Database {
         get {
-            database
+            model.settings.database
         }
     }
     
