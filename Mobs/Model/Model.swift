@@ -23,10 +23,10 @@ final class Model: ObservableObject {
     @Published var numberOfScenes = 0
     @Published var numberOfWidgets = 0
     @Published var numberOfVariables = 0
-    @Published var widgets = ["Sub goal", "Earnings", "Chat", "Back camera", "Front camera", "Recording"]
+    var widgets = ["Sub goal", "Earnings", "Chat", "Back camera", "Front camera", "Recording"]
     @Published var connections = ["Home", "Twitch"]
     @AppStorage("isConnectionOn") var isConnectionOn = true
-    @Published var settings: Settings = Settings()
+    var settings: Settings = Settings()
     @Published var chatText = ""
     @Published var viewers = "-"
     
