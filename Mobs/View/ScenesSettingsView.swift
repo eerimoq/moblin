@@ -10,8 +10,8 @@ struct ScenesSettingsView: View {
                     NavigationLink(destination: SceneSettingsView(index: index, model: self.model)) {
                         Toggle(self.model.settings.database.scenes[index].name, isOn: Binding(get: {
                             self.model.settings.database.scenes[index].enabled
-                        }, set: { _ in
-                            self.model.settings.database.scenes[index].enabled.toggle()
+                        }, set: { value in
+                            self.model.settings.database.scenes[index].enabled = value
                             self.model.settings.store()
                         }))
                     }

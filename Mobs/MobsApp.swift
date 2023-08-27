@@ -7,8 +7,6 @@ struct MobsApp: App {
     private var settings: Settings = {
         let settings = Settings()
         settings.load()
-        // ToDo: Remove. Just for testing.
-        //settings.store()
         return settings
     }()
 

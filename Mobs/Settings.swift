@@ -108,8 +108,6 @@ class Settings: ObservableObject {
 
     func load() {
         do {
-            print("Load settings.")
-            print(storage)
             self.database = try JSONDecoder().decode(Database.self, from: storage.data(using: .utf8)!)
         } catch {
             print("Failed to load settings.")
@@ -117,7 +115,6 @@ class Settings: ObservableObject {
     }
 
     func store() {
-        print("Store settings.")
         do {
             self.storage = String(decoding: try JSONEncoder().encode(self.database), as: UTF8.self)
         } catch {

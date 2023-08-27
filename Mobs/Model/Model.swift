@@ -34,21 +34,11 @@ final class Model: ObservableObject {
     @AppStorage("websocketUrlVariableValue") var websocketUrlVariableValue: String = "wss://foo.com/ws"
     @AppStorage("websocketPatternVariableValue") var websocketPatternVariableValue: String = ".data"
     @AppStorage("variableSelectedKind") var variableSelectedKind = "Text"
-    @AppStorage("sceneName") var sceneName: String = "Back"
-    @AppStorage("isSceneOn") var isSceneOn = true
-    @AppStorage("widgetName") var widgetName: String = "Earnings"
-    @AppStorage("widgetTextFormatString") var widgetTextFormatString: String = "Earnings: ${earnings}"
-    @AppStorage("widgetImageUrl") var widgetImageUrl: String = "https://foo.com/bar.png"
-    @AppStorage("widgetVideoUrl") var widgetVideoUrl: String = "https://foo.com/bar.mp4"
-    @AppStorage("widgetCameraDirection") var widgetCameraDirection: String = "Back"
-    @AppStorage("widgetChatChannelName") var widgetChatChannelName: String = "jinnytty"
-    @AppStorage("widgetWebviewUrl") var widgetWebviewUrl: String = "https://foo.com/index.html"
-    @AppStorage("widgetSelectedKind")  var widgetSelectedKind = "Text"
     @Published var settings: Settings = Settings()
     @Published var chatText = ""
     @Published var viewers = "-"
     
-    var selectedScene: String = "Back"
+    var selectedScene: String = "Main"
     
     var frameRate: String = "30.0" {
         willSet {
