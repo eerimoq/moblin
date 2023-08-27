@@ -18,7 +18,7 @@ final class Model: ObservableObject {
     private var nc = NotificationCenter.default
     var subscriptions = Set<AnyCancellable>()
     var startDate: Date? = nil
-    @Published var uptime: String = "-"
+    @Published var uptime: String = ""
     
     @Published var numberOfScenes = 0
     @Published var numberOfWidgets = 0
@@ -28,7 +28,7 @@ final class Model: ObservableObject {
     @AppStorage("isConnectionOn") var isConnectionOn = true
     var settings: Settings = Settings()
     @Published var chatText = ""
-    @Published var viewers = "-"
+    @Published var viewers = ""
     
     var selectedScene: String = "Main"
     
@@ -73,7 +73,7 @@ final class Model: ObservableObject {
     func updateUptime() {
         DispatchQueue.main.async {
             if self.startDate == nil {
-                self.uptime = "-"
+                self.uptime = ""
             } else {
                 let elapsed = Date().timeIntervalSince(self.startDate!)
                 self.uptime = self.uptimeFormatter.string(from: elapsed)!

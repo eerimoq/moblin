@@ -74,6 +74,8 @@ struct LeadingOverlayView: View {
             }
             Spacer()
             if model.settings.database.chat {
+                Image(systemName: "message.fill")
+                    .frame(width: 12, height: 12)
                 TextView(text: model.chatText)
             }
         }
