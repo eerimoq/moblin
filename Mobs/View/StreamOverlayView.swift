@@ -17,9 +17,6 @@ struct IconAndText: View {
 
 struct TextView: View {
     var text: String
-    init(text: String) {
-        self.text = text
-    }
 
     var body: some View {
         HStack {
