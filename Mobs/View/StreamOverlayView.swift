@@ -62,7 +62,7 @@ struct LeadingOverlayView: View {
             if model.settings.database.uptime {
                 HStack {
                     Image(systemName: "deskclock.fill")
-                    TextView(text: "0:35:12")
+                    TextView(text: model.uptime)
                 }
             }
             Spacer()

@@ -8,7 +8,7 @@ import TwitchChat
 
 final class Model: ObservableObject {
     let maxRetryCount: Int = 5
-
+    
     private var rtmpConnection = RTMPConnection()
     @Published var rtmpStream: RTMPStream!
     @Published var currentPosition: AVCaptureDevice.Position = .back
@@ -17,6 +17,8 @@ final class Model: ObservableObject {
     @Published var fps: String = "FPS"
     private var nc = NotificationCenter.default
     var subscriptions = Set<AnyCancellable>()
+    var startDate: Date? = nil
+    @Published var uptime: String = "-"
     
     @Published var numberOfScenes = 0
     @Published var numberOfWidgets = 0
@@ -30,16 +32,25 @@ final class Model: ObservableObject {
     
     var selectedScene: String = "Main"
     
+    var uptimeFormatter: DateComponentsFormatter {
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.hour, .minute, .second]
+        formatter.zeroFormattingBehavior = .pad
+        return formatter
+    }
+    
+    var updateTimer: Timer? = nil
+    
     var frameRate: String = "30.0" {
         willSet {
             rtmpStream.frameRate = Float64(newValue) ?? 30.0
             objectWillChange.send()
         }
     }
-
+    
     private var twitchChat: TwitchChatMobs?
     private var twitchPubSub: TwitchPubSub?
-
+    
     func config(settings: Settings) {
         self.settings = settings
         self.numberOfScenes = settings.database.scenes.count
@@ -54,8 +65,22 @@ final class Model: ObservableObject {
         self.twitchChat!.start()
         self.twitchPubSub = TwitchPubSub()
         self.twitchPubSub!.start(channelId: defaultConfig.twitchChannelId, model: self)
+        updateTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
+            self.updateUptime()
+        })
     }
-
+    
+    func updateUptime() {
+        DispatchQueue.main.async {
+            if self.startDate == nil {
+                self.uptime = "-"
+            } else {
+                let elapsed = Date().timeIntervalSince(self.startDate!)
+                self.uptime = self.uptimeFormatter.string(from: elapsed)!
+            }
+        }
+    }
+    
     func checkDeviceAuthorization() {
         let requiredAccessLevel: PHAccessLevel = .readWrite
         PHPhotoLibrary.requestAuthorization(for: requiredAccessLevel) { authorizationStatus in
@@ -117,6 +142,8 @@ final class Model: ObservableObject {
         rtmpConnection.close()
         rtmpConnection.removeEventListener(.rtmpStatus, selector: #selector(rtmpStatusHandler), observer: self)
         rtmpConnection.removeEventListener(.ioError, selector: #selector(rtmpErrorHandler), observer: self)
+        startDate = nil
+        updateUptime()
     }
 
     func toggleLight() {
@@ -150,7 +177,11 @@ final class Model: ObservableObject {
         case RTMPConnection.Code.connectSuccess.rawValue:
             retryCount = 0
             rtmpStream.publish(defaultConfig.streamName)
+            startDate = Date()
+            updateUptime()
         case RTMPConnection.Code.connectFailed.rawValue, RTMPConnection.Code.connectClosed.rawValue:
+            startDate = nil
+            updateUptime()
             guard retryCount <= maxRetryCount else {
                 return
             }
