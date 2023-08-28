@@ -28,7 +28,7 @@ final class Model: ObservableObject {
     @Published var connections = ["Home", "Twitch"]
     @AppStorage("isConnectionOn") var isConnectionOn = true
     var settings: Settings = Settings()
-    @Published var chatText = ""
+    @Published var chatPosts: [Post] = []
     @Published var viewers = ""
 
     var selectedScene: String = "Main"
