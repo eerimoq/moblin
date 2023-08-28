@@ -10,7 +10,9 @@ struct IconAndText: View {
         HStack {
             Image(systemName: image)
                 .frame(width: 12, height: 12)
+                .font(.system(size: 13))
             TextView(text: text)
+                .font(.system(size: 13))
         }
     }
 }
@@ -22,9 +24,10 @@ struct TextView: View {
         HStack {
             Text(text)
                 .foregroundColor(.white)
-        }.padding(5)
-            .background(.black)
-            .cornerRadius(10)
+        }
+        .padding(2)
+        .background(.black)
+        .cornerRadius(5)
     }
 }
 
@@ -79,6 +82,7 @@ struct LeadingOverlayView: View {
             if database.chat {
                 Image(systemName: "message.fill")
                     .frame(width: 12, height: 12)
+                    .font(.system(size: 13))
                 ChatView(posts: model.twitchChatPosts)
             }
         }
@@ -97,6 +101,7 @@ struct TrailingOverlayView: View {
     var body: some View {
         VStack(alignment: .trailing) {
             TextView(text: model.fps)
+                .font(.system(size: 13))
             Spacer()
             Variable(name: "Earnings", value: "10.32")
             Picker("", selection: Binding(get: {

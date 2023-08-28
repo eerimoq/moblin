@@ -3,30 +3,37 @@ import HaishinKit
 import SwiftUI
 import VideoToolbox
 
+struct StreamButtonText: View {
+    var text: String
+    
+    var body: some View {
+        Text(text)
+            .frame(width: 60)
+            .padding(5)
+            .background(.red)
+            .cornerRadius(10)
+    }
+}
+
 struct StreamButton: View {
-    @ObservedObject var model = Model()
+    @ObservedObject var model: Model
 
     var body: some View {
-        if model.published {
+        switch model.liveState {
+        case .goLive:
             Button(action: {
-                model.published.toggle()
-                model.stopPublish()
-            }, label: {
-                Text("Stop")
-            })
-            .padding(5)
-            .background(.red)
-            .cornerRadius(10)
-        } else {
-            Button(action: {
-                model.published.toggle()
+                model.liveState = .stop
                 model.startPublish()
             }, label: {
-                Text("Go live")
+                StreamButtonText(text: "Go Live")
             })
-            .padding(5)
-            .background(.red)
-            .cornerRadius(10)
+        case .stop:
+            Button(action: {
+                model.liveState = .goLive
+                model.stopPublish()
+            }, label: {
+                StreamButtonText(text: "Stop")
+            })
         }
     }
 }
@@ -60,31 +67,28 @@ struct Battery: View {
         Rectangle()
             .fill(.green)
             .frame(width: 30, height: 15)
+            .cornerRadius(5)
     }
 }
 
 struct ZoomSlider: View {
-    var label: String
     var onChange: (_ level: CGFloat) -> Void
 
     @State var level: CGFloat = 1.0
 
     var body: some View {
-        HStack {
-            Text(label)
-            Slider(
-                value: Binding(get: {
-                    level
-                }, set: { (level) in
-                    if level != self.level {
-                        onChange(level)
-                        self.level = level
-                    }
-                }),
-                in: 1...5,
-                step: 0.1
-            )
-        }
+        Slider(
+            value: Binding(get: {
+                level
+            }, set: { (level) in
+                if level != self.level {
+                    onChange(level)
+                    self.level = level
+                }
+            }),
+            in: 1...5,
+            step: 0.1
+        )
     }
 }
 
@@ -121,7 +125,11 @@ struct ContentView: View {
                 }
                 VStack {
                     VStack {
-                        Battery()
+                        HStack {
+                            Text(model.currentTime)
+                                .font(.system(size: 13))
+                            Battery()
+                        }
                         Spacer()
                         HStack {
                             GenericButton(image: "ellipsis", action: {
@@ -169,10 +177,8 @@ struct ContentView: View {
                                 }
                             })
                         }
-                        ZoomSlider(label: "B", onChange: { (level) in
+                        ZoomSlider(onChange: { (level) in
                             model.setBackCameraZoomLevel(level: level)
-                        })
-                        ZoomSlider(label: "F", onChange: { (level) in
                         })
                         StreamButton(model: model)
                     }

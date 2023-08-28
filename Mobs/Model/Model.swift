@@ -6,6 +6,11 @@ import SwiftUI
 import VideoToolbox
 import TwitchChat
 
+enum LiveState {
+    case goLive
+    case stop
+}
+
 final class Model: ObservableObject {
     let maxRetryCount: Int = 5
 
@@ -13,7 +18,7 @@ final class Model: ObservableObject {
     @Published var rtmpStream: RTMPStream!
     @Published var currentPosition: AVCaptureDevice.Position = .back
     private var retryCount: Int = 0
-    @Published var published = false
+    @Published var liveState: LiveState = .goLive
     @Published var fps: String = "FPS"
     private var nc = NotificationCenter.default
     var subscriptions = Set<AnyCancellable>()
@@ -28,7 +33,7 @@ final class Model: ObservableObject {
     @Published var connections = ["Home", "Twitch"]
     @AppStorage("isConnectionOn") var isConnectionOn = true
     var settings: Settings = Settings()
-
+    @Published var currentTime: String = Date().formatted(date: .omitted, time: .shortened)
     var selectedScene: String = "Main"
 
     var uptimeFormatter: DateComponentsFormatter {
@@ -76,21 +81,33 @@ final class Model: ObservableObject {
         twitchChat = TwitchChatMobs(channelName: database.connections[0].twitchChannelName, model: self)
         twitchChat!.start()
         twitchPubSub = TwitchPubSub(model: self)
-        twitchPubSub!.start(channelId: database.connections[0].twitchChannelName)
+        twitchPubSub!.start(channelId: database.connections[0].twitchChannelId)
         updateTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
-            self.updateUptime()
+            DispatchQueue.main.async {
+                let now = Date()
+                self.updateUptime(now: now)
+                self.updateCurrentTime(now: now)
+            }
         })
     }
 
-    func updateUptime() {
+    func updateUptimeFromNonMain() {
         DispatchQueue.main.async {
-            if self.startDate == nil {
-                self.uptime = ""
-            } else {
-                let elapsed = Date().timeIntervalSince(self.startDate!)
-                self.uptime = self.uptimeFormatter.string(from: elapsed)!
-            }
+            self.updateUptime(now: Date())
         }
+    }
+
+    func updateUptime(now: Date) {
+        if self.startDate == nil {
+            self.uptime = ""
+        } else {
+            let elapsed = now.timeIntervalSince(self.startDate!)
+            self.uptime = self.uptimeFormatter.string(from: elapsed)!
+        }
+    }
+
+    func updateCurrentTime(now: Date) {
+        self.currentTime = now.formatted(date: .omitted, time: .shortened)
     }
 
     func checkDeviceAuthorization() {
@@ -120,7 +137,7 @@ final class Model: ObservableObject {
                     return
                 }
                 DispatchQueue.main.async {
-                    self.fps = self.published == true ? "\(currentFPS)" : "FPS"
+                    self.fps = self.liveState == .goLive ? "" : "\(currentFPS)"
                 }
             }
             .store(in: &subscriptions)
@@ -172,7 +189,7 @@ final class Model: ObservableObject {
         rtmpConnection.removeEventListener(.rtmpStatus, selector: #selector(rtmpStatusHandler), observer: self)
         rtmpConnection.removeEventListener(.ioError, selector: #selector(rtmpErrorHandler), observer: self)
         startDate = nil
-        updateUptime()
+        updateUptimeFromNonMain()
     }
 
     func toggleLight() {
@@ -207,10 +224,10 @@ final class Model: ObservableObject {
             retryCount = 0
             rtmpStream.publish(rtmpStreamName())
             startDate = Date()
-            updateUptime()
+            updateUptimeFromNonMain()
         case RTMPConnection.Code.connectFailed.rawValue, RTMPConnection.Code.connectClosed.rawValue:
             startDate = nil
-            updateUptime()
+            updateUptimeFromNonMain()
             guard retryCount <= maxRetryCount else {
                 return
             }

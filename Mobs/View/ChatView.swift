@@ -14,15 +14,14 @@ struct LineView: View {
     var body: some View {
         HStack {
             Text(user)
-                .frame(width: 40, alignment: .leading)
+                .frame(width: 50, alignment: .leading)
                 .lineLimit(1)
-                .truncationMode(.tail)
                 .padding([.leading], 5)
             Text(message)
                 .padding([.trailing], 5)
         }
         .padding(0)
-        .font(.system(size: 14))
+        .font(.system(size: 13))
         .background(.black)
         .foregroundColor(.white)
         .cornerRadius(5)
@@ -44,8 +43,8 @@ struct ChatView: View {
 struct ChatView_Previews: PreviewProvider {
     static var previews: some View {
         ChatView(posts: [
-            Post(user: "Foo", message: "bar fe fe ef"),
-            Post(user: "Foofowkokwef", message: "barwef wef we fe fe ef")
+            Post(id: 1, user: "Foo", message: "bar fe fe ef"),
+            Post(id: 2, user: "Foofowkokwef", message: "barwef wef we fe fe ef")
         ])
     }
 }

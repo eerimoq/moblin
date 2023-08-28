@@ -2,6 +2,7 @@ import Foundation
 import TwitchChat
 
 struct Post: Hashable {
+    var id: Int
     var user: String
     var message: String
 }
@@ -11,6 +12,7 @@ final class TwitchChatMobs {
     private var channelName: String
     private var model: Model
     private var posts: [Post] = []
+    private var id: Int = 0
 
     init(channelName: String, model: Model){
         self.channelName = channelName
@@ -25,7 +27,8 @@ final class TwitchChatMobs {
                     if self.posts.count > 6 {
                         self.posts.removeFirst()
                     }
-                    self.posts.append(Post(user: message.sender, message: message.text))
+                    self.id += 1
+                    self.posts.append(Post(id: self.id, user: message.sender, message: message.text))
                     self.model.twitchChatPosts = self.posts
                 }
             }
