@@ -8,9 +8,9 @@ struct IconAndText: View {
 
     var body: some View {
         HStack {
-            Image(systemName: self.image)
+            Image(systemName: image)
                 .frame(width: 12, height: 12)
-            TextView(text: self.text)
+            TextView(text: text)
         }
     }
 }
@@ -20,7 +20,7 @@ struct TextView: View {
 
     var body: some View {
         HStack {
-            Text(self.text)
+            Text(text)
                 .foregroundColor(.white)
         }.padding(5)
             .background(.black)
@@ -34,7 +34,7 @@ struct Variable: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Text(self.name)
+            Text(name)
                 .foregroundColor(.white)
                 .font(.system(size: 12))
                 .padding([.top, .trailing, .leading], 5)
@@ -70,7 +70,7 @@ struct LeadingOverlayView: View {
     var body: some View {
         VStack(alignment: .leading) {
             if database.viewers {
-                IconAndText(image: "person.2.fill", text: model.viewers)
+                IconAndText(image: "person.2.fill", text: model.numberOfViewers)
             }
             if database.uptime {
                 IconAndText(image: "deskclock.fill", text: model.uptime)
@@ -79,7 +79,7 @@ struct LeadingOverlayView: View {
             if database.chat {
                 Image(systemName: "message.fill")
                     .frame(width: 12, height: 12)
-                ChatView(posts: model.chatPosts)
+                ChatView(posts: model.twitchChatPosts)
             }
         }
     }

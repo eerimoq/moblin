@@ -50,11 +50,14 @@ func decodeMessageViewCount(message: String) throws -> MessageViewCount {
 final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     private var webSocket: URLSessionWebSocketTask?
     private var channelId: String?
-    private var model: Model?
-
-    func start(channelId: String, model: Model) {
-        self.channelId = channelId
+    private var model: Model
+    
+    init(model: Model) {
         self.model = model
+    }
+
+    func start(channelId: String) {
+        self.channelId = channelId
         let session = URLSession(configuration: .default,
                                  delegate: self,
                                  delegateQueue: OperationQueue())
@@ -64,27 +67,39 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         readMessage()
     }
 
+    func handlePong() {
+        print("Got pong.")
+    }
+
+    func handleResponse(message: String) throws {
+        let message = try decodeResponse(message: message)
+        print("Response:", message)
+    }
+
+    func handleMessage(message: String) throws {
+        let message = try decodeMessage(message: message)
+        let type = try getMessageType(message: message.data.message)
+        if type == "viewcount" {
+            let message = try decodeMessageViewCount(message: message.data.message)
+            Task.detached(operation: {
+                await MainActor.run {
+                    self.model.numberOfViewers = "\(message.viewers)"
+                }
+            })
+        } else {
+            print("Unsupported message type:", type)
+        }
+    }
+
     func handleStringMessage(message: String) {
         do {
             let type = try getMessageType(message: message)
             if type == "PONG" {
-                print("Got pong.")
+                handlePong()
             } else if type == "RESPONSE" {
-                let message = try decodeResponse(message: message)
-                print("Response:", message)
+                try handleResponse(message: message)
             } else if type == "MESSAGE" {
-                let message = try decodeMessage(message: message)
-                let type = try getMessageType(message: message.data.message)
-                if type == "viewcount" {
-                    let message = try decodeMessageViewCount(message: message.data.message)
-                    Task.detached(operation: {
-                        await MainActor.run {
-                            self.model!.viewers = "\(message.viewers)"
-                        }
-                    })
-                } else {
-                    print("Unsupported message type:", type)
-                }
+                try handleMessage(message: message)
             } else {
                 print("Unsupported type:", type)
             }
@@ -107,7 +122,6 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
                 @unknown default:
                     fatalError()
                 }
-
                 self.readMessage()
             }
         }
@@ -116,7 +130,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol proto: String?) {
         print("Connected to PubSub server")
         sendMessage(message: "{\"type\":\"PING\"}")
-        sendMessage(message: "{\"type\":\"LISTEN\",\"data\":{\"topics\":[\"video-playback-by-id.\(self.channelId!)\"]}}")
+        sendMessage(message: "{\"type\":\"LISTEN\",\"data\":{\"topics\":[\"video-playback-by-id.\(channelId!)\"]}}")
     }
 
     func sendMessage(message: String) {

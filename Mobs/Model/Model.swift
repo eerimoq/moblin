@@ -28,8 +28,6 @@ final class Model: ObservableObject {
     @Published var connections = ["Home", "Twitch"]
     @AppStorage("isConnectionOn") var isConnectionOn = true
     var settings: Settings = Settings()
-    @Published var chatPosts: [Post] = []
-    @Published var viewers = ""
 
     var selectedScene: String = "Main"
 
@@ -51,26 +49,34 @@ final class Model: ObservableObject {
 
     private var twitchChat: TwitchChatMobs?
     private var twitchPubSub: TwitchPubSub?
+    @Published var twitchChatPosts: [Post] = []
+    @Published var numberOfViewers = ""
 
     func store() {
         settings.store()
     }
 
+    var database: Database {
+        get {
+            settings.database
+        }
+    }
+    
     func config(settings: Settings) {
         self.settings = settings
-        self.numberOfScenes = settings.database.scenes.count
-        self.numberOfWidgets = settings.database.widgets.count
-        self.numberOfVariables = settings.database.variables.count
-        self.numberOfConnections = settings.database.connections.count
+        numberOfScenes = database.scenes.count
+        numberOfWidgets = database.widgets.count
+        numberOfVariables = database.variables.count
+        numberOfConnections = database.connections.count
         rtmpStream = RTMPStream(connection: rtmpConnection)
         rtmpStream.videoOrientation = .landscapeRight
         rtmpStream.sessionPreset = .hd1280x720
         rtmpStream.mixer.recorder.delegate = self
         checkDeviceAuthorization()
-        self.twitchChat = TwitchChatMobs(channelName: settings.database.connections[0].twitchChannelName, model: self)
-        self.twitchChat!.start()
-        self.twitchPubSub = TwitchPubSub()
-        self.twitchPubSub!.start(channelId: settings.database.connections[0].twitchChannelName, model: self)
+        twitchChat = TwitchChatMobs(channelName: database.connections[0].twitchChannelName, model: self)
+        twitchChat!.start()
+        twitchPubSub = TwitchPubSub(model: self)
+        twitchPubSub!.start(channelId: database.connections[0].twitchChannelName)
         updateTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             self.updateUptime()
         })
@@ -144,7 +150,7 @@ final class Model: ObservableObject {
     }
 
     func rtmpUri() -> String {
-        var url = URL(string: self.settings.database.connections[0].rtmpUrl)!
+        var url = URL(string: database.connections[0].rtmpUrl)!
         var components = url.pathComponents
         components.removeFirst()
         components.removeLast()
@@ -156,7 +162,7 @@ final class Model: ObservableObject {
     }
 
     func rtmpStreamName() -> String {
-        let parts = self.settings.database.connections[0].rtmpUrl.split(separator: "/")
+        let parts = database.connections[0].rtmpUrl.split(separator: "/")
         return String(parts[parts.count - 1])
     }
 

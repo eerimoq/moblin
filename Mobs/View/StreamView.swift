@@ -4,7 +4,6 @@ import SwiftUI
 
 struct StreamView: UIViewRepresentable {
     var mthkView = MTHKView(frame: .zero)
-
     @Binding var rtmpStream: RTMPStream
 
     func makeUIView(context: Context) -> MTHKView {

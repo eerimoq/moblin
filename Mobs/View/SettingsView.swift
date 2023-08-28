@@ -11,10 +11,10 @@ struct SettingsView: View {
 
     var body: some View {
         Form {
-            NavigationLink(destination: ConnectionsSettingsView(model: self.model)) {
+            NavigationLink(destination: ConnectionsSettingsView(model: model)) {
                 Text("Connections")
             }
-            NavigationLink(destination: ScenesSettingsView(model: self.model)) {
+            NavigationLink(destination: ScenesSettingsView(model: model)) {
                 Text("Scenes")
             }
             Toggle("Chat", isOn: Binding(get: {

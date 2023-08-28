@@ -26,7 +26,7 @@ final class TwitchChatMobs {
                         self.posts.removeFirst()
                     }
                     self.posts.append(Post(user: message.sender, message: message.text))
-                    self.model.chatPosts = self.posts
+                    self.model.twitchChatPosts = self.posts
                 }
             }
         }

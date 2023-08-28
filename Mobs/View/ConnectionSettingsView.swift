@@ -1,17 +1,12 @@
 import SwiftUI
 
 struct ConnectionSettingsView: View {
-    private var index: Int
-    @ObservedObject private var model: Model
-
-    init(index: Int, model: Model) {
-        self.index = index
-        self.model = model
-    }
+    var index: Int
+    @ObservedObject var model: Model
 
     var connection: SettingsConnection {
         get {
-            model.settings.database.connections[self.index]
+            model.settings.database.connections[index]
         }
     }
 
@@ -22,8 +17,8 @@ struct ConnectionSettingsView: View {
                     connection.name
                 }, set: { value in
                     connection.name = value
-                    self.model.store()
-                    self.model.numberOfConnections += 0
+                    model.store()
+                    model.numberOfConnections += 0
                 }))
             }
             Section("RTMP URL") {
@@ -31,7 +26,7 @@ struct ConnectionSettingsView: View {
                     connection.rtmpUrl
                 }, set: { value in
                     connection.rtmpUrl = value
-                    self.model.store()
+                    model.store()
                 }))
             }
             Section("Twitch channel name") {
@@ -39,7 +34,7 @@ struct ConnectionSettingsView: View {
                     connection.twitchChannelName
                 }, set: { value in
                     connection.twitchChannelName = value
-                    self.model.store()
+                    model.store()
                 }))
             }
             Section("Twitch channel id") {
@@ -47,7 +42,7 @@ struct ConnectionSettingsView: View {
                     connection.twitchChannelId
                 }, set: { value in
                     connection.twitchChannelId = value
-                    self.model.store()
+                    model.store()
                 }))
             }
         }

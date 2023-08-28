@@ -1,18 +1,12 @@
 import SwiftUI
 
 struct WidgetSettingsView: View {
-    private var index: Int
+    var index: Int
     @ObservedObject var model: Model
-    let types = ["Text", "Image", "Video", "Camera", "Chat", "Recording", "Webview"]
-
-    init(index: Int, model: Model) {
-        self.index = index
-        self.model = model
-    }
 
     var widget: SettingsWidget {
         get {
-            model.settings.database.widgets[self.index]
+            model.settings.database.widgets[index]
         }
     }
 
@@ -23,8 +17,8 @@ struct WidgetSettingsView: View {
                     widget.name
                 }, set: { value in
                     widget.name = value
-                    self.model.store()
-                    self.model.numberOfWidgets += 0
+                    model.store()
+                    model.numberOfWidgets += 0
                 }))
             }
             Section("Type") {
@@ -32,10 +26,10 @@ struct WidgetSettingsView: View {
                     widget.type
                 }, set: { value in
                     widget.type = value
-                    self.model.store()
-                    self.model.numberOfWidgets += 0
+                    model.store()
+                    model.numberOfWidgets += 0
                 })) {
-                    ForEach(types, id: \.self) {
+                    ForEach(widgetTypes, id: \.self) {
                         Text($0)
                     }
                 }
@@ -49,7 +43,7 @@ struct WidgetSettingsView: View {
                         widget.text.formatString
                     }, set: { value in
                         widget.text.formatString = value
-                        self.model.store()
+                        model.store()
                     }))
                 }
             case "Image":
@@ -58,7 +52,7 @@ struct WidgetSettingsView: View {
                         widget.image.url
                     }, set: { value in
                         widget.image.url = value
-                        self.model.store()
+                        model.store()
                     }))
                 }
             case "Video":
@@ -67,7 +61,7 @@ struct WidgetSettingsView: View {
                         widget.video.url
                     }, set: { value in
                         widget.video.url = value
-                        self.model.store()
+                        model.store()
                     }))
                 }
             case "Camera":
@@ -76,7 +70,7 @@ struct WidgetSettingsView: View {
                         widget.camera.direction
                     }, set: { value in
                         widget.camera.direction = value
-                        self.model.store()
+                        model.store()
                     }))
                 }
             case "Webview":
@@ -85,7 +79,7 @@ struct WidgetSettingsView: View {
                         widget.webview.url
                     }, set: { value in
                         widget.webview.url = value
-                        self.model.store()
+                        model.store()
                     }))
                 }
             default:

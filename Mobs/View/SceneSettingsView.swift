@@ -2,20 +2,15 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct SceneSettingsView: View {
-    private var index: Int
-    @ObservedObject private var model: Model
-    @State var widgets: [String] = []
+    var index: Int
+    @ObservedObject var model: Model
+    @State private var widgets: [String] = []
     @State private var showingAdd = false
     @State private var selected = "Sub goal"
 
-    init(index: Int, model: Model) {
-        self.index = index
-        self.model = model
-    }
-
     var scene: SettingsScene {
         get {
-            model.settings.database.scenes[self.index]
+            model.settings.database.scenes[index]
         }
     }
 
@@ -26,8 +21,8 @@ struct SceneSettingsView: View {
                     scene.name
                 }, set: { value in
                     scene.name = value
-                    self.model.store()
-                    self.model.numberOfScenes += 0
+                    model.store()
+                    model.numberOfScenes += 0
                 }))
             }
             Section("Widgets") {

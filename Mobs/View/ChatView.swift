@@ -13,12 +13,12 @@ struct LineView: View {
     
     var body: some View {
         HStack {
-            Text(self.user)
+            Text(user)
                 .frame(width: 40, alignment: .leading)
                 .lineLimit(1)
                 .truncationMode(.tail)
                 .padding([.leading], 5)
-            Text(self.message)
+            Text(message)
                 .padding([.trailing], 5)
         }
         .padding(0)
@@ -34,7 +34,7 @@ struct ChatView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            ForEach(self.posts, id: \.self) {post in
+            ForEach(posts, id: \.self) {post in
                 LineView(user: post.user, message: post.message)
             }
         }

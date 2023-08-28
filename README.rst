@@ -64,6 +64,10 @@ Ideas/plan
 
 - LIDAR, altitude.
 
+- AV1 codec (to complement H264).
+
+- SRT.
+
 Resources
 =========
 

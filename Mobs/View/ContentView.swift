@@ -7,10 +7,10 @@ struct StreamButton: View {
     @ObservedObject var model = Model()
 
     var body: some View {
-        if self.model.published {
+        if model.published {
             Button(action: {
-                self.model.published.toggle()
-                self.model.stopPublish()
+                model.published.toggle()
+                model.stopPublish()
             }, label: {
                 Text("Stop")
             })
@@ -19,8 +19,8 @@ struct StreamButton: View {
             .cornerRadius(10)
         } else {
             Button(action: {
-                self.model.published.toggle()
-                self.model.startPublish()
+                model.published.toggle()
+                model.startPublish()
             }, label: {
                 Text("Go live")
             })
@@ -35,7 +35,7 @@ struct ButtonImage: View {
     var image: String
 
     var body: some View {
-        Image(systemName: self.image)
+        Image(systemName: image)
             .frame(width: 40, height: 40)
             .background(.blue)
             .clipShape(Circle())
@@ -48,7 +48,7 @@ struct GenericButton: View {
 
     var body: some View {
         Button(action: {
-            self.action()
+            action()
         }, label: {
             ButtonImage(image: self.image)
         })
@@ -71,13 +71,13 @@ struct ZoomSlider: View {
 
     var body: some View {
         HStack {
-            Text(self.label)
+            Text(label)
             Slider(
                 value: Binding(get: {
-                    self.level
+                    level
                 }, set: { (level) in
                     if level != self.level {
-                        self.onChange(level)
+                        onChange(level)
                         self.level = level
                     }
                 }),
@@ -129,7 +129,7 @@ struct ContentView: View {
                             Button(action: {
                                 print("Settings")
                             }, label: {
-                                NavigationLink(destination: SettingsView(model: self.model)) {
+                                NavigationLink(destination: SettingsView(model: model)) {
                                     ButtonImage(image: "gearshape")
                                 }
                             })
@@ -174,7 +174,7 @@ struct ContentView: View {
                         })
                         ZoomSlider(label: "F", onChange: { (level) in
                         })
-                        StreamButton(model: self.model)
+                        StreamButton(model: model)
                     }
                     .padding([.leading, .trailing, .top], 10)
                 }
@@ -182,10 +182,10 @@ struct ContentView: View {
                 .background(.black)
             }
             .onAppear {
-                self.model.registerForPublishEvent()
+                model.registerForPublishEvent()
             }
             .onDisappear {
-                self.model.unregisterForPublishEvent()
+                model.unregisterForPublishEvent()
             }
             .foregroundColor(.white)
         }

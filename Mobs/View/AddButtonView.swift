@@ -4,11 +4,9 @@ struct AddButtonView: View {
     var action: () -> Void
 
     var body: some View {
-        Button(action: self.action, label: {
-            HStack {
-                Spacer()
+        Button(action: action, label: {
+            HStack(alignment: .center) {
                 Text("Add")
-                Spacer()
             }
         })
     }

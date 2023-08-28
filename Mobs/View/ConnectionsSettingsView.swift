@@ -12,24 +12,24 @@ struct ConnectionsSettingsView: View {
     var body: some View {
         VStack {
             Form {
-                ForEach(0..<self.model.numberOfConnections, id: \.self) { index in
-                    NavigationLink(destination: ConnectionSettingsView(index: index, model: self.model)) {
+                ForEach(0..<model.numberOfConnections, id: \.self) { index in
+                    NavigationLink(destination: ConnectionSettingsView(index: index, model: model)) {
                         Toggle(database.connections[index].name, isOn: Binding(get: {
                             database.connections[index].enabled
                         }, set: { value in
                             database.connections[index].enabled = value
-                            self.model.store()
+                            model.store()
                         }))
                     }
                 }.onDelete(perform: { offsets in
                     database.connections.remove(atOffsets: offsets)
-                    self.model.store()
-                    self.model.numberOfConnections -= 1
+                    model.store()
+                    model.numberOfConnections -= 1
                 })
                 CreateButtonView(action: {
                     database.connections.append(SettingsConnection(name: "My connection"))
-                    self.model.store()
-                    self.model.numberOfConnections += 1
+                    model.store()
+                    model.numberOfConnections += 1
                 })
             }
         }

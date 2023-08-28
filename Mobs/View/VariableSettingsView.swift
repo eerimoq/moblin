@@ -1,18 +1,12 @@
 import SwiftUI
 
 struct VariableSettingsView: View {
-    private var index: Int
+    var index: Int
     @ObservedObject var model: Model
-    let types = ["Text", "HTTP", "Twitch PubSub", "Websocket"]
-
-    init(index: Int, model: Model) {
-        self.index = index
-        self.model = model
-    }
 
     var variable: SettingsVariable {
         get {
-            model.settings.database.variables[self.index]
+            model.settings.database.variables[index]
         }
     }
 
@@ -23,8 +17,8 @@ struct VariableSettingsView: View {
                     variable.name
                 }, set: { value in
                     variable.name = value
-                    self.model.store()
-                    self.model.numberOfVariables += 0
+                    model.store()
+                    model.numberOfVariables += 0
                 }))
             }
             Section("Type") {
@@ -32,10 +26,10 @@ struct VariableSettingsView: View {
                     variable.type
                 }, set: { value in
                     variable.type = value
-                    self.model.store()
-                    self.model.numberOfVariables += 0
+                    model.store()
+                    model.numberOfVariables += 0
                 })) {
-                    ForEach(types, id: \.self) {
+                    ForEach(variableTypes, id: \.self) {
                         Text($0)
                     }
                 }
@@ -49,7 +43,7 @@ struct VariableSettingsView: View {
                         variable.text.value
                     }, set: { value in
                         variable.text.value = value
-                        self.model.store()
+                        model.store()
                     }))
                 }
             case "HTTP":
@@ -58,7 +52,7 @@ struct VariableSettingsView: View {
                         variable.http.url
                     }, set: { value in
                         variable.http.url = value
-                        self.model.store()
+                        model.store()
                     }))
                 }
             case "Twitch PubSub":
@@ -67,7 +61,7 @@ struct VariableSettingsView: View {
                         variable.twitchPubSub.pattern
                     }, set: { value in
                         variable.twitchPubSub.pattern = value
-                        self.model.store()
+                        model.store()
                     }))
                 }
             case "Websocket":
@@ -76,7 +70,7 @@ struct VariableSettingsView: View {
                         variable.websocket.url
                     }, set: { value in
                         variable.websocket.url = value
-                        self.model.store()
+                        model.store()
                     }))
                 }
                 Section("Pattern") {
@@ -84,7 +78,7 @@ struct VariableSettingsView: View {
                         variable.websocket.pattern
                     }, set: { value in
                         variable.websocket.pattern = value
-                        self.model.store()
+                        model.store()
                     }))
                 }
             default:

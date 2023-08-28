@@ -3,7 +3,7 @@ import SwiftUI
 class SettingsConnection: Codable {
     var name: String
     var id: UUID = UUID()
-    var enabled: Bool = true
+    var enabled: Bool = false
     var rtmpUrl: String = "rtmp://"
     var twitchChannelName: String = ""
     var twitchChannelId: String = ""
@@ -19,6 +19,10 @@ class SettingsSceneWidget: Codable {
     var y: Int = 0
     var w: Int = 10
     var h: Int = 10
+    
+    init(id: UUID) {
+        self.id = id
+    }
 }
 
 class SettingsScene: Codable {
@@ -58,6 +62,8 @@ class SettingsWidgetWebview: Codable {
     var url: String = "https://"
 }
 
+let widgetTypes = ["Text", "Image", "Video", "Camera", "Chat", "Recording", "Webview"]
+
 class SettingsWidget: Codable {
     var name: String
     var id: UUID = UUID()
@@ -92,6 +98,8 @@ class SettingsVariableTextWebsocket: Codable {
     var pattern: String = ""
 }
 
+let variableTypes = ["Text", "HTTP", "Twitch PubSub", "Websocket"]
+
 class SettingsVariable: Codable {
     var name: String
     var id: UUID = UUID()
@@ -116,31 +124,56 @@ class Database: Codable {
     var uptime: Bool = false
 }
 
-class Settings: ObservableObject {
-    @Published var database = Database()
+func addDefaultWidgets(database: Database) {
+    let widget = SettingsWidget(name: "Back camera")
+    widget.type = "Camera"
+    database.widgets.append(widget)
+}
+
+func addDefaultScenes(database: Database) {
+    let scene = SettingsScene(name: "Default")
+    let widget = SettingsSceneWidget(id: database.widgets[0].id)
+    widget.x = 0
+    widget.y = 0
+    widget.h = 100
+    widget.w = 100
+    scene.widgets.append(widget)
+    database.scenes.append(scene)
+}
+
+func addDefaultConnections(database: Database) {
+    let connection = SettingsConnection(name: "Default")
+    connection.id = UUID()
+    connection.rtmpUrl = "rtmp://192.168.202.169:1935/live/1234"
+    connection.twitchChannelName = "jinnytty"
+    connection.twitchChannelId = "59965916"
+    database.connections.append(connection)
+}
+
+func createDefault() -> Database {
+    let database = Database()
+    addDefaultWidgets(database: database)
+    addDefaultScenes(database: database)
+    addDefaultConnections(database: database)
+    return database
+}
+
+final class Settings {
+    var database = Database()
     @AppStorage("settings") var storage = ""
 
     func load() {
         do {
-            self.database = try JSONDecoder().decode(Database.self, from: storage.data(using: .utf8)!)
+            database = try JSONDecoder().decode(Database.self, from: storage.data(using: .utf8)!)
         } catch {
-            print("Failed to load settings.")
-        }
-        if database.connections.isEmpty {
-            let connection = SettingsConnection(name: "Default")
-            connection.id = UUID()
-            connection.enabled = true
-            connection.rtmpUrl = "rtmp://192.168.202.169:1935/live/1234"
-            connection.twitchChannelName = "jinnytty"
-            connection.twitchChannelId = "59965916"
-            database.connections.append(connection)
-            self.store()
+            print("Failed to load settings. Using default.")
+            database = createDefault()
         }
     }
 
     func store() {
         do {
-            self.storage = String(decoding: try JSONEncoder().encode(self.database), as: UTF8.self)
+            storage = String(decoding: try JSONEncoder().encode(database), as: UTF8.self)
         } catch {
             print("Failed to store settings.")
         }
