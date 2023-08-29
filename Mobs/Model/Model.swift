@@ -30,8 +30,6 @@ final class Model: ObservableObject {
     @Published var numberOfVariables = 0
     @Published var numberOfConnections = 0
     var widgets = ["Sub goal", "Earnings", "Chat", "Back camera", "Front camera", "Recording"]
-    @Published var connections = ["Home", "Twitch"]
-    @AppStorage("isConnectionOn") var isConnectionOn = true
     var settings: Settings = Settings()
     @Published var currentTime: String = Date().formatted(date: .omitted, time: .shortened)
     var selectedScene: String = "Main"
@@ -66,7 +64,16 @@ final class Model: ObservableObject {
             settings.database
         }
     }
-    
+
+    func selectedConnection() -> SettingsConnection {
+        for connection in database.connections {
+            if connection.enabled {
+                return connection
+            }
+        }
+        return database.connections[0]
+    }
+
     func config(settings: Settings) {
         self.settings = settings
         numberOfScenes = database.scenes.count
@@ -78,10 +85,10 @@ final class Model: ObservableObject {
         rtmpStream.sessionPreset = .hd1280x720
         rtmpStream.mixer.recorder.delegate = self
         checkDeviceAuthorization()
-        twitchChat = TwitchChatMobs(channelName: database.connections[0].twitchChannelName, model: self)
+        twitchChat = TwitchChatMobs(channelName: selectedConnection().twitchChannelName, model: self)
         twitchChat!.start()
         twitchPubSub = TwitchPubSub(model: self)
-        twitchPubSub!.start(channelId: database.connections[0].twitchChannelId)
+        twitchPubSub!.start(channelId: selectedConnection().twitchChannelId)
         updateTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             DispatchQueue.main.async {
                 let now = Date()
@@ -167,7 +174,7 @@ final class Model: ObservableObject {
     }
 
     func rtmpUri() -> String {
-        var url = URL(string: database.connections[0].rtmpUrl)!
+        var url = URL(string: selectedConnection().rtmpUrl)!
         var components = url.pathComponents
         components.removeFirst()
         components.removeLast()
@@ -179,7 +186,7 @@ final class Model: ObservableObject {
     }
 
     func rtmpStreamName() -> String {
-        let parts = database.connections[0].rtmpUrl.split(separator: "/")
+        let parts = selectedConnection().rtmpUrl.split(separator: "/")
         return String(parts[parts.count - 1])
     }
 
