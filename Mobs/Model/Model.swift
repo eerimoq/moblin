@@ -54,6 +54,7 @@ final class Model: ObservableObject {
     private var twitchPubSub: TwitchPubSub?
     @Published var twitchChatPosts: [Post] = []
     @Published var numberOfViewers = ""
+    @Published var batteryLevel = UIDevice.current.batteryLevel
     
     var connection: SettingsConnection? {
         get {
@@ -93,13 +94,18 @@ final class Model: ObservableObject {
     }
     
     func reloadTwitchChat() {
+        if twitchChat != nil {
+            twitchChat!.stop()
+        }
         twitchChat = TwitchChatMobs(channelName: connection!.twitchChannelName, model: self)
         twitchChat!.start()
+        twitchChatPosts = []
     }
     
     func reloadTwitchViewers() {
         twitchPubSub = TwitchPubSub(model: self)
         twitchPubSub!.start(channelId: connection!.twitchChannelId)
+        numberOfViewers = ""
     }
 
     func rtmpUrlChanged() {
@@ -134,6 +140,7 @@ final class Model: ObservableObject {
                 let now = Date()
                 self.updateUptime(now: now)
                 self.updateCurrentTime(now: now)
+                self.updateBatteryLevel()
             }
         })
     }
@@ -157,6 +164,10 @@ final class Model: ObservableObject {
         self.currentTime = now.formatted(date: .omitted, time: .shortened)
     }
 
+    func updateBatteryLevel() {
+        batteryLevel = UIDevice.current.batteryLevel
+    }
+    
     func checkDeviceAuthorization() {
         let requiredAccessLevel: PHAccessLevel = .readWrite
         PHPhotoLibrary.requestAuthorization(for: requiredAccessLevel) { authorizationStatus in

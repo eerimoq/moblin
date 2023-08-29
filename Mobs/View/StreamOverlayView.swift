@@ -26,7 +26,7 @@ struct TextView: View {
                 .foregroundColor(.white)
         }
         .padding(2)
-        .background(.black)
+        .background(Color(white: 0, opacity: 0.6))
         .cornerRadius(5)
     }
 }
@@ -52,7 +52,7 @@ struct Variable: View {
             .fixedSize()
             .padding([.bottom, .trailing, .leading], 5)
         }
-        .background(.black)
+        .background(Color(white: 0, opacity: 0.6))
         .cornerRadius(10)
         .overlay(
             RoundedRectangle(cornerRadius: 10)
@@ -115,10 +115,11 @@ struct TrailingOverlayView: View {
             }
             .pickerStyle(.segmented)
             .frame(width: CGFloat(50 * database.scenes.filter({scene in scene.enabled}).count))
+            .background(Color(white: 1, opacity: 0.8))
             .colorInvert()
             .cornerRadius(10)
             .overlay(
-                RoundedRectangle(cornerRadius: 10)
+                RoundedRectangle(cornerRadius: 7)
                     .stroke(.secondary)
             )
         }

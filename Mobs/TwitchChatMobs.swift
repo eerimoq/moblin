@@ -13,6 +13,7 @@ final class TwitchChatMobs {
     private var model: Model
     private var posts: [Post] = []
     private var id: Int = 0
+    private var stopped = false
 
     init(channelName: String, model: Model){
         self.channelName = channelName
@@ -20,18 +21,30 @@ final class TwitchChatMobs {
     }
 
     func start() {
+        print("Starting twitch chat.")
         twitchChat = TwitchChat(token: "SCHMOOPIIE", nick: "justinfan67420", name: channelName)
         Task.detached {
             for try await message in self.twitchChat!.messages {
+                if self.stopped {
+                    print("Discarding twitch chat message as stopped.")
+                    continue
+                }
                 await MainActor.run {
                     if self.posts.count > 6 {
                         self.posts.removeFirst()
                     }
                     self.id += 1
                     self.posts.append(Post(id: self.id, user: message.sender, message: message.text))
-                    self.model.twitchChatPosts = self.posts
+                    if !self.stopped {
+                        self.model.twitchChatPosts = self.posts
+                    }
                 }
             }
         }
+    }
+    
+    func stop() {
+        print("Stopping twitch chat.")
+        stopped = true
     }
 }

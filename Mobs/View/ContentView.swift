@@ -62,11 +62,17 @@ struct GenericButton: View {
 }
 
 struct Battery: View {
+    var level: Float
+    
     var body: some View {
-        Rectangle()
-            .fill(.green)
-            .frame(width: 30, height: 15)
-            .cornerRadius(5)
+        ZStack(alignment: .leading) {
+            Rectangle()
+                .frame(width: 25, height: 12)
+            Rectangle()
+                .fill(.green)
+                .frame(width: 25 * CGFloat(level), height: 12)
+        }
+        .cornerRadius(3)
     }
 }
 
@@ -125,7 +131,7 @@ struct ContentView: View {
                         HStack {
                             Text(model.currentTime)
                                 .font(.system(size: 13))
-                            Battery()
+                            Battery(level: model.batteryLevel)
                         }
                         Spacer()
                         HStack {

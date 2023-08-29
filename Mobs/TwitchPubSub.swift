@@ -87,7 +87,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
                 }
             })
         } else {
-            print("Unsupported message type:", type)
+            print("Unsupported message type \(type) (message: \(message))")
         }
     }
 

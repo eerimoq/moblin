@@ -18,11 +18,12 @@ struct LineView: View {
                 .lineLimit(1)
                 .padding([.leading], 5)
             Text(message)
+                .lineLimit(2)
                 .padding([.trailing], 5)
         }
         .padding(0)
         .font(.system(size: 13))
-        .background(.black)
+        .background(Color(white: 0, opacity: 0.6))
         .foregroundColor(.white)
         .cornerRadius(5)
     }
