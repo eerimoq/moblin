@@ -26,6 +26,7 @@ struct StreamButton: View {
             }, label: {
                 StreamButtonText(text: "Go Live")
             })
+            .disabled(model.connection == nil)
         case .live:
             Button(action: {
                 model.stopStream()
@@ -105,7 +106,6 @@ struct ContentView: View {
     @State private var mutedImage = mutedImageOff
     @State private var recordingImage = recordingImageOff
     @State private var flashLightImage = flashImageOff
-    @State private var action: Int? = 0
 
     init(settings: Settings) {
         model.config(settings: settings)
