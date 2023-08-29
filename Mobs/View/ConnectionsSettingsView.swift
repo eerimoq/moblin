@@ -18,7 +18,13 @@ struct ConnectionsSettingsView: View {
                             database.connections[index].enabled
                         }, set: { value in
                             database.connections[index].enabled = value
+                            for cindex in 0..<model.numberOfConnections {
+                                if cindex != index {
+                                    database.connections[cindex].enabled = false
+                                }
+                            }
                             model.store()
+                            model.numberOfConnections += 0
                         }))
                     }
                 }.onDelete(perform: { offsets in
