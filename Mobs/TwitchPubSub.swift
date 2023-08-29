@@ -10,13 +10,13 @@ struct Message: Decodable {
     var data: MessageData
 }
 
-struct Response : Decodable {
+struct Response: Decodable {
     var type: String
     var nonce: String
     var error: String
 }
 
-struct MessageViewCount : Decodable {
+struct MessageViewCount: Decodable {
     var viewers: Int
 }
 
@@ -26,7 +26,7 @@ func getMessageType(message: String) throws -> String {
     if let jsonData = message.data(using: String.Encoding.utf8) {
         let data = try JSONSerialization.jsonObject(with: jsonData, options: JSONSerialization.ReadingOptions.mutableContainers)
         if let jsonResult: NSDictionary = data as? NSDictionary {
-            if let type : String = jsonResult["type"] as? String {
+            if let type: String = jsonResult["type"] as? String {
                 return type
             }
         }

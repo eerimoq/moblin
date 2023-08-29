@@ -37,7 +37,7 @@ struct WidgetSettingsView: View {
                 .labelsHidden()
             }
             switch widget.type {
-            case "Text" :
+            case "Text":
                 Section("Format string") {
                     TextField("", text: Binding(get: {
                         widget.text.formatString

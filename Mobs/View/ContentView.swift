@@ -72,7 +72,6 @@ struct Battery: View {
 
 struct ZoomSlider: View {
     var onChange: (_ level: CGFloat) -> Void
-
     @State var level: CGFloat = 1.0
 
     var body: some View {
