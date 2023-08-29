@@ -37,6 +37,7 @@ final class TwitchChatMobs {
                     self.posts.append(Post(id: self.id, user: message.sender, message: message.text))
                     if !self.stopped {
                         self.model.twitchChatPosts = self.posts
+                        self.model.numberOfTwitchChatPosts += 1
                     }
                 }
             }

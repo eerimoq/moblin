@@ -14,6 +14,7 @@ struct IconAndText: View {
             TextView(text: text)
                 .font(.system(size: 13))
         }
+        .padding([.bottom], 2)
     }
 }
 
@@ -25,7 +26,7 @@ struct TextView: View {
             Text(text)
                 .foregroundColor(.white)
         }
-        .padding(2)
+        .padding([.leading, .trailing], 2)
         .background(Color(white: 0, opacity: 0.6))
         .cornerRadius(5)
     }
@@ -80,9 +81,13 @@ struct LeadingOverlayView: View {
             }
             Spacer()
             if database.chat {
-                Image(systemName: "message.fill")
-                    .frame(width: 12, height: 12)
-                    .font(.system(size: 13))
+                HStack {
+                    Image(systemName: "message.fill")
+                        .frame(width: 12, height: 12)
+                        .font(.system(size: 13))
+                    TextView(text: String(format: "%.2f m/s", model.twitchChatPostsPerSecond))
+                        .font(.system(size: 13))
+                }
                 ChatView(posts: model.twitchChatPosts)
             }
         }

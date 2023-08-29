@@ -53,6 +53,8 @@ final class Model: ObservableObject {
     private var twitchChat: TwitchChatMobs?
     private var twitchPubSub: TwitchPubSub?
     @Published var twitchChatPosts: [Post] = []
+    var numberOfTwitchChatPosts: Int = 0
+    @Published var twitchChatPostsPerSecond: Float = 0.0
     @Published var numberOfViewers = ""
     @Published var batteryLevel = UIDevice.current.batteryLevel
     
@@ -141,6 +143,7 @@ final class Model: ObservableObject {
                 self.updateUptime(now: now)
                 self.updateCurrentTime(now: now)
                 self.updateBatteryLevel()
+                self.updateTwitchChatSpeed()
             }
         })
     }
@@ -166,6 +169,11 @@ final class Model: ObservableObject {
 
     func updateBatteryLevel() {
         batteryLevel = UIDevice.current.batteryLevel
+    }
+    
+    func updateTwitchChatSpeed() {
+        twitchChatPostsPerSecond = twitchChatPostsPerSecond * 0.8 + Float(numberOfTwitchChatPosts) * 0.2
+        numberOfTwitchChatPosts = 0
     }
     
     func checkDeviceAuthorization() {
