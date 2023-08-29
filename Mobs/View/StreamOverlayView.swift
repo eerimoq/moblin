@@ -73,6 +73,9 @@ struct LeadingOverlayView: View {
 
     var body: some View {
         VStack(alignment: .leading) {
+            if database.connection {
+                IconAndText(image: "app.connected.to.app.below.fill", text: model.connection?.name ?? "")
+            }
             if database.viewers {
                 IconAndText(image: "person.2.fill", text: model.numberOfViewers)
             }

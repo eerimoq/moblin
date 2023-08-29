@@ -122,6 +122,7 @@ class Database: Codable {
     var chat: Bool = false
     var viewers: Bool = false
     var uptime: Bool = false
+    var connection: Bool = false
 }
 
 func addDefaultWidgets(database: Database) {

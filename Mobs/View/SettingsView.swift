@@ -17,10 +17,10 @@ struct SettingsView: View {
             NavigationLink(destination: ScenesSettingsView(model: model)) {
                 Text("Scenes")
             }
-            Toggle("Chat", isOn: Binding(get: {
-                database.chat
+            Toggle("Connection", isOn: Binding(get: {
+                database.connection
             }, set: { value in
-                database.chat = value
+                database.connection = value
                 model.settings.store()
             }))
             Toggle("Viewers", isOn: Binding(get: {
@@ -33,6 +33,12 @@ struct SettingsView: View {
                 database.uptime
             }, set: { value in
                 database.uptime = value
+                model.settings.store()
+            }))
+            Toggle("Chat", isOn: Binding(get: {
+                database.chat
+            }, set: { value in
+                database.chat = value
                 model.settings.store()
             }))
         }
