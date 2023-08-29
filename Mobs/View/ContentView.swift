@@ -105,7 +105,6 @@ var flashImageOff = "lightbulb"
 
 struct ContentView: View {
     @ObservedObject var model = Model()
-
     private var videoView: StreamView!
     private var videoOverlayView: StreamOverlayView!
     @State private var mutedImage = mutedImageOff
