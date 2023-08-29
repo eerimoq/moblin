@@ -61,8 +61,8 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         let session = URLSession(configuration: .default,
                                  delegate: self,
                                  delegateQueue: OperationQueue())
-        let url = URL(string: "wss://pubsub-edge.twitch.tv/v1")
-        webSocket = session.webSocketTask(with: url!)
+        let url = URL(string: "wss://pubsub-edge.twitch.tv/v1")!
+        webSocket = session.webSocketTask(with: url)
         webSocket?.resume()
         readMessage()
     }

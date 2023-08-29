@@ -28,7 +28,8 @@ struct ConnectionsSettingsView: View {
                             model.reloadConnection()
                         }))
                     }
-                }.onDelete(perform: { offsets in
+                }
+                .onDelete(perform: { offsets in
                     database.connections.remove(atOffsets: offsets)
                     model.store()
                     model.numberOfConnections -= 1
