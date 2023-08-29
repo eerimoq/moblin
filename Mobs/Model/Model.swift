@@ -65,6 +65,13 @@ final class Model: ObservableObject {
         }
     }
 
+    func reloadConnection() {
+        twitchChat = TwitchChatMobs(channelName: selectedConnection().twitchChannelName, model: self)
+        twitchChat!.start()
+        twitchPubSub = TwitchPubSub(model: self)
+        twitchPubSub!.start(channelId: selectedConnection().twitchChannelId)
+    }
+    
     func selectedConnection() -> SettingsConnection {
         for connection in database.connections {
             if connection.enabled {
