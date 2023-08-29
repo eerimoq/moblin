@@ -5,8 +5,10 @@ struct CreateButtonView: View {
 
     var body: some View {
         Button(action: action, label: {
-            HStack(alignment: .center) {
+            HStack {
+                Spacer()
                 Text("Create")
+                Spacer()
             }
         })
     }
