@@ -69,7 +69,7 @@ struct Battery: View {
             Rectangle()
                 .frame(width: 25, height: 12)
             Rectangle()
-                .fill(.green)
+                .fill(Color(red: 88/255, green: 191/255, blue: 108/255))
                 .frame(width: 25 * CGFloat(level), height: 12)
         }
         .cornerRadius(3)
@@ -128,9 +128,10 @@ struct ContentView: View {
                 VStack {
                     VStack {
                         HStack {
+                            Battery(level: model.batteryLevel)
+                            Spacer()
                             Text(model.currentTime)
                                 .font(.system(size: 13))
-                            Battery(level: model.batteryLevel)
                         }
                         Spacer()
                         HStack {
@@ -183,6 +184,7 @@ struct ContentView: View {
                             model.setBackCameraZoomLevel(level: level)
                         })
                         StreamButton(model: model)
+                            .padding([.top], 10)
                     }
                     .padding([.leading, .trailing, .top], 10)
                 }
