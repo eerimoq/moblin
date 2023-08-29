@@ -7,8 +7,8 @@ import VideoToolbox
 import TwitchChat
 
 enum LiveState {
-    case goLive
-    case stop
+    case stopped
+    case live
 }
 
 final class Model: ObservableObject {
@@ -18,7 +18,7 @@ final class Model: ObservableObject {
     @Published var rtmpStream: RTMPStream!
     @Published var currentPosition: AVCaptureDevice.Position = .back
     private var retryCount: Int = 0
-    @Published var liveState: LiveState = .goLive
+    @Published var liveState: LiveState = .stopped
     @Published var fps: String = "FPS"
     private var nc = NotificationCenter.default
     var subscriptions = Set<AnyCancellable>()
@@ -65,11 +65,42 @@ final class Model: ObservableObject {
         }
     }
 
+    func startStream() {
+        liveState = .live
+        startPublish()
+    }
+    
+    func stopStream() {
+        liveState = .stopped
+        stopPublish()
+    }
+    
     func reloadConnection() {
+        stopStream()
+        reloadTwitchChat()
+        reloadTwitchViewers()
+    }
+    
+    func reloadTwitchChat() {
         twitchChat = TwitchChatMobs(channelName: selectedConnection().twitchChannelName, model: self)
         twitchChat!.start()
+    }
+    
+    func reloadTwitchViewers() {
         twitchPubSub = TwitchPubSub(model: self)
         twitchPubSub!.start(channelId: selectedConnection().twitchChannelId)
+    }
+
+    func rtmpUrlChanged() {
+        stopStream()
+    }
+
+    func twitchChannelNameUpdated() {
+        reloadTwitchChat()
+    }
+
+    func twitchChannelIdUpdated() {
+        reloadTwitchViewers()
     }
     
     func selectedConnection() -> SettingsConnection {
@@ -151,7 +182,7 @@ final class Model: ObservableObject {
                     return
                 }
                 DispatchQueue.main.async {
-                    self.fps = self.liveState == .goLive ? "" : "\(currentFPS)"
+                    self.fps = self.liveState == .stopped ? "" : "\(currentFPS)"
                 }
             }
             .store(in: &subscriptions)

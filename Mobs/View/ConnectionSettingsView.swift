@@ -27,6 +27,7 @@ struct ConnectionSettingsView: View {
                 }, set: { value in
                     connection.rtmpUrl = value
                     model.store()
+                    model.rtmpUrlChanged()
                 }))
             }
             Section("Twitch channel name") {
@@ -35,6 +36,7 @@ struct ConnectionSettingsView: View {
                 }, set: { value in
                     connection.twitchChannelName = value
                     model.store()
+                    model.twitchChannelNameUpdated()
                 }))
             }
             Section("Twitch channel id") {
@@ -43,6 +45,7 @@ struct ConnectionSettingsView: View {
                 }, set: { value in
                     connection.twitchChannelId = value
                     model.store()
+                    model.twitchChannelIdUpdated()
                 }))
             }
         }

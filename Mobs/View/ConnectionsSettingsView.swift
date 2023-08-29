@@ -27,7 +27,6 @@ struct ConnectionsSettingsView: View {
                             model.numberOfConnections += 0
                             model.reloadConnection()
                         }))
-                        .disabled(model.liveState == .stop)
                     }
                 }.onDelete(perform: { offsets in
                     database.connections.remove(atOffsets: offsets)

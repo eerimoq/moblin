@@ -20,17 +20,15 @@ struct StreamButton: View {
 
     var body: some View {
         switch model.liveState {
-        case .goLive:
+        case .stopped:
             Button(action: {
-                model.liveState = .stop
-                model.startPublish()
+                model.startStream()
             }, label: {
                 StreamButtonText(text: "Go Live")
             })
-        case .stop:
+        case .live:
             Button(action: {
-                model.liveState = .goLive
-                model.stopPublish()
+                model.stopStream()
             }, label: {
                 StreamButtonText(text: "Stop")
             })
