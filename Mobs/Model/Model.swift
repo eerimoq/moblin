@@ -83,11 +83,13 @@ final class Model: ObservableObject {
     func startStream() {
         liveState = .live
         startPublish()
+        updateSpeed()
     }
     
     func stopStream() {
         liveState = .stopped
         stopPublish()
+        updateSpeed()
     }
     
     func reloadConnection() {
@@ -106,6 +108,9 @@ final class Model: ObservableObject {
     }
     
     func reloadTwitchViewers() {
+        if twitchPubSub != nil {
+            twitchPubSub!.stop()
+        }
         twitchPubSub = TwitchPubSub(model: self)
         twitchPubSub!.start(channelId: connection!.twitchChannelId)
         numberOfViewers = ""

@@ -67,6 +67,13 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         readMessage()
     }
 
+    func stop() {
+        guard let webSocket = webSocket else {
+            return
+        }
+        webSocket.cancel()
+    }
+    
     func handlePong() {
         print("Got pong.")
     }
@@ -112,7 +119,8 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         webSocket?.receive { result in
             switch result {
             case .failure(let error):
-                print("Failed to receive message:", error)
+                print("Receive failed with error:", error)
+                return
             case .success(let message):
                 switch message {
                 case .string(let text):
@@ -120,7 +128,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
                 case .data(let data):
                     print("Received binary message:", data)
                 @unknown default:
-                    fatalError()
+                    print("Unknown message type.")
                 }
                 self.readMessage()
             }

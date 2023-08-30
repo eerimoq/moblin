@@ -10,6 +10,8 @@ inspired by it.
 
 .. image:: https://github.com/eerimoq/mobs/raw/main/docs/main.jpg
 
+Discord: https://discord.gg/kRCXKuRu
+           
 Testing with local streaming server
 ===================================
 
