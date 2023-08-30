@@ -99,20 +99,26 @@ final class Model: ObservableObject {
     }
     
     func reloadTwitchChat() {
+        guard let connection = connection else {
+            return
+        }
         if twitchChat != nil {
             twitchChat!.stop()
         }
-        twitchChat = TwitchChatMobs(channelName: connection!.twitchChannelName, model: self)
+        twitchChat = TwitchChatMobs(channelName: connection.twitchChannelName, model: self)
         twitchChat!.start()
         twitchChatPosts = []
     }
     
     func reloadTwitchViewers() {
+        guard let connection = connection else {
+            return
+        }
         if twitchPubSub != nil {
             twitchPubSub!.stop()
         }
         twitchPubSub = TwitchPubSub(model: self)
-        twitchPubSub!.start(channelId: connection!.twitchChannelId)
+        twitchPubSub!.start(channelId: connection.twitchChannelId)
         numberOfViewers = ""
     }
 
@@ -139,10 +145,12 @@ final class Model: ObservableObject {
         rtmpStream.sessionPreset = .hd1280x720
         rtmpStream.mixer.recorder.delegate = self
         checkDeviceAuthorization()
-        twitchChat = TwitchChatMobs(channelName: connection!.twitchChannelName, model: self)
-        twitchChat!.start()
-        twitchPubSub = TwitchPubSub(model: self)
-        twitchPubSub!.start(channelId: connection!.twitchChannelId)
+        if let connection = connection {
+            twitchChat = TwitchChatMobs(channelName: connection.twitchChannelName, model: self)
+            twitchChat!.start()
+            twitchPubSub = TwitchPubSub(model: self)
+            twitchPubSub!.start(channelId: connection.twitchChannelId)
+        }
         updateTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             DispatchQueue.main.async {
                 let now = Date()
@@ -153,8 +161,17 @@ final class Model: ObservableObject {
                 self.updateSpeed()
             }
         })
+        NotificationCenter.default.addObserver(self, selector: #selector(thermalStateChanged), name: ProcessInfo.thermalStateDidChangeNotification,    object: nil)
     }
-
+    
+    @objc
+    func thermalStateChanged(notification: NSNotification) {
+        guard let processInfo = notification.object as? ProcessInfo else {
+            return
+        }
+        print(processInfo.thermalState)
+    }
+    
     func updateUptimeFromNonMain() {
         DispatchQueue.main.async {
             self.updateUptime(now: Date())
@@ -251,7 +268,10 @@ final class Model: ObservableObject {
     }
 
     func rtmpUri() -> String {
-        var url = URL(string: connection!.rtmpUrl)!
+        guard let connection = connection else {
+            return ""
+        }
+        var url = URL(string: connection.rtmpUrl)!
         var components = url.pathComponents
         components.removeFirst()
         components.removeLast()
@@ -263,7 +283,10 @@ final class Model: ObservableObject {
     }
 
     func rtmpStreamName() -> String {
-        let parts = connection!.rtmpUrl.split(separator: "/")
+        guard let connection = connection else {
+            return ""
+        }
+        let parts = connection.rtmpUrl.split(separator: "/")
         return String(parts[parts.count - 1])
     }
 

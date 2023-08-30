@@ -20,8 +20,6 @@ struct MessageViewCount: Decodable {
     var viewers: Int
 }
 
-extension String: Error {}
-
 func getMessageType(message: String) throws -> String {
     if let jsonData = message.data(using: String.Encoding.utf8) {
         let data = try JSONSerialization.jsonObject(with: jsonData, options: JSONSerialization.ReadingOptions.mutableContainers)

@@ -7,6 +7,8 @@
 
 import Foundation
 
+extension String: Error {}
+
 extension String {
     func trim() -> String {
         return trimmingCharacters(in: .whitespaces)
