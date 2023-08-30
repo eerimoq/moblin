@@ -1,6 +1,17 @@
-import Combine
 import Foundation
 import SwiftUI
+
+struct TextView: View {
+    var text: String
+
+    var body: some View {
+        Text(text)
+            .foregroundColor(.white)
+            .padding([.leading, .trailing], 2)
+            .background(Color(white: 0, opacity: 0.6))
+            .cornerRadius(5)
+    }
+}
 
 struct IconAndText: View {
     var image: String
@@ -9,26 +20,12 @@ struct IconAndText: View {
     var body: some View {
         HStack {
             Image(systemName: image)
-                .frame(width: 12, height: 12)
+                .frame(width: 12)
                 .font(.system(size: 13))
             TextView(text: text)
                 .font(.system(size: 13))
         }
-        .padding([.bottom], 2)
-    }
-}
-
-struct TextView: View {
-    var text: String
-
-    var body: some View {
-        HStack {
-            Text(text)
-                .foregroundColor(.white)
-        }
-        .padding([.leading, .trailing], 2)
-        .background(Color(white: 0, opacity: 0.6))
-        .cornerRadius(5)
+        .padding(0)
     }
 }
 
@@ -73,24 +70,26 @@ struct LeadingOverlayView: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            if database.connection {
+            if database.show.connection {
                 IconAndText(image: "app.connected.to.app.below.fill", text: model.connection?.name ?? "")
             }
-            if database.viewers {
-                IconAndText(image: "person.2.fill", text: model.numberOfViewers)
+            if database.show.speed {
+                IconAndText(image: "speedometer", text: model.speed)
             }
-            if database.uptime {
-                IconAndText(image: "deskclock.fill", text: model.uptime)
+            if database.show.viewers {
+                IconAndText(image: "person.2", text: model.numberOfViewers)
+            }
+            if database.show.uptime {
+                IconAndText(image: "deskclock", text: model.uptime)
             }
             Spacer()
-            if database.chat {
+            if database.show.chat {
                 HStack {
-                    Image(systemName: "message.fill")
-                        .frame(width: 12, height: 12)
-                        .font(.system(size: 13))
+                    Image(systemName: "message")
+                        .frame(width: 12)
                     TextView(text: String(format: "%.2f m/s", model.twitchChatPostsPerSecond))
-                        .font(.system(size: 13))
                 }
+                .font(.system(size: 13))
                 ChatView(posts: model.twitchChatPosts)
             }
         }
@@ -142,7 +141,8 @@ struct StreamOverlayView: View {
             LeadingOverlayView(model: model)
             Spacer()
             TrailingOverlayView(model: model)
-        }.padding([.trailing, .top])
+        }
+        .padding([.trailing, .top])
     }
 }
 

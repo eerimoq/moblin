@@ -18,27 +18,27 @@ struct SettingsView: View {
                 Text("Scenes")
             }
             Toggle("Connection", isOn: Binding(get: {
-                database.connection
+                database.show.connection
             }, set: { value in
-                database.connection = value
+                database.show.connection = value
                 model.settings.store()
             }))
             Toggle("Viewers", isOn: Binding(get: {
-                database.viewers
+                database.show.viewers
             }, set: { value in
-                database.viewers = value
+                database.show.viewers = value
                 model.settings.store()
             }))
             Toggle("Uptime", isOn: Binding(get: {
-                database.uptime
+                database.show.uptime
             }, set: { value in
-                database.uptime = value
+                database.show.uptime = value
                 model.settings.store()
             }))
             Toggle("Chat", isOn: Binding(get: {
-                database.chat
+                database.show.chat
             }, set: { value in
-                database.chat = value
+                database.show.chat = value
                 model.settings.store()
             }))
         }

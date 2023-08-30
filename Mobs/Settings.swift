@@ -114,15 +114,20 @@ class SettingsVariable: Codable {
     }
 }
 
+class Show: Codable {
+    var chat: Bool = false
+    var viewers: Bool = false
+    var uptime: Bool = false
+    var connection: Bool = false
+    var speed: Bool = false
+}
+
 class Database: Codable {
     var connections: [SettingsConnection] = []
     var scenes: [SettingsScene] = []
     var widgets: [SettingsWidget] = []
     var variables: [SettingsVariable] = []
-    var chat: Bool = false
-    var viewers: Bool = false
-    var uptime: Bool = false
-    var connection: Bool = false
+    var show: Show = Show()
 }
 
 func addDefaultWidgets(database: Database) {
@@ -170,6 +175,7 @@ final class Settings {
             print("Failed to load settings. Using default.")
             database = createDefault()
         }
+        database.show.speed = true
     }
 
     func store() {

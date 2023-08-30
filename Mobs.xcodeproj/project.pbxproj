@@ -29,6 +29,9 @@
 		03A9836E2A9A05F9008FF0DB /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9836D2A9A05F9008FF0DB /* Model.swift */; };
 		03A983712A9A0659008FF0DB /* TwitchPubSub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */; };
 		03A983722A9A0659008FF0DB /* TwitchChatMobs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A983702A9A0659008FF0DB /* TwitchChatMobs.swift */; };
+		03B373F62A9EF98E0028DDD5 /* ControlBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373F52A9EF98E0028DDD5 /* ControlBarView.swift */; };
+		03B373F92A9EFB340028DDD5 /* BatteryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373F82A9EFB340028DDD5 /* BatteryView.swift */; };
+		03B373FB2A9EFB910028DDD5 /* ZoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FA2A9EFB910028DDD5 /* ZoomView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -53,6 +56,9 @@
 		03A9836D2A9A05F9008FF0DB /* Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitchPubSub.swift; sourceTree = "<group>"; };
 		03A983702A9A0659008FF0DB /* TwitchChatMobs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitchChatMobs.swift; sourceTree = "<group>"; };
+		03B373F52A9EF98E0028DDD5 /* ControlBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlBarView.swift; sourceTree = "<group>"; };
+		03B373F82A9EFB340028DDD5 /* BatteryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryView.swift; sourceTree = "<group>"; };
+		03B373FA2A9EFB910028DDD5 /* ZoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,11 +124,12 @@
 		03A983542A9A0582008FF0DB /* View */ = {
 			isa = PBXGroup;
 			children = (
+				03B373F72A9EFB1F0028DDD5 /* ControlBar */,
 				03B373F42A9EF8BD0028DDD5 /* Settings */,
+				030947C22A9C0496003FC387 /* ChatView.swift */,
 				03A983562A9A05D7008FF0DB /* ContentView.swift */,
 				03A9835F2A9A05D7008FF0DB /* StreamOverlayView.swift */,
 				03A983582A9A05D7008FF0DB /* StreamView.swift */,
-				030947C22A9C0496003FC387 /* ChatView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -141,6 +148,16 @@
 				03A983602A9A05D7008FF0DB /* WidgetSettingsView.swift */,
 			);
 			path = Settings;
+			sourceTree = "<group>";
+		};
+		03B373F72A9EFB1F0028DDD5 /* ControlBar */ = {
+			isa = PBXGroup;
+			children = (
+				03B373F52A9EF98E0028DDD5 /* ControlBarView.swift */,
+				03B373F82A9EFB340028DDD5 /* BatteryView.swift */,
+				03B373FA2A9EFB910028DDD5 /* ZoomView.swift */,
+			);
+			path = ControlBar;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -227,11 +244,14 @@
 				03A983642A9A05D7008FF0DB /* StreamView.swift in Sources */,
 				030947C32A9C0496003FC387 /* ChatView.swift in Sources */,
 				03A983622A9A05D7008FF0DB /* ContentView.swift in Sources */,
+				03B373F92A9EFB340028DDD5 /* BatteryView.swift in Sources */,
 				03A983652A9A05D7008FF0DB /* ConnectionSettingsView.swift in Sources */,
+				03B373F62A9EF98E0028DDD5 /* ControlBarView.swift in Sources */,
 				0382933B2A9A73ED008963AA /* Settings.swift in Sources */,
 				03A983692A9A05D7008FF0DB /* CreateButtonView.swift in Sources */,
 				03A9836E2A9A05F9008FF0DB /* Model.swift in Sources */,
 				03A983722A9A0659008FF0DB /* TwitchChatMobs.swift in Sources */,
+				03B373FB2A9EFB910028DDD5 /* ZoomView.swift in Sources */,
 				03A983672A9A05D7008FF0DB /* ScenesSettingsView.swift in Sources */,
 				035E9E372A9A02D6009D4F5A /* MobsApp.swift in Sources */,
 				03A9836A2A9A05D7008FF0DB /* VariableSettingsView.swift in Sources */,

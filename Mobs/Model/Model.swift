@@ -57,6 +57,7 @@ final class Model: ObservableObject {
     @Published var twitchChatPostsPerSecond: Float = 0.0
     @Published var numberOfViewers = ""
     @Published var batteryLevel = UIDevice.current.batteryLevel
+    @Published var speed = ""
     
     var connection: SettingsConnection? {
         get {
@@ -144,6 +145,7 @@ final class Model: ObservableObject {
                 self.updateCurrentTime(now: now)
                 self.updateBatteryLevel()
                 self.updateTwitchChatSpeed()
+                self.updateSpeed()
             }
         })
     }
@@ -174,6 +176,17 @@ final class Model: ObservableObject {
     func updateTwitchChatSpeed() {
         twitchChatPostsPerSecond = twitchChatPostsPerSecond * 0.8 + Float(numberOfTwitchChatPosts) * 0.2
         numberOfTwitchChatPosts = 0
+    }
+
+    func updateSpeed() {
+        if liveState == .live {
+            var speed = ByteCountFormatter().string(fromByteCount: Int64(8 * rtmpStream.info.currentBytesPerSecond))
+            speed = speed.replacingOccurrences(of: "B", with: "b")
+            let total = ByteCountFormatter().string(fromByteCount: rtmpStream.info.byteCount.value)
+            self.speed = "\(speed)ps (\(total))"
+        } else {
+            self.speed = ""
+        }
     }
     
     func checkDeviceAuthorization() {
