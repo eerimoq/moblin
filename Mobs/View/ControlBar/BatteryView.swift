@@ -13,10 +13,10 @@ struct BatteryView: View {
     var body: some View {
         ZStack(alignment: .leading) {
             Rectangle()
-                .frame(width: 25, height: 12)
+                .frame(width: 22, height: 12)
             Rectangle()
                 .fill(Color(red: 88/255, green: 191/255, blue: 108/255))
-                .frame(width: 25 * CGFloat(level >= 0 ? level : 0), height: 12)
+                .frame(width: 22 * CGFloat(level >= 0 ? level : 0), height: 12)
         }
         .cornerRadius(3)
     }
