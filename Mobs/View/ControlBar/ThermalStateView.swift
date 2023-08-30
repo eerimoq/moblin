@@ -10,7 +10,7 @@ import SwiftUI
 struct ThermalStateView: View {
     var thermalState: ProcessInfo.ThermalState
     
-    func color() -> Color {
+    func color(thermalState: ProcessInfo.ThermalState) -> Color {
         switch thermalState {
         case .nominal:
             return .white
@@ -29,7 +29,7 @@ struct ThermalStateView: View {
         Image(systemName: "flame")
             .frame(width: 5, height: 5)
             .font(.system(size: 10))
-            .foregroundColor(color())
+            .foregroundColor(color(thermalState: thermalState))
     }
 }
 
