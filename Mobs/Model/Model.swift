@@ -41,6 +41,13 @@ final class Model: ObservableObject {
         return formatter
     }
 
+    var sizeFormatter : ByteCountFormatter {
+        let formatter = ByteCountFormatter()
+        formatter.allowsNonnumericFormatting = false
+        formatter.countStyle = .decimal
+        return formatter
+    }
+    
     var updateTimer: Timer? = nil
 
     var frameRate: String = "30.0" {
@@ -195,9 +202,10 @@ final class Model: ObservableObject {
 
     func updateSpeed() {
         if liveState == .live {
-            var speed = ByteCountFormatter().string(fromByteCount: Int64(8 * rtmpStream.info.currentBytesPerSecond))
+            var speed = sizeFormatter.string(fromByteCount: Int64(8 * rtmpStream.info.currentBytesPerSecond))
+            speed = speed.replacingOccurrences(of: "bytes", with: "b")
             speed = speed.replacingOccurrences(of: "B", with: "b")
-            let total = ByteCountFormatter().string(fromByteCount: rtmpStream.info.byteCount.value)
+            let total = sizeFormatter.string(fromByteCount: rtmpStream.info.byteCount.value)
             self.speed = "\(speed)ps (\(total))"
         } else {
             self.speed = ""
