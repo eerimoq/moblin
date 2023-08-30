@@ -16,7 +16,7 @@ struct WidgetSettingsView: View {
                 TextField("", text: Binding(get: {
                     widget.name
                 }, set: { value in
-                    widget.name = value
+                    widget.name = value.trim()
                     model.store()
                     model.numberOfWidgets += 0
                 }))
@@ -25,7 +25,7 @@ struct WidgetSettingsView: View {
                 Picker("", selection: Binding(get: {
                     widget.type
                 }, set: { value in
-                    widget.type = value
+                    widget.type = value.trim()
                     model.store()
                     model.numberOfWidgets += 0
                 })) {
@@ -42,7 +42,7 @@ struct WidgetSettingsView: View {
                     TextField("", text: Binding(get: {
                         widget.text.formatString
                     }, set: { value in
-                        widget.text.formatString = value
+                        widget.text.formatString = value.trim()
                         model.store()
                     }))
                 }
@@ -51,7 +51,7 @@ struct WidgetSettingsView: View {
                     TextField("", text: Binding(get: {
                         widget.image.url
                     }, set: { value in
-                        widget.image.url = value
+                        widget.image.url = value.trim()
                         model.store()
                     }))
                 }
@@ -60,7 +60,7 @@ struct WidgetSettingsView: View {
                     TextField("", text: Binding(get: {
                         widget.video.url
                     }, set: { value in
-                        widget.video.url = value
+                        widget.video.url = value.trim()
                         model.store()
                     }))
                 }
@@ -69,7 +69,7 @@ struct WidgetSettingsView: View {
                     TextField("", text: Binding(get: {
                         widget.camera.direction
                     }, set: { value in
-                        widget.camera.direction = value
+                        widget.camera.direction = value.trim()
                         model.store()
                     }))
                 }
@@ -78,7 +78,7 @@ struct WidgetSettingsView: View {
                     TextField("", text: Binding(get: {
                         widget.webview.url
                     }, set: { value in
-                        widget.webview.url = value
+                        widget.webview.url = value.trim()
                         model.store()
                     }))
                 }

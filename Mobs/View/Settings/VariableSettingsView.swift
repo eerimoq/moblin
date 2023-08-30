@@ -16,7 +16,7 @@ struct VariableSettingsView: View {
                 TextField("", text: Binding(get: {
                     variable.name
                 }, set: { value in
-                    variable.name = value
+                    variable.name = value.trim()
                     model.store()
                     model.numberOfVariables += 0
                 }))
@@ -25,7 +25,7 @@ struct VariableSettingsView: View {
                 Picker("", selection: Binding(get: {
                     variable.type
                 }, set: { value in
-                    variable.type = value
+                    variable.type = value.trim()
                     model.store()
                     model.numberOfVariables += 0
                 })) {
@@ -42,7 +42,7 @@ struct VariableSettingsView: View {
                     TextField("", text: Binding(get: {
                         variable.text.value
                     }, set: { value in
-                        variable.text.value = value
+                        variable.text.value = value.trim()
                         model.store()
                     }))
                 }
@@ -51,7 +51,7 @@ struct VariableSettingsView: View {
                     TextField("", text: Binding(get: {
                         variable.http.url
                     }, set: { value in
-                        variable.http.url = value
+                        variable.http.url = value.trim()
                         model.store()
                     }))
                 }
@@ -60,7 +60,7 @@ struct VariableSettingsView: View {
                     TextField("", text: Binding(get: {
                         variable.twitchPubSub.pattern
                     }, set: { value in
-                        variable.twitchPubSub.pattern = value
+                        variable.twitchPubSub.pattern = value.trim()
                         model.store()
                     }))
                 }
@@ -69,7 +69,7 @@ struct VariableSettingsView: View {
                     TextField("", text: Binding(get: {
                         variable.websocket.url
                     }, set: { value in
-                        variable.websocket.url = value
+                        variable.websocket.url = value.trim()
                         model.store()
                     }))
                 }
@@ -77,7 +77,7 @@ struct VariableSettingsView: View {
                     TextField("", text: Binding(get: {
                         variable.websocket.pattern
                     }, set: { value in
-                        variable.websocket.pattern = value
+                        variable.websocket.pattern = value.trim()
                         model.store()
                     }))
                 }

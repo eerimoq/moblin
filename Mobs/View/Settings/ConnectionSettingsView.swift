@@ -33,7 +33,7 @@ struct ConnectionSettingsView: View {
             Section("Name") {
                 TextField("", text: $name)
                     .onSubmit {
-                        connection.name = name
+                        connection.name = name.trim()
                         model.store()
                         model.numberOfConnections += 0
                     }
@@ -41,6 +41,7 @@ struct ConnectionSettingsView: View {
             Section("RTMP URL") {
                 TextField("", text: $rtmpUrl)
                     .onSubmit {
+                        let rtmpUrl = rtmpUrl.trim()
                         if URL(string: rtmpUrl) == nil {
                             return
                         }
@@ -52,7 +53,7 @@ struct ConnectionSettingsView: View {
             Section("Twitch channel name") {
                 TextField("", text: $twitchChannelName)
                     .onSubmit {
-                        connection.twitchChannelName = twitchChannelName
+                        connection.twitchChannelName = twitchChannelName.trim()
                         model.store()
                         model.twitchChannelNameUpdated()
                     }
@@ -60,7 +61,7 @@ struct ConnectionSettingsView: View {
             Section("Twitch channel id") {
                 TextField("", text: $twitchChannelId)
                     .onSubmit {
-                        connection.twitchChannelId = twitchChannelId
+                        connection.twitchChannelId = twitchChannelId.trim()
                         model.store()
                         model.twitchChannelIdUpdated()
                 }

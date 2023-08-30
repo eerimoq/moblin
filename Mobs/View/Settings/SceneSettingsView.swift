@@ -20,7 +20,7 @@ struct SceneSettingsView: View {
                 TextField("", text: Binding(get: {
                     scene.name
                 }, set: { value in
-                    scene.name = value
+                    scene.name = value.trim()
                     model.store()
                     model.numberOfScenes += 0
                 }))

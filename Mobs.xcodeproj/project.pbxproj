@@ -32,6 +32,7 @@
 		03B373F62A9EF98E0028DDD5 /* ControlBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373F52A9EF98E0028DDD5 /* ControlBarView.swift */; };
 		03B373F92A9EFB340028DDD5 /* BatteryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373F82A9EFB340028DDD5 /* BatteryView.swift */; };
 		03B373FB2A9EFB910028DDD5 /* ZoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FA2A9EFB910028DDD5 /* ZoomView.swift */; };
+		03B373FD2A9F35EF0028DDD5 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FC2A9F35EF0028DDD5 /* Utils.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -59,6 +60,7 @@
 		03B373F52A9EF98E0028DDD5 /* ControlBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlBarView.swift; sourceTree = "<group>"; };
 		03B373F82A9EFB340028DDD5 /* BatteryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryView.swift; sourceTree = "<group>"; };
 		03B373FA2A9EFB910028DDD5 /* ZoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomView.swift; sourceTree = "<group>"; };
+		03B373FC2A9F35EF0028DDD5 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,14 +95,15 @@
 		035E9E352A9A02D6009D4F5A /* Mobs */ = {
 			isa = PBXGroup;
 			children = (
-				03A983702A9A0659008FF0DB /* TwitchChatMobs.swift */,
-				03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */,
 				03A983542A9A0582008FF0DB /* View */,
 				03A983532A9A057A008FF0DB /* Model */,
-				035E9E362A9A02D6009D4F5A /* MobsApp.swift */,
-				035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */,
 				035E9E3C2A9A02D7009D4F5A /* Preview Content */,
+				035E9E362A9A02D6009D4F5A /* MobsApp.swift */,
 				0382933A2A9A73ED008963AA /* Settings.swift */,
+				03A983702A9A0659008FF0DB /* TwitchChatMobs.swift */,
+				03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */,
+				03B373FC2A9F35EF0028DDD5 /* Utils.swift */,
+				035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */,
 			);
 			path = Mobs;
 			sourceTree = "<group>";
@@ -245,6 +248,7 @@
 				030947C32A9C0496003FC387 /* ChatView.swift in Sources */,
 				03A983622A9A05D7008FF0DB /* ContentView.swift in Sources */,
 				03B373F92A9EFB340028DDD5 /* BatteryView.swift in Sources */,
+				03B373FD2A9F35EF0028DDD5 /* Utils.swift in Sources */,
 				03A983652A9A05D7008FF0DB /* ConnectionSettingsView.swift in Sources */,
 				03B373F62A9EF98E0028DDD5 /* ControlBarView.swift in Sources */,
 				0382933B2A9A73ED008963AA /* Settings.swift in Sources */,
