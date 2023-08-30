@@ -13,7 +13,7 @@ struct ThermalStateView: View {
     func color() -> Color {
         switch thermalState {
         case .nominal:
-            return .black
+            return .white
         case .fair:
             return .yellow
         case .serious:
