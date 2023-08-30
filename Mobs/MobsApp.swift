@@ -5,7 +5,6 @@ import SwiftUI
 struct MobsApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     private var settings: Settings = {
-        //print(ProcessInfo.thermalStateDidChangeNotification)
         UIDevice.current.isBatteryMonitoringEnabled = true
         let settings = Settings()
         settings.load()

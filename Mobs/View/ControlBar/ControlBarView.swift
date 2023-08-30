@@ -84,6 +84,8 @@ struct ControlBarView: View {
                 HStack {
                     BatteryView(level: model.batteryLevel)
                     Spacer()
+                    ThermalStateView(thermalState: model.thermalState)
+                    Spacer()
                     Text(model.currentTime)
                         .font(.system(size: 13))
                 }

@@ -58,6 +58,7 @@ final class Model: ObservableObject {
     @Published var numberOfViewers = ""
     @Published var batteryLevel = UIDevice.current.batteryLevel
     @Published var speed = ""
+    @Published var thermalState: ProcessInfo.ThermalState = ProcessInfo().thermalState
     
     var connection: SettingsConnection? {
         get {
@@ -159,17 +160,9 @@ final class Model: ObservableObject {
                 self.updateBatteryLevel()
                 self.updateTwitchChatSpeed()
                 self.updateSpeed()
+                self.updateThermalState()
             }
         })
-        NotificationCenter.default.addObserver(self, selector: #selector(thermalStateChanged), name: ProcessInfo.thermalStateDidChangeNotification,    object: nil)
-    }
-    
-    @objc
-    func thermalStateChanged(notification: NSNotification) {
-        guard let processInfo = notification.object as? ProcessInfo else {
-            return
-        }
-        print(processInfo.thermalState)
     }
     
     func updateUptimeFromNonMain() {
@@ -210,7 +203,11 @@ final class Model: ObservableObject {
             self.speed = ""
         }
     }
-    
+
+    func updateThermalState() {
+        thermalState = ProcessInfo().thermalState
+    }
+
     func checkDeviceAuthorization() {
         let requiredAccessLevel: PHAccessLevel = .readWrite
         PHPhotoLibrary.requestAuthorization(for: requiredAccessLevel) { authorizationStatus in

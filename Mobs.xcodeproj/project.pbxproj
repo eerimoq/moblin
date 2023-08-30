@@ -33,6 +33,7 @@
 		03B373F92A9EFB340028DDD5 /* BatteryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373F82A9EFB340028DDD5 /* BatteryView.swift */; };
 		03B373FB2A9EFB910028DDD5 /* ZoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FA2A9EFB910028DDD5 /* ZoomView.swift */; };
 		03B373FD2A9F35EF0028DDD5 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FC2A9F35EF0028DDD5 /* Utils.swift */; };
+		03B373FF2A9FCA790028DDD5 /* ThermalStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FE2A9FCA790028DDD5 /* ThermalStateView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -61,6 +62,7 @@
 		03B373F82A9EFB340028DDD5 /* BatteryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryView.swift; sourceTree = "<group>"; };
 		03B373FA2A9EFB910028DDD5 /* ZoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomView.swift; sourceTree = "<group>"; };
 		03B373FC2A9F35EF0028DDD5 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		03B373FE2A9FCA790028DDD5 /* ThermalStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThermalStateView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -156,8 +158,9 @@
 		03B373F72A9EFB1F0028DDD5 /* ControlBar */ = {
 			isa = PBXGroup;
 			children = (
-				03B373F52A9EF98E0028DDD5 /* ControlBarView.swift */,
 				03B373F82A9EFB340028DDD5 /* BatteryView.swift */,
+				03B373F52A9EF98E0028DDD5 /* ControlBarView.swift */,
+				03B373FE2A9FCA790028DDD5 /* ThermalStateView.swift */,
 				03B373FA2A9EFB910028DDD5 /* ZoomView.swift */,
 			);
 			path = ControlBar;
@@ -259,6 +262,7 @@
 				03A983672A9A05D7008FF0DB /* ScenesSettingsView.swift in Sources */,
 				035E9E372A9A02D6009D4F5A /* MobsApp.swift in Sources */,
 				03A9836A2A9A05D7008FF0DB /* VariableSettingsView.swift in Sources */,
+				03B373FF2A9FCA790028DDD5 /* ThermalStateView.swift in Sources */,
 				03A983682A9A05D7008FF0DB /* SceneSettingsView.swift in Sources */,
 				03A983632A9A05D7008FF0DB /* SettingsView.swift in Sources */,
 				03A983662A9A05D7008FF0DB /* AddButtonView.swift in Sources */,
