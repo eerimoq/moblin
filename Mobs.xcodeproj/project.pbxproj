@@ -118,21 +118,29 @@
 		03A983542A9A0582008FF0DB /* View */ = {
 			isa = PBXGroup;
 			children = (
+				03B373F42A9EF8BD0028DDD5 /* Settings */,
+				03A983562A9A05D7008FF0DB /* ContentView.swift */,
+				03A9835F2A9A05D7008FF0DB /* StreamOverlayView.swift */,
+				03A983582A9A05D7008FF0DB /* StreamView.swift */,
+				030947C22A9C0496003FC387 /* ChatView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		03B373F42A9EF8BD0028DDD5 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
 				03A9835A2A9A05D7008FF0DB /* AddButtonView.swift */,
 				03A983592A9A05D7008FF0DB /* ConnectionSettingsView.swift */,
 				03A983552A9A05D7008FF0DB /* ConnectionsSettingsView.swift */,
-				03A983562A9A05D7008FF0DB /* ContentView.swift */,
 				03A9835D2A9A05D7008FF0DB /* CreateButtonView.swift */,
 				03A9835C2A9A05D7008FF0DB /* SceneSettingsView.swift */,
 				03A9835B2A9A05D7008FF0DB /* ScenesSettingsView.swift */,
 				03A983572A9A05D7008FF0DB /* SettingsView.swift */,
 				03A9835E2A9A05D7008FF0DB /* VariableSettingsView.swift */,
-				03A9835F2A9A05D7008FF0DB /* StreamOverlayView.swift */,
-				03A983582A9A05D7008FF0DB /* StreamView.swift */,
 				03A983602A9A05D7008FF0DB /* WidgetSettingsView.swift */,
-				030947C22A9C0496003FC387 /* ChatView.swift */,
 			);
-			path = View;
+			path = Settings;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
