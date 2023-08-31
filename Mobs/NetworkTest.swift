@@ -27,8 +27,10 @@ class NetworkTestType {
     }
 
     func connect() {
-        let tcpOptions = NWProtocolTCP.Options()
-        let params = NWParameters(tls: .init(), tcp: tcpOptions)
+        // let options = NWProtocolTCP.Options()
+        // let params = NWParameters(tls: .init(), tcp: options)
+        let options = NWProtocolUDP.Options()
+        let params = NWParameters(dtls: .none, udp: options)
         params.requiredInterfaceType = type
         params.prohibitExpensivePaths = false
         connection = NWConnection(host: "mys-lang.org", port: 443, using: params)
