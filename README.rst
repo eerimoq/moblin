@@ -49,19 +49,15 @@ Ideas/plan
 
 - Play music and short sound samples.
 
-- Show latency, bitrate, resolution, protocol, ...
-
 - Streamlabs integration.
 
-- Filters/effects.
-
-- Record to disk in different resolution than stream.
+- Record to disk.
 
 - LIDAR, altitude.
 
 - AV1 codec (to complement H264).
 
-- SRT.
+- SRT(LA).
 
 Resources
 =========
