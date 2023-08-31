@@ -141,7 +141,7 @@ final class Model: ObservableObject {
         numberOfConnections = database.connections.count
         rtmpStream = RTMPStream(connection: rtmpConnection)
         rtmpStream.videoOrientation = .landscapeRight
-        rtmpStream.sessionPreset = .hd1280x720
+        rtmpStream.sessionPreset = .hd1920x1080
         rtmpStream.mixer.recorder.delegate = self
         checkDeviceAuthorization()
         if let connection = connection {
