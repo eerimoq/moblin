@@ -66,7 +66,7 @@ final class Model: ObservableObject {
             return nil
         }
     }
-
+    
     func store() {
         settings.store()
     }
@@ -116,8 +116,8 @@ final class Model: ObservableObject {
         if let twitchPubSub = twitchPubSub {
             twitchPubSub.stop()
         }
-        twitchPubSub = TwitchPubSub(model: self)
-        twitchPubSub!.start(channelId: connection.twitchChannelId)
+        twitchPubSub = TwitchPubSub(model: self, channelId: connection.twitchChannelId)
+        twitchPubSub!.start()
         numberOfViewers = ""
     }
 
@@ -147,8 +147,8 @@ final class Model: ObservableObject {
         if let connection = connection {
             twitchChat = TwitchChatMobs(channelName: connection.twitchChannelName, model: self)
             twitchChat!.start()
-            twitchPubSub = TwitchPubSub(model: self)
-            twitchPubSub!.start(channelId: connection.twitchChannelId)
+            twitchPubSub = TwitchPubSub(model: self, channelId: connection.twitchChannelId)
+            twitchPubSub!.start()
         }
         updateTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             DispatchQueue.main.async {

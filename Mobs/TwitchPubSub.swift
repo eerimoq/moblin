@@ -45,30 +45,29 @@ func decodeMessageViewCount(message: String) throws -> MessageViewCount {
     return try JSONDecoder().decode(MessageViewCount.self, from: message.data(using: String.Encoding.utf8)!)
 }
 
+var url = URL(string: "wss://pubsub-edge.twitch.tv/v1")!
+
 final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
-    private var webSocket: URLSessionWebSocketTask?
-    private var channelId: String?
     private var model: Model
+    private var webSocket: URLSessionWebSocketTask
+    private var channelId: String
     
-    init(model: Model) {
+    init(model: Model, channelId: String) {
         self.model = model
+        self.channelId = channelId
+        self.webSocket = URLSession(configuration: .default).webSocketTask(with: url)
     }
 
-    func start(channelId: String) {
-        self.channelId = channelId
+    func start() {
         let session = URLSession(configuration: .default,
                                  delegate: self,
                                  delegateQueue: OperationQueue())
-        let url = URL(string: "wss://pubsub-edge.twitch.tv/v1")!
         webSocket = session.webSocketTask(with: url)
-        webSocket?.resume()
+        webSocket.resume()
         readMessage()
     }
 
     func stop() {
-        guard let webSocket = webSocket else {
-            return
-        }
         webSocket.cancel()
     }
     
@@ -114,7 +113,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     }
 
     func readMessage()  {
-        webSocket?.receive { result in
+        webSocket.receive { result in
             switch result {
             case .failure(let error):
                 print("Receive failed with error:", error)
@@ -136,13 +135,13 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol proto: String?) {
         print("Connected to PubSub server")
         sendMessage(message: "{\"type\":\"PING\"}")
-        sendMessage(message: "{\"type\":\"LISTEN\",\"data\":{\"topics\":[\"video-playback-by-id.\(channelId!)\"]}}")
+        sendMessage(message: "{\"type\":\"LISTEN\",\"data\":{\"topics\":[\"video-playback-by-id.\(channelId)\"]}}")
     }
 
     func sendMessage(message: String) {
         print("Sending:", message)
         let message = URLSessionWebSocketTask.Message.string(message)
-        webSocket?.send(message) { error in
+        webSocket.send(message) { error in
             if let error = error {
                 print("WebSocket sending error:", error)
             }
