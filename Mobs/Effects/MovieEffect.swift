@@ -35,7 +35,6 @@ final class MovieEffect: VideoEffect {
         guard let filter = filter else {
             return image
         }
-        print("asd")
         extent = image.extent
         filter.setValue(black!, forKey: "inputImage")
         filter.setValue(image, forKey: "inputBackgroundImage")
