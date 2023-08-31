@@ -66,15 +66,16 @@ final class Model: ObservableObject {
             return nil
         }
     }
-    
-    func store() {
-        settings.store()
-    }
+    private var networkTest: NetworkTest?
 
     var database: Database {
         get {
             settings.database
         }
+    }
+    
+    func store() {
+        settings.store()
     }
 
     func startStream() {
@@ -161,6 +162,8 @@ final class Model: ObservableObject {
             }
         })
         NotificationCenter.default.addObserver(self, selector: #selector(thermalStateChanged), name: ProcessInfo.thermalStateDidChangeNotification, object: nil)
+        networkTest = NetworkTest()
+        networkTest!.connectUsingCellularAndWifi();
     }
 
     @objc
