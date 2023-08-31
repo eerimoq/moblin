@@ -34,8 +34,10 @@
 		03B373FB2A9EFB910028DDD5 /* ZoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FA2A9EFB910028DDD5 /* ZoomView.swift */; };
 		03B373FD2A9F35EF0028DDD5 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FC2A9F35EF0028DDD5 /* Utils.swift */; };
 		03B373FF2A9FCA790028DDD5 /* ThermalStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FE2A9FCA790028DDD5 /* ThermalStateView.swift */; };
-		03B374022AA0354C0028DDD5 /* VideoEffects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374012AA0354C0028DDD5 /* VideoEffects.swift */; };
+		03B374022AA0354C0028DDD5 /* MonochromeEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374012AA0354C0028DDD5 /* MonochromeEffect.swift */; };
 		03B374042AA036D10028DDD5 /* ButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374032AA036D10028DDD5 /* ButtonsView.swift */; };
+		03B374072AA0EA650028DDD5 /* MovieEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374062AA0EA650028DDD5 /* MovieEffect.swift */; };
+		03B374092AA0EA700028DDD5 /* IconEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374082AA0EA700028DDD5 /* IconEffect.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -65,8 +67,10 @@
 		03B373FA2A9EFB910028DDD5 /* ZoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomView.swift; sourceTree = "<group>"; };
 		03B373FC2A9F35EF0028DDD5 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		03B373FE2A9FCA790028DDD5 /* ThermalStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThermalStateView.swift; sourceTree = "<group>"; };
-		03B374012AA0354C0028DDD5 /* VideoEffects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoEffects.swift; sourceTree = "<group>"; };
+		03B374012AA0354C0028DDD5 /* MonochromeEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonochromeEffect.swift; sourceTree = "<group>"; };
 		03B374032AA036D10028DDD5 /* ButtonsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonsView.swift; sourceTree = "<group>"; };
+		03B374062AA0EA650028DDD5 /* MovieEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieEffect.swift; sourceTree = "<group>"; };
+		03B374082AA0EA700028DDD5 /* IconEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconEffect.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +105,7 @@
 		035E9E352A9A02D6009D4F5A /* Mobs */ = {
 			isa = PBXGroup;
 			children = (
+				03B374052AA0EA370028DDD5 /* Effects */,
 				035E9E3C2A9A02D7009D4F5A /* Preview Content */,
 				03B373F42A9EF8BD0028DDD5 /* Settings */,
 				03A983542A9A0582008FF0DB /* View */,
@@ -110,7 +115,6 @@
 				03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */,
 				03A983702A9A0659008FF0DB /* TwitchChatMobs.swift */,
 				03B373FC2A9F35EF0028DDD5 /* Utils.swift */,
-				03B374012AA0354C0028DDD5 /* VideoEffects.swift */,
 				035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */,
 			);
 			path = Mobs;
@@ -170,6 +174,16 @@
 				03A983582A9A05D7008FF0DB /* StreamView.swift */,
 			);
 			path = Stream;
+			sourceTree = "<group>";
+		};
+		03B374052AA0EA370028DDD5 /* Effects */ = {
+			isa = PBXGroup;
+			children = (
+				03B374012AA0354C0028DDD5 /* MonochromeEffect.swift */,
+				03B374062AA0EA650028DDD5 /* MovieEffect.swift */,
+				03B374082AA0EA700028DDD5 /* IconEffect.swift */,
+			);
+			path = Effects;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -259,9 +273,11 @@
 				03B374042AA036D10028DDD5 /* ButtonsView.swift in Sources */,
 				03B373F92A9EFB340028DDD5 /* BatteryView.swift in Sources */,
 				03B373FD2A9F35EF0028DDD5 /* Utils.swift in Sources */,
+				03B374072AA0EA650028DDD5 /* MovieEffect.swift in Sources */,
 				03A983652A9A05D7008FF0DB /* ConnectionSettingsView.swift in Sources */,
 				03B373F62A9EF98E0028DDD5 /* ControlBarView.swift in Sources */,
 				0382933B2A9A73ED008963AA /* Settings.swift in Sources */,
+				03B374092AA0EA700028DDD5 /* IconEffect.swift in Sources */,
 				03A983692A9A05D7008FF0DB /* CreateButtonView.swift in Sources */,
 				03A9836E2A9A05F9008FF0DB /* Model.swift in Sources */,
 				03A983722A9A0659008FF0DB /* TwitchChatMobs.swift in Sources */,
@@ -271,7 +287,7 @@
 				03A9836A2A9A05D7008FF0DB /* VariableSettingsView.swift in Sources */,
 				03B373FF2A9FCA790028DDD5 /* ThermalStateView.swift in Sources */,
 				03A983682A9A05D7008FF0DB /* SceneSettingsView.swift in Sources */,
-				03B374022AA0354C0028DDD5 /* VideoEffects.swift in Sources */,
+				03B374022AA0354C0028DDD5 /* MonochromeEffect.swift in Sources */,
 				03A983632A9A05D7008FF0DB /* SettingsView.swift in Sources */,
 				03A983662A9A05D7008FF0DB /* AddButtonView.swift in Sources */,
 				03A983612A9A05D7008FF0DB /* ConnectionsSettingsView.swift in Sources */,

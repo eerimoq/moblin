@@ -10,7 +10,7 @@ import SwiftUI
 struct LineView: View {
     var user: String
     var message: String
-    
+
     var body: some View {
         HStack {
             Text(user)
@@ -31,7 +31,7 @@ struct LineView: View {
 
 struct ChatView: View {
     var posts: [Post]
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             ForEach(posts, id: \.self) {post in
