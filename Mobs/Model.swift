@@ -119,6 +119,8 @@ final class Model: ObservableObject {
         twitchChat = TwitchChatMobs(channelName: connection.twitchChannelName, model: self)
         twitchChat!.start()
         twitchChatPosts = []
+        twitchChatPostsPerSecond = 0.0
+        numberOfTwitchChatPosts = 0
     }
     
     func reloadTwitchViewers() {
