@@ -12,8 +12,7 @@ enum LiveState {
 }
 
 final class Model: ObservableObject {
-    let maxRetryCount: Int = 5
-
+    private let maxRetryCount: Int = 5
     private var rtmpConnection = RTMPConnection()
     @Published var rtmpStream: RTMPStream!
     @Published var currentPosition: AVCaptureDevice.Position = .back
@@ -21,10 +20,9 @@ final class Model: ObservableObject {
     @Published var liveState: LiveState = .stopped
     @Published var fps: String = "FPS"
     private var nc = NotificationCenter.default
-    var subscriptions = Set<AnyCancellable>()
-    var startDate: Date? = nil
+    private var subscriptions = Set<AnyCancellable>()
+    private var startDate: Date? = nil
     @Published var uptime: String = ""
-
     @Published var numberOfScenes = 0
     @Published var numberOfWidgets = 0
     @Published var numberOfVariables = 0
@@ -33,30 +31,19 @@ final class Model: ObservableObject {
     var settings: Settings = Settings()
     @Published var currentTime: String = Date().formatted(date: .omitted, time: .shortened)
     var selectedScene: String = "Main"
-
-    var uptimeFormatter: DateComponentsFormatter {
+    private var uptimeFormatter: DateComponentsFormatter {
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.hour, .minute, .second]
         formatter.zeroFormattingBehavior = .pad
         return formatter
     }
-
-    var sizeFormatter : ByteCountFormatter {
+    private var sizeFormatter : ByteCountFormatter {
         let formatter = ByteCountFormatter()
         formatter.allowsNonnumericFormatting = false
         formatter.countStyle = .decimal
         return formatter
     }
-    
-    var updateTimer: Timer? = nil
-
-    var frameRate: String = "30.0" {
-        willSet {
-            rtmpStream.frameRate = Float64(newValue) ?? 30.0
-            objectWillChange.send()
-        }
-    }
-
+    private var updateTimer: Timer? = nil
     private var twitchChat: TwitchChatMobs?
     private var twitchPubSub: TwitchPubSub?
     @Published var twitchChatPosts: [Post] = []
@@ -69,7 +56,6 @@ final class Model: ObservableObject {
     private var monochromeEffect: MonochromeEffect = MonochromeEffect()
     private var pronamaEffect: IconEffect = IconEffect()
     private var movieEffect: MovieEffect = MovieEffect()
-    
     var connection: SettingsConnection? {
         get {
             for connection in database.connections {
@@ -113,8 +99,8 @@ final class Model: ObservableObject {
         guard let connection = connection else {
             return
         }
-        if twitchChat != nil {
-            twitchChat!.stop()
+        if let twitchChat = twitchChat {
+            twitchChat.stop()
         }
         twitchChat = TwitchChatMobs(channelName: connection.twitchChannelName, model: self)
         twitchChat!.start()
@@ -127,8 +113,8 @@ final class Model: ObservableObject {
         guard let connection = connection else {
             return
         }
-        if twitchPubSub != nil {
-            twitchPubSub!.stop()
+        if let twitchPubSub = twitchPubSub {
+            twitchPubSub.stop()
         }
         twitchPubSub = TwitchPubSub(model: self)
         twitchPubSub!.start(channelId: connection.twitchChannelId)
