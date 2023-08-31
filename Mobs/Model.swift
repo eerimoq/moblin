@@ -163,7 +163,7 @@ final class Model: ObservableObject {
         })
         NotificationCenter.default.addObserver(self, selector: #selector(thermalStateChanged), name: ProcessInfo.thermalStateDidChangeNotification, object: nil)
         networkTest = NetworkTest()
-        networkTest!.connectUsingCellularAndWifi();
+        networkTest!.connect();
     }
 
     @objc
