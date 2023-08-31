@@ -25,11 +25,11 @@ class NetworkTestCellular {
         params.prohibitExpensivePaths = false
         params.prohibitedInterfaceTypes = [.wifi]
         connection = NWConnection(host: "mys-lang.org", port: 443, using: params)
-        print("cellular", connection!)
-        connection?.viabilityUpdateHandler = viabilityDidChange(to:)
-        connection?.stateUpdateHandler = stateDidChange(to:)
-        connection?.start(queue: networkQueue)
         if let connection = connection {
+            print("cellular", connection)
+            connection.viabilityUpdateHandler = viabilityDidChange(to:)
+            connection.stateUpdateHandler = stateDidChange(to:)
+            connection.start(queue: networkQueue)
             receive(on: connection)
         }
     }
@@ -64,11 +64,11 @@ class NetworkTestWiFi {
         params.prohibitExpensivePaths = false
         params.prohibitedInterfaceTypes = [.cellular]
         connection = NWConnection(host: "mys-lang.org", port: 443, using: params)
-        print("wifi", connection!)
-        connection?.viabilityUpdateHandler = viabilityDidChange(to:)
-        connection?.stateUpdateHandler = stateDidChange(to:)
-        connection?.start(queue: networkQueue)
         if let connection = connection {
+            print("wifi", connection)
+            connection.viabilityUpdateHandler = viabilityDidChange(to:)
+            connection.stateUpdateHandler = stateDidChange(to:)
+            connection.start(queue: networkQueue)
             receive(on: connection)
         }
     }
