@@ -37,10 +37,12 @@ var recordingImageOn = "record.circle.fill"
 var recordingImageOff = "record.circle"
 var flashImageOn = "lightbulb.fill"
 var flashImageOff = "lightbulb"
-var monochromeEffectImageOn = "popcorn.fill"
-var monochromeEffectImageOff = "popcorn"
+var monochromeEffectImageOn = "moon.fill"
+var monochromeEffectImageOff = "moon"
 var iconEffectImageOn = "photo.fill"
 var iconEffectImageOff = "photo"
+var movieEffectImageOn = "film.fill"
+var movieEffectImageOff = "film"
 
 struct ButtonsView: View {
     @ObservedObject var model: Model
@@ -49,6 +51,7 @@ struct ButtonsView: View {
     @State private var flashLightImage = flashImageOff
     @State private var monochromeEffectImage = monochromeEffectImageOff
     @State private var iconEffectImage = iconEffectImageOff
+    @State private var movieEffectImage = movieEffectImageOff
     
     var body: some View {
         VStack {
@@ -73,7 +76,14 @@ struct ButtonsView: View {
                         iconEffectImage = iconEffectImageOn
                     }
                 })
-                GenericButton(image: "hand.thumbsup.fill", action: {
+                GenericButton(image: movieEffectImage, action: {
+                    if movieEffectImage == movieEffectImageOn {
+                        model.movieEffectOff()
+                        movieEffectImage = movieEffectImageOff
+                    } else {
+                        model.movieEffectOn()
+                        movieEffectImage = movieEffectImageOn
+                    }
                 })
             }
             HStack {

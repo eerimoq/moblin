@@ -169,9 +169,17 @@ final class Model: ObservableObject {
                 self.updateBatteryLevel()
                 self.updateTwitchChatSpeed()
                 self.updateSpeed()
-                self.updateThermalState()
             }
         })
+        NotificationCenter.default.addObserver(self, selector: #selector(thermalStateChanged), name: ProcessInfo.thermalStateDidChangeNotification, object: nil)
+    }
+
+    @objc
+    func thermalStateChanged(notification: NSNotification) {
+        guard let processInfo = notification.object as? ProcessInfo else {
+            return
+        }
+        thermalState = processInfo.thermalState
     }
     
     func updateUptimeFromNonMain() {
@@ -212,10 +220,6 @@ final class Model: ObservableObject {
         } else {
             self.speed = ""
         }
-    }
-
-    func updateThermalState() {
-        thermalState = ProcessInfo().thermalState
     }
 
     func checkDeviceAuthorization() {
@@ -328,7 +332,12 @@ final class Model: ObservableObject {
 
     func iconEffectOff() {
         _ = rtmpStream.unregisterVideoEffect(pronamaEffect)
-        
+    }
+
+    func movieEffectOn() {
+    }
+
+    func movieEffectOff() {
     }
 
     func setBackCameraZoomLevel(level: CGFloat) {
