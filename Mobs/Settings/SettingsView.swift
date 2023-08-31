@@ -23,6 +23,12 @@ struct SettingsView: View {
                 database.show.connection = value
                 model.settings.store()
             }))
+            Toggle("Speed", isOn: Binding(get: {
+                database.show.speed
+            }, set: { value in
+                database.show.speed = value
+                model.settings.store()
+            }))
             Toggle("Viewers", isOn: Binding(get: {
                 database.show.viewers
             }, set: { value in

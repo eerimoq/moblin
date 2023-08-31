@@ -179,6 +179,7 @@ final class Model: ObservableObject {
         guard let processInfo = notification.object as? ProcessInfo else {
             return
         }
+        print("Thermal state:", processInfo.thermalState, thermalState)
         thermalState = processInfo.thermalState
     }
     

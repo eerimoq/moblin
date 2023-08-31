@@ -109,7 +109,7 @@ struct TrailingOverlayView: View {
             TextView(text: model.fps)
                 .font(.system(size: 13))
             Spacer()
-            Variable(name: "Earnings", value: "10.32")
+            // Variable(name: "Earnings", value: "10.32")
             Picker("", selection: Binding(get: {
                 model.selectedScene
             }, set: { (scene) in
