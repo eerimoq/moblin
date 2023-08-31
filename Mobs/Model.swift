@@ -68,6 +68,7 @@ final class Model: ObservableObject {
     @Published var thermalState: ProcessInfo.ThermalState = ProcessInfo().thermalState
     private var monochromeEffect: MonochromeEffect = MonochromeEffect()
     private var pronamaEffect: IconEffect = IconEffect()
+    private var movieEffect: MovieEffect = MovieEffect()
     
     var connection: SettingsConnection? {
         get {
@@ -336,9 +337,11 @@ final class Model: ObservableObject {
     }
 
     func movieEffectOn() {
+        _ = rtmpStream.registerVideoEffect(movieEffect)
     }
 
     func movieEffectOff() {
+        _ = rtmpStream.unregisterVideoEffect(movieEffect)
     }
 
     func setBackCameraZoomLevel(level: CGFloat) {

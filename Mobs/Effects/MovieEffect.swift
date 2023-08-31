@@ -16,22 +16,28 @@ final class MovieEffect: VideoEffect {
             if extent == oldValue {
                 return
             }
+            let width = extent.size.width
+            let height = extent.size.height / 6
             UIGraphicsBeginImageContext(extent.size)
-            var image = UIImage(named: "AppIcon.png")!
-            image = image.scalePreservingAspectRatio(targetSize: CGSize(width: 50, height: 50))
-            image.draw(at: CGPoint(x: extent.size.width - 55, y: extent.size.height - 55))
-            icon = CIImage(image: UIGraphicsGetImageFromCurrentImageContext()!, options: nil)
+            let context = UIGraphicsGetCurrentContext()!
+            context.setFillColor(UIColor.black.cgColor)
+            context.fill([
+                CGRect(x: 0, y: 0, width: width, height: height),
+                CGRect(x: 0, y: 5 * height, width: width, height: height)
+            ])
+            black = CIImage(image: UIGraphicsGetImageFromCurrentImageContext()!)
             UIGraphicsEndImageContext()
         }
     }
-    var icon: CIImage?
+    var black: CIImage?
 
     override func execute(_ image: CIImage, info: CMSampleBuffer?) -> CIImage {
         guard let filter = filter else {
             return image
         }
+        print("asd")
         extent = image.extent
-        filter.setValue(icon!, forKey: "inputImage")
+        filter.setValue(black!, forKey: "inputImage")
         filter.setValue(image, forKey: "inputBackgroundImage")
         return filter.outputImage!
     }
