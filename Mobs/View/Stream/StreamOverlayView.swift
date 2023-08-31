@@ -89,6 +89,7 @@ struct LeadingOverlayView: View {
                     TextView(text: String(format: "%.2f m/s", model.twitchChatPostsPerSecond))
                 }
                 .font(.system(size: 13))
+                .padding([.bottom], 1)
                 ChatView(posts: model.twitchChatPosts)
             }
         }

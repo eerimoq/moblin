@@ -177,6 +177,7 @@ final class Model: ObservableObject {
 
     @objc
     func thermalStateChanged(notification: NSNotification) {
+        print("thernal change")
         guard let processInfo = notification.object as? ProcessInfo else {
             return
         }
