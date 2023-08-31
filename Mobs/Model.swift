@@ -66,6 +66,8 @@ final class Model: ObservableObject {
     @Published var batteryLevel = UIDevice.current.batteryLevel
     @Published var speed = ""
     @Published var thermalState: ProcessInfo.ThermalState = ProcessInfo().thermalState
+    private var monochromeEffect: MonochromeEffect = MonochromeEffect()
+    private var pronamaEffect: IconEffect = IconEffect()
     
     var connection: SettingsConnection? {
         get {
@@ -310,6 +312,23 @@ final class Model: ObservableObject {
 
     func toggleMute() {
         rtmpStream.hasAudio.toggle();
+    }
+
+    func monochromeEffectOn() {
+        _ = rtmpStream.registerVideoEffect(monochromeEffect)
+    }
+
+    func monochromeEffectOff() {
+        _ = rtmpStream.unregisterVideoEffect(monochromeEffect)
+    }
+
+    func iconEffectOn() {
+        _ = rtmpStream.registerVideoEffect(pronamaEffect)
+    }
+
+    func iconEffectOff() {
+        _ = rtmpStream.unregisterVideoEffect(pronamaEffect)
+        
     }
 
     func setBackCameraZoomLevel(level: CGFloat) {

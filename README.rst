@@ -42,11 +42,6 @@ Ideas/plan
 - Buffering for short disconnections. Show as picture in picture or
   other layout once reconnected. Possible a record button.
 
-- Built-in support for commonly used streaming platforms (Twitch,
-  Youtube, etc.).
-
-  - Show number of viewers, chat, title, uptime, etc.
-
 - Subscription and donation notifications. Both visually and with
   sound.
 
@@ -59,8 +54,6 @@ Ideas/plan
 - Streamlabs integration.
 
 - Filters/effects.
-
-- Energy efficient.
 
 - Record to disk in different resolution than stream.
 

@@ -76,7 +76,7 @@ struct LeadingOverlayView: View {
                 IconAndText(image: "speedometer", text: model.speed)
             }
             if database.show.viewers {
-                IconAndText(image: "person.2", text: model.numberOfViewers)
+                IconAndText(image: "eye", text: model.numberOfViewers)
             }
             if database.show.uptime {
                 IconAndText(image: "deskclock", text: model.uptime)
