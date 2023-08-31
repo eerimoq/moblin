@@ -120,8 +120,9 @@ struct TrailingOverlayView: View {
                 }
             }
             .pickerStyle(.segmented)
+            .colorMultiply(.orange)
             .frame(width: CGFloat(50 * database.scenes.filter({scene in scene.enabled}).count))
-            .background(Color(white: 1, opacity: 0.8))
+            .background(Color(white: 1, opacity: 0.6))
             .colorInvert()
             .cornerRadius(10)
             .overlay(
