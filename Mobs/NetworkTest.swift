@@ -11,12 +11,6 @@ import Network
 class NetworkTestType {
     private var typeName: String
     private var type: NWInterface.InterfaceType
-    
-    init(typeName: String, type: NWInterface.InterfaceType) {
-        self.typeName = typeName
-        self.type = type
-    }
-    
     private var networkQueue = DispatchQueue(label: "com.eerimoq.network", qos: .userInitiated)
     private var connection: NWConnection? {
         didSet {
@@ -25,7 +19,12 @@ class NetworkTestType {
             oldValue?.forceCancel()
         }
     }
-
+    
+    init(typeName: String, type: NWInterface.InterfaceType) {
+        self.typeName = typeName
+        self.type = type
+    }
+    
     func connect() {
         // let options = NWProtocolTCP.Options()
         // let params = NWParameters(tls: .init(), tcp: options)
@@ -44,15 +43,15 @@ class NetworkTestType {
     }
 
     private func viabilityDidChange(to viability: Bool) {
-        print(typeName, "Connection viability changed to ", viability)
+        print(typeName, "Connection viability changed to", viability)
     }
 
     private func stateDidChange(to state: NWConnection.State) {
-        print(typeName, "Connection:", state)
+        print(typeName, "Connection state changed to", state)
     }
 
     private func receive(on connection: NWConnection) {
-        print(typeName, "Receive", connection.state)
+        print(typeName, "Connection receive in state", connection.state)
     }
 }
 
