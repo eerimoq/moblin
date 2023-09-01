@@ -13,15 +13,31 @@ struct TextView: View {
 }
 
 struct IconAndText: View {
-    var image: String
+    var icon: String
     var text: String
 
     var body: some View {
         HStack {
-            Image(systemName: image)
+            Image(systemName: icon)
                 .frame(width: 12)
                 .font(.system(size: 13))
             TextView(text: text)
+                .font(.system(size: 13))
+        }
+        .padding(0)
+    }
+}
+
+struct TextAndIcon: View {
+    var text: String
+    var icon: String
+
+    var body: some View {
+        HStack {
+            TextView(text: text)
+                .font(.system(size: 13))
+            Image(systemName: icon)
+                .frame(width: 12)
                 .font(.system(size: 13))
         }
         .padding(0)
@@ -70,16 +86,13 @@ struct LeadingOverlayView: View {
     var body: some View {
         VStack(alignment: .leading) {
             if database.show.connection {
-                IconAndText(image: "app.connected.to.app.below.fill", text: model.connection?.name ?? "")
-            }
-            if database.show.speed {
-                IconAndText(image: "speedometer", text: model.speed)
+                IconAndText(icon: "app.connected.to.app.below.fill", text: model.connection?.name ?? "")
             }
             if database.show.viewers {
-                IconAndText(image: "eye", text: model.numberOfViewers)
+                IconAndText(icon: "eye", text: model.numberOfViewers)
             }
             if database.show.uptime {
-                IconAndText(image: "deskclock", text: model.uptime)
+                IconAndText(icon: "deskclock", text: model.uptime)
             }
             Spacer()
             if database.show.chat {
@@ -107,8 +120,11 @@ struct TrailingOverlayView: View {
 
     var body: some View {
         VStack(alignment: .trailing) {
-            TextView(text: model.fps)
-                .font(.system(size: 13))
+            if database.show.speed {
+                TextAndIcon(text: model.speed, icon: "speedometer")
+            }
+            TextAndIcon(text: "1920x1080", icon: "display")
+            TextAndIcon(text: model.fps, icon: "film.stack")
             Spacer()
             // Variable(name: "Earnings", value: "10.32")
             Picker("", selection: Binding(get: {
