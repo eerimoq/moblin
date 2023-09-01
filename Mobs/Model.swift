@@ -103,7 +103,7 @@ final class Model: ObservableObject {
         })
         NotificationCenter.default.addObserver(self, selector: #selector(thermalStateChanged), name: ProcessInfo.thermalStateDidChangeNotification, object: nil)
         networkTest = NetworkTest()
-        networkTest!.connect();
+        networkTest!.connect()
     }
     
     func store() {
@@ -306,7 +306,7 @@ final class Model: ObservableObject {
     }
 
     func toggleMute() {
-        rtmpStream.hasAudio.toggle();
+        rtmpStream.hasAudio.toggle()
     }
 
     func monochromeEffectOn() {

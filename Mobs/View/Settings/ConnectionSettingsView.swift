@@ -7,10 +7,10 @@ func getConnection(index: Int, model: Model) -> SettingsConnection {
 struct ConnectionSettingsView: View {
     private var index: Int
     @ObservedObject private var model: Model
-    @State private var name: String;
-    @State private var rtmpUrl: String;
-    @State private var twitchChannelName: String;
-    @State private var twitchChannelId: String;
+    @State private var name: String
+    @State private var rtmpUrl: String
+    @State private var twitchChannelName: String
+    @State private var twitchChannelId: String
 
     init(index: Int, model: Model) {
         self.index = index
