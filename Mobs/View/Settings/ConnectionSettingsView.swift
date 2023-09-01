@@ -9,6 +9,8 @@ struct ConnectionSettingsView: View {
     @ObservedObject private var model: Model
     @State private var name: String
     @State private var rtmpUrl: String
+    @State private var srtUrl: String
+    @State private var srtla: Bool
     @State private var twitchChannelName: String
     @State private var twitchChannelId: String
 
@@ -18,6 +20,8 @@ struct ConnectionSettingsView: View {
         let connection = model.settings.database.connections[index]
         self.name = connection.name
         self.rtmpUrl = connection.rtmpUrl
+        self.srtUrl = "srt://foo.com/123"
+        self.srtla = false
         self.twitchChannelName = connection.twitchChannelName
         self.twitchChannelId = connection.twitchChannelId
     }
@@ -49,6 +53,12 @@ struct ConnectionSettingsView: View {
                         model.store()
                         model.rtmpUrlChanged()
                     }
+            }
+            Section("SRT URL") {
+                TextField("", text: $srtUrl)
+            }
+            Section("SRTLA") {
+                Toggle("", isOn: $srtla)
             }
             Section("Twitch channel name") {
                 TextField("", text: $twitchChannelName)
