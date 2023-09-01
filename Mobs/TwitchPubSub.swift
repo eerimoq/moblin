@@ -61,7 +61,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     func start() {
         let session = URLSession(configuration: .default,
                                  delegate: self,
-                                 delegateQueue: OperationQueue())
+                                 delegateQueue: OperationQueue.main)
         webSocket = session.webSocketTask(with: url)
         webSocket.resume()
         readMessage()
@@ -85,11 +85,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         let type = try getMessageType(message: message.data.message)
         if type == "viewcount" {
             let message = try decodeMessageViewCount(message: message.data.message)
-            Task.detached(operation: {
-                await MainActor.run {
-                    self.model.numberOfViewers = "\(message.viewers)"
-                }
-            })
+            self.model.numberOfViewers = "\(message.viewers)"
         } else {
             print("Unsupported message type \(type) (message: \(message))")
         }
@@ -132,24 +128,24 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         }
     }
 
+    func sendMessage(message: String) {
+        print("Sending:", message)
+        let message = URLSessionWebSocketTask.Message.string(message)
+        webSocket.send(message) { error in
+            if let error = error {
+                print("Failed to send message to PubSub server with error", error)
+            }
+        }
+    }
+
     func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol proto: String?) {
         print("Connected to PubSub server")
         sendMessage(message: "{\"type\":\"PING\"}")
         sendMessage(message: "{\"type\":\"LISTEN\",\"data\":{\"topics\":[\"video-playback-by-id.\(channelId)\"]}}")
     }
 
-    func sendMessage(message: String) {
-        print("Sending:", message)
-        let message = URLSessionWebSocketTask.Message.string(message)
-        webSocket.send(message) { error in
-            if let error = error {
-                print("WebSocket sending error:", error)
-            }
-        }
-    }
-
     func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
-        print("Disconnect from Server:", reason ?? "unknown")
+        print("Disconnect from PubSub server:", reason ?? "unknown")
     }
 
 }
