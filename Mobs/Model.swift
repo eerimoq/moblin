@@ -74,6 +74,38 @@ final class Model: ObservableObject {
         }
     }
     
+    func setup(settings: Settings) {
+        self.settings = settings
+        numberOfScenes = database.scenes.count
+        numberOfWidgets = database.widgets.count
+        numberOfVariables = database.variables.count
+        numberOfConnections = database.connections.count
+        rtmpStream = RTMPStream(connection: rtmpConnection)
+        rtmpStream.videoOrientation = .landscapeRight
+        rtmpStream.sessionPreset = .hd1920x1080
+        rtmpStream.mixer.recorder.delegate = self
+        checkDeviceAuthorization()
+        twitchChat = TwitchChatMobs(model: self)
+        if let connection = connection {
+            twitchChat!.start(channelName: connection.twitchChannelName)
+            twitchPubSub = TwitchPubSub(model: self, channelId: connection.twitchChannelId)
+            twitchPubSub!.start()
+        }
+        updateTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
+            DispatchQueue.main.async {
+                let now = Date()
+                self.updateUptime(now: now)
+                self.updateCurrentTime(now: now)
+                self.updateBatteryLevel()
+                self.updateTwitchChatSpeed()
+                self.updateSpeed()
+            }
+        })
+        NotificationCenter.default.addObserver(self, selector: #selector(thermalStateChanged), name: ProcessInfo.thermalStateDidChangeNotification, object: nil)
+        networkTest = NetworkTest()
+        networkTest!.connect();
+    }
+    
     func store() {
         settings.store()
     }
@@ -97,14 +129,11 @@ final class Model: ObservableObject {
     }
     
     func reloadTwitchChat() {
+        twitchChat!.stop()
         guard let connection = connection else {
             return
         }
-        if let twitchChat = twitchChat {
-            twitchChat.stop()
-        }
-        twitchChat = TwitchChatMobs(channelName: connection.twitchChannelName, model: self)
-        twitchChat!.start()
+        twitchChat!.start(channelName: connection.twitchChannelName)
         twitchChatPosts = []
         twitchChatPostsPerSecond = 0.0
         numberOfTwitchChatPosts = 0
@@ -132,38 +161,6 @@ final class Model: ObservableObject {
 
     func twitchChannelIdUpdated() {
         reloadTwitchViewers()
-    }
-
-    func config(settings: Settings) {
-        self.settings = settings
-        numberOfScenes = database.scenes.count
-        numberOfWidgets = database.widgets.count
-        numberOfVariables = database.variables.count
-        numberOfConnections = database.connections.count
-        rtmpStream = RTMPStream(connection: rtmpConnection)
-        rtmpStream.videoOrientation = .landscapeRight
-        rtmpStream.sessionPreset = .hd1920x1080
-        rtmpStream.mixer.recorder.delegate = self
-        checkDeviceAuthorization()
-        if let connection = connection {
-            twitchChat = TwitchChatMobs(channelName: connection.twitchChannelName, model: self)
-            twitchChat!.start()
-            twitchPubSub = TwitchPubSub(model: self, channelId: connection.twitchChannelId)
-            twitchPubSub!.start()
-        }
-        updateTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
-            DispatchQueue.main.async {
-                let now = Date()
-                self.updateUptime(now: now)
-                self.updateCurrentTime(now: now)
-                self.updateBatteryLevel()
-                self.updateTwitchChatSpeed()
-                self.updateSpeed()
-            }
-        })
-        NotificationCenter.default.addObserver(self, selector: #selector(thermalStateChanged), name: ProcessInfo.thermalStateDidChangeNotification, object: nil)
-        networkTest = NetworkTest()
-        networkTest!.connect();
     }
 
     @objc

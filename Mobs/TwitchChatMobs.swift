@@ -11,14 +11,12 @@ final class TwitchChatMobs {
     private var twitchChat: TwitchChat?
     private var model: Model
     private var task: Task<Void, Error>? = nil
-    var channelName: String
 
-    init(channelName: String, model: Model){
-        self.channelName = channelName
+    init(model: Model) {
         self.model = model
     }
 
-    func start() {
+    func start(channelName: String) {
         print("Starting twitch chat.")
         twitchChat = TwitchChat(token: "SCHMOOPIIE", nick: "justinfan67420", name: channelName)
         task = Task.init {

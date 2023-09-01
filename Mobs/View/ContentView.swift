@@ -9,7 +9,7 @@ struct ContentView: View {
     private var videoOverlayView: StreamOverlayView!
 
     init(settings: Settings) {
-        model.config(settings: settings)
+        model.setup(settings: settings)
         videoView = StreamView(rtmpStream: $model.rtmpStream)
         videoOverlayView = StreamOverlayView(model: model)
     }
