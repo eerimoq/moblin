@@ -57,7 +57,7 @@ Ideas/plan
 
 - AV1 codec (to complement H264).
 
-- SRT(LA).
+- `SRTLA`_.
 
 Resources
 =========
@@ -101,3 +101,5 @@ Viewer count. Set channel id (123668195) in settings.
 .. _OBS: https://obsproject.com
 
 .. _go: https://go.dev
+
+.. _SRTLA: https://github.com/BELABOX/srtla
