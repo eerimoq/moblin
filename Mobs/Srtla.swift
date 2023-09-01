@@ -8,7 +8,7 @@
 import Foundation
 import Network
 
-class NetworkTestType {
+class SrtlaType {
     private var typeName: String
     private var type: NWInterface.InterfaceType
     private var networkQueue = DispatchQueue(label: "com.eerimoq.network", qos: .userInitiated)
@@ -57,9 +57,9 @@ class NetworkTestType {
 }
 
 class Srtla {
-    private var cellular: NetworkTestType = NetworkTestType(typeName: "cellular", type: .cellular)
-    private var wifi: NetworkTestType = NetworkTestType(typeName: "wifi", type: .wifi)
-    private var wiredEthernet: NetworkTestType = NetworkTestType(typeName: "wiredEthernet", type: .wiredEthernet)
+    private var cellular: SrtlaType = SrtlaType(typeName: "cellular", type: .cellular)
+    private var wifi: SrtlaType = SrtlaType(typeName: "wifi", type: .wifi)
+    private var wiredEthernet: SrtlaType = SrtlaType(typeName: "wiredEthernet", type: .wiredEthernet)
 
     func start() {
         cellular.start()
