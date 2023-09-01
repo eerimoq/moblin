@@ -25,9 +25,7 @@ class NetworkTestType {
         self.type = type
     }
     
-    func connect() {
-        // let options = NWProtocolTCP.Options()
-        // let params = NWParameters(tls: .init(), tcp: options)
+    func start() {
         let options = NWProtocolUDP.Options()
         let params = NWParameters(dtls: .none, udp: options)
         params.requiredInterfaceType = type
@@ -42,6 +40,9 @@ class NetworkTestType {
         }
     }
 
+    func stop() {
+    }
+    
     private func viabilityDidChange(to viability: Bool) {
         print(typeName, "Connection viability changed to", viability)
     }
@@ -60,9 +61,15 @@ class Srtla {
     private var wifi: NetworkTestType = NetworkTestType(typeName: "wifi", type: .wifi)
     private var wiredEthernet: NetworkTestType = NetworkTestType(typeName: "wiredEthernet", type: .wiredEthernet)
 
-    func connect() {
-        cellular.connect()
-        wifi.connect()
-        wiredEthernet.connect()
+    func start() {
+        cellular.start()
+        wifi.start()
+        wiredEthernet.start()
+    }
+    
+    func stop() {
+        cellular.stop()
+        wifi.stop()
+        wiredEthernet.stop()
     }
 }
