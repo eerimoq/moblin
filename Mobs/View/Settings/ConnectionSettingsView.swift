@@ -54,12 +54,13 @@ struct ConnectionSettingsView: View {
                         model.rtmpUrlChanged()
                     }
             }
+            /*
             Section("SRT URL") {
                 TextField("", text: $srtUrl)
             }
             Section("SRTLA") {
                 Toggle("", isOn: $srtla)
-            }
+            }*/
             Section("Twitch channel name") {
                 TextField("", text: $twitchChannelName)
                     .onSubmit {
