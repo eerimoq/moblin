@@ -38,7 +38,7 @@
 		03B374042AA036D10028DDD5 /* ButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374032AA036D10028DDD5 /* ButtonsView.swift */; };
 		03B374072AA0EA650028DDD5 /* MovieEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374062AA0EA650028DDD5 /* MovieEffect.swift */; };
 		03B374092AA0EA700028DDD5 /* IconEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374082AA0EA700028DDD5 /* IconEffect.swift */; };
-		03B3740D2AA12B670028DDD5 /* NetworkTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B3740C2AA12B670028DDD5 /* NetworkTest.swift */; };
+		03B374132AA277570028DDD5 /* Srtla.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374122AA277570028DDD5 /* Srtla.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -72,7 +72,7 @@
 		03B374032AA036D10028DDD5 /* ButtonsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonsView.swift; sourceTree = "<group>"; };
 		03B374062AA0EA650028DDD5 /* MovieEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieEffect.swift; sourceTree = "<group>"; };
 		03B374082AA0EA700028DDD5 /* IconEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconEffect.swift; sourceTree = "<group>"; };
-		03B3740C2AA12B670028DDD5 /* NetworkTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkTest.swift; sourceTree = "<group>"; };
+		03B374122AA277570028DDD5 /* Srtla.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Srtla.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,11 +113,11 @@
 				035E9E362A9A02D6009D4F5A /* MobsApp.swift */,
 				03A9836D2A9A05F9008FF0DB /* Model.swift */,
 				0382933A2A9A73ED008963AA /* Settings.swift */,
-				03B3740C2AA12B670028DDD5 /* NetworkTest.swift */,
 				03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */,
 				03A983702A9A0659008FF0DB /* TwitchChatMobs.swift */,
 				03B373FC2A9F35EF0028DDD5 /* Utils.swift */,
 				035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */,
+				03B374122AA277570028DDD5 /* Srtla.swift */,
 			);
 			path = Mobs;
 			sourceTree = "<group>";
@@ -281,7 +281,6 @@
 				03B373F62A9EF98E0028DDD5 /* ControlBarView.swift in Sources */,
 				0382933B2A9A73ED008963AA /* Settings.swift in Sources */,
 				03B374092AA0EA700028DDD5 /* IconEffect.swift in Sources */,
-				03B3740D2AA12B670028DDD5 /* NetworkTest.swift in Sources */,
 				03A983692A9A05D7008FF0DB /* CreateButtonView.swift in Sources */,
 				03A9836E2A9A05F9008FF0DB /* Model.swift in Sources */,
 				03A983722A9A0659008FF0DB /* TwitchChatMobs.swift in Sources */,
@@ -293,6 +292,7 @@
 				03A983682A9A05D7008FF0DB /* SceneSettingsView.swift in Sources */,
 				03B374022AA0354C0028DDD5 /* MonochromeEffect.swift in Sources */,
 				03A983632A9A05D7008FF0DB /* SettingsView.swift in Sources */,
+				03B374132AA277570028DDD5 /* Srtla.swift in Sources */,
 				03A983662A9A05D7008FF0DB /* AddButtonView.swift in Sources */,
 				03A983612A9A05D7008FF0DB /* ConnectionsSettingsView.swift in Sources */,
 			);

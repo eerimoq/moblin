@@ -66,7 +66,7 @@ final class Model: ObservableObject {
             return nil
         }
     }
-    private var networkTest: NetworkTest?
+    private var networkTest: Srtla?
 
     var database: Database {
         get {
@@ -102,7 +102,7 @@ final class Model: ObservableObject {
             }
         })
         NotificationCenter.default.addObserver(self, selector: #selector(thermalStateChanged), name: ProcessInfo.thermalStateDidChangeNotification, object: nil)
-        networkTest = NetworkTest()
+        networkTest = Srtla()
         networkTest!.connect()
     }
     
