@@ -15,30 +15,21 @@ struct TextView: View {
 struct IconAndText: View {
     var icon: String
     var text: String
+    var textFirst = false
 
     var body: some View {
         HStack {
+            if textFirst {
+                TextView(text: text)
+                    .font(.system(size: 13))
+            }
             Image(systemName: icon)
                 .frame(width: 12)
                 .font(.system(size: 13))
-            TextView(text: text)
-                .font(.system(size: 13))
-        }
-        .padding(0)
-    }
-}
-
-struct TextAndIcon: View {
-    var text: String
-    var icon: String
-
-    var body: some View {
-        HStack {
-            TextView(text: text)
-                .font(.system(size: 13))
-            Image(systemName: icon)
-                .frame(width: 12)
-                .font(.system(size: 13))
+            if !textFirst {
+                TextView(text: text)
+                    .font(.system(size: 13))
+            }
         }
         .padding(0)
     }
@@ -121,10 +112,10 @@ struct TrailingOverlayView: View {
     var body: some View {
         VStack(alignment: .trailing) {
             if database.show.speed {
-                TextAndIcon(text: model.speed, icon: "speedometer")
+                IconAndText(icon: "speedometer", text: model.speed, textFirst: true)
             }
-            TextAndIcon(text: "1920x1080", icon: "display")
-            TextAndIcon(text: model.fps, icon: "film.stack")
+            IconAndText(icon: "display", text: "1920x1080", textFirst: true)
+            IconAndText(icon: "film.stack", text: model.fps, textFirst: true)
             Spacer()
             // Variable(name: "Earnings", value: "10.32")
             Picker("", selection: Binding(get: {

@@ -109,7 +109,6 @@
 			children = (
 				03B374052AA0EA370028DDD5 /* Effects */,
 				035E9E3C2A9A02D7009D4F5A /* Preview Content */,
-				03B373F42A9EF8BD0028DDD5 /* Settings */,
 				03A983542A9A0582008FF0DB /* View */,
 				035E9E362A9A02D6009D4F5A /* MobsApp.swift */,
 				03A9836D2A9A05F9008FF0DB /* Model.swift */,
@@ -134,6 +133,7 @@
 		03A983542A9A0582008FF0DB /* View */ = {
 			isa = PBXGroup;
 			children = (
+				03B373F42A9EF8BD0028DDD5 /* Settings */,
 				03B374002A9FDEC80028DDD5 /* Stream */,
 				03B373F72A9EFB1F0028DDD5 /* ControlBar */,
 				03A983562A9A05D7008FF0DB /* ContentView.swift */,
