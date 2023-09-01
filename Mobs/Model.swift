@@ -66,7 +66,7 @@ final class Model: ObservableObject {
             return nil
         }
     }
-    private var srtla: Srtla?
+    private var srtla = Srtla()
 
     var database: Database {
         get {
@@ -102,8 +102,7 @@ final class Model: ObservableObject {
             }
         })
         NotificationCenter.default.addObserver(self, selector: #selector(thermalStateChanged), name: ProcessInfo.thermalStateDidChangeNotification, object: nil)
-        srtla = Srtla()
-        srtla!.start()
+        srtla.start()
     }
     
     func store() {
