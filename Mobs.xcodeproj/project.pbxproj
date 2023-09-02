@@ -113,11 +113,11 @@
 				035E9E362A9A02D6009D4F5A /* MobsApp.swift */,
 				03A9836D2A9A05F9008FF0DB /* Model.swift */,
 				0382933A2A9A73ED008963AA /* Settings.swift */,
+				03B374122AA277570028DDD5 /* Srtla.swift */,
 				03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */,
 				03A983702A9A0659008FF0DB /* TwitchChatMobs.swift */,
 				03B373FC2A9F35EF0028DDD5 /* Utils.swift */,
 				035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */,
-				03B374122AA277570028DDD5 /* Srtla.swift */,
 			);
 			path = Mobs;
 			sourceTree = "<group>";

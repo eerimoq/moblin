@@ -8,7 +8,7 @@
 import Foundation
 import Network
 
-class SrtlaType {
+class RemoteConnection {
     private var typeName: String
     private var type: NWInterface.InterfaceType
     private var networkQueue = DispatchQueue(label: "com.eerimoq.network", qos: .userInitiated)
@@ -33,8 +33,8 @@ class SrtlaType {
         connection = NWConnection(host: "mys-lang.org", port: 443, using: params)
         if let connection = connection {
             // print(typeName, connection)
-            connection.viabilityUpdateHandler = viabilityDidChange(to:)
-            connection.stateUpdateHandler = stateDidChange(to:)
+            connection.viabilityUpdateHandler = handleViabilityChange(to:)
+            connection.stateUpdateHandler = handleStateChange(to:)
             connection.start(queue: networkQueue)
             receive(on: connection)
         }
@@ -43,11 +43,11 @@ class SrtlaType {
     func stop() {
     }
     
-    private func viabilityDidChange(to viability: Bool) {
+    private func handleViabilityChange(to viability: Bool) {
         print(typeName, "Connection viability changed to", viability)
     }
 
-    private func stateDidChange(to state: NWConnection.State) {
+    private func handleStateChange(to state: NWConnection.State) {
         print(typeName, "Connection state changed to", state)
     }
 
@@ -56,43 +56,64 @@ class SrtlaType {
     }
 }
 
-class LocalListener {
+class Srtla {
     private var networkQueue = DispatchQueue(label: "com.eerimoq.network", qos: .userInitiated)
+    private var remoteConnections: [RemoteConnection] = [
+        RemoteConnection(typeName: "cellular", type: .cellular),
+        RemoteConnection(typeName: "wifi", type: .wifi),
+        RemoteConnection(typeName: "wiredEthernet", type: .wiredEthernet)
+    ]
     private var listener: NWListener?
-    var localPort: NWEndpoint.Port? = nil
+    var listenerPort: UInt16 = 0
     
     func start() {
+        startListener()
+        for connection in remoteConnections {
+            connection.start()
+        }
+    }
+    
+    func stop() {
+        for connection in remoteConnections {
+            connection.stop()
+        }
+        stopListener()
+    }
+    
+    func startListener() {
         do {
             listener = try NWListener(using: .udp, on: .any)
         } catch {
             print("Failed to create SRTLA listener with error", error)
             return
         }
-        listener!.stateUpdateHandler = stateDidChange(to:)
-        listener!.newConnectionHandler = newConnectionHandler
+        listener!.stateUpdateHandler = handleListenerStateChange(to:)
+        listener!.newConnectionHandler = handleNewListenerConnection(connection:)
         listener!.start(queue: networkQueue)
     }
 
-    func stop() {
+    func stopListener() {
         if let listener = listener {
             listener.cancel()
         }
     }
 
-    private func stateDidChange(to state: NWListener.State) {
-        // print("Listener state changed to", state)
+    private func handleListenerStateChange(to state: NWListener.State) {
         switch state {
+        case .setup:
+            break
         case .ready:
             if let port = listener!.port {
-                print("Listener at port", port)
-                localPort = port
+                listenerPort = port.rawValue
+                print("Listener at port", listenerPort)
             }
         default:
+            print("Ignoring listener state changed to", state)
             break
         }
     }
     
-    func newConnectionHandler(connection: NWConnection) {
+    func handleNewListenerConnection(connection: NWConnection) {
         print("New connection", connection.debugDescription)
         connection.stateUpdateHandler = { (state) in
             print("Connection state", state)
@@ -108,26 +129,5 @@ class LocalListener {
             }
         }
         connection.start(queue: networkQueue)
-    }
-}
-
-class Srtla {
-    private var cellular = SrtlaType(typeName: "cellular", type: .cellular)
-    private var wifi = SrtlaType(typeName: "wifi", type: .wifi)
-    private var wiredEthernet = SrtlaType(typeName: "wiredEthernet", type: .wiredEthernet)
-    private var localListener = LocalListener()
-    
-    func start() {
-        localListener.start()
-        cellular.start()
-        wifi.start()
-        wiredEthernet.start()
-    }
-    
-    func stop() {
-        cellular.stop()
-        wifi.stop()
-        wiredEthernet.stop()
-        localListener.start()
     }
 }
