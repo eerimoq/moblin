@@ -10,7 +10,7 @@ struct SceneSettingsView: View {
     init(index: Int, model: Model) {
         self.index = index
         self.model = model
-        _widgets = State(initialValue: Array(0..<model.database.scenes[index].widgets.count))
+        self.widgets = Array(0..<model.database.scenes[index].widgets.count)
     }
 
     var scene: SettingsScene {
