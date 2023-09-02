@@ -9,9 +9,11 @@ import Foundation
 import Network
 
 class LocalListener {
-    private var listener: NWListener?
     private var queue: DispatchQueue
-    var port: UInt16 = 0
+    private var listener: NWListener?
+    var port: UInt16? = nil
+    var packetHandler: (() -> Void)?
+    private var connection: NWConnection?
     
     init(queue: DispatchQueue) {
         self.queue = queue
@@ -45,15 +47,15 @@ class LocalListener {
         case .ready:
             if let port = listener!.port {
                 self.port = port.rawValue
-                print("Listener at port", self.port)
+                print("Listener ready at port", self.port!)
             }
         default:
-            print("Ignoring listener state changed to", state)
-            break
+            self.port = nil
         }
     }
     
     func handleNewListenerConnection(connection: NWConnection) {
+        self.connection = connection
         print("New connection", connection.debugDescription)
         connection.stateUpdateHandler = { (state) in
             print("Connection state", state)
@@ -69,5 +71,26 @@ class LocalListener {
             }
         }
         connection.start(queue: queue)
+        receivePacket()
+    }
+    
+    private func receivePacket() {
+        guard let connection = connection else {
+            return
+        }
+        connection.receive(minimumIncompleteLength: 1, maximumLength: 65536) { data, _, isDone, error in
+            if let data = data, !data.isEmpty {
+                print("Local data:", data)
+            }
+            if let error = error {
+                print("Local error:", error)
+                return
+            }
+            if isDone {
+                print("Local done")
+                return
+            }
+            self.receivePacket()
+        }
     }
 }

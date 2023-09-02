@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Network
 
 class Srtla {
     private var queue = DispatchQueue(label: "com.eerimoq.network", qos: .userInitiated)
@@ -27,6 +28,7 @@ class Srtla {
             print("Failed to start srtla")
             return
         }
+        localListener.packetHandler = nil
         localListener.start()
         for connection in remoteConnections {
             connection.start(host: host, port: UInt16(port))
@@ -38,5 +40,9 @@ class Srtla {
             connection.stop()
         }
         localListener.stop()
+    }
+    
+    func handleLocalPacket() {
+        print("Got local packet.")
     }
 }

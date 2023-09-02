@@ -34,7 +34,7 @@ class RemoteConnection {
             connection.viabilityUpdateHandler = handleViabilityChange(to:)
             connection.stateUpdateHandler = handleStateChange(to:)
             connection.start(queue: queue)
-            receive(on: connection)
+            receivePacket()
         }
     }
 
@@ -49,7 +49,23 @@ class RemoteConnection {
         print("\(type): Connection state changed to \(state)")
     }
 
-    private func receive(on connection: NWConnection) {
-        print("\(type): Connection receive in state \(connection.state)")
+    private func receivePacket() {
+        guard let connection = connection else {
+            return
+        }
+        connection.receive(minimumIncompleteLength: 1, maximumLength: 65536) { data, _, isDone, error in
+            if let data = data, !data.isEmpty {
+                print("\(self.type): Receive \(data)")
+            }
+            if let error = error {
+                print("\(self.type): Receive \(error)")
+                return
+            }
+            if isDone {
+                print("\(self.type): Receive done")
+                return
+            }
+            self.receivePacket()
+        }
     }
 }
