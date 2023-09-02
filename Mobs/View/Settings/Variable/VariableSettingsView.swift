@@ -12,14 +12,12 @@ struct VariableSettingsView: View {
 
     var body: some View {
         Form {
-            Section("Name") {
-                TextField("", text: Binding(get: {
-                    variable.name
-                }, set: { value in
-                    variable.name = value.trim()
-                    model.store()
-                    model.numberOfVariables += 0
-                }))
+            NavigationLink(destination: VariableNameSettingsView(model: model, variable: variable)) {
+                HStack {
+                    Text("Name")
+                    Spacer()
+                    Text(variable.name).foregroundColor(.gray)
+                }
             }
             Section("Type") {
                 Picker("", selection: Binding(get: {

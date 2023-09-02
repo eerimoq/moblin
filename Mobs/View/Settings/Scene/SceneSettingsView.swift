@@ -15,14 +15,12 @@ struct SceneSettingsView: View {
 
     var body: some View {
         Form {
-            Section("Name") {
-                TextField("", text: Binding(get: {
-                    scene.name
-                }, set: { value in
-                    scene.name = value.trim()
-                    model.store()
-                    model.numberOfScenes += 0
-                }))
+            NavigationLink(destination: SceneNameSettingsView(model: model, scene: scene)) {
+                HStack {
+                    Text("Name")
+                    Spacer()
+                    Text(scene.name).foregroundColor(.gray)
+                }
             }
             Section("Widgets") {
                 List {

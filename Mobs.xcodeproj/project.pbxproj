@@ -11,6 +11,14 @@
 		0315A33B2AA2FA7100295443 /* LocalListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33A2AA2FA7100295443 /* LocalListener.swift */; };
 		0315A33D2AA2FA7D00295443 /* RemoteConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */; };
 		0315A33F2AA3173000295443 /* DummySender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33E2AA3173000295443 /* DummySender.swift */; };
+		0315A3422AA31B0000295443 /* ConnectionNameSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3412AA31B0000295443 /* ConnectionNameSettingsView.swift */; };
+		0315A3442AA31D0100295443 /* ConnectionRtmpSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3432AA31D0100295443 /* ConnectionRtmpSettingsView.swift */; };
+		0315A3462AA31E9000295443 /* ConnectionTwitchSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3452AA31E9000295443 /* ConnectionTwitchSettingsView.swift */; };
+		0315A3492AA31EE200295443 /* ConnectionTwitchNameSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3482AA31EE200295443 /* ConnectionTwitchNameSettingsView.swift */; };
+		0315A34B2AA31EF600295443 /* ConnectionTwitchIdSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A34A2AA31EF600295443 /* ConnectionTwitchIdSettingsView.swift */; };
+		0315A34E2AA3218900295443 /* SceneNameSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A34D2AA3218900295443 /* SceneNameSettingsView.swift */; };
+		0315A3532AA3239700295443 /* WidgetNameSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3522AA3239700295443 /* WidgetNameSettingsView.swift */; };
+		0315A3552AA324A500295443 /* VariableNameSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3542AA324A500295443 /* VariableNameSettingsView.swift */; };
 		035E9E372A9A02D6009D4F5A /* MobsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035E9E362A9A02D6009D4F5A /* MobsApp.swift */; };
 		035E9E3B2A9A02D7009D4F5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */; };
 		035E9E3E2A9A02D7009D4F5A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3D2A9A02D7009D4F5A /* Preview Assets.xcassets */; };
@@ -49,6 +57,14 @@
 		0315A33A2AA2FA7100295443 /* LocalListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalListener.swift; sourceTree = "<group>"; };
 		0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteConnection.swift; sourceTree = "<group>"; };
 		0315A33E2AA3173000295443 /* DummySender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DummySender.swift; sourceTree = "<group>"; };
+		0315A3412AA31B0000295443 /* ConnectionNameSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionNameSettingsView.swift; sourceTree = "<group>"; };
+		0315A3432AA31D0100295443 /* ConnectionRtmpSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionRtmpSettingsView.swift; sourceTree = "<group>"; };
+		0315A3452AA31E9000295443 /* ConnectionTwitchSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionTwitchSettingsView.swift; sourceTree = "<group>"; };
+		0315A3482AA31EE200295443 /* ConnectionTwitchNameSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionTwitchNameSettingsView.swift; sourceTree = "<group>"; };
+		0315A34A2AA31EF600295443 /* ConnectionTwitchIdSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionTwitchIdSettingsView.swift; sourceTree = "<group>"; };
+		0315A34D2AA3218900295443 /* SceneNameSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneNameSettingsView.swift; sourceTree = "<group>"; };
+		0315A3522AA3239700295443 /* WidgetNameSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetNameSettingsView.swift; sourceTree = "<group>"; };
+		0315A3542AA324A500295443 /* VariableNameSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariableNameSettingsView.swift; sourceTree = "<group>"; };
 		035E9E332A9A02D6009D4F5A /* Mobs.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mobs.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		035E9E362A9A02D6009D4F5A /* MobsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobsApp.swift; sourceTree = "<group>"; };
 		035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -103,6 +119,63 @@
 				0315A33E2AA3173000295443 /* DummySender.swift */,
 			);
 			path = Srtla;
+			sourceTree = "<group>";
+		};
+		0315A3402AA31ADC00295443 /* Connection */ = {
+			isa = PBXGroup;
+			children = (
+				0315A3472AA31EC800295443 /* Twitch */,
+				03A983592A9A05D7008FF0DB /* ConnectionSettingsView.swift */,
+				0315A3412AA31B0000295443 /* ConnectionNameSettingsView.swift */,
+				0315A3432AA31D0100295443 /* ConnectionRtmpSettingsView.swift */,
+				0315A3452AA31E9000295443 /* ConnectionTwitchSettingsView.swift */,
+			);
+			path = Connection;
+			sourceTree = "<group>";
+		};
+		0315A3472AA31EC800295443 /* Twitch */ = {
+			isa = PBXGroup;
+			children = (
+				0315A3482AA31EE200295443 /* ConnectionTwitchNameSettingsView.swift */,
+				0315A34A2AA31EF600295443 /* ConnectionTwitchIdSettingsView.swift */,
+			);
+			path = Twitch;
+			sourceTree = "<group>";
+		};
+		0315A34C2AA3217500295443 /* Scene */ = {
+			isa = PBXGroup;
+			children = (
+				0315A34D2AA3218900295443 /* SceneNameSettingsView.swift */,
+				03A9835C2A9A05D7008FF0DB /* SceneSettingsView.swift */,
+			);
+			path = Scene;
+			sourceTree = "<group>";
+		};
+		0315A34F2AA322ED00295443 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				03A9835A2A9A05D7008FF0DB /* AddButtonView.swift */,
+				03A9835D2A9A05D7008FF0DB /* CreateButtonView.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		0315A3502AA3233000295443 /* Variable */ = {
+			isa = PBXGroup;
+			children = (
+				03A9835E2A9A05D7008FF0DB /* VariableSettingsView.swift */,
+				0315A3542AA324A500295443 /* VariableNameSettingsView.swift */,
+			);
+			path = Variable;
+			sourceTree = "<group>";
+		};
+		0315A3512AA3233700295443 /* Widget */ = {
+			isa = PBXGroup;
+			children = (
+				03A983602A9A05D7008FF0DB /* WidgetSettingsView.swift */,
+				0315A3522AA3239700295443 /* WidgetNameSettingsView.swift */,
+			);
+			path = Widget;
 			sourceTree = "<group>";
 		};
 		035E9E2A2A9A02D6009D4F5A = {
@@ -161,15 +234,14 @@
 		03B373F42A9EF8BD0028DDD5 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				03A9835A2A9A05D7008FF0DB /* AddButtonView.swift */,
-				03A983592A9A05D7008FF0DB /* ConnectionSettingsView.swift */,
+				0315A3512AA3233700295443 /* Widget */,
+				0315A3502AA3233000295443 /* Variable */,
+				0315A34F2AA322ED00295443 /* Utils */,
+				0315A34C2AA3217500295443 /* Scene */,
+				0315A3402AA31ADC00295443 /* Connection */,
 				03A983552A9A05D7008FF0DB /* ConnectionsSettingsView.swift */,
-				03A9835D2A9A05D7008FF0DB /* CreateButtonView.swift */,
-				03A9835C2A9A05D7008FF0DB /* SceneSettingsView.swift */,
 				03A9835B2A9A05D7008FF0DB /* ScenesSettingsView.swift */,
 				03A983572A9A05D7008FF0DB /* SettingsView.swift */,
-				03A9835E2A9A05D7008FF0DB /* VariableSettingsView.swift */,
-				03A983602A9A05D7008FF0DB /* WidgetSettingsView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -287,11 +359,13 @@
 				03A9836B2A9A05D7008FF0DB /* StreamOverlayView.swift in Sources */,
 				03A983712A9A0659008FF0DB /* TwitchPubSub.swift in Sources */,
 				03A9836C2A9A05D7008FF0DB /* WidgetSettingsView.swift in Sources */,
+				0315A34E2AA3218900295443 /* SceneNameSettingsView.swift in Sources */,
 				0315A33F2AA3173000295443 /* DummySender.swift in Sources */,
 				03A983642A9A05D7008FF0DB /* StreamView.swift in Sources */,
 				030947C32A9C0496003FC387 /* ChatView.swift in Sources */,
 				03A983622A9A05D7008FF0DB /* ContentView.swift in Sources */,
 				03B374042AA036D10028DDD5 /* ButtonsView.swift in Sources */,
+				0315A3462AA31E9000295443 /* ConnectionTwitchSettingsView.swift in Sources */,
 				03B373F92A9EFB340028DDD5 /* BatteryView.swift in Sources */,
 				03B373FD2A9F35EF0028DDD5 /* Utils.swift in Sources */,
 				03B374072AA0EA650028DDD5 /* MovieEffect.swift in Sources */,
@@ -299,7 +373,11 @@
 				03B373F62A9EF98E0028DDD5 /* ControlBarView.swift in Sources */,
 				0382933B2A9A73ED008963AA /* Settings.swift in Sources */,
 				03B374092AA0EA700028DDD5 /* IconEffect.swift in Sources */,
+				0315A3492AA31EE200295443 /* ConnectionTwitchNameSettingsView.swift in Sources */,
 				03A983692A9A05D7008FF0DB /* CreateButtonView.swift in Sources */,
+				0315A3422AA31B0000295443 /* ConnectionNameSettingsView.swift in Sources */,
+				0315A34B2AA31EF600295443 /* ConnectionTwitchIdSettingsView.swift in Sources */,
+				0315A3442AA31D0100295443 /* ConnectionRtmpSettingsView.swift in Sources */,
 				03A9836E2A9A05F9008FF0DB /* Model.swift in Sources */,
 				03A983722A9A0659008FF0DB /* TwitchChatMobs.swift in Sources */,
 				03B373FB2A9EFB910028DDD5 /* ZoomView.swift in Sources */,
@@ -310,10 +388,12 @@
 				03B373FF2A9FCA790028DDD5 /* ThermalStateView.swift in Sources */,
 				03A983682A9A05D7008FF0DB /* SceneSettingsView.swift in Sources */,
 				03B374022AA0354C0028DDD5 /* MonochromeEffect.swift in Sources */,
+				0315A3532AA3239700295443 /* WidgetNameSettingsView.swift in Sources */,
 				03A983632A9A05D7008FF0DB /* SettingsView.swift in Sources */,
 				03B374132AA277570028DDD5 /* Srtla.swift in Sources */,
 				03A983662A9A05D7008FF0DB /* AddButtonView.swift in Sources */,
 				03A983612A9A05D7008FF0DB /* ConnectionsSettingsView.swift in Sources */,
+				0315A3552AA324A500295443 /* VariableNameSettingsView.swift in Sources */,
 				0315A33B2AA2FA7100295443 /* LocalListener.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

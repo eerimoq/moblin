@@ -12,14 +12,12 @@ struct WidgetSettingsView: View {
 
     var body: some View {
         Form {
-            Section("Name") {
-                TextField("", text: Binding(get: {
-                    widget.name
-                }, set: { value in
-                    widget.name = value.trim()
-                    model.store()
-                    model.numberOfWidgets += 0
-                }))
+            NavigationLink(destination: WidgetNameSettingsView(model: model, widget: widget)) {
+                HStack {
+                    Text("Name")
+                    Spacer()
+                    Text(widget.name).foregroundColor(.gray)
+                }
             }
             Section("Type") {
                 Picker("", selection: Binding(get: {
