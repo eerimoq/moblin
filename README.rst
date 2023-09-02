@@ -1,5 +1,5 @@
 .. image:: https://github.com/eerimoq/mobs/raw/main/docs/logo.png
-   :width: 10%
+   :align: center
 
 MOBS
 ====
