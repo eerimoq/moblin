@@ -19,7 +19,10 @@ class LocalListener {
     
     func start() {
         do {
-            listener = try NWListener(using: .udp, on: .any)
+            let options = NWProtocolUDP.Options()
+            let parameters = NWParameters(dtls: .none, udp: options)
+            parameters.acceptLocalOnly = true
+            listener = try NWListener(using: parameters)
         } catch {
             print("Failed to create SRTLA listener with error", error)
             return
