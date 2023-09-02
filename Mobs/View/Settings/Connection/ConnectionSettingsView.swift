@@ -7,21 +7,12 @@ func getConnection(index: Int, model: Model) -> SettingsConnection {
 struct ConnectionSettingsView: View {
     private var index: Int
     @ObservedObject private var model: Model
-    @State private var rtmpUrl: String
-    @State private var srtUrl: String
-    @State private var srtla: Bool
-    @State private var twitchChannelName: String
-    @State private var twitchChannelId: String
+    @State private var transport: String
 
     init(index: Int, model: Model) {
         self.index = index
         self.model = model
-        let connection = model.settings.database.connections[index]
-        self.rtmpUrl = connection.rtmpUrl
-        self.srtUrl = "srt://foo.com/123"
-        self.srtla = false
-        self.twitchChannelName = connection.twitchChannelName
-        self.twitchChannelId = connection.twitchChannelId
+        self.transport = "RTMP"
     }
     
     var connection: SettingsConnection {
@@ -53,6 +44,15 @@ struct ConnectionSettingsView: View {
                 HStack {
                     Text("Twitch")
                 }
+            }
+            Section("Protocol") {
+                Picker("", selection: $transport) {
+                    ForEach(["RTMP", "SRT"], id: \.self) {
+                        Text($0)
+                    }
+                }
+                .pickerStyle(.inline)
+                .labelsHidden()
             }
         }
         .navigationTitle("Connection")
