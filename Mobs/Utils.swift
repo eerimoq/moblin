@@ -37,3 +37,28 @@ extension UIImage {
         return scaledImage
     }
 }
+
+func makeRtmpUri(url: String) -> String {
+    guard var url = URL(string: url) else {
+        return ""
+    }
+    var components = url.pathComponents
+    if components.count < 2 {
+        return ""
+    }
+    components.removeFirst()
+    components.removeLast()
+    var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+    let path = components.joined(separator: "/")
+    urlComponents.path = "/\(path)"
+    url = urlComponents.url!
+    return "\(url)"
+}
+
+func makeRtmpStreamName(url: String) -> String {
+    let parts = url.split(separator: "/")
+    if parts.isEmpty {
+        return ""
+    }
+    return String(parts[parts.count - 1])
+}

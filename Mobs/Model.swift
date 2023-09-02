@@ -313,23 +313,14 @@ final class Model: ObservableObject {
         guard let connection = connection else {
             return ""
         }
-        var url = URL(string: connection.rtmpUrl)!
-        var components = url.pathComponents
-        components.removeFirst()
-        components.removeLast()
-        var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)!
-        let path = components.joined(separator: "/")
-        urlComponents.path = "/\(path)"
-        url = urlComponents.url!
-        return "\(url)"
+        return makeRtmpUri(url: connection.rtmpUrl)
     }
 
     func rtmpStreamName() -> String {
         guard let connection = connection else {
             return ""
         }
-        let parts = connection.rtmpUrl.split(separator: "/")
-        return String(parts[parts.count - 1])
+        return makeRtmpStreamName(url: connection.rtmpUrl)
     }
 
     func stopPublish() {

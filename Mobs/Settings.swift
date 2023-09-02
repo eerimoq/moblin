@@ -4,8 +4,8 @@ class SettingsConnection: Codable, Identifiable {
     var name: String
     var id: UUID = UUID()
     var enabled: Bool = false
-    var rtmpUrl: String = "rtmp://"
-    var srtUrl: String = "srt://"
+    var rtmpUrl: String = "rtmp://arn03.contribute.live-video.net/app/your_stream_key"
+    var srtUrl: String = "srt://platform.com:5000"
     var srtla: Bool = false
     var twitchChannelName: String = ""
     var twitchChannelId: String = ""

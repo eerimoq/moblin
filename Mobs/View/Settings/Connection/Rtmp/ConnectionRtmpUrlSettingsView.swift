@@ -23,7 +23,10 @@ struct ConnectionRtmpUrlSettingsView: View {
             TextField("", text: $url)
                 .onSubmit {
                     let rtmpUrl = url.trim()
-                    if URL(string: rtmpUrl) == nil {
+                    if makeRtmpUri(url: rtmpUrl) == "" {
+                        return
+                    }
+                    if makeRtmpStreamName(url: rtmpUrl) == "" {
                         return
                     }
                     connection.rtmpUrl = rtmpUrl

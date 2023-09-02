@@ -20,13 +20,12 @@ struct WidgetNameSettingsView: View {
     
     var body: some View {
         Form {
-            TextField("", text: Binding(get: {
-                widget.name
-            }, set: { value in
-                widget.name = value.trim()
-                model.store()
-                model.numberOfWidgets += 0
-            }))
+            TextField("", text: $name)
+                .onSubmit {
+                    widget.name = name.trim()
+                    model.store()
+                    model.numberOfWidgets += 0
+                }
         }
         .navigationTitle("Name")
     }

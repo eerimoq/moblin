@@ -20,13 +20,12 @@ struct SceneNameSettingsView: View {
     
     var body: some View {
         Form {
-            TextField("", text: Binding(get: {
-                scene.name
-            }, set: { value in
-                scene.name = value.trim()
-                model.store()
-                model.numberOfScenes += 0
-            }))
+            TextField("", text: $name)
+                .onSubmit {
+                    scene.name = name.trim()
+                    model.store()
+                    model.numberOfScenes += 0
+            }
         }
         .navigationTitle("Name")
     }
