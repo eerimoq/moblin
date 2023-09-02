@@ -3,15 +3,49 @@ MOBS
 
 An iOS app for IRL streaming.
 
-🚧 🚧 🚧 UNDER CONSTRUCTION 🚧 🚧 🚧
+.. image:: https://github.com/eerimoq/mobs/raw/main/docs/main.jpg
+
+Discord: https://discord.gg/kRCXKuRu
 
 This project is **not** part of `OBS`_. It's just the name that is
 inspired by it.
 
-.. image:: https://github.com/eerimoq/mobs/raw/main/docs/main.jpg
+Features
+========
 
-Discord: https://discord.gg/kRCXKuRu
-           
+- Scenes
+
+- Twitch chat and viewer count
+
+- Movie and grayscale video effects
+
+- RTMP
+
+- iPhone thermal state information
+  
+Ideas/plan
+==========
+
+- Buffering for short disconnections. Show as picture in picture or
+  other layout once reconnected. Possible a record button.
+
+- Subscription and donation notifications. Both visually and with
+  sound.
+
+- Geolocation.
+
+- Play music and short sound samples.
+
+- Streamlabs integration.
+
+- Record to disk.
+
+- LIDAR, altitude.
+
+- AV1 codec (to complement H264).
+
+- `SRTLA`_.
+  
 Testing with local streaming server
 ===================================
 
@@ -35,29 +69,6 @@ Testing with local streaming server
    .. code-block::
 
       $ vlc rtmp://localhost:1935/live/movie
-
-Ideas/plan
-==========
-
-- Buffering for short disconnections. Show as picture in picture or
-  other layout once reconnected. Possible a record button.
-
-- Subscription and donation notifications. Both visually and with
-  sound.
-
-- Geolocation.
-
-- Play music and short sound samples.
-
-- Streamlabs integration.
-
-- Record to disk.
-
-- LIDAR, altitude.
-
-- AV1 codec (to complement H264).
-
-- `SRTLA`_.
 
 Resources
 =========
