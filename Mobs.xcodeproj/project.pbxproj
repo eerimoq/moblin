@@ -26,6 +26,8 @@
 		0315A3642AA33AE700295443 /* WidgetTextFormatStringSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3632AA33AE700295443 /* WidgetTextFormatStringSettingsView.swift */; };
 		0315A3672AA33C6A00295443 /* WidgetImageSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3662AA33C6A00295443 /* WidgetImageSettingsView.swift */; };
 		0315A3692AA33CF400295443 /* WidgetImageUrlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3682AA33CF400295443 /* WidgetImageUrlSettingsView.swift */; };
+		0315A36C2AA33F2100295443 /* WidgetCameraSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A36B2AA33F2100295443 /* WidgetCameraSettingsView.swift */; };
+		0315A36E2AA33F3400295443 /* WidgetCameraDirectionSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A36D2AA33F3400295443 /* WidgetCameraDirectionSettingsView.swift */; };
 		035E9E372A9A02D6009D4F5A /* MobsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035E9E362A9A02D6009D4F5A /* MobsApp.swift */; };
 		035E9E3B2A9A02D7009D4F5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */; };
 		035E9E3E2A9A02D7009D4F5A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3D2A9A02D7009D4F5A /* Preview Assets.xcassets */; };
@@ -79,6 +81,8 @@
 		0315A3632AA33AE700295443 /* WidgetTextFormatStringSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetTextFormatStringSettingsView.swift; sourceTree = "<group>"; };
 		0315A3662AA33C6A00295443 /* WidgetImageSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetImageSettingsView.swift; sourceTree = "<group>"; };
 		0315A3682AA33CF400295443 /* WidgetImageUrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetImageUrlSettingsView.swift; sourceTree = "<group>"; };
+		0315A36B2AA33F2100295443 /* WidgetCameraSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCameraSettingsView.swift; sourceTree = "<group>"; };
+		0315A36D2AA33F3400295443 /* WidgetCameraDirectionSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCameraDirectionSettingsView.swift; sourceTree = "<group>"; };
 		035E9E332A9A02D6009D4F5A /* Mobs.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mobs.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		035E9E362A9A02D6009D4F5A /* MobsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobsApp.swift; sourceTree = "<group>"; };
 		035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -187,6 +191,7 @@
 		0315A3512AA3233700295443 /* Widget */ = {
 			isa = PBXGroup;
 			children = (
+				0315A36A2AA33F0F00295443 /* Camera */,
 				0315A3652AA33C5400295443 /* Image */,
 				0315A3602AA33A1100295443 /* Text */,
 				03A983602A9A05D7008FF0DB /* WidgetSettingsView.swift */,
@@ -229,6 +234,15 @@
 				0315A3682AA33CF400295443 /* WidgetImageUrlSettingsView.swift */,
 			);
 			path = Image;
+			sourceTree = "<group>";
+		};
+		0315A36A2AA33F0F00295443 /* Camera */ = {
+			isa = PBXGroup;
+			children = (
+				0315A36B2AA33F2100295443 /* WidgetCameraSettingsView.swift */,
+				0315A36D2AA33F3400295443 /* WidgetCameraDirectionSettingsView.swift */,
+			);
+			path = Camera;
 			sourceTree = "<group>";
 		};
 		035E9E2A2A9A02D6009D4F5A = {
@@ -411,6 +425,7 @@
 			files = (
 				03A9836B2A9A05D7008FF0DB /* StreamOverlayView.swift in Sources */,
 				0315A35F2AA32AFC00295443 /* ConnectionRtmpUrlSettingsView.swift in Sources */,
+				0315A36C2AA33F2100295443 /* WidgetCameraSettingsView.swift in Sources */,
 				03A983712A9A0659008FF0DB /* TwitchPubSub.swift in Sources */,
 				03A9836C2A9A05D7008FF0DB /* WidgetSettingsView.swift in Sources */,
 				0315A3622AA33A2C00295443 /* WidgetTextSettingsView.swift in Sources */,
@@ -436,6 +451,7 @@
 				0315A3492AA31EE200295443 /* ConnectionTwitchNameSettingsView.swift in Sources */,
 				03A983692A9A05D7008FF0DB /* CreateButtonView.swift in Sources */,
 				0315A3422AA31B0000295443 /* ConnectionNameSettingsView.swift in Sources */,
+				0315A36E2AA33F3400295443 /* WidgetCameraDirectionSettingsView.swift in Sources */,
 				0315A34B2AA31EF600295443 /* ConnectionTwitchIdSettingsView.swift in Sources */,
 				0315A3442AA31D0100295443 /* ConnectionRtmpSettingsView.swift in Sources */,
 				03A9836E2A9A05F9008FF0DB /* Model.swift in Sources */,

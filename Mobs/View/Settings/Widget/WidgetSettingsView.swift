@@ -49,14 +49,7 @@ struct WidgetSettingsView: View {
                     }))
                 }
             case "Camera":
-                Section("Direction") {
-                    TextField("", text: Binding(get: {
-                        widget.camera.direction
-                    }, set: { value in
-                        widget.camera.direction = value.trim()
-                        model.store()
-                    }))
-                }
+                WidgetCameraSettingsView(model: model, widget: widget)
             case "Webview":
                 Section("URL") {
                     TextField("", text: Binding(get: {
