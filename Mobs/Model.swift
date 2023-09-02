@@ -53,7 +53,7 @@ final class Model: ObservableObject {
     @Published var speed = ""
     @Published var thermalState: ProcessInfo.ThermalState = ProcessInfo().thermalState
     private var monochromeEffect: MonochromeEffect = MonochromeEffect()
-    private var pronamaEffect: IconEffect = IconEffect()
+    private var iconEffect: IconEffect = IconEffect()
     private var movieEffect: MovieEffect = MovieEffect()
     var connection: SettingsConnection? {
         get {
@@ -353,11 +353,11 @@ final class Model: ObservableObject {
     }
 
     func iconEffectOn() {
-        _ = rtmpStream.registerVideoEffect(pronamaEffect)
+        _ = rtmpStream.registerVideoEffect(iconEffect)
     }
 
     func iconEffectOff() {
-        _ = rtmpStream.unregisterVideoEffect(pronamaEffect)
+        _ = rtmpStream.unregisterVideoEffect(iconEffect)
     }
 
     func movieEffectOn() {
