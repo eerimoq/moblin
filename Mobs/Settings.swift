@@ -117,11 +117,11 @@ class SettingsVariable: Codable {
 }
 
 class Show: Codable {
-    var chat: Bool = false
-    var viewers: Bool = false
-    var uptime: Bool = false
-    var connection: Bool = false
-    var speed: Bool = false
+    var chat: Bool = true
+    var viewers: Bool = true
+    var uptime: Bool = true
+    var connection: Bool = true
+    var speed: Bool = true
 }
 
 class Database: Codable {
@@ -139,7 +139,7 @@ func addDefaultWidgets(database: Database) {
 }
 
 func addDefaultScenes(database: Database) {
-    let scene = SettingsScene(name: "Default")
+    let scene = SettingsScene(name: "Main")
     let widget = SettingsSceneWidget(id: database.widgets[0].id)
     widget.x = 0
     widget.y = 0
@@ -150,9 +150,10 @@ func addDefaultScenes(database: Database) {
 }
 
 func addDefaultConnections(database: Database) {
-    let connection = SettingsConnection(name: "Default")
+    let connection = SettingsConnection(name: "Twitch")
     connection.id = UUID()
-    connection.rtmpUrl = "rtmp://192.168.202.169:1935/live/1234"
+    connection.enabled = true
+    connection.rtmpUrl = "rtmp://arn03.contribute.live-video.net/app/your_stream_key"
     connection.srtUrl = "srt://192.168.202.169:5000"
     connection.twitchChannelName = "jinnytty"
     connection.twitchChannelId = "59965916"
