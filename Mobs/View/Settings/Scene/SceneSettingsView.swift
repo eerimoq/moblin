@@ -5,22 +5,28 @@ struct SceneSettingsView: View {
     @ObservedObject var model: Model
     @State private var showingAdd = false
     @State private var selected = 0
-    @State private var widgets: [Int]
+    @State private var sceneWidgets: [Int]
     
     init(index: Int, model: Model) {
         self.index = index
         self.model = model
-        self.widgets = Array(0..<model.database.scenes[index].widgets.count)
+        self.sceneWidgets = Array(0..<model.database.scenes[index].widgets.count)
     }
 
     var scene: SettingsScene {
         get {
-            model.settings.database.scenes[index]
+            model.database.scenes[index]
+        }
+    }
+    
+    var widgets: [SettingsWidget] {
+        get {
+            model.database.widgets
         }
     }
     
     func resetWidgets() {
-        widgets = Array(0..<scene.widgets.count)
+        sceneWidgets = Array(0..<scene.widgets.count)
     }
     
     var body: some View {
@@ -30,11 +36,11 @@ struct SceneSettingsView: View {
             }
             Section("Widgets") {
                 List {
-                    ForEach($widgets, id: \.self) { $index in
+                    ForEach($sceneWidgets, id: \.self) { $index in
                         let widget = scene.widgets[index]
-                        if let realWidget = model.database.widgets.first(where: {item in item.id == widget.id}) {
+                        if let realWidget = widgets.first(where: {item in item.id == widget.id}) {
                             NavigationLink(destination: SceneWidgetSettingsView(model: model, widget: widget, name: realWidget.name)) {
-                                Text(realWidget.name).tag(index)
+                                Text(realWidget.name)
                             }
                         }
                     }
@@ -57,8 +63,8 @@ struct SceneSettingsView: View {
                         Form {
                             Section("Name") {
                                 Picker("", selection: $selected) {
-                                    ForEach(0..<model.database.widgets.count, id: \.self) { tag in
-                                        Text(model.database.widgets[tag].name).tag(tag)
+                                    ForEach(0..<widgets.count, id: \.self) { tag in
+                                        Text(widgets[tag].name)
                                     }
                                 }
                                 .pickerStyle(.inline)
@@ -74,7 +80,7 @@ struct SceneSettingsView: View {
                             })
                             Spacer()
                             Button(action: {
-                                let realWidget = model.database.widgets[selected]
+                                let realWidget = widgets[selected]
                                 scene.widgets.append(SettingsSceneWidget(id: realWidget.id))
                                 model.store()
                                 resetWidgets()
