@@ -42,6 +42,15 @@ class RemoteConnection {
     func stop() {
     }
     
+    func score() -> Int {
+        guard
+            let connection = connection,
+            connection.state == .ready else {
+            return -1
+        }
+        return 1
+    }
+    
     private func handleViabilityChange(to viability: Bool) {
         print("\(type): Connection viability changed to \(viability)")
     }
@@ -49,7 +58,7 @@ class RemoteConnection {
     private func handleStateChange(to state: NWConnection.State) {
         print("\(type): Connection state changed to \(state)")
     }
-
+    
     private func receivePacket() {
         guard let connection = connection else {
             return

@@ -20,6 +20,10 @@ class Srtla {
         remoteConnections.append(RemoteConnection(queue: queue, type: .wiredEthernet))
     }
     
+    func localPort() -> UInt16? {
+        return localListener.port
+    }
+    
     func start(uri: String) {
         guard
             let url = URL(string: uri),
@@ -44,20 +48,26 @@ class Srtla {
     }
     
     func handleLocalPacket(packet: Data) {
-        print("Got local packet:", packet)
+        // print("Got local packet:", packet)
         guard let connection = findBestRemoteConnection() else {
-            print("No remote connection found.")
+            print("No remote connection found. Discarding packet.")
             return
         }
         connection.sendPacket(packet: packet)
     }
     
     func handleRemotePacket(packet: Data) {
-        print("Got remote packet:", packet)
+        // print("Got remote packet:", packet)
         localListener.sendPacket(packet: packet)
     }
     
     func findBestRemoteConnection() -> RemoteConnection? {
-        return nil
+        var bestConnection = remoteConnections[0]
+        for connection in remoteConnections {
+            if connection.score() > bestConnection.score() {
+                bestConnection = connection
+            }
+        }
+        return bestConnection.score() == -1 ? nil : bestConnection
     }
 }

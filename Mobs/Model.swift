@@ -5,6 +5,7 @@ import PhotosUI
 import SwiftUI
 import VideoToolbox
 import TwitchChat
+import Network
 
 enum LiveState {
     case stopped
@@ -67,6 +68,7 @@ final class Model: ObservableObject {
         }
     }
     private var srtla = Srtla()
+    private var srtDummyConnection: NWConnection?
 
     var database: Database {
         get {
@@ -99,10 +101,11 @@ final class Model: ObservableObject {
                 self.updateBatteryLevel()
                 self.updateTwitchChatSpeed()
                 self.updateSpeed()
+                self.sendDummySrtPacket()
             }
         })
         NotificationCenter.default.addObserver(self, selector: #selector(thermalStateChanged), name: ProcessInfo.thermalStateDidChangeNotification, object: nil)
-        srtla.start(uri: "srt://mys-lang.org:443")
+        srtla.start(uri: "srt://192.168.50.72:10000")
     }
     
     func store() {
@@ -212,6 +215,29 @@ final class Model: ObservableObject {
         }
     }
 
+    func sendDummySrtPacket() {
+        if srtDummyConnection == nil {
+            guard let port = self.srtla.localPort() else {
+                return
+            }
+            srtDummyConnection = NWConnection(host: "localhost",
+                                              port: NWEndpoint.Port(integerLiteral: port),
+                                              using: .udp)
+            srtDummyConnection!.stateUpdateHandler = handleDummySrtStateChange(to:)
+            srtDummyConnection!.start(queue: DispatchQueue.main)
+        }
+        let data = Data("An SRT packet".utf8)
+        srtDummyConnection!.send(content: data, completion: .contentProcessed { error in
+            if let error = error {
+                print("Local dummy send error: \(error)")
+            }
+        })
+    }
+    
+    private func handleDummySrtStateChange(to state: NWConnection.State) {
+        print("Dummy SRT state change to", state)
+    }
+    
     func checkDeviceAuthorization() {
         let requiredAccessLevel: PHAccessLevel = .readWrite
         PHPhotoLibrary.requestAuthorization(for: requiredAccessLevel) { authorizationStatus in

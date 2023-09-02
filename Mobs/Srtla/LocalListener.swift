@@ -90,10 +90,6 @@ class LocalListener {
                 print("Local error:", error)
                 return
             }
-            if isDone {
-                print("Local done")
-                return
-            }
             self.receivePacket()
         }
     }
