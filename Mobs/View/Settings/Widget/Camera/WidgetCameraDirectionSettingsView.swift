@@ -12,23 +12,23 @@ var directions = ["Back", "Front"]
 struct WidgetCameraDirectionSettingsView: View {
     @ObservedObject var model: Model
     private var widget: SettingsWidget
-    @State private var selection = 0
+    @State private var selection: String
     
     init(model: Model, widget: SettingsWidget) {
         self.model = model
         self.widget = widget
-        self.selection = directions.firstIndex(of: widget.camera.direction) ?? 0
+        self.selection = widget.camera.direction
     }
     
     var body: some View {
         Form {
             Picker("", selection: $selection) {
-                ForEach(0..<2, id: \.self) { tag in
-                    Text(directions[tag]).tag(tag)
+                ForEach(directions, id: \.self) { direction in
+                    Text(direction)
                 }
             }
-            .onChange(of: selection) { tag in
-                widget.camera.direction = directions[tag].trim()
+            .onChange(of: selection) { direction in
+                widget.camera.direction = direction.trim()
                 model.store()
             }
             .pickerStyle(.inline)

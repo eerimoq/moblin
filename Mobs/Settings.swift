@@ -69,7 +69,7 @@ let widgetTypes = ["Camera", /*"Text", */ "Image"/*, "Video", "Chat", "Recording
 class SettingsWidget: Codable, Identifiable {
     var name: String
     var id: UUID = UUID()
-    var type: String = "Text"
+    var type: String = widgetTypes[0]
     var text: SettingsWidgetText = SettingsWidgetText()
     var image: SettingsWidgetImage = SettingsWidgetImage()
     var video: SettingsWidgetVideo = SettingsWidgetVideo()
