@@ -24,9 +24,9 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="0.70649647"
-     inkscape:cx="345.3662"
-     inkscape:cy="425.33829"
+     inkscape:zoom="0.77590384"
+     inkscape:cx="368.60238"
+     inkscape:cy="416.93311"
      inkscape:window-width="1440"
      inkscape:window-height="847"
      inkscape:window-x="0"
@@ -48,6 +48,15 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
+    <circle
+       style="fill:#1e1f22;fill-opacity:1;stroke:#1e1f22;stroke-width:0.83858;stroke-linejoin:bevel;stroke-miterlimit:3.4;stroke-dasharray:none;stroke-opacity:1"
+       id="path16317"
+       cx="105.14233"
+       cy="125.6862"
+       r="64.580711"
+       inkscape:export-filename="logo.png"
+       inkscape:export-xdpi="25.18"
+       inkscape:export-ydpi="25.18" />
     <circle
        style="fill:#008000;stroke:#1e1a1a;stroke-width:0.6;stroke-linejoin:bevel;stroke-miterlimit:3.4;stroke-dasharray:none"
        id="path577"
