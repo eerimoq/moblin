@@ -110,7 +110,6 @@ final class Model: ObservableObject {
                 self.srtDummySender!.sendPacket()
             }
         })
-        NotificationCenter.default.addObserver(self, selector: #selector(thermalStateChanged), name: ProcessInfo.thermalStateDidChangeNotification, object: nil)
         srtla.start(uri: "srt://192.168.50.72:10000")
         self.srtDummySender = DummySender(srtla: srtla)
     }
@@ -198,15 +197,15 @@ final class Model: ObservableObject {
         }
     }
     
-    @objc
-    func thermalStateChanged(notification: NSNotification) {
+    /*@objc
+    func thermalStateChanged(notification: Notification) {
         print("thermal change")
         guard let processInfo = notification.object as? ProcessInfo else {
             return
         }
         print("Thermal state:", processInfo.thermalState, thermalState)
         thermalState = processInfo.thermalState
-    }
+    }*/
     
     func updateUptimeFromNonMain() {
         DispatchQueue.main.async {
@@ -289,6 +288,12 @@ final class Model: ObservableObject {
         nc.publisher(for: AVAudioSession.routeChangeNotification, object: nil)
             .sink { notification in
                 print(notification)
+            }
+            .store(in: &subscriptions)
+        
+        nc.publisher(for: ProcessInfo.thermalStateDidChangeNotification, object: nil)
+            .sink { notification in
+                print("Thermal:", notification)
             }
             .store(in: &subscriptions)
     }

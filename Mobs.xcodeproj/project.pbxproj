@@ -308,6 +308,7 @@
 		03A983542A9A0582008FF0DB /* View */ = {
 			isa = PBXGroup;
 			children = (
+				0315A34F2AA322ED00295443 /* Utils */,
 				03B373F42A9EF8BD0028DDD5 /* Settings */,
 				03B374002A9FDEC80028DDD5 /* Stream */,
 				03B373F72A9EFB1F0028DDD5 /* ControlBar */,
@@ -321,7 +322,6 @@
 			children = (
 				0315A3512AA3233700295443 /* Widget */,
 				0315A3502AA3233000295443 /* Variable */,
-				0315A34F2AA322ED00295443 /* Utils */,
 				0315A34C2AA3217500295443 /* Scene */,
 				0315A3402AA31ADC00295443 /* Connection */,
 				03A983552A9A05D7008FF0DB /* ConnectionsSettingsView.swift */,

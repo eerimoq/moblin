@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SceneSettingsView: View {
-    var index: Int
+    private var index: Int
     @ObservedObject var model: Model
     @State private var showingAdd = false
     @State private var selected = 0
