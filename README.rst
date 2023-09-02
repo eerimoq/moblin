@@ -1,7 +1,7 @@
 MOBS
 ====
 
-An iOS app for IRL streaming.
+An iOS app for IRL streaming. Mainly targetting `Twitch`_.
 
 .. image:: https://github.com/eerimoq/mobs/raw/main/Docs/logo.png
    :width: 6%
@@ -76,3 +76,5 @@ Resources
 .. _go: https://go.dev
 
 .. _SRTLA: https://github.com/BELABOX/srtla
+
+.. _Twitch: https://twitch.tv
