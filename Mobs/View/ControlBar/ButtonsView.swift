@@ -31,8 +31,8 @@ struct GenericButton: View {
     }
 }
 
-var mutedImageOn = "mic.slash.fill"
-var mutedImageOff = "mic.fill"
+var mutedImageOn = "mic.slash"
+var mutedImageOff = "mic"
 var recordingImageOn = "record.circle.fill"
 var recordingImageOff = "record.circle"
 var flashImageOn = "lightbulb.fill"

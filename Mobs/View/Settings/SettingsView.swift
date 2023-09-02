@@ -17,36 +17,38 @@ struct SettingsView: View {
             NavigationLink(destination: ScenesSettingsView(model: model)) {
                 Text("Scenes")
             }
-            Toggle("Connection", isOn: Binding(get: {
-                database.show.connection
-            }, set: { value in
-                database.show.connection = value
-                model.settings.store()
-            }))
-            Toggle("Speed", isOn: Binding(get: {
-                database.show.speed
-            }, set: { value in
-                database.show.speed = value
-                model.settings.store()
-            }))
-            Toggle("Viewers", isOn: Binding(get: {
-                database.show.viewers
-            }, set: { value in
-                database.show.viewers = value
-                model.settings.store()
-            }))
-            Toggle("Uptime", isOn: Binding(get: {
-                database.show.uptime
-            }, set: { value in
-                database.show.uptime = value
-                model.settings.store()
-            }))
-            Toggle("Chat", isOn: Binding(get: {
-                database.show.chat
-            }, set: { value in
-                database.show.chat = value
-                model.settings.store()
-            }))
+            Section("Local overlays") {
+                Toggle("Connection", isOn: Binding(get: {
+                    database.show.connection
+                }, set: { value in
+                    database.show.connection = value
+                    model.settings.store()
+                }))
+                Toggle("Speed", isOn: Binding(get: {
+                    database.show.speed
+                }, set: { value in
+                    database.show.speed = value
+                    model.settings.store()
+                }))
+                Toggle("Viewers", isOn: Binding(get: {
+                    database.show.viewers
+                }, set: { value in
+                    database.show.viewers = value
+                    model.settings.store()
+                }))
+                Toggle("Uptime", isOn: Binding(get: {
+                    database.show.uptime
+                }, set: { value in
+                    database.show.uptime = value
+                    model.settings.store()
+                }))
+                Toggle("Chat", isOn: Binding(get: {
+                    database.show.chat
+                }, set: { value in
+                    database.show.chat = value
+                    model.settings.store()
+                }))
+            }
         }
         .navigationTitle("Settings")
     }
