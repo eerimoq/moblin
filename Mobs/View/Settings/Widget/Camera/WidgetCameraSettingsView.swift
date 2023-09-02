@@ -9,12 +9,7 @@ import SwiftUI
 
 struct WidgetCameraSettingsView: View {
     @ObservedObject var model: Model
-    private var widget: SettingsWidget
-    
-    init(model: Model, widget: SettingsWidget) {
-        self.model = model
-        self.widget = widget
-    }
+    var widget: SettingsWidget
     
     var body: some View {
         Section(widget.type) {

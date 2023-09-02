@@ -31,9 +31,9 @@ struct SceneSettingsView: View {
             Section("Widgets") {
                 List {
                     ForEach($widgets, id: \.self) { $widget in
-                        let id = scene.widgets[widget].id
-                        if let realWidget = model.database.widgets.first(where: {item in item.id == id}) {
-                            NavigationLink(destination: SceneWidgetSettingsView(model: model, widget: scene.widgets[widget], name: realWidget.name)) {
+                        let widget = scene.widgets[widget]
+                        if let realWidget = model.database.widgets.first(where: {item in item.id == widget.id}) {
+                            NavigationLink(destination: SceneWidgetSettingsView(model: model, widget: widget, name: realWidget.name)) {
                                 Text(realWidget.name)
                             }
                         } else {
@@ -45,9 +45,8 @@ struct SceneSettingsView: View {
                             let temp = scene.widgets[to]
                             scene.widgets[to] = scene.widgets[from]
                             scene.widgets[from] = temp
-                            model.store()
-                            widgets = Array(0..<scene.widgets.count)
                         }
+                        model.store()
                     }
                     .onDelete(perform: { offsets in
                         scene.widgets.remove(atOffsets: offsets)
