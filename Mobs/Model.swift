@@ -16,7 +16,6 @@ final class Model: ObservableObject {
     private let maxRetryCount: Int = 5
     private var rtmpConnection = RTMPConnection()
     @Published var rtmpStream: RTMPStream!
-    @Published var currentPosition: AVCaptureDevice.Position = .back
     private var retryCount: Int = 0
     @Published var liveState: LiveState = .stopped
     @Published var fps: String = "FPS"
@@ -28,7 +27,6 @@ final class Model: ObservableObject {
     @Published var numberOfWidgets = 0
     @Published var numberOfVariables = 0
     @Published var numberOfConnections = 0
-    var widgets = ["Sub goal", "Earnings", "Chat", "Back camera", "Front camera", "Recording"]
     var settings: Settings = Settings()
     @Published var currentTime: String = Date().formatted(date: .omitted, time: .shortened)
     var selectedSceneId = UUID()
@@ -266,7 +264,7 @@ final class Model: ObservableObject {
         rtmpStream.attachAudio(AVCaptureDevice.default(for: .audio)) { error in
             print(error)
         }
-        rtmpStream.attachCamera(AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: currentPosition)) { error in
+        rtmpStream.attachCamera(AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)) { error in
             print(error)
         }
         rtmpStream.publisher(for: \.currentFPS)
