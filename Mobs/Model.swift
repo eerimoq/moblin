@@ -102,7 +102,7 @@ final class Model: ObservableObject {
             }
         })
         NotificationCenter.default.addObserver(self, selector: #selector(thermalStateChanged), name: ProcessInfo.thermalStateDidChangeNotification, object: nil)
-        srtla.start()
+        srtla.start(host: "mys-lang.org", port: 443)
     }
     
     func store() {

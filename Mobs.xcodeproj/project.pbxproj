@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		030947C32A9C0496003FC387 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030947C22A9C0496003FC387 /* ChatView.swift */; };
+		0315A33B2AA2FA7100295443 /* LocalListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33A2AA2FA7100295443 /* LocalListener.swift */; };
+		0315A33D2AA2FA7D00295443 /* RemoteConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */; };
 		035E9E372A9A02D6009D4F5A /* MobsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035E9E362A9A02D6009D4F5A /* MobsApp.swift */; };
 		035E9E3B2A9A02D7009D4F5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */; };
 		035E9E3E2A9A02D7009D4F5A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3D2A9A02D7009D4F5A /* Preview Assets.xcassets */; };
@@ -43,6 +45,8 @@
 
 /* Begin PBXFileReference section */
 		030947C22A9C0496003FC387 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		0315A33A2AA2FA7100295443 /* LocalListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalListener.swift; sourceTree = "<group>"; };
+		0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteConnection.swift; sourceTree = "<group>"; };
 		035E9E332A9A02D6009D4F5A /* Mobs.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mobs.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		035E9E362A9A02D6009D4F5A /* MobsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobsApp.swift; sourceTree = "<group>"; };
 		035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -88,6 +92,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0315A3392AA2FA0A00295443 /* Srtla */ = {
+			isa = PBXGroup;
+			children = (
+				03B374122AA277570028DDD5 /* Srtla.swift */,
+				0315A33A2AA2FA7100295443 /* LocalListener.swift */,
+				0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */,
+			);
+			path = Srtla;
+			sourceTree = "<group>";
+		};
 		035E9E2A2A9A02D6009D4F5A = {
 			isa = PBXGroup;
 			children = (
@@ -108,12 +122,12 @@
 			isa = PBXGroup;
 			children = (
 				03B374052AA0EA370028DDD5 /* Effects */,
-				035E9E3C2A9A02D7009D4F5A /* Preview Content */,
+				0315A3392AA2FA0A00295443 /* Srtla */,
 				03A983542A9A0582008FF0DB /* View */,
+				035E9E3C2A9A02D7009D4F5A /* Preview Content */,
 				035E9E362A9A02D6009D4F5A /* MobsApp.swift */,
 				03A9836D2A9A05F9008FF0DB /* Model.swift */,
 				0382933A2A9A73ED008963AA /* Settings.swift */,
-				03B374122AA277570028DDD5 /* Srtla.swift */,
 				03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */,
 				03A983702A9A0659008FF0DB /* TwitchChatMobs.swift */,
 				03B373FC2A9F35EF0028DDD5 /* Utils.swift */,
@@ -288,6 +302,7 @@
 				03A983672A9A05D7008FF0DB /* ScenesSettingsView.swift in Sources */,
 				035E9E372A9A02D6009D4F5A /* MobsApp.swift in Sources */,
 				03A9836A2A9A05D7008FF0DB /* VariableSettingsView.swift in Sources */,
+				0315A33D2AA2FA7D00295443 /* RemoteConnection.swift in Sources */,
 				03B373FF2A9FCA790028DDD5 /* ThermalStateView.swift in Sources */,
 				03A983682A9A05D7008FF0DB /* SceneSettingsView.swift in Sources */,
 				03B374022AA0354C0028DDD5 /* MonochromeEffect.swift in Sources */,
@@ -295,6 +310,7 @@
 				03B374132AA277570028DDD5 /* Srtla.swift in Sources */,
 				03A983662A9A05D7008FF0DB /* AddButtonView.swift in Sources */,
 				03A983612A9A05D7008FF0DB /* ConnectionsSettingsView.swift in Sources */,
+				0315A33B2AA2FA7100295443 /* LocalListener.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
