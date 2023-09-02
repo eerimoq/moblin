@@ -45,9 +45,19 @@ class Srtla {
     
     func handleLocalPacket(packet: Data) {
         print("Got local packet:", packet)
+        guard let connection = findBestRemoteConnection() else {
+            print("No remote connection found.")
+            return
+        }
+        connection.sendPacket(packet: packet)
     }
     
     func handleRemotePacket(packet: Data) {
         print("Got remote packet:", packet)
+        localListener.sendPacket(packet: packet)
+    }
+    
+    func findBestRemoteConnection() -> RemoteConnection? {
+        return nil
     }
 }

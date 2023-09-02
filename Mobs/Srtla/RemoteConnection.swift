@@ -74,4 +74,15 @@ class RemoteConnection {
             self.receivePacket()
         }
     }
+    
+    func sendPacket(packet: Data) {
+        guard let connection = connection else {
+            return
+        }
+        connection.send(content: packet, completion: .contentProcessed { error in
+            if let error = error {
+                print("\(self.type): Remote send error: \(error)")
+            }
+        })
+    }
 }
