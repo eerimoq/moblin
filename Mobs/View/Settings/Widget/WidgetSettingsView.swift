@@ -36,23 +36,9 @@ struct WidgetSettingsView: View {
             }
             switch widget.type {
             case "Text":
-                Section("Format string") {
-                    TextField("", text: Binding(get: {
-                        widget.text.formatString
-                    }, set: { value in
-                        widget.text.formatString = value.trim()
-                        model.store()
-                    }))
-                }
+                WidgetTextSettingsView(model: model, widget: widget)
             case "Image":
-                Section("URL") {
-                    TextField("", text: Binding(get: {
-                        widget.image.url
-                    }, set: { value in
-                        widget.image.url = value.trim()
-                        model.store()
-                    }))
-                }
+                WidgetImageSettingsView(model: model, widget: widget)
             case "Video":
                 Section("URL") {
                     TextField("", text: Binding(get: {

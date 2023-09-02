@@ -22,6 +22,10 @@
 		0315A3572AA3261900295443 /* ConnectionSrtSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3562AA3261900295443 /* ConnectionSrtSettingsView.swift */; };
 		0315A35A2AA3270100295443 /* ConnectionSrtUrlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3592AA3270100295443 /* ConnectionSrtUrlSettingsView.swift */; };
 		0315A35F2AA32AFC00295443 /* ConnectionRtmpUrlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A35E2AA32AFC00295443 /* ConnectionRtmpUrlSettingsView.swift */; };
+		0315A3622AA33A2C00295443 /* WidgetTextSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3612AA33A2C00295443 /* WidgetTextSettingsView.swift */; };
+		0315A3642AA33AE700295443 /* WidgetTextFormatStringSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3632AA33AE700295443 /* WidgetTextFormatStringSettingsView.swift */; };
+		0315A3672AA33C6A00295443 /* WidgetImageSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3662AA33C6A00295443 /* WidgetImageSettingsView.swift */; };
+		0315A3692AA33CF400295443 /* WidgetImageUrlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3682AA33CF400295443 /* WidgetImageUrlSettingsView.swift */; };
 		035E9E372A9A02D6009D4F5A /* MobsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035E9E362A9A02D6009D4F5A /* MobsApp.swift */; };
 		035E9E3B2A9A02D7009D4F5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */; };
 		035E9E3E2A9A02D7009D4F5A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3D2A9A02D7009D4F5A /* Preview Assets.xcassets */; };
@@ -71,6 +75,10 @@
 		0315A3562AA3261900295443 /* ConnectionSrtSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionSrtSettingsView.swift; sourceTree = "<group>"; };
 		0315A3592AA3270100295443 /* ConnectionSrtUrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionSrtUrlSettingsView.swift; sourceTree = "<group>"; };
 		0315A35E2AA32AFC00295443 /* ConnectionRtmpUrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionRtmpUrlSettingsView.swift; sourceTree = "<group>"; };
+		0315A3612AA33A2C00295443 /* WidgetTextSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetTextSettingsView.swift; sourceTree = "<group>"; };
+		0315A3632AA33AE700295443 /* WidgetTextFormatStringSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetTextFormatStringSettingsView.swift; sourceTree = "<group>"; };
+		0315A3662AA33C6A00295443 /* WidgetImageSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetImageSettingsView.swift; sourceTree = "<group>"; };
+		0315A3682AA33CF400295443 /* WidgetImageUrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetImageUrlSettingsView.swift; sourceTree = "<group>"; };
 		035E9E332A9A02D6009D4F5A /* Mobs.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mobs.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		035E9E362A9A02D6009D4F5A /* MobsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobsApp.swift; sourceTree = "<group>"; };
 		035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -179,6 +187,8 @@
 		0315A3512AA3233700295443 /* Widget */ = {
 			isa = PBXGroup;
 			children = (
+				0315A3652AA33C5400295443 /* Image */,
+				0315A3602AA33A1100295443 /* Text */,
 				03A983602A9A05D7008FF0DB /* WidgetSettingsView.swift */,
 				0315A3522AA3239700295443 /* WidgetNameSettingsView.swift */,
 			);
@@ -201,6 +211,24 @@
 				0315A35E2AA32AFC00295443 /* ConnectionRtmpUrlSettingsView.swift */,
 			);
 			path = Rtmp;
+			sourceTree = "<group>";
+		};
+		0315A3602AA33A1100295443 /* Text */ = {
+			isa = PBXGroup;
+			children = (
+				0315A3612AA33A2C00295443 /* WidgetTextSettingsView.swift */,
+				0315A3632AA33AE700295443 /* WidgetTextFormatStringSettingsView.swift */,
+			);
+			path = Text;
+			sourceTree = "<group>";
+		};
+		0315A3652AA33C5400295443 /* Image */ = {
+			isa = PBXGroup;
+			children = (
+				0315A3662AA33C6A00295443 /* WidgetImageSettingsView.swift */,
+				0315A3682AA33CF400295443 /* WidgetImageUrlSettingsView.swift */,
+			);
+			path = Image;
 			sourceTree = "<group>";
 		};
 		035E9E2A2A9A02D6009D4F5A = {
@@ -385,9 +413,11 @@
 				0315A35F2AA32AFC00295443 /* ConnectionRtmpUrlSettingsView.swift in Sources */,
 				03A983712A9A0659008FF0DB /* TwitchPubSub.swift in Sources */,
 				03A9836C2A9A05D7008FF0DB /* WidgetSettingsView.swift in Sources */,
+				0315A3622AA33A2C00295443 /* WidgetTextSettingsView.swift in Sources */,
 				0315A34E2AA3218900295443 /* SceneNameSettingsView.swift in Sources */,
 				0315A33F2AA3173000295443 /* DummySender.swift in Sources */,
 				03A983642A9A05D7008FF0DB /* StreamView.swift in Sources */,
+				0315A3672AA33C6A00295443 /* WidgetImageSettingsView.swift in Sources */,
 				0315A35A2AA3270100295443 /* ConnectionSrtUrlSettingsView.swift in Sources */,
 				030947C32A9C0496003FC387 /* ChatView.swift in Sources */,
 				03A983622A9A05D7008FF0DB /* ContentView.swift in Sources */,
@@ -400,6 +430,8 @@
 				03B373F62A9EF98E0028DDD5 /* ControlBarView.swift in Sources */,
 				0315A3572AA3261900295443 /* ConnectionSrtSettingsView.swift in Sources */,
 				0382933B2A9A73ED008963AA /* Settings.swift in Sources */,
+				0315A3642AA33AE700295443 /* WidgetTextFormatStringSettingsView.swift in Sources */,
+				0315A3692AA33CF400295443 /* WidgetImageUrlSettingsView.swift in Sources */,
 				03B374092AA0EA700028DDD5 /* IconEffect.swift in Sources */,
 				0315A3492AA31EE200295443 /* ConnectionTwitchNameSettingsView.swift in Sources */,
 				03A983692A9A05D7008FF0DB /* CreateButtonView.swift in Sources */,

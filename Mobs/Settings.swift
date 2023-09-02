@@ -64,7 +64,7 @@ class SettingsWidgetWebview: Codable {
     var url: String = "https://"
 }
 
-let widgetTypes = ["Text", "Image", "Video", "Camera", "Chat", "Recording", "Webview"]
+let widgetTypes = ["Camera", /*"Text", */ "Image"/*, "Video", "Chat", "Recording", "Webview"*/]
 
 class SettingsWidget: Codable {
     var name: String
