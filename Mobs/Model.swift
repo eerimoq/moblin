@@ -158,6 +158,14 @@ final class Model: ObservableObject {
         stopStream()
     }
 
+    func srtUrlChanged() {
+        stopStream()
+    }
+
+    func srtlaChanged() {
+        stopStream()
+    }
+
     func twitchChannelNameUpdated() {
         reloadTwitchChat()
     }

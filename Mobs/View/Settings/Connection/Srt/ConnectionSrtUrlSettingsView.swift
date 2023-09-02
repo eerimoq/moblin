@@ -1,5 +1,5 @@
 //
-//  ConnectionNameSettingsView.swift
+//  ConnectionSrtNameSettingsView.swift
 //  Mobs
 //
 //  Created by Erik Moqvist on 2023-09-02.
@@ -7,36 +7,36 @@
 
 import SwiftUI
 
-struct ConnectionRtmpSettingsView: View {
+struct ConnectionSrtUrlSettingsView: View {
     @ObservedObject private var model: Model
-    @State private var url: String
     private var connection: SettingsConnection
+    @State private var url: String
     
     init(model: Model, connection: SettingsConnection) {
         self.model = model
-        self.url = connection.rtmpUrl
         self.connection = connection
+        self.url = connection.srtUrl
     }
     
     var body: some View {
         Form {
             TextField("", text: $url)
                 .onSubmit {
-                    let rtmpUrl = url.trim()
-                    if URL(string: rtmpUrl) == nil {
+                    let srtUrl = url.trim()
+                    if URL(string: srtUrl) == nil {
                         return
                     }
-                    connection.rtmpUrl = rtmpUrl
+                    connection.srtUrl = srtUrl
                     model.store()
-                    model.rtmpUrlChanged()
+                    model.srtUrlChanged()
                 }
         }
-        .navigationTitle("RTMP URL")
+        .navigationTitle("URL")
     }
 }
 
-struct ConnectionRtmpSettingsView_Previews: PreviewProvider {
+struct ConnectionSrtUrlSettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        ConnectionRtmpSettingsView(model: Model(), connection: SettingsConnection(name: "Foo"))
+        ConnectionSrtUrlSettingsView(model: Model(), connection: SettingsConnection(name: ""))
     }
 }

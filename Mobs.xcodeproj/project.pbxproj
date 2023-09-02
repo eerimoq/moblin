@@ -19,6 +19,9 @@
 		0315A34E2AA3218900295443 /* SceneNameSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A34D2AA3218900295443 /* SceneNameSettingsView.swift */; };
 		0315A3532AA3239700295443 /* WidgetNameSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3522AA3239700295443 /* WidgetNameSettingsView.swift */; };
 		0315A3552AA324A500295443 /* VariableNameSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3542AA324A500295443 /* VariableNameSettingsView.swift */; };
+		0315A3572AA3261900295443 /* ConnectionSrtSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3562AA3261900295443 /* ConnectionSrtSettingsView.swift */; };
+		0315A35A2AA3270100295443 /* ConnectionSrtUrlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3592AA3270100295443 /* ConnectionSrtUrlSettingsView.swift */; };
+		0315A35F2AA32AFC00295443 /* ConnectionRtmpUrlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A35E2AA32AFC00295443 /* ConnectionRtmpUrlSettingsView.swift */; };
 		035E9E372A9A02D6009D4F5A /* MobsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035E9E362A9A02D6009D4F5A /* MobsApp.swift */; };
 		035E9E3B2A9A02D7009D4F5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */; };
 		035E9E3E2A9A02D7009D4F5A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3D2A9A02D7009D4F5A /* Preview Assets.xcassets */; };
@@ -65,6 +68,9 @@
 		0315A34D2AA3218900295443 /* SceneNameSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneNameSettingsView.swift; sourceTree = "<group>"; };
 		0315A3522AA3239700295443 /* WidgetNameSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetNameSettingsView.swift; sourceTree = "<group>"; };
 		0315A3542AA324A500295443 /* VariableNameSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariableNameSettingsView.swift; sourceTree = "<group>"; };
+		0315A3562AA3261900295443 /* ConnectionSrtSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionSrtSettingsView.swift; sourceTree = "<group>"; };
+		0315A3592AA3270100295443 /* ConnectionSrtUrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionSrtUrlSettingsView.swift; sourceTree = "<group>"; };
+		0315A35E2AA32AFC00295443 /* ConnectionRtmpUrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionRtmpUrlSettingsView.swift; sourceTree = "<group>"; };
 		035E9E332A9A02D6009D4F5A /* Mobs.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mobs.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		035E9E362A9A02D6009D4F5A /* MobsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobsApp.swift; sourceTree = "<group>"; };
 		035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -124,11 +130,11 @@
 		0315A3402AA31ADC00295443 /* Connection */ = {
 			isa = PBXGroup;
 			children = (
+				0315A35D2AA32ADA00295443 /* Rtmp */,
+				0315A3582AA3264800295443 /* Srt */,
 				0315A3472AA31EC800295443 /* Twitch */,
 				03A983592A9A05D7008FF0DB /* ConnectionSettingsView.swift */,
 				0315A3412AA31B0000295443 /* ConnectionNameSettingsView.swift */,
-				0315A3432AA31D0100295443 /* ConnectionRtmpSettingsView.swift */,
-				0315A3452AA31E9000295443 /* ConnectionTwitchSettingsView.swift */,
 			);
 			path = Connection;
 			sourceTree = "<group>";
@@ -136,6 +142,7 @@
 		0315A3472AA31EC800295443 /* Twitch */ = {
 			isa = PBXGroup;
 			children = (
+				0315A3452AA31E9000295443 /* ConnectionTwitchSettingsView.swift */,
 				0315A3482AA31EE200295443 /* ConnectionTwitchNameSettingsView.swift */,
 				0315A34A2AA31EF600295443 /* ConnectionTwitchIdSettingsView.swift */,
 			);
@@ -176,6 +183,24 @@
 				0315A3522AA3239700295443 /* WidgetNameSettingsView.swift */,
 			);
 			path = Widget;
+			sourceTree = "<group>";
+		};
+		0315A3582AA3264800295443 /* Srt */ = {
+			isa = PBXGroup;
+			children = (
+				0315A3562AA3261900295443 /* ConnectionSrtSettingsView.swift */,
+				0315A3592AA3270100295443 /* ConnectionSrtUrlSettingsView.swift */,
+			);
+			path = Srt;
+			sourceTree = "<group>";
+		};
+		0315A35D2AA32ADA00295443 /* Rtmp */ = {
+			isa = PBXGroup;
+			children = (
+				0315A3432AA31D0100295443 /* ConnectionRtmpSettingsView.swift */,
+				0315A35E2AA32AFC00295443 /* ConnectionRtmpUrlSettingsView.swift */,
+			);
+			path = Rtmp;
 			sourceTree = "<group>";
 		};
 		035E9E2A2A9A02D6009D4F5A = {
@@ -357,11 +382,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				03A9836B2A9A05D7008FF0DB /* StreamOverlayView.swift in Sources */,
+				0315A35F2AA32AFC00295443 /* ConnectionRtmpUrlSettingsView.swift in Sources */,
 				03A983712A9A0659008FF0DB /* TwitchPubSub.swift in Sources */,
 				03A9836C2A9A05D7008FF0DB /* WidgetSettingsView.swift in Sources */,
 				0315A34E2AA3218900295443 /* SceneNameSettingsView.swift in Sources */,
 				0315A33F2AA3173000295443 /* DummySender.swift in Sources */,
 				03A983642A9A05D7008FF0DB /* StreamView.swift in Sources */,
+				0315A35A2AA3270100295443 /* ConnectionSrtUrlSettingsView.swift in Sources */,
 				030947C32A9C0496003FC387 /* ChatView.swift in Sources */,
 				03A983622A9A05D7008FF0DB /* ContentView.swift in Sources */,
 				03B374042AA036D10028DDD5 /* ButtonsView.swift in Sources */,
@@ -371,6 +398,7 @@
 				03B374072AA0EA650028DDD5 /* MovieEffect.swift in Sources */,
 				03A983652A9A05D7008FF0DB /* ConnectionSettingsView.swift in Sources */,
 				03B373F62A9EF98E0028DDD5 /* ControlBarView.swift in Sources */,
+				0315A3572AA3261900295443 /* ConnectionSrtSettingsView.swift in Sources */,
 				0382933B2A9A73ED008963AA /* Settings.swift in Sources */,
 				03B374092AA0EA700028DDD5 /* IconEffect.swift in Sources */,
 				0315A3492AA31EE200295443 /* ConnectionTwitchNameSettingsView.swift in Sources */,

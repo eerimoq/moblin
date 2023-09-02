@@ -5,6 +5,8 @@ class SettingsConnection: Codable {
     var id: UUID = UUID()
     var enabled: Bool = false
     var rtmpUrl: String = "rtmp://"
+    var srtUrl: String = "srt://"
+    var srtla: Bool = false
     var twitchChannelName: String = ""
     var twitchChannelId: String = ""
 
@@ -151,6 +153,7 @@ func addDefaultConnections(database: Database) {
     let connection = SettingsConnection(name: "Default")
     connection.id = UUID()
     connection.rtmpUrl = "rtmp://192.168.202.169:1935/live/1234"
+    connection.srtUrl = "srt://192.168.202.169:5000"
     connection.twitchChannelName = "jinnytty"
     connection.twitchChannelId = "59965916"
     database.connections.append(connection)
@@ -175,7 +178,6 @@ final class Settings {
             print("Failed to load settings. Using default.")
             database = createDefault()
         }
-        database.show.speed = true
     }
 
     func store() {

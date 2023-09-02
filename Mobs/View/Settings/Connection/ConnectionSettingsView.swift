@@ -41,7 +41,12 @@ struct ConnectionSettingsView: View {
             }
             NavigationLink(destination: ConnectionRtmpSettingsView(model: model, connection: connection)) {
                 HStack {
-                    Text("RTMP URL")
+                    Text("RTMP")
+                }
+            }
+            NavigationLink(destination: ConnectionSrtSettingsView(model: model, connection: connection)) {
+                HStack {
+                    Text("SRT")
                 }
             }
             NavigationLink(destination: ConnectionTwitchSettingsView(model: model, connection: connection)) {
