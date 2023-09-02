@@ -19,6 +19,10 @@ struct SceneSettingsView: View {
         }
     }
     
+    func resetWidgets() {
+        widgets = Array(0..<scene.widgets.count)
+    }
+    
     var body: some View {
         Form {
             NavigationLink(destination: SceneNameSettingsView(model: model, scene: scene)) {
@@ -26,28 +30,23 @@ struct SceneSettingsView: View {
             }
             Section("Widgets") {
                 List {
-                    ForEach($widgets, id: \.self) { $widget in
-                        let widget = scene.widgets[widget]
+                    ForEach($widgets, id: \.self) { $index in
+                        let widget = scene.widgets[index]
                         if let realWidget = model.database.widgets.first(where: {item in item.id == widget.id}) {
                             NavigationLink(destination: SceneWidgetSettingsView(model: model, widget: widget, name: realWidget.name)) {
-                                Text(realWidget.name)
+                                Text(realWidget.name).tag(index)
                             }
-                        } else {
-                            Text("Unknown")
                         }
                     }
-                    .onMove() { (froms, to ) in
-                        for from in froms {
-                            let tmp = scene.widgets[to]
-                            scene.widgets[to] = scene.widgets[from]
-                            scene.widgets[from] = tmp
-                        }
+                    .onMove(perform: { (froms, to) in
+                        scene.widgets.move(fromOffsets: froms, toOffset: to)
                         model.store()
-                    }
+                        resetWidgets()
+                    })
                     .onDelete(perform: { offsets in
                         scene.widgets.remove(atOffsets: offsets)
-                        widgets = Array(0..<scene.widgets.count)
                         model.store()
+                        resetWidgets()
                     })
                 }
                 AddButtonView(action: {
@@ -77,8 +76,8 @@ struct SceneSettingsView: View {
                             Button(action: {
                                 let realWidget = model.database.widgets[selected]
                                 scene.widgets.append(SettingsSceneWidget(id: realWidget.id))
-                                widgets = Array(0..<scene.widgets.count)
                                 model.store()
+                                resetWidgets()
                                 showingAdd = false
                             }, label: {
                                 Text("Done")

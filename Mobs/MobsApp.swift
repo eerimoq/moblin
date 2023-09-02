@@ -1,6 +1,5 @@
 import AVFoundation
 import SwiftUI
-
 @main
 struct MobsApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
