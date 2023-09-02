@@ -73,41 +73,13 @@ Testing with local streaming server
 Resources
 =========
 
-- https://github.com/cocoatype/twitch-chat
-
-  Receive Twitch chat messages in Swift.
-
 - https://github.com/gwuhaolin/livego
 
   Streaming server for testing.
 
-- https://github.com/shogo4405/HaishinKit.swift
-
-  Camera capture and RTMP streaming in Swift.
-
 - https://twitchapps.com/tmi/
 
   Create Twitch (chat) token.
-
-- https://github.com/loopy750/SRT-Stats-Monitor
-
-  Stream switcher on low bitrate.
-
-Twitch PubSub over websocket
-============================
-
-URL: wss://pubsub-edge.twitch.tv/v1
-
-Viewer count. Set channel id (123668195) in settings.
-
-.. code-block::
-
-   > {"type":"LISTEN","data":{"topics":["video-playback-by-id.123668195"]}}
-   < {"type":"MESSAGE","data":{"topic":"video-playback-by-id.123668195","message":"{\"type\":\"viewcount\",\"server_time\":1692772100.706721,\"viewers\":63}"}}
-
-   > {"type":"LISTEN","data":{"topics":["video-playback-by-id.159498717"]}}
-
-   /
 
 .. _OBS: https://obsproject.com
 
