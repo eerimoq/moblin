@@ -1,10 +1,10 @@
 MOBS
 ====
 
+An iOS app for IRL streaming.
+
 .. image:: https://github.com/eerimoq/mobs/raw/main/docs/logo.png
    :width: 6%
-
-An iOS app for IRL streaming.
 
 .. image:: https://github.com/eerimoq/mobs/raw/main/docs/main.jpg
 
