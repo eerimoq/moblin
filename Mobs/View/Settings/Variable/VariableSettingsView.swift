@@ -13,11 +13,7 @@ struct VariableSettingsView: View {
     var body: some View {
         Form {
             NavigationLink(destination: VariableNameSettingsView(model: model, variable: variable)) {
-                HStack {
-                    Text("Name")
-                    Spacer()
-                    Text(variable.name).foregroundColor(.gray)
-                }
+                TextItemView(name: "Name", value: variable.name)
             }
             Section("Type") {
                 Picker("", selection: Binding(get: {

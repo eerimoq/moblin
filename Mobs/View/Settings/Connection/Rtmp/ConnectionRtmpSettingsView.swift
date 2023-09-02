@@ -19,11 +19,7 @@ struct ConnectionRtmpSettingsView: View {
     var body: some View {
         Form {
             NavigationLink(destination: ConnectionRtmpUrlSettingsView(model: model, connection: connection)) {
-                HStack {
-                    Text("URL")
-                    Spacer()
-                    Text(connection.rtmpUrl).foregroundColor(.gray)
-                }
+                TextItemView(name: "URL", value: connection.rtmpUrl)
             }
         }
         .navigationTitle("RTMP")

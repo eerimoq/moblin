@@ -13,11 +13,7 @@ struct WidgetSettingsView: View {
     var body: some View {
         Form {
             NavigationLink(destination: WidgetNameSettingsView(model: model, widget: widget)) {
-                HStack {
-                    Text("Name")
-                    Spacer()
-                    Text(widget.name).foregroundColor(.gray)
-                }
+                TextItemView(name: "Name", value: widget.name)
             }
             Section("Type") {
                 Picker("", selection: Binding(get: {

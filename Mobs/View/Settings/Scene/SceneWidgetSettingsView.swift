@@ -21,32 +21,16 @@ struct SceneWidgetSettingsView: View {
     var body: some View {
         Form {
             NavigationLink(destination: SceneWidgetXSettingsView(model: model, widget: widget)) {
-                HStack {
-                    Text("X")
-                    Spacer()
-                    Text("\(widget.x)").foregroundColor(.gray)
-                }
+                TextItemView(name: "X", value: "\(widget.x)")
             }
             NavigationLink(destination: SceneWidgetYSettingsView(model: model, widget: widget)) {
-                HStack {
-                    Text("Y")
-                    Spacer()
-                    Text("\(widget.y)").foregroundColor(.gray)
-                }
+                TextItemView(name: "Y", value: "\(widget.y)")
             }
             NavigationLink(destination: SceneWidgetWSettingsView(model: model, widget: widget)) {
-                HStack {
-                    Text("Width")
-                    Spacer()
-                    Text("\(widget.w)").foregroundColor(.gray)
-                }
+                TextItemView(name: "Width", value: "\(widget.w)")
             }
             NavigationLink(destination: SceneWidgetHSettingsView(model: model, widget: widget)) {
-                HStack {
-                    Text("Height")
-                    Spacer()
-                    Text("\(widget.h)").foregroundColor(.gray)
-                }
+                TextItemView(name: "Height", value: "\(widget.h)")
             }
         }
         .navigationTitle("Widget")

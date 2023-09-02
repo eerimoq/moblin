@@ -19,11 +19,7 @@ struct ConnectionSrtSettingsView: View {
     var body: some View {
         Form {
             NavigationLink(destination: ConnectionSrtUrlSettingsView(model: model, connection: connection)) {
-                HStack {
-                    Text("URL")
-                    Spacer()
-                    Text(connection.srtUrl).foregroundColor(.gray)
-                }
+                TextItemView(name: "URL", value: connection.srtUrl)
             }
             Toggle("SRTLA", isOn: Binding(get: {
                 connection.srtla

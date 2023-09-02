@@ -33,6 +33,7 @@
 		0315A3742AA37A8200295443 /* SceneWidgetYSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3732AA37A8200295443 /* SceneWidgetYSettingsView.swift */; };
 		0315A3762AA37A8F00295443 /* SceneWidgetWidthSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3752AA37A8F00295443 /* SceneWidgetWidthSettingsView.swift */; };
 		0315A3782AA37A9900295443 /* SceneWidgetHeightSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3772AA37A9900295443 /* SceneWidgetHeightSettingsView.swift */; };
+		0315A37A2AA39DA800295443 /* TextItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3792AA39DA800295443 /* TextItemView.swift */; };
 		035E9E372A9A02D6009D4F5A /* MobsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035E9E362A9A02D6009D4F5A /* MobsApp.swift */; };
 		035E9E3B2A9A02D7009D4F5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */; };
 		035E9E3E2A9A02D7009D4F5A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3D2A9A02D7009D4F5A /* Preview Assets.xcassets */; };
@@ -93,6 +94,7 @@
 		0315A3732AA37A8200295443 /* SceneWidgetYSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneWidgetYSettingsView.swift; sourceTree = "<group>"; };
 		0315A3752AA37A8F00295443 /* SceneWidgetWidthSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneWidgetWidthSettingsView.swift; sourceTree = "<group>"; };
 		0315A3772AA37A9900295443 /* SceneWidgetHeightSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneWidgetHeightSettingsView.swift; sourceTree = "<group>"; };
+		0315A3792AA39DA800295443 /* TextItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextItemView.swift; sourceTree = "<group>"; };
 		035E9E332A9A02D6009D4F5A /* Mobs.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mobs.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		035E9E362A9A02D6009D4F5A /* MobsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobsApp.swift; sourceTree = "<group>"; };
 		035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -190,6 +192,7 @@
 			children = (
 				03A9835A2A9A05D7008FF0DB /* AddButtonView.swift */,
 				03A9835D2A9A05D7008FF0DB /* CreateButtonView.swift */,
+				0315A3792AA39DA800295443 /* TextItemView.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -440,6 +443,7 @@
 			files = (
 				03A9836B2A9A05D7008FF0DB /* StreamOverlayView.swift in Sources */,
 				0315A35F2AA32AFC00295443 /* ConnectionRtmpUrlSettingsView.swift in Sources */,
+				0315A37A2AA39DA800295443 /* TextItemView.swift in Sources */,
 				0315A36C2AA33F2100295443 /* WidgetCameraSettingsView.swift in Sources */,
 				03A983712A9A0659008FF0DB /* TwitchPubSub.swift in Sources */,
 				03A9836C2A9A05D7008FF0DB /* WidgetSettingsView.swift in Sources */,

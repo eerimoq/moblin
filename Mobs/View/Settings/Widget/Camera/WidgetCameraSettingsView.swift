@@ -14,11 +14,7 @@ struct WidgetCameraSettingsView: View {
     var body: some View {
         Section(widget.type) {
             NavigationLink(destination: WidgetCameraDirectionSettingsView(model: model, widget: widget)) {
-                HStack {
-                    Text("Direction")
-                    Spacer()
-                    Text(widget.camera.direction).foregroundColor(.gray)
-                }
+                TextItemView(name: "Direction", value: widget.camera.direction)
             }
         }
     }

@@ -22,11 +22,7 @@ struct SceneSettingsView: View {
     var body: some View {
         Form {
             NavigationLink(destination: SceneNameSettingsView(model: model, scene: scene)) {
-                HStack {
-                    Text("Name")
-                    Spacer()
-                    Text(scene.name).foregroundColor(.gray)
-                }
+                TextItemView(name: "Name", value: scene.name)
             }
             Section("Widgets") {
                 List {
@@ -42,9 +38,9 @@ struct SceneSettingsView: View {
                     }
                     .onMove() { (froms, to ) in
                         for from in froms {
-                            let temp = scene.widgets[to]
+                            let tmp = scene.widgets[to]
                             scene.widgets[to] = scene.widgets[from]
-                            scene.widgets[from] = temp
+                            scene.widgets[from] = tmp
                         }
                         model.store()
                     }

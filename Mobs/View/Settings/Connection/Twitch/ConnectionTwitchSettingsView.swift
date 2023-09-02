@@ -19,18 +19,10 @@ struct ConnectionTwitchSettingsView: View {
     var body: some View {
         Form {
             NavigationLink(destination: ConnectionTwitchChannelNameSettingsView(model: model, connection: connection)) {
-                HStack {
-                    Text("Channel name")
-                    Spacer()
-                    Text(connection.twitchChannelName).foregroundColor(.gray)
-                }
+                TextItemView(name: "Channel name", value: connection.twitchChannelName)
             }
             NavigationLink(destination: ConnectionTwitchChannelIdSettingsView(model: model, connection: connection)) {
-                HStack {
-                    Text("Channel id")
-                    Spacer()
-                    Text(connection.twitchChannelId).foregroundColor(.gray)
-                }
+                TextItemView(name: "Channel id", value: connection.twitchChannelId)
             }
         }
         .navigationTitle("Twitch")

@@ -24,11 +24,7 @@ struct ConnectionSettingsView: View {
     var body: some View {
         Form {
             NavigationLink(destination: ConnectionNameSettingsView(model: model, connection: connection)) {
-                HStack {
-                    Text("Name")
-                    Spacer()
-                    Text(connection.name).foregroundColor(.gray)
-                }
+                TextItemView(name: "Name", value: connection.name)
             }
             NavigationLink(destination: ConnectionRtmpSettingsView(model: model, connection: connection)) {
                 Text("RTMP")

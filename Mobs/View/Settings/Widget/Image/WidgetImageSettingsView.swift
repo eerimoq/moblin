@@ -14,11 +14,7 @@ struct WidgetImageSettingsView: View {
     var body: some View {
         Section(widget.type) {
             NavigationLink(destination: WidgetImageUrlSettingsView(model: model, widget: widget)) {
-                HStack {
-                    Text("URL")
-                    Spacer()
-                    Text(widget.image.url).foregroundColor(.gray)
-                }
+                TextItemView(name: "URL", value: widget.image.url)
             }
         }
     }

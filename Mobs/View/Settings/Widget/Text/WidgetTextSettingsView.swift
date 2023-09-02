@@ -14,11 +14,7 @@ struct WidgetTextSettingsView: View {
     var body: some View {
         Section(widget.type) {
             NavigationLink(destination: WidgetTextFormatStringSettingsView(model: model, widget: widget)) {
-                HStack {
-                    Text("Format string")
-                    Spacer()
-                    Text(widget.text.formatString).foregroundColor(.gray)
-                }
+                TextItemView(name: "Format string", value: widget.text.formatString)
             }
         }
     }
