@@ -12,19 +12,6 @@ Discord: https://discord.gg/kRCXKuRu
 
 This project is **not** part of `OBS`_. It's just the name that is
 inspired by it.
-
-Features
-========
-
-- Scenes
-
-- Twitch chat and viewer count
-
-- Movie and grayscale video effects
-
-- RTMP
-
-- iPhone thermal state information
   
 Ideas/plan
 ==========
@@ -32,22 +19,22 @@ Ideas/plan
 - Buffering for short disconnections. Show as picture in picture or
   other layout once reconnected. Possible a record button.
 
-- Subscription and donation notifications. Both visually and with
-  sound.
-
-- Geolocation.
+- Geolocation (with map?).
 
 - Play music and short sound samples.
 
-- Streamlabs integration.
-
 - Record to disk.
 
-- LIDAR, altitude.
+- `SRTLA`_.
 
 - AV1 codec (to complement H264).
 
-- `SRTLA`_.
+- LIDAR, altitude.
+
+- Subscription and donation notifications. Both visually and with
+  sound.
+
+- Streamlabs integration.
   
 Testing with local streaming server
 ===================================
