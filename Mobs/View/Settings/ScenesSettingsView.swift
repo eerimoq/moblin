@@ -19,6 +19,7 @@ struct ScenesSettingsView: View {
                         }, set: { value in
                             database.scenes[index].enabled = value
                             model.store()
+                            model.resetSelectedScene()
                         }))
                     }
                 }.onDelete(perform: { offsets in

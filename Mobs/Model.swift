@@ -67,7 +67,8 @@ final class Model: ObservableObject {
     }
     private var srtla = Srtla()
     private var srtDummySender: DummySender?
-
+    @Published var sceneIndex = 0
+    
     var database: Database {
         get {
             settings.database
@@ -115,8 +116,9 @@ final class Model: ObservableObject {
     }
     
     func resetSelectedScene() {
-        if !database.scenes.isEmpty {
-            selectedSceneId = database.scenes[0].id
+        if !enabledScenes.isEmpty {
+            selectedSceneId = enabledScenes[0].id
+            sceneIndex = 0
         }
     }
     

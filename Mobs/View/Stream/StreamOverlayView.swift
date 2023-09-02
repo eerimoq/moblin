@@ -102,7 +102,6 @@ struct LeadingOverlayView: View {
 
 struct TrailingOverlayView: View {
     @ObservedObject var model: Model
-    @State private var sceneIndex = 0
     
     var database: Database {
         get {
@@ -119,13 +118,13 @@ struct TrailingOverlayView: View {
             IconAndText(icon: "film.stack", text: model.fps, textFirst: true)
             Spacer()
             // Variable(name: "Earnings", value: "10.32")
-            Picker("", selection: $sceneIndex) {
+            Picker("", selection: $model.sceneIndex) {
                 ForEach(0..<model.enabledScenes.count, id: \.self) { id in
                     let scene = model.enabledScenes[id]
                     Text(scene.name).tag(scene.id)
                 }
             }
-            .onChange(of: sceneIndex) { tag in
+            .onChange(of: model.sceneIndex) { tag in
                 model.selectedSceneId = model.enabledScenes[tag].id
                 model.sceneUpdated()
             }
