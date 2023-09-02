@@ -19,10 +19,17 @@ class Srtla {
         remoteConnections.append(RemoteConnection(queue: queue, type: .wiredEthernet))
     }
     
-    func start(host: String, port: UInt16) {
+    func start(uri: String) {
+        guard
+            let url = URL(string: uri),
+            let host = url.host,
+            let port = url.port else {
+            print("Failed to start srtla")
+            return
+        }
         localListener.start()
         for connection in remoteConnections {
-            connection.start(host: host, port: port)
+            connection.start(host: host, port: UInt16(port))
         }
     }
     
