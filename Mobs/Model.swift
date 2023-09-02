@@ -31,7 +31,7 @@ final class Model: ObservableObject {
     var widgets = ["Sub goal", "Earnings", "Chat", "Back camera", "Front camera", "Recording"]
     var settings: Settings = Settings()
     @Published var currentTime: String = Date().formatted(date: .omitted, time: .shortened)
-    var selectedScene: String = "Main"
+    var selectedSceneId = UUID()
     private var uptimeFormatter: DateComponentsFormatter {
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.hour, .minute, .second]
@@ -76,6 +76,12 @@ final class Model: ObservableObject {
         }
     }
     
+    var enabledScenes: [SettingsScene] {
+        get {
+            database.scenes.filter({scene in scene.enabled})
+        }
+    }
+    
     func setup(settings: Settings) {
         self.settings = settings
         numberOfScenes = database.scenes.count
@@ -93,6 +99,7 @@ final class Model: ObservableObject {
             twitchPubSub = TwitchPubSub(model: self, channelId: connection.twitchChannelId)
             twitchPubSub!.start()
         }
+        resetSelectedScene()
         updateTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             DispatchQueue.main.async {
                 let now = Date()
@@ -107,6 +114,12 @@ final class Model: ObservableObject {
         NotificationCenter.default.addObserver(self, selector: #selector(thermalStateChanged), name: ProcessInfo.thermalStateDidChangeNotification, object: nil)
         srtla.start(uri: "srt://192.168.50.72:10000")
         self.srtDummySender = DummySender(srtla: srtla)
+    }
+    
+    func resetSelectedScene() {
+        if !database.scenes.isEmpty {
+            selectedSceneId = database.scenes[0].id
+        }
     }
     
     func store() {
@@ -174,9 +187,20 @@ final class Model: ObservableObject {
         reloadTwitchViewers()
     }
 
+    func sceneUpdated() {
+        for scene in enabledScenes {
+            if selectedSceneId == scene.id {
+                print("Found scene:", scene.name)
+                for widget in scene.widgets {
+                    print(widget.id, widget.x, widget.y, widget.w, widget.h)
+                }
+            }
+        }
+    }
+    
     @objc
     func thermalStateChanged(notification: NSNotification) {
-        print("thernal change")
+        print("thermal change")
         guard let processInfo = notification.object as? ProcessInfo else {
             return
         }

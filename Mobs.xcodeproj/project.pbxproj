@@ -28,6 +28,11 @@
 		0315A3692AA33CF400295443 /* WidgetImageUrlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3682AA33CF400295443 /* WidgetImageUrlSettingsView.swift */; };
 		0315A36C2AA33F2100295443 /* WidgetCameraSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A36B2AA33F2100295443 /* WidgetCameraSettingsView.swift */; };
 		0315A36E2AA33F3400295443 /* WidgetCameraDirectionSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A36D2AA33F3400295443 /* WidgetCameraDirectionSettingsView.swift */; };
+		0315A3702AA3771F00295443 /* SceneWidgetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A36F2AA3771F00295443 /* SceneWidgetSettingsView.swift */; };
+		0315A3722AA3788600295443 /* SceneWidgetXSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3712AA3788600295443 /* SceneWidgetXSettingsView.swift */; };
+		0315A3742AA37A8200295443 /* SceneWidgetYSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3732AA37A8200295443 /* SceneWidgetYSettingsView.swift */; };
+		0315A3762AA37A8F00295443 /* SceneWidgetWidthSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3752AA37A8F00295443 /* SceneWidgetWidthSettingsView.swift */; };
+		0315A3782AA37A9900295443 /* SceneWidgetHeightSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3772AA37A9900295443 /* SceneWidgetHeightSettingsView.swift */; };
 		035E9E372A9A02D6009D4F5A /* MobsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035E9E362A9A02D6009D4F5A /* MobsApp.swift */; };
 		035E9E3B2A9A02D7009D4F5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */; };
 		035E9E3E2A9A02D7009D4F5A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3D2A9A02D7009D4F5A /* Preview Assets.xcassets */; };
@@ -83,6 +88,11 @@
 		0315A3682AA33CF400295443 /* WidgetImageUrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetImageUrlSettingsView.swift; sourceTree = "<group>"; };
 		0315A36B2AA33F2100295443 /* WidgetCameraSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCameraSettingsView.swift; sourceTree = "<group>"; };
 		0315A36D2AA33F3400295443 /* WidgetCameraDirectionSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCameraDirectionSettingsView.swift; sourceTree = "<group>"; };
+		0315A36F2AA3771F00295443 /* SceneWidgetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneWidgetSettingsView.swift; sourceTree = "<group>"; };
+		0315A3712AA3788600295443 /* SceneWidgetXSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneWidgetXSettingsView.swift; sourceTree = "<group>"; };
+		0315A3732AA37A8200295443 /* SceneWidgetYSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneWidgetYSettingsView.swift; sourceTree = "<group>"; };
+		0315A3752AA37A8F00295443 /* SceneWidgetWidthSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneWidgetWidthSettingsView.swift; sourceTree = "<group>"; };
+		0315A3772AA37A9900295443 /* SceneWidgetHeightSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneWidgetHeightSettingsView.swift; sourceTree = "<group>"; };
 		035E9E332A9A02D6009D4F5A /* Mobs.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mobs.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		035E9E362A9A02D6009D4F5A /* MobsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobsApp.swift; sourceTree = "<group>"; };
 		035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -166,6 +176,11 @@
 			children = (
 				0315A34D2AA3218900295443 /* SceneNameSettingsView.swift */,
 				03A9835C2A9A05D7008FF0DB /* SceneSettingsView.swift */,
+				0315A36F2AA3771F00295443 /* SceneWidgetSettingsView.swift */,
+				0315A3712AA3788600295443 /* SceneWidgetXSettingsView.swift */,
+				0315A3732AA37A8200295443 /* SceneWidgetYSettingsView.swift */,
+				0315A3752AA37A8F00295443 /* SceneWidgetWidthSettingsView.swift */,
+				0315A3772AA37A9900295443 /* SceneWidgetHeightSettingsView.swift */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -430,9 +445,11 @@
 				03A9836C2A9A05D7008FF0DB /* WidgetSettingsView.swift in Sources */,
 				0315A3622AA33A2C00295443 /* WidgetTextSettingsView.swift in Sources */,
 				0315A34E2AA3218900295443 /* SceneNameSettingsView.swift in Sources */,
+				0315A3722AA3788600295443 /* SceneWidgetXSettingsView.swift in Sources */,
 				0315A33F2AA3173000295443 /* DummySender.swift in Sources */,
 				03A983642A9A05D7008FF0DB /* StreamView.swift in Sources */,
 				0315A3672AA33C6A00295443 /* WidgetImageSettingsView.swift in Sources */,
+				0315A3762AA37A8F00295443 /* SceneWidgetWidthSettingsView.swift in Sources */,
 				0315A35A2AA3270100295443 /* ConnectionSrtUrlSettingsView.swift in Sources */,
 				030947C32A9C0496003FC387 /* ChatView.swift in Sources */,
 				03A983622A9A05D7008FF0DB /* ContentView.swift in Sources */,
@@ -450,6 +467,7 @@
 				03B374092AA0EA700028DDD5 /* IconEffect.swift in Sources */,
 				0315A3492AA31EE200295443 /* ConnectionTwitchNameSettingsView.swift in Sources */,
 				03A983692A9A05D7008FF0DB /* CreateButtonView.swift in Sources */,
+				0315A3742AA37A8200295443 /* SceneWidgetYSettingsView.swift in Sources */,
 				0315A3422AA31B0000295443 /* ConnectionNameSettingsView.swift in Sources */,
 				0315A36E2AA33F3400295443 /* WidgetCameraDirectionSettingsView.swift in Sources */,
 				0315A34B2AA31EF600295443 /* ConnectionTwitchIdSettingsView.swift in Sources */,
@@ -458,6 +476,7 @@
 				03A983722A9A0659008FF0DB /* TwitchChatMobs.swift in Sources */,
 				03B373FB2A9EFB910028DDD5 /* ZoomView.swift in Sources */,
 				03A983672A9A05D7008FF0DB /* ScenesSettingsView.swift in Sources */,
+				0315A3782AA37A9900295443 /* SceneWidgetHeightSettingsView.swift in Sources */,
 				035E9E372A9A02D6009D4F5A /* MobsApp.swift in Sources */,
 				03A9836A2A9A05D7008FF0DB /* VariableSettingsView.swift in Sources */,
 				0315A33D2AA2FA7D00295443 /* RemoteConnection.swift in Sources */,
@@ -469,6 +488,7 @@
 				03B374132AA277570028DDD5 /* Srtla.swift in Sources */,
 				03A983662A9A05D7008FF0DB /* AddButtonView.swift in Sources */,
 				03A983612A9A05D7008FF0DB /* ConnectionsSettingsView.swift in Sources */,
+				0315A3702AA3771F00295443 /* SceneWidgetSettingsView.swift in Sources */,
 				0315A3552AA324A500295443 /* VariableNameSettingsView.swift in Sources */,
 				0315A33B2AA2FA7100295443 /* LocalListener.swift in Sources */,
 			);

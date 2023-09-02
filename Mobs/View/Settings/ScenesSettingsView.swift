@@ -24,6 +24,7 @@ struct ScenesSettingsView: View {
                 }.onDelete(perform: { offsets in
                     database.scenes.remove(atOffsets: offsets)
                     model.store()
+                    model.resetSelectedScene()
                     model.numberOfScenes -= 1
                 })
                 CreateButtonView(action: {

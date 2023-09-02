@@ -1,6 +1,6 @@
 import SwiftUI
 
-class SettingsConnection: Codable {
+class SettingsConnection: Codable, Identifiable {
     var name: String
     var id: UUID = UUID()
     var enabled: Bool = false
@@ -15,7 +15,7 @@ class SettingsConnection: Codable {
     }
 }
 
-class SettingsSceneWidget: Codable {
+class SettingsSceneWidget: Codable, Identifiable {    
     var id: UUID
     var x: Int = 0
     var y: Int = 0
@@ -66,7 +66,7 @@ class SettingsWidgetWebview: Codable {
 
 let widgetTypes = ["Camera", /*"Text", */ "Image"/*, "Video", "Chat", "Recording", "Webview"*/]
 
-class SettingsWidget: Codable {
+class SettingsWidget: Codable, Identifiable {
     var name: String
     var id: UUID = UUID()
     var type: String = "Text"

@@ -31,19 +31,13 @@ struct ConnectionSettingsView: View {
                 }
             }
             NavigationLink(destination: ConnectionRtmpSettingsView(model: model, connection: connection)) {
-                HStack {
-                    Text("RTMP")
-                }
+                Text("RTMP")
             }
             NavigationLink(destination: ConnectionSrtSettingsView(model: model, connection: connection)) {
-                HStack {
-                    Text("SRT")
-                }
+                Text("SRT")
             }
             NavigationLink(destination: ConnectionTwitchSettingsView(model: model, connection: connection)) {
-                HStack {
-                    Text("Twitch")
-                }
+                Text("Twitch")
             }
             Section("Protocol") {
                 Picker("", selection: $transport) {

@@ -3,16 +3,22 @@ import SwiftUI
 struct SceneSettingsView: View {
     var index: Int
     @ObservedObject var model: Model
-    @State private var widgets: [String] = []
     @State private var showingAdd = false
-    @State private var selected = "Sub goal"
+    @State private var selected = 0
+    @State private var widgets: [Int]
+    
+    init(index: Int, model: Model) {
+        self.index = index
+        self.model = model
+        _widgets = State(initialValue: Array(0..<model.database.scenes[index].widgets.count))
+    }
 
     var scene: SettingsScene {
         get {
             model.settings.database.scenes[index]
         }
     }
-
+    
     var body: some View {
         Form {
             NavigationLink(destination: SceneNameSettingsView(model: model, scene: scene)) {
@@ -24,21 +30,41 @@ struct SceneSettingsView: View {
             }
             Section("Widgets") {
                 List {
-                    ForEach($widgets, id: \.self, editActions: .move) { $widget in
-                        Text(widget)
-                    }.onDelete(perform: { offsets in
-                        print("delete")
+                    ForEach($widgets, id: \.self) { $widget in
+                        let id = scene.widgets[widget].id
+                        if let realWidget = model.database.widgets.first(where: {item in item.id == id}) {
+                            NavigationLink(destination: SceneWidgetSettingsView(model: model, widget: scene.widgets[widget], name: realWidget.name)) {
+                                Text(realWidget.name)
+                            }
+                        } else {
+                            Text("Unknown")
+                        }
+                    }
+                    .onMove() { (froms, to ) in
+                        for from in froms {
+                            let temp = scene.widgets[to]
+                            scene.widgets[to] = scene.widgets[from]
+                            scene.widgets[from] = temp
+                            widgets = Array(0..<scene.widgets.count)
+                            model.store()
+                        }
+                    }
+                    .onDelete(perform: { offsets in
+                        scene.widgets.remove(atOffsets: offsets)
+                        widgets = Array(0..<scene.widgets.count)
+                        model.store()
                     })
                 }
                 AddButtonView(action: {
                     showingAdd = true
-                }).popover(isPresented: $showingAdd) {
+                })
+                .popover(isPresented: $showingAdd) {
                     VStack {
                         Form {
                             Section("Name") {
                                 Picker("", selection: $selected) {
-                                    ForEach(model.widgets, id: \.self) {
-                                        Text($0)
+                                    ForEach(0..<model.database.widgets.count, id: \.self) { tag in
+                                        Text(model.database.widgets[tag].name).tag(tag)
                                     }
                                 }
                                 .pickerStyle(.inline)
@@ -54,6 +80,10 @@ struct SceneSettingsView: View {
                             })
                             Spacer()
                             Button(action: {
+                                let realWidget = model.database.widgets[selected]
+                                scene.widgets.append(SettingsSceneWidget(id: realWidget.id))
+                                widgets = Array(0..<scene.widgets.count)
+                                model.store()
                                 showingAdd = false
                             }, label: {
                                 Text("Done")
