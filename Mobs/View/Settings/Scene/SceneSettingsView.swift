@@ -45,8 +45,8 @@ struct SceneSettingsView: View {
                             let temp = scene.widgets[to]
                             scene.widgets[to] = scene.widgets[from]
                             scene.widgets[from] = temp
-                            widgets = Array(0..<scene.widgets.count)
                             model.store()
+                            widgets = Array(0..<scene.widgets.count)
                         }
                     }
                     .onDelete(perform: { offsets in
