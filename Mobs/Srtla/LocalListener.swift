@@ -12,7 +12,7 @@ class LocalListener {
     private var queue: DispatchQueue
     private var listener: NWListener?
     var port: UInt16? = nil
-    var packetHandler: (() -> Void)?
+    var packetHandler: ((_ packet: Data) -> Void)?
     private var connection: NWConnection?
     
     init(queue: DispatchQueue) {
@@ -80,7 +80,11 @@ class LocalListener {
         }
         connection.receive(minimumIncompleteLength: 1, maximumLength: 65536) { data, _, isDone, error in
             if let data = data, !data.isEmpty {
-                print("Local data:", data)
+                if let packetHandler = self.packetHandler {
+                    packetHandler(data)
+                } else {
+                    print("Discarding local packet.")
+                }
             }
             if let error = error {
                 print("Local error:", error)

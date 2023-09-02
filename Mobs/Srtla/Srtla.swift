@@ -28,9 +28,10 @@ class Srtla {
             print("Failed to start srtla")
             return
         }
-        localListener.packetHandler = nil
+        localListener.packetHandler = handleLocalPacket(packet:)
         localListener.start()
         for connection in remoteConnections {
+            connection.packetHandler = handleRemotePacket(packet:)
             connection.start(host: host, port: UInt16(port))
         }
     }
@@ -42,7 +43,11 @@ class Srtla {
         localListener.stop()
     }
     
-    func handleLocalPacket() {
-        print("Got local packet.")
+    func handleLocalPacket(packet: Data) {
+        print("Got local packet:", packet)
+    }
+    
+    func handleRemotePacket(packet: Data) {
+        print("Got remote packet:", packet)
     }
 }

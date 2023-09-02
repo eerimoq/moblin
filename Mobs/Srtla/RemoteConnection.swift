@@ -18,6 +18,7 @@ class RemoteConnection {
             oldValue?.forceCancel()
         }
     }
+    var packetHandler: ((_ packet: Data) -> Void)?
     
     init(queue: DispatchQueue, type: NWInterface.InterfaceType) {
         self.queue = queue
@@ -56,6 +57,11 @@ class RemoteConnection {
         connection.receive(minimumIncompleteLength: 1, maximumLength: 65536) { data, _, isDone, error in
             if let data = data, !data.isEmpty {
                 print("\(self.type): Receive \(data)")
+                if let packetHandler = self.packetHandler {
+                    packetHandler(data)
+                } else {
+                    print("\(self.type): Discarding packet.")
+                }
             }
             if let error = error {
                 print("\(self.type): Receive \(error)")
