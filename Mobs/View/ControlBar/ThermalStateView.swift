@@ -32,9 +32,3 @@ struct ThermalStateView: View {
             .foregroundColor(color(thermalState: thermalState))
     }
 }
-
-struct ThermalStateView_Previews: PreviewProvider {
-    static var previews: some View {
-        ThermalStateView(thermalState: .nominal)
-    }
-}

@@ -125,9 +125,3 @@ struct ButtonsView: View {
         }
     }
 }
-
-struct ButtonsView_Previews: PreviewProvider {
-    static var previews: some View {
-        ButtonsView(model: Model())
-    }
-}

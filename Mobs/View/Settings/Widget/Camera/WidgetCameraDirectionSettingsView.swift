@@ -37,9 +37,3 @@ struct WidgetCameraDirectionSettingsView: View {
         .navigationTitle("Direction")
     }
 }
-
-struct WidgetCameraDirectionSettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        WidgetCameraDirectionSettingsView(model: Model(), widget: SettingsWidget(name: ""))
-    }
-}

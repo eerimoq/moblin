@@ -40,12 +40,3 @@ struct ChatView: View {
         }
     }
 }
-
-struct ChatView_Previews: PreviewProvider {
-    static var previews: some View {
-        ChatView(posts: [
-            Post(id: 1, user: "Foo", message: "bar fe fe ef"),
-            Post(id: 2, user: "Foofowkokwef", message: "barwef wef we fe fe ef")
-        ])
-    }
-}

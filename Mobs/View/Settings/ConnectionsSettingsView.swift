@@ -45,9 +45,3 @@ struct ConnectionsSettingsView: View {
         .navigationTitle("Connections")
     }
 }
-
-struct ConnectionsSettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        ConnectionsSettingsView(model: Model())
-    }
-}

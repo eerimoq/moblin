@@ -13,9 +13,3 @@ struct AddButtonView: View {
         })
     }
 }
-
-struct AddButtonView_Previews: PreviewProvider {
-    static var previews: some View {
-        AddButtonView(action: {})
-    }
-}

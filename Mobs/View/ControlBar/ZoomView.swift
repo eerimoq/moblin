@@ -26,9 +26,3 @@ struct ZoomView: View {
         )
     }
 }
-
-struct ZoomView_Previews: PreviewProvider {
-    static var previews: some View {
-        ZoomView(onChange: {level in})
-    }
-}

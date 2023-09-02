@@ -34,9 +34,3 @@ struct ConnectionSrtUrlSettingsView: View {
         .navigationTitle("URL")
     }
 }
-
-struct ConnectionSrtUrlSettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        ConnectionSrtUrlSettingsView(model: Model(), connection: SettingsConnection(name: ""))
-    }
-}

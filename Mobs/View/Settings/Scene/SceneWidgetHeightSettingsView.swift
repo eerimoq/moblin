@@ -31,9 +31,3 @@ struct SceneWidgetHSettingsView: View {
         .navigationTitle("Height")
     }
 }
-
-struct SceneWidgetHSettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        SceneWidgetHSettingsView(model: Model(), widget: SettingsSceneWidget(id: UUID()))
-    }
-}

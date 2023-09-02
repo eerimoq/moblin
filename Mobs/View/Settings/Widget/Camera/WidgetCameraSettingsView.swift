@@ -19,9 +19,3 @@ struct WidgetCameraSettingsView: View {
         }
     }
 }
-
-struct WidgetCameraSettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        WidgetCameraSettingsView(model: Model(), widget: SettingsWidget(name: ""))
-    }
-}

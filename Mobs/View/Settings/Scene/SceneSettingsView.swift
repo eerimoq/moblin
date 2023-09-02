@@ -92,9 +92,3 @@ struct SceneSettingsView: View {
         .navigationTitle("Scene")
     }
 }
-
-struct SceneSettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        SceneSettingsView(index: 0, model: Model())
-    }
-}

@@ -30,9 +30,3 @@ struct ConnectionNameSettingsView: View {
         .navigationTitle("Name")
     }
 }
-
-struct ConnectionNameSettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        ConnectionNameSettingsView(model: Model(), connection: SettingsConnection(name: "Foo"))
-    }
-}

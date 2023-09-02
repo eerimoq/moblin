@@ -32,9 +32,3 @@ struct ConnectionSrtSettingsView: View {
         .navigationTitle("SRT")
     }
 }
-
-struct ConnectionSrtSettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        ConnectionSrtSettingsView(model: Model(), connection: SettingsConnection(name: "Foo"))
-    }
-}

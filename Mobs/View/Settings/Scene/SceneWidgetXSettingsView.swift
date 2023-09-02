@@ -31,9 +31,3 @@ struct SceneWidgetXSettingsView: View {
         .navigationTitle("X")
     }
 }
-
-struct SceneWidgetXSettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        SceneWidgetXSettingsView(model: Model(), widget: SettingsSceneWidget(id: UUID()))
-    }
-}

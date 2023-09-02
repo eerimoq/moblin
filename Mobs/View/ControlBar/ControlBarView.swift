@@ -69,9 +69,3 @@ struct ControlBarView: View {
         .background(.black)
     }
 }
-
-struct ControlBarView_Previews: PreviewProvider {
-    static var previews: some View {
-        ControlBarView(model: Model())
-    }
-}

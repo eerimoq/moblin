@@ -21,9 +21,3 @@ struct BatteryView: View {
         .cornerRadius(3)
     }
 }
-
-struct BatteryView_Previews: PreviewProvider {
-    static var previews: some View {
-        BatteryView(level: 0.5)
-    }
-}

@@ -154,9 +154,3 @@ struct StreamOverlayView: View {
         .padding([.trailing, .top])
     }
 }
-
-struct StreamOverlayView_Previews: PreviewProvider {
-    static var previews: some View {
-        StreamOverlayView(model: Model())
-    }
-}

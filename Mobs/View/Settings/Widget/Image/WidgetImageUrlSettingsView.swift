@@ -23,9 +23,3 @@ struct WidgetImageUrlSettingsView: View {
         .navigationTitle("URL")
     }
 }
-
-struct WidgetImageUrlSettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        WidgetImageUrlSettingsView(model: Model(), widget: SettingsWidget(name: ""))
-    }
-}

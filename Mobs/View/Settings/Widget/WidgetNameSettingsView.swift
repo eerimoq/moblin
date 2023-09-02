@@ -31,9 +31,3 @@ struct WidgetNameSettingsView: View {
         .navigationTitle("Name")
     }
 }
-
-struct WidgetNameSettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        WidgetNameSettingsView(model: Model(), widget: SettingsWidget(name: "Foo"))
-    }
-}

@@ -28,9 +28,3 @@ struct ConnectionTwitchSettingsView: View {
         .navigationTitle("Twitch")
     }
 }
-
-struct ConnectionTwitchSettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        ConnectionTwitchSettingsView(model: Model(), connection: SettingsConnection(name: "Foo"))
-    }
-}

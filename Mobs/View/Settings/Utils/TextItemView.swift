@@ -19,9 +19,3 @@ struct TextItemView: View {
         }
     }
 }
-
-struct TextItemView_Previews: PreviewProvider {
-    static var previews: some View {
-        TextItemView(name: "", value: "")
-    }
-}

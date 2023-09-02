@@ -82,9 +82,3 @@ struct VariableSettingsView: View {
         .navigationTitle("Variable")
     }
 }
-
-struct VariableSettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        VariableSettingsView(index: 0, model: Model())
-    }
-}

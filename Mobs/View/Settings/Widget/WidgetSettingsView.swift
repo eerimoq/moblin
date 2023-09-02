@@ -62,9 +62,3 @@ struct WidgetSettingsView: View {
         .navigationTitle("Widget")
     }
 }
-
-struct WidgetSettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        WidgetSettingsView(index: 0, model: Model())
-    }
-}

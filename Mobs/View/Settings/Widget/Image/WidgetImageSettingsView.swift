@@ -19,9 +19,3 @@ struct WidgetImageSettingsView: View {
         }
     }
 }
-
-struct WidgetImageSettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        WidgetImageSettingsView(model: Model(), widget: SettingsWidget(name: ""))
-    }
-}

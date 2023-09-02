@@ -53,9 +53,3 @@ struct SettingsView: View {
         .navigationTitle("Settings")
     }
 }
-
-struct SettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        SettingsView(model: Model())
-    }
-}

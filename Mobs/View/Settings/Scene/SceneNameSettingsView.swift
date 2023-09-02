@@ -31,9 +31,3 @@ struct SceneNameSettingsView: View {
         .navigationTitle("Name")
     }
 }
-
-struct SceneNameSettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        SceneNameSettingsView(model: Model(), scene: SettingsScene(name: "Foo"))
-    }
-}

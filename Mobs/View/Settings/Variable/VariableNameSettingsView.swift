@@ -31,9 +31,3 @@ struct VariableNameSettingsView: View {
         .navigationTitle("Name")
     }
 }
-
-struct VariableNameSettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        VariableNameSettingsView(model: Model(), variable: SettingsVariable(name: "Foo"))
-    }
-}

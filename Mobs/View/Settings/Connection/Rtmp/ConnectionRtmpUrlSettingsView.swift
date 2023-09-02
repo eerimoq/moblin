@@ -34,9 +34,3 @@ struct ConnectionRtmpUrlSettingsView: View {
         .navigationTitle("URL")
     }
 }
-
-struct ConnectionRtmpUrlSettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        ConnectionRtmpUrlSettingsView(model: Model(), connection: SettingsConnection(name: ""))
-    }
-}
