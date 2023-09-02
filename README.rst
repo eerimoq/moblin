@@ -1,3 +1,6 @@
+.. image:: https://github.com/eerimoq/mobs/raw/main/docs/logo.png
+   :width: 20%
+
 MOBS
 ====
 
