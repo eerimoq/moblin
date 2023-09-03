@@ -223,4 +223,9 @@ final class Settings {
             logger.error("settings: Failed to store.")
         }
     }
+    
+    func reset() {
+        database = createDefault()
+        store()
+    }
 }

@@ -2,6 +2,8 @@ import SwiftUI
 
 struct SettingsView: View {
     @ObservedObject var model: Model
+    @State private var isPresentingResetConfirm: Bool = false
+
 
     var database: Database {
         get {
@@ -89,6 +91,20 @@ struct SettingsView: View {
             }
             Section("About") {
                 TextItemView(name: "Version", value: version())
+            }
+            Section {
+                HStack {
+                    Spacer()
+                    Button("Reset settings", role: .destructive) {
+                        isPresentingResetConfirm = true
+                    }
+                    .confirmationDialog("Are you sure?", isPresented: $isPresentingResetConfirm) {
+                        Button("Reset settings", role: .destructive) {
+                            model.settings.reset()
+                         }
+                    }
+                    Spacer()
+                }
             }
         }
         .navigationTitle("Settings")
