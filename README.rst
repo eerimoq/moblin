@@ -3,9 +3,6 @@ MOBS
 
 An iOS app for IRL streaming. Mainly targetting `Twitch`_.
 
-.. image:: https://github.com/eerimoq/mobs/raw/main/Docs/logo.png
-   :width: 6%
-
 .. image:: https://github.com/eerimoq/mobs/raw/main/Docs/main.jpg
 
 Discord: https://discord.gg/kRCXKuRu
