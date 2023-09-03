@@ -27,7 +27,7 @@ class SettingsSceneWidget: Codable, Identifiable {
     }
 }
 
-class SettingsScene: Codable {
+class SettingsScene: Codable, Identifiable {
     var name: String
     var id: UUID = UUID()
     var enabled: Bool = true
@@ -102,7 +102,7 @@ class SettingsVariableTextWebsocket: Codable {
 
 let variableTypes = ["Text", "HTTP", "Twitch PubSub", "Websocket"]
 
-class SettingsVariable: Codable {
+class SettingsVariable: Codable, Identifiable {
     var name: String
     var id: UUID = UUID()
     var type: String = "Text"

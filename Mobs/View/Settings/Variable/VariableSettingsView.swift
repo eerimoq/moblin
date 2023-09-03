@@ -1,14 +1,8 @@
 import SwiftUI
 
 struct VariableSettingsView: View {
-    var index: Int
+    var variable: SettingsVariable
     @ObservedObject var model: Model
-
-    var variable: SettingsVariable {
-        get {
-            model.settings.database.variables[index]
-        }
-    }
 
     func submitName(name: String) {
         variable.name = name
@@ -26,7 +20,7 @@ struct VariableSettingsView: View {
                 }, set: { value in
                     variable.type = value.trim()
                     model.store()
-                    model.numberOfVariables += 0
+                    model.objectWillChange.send()
                 })) {
                     ForEach(variableTypes, id: \.self) {
                         Text($0)

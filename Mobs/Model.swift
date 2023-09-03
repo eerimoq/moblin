@@ -23,10 +23,6 @@ final class Model: ObservableObject {
     private var subscriptions = Set<AnyCancellable>()
     private var startDate: Date? = nil
     @Published var uptime: String = ""
-    @Published var numberOfScenes = 0
-    @Published var numberOfWidgets = 0
-    @Published var numberOfVariables = 0
-    @Published var numberOfConnections = 0
     var settings: Settings = Settings()
     @Published var currentTime: String = Date().formatted(date: .omitted, time: .shortened)
     var selectedSceneId = UUID()
@@ -83,10 +79,6 @@ final class Model: ObservableObject {
     
     func setup(settings: Settings) {
         self.settings = settings
-        numberOfScenes = database.scenes.count
-        numberOfWidgets = database.widgets.count
-        numberOfVariables = database.variables.count
-        numberOfConnections = database.connections.count
         rtmpStream = RTMPStream(connection: rtmpConnection)
         rtmpStream.videoOrientation = .landscapeRight
         rtmpStream.sessionPreset = .hd1920x1080

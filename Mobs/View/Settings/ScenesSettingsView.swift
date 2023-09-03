@@ -12,12 +12,12 @@ struct ScenesSettingsView: View {
     var body: some View {
         Form {
             Section {
-                ForEach(0..<model.numberOfScenes, id: \.self) { index in
-                    NavigationLink(destination: SceneSettingsView(index: index, model: model)) {
-                        Toggle(database.scenes[index].name, isOn: Binding(get: {
-                            database.scenes[index].enabled
+                ForEach(database.scenes) { scene in
+                    NavigationLink(destination: SceneSettingsView(scene: scene, model: model)) {
+                        Toggle(scene.name, isOn: Binding(get: {
+                            scene.enabled
                         }, set: { value in
-                            database.scenes[index].enabled = value
+                            scene.enabled = value
                             model.store()
                             model.resetSelectedScene()
                         }))
@@ -27,46 +27,46 @@ struct ScenesSettingsView: View {
                     database.scenes.remove(atOffsets: offsets)
                     model.store()
                     model.resetSelectedScene()
-                    model.numberOfScenes -= 1
+                    model.objectWillChange.send()
                 })
                 CreateButtonView(action: {
                     database.scenes.append(SettingsScene(name: "My scene"))
                     model.store()
-                    model.numberOfScenes += 1
+                    model.objectWillChange.send()
                 })
             }
             Section("Widgets") {
-                ForEach(0..<model.numberOfWidgets, id: \.self) { index in
-                    NavigationLink(destination: WidgetSettingsView(index: index, model: model)) {
-                        Text(database.widgets[index].name)
+                ForEach(database.widgets) { widget in
+                    NavigationLink(destination: WidgetSettingsView(widget: widget, model: model)) {
+                        Text(widget.name)
                     }
                 }
                 .onDelete(perform: { offsets in
                     database.widgets.remove(atOffsets: offsets)
                     model.store()
-                    model.numberOfWidgets -= 1
+                    model.objectWillChange.send()
                 })
                 CreateButtonView(action: {
                     database.widgets.append(SettingsWidget(name: "My widget"))
                     model.store()
-                    model.numberOfWidgets += 1
+                    model.objectWillChange.send()
                 })
             }
             Section("Variables") {
-                ForEach(0..<model.numberOfVariables, id: \.self) { index in
-                    NavigationLink(destination: VariableSettingsView(index: index, model: model)) {
-                        Text(database.variables[index].name)
+                ForEach(database.variables) { variable in
+                    NavigationLink(destination: VariableSettingsView(variable: variable, model: model)) {
+                        Text(variable.name)
                     }
                 }
                 .onDelete(perform: { offsets in
                     database.variables.remove(atOffsets: offsets)
                     model.store()
-                    model.numberOfVariables -= 1
+                    model.objectWillChange.send()
                 })
                 CreateButtonView(action: {
                     database.variables.append(SettingsVariable(name: "My variable"))
                     model.store()
-                    model.numberOfVariables += 1
+                    model.objectWillChange.send()
                 })
             }
         }

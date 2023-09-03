@@ -1,22 +1,16 @@
 import SwiftUI
 
 struct SceneSettingsView: View {
-    private var index: Int
     @ObservedObject var model: Model
     @State private var showingAdd = false
     @State private var selected = 0
     @State private var sceneWidgets: [Int]
+    private var scene: SettingsScene
     
-    init(index: Int, model: Model) {
-        self.index = index
+    init(scene: SettingsScene, model: Model) {
+        self.scene = scene
         self.model = model
-        self.sceneWidgets = Array(0..<model.database.scenes[index].widgets.count)
-    }
-
-    var scene: SettingsScene {
-        get {
-            model.database.scenes[index]
-        }
+        self.sceneWidgets = Array(0..<scene.widgets.count)
     }
     
     var widgets: [SettingsWidget] {

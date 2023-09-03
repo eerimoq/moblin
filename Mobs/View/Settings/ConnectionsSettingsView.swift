@@ -12,33 +12,33 @@ struct ConnectionsSettingsView: View {
     var body: some View {
         VStack {
             Form {
-                ForEach(0..<model.numberOfConnections, id: \.self) { index in
-                    NavigationLink(destination: ConnectionSettingsView(index: index, model: model)) {
-                        Toggle(database.connections[index].name, isOn: Binding(get: {
-                            database.connections[index].enabled
+                ForEach(database.connections) { connection in
+                    NavigationLink(destination: ConnectionSettingsView(connection: connection, model: model)) {
+                        Toggle(connection.name, isOn: Binding(get: {
+                            connection.enabled
                         }, set: { value in
-                            database.connections[index].enabled = value
-                            for cindex in 0..<model.numberOfConnections {
-                                if cindex != index {
-                                    database.connections[cindex].enabled = false
+                            connection.enabled = value
+                            for oconnection in database.connections {
+                                if oconnection.id != connection.id {
+                                    oconnection.enabled = false
                                 }
                             }
                             model.store()
-                            model.numberOfConnections += 0
                             model.reloadConnection()
+                            model.objectWillChange.send()
                         }))
-                        .disabled(database.connections[index].enabled)
+                        .disabled(connection.enabled)
                     }
                 }
                 .onDelete(perform: { offsets in
                     database.connections.remove(atOffsets: offsets)
                     model.store()
-                    model.numberOfConnections -= 1
+                    model.objectWillChange.send()
                 })
                 CreateButtonView(action: {
                     database.connections.append(SettingsConnection(name: "My connection"))
                     model.store()
-                    model.numberOfConnections += 1
+                    model.objectWillChange.send()
                 })
             }
         }

@@ -5,20 +5,14 @@ func getConnection(index: Int, model: Model) -> SettingsConnection {
 }
 
 struct ConnectionSettingsView: View {
-    private var index: Int
+    private var connection: SettingsConnection
     @ObservedObject private var model: Model
     @State private var transport: String
 
-    init(index: Int, model: Model) {
-        self.index = index
+    init(connection: SettingsConnection, model: Model) {
+        self.connection = connection
         self.model = model
         self.transport = "RTMP"
-    }
-    
-    var connection: SettingsConnection {
-        get {
-            model.settings.database.connections[index]
-        }
     }
     
     func submitName(name: String) {

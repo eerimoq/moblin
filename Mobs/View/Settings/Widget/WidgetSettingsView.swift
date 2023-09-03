@@ -1,14 +1,8 @@
 import SwiftUI
 
 struct WidgetSettingsView: View {
-    var index: Int
+    var widget: SettingsWidget
     @ObservedObject var model: Model
-
-    var widget: SettingsWidget {
-        get {
-            model.settings.database.widgets[index]
-        }
-    }
 
     func submitName(name: String) {
         widget.name = name
@@ -26,7 +20,7 @@ struct WidgetSettingsView: View {
                 }, set: { value in
                     widget.type = value.trim()
                     model.store()
-                    model.numberOfWidgets += 0
+                    model.objectWillChange.send()
                 })) {
                     ForEach(widgetTypes, id: \.self) {
                         Text($0)
