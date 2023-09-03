@@ -4,23 +4,17 @@ struct SceneSettingsView: View {
     @ObservedObject var model: Model
     @State private var showingAdd = false
     @State private var selected = 0
-    @State private var sceneWidgets: [Int]
     private var scene: SettingsScene
     
     init(scene: SettingsScene, model: Model) {
         self.scene = scene
         self.model = model
-        self.sceneWidgets = Array(0..<scene.widgets.count)
     }
     
     var widgets: [SettingsWidget] {
         get {
             model.database.widgets
         }
-    }
-    
-    func resetWidgets() {
-        sceneWidgets = Array(0..<scene.widgets.count)
     }
     
     func submitName(name: String) {
@@ -35,8 +29,7 @@ struct SceneSettingsView: View {
             }
             Section("Widgets") {
                 List {
-                    ForEach($sceneWidgets, id: \.self) { $index in
-                        let widget = scene.widgets[index]
+                    ForEach(scene.widgets) { widget in
                         if let realWidget = widgets.first(where: {item in item.id == widget.id}) {
                             NavigationLink(destination: SceneWidgetSettingsView(model: model, widget: widget, name: realWidget.name)) {
                                 Text(realWidget.name)
@@ -46,12 +39,10 @@ struct SceneSettingsView: View {
                     .onMove(perform: { (froms, to) in
                         scene.widgets.move(fromOffsets: froms, toOffset: to)
                         model.store()
-                        resetWidgets()
                     })
                     .onDelete(perform: { offsets in
                         scene.widgets.remove(atOffsets: offsets)
                         model.store()
-                        resetWidgets()
                     })
                 }
                 AddButtonView(action: {
@@ -62,8 +53,8 @@ struct SceneSettingsView: View {
                         Form {
                             Section("Name") {
                                 Picker("", selection: $selected) {
-                                    ForEach(0..<widgets.count, id: \.self) { tag in
-                                        Text(widgets[tag].name)
+                                    ForEach(widgets) { widget in
+                                        Text(widget.name)
                                     }
                                 }
                                 .pickerStyle(.inline)
@@ -82,7 +73,7 @@ struct SceneSettingsView: View {
                                 let realWidget = widgets[selected]
                                 scene.widgets.append(SettingsSceneWidget(id: realWidget.id))
                                 model.store()
-                                resetWidgets()
+                                model.objectWillChange.send()
                                 showingAdd = false
                             }, label: {
                                 Text("Done")
