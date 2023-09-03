@@ -10,8 +10,8 @@ import HaishinKit
 import UIKit
 
 final class MovieEffect: VideoEffect {
-    let filter: CIFilter? = CIFilter(name: "CISourceOverCompositing")
-    var extent = CGRect.zero {
+    private let filter: CIFilter? = CIFilter(name: "CISourceOverCompositing")
+    private var extent = CGRect.zero {
         didSet {
             if extent == oldValue {
                 return
@@ -29,7 +29,7 @@ final class MovieEffect: VideoEffect {
             UIGraphicsEndImageContext()
         }
     }
-    var black: CIImage?
+    private var black: CIImage?
 
     override func execute(_ image: CIImage, info: CMSampleBuffer?) -> CIImage {
         guard let filter = filter else {

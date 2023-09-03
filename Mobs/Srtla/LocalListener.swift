@@ -11,9 +11,9 @@ import Network
 class LocalListener {
     private var queue: DispatchQueue
     private var listener: NWListener?
-    var port: UInt16? = nil
-    var packetHandler: ((_ packet: Data) -> Void)?
     private var connection: NWConnection?
+    var packetHandler: ((_ packet: Data) -> Void)?
+    var port: UInt16? = nil
     
     init(queue: DispatchQueue) {
         self.queue = queue
@@ -35,9 +35,7 @@ class LocalListener {
     }
 
     func stop() {
-        if let listener = listener {
-            listener.cancel()
-        }
+        listener?.cancel()
     }
 
     private func handleListenerStateChange(to state: NWListener.State) {
@@ -77,7 +75,7 @@ class LocalListener {
         guard let connection = connection else {
             return
         }
-        connection.receive(minimumIncompleteLength: 1, maximumLength: 65536) { data, _, isDone, error in
+        connection.receive(minimumIncompleteLength: 1, maximumLength: 32768) { data, _, isDone, error in
             if let data = data, !data.isEmpty {
                 if let packetHandler = self.packetHandler {
                     packetHandler(data)

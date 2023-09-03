@@ -55,6 +55,9 @@ struct ControlBarView: View {
                     Text(model.currentTime)
                         .font(.system(size: 13))
                 }
+                Image("AppIconNoBackground")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
                 Spacer()
                 ButtonsView(model: model)
                 ZoomView(onChange: { (level) in
