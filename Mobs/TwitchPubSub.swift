@@ -62,10 +62,13 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     }
 
     func start() {
+        reconnectTime = 2.0
         setupWebsocket()
     }
 
     func setupWebsocket() {
+        keepAliveTimer?.invalidate()
+        reconnectTimer?.invalidate()
         let session = URLSession(configuration: .default,
                                  delegate: self,
                                  delegateQueue: OperationQueue.main)
@@ -77,6 +80,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     func stop() {
         webSocket.cancel()
         keepAliveTimer?.invalidate()
+        reconnectTimer?.invalidate()
     }
     
     func handlePong() {
