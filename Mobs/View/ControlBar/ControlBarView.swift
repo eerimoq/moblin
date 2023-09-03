@@ -21,19 +21,26 @@ struct StreamButtonText: View {
 
 struct StreamButton: View {
     @ObservedObject var model: Model
+    @State private var isPresentingGoLiveConfirm: Bool = false
+    @State private var isPresentingStopConfirm: Bool = false
 
     var body: some View {
         switch model.liveState {
         case .stopped:
             Button(action: {
-                model.startStream()
+                isPresentingGoLiveConfirm = true
             }, label: {
                 StreamButtonText(text: "Go Live")
             })
             .disabled(model.connection == nil)
+            .confirmationDialog("", isPresented: $isPresentingGoLiveConfirm) {
+                Button("Go live") {
+                    model.startStream()
+                }
+            }
         case .live:
             Button(action: {
-                model.stopStream()
+                isPresentingStopConfirm = true
             }, label: {
                 StreamButtonText(text: "Stop")
             })
@@ -41,6 +48,11 @@ struct StreamButton: View {
                 RoundedRectangle(cornerRadius: 10)
                     .stroke(.white)
             )
+            .confirmationDialog("", isPresented: $isPresentingStopConfirm) {
+                Button("Stop") {
+                    model.stopStream()
+                 }
+            }
         }
     }
 }
