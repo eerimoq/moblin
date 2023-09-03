@@ -10,9 +10,15 @@ struct VariableSettingsView: View {
         }
     }
 
+    func submitName(name: String) {
+        variable.name = name.trim()
+        model.store()
+        model.numberOfVariables += 0
+    }
+    
     var body: some View {
         Form {
-            NavigationLink(destination: VariableNameSettingsView(model: model, variable: variable)) {
+            NavigationLink(destination: NameEditView(name: variable.name, onSubmit: submitName)) {
                 TextItemView(name: "Name", value: variable.name)
             }
             Section("Type") {

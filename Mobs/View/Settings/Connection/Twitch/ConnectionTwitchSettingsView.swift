@@ -16,12 +16,24 @@ struct ConnectionTwitchSettingsView: View {
         self.connection = connection
     }
     
+    func submitChannelName(value: String) {
+        connection.twitchChannelName = value
+        model.store()
+        model.twitchChannelNameUpdated()
+    }
+    
+    func submitChannelId(value: String) {
+        connection.twitchChannelId = value
+        model.store()
+        model.twitchChannelIdUpdated()
+    }
+    
     var body: some View {
         Form {
-            NavigationLink(destination: ConnectionTwitchChannelNameSettingsView(model: model, connection: connection)) {
+            NavigationLink(destination: TextEditView(title: "Channel name", value: connection.twitchChannelName, onSubmit: submitChannelName)) {
                 TextItemView(name: "Channel name", value: connection.twitchChannelName)
             }
-            NavigationLink(destination: ConnectionTwitchChannelIdSettingsView(model: model, connection: connection)) {
+            NavigationLink(destination: TextEditView(title: "Channel id", value: connection.twitchChannelId, onSubmit: submitChannelId)) {
                 TextItemView(name: "Channel id", value: connection.twitchChannelId)
             }
         }

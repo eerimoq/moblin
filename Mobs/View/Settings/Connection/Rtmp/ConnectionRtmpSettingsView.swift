@@ -16,9 +16,21 @@ struct ConnectionRtmpSettingsView: View {
         self.connection = connection
     }
     
+    func submitUrl(value: String) {
+        if makeRtmpUri(url: value) == "" {
+            return
+        }
+        if makeRtmpStreamName(url: value) == "" {
+            return
+        }
+        connection.rtmpUrl = value
+        model.store()
+        model.rtmpUrlChanged()
+    }
+    
     var body: some View {
         Form {
-            NavigationLink(destination: ConnectionRtmpUrlSettingsView(model: model, connection: connection)) {
+            NavigationLink(destination: TextEditView(title: "URL", value: connection.rtmpUrl, onSubmit: submitUrl)) {
                 TextItemView(name: "URL", value: connection.rtmpUrl)
             }
         }

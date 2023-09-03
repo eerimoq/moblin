@@ -20,10 +20,16 @@ struct ConnectionSettingsView: View {
             model.settings.database.connections[index]
         }
     }
-
+    
+    func submitName(name: String) {
+        connection.name = name.trim()
+        model.store()
+        model.numberOfConnections += 0
+    }
+    
     var body: some View {
         Form {
-            NavigationLink(destination: ConnectionNameSettingsView(model: model, connection: connection)) {
+            NavigationLink(destination: NameEditView(name: connection.name, onSubmit: submitName)) {
                 TextItemView(name: "Name", value: connection.name)
             }
             NavigationLink(destination: ConnectionRtmpSettingsView(model: model, connection: connection)) {

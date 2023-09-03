@@ -29,9 +29,15 @@ struct SceneSettingsView: View {
         sceneWidgets = Array(0..<scene.widgets.count)
     }
     
+    func submitName(name: String) {
+        scene.name = name.trim()
+        model.store()
+        model.numberOfScenes += 0
+    }
+    
     var body: some View {
         Form {
-            NavigationLink(destination: SceneNameSettingsView(model: model, scene: scene)) {
+            NavigationLink(destination: NameEditView(name: scene.name, onSubmit: submitName)) {
                 TextItemView(name: "Name", value: scene.name)
             }
             Section("Widgets") {

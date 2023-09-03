@@ -16,9 +16,18 @@ struct ConnectionSrtSettingsView: View {
         self.connection = connection
     }
     
+    func submitUrl(value: String) {
+        if URL(string: value) == nil {
+            return
+        }
+        connection.srtUrl = value
+        model.store()
+        model.srtUrlChanged()
+    }
+    
     var body: some View {
         Form {
-            NavigationLink(destination: ConnectionSrtUrlSettingsView(model: model, connection: connection)) {
+            NavigationLink(destination: TextEditView(title: "URL", value: connection.srtUrl, onSubmit: submitUrl)) {
                 TextItemView(name: "URL", value: connection.srtUrl)
             }
             Toggle("SRTLA", isOn: Binding(get: {

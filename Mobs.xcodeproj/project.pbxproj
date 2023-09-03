@@ -11,29 +11,17 @@
 		0315A33B2AA2FA7100295443 /* LocalListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33A2AA2FA7100295443 /* LocalListener.swift */; };
 		0315A33D2AA2FA7D00295443 /* RemoteConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */; };
 		0315A33F2AA3173000295443 /* DummySender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33E2AA3173000295443 /* DummySender.swift */; };
-		0315A3422AA31B0000295443 /* ConnectionNameSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3412AA31B0000295443 /* ConnectionNameSettingsView.swift */; };
 		0315A3442AA31D0100295443 /* ConnectionRtmpSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3432AA31D0100295443 /* ConnectionRtmpSettingsView.swift */; };
 		0315A3462AA31E9000295443 /* ConnectionTwitchSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3452AA31E9000295443 /* ConnectionTwitchSettingsView.swift */; };
-		0315A3492AA31EE200295443 /* ConnectionTwitchNameSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3482AA31EE200295443 /* ConnectionTwitchNameSettingsView.swift */; };
-		0315A34B2AA31EF600295443 /* ConnectionTwitchIdSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A34A2AA31EF600295443 /* ConnectionTwitchIdSettingsView.swift */; };
-		0315A34E2AA3218900295443 /* SceneNameSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A34D2AA3218900295443 /* SceneNameSettingsView.swift */; };
-		0315A3532AA3239700295443 /* WidgetNameSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3522AA3239700295443 /* WidgetNameSettingsView.swift */; };
-		0315A3552AA324A500295443 /* VariableNameSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3542AA324A500295443 /* VariableNameSettingsView.swift */; };
 		0315A3572AA3261900295443 /* ConnectionSrtSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3562AA3261900295443 /* ConnectionSrtSettingsView.swift */; };
-		0315A35A2AA3270100295443 /* ConnectionSrtUrlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3592AA3270100295443 /* ConnectionSrtUrlSettingsView.swift */; };
-		0315A35F2AA32AFC00295443 /* ConnectionRtmpUrlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A35E2AA32AFC00295443 /* ConnectionRtmpUrlSettingsView.swift */; };
 		0315A3622AA33A2C00295443 /* WidgetTextSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3612AA33A2C00295443 /* WidgetTextSettingsView.swift */; };
-		0315A3642AA33AE700295443 /* WidgetTextFormatStringSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3632AA33AE700295443 /* WidgetTextFormatStringSettingsView.swift */; };
 		0315A3672AA33C6A00295443 /* WidgetImageSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3662AA33C6A00295443 /* WidgetImageSettingsView.swift */; };
-		0315A3692AA33CF400295443 /* WidgetImageUrlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3682AA33CF400295443 /* WidgetImageUrlSettingsView.swift */; };
 		0315A36C2AA33F2100295443 /* WidgetCameraSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A36B2AA33F2100295443 /* WidgetCameraSettingsView.swift */; };
 		0315A36E2AA33F3400295443 /* WidgetCameraDirectionSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A36D2AA33F3400295443 /* WidgetCameraDirectionSettingsView.swift */; };
 		0315A3702AA3771F00295443 /* SceneWidgetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A36F2AA3771F00295443 /* SceneWidgetSettingsView.swift */; };
-		0315A3722AA3788600295443 /* SceneWidgetXSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3712AA3788600295443 /* SceneWidgetXSettingsView.swift */; };
-		0315A3742AA37A8200295443 /* SceneWidgetYSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3732AA37A8200295443 /* SceneWidgetYSettingsView.swift */; };
-		0315A3762AA37A8F00295443 /* SceneWidgetWidthSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3752AA37A8F00295443 /* SceneWidgetWidthSettingsView.swift */; };
-		0315A3782AA37A9900295443 /* SceneWidgetHeightSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3772AA37A9900295443 /* SceneWidgetHeightSettingsView.swift */; };
 		0315A37A2AA39DA800295443 /* TextItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3792AA39DA800295443 /* TextItemView.swift */; };
+		0315A37C2AA439B500295443 /* NameEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A37B2AA439B500295443 /* NameEditView.swift */; };
+		0315A37E2AA43DCC00295443 /* TextEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A37D2AA43DCC00295443 /* TextEditView.swift */; };
 		035E9E372A9A02D6009D4F5A /* MobsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035E9E362A9A02D6009D4F5A /* MobsApp.swift */; };
 		035E9E3B2A9A02D7009D4F5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */; };
 		035E9E3E2A9A02D7009D4F5A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3D2A9A02D7009D4F5A /* Preview Assets.xcassets */; };
@@ -72,29 +60,17 @@
 		0315A33A2AA2FA7100295443 /* LocalListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalListener.swift; sourceTree = "<group>"; };
 		0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteConnection.swift; sourceTree = "<group>"; };
 		0315A33E2AA3173000295443 /* DummySender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DummySender.swift; sourceTree = "<group>"; };
-		0315A3412AA31B0000295443 /* ConnectionNameSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionNameSettingsView.swift; sourceTree = "<group>"; };
 		0315A3432AA31D0100295443 /* ConnectionRtmpSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionRtmpSettingsView.swift; sourceTree = "<group>"; };
 		0315A3452AA31E9000295443 /* ConnectionTwitchSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionTwitchSettingsView.swift; sourceTree = "<group>"; };
-		0315A3482AA31EE200295443 /* ConnectionTwitchNameSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionTwitchNameSettingsView.swift; sourceTree = "<group>"; };
-		0315A34A2AA31EF600295443 /* ConnectionTwitchIdSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionTwitchIdSettingsView.swift; sourceTree = "<group>"; };
-		0315A34D2AA3218900295443 /* SceneNameSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneNameSettingsView.swift; sourceTree = "<group>"; };
-		0315A3522AA3239700295443 /* WidgetNameSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetNameSettingsView.swift; sourceTree = "<group>"; };
-		0315A3542AA324A500295443 /* VariableNameSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariableNameSettingsView.swift; sourceTree = "<group>"; };
 		0315A3562AA3261900295443 /* ConnectionSrtSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionSrtSettingsView.swift; sourceTree = "<group>"; };
-		0315A3592AA3270100295443 /* ConnectionSrtUrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionSrtUrlSettingsView.swift; sourceTree = "<group>"; };
-		0315A35E2AA32AFC00295443 /* ConnectionRtmpUrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionRtmpUrlSettingsView.swift; sourceTree = "<group>"; };
 		0315A3612AA33A2C00295443 /* WidgetTextSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetTextSettingsView.swift; sourceTree = "<group>"; };
-		0315A3632AA33AE700295443 /* WidgetTextFormatStringSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetTextFormatStringSettingsView.swift; sourceTree = "<group>"; };
 		0315A3662AA33C6A00295443 /* WidgetImageSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetImageSettingsView.swift; sourceTree = "<group>"; };
-		0315A3682AA33CF400295443 /* WidgetImageUrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetImageUrlSettingsView.swift; sourceTree = "<group>"; };
 		0315A36B2AA33F2100295443 /* WidgetCameraSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCameraSettingsView.swift; sourceTree = "<group>"; };
 		0315A36D2AA33F3400295443 /* WidgetCameraDirectionSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCameraDirectionSettingsView.swift; sourceTree = "<group>"; };
 		0315A36F2AA3771F00295443 /* SceneWidgetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneWidgetSettingsView.swift; sourceTree = "<group>"; };
-		0315A3712AA3788600295443 /* SceneWidgetXSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneWidgetXSettingsView.swift; sourceTree = "<group>"; };
-		0315A3732AA37A8200295443 /* SceneWidgetYSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneWidgetYSettingsView.swift; sourceTree = "<group>"; };
-		0315A3752AA37A8F00295443 /* SceneWidgetWidthSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneWidgetWidthSettingsView.swift; sourceTree = "<group>"; };
-		0315A3772AA37A9900295443 /* SceneWidgetHeightSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneWidgetHeightSettingsView.swift; sourceTree = "<group>"; };
 		0315A3792AA39DA800295443 /* TextItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextItemView.swift; sourceTree = "<group>"; };
+		0315A37B2AA439B500295443 /* NameEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameEditView.swift; sourceTree = "<group>"; };
+		0315A37D2AA43DCC00295443 /* TextEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditView.swift; sourceTree = "<group>"; };
 		035E9E332A9A02D6009D4F5A /* Mobs.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mobs.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		035E9E362A9A02D6009D4F5A /* MobsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobsApp.swift; sourceTree = "<group>"; };
 		035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -158,7 +134,6 @@
 				0315A3582AA3264800295443 /* Srt */,
 				0315A3472AA31EC800295443 /* Twitch */,
 				03A983592A9A05D7008FF0DB /* ConnectionSettingsView.swift */,
-				0315A3412AA31B0000295443 /* ConnectionNameSettingsView.swift */,
 			);
 			path = Connection;
 			sourceTree = "<group>";
@@ -167,8 +142,6 @@
 			isa = PBXGroup;
 			children = (
 				0315A3452AA31E9000295443 /* ConnectionTwitchSettingsView.swift */,
-				0315A3482AA31EE200295443 /* ConnectionTwitchNameSettingsView.swift */,
-				0315A34A2AA31EF600295443 /* ConnectionTwitchIdSettingsView.swift */,
 			);
 			path = Twitch;
 			sourceTree = "<group>";
@@ -176,13 +149,8 @@
 		0315A34C2AA3217500295443 /* Scene */ = {
 			isa = PBXGroup;
 			children = (
-				0315A34D2AA3218900295443 /* SceneNameSettingsView.swift */,
 				03A9835C2A9A05D7008FF0DB /* SceneSettingsView.swift */,
 				0315A36F2AA3771F00295443 /* SceneWidgetSettingsView.swift */,
-				0315A3712AA3788600295443 /* SceneWidgetXSettingsView.swift */,
-				0315A3732AA37A8200295443 /* SceneWidgetYSettingsView.swift */,
-				0315A3752AA37A8F00295443 /* SceneWidgetWidthSettingsView.swift */,
-				0315A3772AA37A9900295443 /* SceneWidgetHeightSettingsView.swift */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -193,6 +161,8 @@
 				03A9835A2A9A05D7008FF0DB /* AddButtonView.swift */,
 				03A9835D2A9A05D7008FF0DB /* CreateButtonView.swift */,
 				0315A3792AA39DA800295443 /* TextItemView.swift */,
+				0315A37B2AA439B500295443 /* NameEditView.swift */,
+				0315A37D2AA43DCC00295443 /* TextEditView.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -201,7 +171,6 @@
 			isa = PBXGroup;
 			children = (
 				03A9835E2A9A05D7008FF0DB /* VariableSettingsView.swift */,
-				0315A3542AA324A500295443 /* VariableNameSettingsView.swift */,
 			);
 			path = Variable;
 			sourceTree = "<group>";
@@ -213,7 +182,6 @@
 				0315A3652AA33C5400295443 /* Image */,
 				0315A3602AA33A1100295443 /* Text */,
 				03A983602A9A05D7008FF0DB /* WidgetSettingsView.swift */,
-				0315A3522AA3239700295443 /* WidgetNameSettingsView.swift */,
 			);
 			path = Widget;
 			sourceTree = "<group>";
@@ -222,7 +190,6 @@
 			isa = PBXGroup;
 			children = (
 				0315A3562AA3261900295443 /* ConnectionSrtSettingsView.swift */,
-				0315A3592AA3270100295443 /* ConnectionSrtUrlSettingsView.swift */,
 			);
 			path = Srt;
 			sourceTree = "<group>";
@@ -231,7 +198,6 @@
 			isa = PBXGroup;
 			children = (
 				0315A3432AA31D0100295443 /* ConnectionRtmpSettingsView.swift */,
-				0315A35E2AA32AFC00295443 /* ConnectionRtmpUrlSettingsView.swift */,
 			);
 			path = Rtmp;
 			sourceTree = "<group>";
@@ -240,7 +206,6 @@
 			isa = PBXGroup;
 			children = (
 				0315A3612AA33A2C00295443 /* WidgetTextSettingsView.swift */,
-				0315A3632AA33AE700295443 /* WidgetTextFormatStringSettingsView.swift */,
 			);
 			path = Text;
 			sourceTree = "<group>";
@@ -249,7 +214,6 @@
 			isa = PBXGroup;
 			children = (
 				0315A3662AA33C6A00295443 /* WidgetImageSettingsView.swift */,
-				0315A3682AA33CF400295443 /* WidgetImageUrlSettingsView.swift */,
 			);
 			path = Image;
 			sourceTree = "<group>";
@@ -442,19 +406,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				03A9836B2A9A05D7008FF0DB /* StreamOverlayView.swift in Sources */,
-				0315A35F2AA32AFC00295443 /* ConnectionRtmpUrlSettingsView.swift in Sources */,
 				0315A37A2AA39DA800295443 /* TextItemView.swift in Sources */,
 				0315A36C2AA33F2100295443 /* WidgetCameraSettingsView.swift in Sources */,
 				03A983712A9A0659008FF0DB /* TwitchPubSub.swift in Sources */,
 				03A9836C2A9A05D7008FF0DB /* WidgetSettingsView.swift in Sources */,
 				0315A3622AA33A2C00295443 /* WidgetTextSettingsView.swift in Sources */,
-				0315A34E2AA3218900295443 /* SceneNameSettingsView.swift in Sources */,
-				0315A3722AA3788600295443 /* SceneWidgetXSettingsView.swift in Sources */,
 				0315A33F2AA3173000295443 /* DummySender.swift in Sources */,
 				03A983642A9A05D7008FF0DB /* StreamView.swift in Sources */,
 				0315A3672AA33C6A00295443 /* WidgetImageSettingsView.swift in Sources */,
-				0315A3762AA37A8F00295443 /* SceneWidgetWidthSettingsView.swift in Sources */,
-				0315A35A2AA3270100295443 /* ConnectionSrtUrlSettingsView.swift in Sources */,
 				030947C32A9C0496003FC387 /* ChatView.swift in Sources */,
 				03A983622A9A05D7008FF0DB /* ContentView.swift in Sources */,
 				03B374042AA036D10028DDD5 /* ButtonsView.swift in Sources */,
@@ -463,37 +422,30 @@
 				03B373FD2A9F35EF0028DDD5 /* Utils.swift in Sources */,
 				03B374072AA0EA650028DDD5 /* MovieEffect.swift in Sources */,
 				03A983652A9A05D7008FF0DB /* ConnectionSettingsView.swift in Sources */,
+				0315A37C2AA439B500295443 /* NameEditView.swift in Sources */,
 				03B373F62A9EF98E0028DDD5 /* ControlBarView.swift in Sources */,
 				0315A3572AA3261900295443 /* ConnectionSrtSettingsView.swift in Sources */,
 				0382933B2A9A73ED008963AA /* Settings.swift in Sources */,
-				0315A3642AA33AE700295443 /* WidgetTextFormatStringSettingsView.swift in Sources */,
-				0315A3692AA33CF400295443 /* WidgetImageUrlSettingsView.swift in Sources */,
 				03B374092AA0EA700028DDD5 /* IconEffect.swift in Sources */,
-				0315A3492AA31EE200295443 /* ConnectionTwitchNameSettingsView.swift in Sources */,
 				03A983692A9A05D7008FF0DB /* CreateButtonView.swift in Sources */,
-				0315A3742AA37A8200295443 /* SceneWidgetYSettingsView.swift in Sources */,
-				0315A3422AA31B0000295443 /* ConnectionNameSettingsView.swift in Sources */,
 				0315A36E2AA33F3400295443 /* WidgetCameraDirectionSettingsView.swift in Sources */,
-				0315A34B2AA31EF600295443 /* ConnectionTwitchIdSettingsView.swift in Sources */,
 				0315A3442AA31D0100295443 /* ConnectionRtmpSettingsView.swift in Sources */,
 				03A9836E2A9A05F9008FF0DB /* Model.swift in Sources */,
 				03A983722A9A0659008FF0DB /* TwitchChatMobs.swift in Sources */,
 				03B373FB2A9EFB910028DDD5 /* ZoomView.swift in Sources */,
 				03A983672A9A05D7008FF0DB /* ScenesSettingsView.swift in Sources */,
-				0315A3782AA37A9900295443 /* SceneWidgetHeightSettingsView.swift in Sources */,
+				0315A37E2AA43DCC00295443 /* TextEditView.swift in Sources */,
 				035E9E372A9A02D6009D4F5A /* MobsApp.swift in Sources */,
 				03A9836A2A9A05D7008FF0DB /* VariableSettingsView.swift in Sources */,
 				0315A33D2AA2FA7D00295443 /* RemoteConnection.swift in Sources */,
 				03B373FF2A9FCA790028DDD5 /* ThermalStateView.swift in Sources */,
 				03A983682A9A05D7008FF0DB /* SceneSettingsView.swift in Sources */,
 				03B374022AA0354C0028DDD5 /* MonochromeEffect.swift in Sources */,
-				0315A3532AA3239700295443 /* WidgetNameSettingsView.swift in Sources */,
 				03A983632A9A05D7008FF0DB /* SettingsView.swift in Sources */,
 				03B374132AA277570028DDD5 /* Srtla.swift in Sources */,
 				03A983662A9A05D7008FF0DB /* AddButtonView.swift in Sources */,
 				03A983612A9A05D7008FF0DB /* ConnectionsSettingsView.swift in Sources */,
 				0315A3702AA3771F00295443 /* SceneWidgetSettingsView.swift in Sources */,
-				0315A3552AA324A500295443 /* VariableNameSettingsView.swift in Sources */,
 				0315A33B2AA2FA7100295443 /* LocalListener.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

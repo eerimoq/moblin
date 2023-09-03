@@ -11,9 +11,14 @@ struct WidgetImageSettingsView: View {
     @ObservedObject var model: Model
     var widget: SettingsWidget
     
+    func submitUrl(value: String) {
+        widget.image.url = value
+        model.store()
+    }
+    
     var body: some View {
         Section(widget.type) {
-            NavigationLink(destination: WidgetImageUrlSettingsView(model: model, widget: widget)) {
+            NavigationLink(destination: TextEditView(title: "URL", value: widget.image.url, onSubmit: submitUrl)) {
                 TextItemView(name: "URL", value: widget.image.url)
             }
         }

@@ -10,9 +10,15 @@ struct WidgetSettingsView: View {
         }
     }
 
+    func submitName(name: String) {
+        widget.name = name.trim()
+        model.store()
+        model.numberOfWidgets += 0
+    }
+    
     var body: some View {
         Form {
-            NavigationLink(destination: WidgetNameSettingsView(model: model, widget: widget)) {
+            NavigationLink(destination: NameEditView(name: widget.name, onSubmit: submitName)) {
                 TextItemView(name: "Name", value: widget.name)
             }
             Section("Type") {
