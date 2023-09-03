@@ -7,6 +7,15 @@
 
 import SwiftUI
 
+struct PickView: View {
+    @State var image = UIImage()
+
+    var body: some View {
+        ImagePickerView(sourceType: .photoLibrary, selectedImage: $image)
+            .navigationTitle("File")
+    }
+}   
+
 struct WidgetImageSettingsView: View {
     @ObservedObject var model: Model
     var widget: SettingsWidget
@@ -20,6 +29,8 @@ struct WidgetImageSettingsView: View {
         Section(widget.type) {
             NavigationLink(destination: TextEditView(title: "URL", value: widget.image.url, onSubmit: submitUrl)) {
                 TextItemView(name: "URL", value: widget.image.url)
+            //NavigationLink(destination: PickView()) {
+            //   TextItemView(name: "File", value: widget.image.url)
             }
         }
     }

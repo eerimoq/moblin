@@ -1,9 +1,5 @@
 import SwiftUI
 
-func getConnection(index: Int, model: Model) -> SettingsConnection {
-    return model.settings.database.connections[index]
-}
-
 struct ConnectionSettingsView: View {
     private var connection: SettingsConnection
     @ObservedObject private var model: Model
