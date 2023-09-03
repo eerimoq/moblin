@@ -32,6 +32,9 @@ struct SettingsView: View {
                 NavigationLink(destination: ScenesSettingsView(model: model)) {
                     Text("Scenes")
                 }
+                NavigationLink(destination: ButtonsSettingsView(model: model)) {
+                    Text("Buttons")
+                }
             }
             Section("Local overlays") {
                 Toggle("Connection", isOn: Binding(get: {
