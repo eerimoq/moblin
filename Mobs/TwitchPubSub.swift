@@ -52,8 +52,8 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     private var webSocket: URLSessionWebSocketTask
     private var channelId: String
     private var keepAliveTimer: Timer? = nil
-    private var pingTimer: Int? = nil
-    private var pongTimer: Int? = nil
+    private var reconnectTimer: Timer? = nil
+    private var reconnectTime = 2.0
     
     init(model: Model, channelId: String) {
         self.model = model
@@ -63,23 +63,6 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
 
     func start() {
         setupWebsocket()
-        keepAliveTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
-            if self.pingTimer != nil {
-                self.pingTimer! += 1
-                if self.pingTimer! == 4 * 60 + 30 {
-                    self.sendPing()
-                }
-            }
-            if self.pongTimer != nil {
-                self.pongTimer! += 1
-                if self.pongTimer! == 10 {
-                    self.pongTimer = nil
-                    logger.warning("pubsub: Timeout waiting for pong")
-                    self.webSocket.cancel()
-                    self.setupWebsocket()
-                }
-            }
-        })
     }
 
     func setupWebsocket() {
@@ -97,8 +80,10 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     }
     
     func handlePong() {
-        pingTimer = 0
-        pongTimer = nil
+        keepAliveTimer?.invalidate()
+        keepAliveTimer = Timer.scheduledTimer(withTimeInterval: 4 * 60 + 30, repeats: false) { _ in
+            self.sendPing()
+        }
     }
 
     func handleResponse(message: String) throws {
@@ -138,6 +123,14 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
             switch result {
             case .failure(let error):
                 logger.error("pubsub: Receive failed with error: \(error)")
+                self.reconnectTimer?.invalidate()
+                self.reconnectTimer = Timer.scheduledTimer(withTimeInterval: self.reconnectTime, repeats: false) { _ in
+                    logger.warning("pubsub: Reconnecting...")
+                    self.webSocket.cancel()
+                    self.setupWebsocket()
+                    self.reconnectTime *= 2
+                    self.reconnectTime = min(self.reconnectTime, 10 * 60)
+                }
                 return
             case .success(let message):
                 switch message {
@@ -166,12 +159,17 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
 
     func sendPing() {
         sendMessage(message: "{\"type\":\"PING\"}")
-        pingTimer = nil
-        pongTimer = 0
+        keepAliveTimer?.invalidate()
+        keepAliveTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { _ in
+            logger.warning("pubsub: Timeout waiting for pong. Reconnecting...")
+            self.webSocket.cancel()
+            self.setupWebsocket()
+        }
     }
     
     func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol proto: String?) {
         logger.info("pubsub: Connected to \(url)")
+        reconnectTime = 2.0
         sendPing()
         sendMessage(message: "{\"type\":\"LISTEN\",\"data\":{\"topics\":[\"video-playback-by-id.\(channelId)\"]}}")
     }
