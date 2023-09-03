@@ -23,11 +23,13 @@ struct SettingsView: View {
     
     var body: some View {
         Form {
-            NavigationLink(destination: ConnectionsSettingsView(model: model)) {
-                Text("Connections")
-            }
-            NavigationLink(destination: ScenesSettingsView(model: model)) {
-                Text("Scenes")
+            Section("General") {
+                NavigationLink(destination: ConnectionsSettingsView(model: model)) {
+                    Text("Connections")
+                }
+                NavigationLink(destination: ScenesSettingsView(model: model)) {
+                    Text("Scenes")
+                }
             }
             Section("Local overlays") {
                 Toggle("Connection", isOn: Binding(get: {

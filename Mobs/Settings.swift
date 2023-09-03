@@ -15,15 +15,16 @@ class SettingsConnection: Codable, Identifiable {
     }
 }
 
-class SettingsSceneWidget: Codable, Identifiable {    
-    var id: UUID
+class SettingsSceneWidget: Codable, Identifiable {
+    var widgetId: UUID
+    var id: UUID = UUID()
     var x: Int = 0
     var y: Int = 0
     var w: Int = 10
     var h: Int = 10
     
-    init(id: UUID) {
-        self.id = id
+    init(widgetId: UUID) {
+        self.widgetId = widgetId
     }
 }
 
@@ -66,7 +67,7 @@ class SettingsWidgetWebview: Codable {
 
 let widgetTypes = ["Camera", /*"Text", */ "Image"/*, "Video", "Chat", "Recording", "Webview"*/]
 
-class SettingsWidget: Codable, Identifiable {
+class SettingsWidget: Codable, Identifiable, Equatable {
     var name: String
     var id: UUID = UUID()
     var type: String = widgetTypes[0]
@@ -80,6 +81,10 @@ class SettingsWidget: Codable, Identifiable {
 
     init(name: String) {
         self.name = name
+    }
+    
+    static func == (lhs: SettingsWidget, rhs: SettingsWidget) -> Bool {
+        return lhs.id == rhs.id
     }
 }
 
@@ -135,19 +140,47 @@ class Database: Codable {
 }
 
 func addDefaultWidgets(database: Database) {
-    let widget = SettingsWidget(name: "Back camera")
+    var widget = SettingsWidget(name: "Back camera")
     widget.type = "Camera"
+    widget.camera.direction = "Back"
+    database.widgets.append(widget)
+    
+    widget = SettingsWidget(name: "Front camera")
+    widget.type = "Camera"
+    widget.camera.direction = "Front"
     database.widgets.append(widget)
 }
 
-func addDefaultScenes(database: Database) {
-    let scene = SettingsScene(name: "Main")
-    let widget = SettingsSceneWidget(id: database.widgets[0].id)
+func createSceneWidgetBackCamera(database: Database) -> SettingsSceneWidget {
+    let widget = SettingsSceneWidget(widgetId: database.widgets[0].id)
     widget.x = 0
     widget.y = 0
     widget.h = 100
     widget.w = 100
-    scene.widgets.append(widget)
+    return widget
+}
+
+func createSceneWidgetFrontCamera(database: Database) -> SettingsSceneWidget {
+    let widget = SettingsSceneWidget(widgetId: database.widgets[1].id)
+    widget.x = 80
+    widget.y = 0
+    widget.h = 20
+    widget.w = 20
+    return widget
+}
+
+func addDefaultScenes(database: Database) {
+    var scene = SettingsScene(name: "Back")
+    scene.widgets.append(createSceneWidgetBackCamera(database: database))
+    database.scenes.append(scene)
+    
+    scene = SettingsScene(name: "Front")
+    scene.widgets.append(createSceneWidgetFrontCamera(database: database))
+    database.scenes.append(scene)
+    
+    scene = SettingsScene(name: "Both")
+    scene.widgets.append(createSceneWidgetBackCamera(database: database))
+    scene.widgets.append(createSceneWidgetFrontCamera(database: database))
     database.scenes.append(scene)
 }
 
@@ -158,7 +191,7 @@ func addDefaultConnections(database: Database) {
     connection.rtmpUrl = "rtmp://arn03.contribute.live-video.net/app/your_stream_key"
     connection.srtUrl = "srt://192.168.202.169:5000"
     connection.twitchChannelName = "jinnytty"
-    connection.twitchChannelId = "59965916"
+    connection.twitchChannelId = "159498717"
     database.connections.append(connection)
 }
 

@@ -30,7 +30,7 @@ struct SceneSettingsView: View {
             Section("Widgets") {
                 List {
                     ForEach(scene.widgets) { widget in
-                        if let realWidget = widgets.first(where: {item in item.id == widget.id}) {
+                        if let realWidget = widgets.first(where: {item in item.id == widget.widgetId}) {
                             NavigationLink(destination: SceneWidgetSettingsView(model: model, widget: widget, name: realWidget.name)) {
                                 Text(realWidget.name)
                             }
@@ -54,7 +54,7 @@ struct SceneSettingsView: View {
                             Section("Name") {
                                 Picker("", selection: $selected) {
                                     ForEach(widgets) { widget in
-                                        Text(widget.name)
+                                        Text(widget.name).tag(widgets.firstIndex(of: widget)!)
                                     }
                                 }
                                 .pickerStyle(.inline)
@@ -70,8 +70,7 @@ struct SceneSettingsView: View {
                             })
                             Spacer()
                             Button(action: {
-                                let realWidget = widgets[selected]
-                                scene.widgets.append(SettingsSceneWidget(id: realWidget.id))
+                                scene.widgets.append(SettingsSceneWidget(widgetId: widgets[selected].id))
                                 model.store()
                                 model.objectWillChange.send()
                                 showingAdd = false
