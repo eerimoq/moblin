@@ -77,7 +77,7 @@ struct SettingsView: View {
                     model.store()
                 }))
             }
-            Section("Help and support") {
+            Section("Help & support") {
                 Button(action: {
                     openDiscord()
                 }, label: {
