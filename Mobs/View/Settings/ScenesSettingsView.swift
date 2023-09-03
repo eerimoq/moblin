@@ -22,7 +22,8 @@ struct ScenesSettingsView: View {
                             model.resetSelectedScene()
                         }))
                     }
-                }.onDelete(perform: { offsets in
+                }
+                .onDelete(perform: { offsets in
                     database.scenes.remove(atOffsets: offsets)
                     model.store()
                     model.resetSelectedScene()
@@ -39,7 +40,8 @@ struct ScenesSettingsView: View {
                     NavigationLink(destination: WidgetSettingsView(index: index, model: model)) {
                         Text(database.widgets[index].name)
                     }
-                }.onDelete(perform: { offsets in
+                }
+                .onDelete(perform: { offsets in
                     database.widgets.remove(atOffsets: offsets)
                     model.store()
                     model.numberOfWidgets -= 1
@@ -53,9 +55,10 @@ struct ScenesSettingsView: View {
             Section("Variables") {
                 ForEach(0..<model.numberOfVariables, id: \.self) { index in
                     NavigationLink(destination: VariableSettingsView(index: index, model: model)) {
-                        Text(database.variables[index].name )
+                        Text(database.variables[index].name)
                     }
-                }.onDelete(perform: { offsets in
+                }
+                .onDelete(perform: { offsets in
                     database.variables.remove(atOffsets: offsets)
                     model.store()
                     model.numberOfVariables -= 1
