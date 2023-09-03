@@ -17,9 +17,9 @@ final class IconEffect: VideoEffect {
                 return
             }
             UIGraphicsBeginImageContext(extent.size)
-            var image = UIImage(named: "AppIcon.png")!
-            image = image.scalePreservingAspectRatio(targetSize: CGSize(width: 50, height: 50))
-            image.draw(at: CGPoint(x: extent.size.width - 55, y: extent.size.height - 55))
+            var image = UIImage(named: "AppIconNoBackground.png")!
+            image = image.scalePreservingAspectRatio(targetSize: CGSize(width: 100, height: 110))
+            image.draw(at: CGPoint(x: extent.size.width - 105, y: extent.size.height - 115))
             icon = CIImage(image: UIGraphicsGetImageFromCurrentImageContext()!, options: nil)
             UIGraphicsEndImageContext()
         }

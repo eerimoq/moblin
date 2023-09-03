@@ -101,7 +101,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
             let message = try decodeMessageViewCount(message: message.data.message)
             self.model.numberOfViewers = "\(message.viewers)"
         } else {
-            logger.warning("pubsub: Unsupported message type \(type) (message: \(message))")
+            logger.debug("pubsub: Unsupported message type \(type) (message: \(message))")
         }
     }
 
@@ -115,7 +115,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
             } else if type == "MESSAGE" {
                 try handleMessage(message: message)
             } else {
-                logger.warning("pubsub: Unsupported type: \(type)")
+                logger.debug("pubsub: Unsupported type: \(type)")
             }
         } catch {
             logger.error("pubsub: Failed to process message \"\(message)\" with error \(error)")
