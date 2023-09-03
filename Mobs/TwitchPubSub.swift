@@ -52,6 +52,8 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     private var webSocket: URLSessionWebSocketTask
     private var channelId: String
     private var keepAliveTimer: Timer? = nil
+    private var pingTimer: Int? = nil
+    private var pongTimer: Int? = nil
     
     init(model: Model, channelId: String) {
         self.model = model
@@ -60,23 +62,43 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     }
 
     func start() {
+        setupWebsocket()
+        keepAliveTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
+            if self.pingTimer != nil {
+                self.pingTimer! += 1
+                if self.pingTimer! == 4 * 60 + 30 {
+                    self.sendPing()
+                }
+            }
+            if self.pongTimer != nil {
+                self.pongTimer! += 1
+                if self.pongTimer! == 10 {
+                    self.pongTimer = nil
+                    logger.warning("pubsub: Timeout waiting for pong")
+                    self.webSocket.cancel()
+                    self.setupWebsocket()
+                }
+            }
+        })
+    }
+
+    func setupWebsocket() {
         let session = URLSession(configuration: .default,
                                  delegate: self,
                                  delegateQueue: OperationQueue.main)
         webSocket = session.webSocketTask(with: url)
         webSocket.resume()
         readMessage()
-        keepAliveTimer = Timer.scheduledTimer(withTimeInterval: 4 * 60 + 30, repeats: true, block: { _ in
-            self.sendPing()
-        })
     }
-
+        
     func stop() {
         webSocket.cancel()
         keepAliveTimer?.invalidate()
     }
     
     func handlePong() {
+        pingTimer = 0
+        pongTimer = nil
     }
 
     func handleResponse(message: String) throws {
@@ -144,6 +166,8 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
 
     func sendPing() {
         sendMessage(message: "{\"type\":\"PING\"}")
+        pingTimer = nil
+        pongTimer = 0
     }
     
     func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol proto: String?) {
