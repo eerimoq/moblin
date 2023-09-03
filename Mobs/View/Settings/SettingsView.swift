@@ -9,6 +9,18 @@ struct SettingsView: View {
         }
     }
 
+    func version() -> String {
+        return Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "-"
+    }
+    
+    func openGithub() {
+        UIApplication.shared.open(URL(string: "https://github.com/eerimoq/mobs")!)
+    }
+    
+    func openDiscord() {
+        UIApplication.shared.open(URL(string: "https://discord.gg/kRCXKuRu")!)
+    }
+    
     var body: some View {
         Form {
             NavigationLink(destination: ConnectionsSettingsView(model: model)) {
@@ -60,6 +72,21 @@ struct SettingsView: View {
                     database.show.fps = value
                     model.store()
                 }))
+            }
+            Section("Help and support") {
+                Button(action: {
+                    openDiscord()
+                }, label: {
+                    Text("Discord")
+                })
+                Button(action: {
+                    openGithub()
+                }, label: {
+                    Text("Github")
+                })
+            }
+            Section("About") {
+                TextItemView(name: "Version", value: version())
             }
         }
         .navigationTitle("Settings")
