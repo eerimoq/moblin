@@ -9,24 +9,35 @@ import SwiftUI
 
 struct ButtonImage: View {
     var image: String
-
+    var on: Bool = false
+    
     var body: some View {
-        Image(systemName: image)
+        let image = Image(systemName: image)
             .frame(width: 40, height: 40)
+            .foregroundColor(.white)
             .background(.blue)
             .clipShape(Circle())
+        if on {
+            image.overlay(
+                Circle()
+                    .stroke(.white)
+            )
+        } else {
+            image
+        }
     }
 }
 
 struct GenericButton: View {
     var image: String
     var action: () -> Void
+    var on: Bool = false
 
     var body: some View {
         Button(action: {
             action()
         }, label: {
-            ButtonImage(image: self.image)
+            ButtonImage(image: image, on: on)
         })
     }
 }
@@ -75,7 +86,7 @@ struct ButtonsView: View {
                         model.iconEffectOn()
                         iconEffectImage = iconEffectImageOn
                     }
-                })
+                }, on: iconEffectImage == iconEffectImageOn)
                 GenericButton(image: movieEffectImage, action: {
                     if movieEffectImage == movieEffectImageOn {
                         model.movieEffectOff()
@@ -84,7 +95,7 @@ struct ButtonsView: View {
                         model.movieEffectOn()
                         movieEffectImage = movieEffectImageOn
                     }
-                })
+                }, on: movieEffectImage == movieEffectImageOn)
             }
             HStack {
                 GenericButton(image: monochromeEffectImage, action: {
@@ -95,7 +106,7 @@ struct ButtonsView: View {
                         model.monochromeEffectOn()
                         monochromeEffectImage = monochromeEffectImageOn
                     }
-                })
+                }, on: monochromeEffectImage == monochromeEffectImageOn)
                 GenericButton(image: mutedImage, action: {
                     model.toggleMute()
                     if mutedImage == mutedImageOn {
@@ -103,7 +114,7 @@ struct ButtonsView: View {
                     } else {
                         mutedImage = mutedImageOn
                     }
-                })
+                }, on: mutedImage == mutedImageOn)
             }
             HStack {
                 GenericButton(image: recordingImage, action: {
@@ -112,7 +123,7 @@ struct ButtonsView: View {
                     } else {
                         recordingImage = recordingImageOff
                     }
-                })
+                }, on: recordingImage == recordingImageOn)
                 GenericButton(image: flashLightImage, action: {
                     model.toggleLight()
                     if flashLightImage == flashImageOff {
@@ -120,7 +131,7 @@ struct ButtonsView: View {
                     } else {
                         flashLightImage = flashImageOff
                     }
-                })
+                }, on: flashLightImage == flashImageOn)
             }
         }
     }

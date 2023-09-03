@@ -37,6 +37,10 @@ struct StreamButton: View {
             }, label: {
                 StreamButtonText(text: "Stop")
             })
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(.white)
+            )
         }
     }
 }
