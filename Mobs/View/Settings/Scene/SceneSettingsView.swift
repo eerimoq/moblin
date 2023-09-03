@@ -30,9 +30,8 @@ struct SceneSettingsView: View {
     }
     
     func submitName(name: String) {
-        scene.name = name.trim()
+        scene.name = name
         model.store()
-        model.numberOfScenes += 0
     }
     
     var body: some View {

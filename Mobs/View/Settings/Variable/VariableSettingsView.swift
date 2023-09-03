@@ -11,9 +11,8 @@ struct VariableSettingsView: View {
     }
 
     func submitName(name: String) {
-        variable.name = name.trim()
+        variable.name = name
         model.store()
-        model.numberOfVariables += 0
     }
     
     var body: some View {

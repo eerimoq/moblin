@@ -22,9 +22,8 @@ struct ConnectionSettingsView: View {
     }
     
     func submitName(name: String) {
-        connection.name = name.trim()
+        connection.name = name
         model.store()
-        model.numberOfConnections += 0
     }
     
     var body: some View {

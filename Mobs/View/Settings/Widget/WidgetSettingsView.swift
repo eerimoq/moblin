@@ -11,9 +11,8 @@ struct WidgetSettingsView: View {
     }
 
     func submitName(name: String) {
-        widget.name = name.trim()
+        widget.name = name
         model.store()
-        model.numberOfWidgets += 0
     }
     
     var body: some View {
