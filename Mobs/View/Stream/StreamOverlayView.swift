@@ -50,7 +50,7 @@ struct Variable: View {
                 text: $value
             )
             .onSubmit {
-                print(value)
+                logger.error(value)
             }
             .font(.system(size: 20))
             .fixedSize()

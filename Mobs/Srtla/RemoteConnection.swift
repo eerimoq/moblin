@@ -40,6 +40,8 @@ class RemoteConnection {
     }
 
     func stop() {
+        connection?.cancel()
+        connection = nil
     }
     
     func score() -> Int {
@@ -52,11 +54,11 @@ class RemoteConnection {
     }
     
     private func handleViabilityChange(to viability: Bool) {
-        print("\(type): Connection viability changed to \(viability)")
+        logger.info("srtla: \(type): Connection viability changed to \(viability)")
     }
 
     private func handleStateChange(to state: NWConnection.State) {
-        print("\(type): Connection state changed to \(state)")
+        logger.info("srtla: \(type): Connection state changed to \(state)")
     }
     
     private func receivePacket() {
@@ -65,19 +67,19 @@ class RemoteConnection {
         }
         connection.receive(minimumIncompleteLength: 1, maximumLength: 65536) { data, _, isDone, error in
             if let data = data, !data.isEmpty {
-                print("\(self.type): Receive \(data)")
+                logger.debug("srtla: \(self.type): Receive \(data)")
                 if let packetHandler = self.packetHandler {
                     packetHandler(data)
                 } else {
-                    print("\(self.type): Discarding packet.")
+                    logger.warning("srtla: \(self.type): Discarding packet.")
                 }
             }
             if let error = error {
-                print("\(self.type): Receive \(error)")
+                logger.warning("srtla: \(self.type): Receive \(error)")
                 return
             }
             if isDone {
-                print("\(self.type): Receive done")
+                logger.info("srtla: \(self.type): Receive done")
                 return
             }
             self.receivePacket()
@@ -90,7 +92,7 @@ class RemoteConnection {
         }
         connection.send(content: packet, completion: .contentProcessed { error in
             if let error = error {
-                print("\(self.type): Remote send error: \(error)")
+                logger.error("srtla: \(self.type): Remote send error: \(error)")
             }
         })
     }

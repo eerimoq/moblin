@@ -28,12 +28,12 @@ class DummySender {
         let data = Data("An SRT packet".utf8)
         connection!.send(content: data, completion: .contentProcessed { error in
             if let error = error {
-                print("Local dummy send error: \(error)")
+                logger.error("srtla: Local dummy send error: \(error)")
             }
         })
     }
     
     private func handleDummySrtStateChange(to state: NWConnection.State) {
-        print("Dummy SRT state change to", state)
+        logger.debug("srtla: Dummy SRT state change to \(state)")
     }
 }

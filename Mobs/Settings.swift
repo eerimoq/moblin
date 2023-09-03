@@ -178,7 +178,7 @@ final class Settings {
         do {
             database = try JSONDecoder().decode(Database.self, from: storage.data(using: .utf8)!)
         } catch {
-            print("Failed to load settings. Using default.")
+            logger.info("settings: Failed to load. Using default.")
             database = createDefault()
         }
     }
@@ -187,7 +187,7 @@ final class Settings {
         do {
             storage = String(decoding: try JSONEncoder().encode(database), as: UTF8.self)
         } catch {
-            print("Failed to store settings.")
+            logger.error("settings: Failed to store.")
         }
     }
 }

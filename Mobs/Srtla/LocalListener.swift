@@ -26,7 +26,7 @@ class LocalListener {
             parameters.acceptLocalOnly = true
             listener = try NWListener(using: parameters)
         } catch {
-            print("Failed to create SRTLA listener with error", error)
+            logger.error("srtla: Failed to create listener with error \(error)")
             return
         }
         listener!.stateUpdateHandler = handleListenerStateChange(to:)
@@ -47,7 +47,7 @@ class LocalListener {
         case .ready:
             if let port = listener!.port {
                 self.port = port.rawValue
-                print("Listener ready at port", self.port!)
+                logger.info("srtla: Listener ready at port \(self.port!)")
             }
         default:
             self.port = nil
@@ -56,16 +56,15 @@ class LocalListener {
     
     func handleNewListenerConnection(connection: NWConnection) {
         self.connection = connection
-        print("New connection", connection.debugDescription)
+        logger.info("srtla: New connection \(connection.debugDescription)")
         connection.stateUpdateHandler = { (state) in
-            print("Connection state", state)
             switch state {
             case .ready:
-                print("Connection ready")
+                logger.info("srtla: Connection ready")
             case .failed(let error):
-                print("Connection failed with error", error)
+                logger.info("srtla: Connection failed with error \(error)")
             case .cancelled:
-                print("Connection cancelled")
+                logger.info("srtla: Connection cancelled")
             default:
                 break
             }
@@ -83,11 +82,11 @@ class LocalListener {
                 if let packetHandler = self.packetHandler {
                     packetHandler(data)
                 } else {
-                    print("Discarding local packet.")
+                    logger.warning("srtla: Discarding local packet.")
                 }
             }
             if let error = error {
-                print("Local error:", error)
+                logger.info("srtla: Local error \(error)")
                 return
             }
             self.receivePacket()
@@ -100,7 +99,7 @@ class LocalListener {
         }
         connection.send(content: packet, completion: .contentProcessed { error in
             if let error = error {
-                print("Local send error: \(error)")
+                logger.warning("srtla: Local send error: \(error)")
             }
         })
     }

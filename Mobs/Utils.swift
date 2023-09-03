@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import os
 
 extension String: Error {}
 
@@ -62,3 +63,25 @@ func makeRtmpStreamName(url: String) -> String {
     }
     return String(parts[parts.count - 1])
 }
+
+class EasyLogger {
+    var logger: Logger = Logger()
+    
+    func debug(_ messsge: String) {
+        logger.debug("\(messsge)")
+    }
+    
+    func info(_ messsge: String) {
+        logger.info("\(messsge)")
+    }
+    
+    func warning(_ messsge: String) {
+        logger.warning("\(messsge)")
+    }
+    
+    func error(_ messsge: String) {
+        logger.error("\(messsge)")
+    }
+}
+
+let logger = EasyLogger()

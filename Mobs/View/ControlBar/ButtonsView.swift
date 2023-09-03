@@ -59,7 +59,7 @@ struct ButtonsView: View {
                 GenericButton(image: "ellipsis", action: {
                 })
                 Button(action: {
-                    print("Settings")
+                    logger.error("Settings")
                 }, label: {
                     NavigationLink(destination: SettingsView(model: model)) {
                         ButtonImage(image: "gearshape")

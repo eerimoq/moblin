@@ -181,9 +181,9 @@ final class Model: ObservableObject {
     func sceneUpdated() {
         for scene in enabledScenes {
             if selectedSceneId == scene.id {
-                print("Found scene:", scene.name)
+                logger.info("model: Found scene \(scene.name)")
                 for widget in scene.widgets {
-                    print(widget.id, widget.x, widget.y, widget.w, widget.h)
+                    logger.info("model: \(widget.id), \(widget.x), \(widget.y), \(widget.w), \(widget.h)")
                 }
             }
         }
@@ -191,11 +191,11 @@ final class Model: ObservableObject {
     
     /*@objc
     func thermalStateChanged(notification: Notification) {
-        print("thermal change")
+        logger.info("model: thermal change")
         guard let processInfo = notification.object as? ProcessInfo else {
             return
         }
-        print("Thermal state:", processInfo.thermalState, thermalState)
+        logger.info("model: Thermal state:", processInfo.thermalState, thermalState)
         thermalState = processInfo.thermalState
     }*/
     
@@ -244,21 +244,21 @@ final class Model: ObservableObject {
         PHPhotoLibrary.requestAuthorization(for: requiredAccessLevel) { authorizationStatus in
             switch authorizationStatus {
             case .limited:
-                print("limited authorization granted")
+                logger.warning("model: limited authorization granted")
             case .authorized:
-                print("authorization granted")
+                logger.info("model: authorization granted")
             default:
-                print("Unimplemented")
+                logger.error("model: Unimplemented")
             }
         }
     }
 
     func registerForPublishEvent() {
         rtmpStream.attachAudio(AVCaptureDevice.default(for: .audio)) { error in
-            print(error)
+            logger.error("model: \(error)")
         }
         rtmpStream.attachCamera(AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)) { error in
-            print(error)
+            logger.error("model: \(error)")
         }
         rtmpStream.publisher(for: \.currentFPS)
             .sink { [weak self] currentFPS in
@@ -273,19 +273,19 @@ final class Model: ObservableObject {
 
         nc.publisher(for: AVAudioSession.interruptionNotification, object: nil)
             .sink { notification in
-                print(notification)
+                logger.info("model: \(notification)")
             }
             .store(in: &subscriptions)
 
         nc.publisher(for: AVAudioSession.routeChangeNotification, object: nil)
             .sink { notification in
-                print(notification)
+                logger.info("model: \(notification)")
             }
             .store(in: &subscriptions)
         
         nc.publisher(for: ProcessInfo.thermalStateDidChangeNotification, object: nil)
             .sink { notification in
-                print("Thermal:", notification)
+                logger.info("model: \(notification)")
             }
             .store(in: &subscriptions)
     }
@@ -365,7 +365,7 @@ final class Model: ObservableObject {
             device.ramp(toVideoZoomFactor: level, withRate: 5.0)
             device.unlockForConfiguration()
         } catch let error as NSError {
-            print("while locking device for ramp: \(error)")
+            logger.warning("model: while locking device for ramp: \(error)")
         }
     }
 
@@ -403,7 +403,7 @@ final class Model: ObservableObject {
 
 extension Model: IORecorderDelegate {
     func recorder(_ recorder: IORecorder, errorOccured error: IORecorder.Error) {
-        print(error)
+        logger.error("model: \(error)")
     }
 
     func recorder(_ recorder: IORecorder, finishWriting writer: AVAssetWriter) {
@@ -413,7 +413,7 @@ extension Model: IORecorderDelegate {
             do {
                 try FileManager.default.removeItem(at: writer.outputURL)
             } catch {
-                print(error)
+                logger.error("model: \(error)")
             }
         })
     }

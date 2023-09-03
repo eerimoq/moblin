@@ -29,7 +29,7 @@ class Srtla {
             let url = URL(string: uri),
             let host = url.host,
             let port = url.port else {
-            print("Failed to start srtla")
+            logger.error("srtla: Failed to start srtla")
             return
         }
         localListener.packetHandler = handleLocalPacket(packet:)
@@ -48,26 +48,22 @@ class Srtla {
     }
     
     func handleLocalPacket(packet: Data) {
-        // print("Got local packet:", packet)
-        guard let connection = findBestRemoteConnection() else {
-            print("No remote connection found. Discarding packet.")
-            return
-        }
-        connection.sendPacket(packet: packet)
+        findBestRemoteConnection()?.sendPacket(packet: packet)
     }
     
     func handleRemotePacket(packet: Data) {
-        // print("Got remote packet:", packet)
         localListener.sendPacket(packet: packet)
     }
     
     func findBestRemoteConnection() -> RemoteConnection? {
-        var bestConnection = remoteConnections[0]
+        var bestConnection: RemoteConnection? = nil
+        var bestScore = -1
         for connection in remoteConnections {
-            if connection.score() > bestConnection.score() {
+            if connection.score() > bestScore {
                 bestConnection = connection
+                bestScore = connection.score()
             }
         }
-        return bestConnection.score() == -1 ? nil : bestConnection
+        return bestConnection
     }
 }

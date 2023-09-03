@@ -51,6 +51,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     private var model: Model
     private var webSocket: URLSessionWebSocketTask
     private var channelId: String
+    private var keepAliveTimer: Timer? = nil
     
     init(model: Model, channelId: String) {
         self.model = model
@@ -65,19 +66,21 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         webSocket = session.webSocketTask(with: url)
         webSocket.resume()
         readMessage()
+        keepAliveTimer = Timer.scheduledTimer(withTimeInterval: 4 * 60 + 30, repeats: true, block: { _ in
+            self.sendPing()
+        })
     }
 
     func stop() {
         webSocket.cancel()
+        keepAliveTimer?.invalidate()
     }
     
     func handlePong() {
-        print("Got pong.")
     }
 
     func handleResponse(message: String) throws {
-        let message = try decodeResponse(message: message)
-        print("Response:", message)
+        _ = try decodeResponse(message: message)
     }
 
     func handleMessage(message: String) throws {
@@ -87,7 +90,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
             let message = try decodeMessageViewCount(message: message.data.message)
             self.model.numberOfViewers = "\(message.viewers)"
         } else {
-            print("Unsupported message type \(type) (message: \(message))")
+            logger.warning("pubsub: Unsupported message type \(type) (message: \(message))")
         }
     }
 
@@ -101,10 +104,10 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
             } else if type == "MESSAGE" {
                 try handleMessage(message: message)
             } else {
-                print("Unsupported type:", type)
+                logger.warning("pubsub: Unsupported type: \(type)")
             }
         } catch {
-            print("Failed to process message \"\(message)\" with error \(error)")
+            logger.error("pubsub: Failed to process message \"\(message)\" with error \(error)")
         }
     }
 
@@ -112,16 +115,17 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         webSocket.receive { result in
             switch result {
             case .failure(let error):
-                print("Receive failed with error:", error)
+                logger.error("pubsub: Receive failed with error: \(error)")
                 return
             case .success(let message):
                 switch message {
                 case .string(let text):
+                    logger.debug("pubsub: Received \(text)")
                     self.handleStringMessage(message: text)
                 case .data(let data):
-                    print("Received binary message:", data)
+                    logger.error("pubsub: Received binary message: \(data)")
                 @unknown default:
-                    print("Unknown message type.")
+                    logger.warning("pubsub: Unknown message type.")
                 }
                 self.readMessage()
             }
@@ -129,23 +133,27 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     }
 
     func sendMessage(message: String) {
-        print("Sending:", message)
+        logger.debug("pubsub: Sending \(message)")
         let message = URLSessionWebSocketTask.Message.string(message)
         webSocket.send(message) { error in
             if let error = error {
-                print("Failed to send message to PubSub server with error", error)
+                logger.error("pubsub: Failed to send message to server with error \(error)")
             }
         }
     }
 
-    func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol proto: String?) {
-        print("Connected to PubSub server")
+    func sendPing() {
         sendMessage(message: "{\"type\":\"PING\"}")
+    }
+    
+    func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol proto: String?) {
+        logger.info("pubsub: Connected to \(url)")
+        sendPing()
         sendMessage(message: "{\"type\":\"LISTEN\",\"data\":{\"topics\":[\"video-playback-by-id.\(channelId)\"]}}")
     }
 
     func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
-        print("Disconnect from PubSub server:", reason ?? "unknown")
+        logger.warning("pubsub: Disconnect from server: \(String(describing: reason))")
     }
 
 }

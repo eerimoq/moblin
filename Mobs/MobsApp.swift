@@ -24,7 +24,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             try session.setCategory(.playAndRecord, mode: .voiceChat, options: [.defaultToSpeaker, .allowBluetooth])
             try session.setActive(true)
     } catch {
-            print(error)
+        logger.error("app: Session error \(error)")
     }
         return true
     }
