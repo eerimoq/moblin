@@ -34,7 +34,7 @@ struct ConnectionSrtSettingsView: View {
                 connection.srtla
             }, set: { value in
                 connection.srtla = value
-                model.settings.store()
+                model.store()
                 model.srtlaChanged()
             }))
         }

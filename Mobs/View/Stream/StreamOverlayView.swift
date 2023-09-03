@@ -114,8 +114,12 @@ struct TrailingOverlayView: View {
             if database.show.speed {
                 IconAndText(icon: "speedometer", text: model.speed, textFirst: true)
             }
-            IconAndText(icon: "display", text: "1920x1080", textFirst: true)
-            IconAndText(icon: "film.stack", text: model.fps, textFirst: true)
+            if database.show.resolution {
+                IconAndText(icon: "display", text: "1920x1080", textFirst: true)
+            }
+            if database.show.fps {
+                IconAndText(icon: "film.stack", text: model.fps, textFirst: true)
+            }
             Spacer()
             // Variable(name: "Earnings", value: "10.32")
             Picker("", selection: $model.sceneIndex) {

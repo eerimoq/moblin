@@ -122,6 +122,8 @@ class Show: Codable {
     var uptime: Bool = true
     var connection: Bool = true
     var speed: Bool = true
+    var resolution: Bool = true
+    var fps: Bool = true
 }
 
 class Database: Codable {

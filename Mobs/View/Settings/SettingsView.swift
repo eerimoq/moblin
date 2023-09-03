@@ -22,31 +22,43 @@ struct SettingsView: View {
                     database.show.connection
                 }, set: { value in
                     database.show.connection = value
-                    model.settings.store()
-                }))
-                Toggle("Speed", isOn: Binding(get: {
-                    database.show.speed
-                }, set: { value in
-                    database.show.speed = value
-                    model.settings.store()
+                    model.store()
                 }))
                 Toggle("Viewers", isOn: Binding(get: {
                     database.show.viewers
                 }, set: { value in
                     database.show.viewers = value
-                    model.settings.store()
+                    model.store()
                 }))
                 Toggle("Uptime", isOn: Binding(get: {
                     database.show.uptime
                 }, set: { value in
                     database.show.uptime = value
-                    model.settings.store()
+                    model.store()
                 }))
                 Toggle("Chat", isOn: Binding(get: {
                     database.show.chat
                 }, set: { value in
                     database.show.chat = value
-                    model.settings.store()
+                    model.store()
+                }))
+                Toggle("Speed", isOn: Binding(get: {
+                    database.show.speed
+                }, set: { value in
+                    database.show.speed = value
+                    model.store()
+                }))
+                Toggle("Resolution", isOn: Binding(get: {
+                    database.show.resolution
+                }, set: { value in
+                    database.show.resolution = value
+                    model.store()
+                }))
+                Toggle("FPS", isOn: Binding(get: {
+                    database.show.fps
+                }, set: { value in
+                    database.show.fps = value
+                    model.store()
                 }))
             }
         }
