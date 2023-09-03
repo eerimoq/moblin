@@ -249,6 +249,7 @@
 		035E9E352A9A02D6009D4F5A /* Mobs */ = {
 			isa = PBXGroup;
 			children = (
+				0379BB712AA4BFA500B718B6 /* Twitch */,
 				03B374052AA0EA370028DDD5 /* Effects */,
 				0315A3392AA2FA0A00295443 /* Srtla */,
 				03A983542A9A0582008FF0DB /* View */,
@@ -256,8 +257,6 @@
 				035E9E362A9A02D6009D4F5A /* MobsApp.swift */,
 				03A9836D2A9A05F9008FF0DB /* Model.swift */,
 				0382933A2A9A73ED008963AA /* Settings.swift */,
-				03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */,
-				03A983702A9A0659008FF0DB /* TwitchChatMobs.swift */,
 				03B373FC2A9F35EF0028DDD5 /* Utils.swift */,
 				035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */,
 			);
@@ -270,6 +269,15 @@
 				035E9E3D2A9A02D7009D4F5A /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		0379BB712AA4BFA500B718B6 /* Twitch */ = {
+			isa = PBXGroup;
+			children = (
+				03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */,
+				03A983702A9A0659008FF0DB /* TwitchChatMobs.swift */,
+			);
+			path = Twitch;
 			sourceTree = "<group>";
 		};
 		03A983542A9A0582008FF0DB /* View */ = {
