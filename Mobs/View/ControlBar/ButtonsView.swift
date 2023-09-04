@@ -72,28 +72,32 @@ struct ButtonsView: View {
     @State private var iconEffectImage = iconEffectImageOff
     @State private var movieEffectImage = movieEffectImageOff
     
+    func buildRow() -> some View {
+        return HStack {
+            GenericButton(image: iconEffectImage, action: {
+                if iconEffectImage == iconEffectImageOn {
+                    model.iconEffectOff()
+                    iconEffectImage = iconEffectImageOff
+                } else {
+                    model.iconEffectOn()
+                    iconEffectImage = iconEffectImageOn
+                }
+            }, on: iconEffectImage == iconEffectImageOn)
+            GenericButton(image: movieEffectImage, action: {
+                if movieEffectImage == movieEffectImageOn {
+                    model.movieEffectOff()
+                    movieEffectImage = movieEffectImageOff
+                } else {
+                    model.movieEffectOn()
+                    movieEffectImage = movieEffectImageOn
+                }
+            }, on: movieEffectImage == movieEffectImageOn)
+        }
+    }
+    
     var body: some View {
         VStack {
-            HStack {
-                GenericButton(image: iconEffectImage, action: {
-                    if iconEffectImage == iconEffectImageOn {
-                        model.iconEffectOff()
-                        iconEffectImage = iconEffectImageOff
-                    } else {
-                        model.iconEffectOn()
-                        iconEffectImage = iconEffectImageOn
-                    }
-                }, on: iconEffectImage == iconEffectImageOn)
-                GenericButton(image: movieEffectImage, action: {
-                    if movieEffectImage == movieEffectImageOn {
-                        model.movieEffectOff()
-                        movieEffectImage = movieEffectImageOff
-                    } else {
-                        model.movieEffectOn()
-                        movieEffectImage = movieEffectImageOn
-                    }
-                }, on: movieEffectImage == movieEffectImageOn)
-            }
+            buildRow()
             HStack {
                 GenericButton(image: monochromeEffectImage, action: {
                     if monochromeEffectImage == monochromeEffectImageOn {

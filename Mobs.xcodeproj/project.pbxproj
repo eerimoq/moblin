@@ -27,6 +27,8 @@
 		035E9E3B2A9A02D7009D4F5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */; };
 		035E9E3E2A9A02D7009D4F5A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3D2A9A02D7009D4F5A /* Preview Assets.xcassets */; };
 		0379BB732AA5149F00B718B6 /* ButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB722AA5149F00B718B6 /* ButtonsSettingsView.swift */; };
+		0379BB762AA6345400B718B6 /* ButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB752AA6345400B718B6 /* ButtonSettingsView.swift */; };
+		0379BB792AA64C9500B718B6 /* WidgetVideoEffectSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB782AA64C9500B718B6 /* WidgetVideoEffectSettingsView.swift */; };
 		0382933B2A9A73ED008963AA /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0382933A2A9A73ED008963AA /* Settings.swift */; };
 		03A983422A9A03D3008FF0DB /* TwitchChat in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983412A9A03D3008FF0DB /* TwitchChat */; };
 		03A983452A9A03EA008FF0DB /* HaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983442A9A03EA008FF0DB /* HaishinKit */; };
@@ -79,6 +81,8 @@
 		035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		035E9E3D2A9A02D7009D4F5A /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		0379BB722AA5149F00B718B6 /* ButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonsSettingsView.swift; sourceTree = "<group>"; };
+		0379BB752AA6345400B718B6 /* ButtonSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonSettingsView.swift; sourceTree = "<group>"; };
+		0379BB782AA64C9500B718B6 /* WidgetVideoEffectSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetVideoEffectSettingsView.swift; sourceTree = "<group>"; };
 		0382933A2A9A73ED008963AA /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		03A983552A9A05D7008FF0DB /* ConnectionsSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionsSettingsView.swift; sourceTree = "<group>"; };
 		03A983562A9A05D7008FF0DB /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -183,6 +187,7 @@
 		0315A3512AA3233700295443 /* Widget */ = {
 			isa = PBXGroup;
 			children = (
+				0379BB772AA64C7F00B718B6 /* VideoEffect */,
 				0315A36A2AA33F0F00295443 /* Camera */,
 				0315A3652AA33C5400295443 /* Image */,
 				0315A3602AA33A1100295443 /* Text */,
@@ -282,6 +287,22 @@
 			path = Twitch;
 			sourceTree = "<group>";
 		};
+		0379BB742AA6343E00B718B6 /* Button */ = {
+			isa = PBXGroup;
+			children = (
+				0379BB752AA6345400B718B6 /* ButtonSettingsView.swift */,
+			);
+			path = Button;
+			sourceTree = "<group>";
+		};
+		0379BB772AA64C7F00B718B6 /* VideoEffect */ = {
+			isa = PBXGroup;
+			children = (
+				0379BB782AA64C9500B718B6 /* WidgetVideoEffectSettingsView.swift */,
+			);
+			path = VideoEffect;
+			sourceTree = "<group>";
+		};
 		03A983542A9A0582008FF0DB /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -297,14 +318,15 @@
 		03B373F42A9EF8BD0028DDD5 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				0379BB742AA6343E00B718B6 /* Button */,
 				0315A3512AA3233700295443 /* Widget */,
 				0315A3502AA3233000295443 /* Variable */,
 				0315A34C2AA3217500295443 /* Scene */,
 				0315A3402AA31ADC00295443 /* Connection */,
+				0379BB722AA5149F00B718B6 /* ButtonsSettingsView.swift */,
 				03A983552A9A05D7008FF0DB /* ConnectionsSettingsView.swift */,
 				03A9835B2A9A05D7008FF0DB /* ScenesSettingsView.swift */,
 				03A983572A9A05D7008FF0DB /* SettingsView.swift */,
-				0379BB722AA5149F00B718B6 /* ButtonsSettingsView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -447,6 +469,7 @@
 				0315A3442AA31D0100295443 /* ConnectionRtmpSettingsView.swift in Sources */,
 				03A9836E2A9A05F9008FF0DB /* Model.swift in Sources */,
 				03A983722A9A0659008FF0DB /* TwitchChatMobs.swift in Sources */,
+				0379BB762AA6345400B718B6 /* ButtonSettingsView.swift in Sources */,
 				03B373FB2A9EFB910028DDD5 /* ZoomView.swift in Sources */,
 				03A983672A9A05D7008FF0DB /* ScenesSettingsView.swift in Sources */,
 				0315A37E2AA43DCC00295443 /* TextEditView.swift in Sources */,
@@ -462,6 +485,7 @@
 				03A983662A9A05D7008FF0DB /* AddButtonView.swift in Sources */,
 				03A983612A9A05D7008FF0DB /* ConnectionsSettingsView.swift in Sources */,
 				0315A3702AA3771F00295443 /* SceneWidgetSettingsView.swift in Sources */,
+				0379BB792AA64C9500B718B6 /* WidgetVideoEffectSettingsView.swift in Sources */,
 				0315A33B2AA2FA7100295443 /* LocalListener.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

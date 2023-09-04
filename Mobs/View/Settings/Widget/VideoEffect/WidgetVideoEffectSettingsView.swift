@@ -1,5 +1,5 @@
 //
-//  WidgetCameraDirectionSettingsView.swift
+//  WidgetImageSettingsView.swift
 //  Mobs
 //
 //  Created by Erik Moqvist on 2023-09-02.
@@ -7,24 +7,24 @@
 
 import SwiftUI
 
-var directions = ["Back", "Front"]
+var videoEffects = ["Movie", "Gray scale"]
 
-struct WidgetCameraDirectionSettingsView: View {
+struct WidgetVideoEffectSettingsView: View {
     @ObservedObject var model: Model
-    private var widget: SettingsWidget
+    var widget: SettingsWidget
     @State private var selection: String
     
     init(model: Model, widget: SettingsWidget) {
         self.model = model
         self.widget = widget
-        self.selection = widget.camera.direction
+        self.selection = widget.videoEffect.type
     }
     
     var body: some View {
         Form {
             Picker("", selection: $selection) {
-                ForEach(directions, id: \.self) { direction in
-                    Text(direction)
+                ForEach(videoEffects, id: \.self) { videoEffect in
+                    Text(videoEffect)
                 }
             }
             .onChange(of: selection) { direction in

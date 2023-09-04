@@ -34,6 +34,8 @@ struct WidgetSettingsView: View {
                 WidgetTextSettingsView(model: model, widget: widget)
             case "Image":
                 WidgetImageSettingsView(model: model, widget: widget)
+            case "Image":
+                WidgetVideoEffectSettingsView(model: model, widget: widget)
             case "Video":
                 Section("URL") {
                     TextField("", text: Binding(get: {

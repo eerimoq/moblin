@@ -75,7 +75,7 @@ struct ControlBarView: View {
                     Image("AppIconNoBackground")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .padding([.bottom], 4)
+                        .padding([.bottom], 6)
                         .frame(width: 40, height: 40)
                     Button(action: {
                         logger.error("Settings")

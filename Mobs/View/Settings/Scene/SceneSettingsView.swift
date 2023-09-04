@@ -27,6 +27,29 @@ struct SceneSettingsView: View {
             NavigationLink(destination: NameEditView(name: scene.name, onSubmit: submitName)) {
                 TextItemView(name: "Name", value: scene.name)
             }
+            Section("Preview") {
+                HStack {
+                    Spacer()
+                    Canvas { context, size in
+                        let fullOrigin = CGPoint(x: 2, y: 2)
+                        let fullSize = CGSize(width: size.width - 4, height: size.height - 4)
+                        context.stroke(
+                            Path(roundedRect: CGRect(origin: fullOrigin, size: fullSize), cornerRadius: 2.0),
+                            with: .color(.red),
+                            lineWidth: 2)
+                        let smallOrigin = CGPoint(x: 2 * size.width / 3 - 2, y: 2)
+                        let smallSize = CGSize(width: size.width / 3, height: size.height / 3)
+                        context.stroke(
+                            Path(roundedRect: CGRect(origin: smallOrigin, size: smallSize), cornerRadius: 2.0),
+                            with: .color(.blue),
+                            lineWidth: 2)
+                    }
+                    .frame(width: 1920/6, height: 1080/6)
+                    .border(.black)
+                    Spacer()
+                }
+
+            }
             Section("Widgets") {
                 List {
                     ForEach(scene.widgets) { widget in

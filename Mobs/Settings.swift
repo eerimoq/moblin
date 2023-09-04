@@ -65,7 +65,11 @@ class SettingsWidgetWebview: Codable {
     var url: String = "https://"
 }
 
-let widgetTypes = ["Camera", /*"Text", */ "Image"/*, "Video", "Chat", "Recording", "Webview"*/]
+class SettingsWidgetVideoEffect: Codable {
+    var type: String = "Movie"
+}
+
+let widgetTypes = ["Camera", /*"Text", */ "Image", "Video effect"/*, "Video", "Chat", "Recording", "Webview"*/]
 
 class SettingsWidget: Codable, Identifiable, Equatable {
     var name: String
@@ -78,6 +82,7 @@ class SettingsWidget: Codable, Identifiable, Equatable {
     var chat: SettingsWidgetChat = SettingsWidgetChat()
     var recording: SettingsWidgetRecording = SettingsWidgetRecording()
     var webview: SettingsWidgetWebview = SettingsWidgetWebview()
+    var videoEffect: SettingsWidgetVideoEffect = SettingsWidgetVideoEffect()
 
     init(name: String) {
         self.name = name
@@ -121,6 +126,22 @@ class SettingsVariable: Codable, Identifiable {
     }
 }
 
+var buttonTypes = ["Torch", "Mute", "Widget"]
+
+class SettingsButton: Codable, Identifiable {
+    var name: String
+    var id: UUID = UUID()
+    var enabled: Bool = false
+    var type: String = "Torch"
+    var imageType: String = "SystemName"
+    var systemImageNameOn: String = "mic.slash"
+    var systemImageNameOff: String = "mic"
+
+    init(name: String) {
+        self.name = name
+    }
+}
+
 class Show: Codable {
     var chat: Bool = true
     var viewers: Bool = true
@@ -136,6 +157,7 @@ class Database: Codable {
     var scenes: [SettingsScene] = []
     var widgets: [SettingsWidget] = []
     var variables: [SettingsVariable] = []
+    var buttons: [SettingsButton] = []
     var show: Show = Show()
 }
 
@@ -148,6 +170,11 @@ func addDefaultWidgets(database: Database) {
     widget = SettingsWidget(name: "Front camera")
     widget.type = "Camera"
     widget.camera.direction = "Front"
+    database.widgets.append(widget)
+    
+    widget = SettingsWidget(name: "Movie")
+    widget.type = "Video effect"
+    widget.videoEffect.type = "Movie"
     database.widgets.append(widget)
 }
 
@@ -169,9 +196,19 @@ func createSceneWidgetFrontCamera(database: Database) -> SettingsSceneWidget {
     return widget
 }
 
+func createSceneWidgetVideoEffectMovie(database: Database) -> SettingsSceneWidget {
+    let widget = SettingsSceneWidget(widgetId: database.widgets[2].id)
+    widget.x = 0
+    widget.y = 0
+    widget.h = 100
+    widget.w = 100
+    return widget
+}
+
 func addDefaultScenes(database: Database) {
     var scene = SettingsScene(name: "Back")
     scene.widgets.append(createSceneWidgetBackCamera(database: database))
+    scene.widgets.append(createSceneWidgetVideoEffectMovie(database: database))
     database.scenes.append(scene)
     
     scene = SettingsScene(name: "Front")
@@ -181,6 +218,7 @@ func addDefaultScenes(database: Database) {
     scene = SettingsScene(name: "Both")
     scene.widgets.append(createSceneWidgetBackCamera(database: database))
     scene.widgets.append(createSceneWidgetFrontCamera(database: database))
+    scene.widgets.append(createSceneWidgetVideoEffectMovie(database: database))
     database.scenes.append(scene)
 }
 
@@ -195,11 +233,50 @@ func addDefaultConnections(database: Database) {
     database.connections.append(connection)
 }
 
+func addDefaultButtons(database: Database) {
+    var button = SettingsButton(name: "Torch")
+    button.id = UUID()
+    button.enabled = true
+    button.type = "Torch"
+    button.imageType = "SystemName"
+    button.systemImageNameOn = "lightbulb.fill"
+    button.systemImageNameOff = "lightbulb"
+    database.buttons.append(button)
+    
+    button = SettingsButton(name: "Mute")
+    button.id = UUID()
+    button.enabled = true
+    button.type = "Mute"
+    button.imageType = "SystemName"
+    button.systemImageNameOn = "mic.slash"
+    button.systemImageNameOff = "mic"
+    database.buttons.append(button)
+    
+    button = SettingsButton(name: "Movie")
+    button.id = UUID()
+    button.enabled = true
+    button.type = "Widget"
+    button.imageType = "SystemName"
+    button.systemImageNameOn = "film.fill"
+    button.systemImageNameOff = "film"
+    database.buttons.append(button)
+    
+    button = SettingsButton(name: "Grayscale")
+    button.id = UUID()
+    button.enabled = true
+    button.type = "Widget"
+    button.imageType = "SystemName"
+    button.systemImageNameOn = "moon.fill"
+    button.systemImageNameOff = "moon"
+    database.buttons.append(button)
+}
+
 func createDefault() -> Database {
     let database = Database()
     addDefaultWidgets(database: database)
     addDefaultScenes(database: database)
     addDefaultConnections(database: database)
+    addDefaultButtons(database: database)
     return database
 }
 
