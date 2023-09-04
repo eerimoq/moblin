@@ -77,6 +77,12 @@ final class Model: ObservableObject {
         }
     }
     
+    var enabledButtons: [SettingsButton] {
+        get {
+            database.buttons.filter({button in button.enabled})
+        }
+    }
+    
     func setup(settings: Settings) {
         self.settings = settings
         rtmpStream = RTMPStream(connection: rtmpConnection)

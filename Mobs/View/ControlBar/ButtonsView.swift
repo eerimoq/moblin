@@ -77,11 +77,13 @@ struct ButtonsView: View {
     
     init(model: Model) {
         self.model = model
-        self.rowIndexes = (0..<(model.database.buttons.count + 1) / 2).map({i in RowIndex(id: i)}).reversed()
+        self.rowIndexes = (0..<(model.enabledButtons.count + 1) / 2)
+            .map({i in RowIndex(id: i)})
+            .reversed()
     }
     
     func buildButton(index: Int) -> GenericButton {
-        let button = model.database.buttons[index]
+        let button = model.enabledButtons[index]
         switch button.type {
         case "Torch":
             return GenericButton(imageOn: button.systemImageNameOn,
@@ -119,7 +121,7 @@ struct ButtonsView: View {
         VStack {
             ForEach(rowIndexes) { rowIndex in
                 HStack {
-                    let evenNumberOfRows = ((rowIndex.id + 1) * 2 <= model.database.buttons.count)
+                    let evenNumberOfRows = ((rowIndex.id + 1) * 2 <= model.enabledButtons.count)
                     if evenNumberOfRows {
                         buildButton(index: 2 * rowIndex.id + 1)
                         buildButton(index: 2 * rowIndex.id)
