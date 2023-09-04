@@ -36,13 +36,13 @@ struct ButtonPlaceholderImage: View {
     }
 }
 
+// ToDo: The button state must be stored in the model.
 struct GenericButton: View {
     @State private var image: String
     private var imageOn: String
     private var imageOff: String
     private var actionOn: () -> Void
     private var actionOff: () -> Void
-    private var on: Bool = false
 
     init(imageOn: String, imageOff: String, actionOn: @escaping () -> Void, actionOff: @escaping () -> Void) {
         self.imageOn = imageOn
