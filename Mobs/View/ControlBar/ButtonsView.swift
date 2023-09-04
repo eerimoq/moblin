@@ -36,7 +36,6 @@ struct ButtonPlaceholderImage: View {
     }
 }
 
-// ToDo: The button state must be stored in the model.
 struct GenericButton: View {
     @State private var image: String
     private var imageOn: String
@@ -56,7 +55,7 @@ struct GenericButton: View {
     
     var body: some View {
         Button(action: {
-            if image == imageOn {
+            if isOn.wrappedValue {
                 image = imageOff
                 actionOff()
             } else {
