@@ -43,8 +43,10 @@ struct GenericButton: View {
     private var imageOff: String
     private var actionOn: () -> Void
     private var actionOff: () -> Void
+    private var isOn: Binding<Bool>
 
-    init(imageOn: String, imageOff: String, actionOn: @escaping () -> Void, actionOff: @escaping () -> Void) {
+    init(isOn: Binding<Bool>, imageOn: String, imageOff: String, actionOn: @escaping () -> Void, actionOff: @escaping () -> Void) {
+        self.isOn = isOn
         self.imageOn = imageOn
         self.imageOff = imageOff
         self.actionOn = actionOn
@@ -62,7 +64,7 @@ struct GenericButton: View {
                 actionOn()
             }
         }, label: {
-            ButtonImage(image: image, on: image == imageOn)
+            ButtonImage(image: image, on: isOn.wrappedValue)
         })
     }
 }
@@ -86,7 +88,8 @@ struct ButtonsView: View {
         let button = model.enabledButtons[index]
         switch button.type {
         case "Torch":
-            return GenericButton(imageOn: button.systemImageNameOn,
+            return GenericButton(isOn: $model.isTorchOn,
+                                 imageOn: button.systemImageNameOn,
                                  imageOff: button.systemImageNameOff,
                                  actionOn: {
                                      model.toggleTorch()
@@ -95,7 +98,8 @@ struct ButtonsView: View {
                                      model.toggleTorch()
                                  })
         case "Mute":
-            return GenericButton(imageOn: button.systemImageNameOn,
+            return GenericButton(isOn: $model.isMuteOn,
+                                 imageOn: button.systemImageNameOn,
                                  imageOff: button.systemImageNameOff,
                                  actionOn: {
                                      model.toggleMute()
@@ -104,7 +108,8 @@ struct ButtonsView: View {
                                      model.toggleMute()
                                  })
         case "Widget":
-            return GenericButton(imageOn: button.systemImageNameOn,
+            return GenericButton(isOn: $model.isMovieOn,
+                                 imageOn: button.systemImageNameOn,
                                  imageOff: button.systemImageNameOff,
                                  actionOn: {
                                      model.movieEffectOn()

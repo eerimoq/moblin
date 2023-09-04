@@ -64,6 +64,9 @@ final class Model: ObservableObject {
     private var srtla = Srtla()
     private var srtDummySender: DummySender?
     @Published var sceneIndex = 0
+    var isTorchOn = false
+    var isMuteOn = false
+    var isMovieOn = false
     
     var database: Database {
         get {
@@ -331,10 +334,12 @@ final class Model: ObservableObject {
     }
 
     func toggleTorch() {
+        isTorchOn.toggle()
         rtmpStream.torch.toggle()
     }
 
     func toggleMute() {
+        isMuteOn.toggle()
         rtmpStream.hasAudio.toggle()
     }
 
@@ -355,10 +360,12 @@ final class Model: ObservableObject {
     }
 
     func movieEffectOn() {
+        isMovieOn = true
         _ = rtmpStream.registerVideoEffect(movieEffect)
     }
 
     func movieEffectOff() {
+        isMovieOn = false
         _ = rtmpStream.unregisterVideoEffect(movieEffect)
     }
 
