@@ -128,14 +128,24 @@ class SettingsVariable: Codable, Identifiable {
 
 var buttonTypes = ["Torch", "Mute", "Widget"]
 
+class SettingsButtonWidget: Codable, Identifiable {
+    var widgetId: UUID
+    var id: UUID = UUID()
+    
+    init(widgetId: UUID) {
+        self.widgetId = widgetId
+    }
+}
+
 class SettingsButton: Codable, Identifiable {
     var name: String
     var id: UUID = UUID()
     var enabled: Bool = false
     var type: String = "Torch"
-    var imageType: String = "SystemName"
+    var imageType: String = "System name"
     var systemImageNameOn: String = "mic.slash"
     var systemImageNameOff: String = "mic"
+    var widget: SettingsButtonWidget = SettingsButtonWidget(widgetId: UUID())
 
     init(name: String) {
         self.name = name
@@ -238,7 +248,7 @@ func addDefaultButtons(database: Database) {
     button.id = UUID()
     button.enabled = true
     button.type = "Torch"
-    button.imageType = "SystemName"
+    button.imageType = "System name"
     button.systemImageNameOn = "lightbulb.fill"
     button.systemImageNameOff = "lightbulb"
     database.buttons.append(button)
@@ -247,28 +257,29 @@ func addDefaultButtons(database: Database) {
     button.id = UUID()
     button.enabled = true
     button.type = "Mute"
-    button.imageType = "SystemName"
+    button.imageType = "System name"
     button.systemImageNameOn = "mic.slash"
     button.systemImageNameOff = "mic"
     database.buttons.append(button)
-    
+
     button = SettingsButton(name: "Movie")
     button.id = UUID()
     button.enabled = true
     button.type = "Widget"
-    button.imageType = "SystemName"
+    button.imageType = "System name"
     button.systemImageNameOn = "film.fill"
     button.systemImageNameOff = "film"
+    button.widget.widgetId = database.widgets[2].id
     database.buttons.append(button)
     
-    button = SettingsButton(name: "Grayscale")
+    /*button = SettingsButton(name: "Grayscale")
     button.id = UUID()
     button.enabled = true
     button.type = "Widget"
-    button.imageType = "SystemName"
+    button.imageType = "System name"
     button.systemImageNameOn = "moon.fill"
     button.systemImageNameOff = "moon"
-    database.buttons.append(button)
+    database.buttons.append(button)*/
 }
 
 func createDefault() -> Database {

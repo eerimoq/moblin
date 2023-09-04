@@ -37,102 +37,97 @@ struct ButtonPlaceholderImage: View {
 }
 
 struct GenericButton: View {
-    var image: String
-    var action: () -> Void
-    var on: Bool = false
+    @State private var image: String
+    private var imageOn: String
+    private var imageOff: String
+    private var actionOn: () -> Void
+    private var actionOff: () -> Void
+    private var on: Bool = false
 
+    init(imageOn: String, imageOff: String, actionOn: @escaping () -> Void, actionOff: @escaping () -> Void) {
+        self.imageOn = imageOn
+        self.imageOff = imageOff
+        self.actionOn = actionOn
+        self.actionOff = actionOff
+        self.image = imageOff
+    }
+    
     var body: some View {
         Button(action: {
-            action()
+            if image == imageOn {
+                image = imageOff
+                actionOff()
+            } else {
+                image = imageOn
+                actionOn()
+            }
         }, label: {
-            ButtonImage(image: image, on: on)
+            ButtonImage(image: image, on: image == imageOn)
         })
     }
 }
 
-var mutedImageOn = "mic.slash"
-var mutedImageOff = "mic"
-var recordingImageOn = "record.circle.fill"
-var recordingImageOff = "record.circle"
-var flashImageOn = "lightbulb.fill"
-var flashImageOff = "lightbulb"
-var monochromeEffectImageOn = "moon.fill"
-var monochromeEffectImageOff = "moon"
-var iconEffectImageOn = "photo.fill"
-var iconEffectImageOff = "photo"
-var movieEffectImageOn = "film.fill"
-var movieEffectImageOff = "film"
+struct RowIndex: Identifiable {
+    var id: Int
+}
 
 struct ButtonsView: View {
     @ObservedObject var model: Model
-    @State private var mutedImage = mutedImageOff
-    @State private var recordingImage = recordingImageOff
-    @State private var flashLightImage = flashImageOff
-    @State private var monochromeEffectImage = monochromeEffectImageOff
-    @State private var iconEffectImage = iconEffectImageOff
-    @State private var movieEffectImage = movieEffectImageOff
+    private var rowIndexes: [RowIndex]
     
-    func buildRow() -> some View {
-        return HStack {
-            GenericButton(image: iconEffectImage, action: {
-                if iconEffectImage == iconEffectImageOn {
-                    model.iconEffectOff()
-                    iconEffectImage = iconEffectImageOff
-                } else {
-                    model.iconEffectOn()
-                    iconEffectImage = iconEffectImageOn
-                }
-            }, on: iconEffectImage == iconEffectImageOn)
-            GenericButton(image: movieEffectImage, action: {
-                if movieEffectImage == movieEffectImageOn {
-                    model.movieEffectOff()
-                    movieEffectImage = movieEffectImageOff
-                } else {
-                    model.movieEffectOn()
-                    movieEffectImage = movieEffectImageOn
-                }
-            }, on: movieEffectImage == movieEffectImageOn)
+    init(model: Model) {
+        self.model = model
+        self.rowIndexes = (0..<(model.database.buttons.count + 1) / 2).map({i in RowIndex(id: i)}).reversed()
+    }
+    
+    func buildButton(index: Int) -> GenericButton {
+        let button = model.database.buttons[index]
+        switch button.type {
+        case "Torch":
+            return GenericButton(imageOn: button.systemImageNameOn,
+                                 imageOff: button.systemImageNameOff,
+                                 actionOn: {
+                                     model.toggleLight()
+                                 },
+                                 actionOff: {
+                                     model.toggleLight()
+                                 })
+        case "Mute":
+            return GenericButton(imageOn: button.systemImageNameOn,
+                                 imageOff: button.systemImageNameOff,
+                                 actionOn: {
+                                     model.toggleMute()
+                                 },
+                                 actionOff: {
+                                     model.toggleMute()
+                                 })
+        case "Widget":
+            return GenericButton(imageOn: button.systemImageNameOn,
+                                 imageOff: button.systemImageNameOff,
+                                 actionOn: {
+                                     model.movieEffectOn()
+                                 },
+                                 actionOff: {
+                                     model.movieEffectOff()
+                                 })
+        default:
+            fatalError("Should never be executed")
         }
     }
     
     var body: some View {
         VStack {
-            buildRow()
-            HStack {
-                GenericButton(image: monochromeEffectImage, action: {
-                    if monochromeEffectImage == monochromeEffectImageOn {
-                        model.monochromeEffectOff()
-                        monochromeEffectImage = monochromeEffectImageOff
+            ForEach(rowIndexes) { rowIndex in
+                HStack {
+                    let evenNumberOfRows = ((rowIndex.id + 1) * 2 <= model.database.buttons.count)
+                    if evenNumberOfRows {
+                        buildButton(index: 2 * rowIndex.id + 1)
+                        buildButton(index: 2 * rowIndex.id)
                     } else {
-                        model.monochromeEffectOn()
-                        monochromeEffectImage = monochromeEffectImageOn
+                        ButtonPlaceholderImage()
+                        buildButton(index: 2 * rowIndex.id)
                     }
-                }, on: monochromeEffectImage == monochromeEffectImageOn)
-                GenericButton(image: mutedImage, action: {
-                    model.toggleMute()
-                    if mutedImage == mutedImageOn {
-                        mutedImage = mutedImageOff
-                    } else {
-                        mutedImage = mutedImageOn
-                    }
-                }, on: mutedImage == mutedImageOn)
-            }
-            HStack {
-                GenericButton(image: recordingImage, action: {
-                    if recordingImage == recordingImageOff {
-                        recordingImage = recordingImageOn
-                    } else {
-                        recordingImage = recordingImageOff
-                    }
-                }, on: recordingImage == recordingImageOn)
-                GenericButton(image: flashLightImage, action: {
-                    model.toggleLight()
-                    if flashLightImage == flashImageOff {
-                        flashLightImage = flashImageOn
-                    } else {
-                        flashLightImage = flashImageOff
-                    }
-                }, on: flashLightImage == flashImageOn)
+                }
             }
         }
     }
