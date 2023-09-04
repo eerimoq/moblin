@@ -71,9 +71,25 @@ struct ControlBarView: View {
                     Text(model.currentTime)
                         .font(.system(size: 13))
                 }
-                Image("AppIconNoBackground")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
+                HStack {
+                    Image("AppIconNoBackground")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .padding([.bottom], 4)
+                        .frame(width: 40, height: 40)
+                    Button(action: {
+                        logger.error("Settings")
+                    }, label: {
+                        NavigationLink(destination: SettingsView(model: model)) {
+                            Image(systemName: "gearshape")
+                                .frame(width: 40, height: 40)
+                                .overlay(
+                                    Circle()
+                                        .stroke(.secondary)
+                                )
+                        }
+                    })
+                }
                 Spacer()
                 ButtonsView(model: model)
                 ZoomView(onChange: { (level) in

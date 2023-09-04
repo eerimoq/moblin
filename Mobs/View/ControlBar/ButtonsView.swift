@@ -28,6 +28,14 @@ struct ButtonImage: View {
     }
 }
 
+struct ButtonPlaceholderImage: View {
+    var body: some View {
+        Image(systemName: "pawprint")
+            .frame(width: 40, height: 40)
+            .foregroundColor(.black)
+    }
+}
+
 struct GenericButton: View {
     var image: String
     var action: () -> Void
@@ -66,17 +74,6 @@ struct ButtonsView: View {
     
     var body: some View {
         VStack {
-            HStack {
-                GenericButton(image: "ellipsis", action: {
-                })
-                Button(action: {
-                    logger.error("Settings")
-                }, label: {
-                    NavigationLink(destination: SettingsView(model: model)) {
-                        ButtonImage(image: "gearshape")
-                    }
-                })
-            }
             HStack {
                 GenericButton(image: iconEffectImage, action: {
                     if iconEffectImage == iconEffectImageOn {
