@@ -89,10 +89,10 @@ struct ButtonsView: View {
             return GenericButton(imageOn: button.systemImageNameOn,
                                  imageOff: button.systemImageNameOff,
                                  actionOn: {
-                                     model.toggleLight()
+                                     model.toggleTorch()
                                  },
                                  actionOff: {
-                                     model.toggleLight()
+                                     model.toggleTorch()
                                  })
         case "Mute":
             return GenericButton(imageOn: button.systemImageNameOn,

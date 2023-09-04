@@ -330,7 +330,7 @@ final class Model: ObservableObject {
         updateUptimeFromNonMain()
     }
 
-    func toggleLight() {
+    func toggleTorch() {
         rtmpStream.torch.toggle()
     }
 
