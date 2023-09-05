@@ -40,7 +40,6 @@ struct ScenesSettingsView: View {
                             model.resetSelectedScene()
                         }))
                     }
-                    .deleteDisabled(database.scenes.count == 1)
                 }
                 .onDelete(perform: { offsets in
                     database.scenes.remove(atOffsets: offsets)

@@ -29,7 +29,6 @@ struct ConnectionsSettingsView: View {
                         }))
                         .disabled(connection.enabled)
                     }
-                    .deleteDisabled(database.connections.count == 1)
                 }
                 .onDelete(perform: { offsets in
                     database.connections.remove(atOffsets: offsets)
