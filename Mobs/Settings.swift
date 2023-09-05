@@ -210,6 +210,15 @@ func createSceneWidgetFrontCamera(database: Database) -> SettingsSceneWidget {
     return widget
 }
 
+func createSceneWidgetFrontCameraFull(database: Database) -> SettingsSceneWidget {
+    let widget = SettingsSceneWidget(widgetId: database.widgets[1].id)
+    widget.x = 0
+    widget.y = 0
+    widget.h = 100
+    widget.w = 100
+    return widget
+}
+
 func createSceneWidgetVideoEffectMovie(database: Database) -> SettingsSceneWidget {
     let widget = SettingsSceneWidget(widgetId: database.widgets[2].id)
     widget.x = 0
@@ -226,7 +235,8 @@ func addDefaultScenes(database: Database) {
     database.scenes.append(scene)
     
     scene = SettingsScene(name: "Front")
-    scene.widgets.append(createSceneWidgetFrontCamera(database: database))
+    scene.widgets.append(createSceneWidgetFrontCameraFull(database: database))
+    scene.widgets.append(createSceneWidgetVideoEffectMovie(database: database))
     database.scenes.append(scene)
     
     scene = SettingsScene(name: "Both")
