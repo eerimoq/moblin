@@ -23,6 +23,16 @@ struct ButtonSettingsView: View {
         model.store()
     }
     
+    func submitSystemImageNameOn(name: String) {
+        button.systemImageNameOn = name
+        model.store()
+    }
+    
+    func submitSystemImageNameOff(name: String) {
+        button.systemImageNameOff = name
+        model.store()
+    }
+    
     var body: some View {
         Form {
             NavigationLink(destination: NameEditView(name: button.name, onSubmit: submitName)) {
@@ -40,6 +50,14 @@ struct ButtonSettingsView: View {
                 }
                 .pickerStyle(.inline)
                 .labelsHidden()
+            }
+            Section("Image") {
+                NavigationLink(destination: TextEditView(title: "System name on", value: button.systemImageNameOn, onSubmit: submitSystemImageNameOn)) {
+                    TextItemView(name: "System name on", value: button.systemImageNameOn)
+                }
+                NavigationLink(destination: TextEditView(title: "System name off", value: button.systemImageNameOff, onSubmit: submitSystemImageNameOff)) {
+                    TextItemView(name: "System name off", value: button.systemImageNameOff)
+                }
             }
         }
         .navigationTitle("Button")

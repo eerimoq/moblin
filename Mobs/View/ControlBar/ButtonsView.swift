@@ -78,7 +78,7 @@ struct ButtonsView: View {
     
     init(model: Model) {
         self.model = model
-        self.rowIndexes = (0..<(model.enabledButtons.count + 1) / 2)
+        self.rowIndexes = (0..<min((model.enabledButtons.count + 1) / 2, 4))
             .map({i in RowIndex(id: i)})
             .reversed()
     }
