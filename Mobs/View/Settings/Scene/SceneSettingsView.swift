@@ -64,9 +64,8 @@ struct SceneSettingsView: View {
                     .border(.black)
                     Spacer()
                 }
-
             }
-            Section("Widgets") {
+            Section {
                 List {
                     ForEach(scene.widgets) { widget in
                         if let realWidget = widgets.first(where: {item in item.id == widget.widgetId}) {
@@ -127,6 +126,10 @@ struct SceneSettingsView: View {
                         }
                     }
                 }
+            } header: {
+                Text("Widgets")
+            } footer: {
+                Text("Widgets are stacked from back to front.")
             }
         }
         .navigationTitle("Scene")
