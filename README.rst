@@ -13,8 +13,6 @@ inspired by it.
 ToDo
 ====
 
-- Fix thermal state indicator. For some reason it never changes.
-
 - Actually change scene.
 
 - Make UI update after buttons reordering and enable/disable.

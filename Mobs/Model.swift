@@ -47,7 +47,7 @@ final class Model: ObservableObject {
     @Published var numberOfViewers = ""
     @Published var batteryLevel = UIDevice.current.batteryLevel
     @Published var speed = ""
-    @Published var thermalState: ProcessInfo.ThermalState = ProcessInfo().thermalState
+    @Published var thermalState: ProcessInfo.ThermalState = ProcessInfo.processInfo.thermalState
     private var monochromeEffect: MonochromeEffect = MonochromeEffect()
     private var iconEffect: IconEffect = IconEffect()
     private var movieEffect: MovieEffect = MovieEffect()
@@ -199,16 +199,6 @@ final class Model: ObservableObject {
         }
     }
     
-    /*@objc
-    func thermalStateChanged(notification: Notification) {
-        logger.info("model: thermal change")
-        guard let processInfo = notification.object as? ProcessInfo else {
-            return
-        }
-        logger.info("model: Thermal state:", processInfo.thermalState, thermalState)
-        thermalState = processInfo.thermalState
-    }*/
-    
     func updateUptimeFromNonMain() {
         DispatchQueue.main.async {
             self.updateUptime(now: Date())
@@ -264,7 +254,6 @@ final class Model: ObservableObject {
     }
 
     func registerForPublishEvent() {
-        print("reg for")
         rtmpStream.attachAudio(AVCaptureDevice.default(for: .audio)) { error in
             logger.error("model: \(error)")
         }
@@ -296,7 +285,9 @@ final class Model: ObservableObject {
         
         nc.publisher(for: ProcessInfo.thermalStateDidChangeNotification, object: nil)
             .sink { notification in
-                logger.info("model: \(notification)")
+                DispatchQueue.main.async {
+                    self.thermalState = ProcessInfo.processInfo.thermalState
+                }
             }
             .store(in: &subscriptions)
     }
