@@ -20,28 +20,28 @@ struct SceneWidgetSettingsView: View {
     
     func submitX(value: String) {
         if let value = Int(value) {
-            widget.x = value
+            widget.x = min(max(value, 0), 99)
             model.store()
         }
     }
     
     func submitY(value: String) {
         if let value = Int(value) {
-            widget.y = value
+            widget.y = min(max(value, 0), 99)
             model.store()
         }
     }
     
     func submitW(value: String) {
         if let value = Int(value) {
-            widget.w = value
+            widget.w = min(max(value, 1), 100)
             model.store()
         }
     }
     
     func submitH(value: String) {
         if let value = Int(value) {
-            widget.h = value
+            widget.h = min(max(value, 1), 100)
             model.store()
         }
     }

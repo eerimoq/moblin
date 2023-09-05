@@ -15,7 +15,11 @@ class SettingsConnection: Codable, Identifiable {
     }
 }
 
-class SettingsSceneWidget: Codable, Identifiable {
+class SettingsSceneWidget: Codable, Identifiable, Equatable {
+    static func == (lhs: SettingsSceneWidget, rhs: SettingsSceneWidget) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
     var widgetId: UUID
     var id: UUID = UUID()
     var x: Int = 0
@@ -199,10 +203,10 @@ func createSceneWidgetBackCamera(database: Database) -> SettingsSceneWidget {
 
 func createSceneWidgetFrontCamera(database: Database) -> SettingsSceneWidget {
     let widget = SettingsSceneWidget(widgetId: database.widgets[1].id)
-    widget.x = 80
+    widget.x = 67
     widget.y = 0
-    widget.h = 20
-    widget.w = 20
+    widget.h = 33
+    widget.w = 33
     return widget
 }
 
@@ -227,8 +231,8 @@ func addDefaultScenes(database: Database) {
     
     scene = SettingsScene(name: "Both")
     scene.widgets.append(createSceneWidgetBackCamera(database: database))
-    scene.widgets.append(createSceneWidgetFrontCamera(database: database))
     scene.widgets.append(createSceneWidgetVideoEffectMovie(database: database))
+    scene.widgets.append(createSceneWidgetFrontCamera(database: database))
     database.scenes.append(scene)
 }
 
