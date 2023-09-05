@@ -24,12 +24,6 @@ struct ContentView: View {
                 }
                 ControlBarView(model: model)
             }
-            .onAppear {
-                model.registerForPublishEvent()
-            }
-            .onDisappear {
-                model.unregisterForPublishEvent()
-            }
             .foregroundColor(.white)
         }
     }

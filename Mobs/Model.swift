@@ -112,7 +112,8 @@ final class Model: ObservableObject {
             }
         })
         srtla.start(uri: "srt://192.168.50.72:10000")
-        self.srtDummySender = DummySender(srtla: srtla)
+        srtDummySender = DummySender(srtla: srtla)
+        registerForPublishEvent()
     }
     
     func resetSelectedScene() {
@@ -263,6 +264,7 @@ final class Model: ObservableObject {
     }
 
     func registerForPublishEvent() {
+        print("reg for")
         rtmpStream.attachAudio(AVCaptureDevice.default(for: .audio)) { error in
             logger.error("model: \(error)")
         }
