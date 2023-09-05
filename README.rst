@@ -24,6 +24,8 @@ ToDo
 - Implement SRTLA.
 
 - Selector in image widget.
+
+- Widget button selector.
   
 Ideas/plan
 ==========
