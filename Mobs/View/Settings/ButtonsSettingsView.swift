@@ -44,6 +44,8 @@ struct ButtonsSettingsView: View {
                     model.store()
                     model.objectWillChange.send()
                 })
+            } footer: {
+                Text("Buttons appear in given order in the main view.")
             }
         }
         .navigationTitle("Buttons")
