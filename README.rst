@@ -2,13 +2,28 @@ MOBS
 ====
 
 An iOS app for IRL streaming. Mainly targetting `Twitch`_.
-
+C
 .. image:: https://github.com/eerimoq/mobs/raw/main/Docs/main.jpg
 
 Discord: https://discord.gg/kRCXKuRu
 
 This project is **not** part of `OBS`_. It's just the name that is
 inspired by it.
+
+ToDo
+====
+
+- Fix thermal state indicator. For some reason it never changes.
+
+- Actually change scene.
+
+- Make UI update after buttons reordering and enable/disable.
+
+- Integrate SRT stack.
+
+- Implement SRTLA.
+
+- Selector in image widget.
   
 Ideas/plan
 ==========
@@ -22,6 +37,8 @@ Ideas/plan
 
 - Record to disk.
 
+- Lookup Twitch channel id from channel name.
+  
 - `SRTLA`_.
 
 - AV1 codec (to complement H264).
@@ -31,8 +48,6 @@ Ideas/plan
 - Subscription and donation notifications. Both visually and with
   sound.
 
-- Streamlabs integration.
-  
 Testing with local streaming server
 ===================================
 
