@@ -24,12 +24,17 @@ final class Model: ObservableObject {
     private var startDate: Date? = nil
     @Published var uptime: String = ""
     var settings: Settings = Settings()
-    @Published var currentTime: String = Date().formatted(date: .omitted, time: .shortened)
+    var currentTime: String = ""
     var selectedSceneId = UUID()
     private var uptimeFormatter: DateComponentsFormatter {
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.hour, .minute, .second]
         formatter.zeroFormattingBehavior = .pad
+        return formatter
+    }
+    private var currentTimeFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:MM"
         return formatter
     }
     private var sizeFormatter : ByteCountFormatter {
@@ -110,6 +115,7 @@ final class Model: ObservableObject {
     }
     
     func setup(settings: Settings) {
+        updateCurrentTime(now: Date())
         self.settings = settings
         rtmpStream = RTMPStream(connection: rtmpConnection)
         rtmpStream.videoOrientation = .landscapeRight
@@ -234,15 +240,15 @@ final class Model: ObservableObject {
 
     func updateUptime(now: Date) {
         if self.startDate == nil {
-            self.uptime = ""
+            uptime = ""
         } else {
-            let elapsed = now.timeIntervalSince(self.startDate!)
-            self.uptime = self.uptimeFormatter.string(from: elapsed)!
+            let elapsed = now.timeIntervalSince(startDate!)
+            uptime = uptimeFormatter.string(from: elapsed)!
         }
     }
 
     func updateCurrentTime(now: Date) {
-        self.currentTime = now.formatted(date: .omitted, time: .shortened)
+        currentTime = currentTimeFormatter.string(from: now)
     }
 
     func updateBatteryLevel() {
