@@ -7,6 +7,8 @@ An iOS app for IRL streaming. Mainly targetting `Twitch`_.
 
 Discord: https://discord.gg/kRCXKuRu
 
+Github: https://github.com/eerimoq/mobs
+
 This project is **not** part of `OBS`_. It's just the name that is
 inspired by it.
 
