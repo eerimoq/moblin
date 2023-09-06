@@ -15,6 +15,10 @@ inspired by it.
 ToDo
 ====
 
+- Clock hours with two digits.
+
+- Emoji chat.
+
 - Actually change scene.
 
 - Make UI update after buttons reordering and enable/disable.
@@ -29,6 +33,8 @@ ToDo
   
 Ideas/plan
 ==========
+
+- Pause and scroll chat.
 
 - Buffering for short disconnections. Show as picture in picture or
   other layout once reconnected. Possible a record button.
