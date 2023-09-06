@@ -67,8 +67,6 @@ final class Model: ObservableObject {
     var isTorchOn = false
     var isMuteOn = false
     var isMovieOn = false
-    var streamResolution = "1920x1080"
-    var streamFPS = 30
     
     var database: Database {
         get {
@@ -90,22 +88,25 @@ final class Model: ObservableObject {
     
     func setStreamResolution() {
         guard let stream = stream else {
+            logger.warning("Cannot set stream resolution.")
             return
         }
-        streamResolution = stream.resolution
-        streamFPS = stream.fps
         switch stream.resolution {
         case "1920x1080":
             rtmpStream.sessionPreset = .hd1920x1080
         case "1280x720":
             rtmpStream.sessionPreset = .hd1280x720
         default:
-            logger.error("Unknoen resolution \(stream.resolution).")
+            logger.error("Unknown resolution \(stream.resolution).")
         }
     }
     
     func setStreamFPS() {
-        rtmpStream.frameRate = Double(streamFPS)
+        guard let stream = stream else {
+            logger.warning("Cannot set stream FPS.")
+            return
+        }
+        rtmpStream.frameRate = Double(stream.fps)
     }
     
     func setup(settings: Settings) {
