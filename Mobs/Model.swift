@@ -353,9 +353,9 @@ final class Model: ObservableObject {
 
     func stopPublish() {
         UIApplication.shared.isIdleTimerDisabled = false
-        rtmpStream.close()
-        rtmpStream.removeEventListener(.rtmpStatus, selector: #selector(rtmpStatusHandler), observer: self)
-        rtmpStream.removeEventListener(.ioError, selector: #selector(rtmpErrorHandler), observer: self)
+        rtmpConnection.close()
+        rtmpConnection.removeEventListener(.rtmpStatus, selector: #selector(rtmpStatusHandler), observer: self)
+        rtmpConnection.removeEventListener(.ioError, selector: #selector(rtmpErrorHandler), observer: self)
         startDate = nil
         updateUptimeFromNonMain()
     }
