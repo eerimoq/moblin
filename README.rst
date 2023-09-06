@@ -2,7 +2,7 @@ MOBS
 ====
 
 An iOS app for IRL streaming. Mainly targetting `Twitch`_.
-C
+
 .. image:: https://github.com/eerimoq/mobs/raw/main/Docs/main.jpg
 
 Discord: https://discord.gg/kRCXKuRu
