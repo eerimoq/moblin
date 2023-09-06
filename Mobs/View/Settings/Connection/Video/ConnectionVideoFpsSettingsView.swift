@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-var fpss = [5, 15, 30, 60]
+var fpss = [60, 30, 15, 5]
 
 struct ConnectionVideoFpsSettingsView: View {
     @ObservedObject var model: Model
