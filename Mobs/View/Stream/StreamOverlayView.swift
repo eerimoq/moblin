@@ -88,8 +88,7 @@ struct LeadingOverlayView: View {
     var body: some View {
         VStack(alignment: .leading) {
             if database.show.stream {
-                
-                IconAndText(icon: "app.connected.to.app.below.fill", text: streamText())
+                IconAndText(icon: "dot.radiowaves.left.and.right", text: streamText())
             }
             if database.show.viewers {
                 IconAndText(icon: "eye", text: model.numberOfViewers)
