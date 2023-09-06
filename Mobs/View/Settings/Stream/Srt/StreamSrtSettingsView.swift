@@ -27,8 +27,8 @@ struct StreamSrtSettingsView: View {
     
     var body: some View {
         Form {
-            NavigationLink(destination: TextEditView(title: "URL", value: stream.srtUrl, onSubmit: submitUrl)) {
-                TextItemView(name: "URL", value: stream.srtUrl)
+            NavigationLink(destination: SensitiveUrlEditView(value: stream.srtUrl, onSubmit: submitUrl)) {
+                TextItemView(name: "URL", value: stream.srtUrl, sensitive: true)
             }
             Toggle("SRTLA", isOn: Binding(get: {
                 stream.srtla

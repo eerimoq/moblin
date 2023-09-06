@@ -32,8 +32,8 @@ struct StreamRtmpSettingsView: View {
     
     var body: some View {
         Form {
-            NavigationLink(destination: TextEditView(title: "URL", value: stream.rtmpUrl, onSubmit: submitUrl)) {
-                TextItemView(name: "URL", value: stream.rtmpUrl)
+            NavigationLink(destination: SensitiveUrlEditView(value: stream.rtmpUrl, onSubmit: submitUrl)) {
+                TextItemView(name: "URL", value: stream.rtmpUrl, sensitive: true)
             }
         }
         .navigationTitle("RTMP")

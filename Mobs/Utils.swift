@@ -85,3 +85,11 @@ class EasyLogger {
 }
 
 let logger = EasyLogger()
+
+func replaceSensitive(value: String, sensitive: Bool) -> String {
+    if sensitive {
+        return value.replacing(/./, with: "*")
+    } else {
+        return value
+    }
+}
