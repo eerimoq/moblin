@@ -34,6 +34,7 @@
 		0379BB882AA836B500B718B6 /* StreamVideoSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB872AA836B500B718B6 /* StreamVideoSettingsView.swift */; };
 		0379BB8A2AA83A8B00B718B6 /* StreamVideoFpsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB892AA83A8B00B718B6 /* StreamVideoFpsSettingsView.swift */; };
 		0379BB8C2AA904BB00B718B6 /* SensitiveUrlEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB8B2AA904BB00B718B6 /* SensitiveUrlEditView.swift */; };
+		0379BB8E2AA90D1900B718B6 /* LogSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB8D2AA90D1900B718B6 /* LogSettingsView.swift */; };
 		0382933B2A9A73ED008963AA /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0382933A2A9A73ED008963AA /* Settings.swift */; };
 		03A983422A9A03D3008FF0DB /* TwitchChat in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983412A9A03D3008FF0DB /* TwitchChat */; };
 		03A983452A9A03EA008FF0DB /* HaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983442A9A03EA008FF0DB /* HaishinKit */; };
@@ -93,6 +94,7 @@
 		0379BB872AA836B500B718B6 /* StreamVideoSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoSettingsView.swift; sourceTree = "<group>"; };
 		0379BB892AA83A8B00B718B6 /* StreamVideoFpsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoFpsSettingsView.swift; sourceTree = "<group>"; };
 		0379BB8B2AA904BB00B718B6 /* SensitiveUrlEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SensitiveUrlEditView.swift; sourceTree = "<group>"; };
+		0379BB8D2AA90D1900B718B6 /* LogSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogSettingsView.swift; sourceTree = "<group>"; };
 		0382933A2A9A73ED008963AA /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		03A983552A9A05D7008FF0DB /* StreamsSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamsSettingsView.swift; sourceTree = "<group>"; };
 		03A983562A9A05D7008FF0DB /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -347,6 +349,7 @@
 				0315A34C2AA3217500295443 /* Scene */,
 				0315A3402AA31ADC00295443 /* Stream */,
 				0379BB722AA5149F00B718B6 /* ButtonsSettingsView.swift */,
+				0379BB8D2AA90D1900B718B6 /* LogSettingsView.swift */,
 				03A983552A9A05D7008FF0DB /* StreamsSettingsView.swift */,
 				03A9835B2A9A05D7008FF0DB /* ScenesSettingsView.swift */,
 				03A983572A9A05D7008FF0DB /* SettingsView.swift */,
@@ -486,6 +489,7 @@
 				03A983652A9A05D7008FF0DB /* StreamSettingsView.swift in Sources */,
 				0315A37C2AA439B500295443 /* NameEditView.swift in Sources */,
 				03B373F62A9EF98E0028DDD5 /* ControlBarView.swift in Sources */,
+				0379BB8E2AA90D1900B718B6 /* LogSettingsView.swift in Sources */,
 				0315A3572AA3261900295443 /* StreamSrtSettingsView.swift in Sources */,
 				0382933B2A9A73ED008963AA /* Settings.swift in Sources */,
 				03B374092AA0EA700028DDD5 /* IconEffect.swift in Sources */,

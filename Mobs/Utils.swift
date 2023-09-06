@@ -66,6 +66,7 @@ func makeRtmpStreamName(url: String) -> String {
 
 class EasyLogger {
     var logger: Logger = Logger()
+    private var handler: ((String) -> Void)? = nil
     
     func debug(_ messsge: String) {
         logger.debug("\(messsge)")
@@ -77,10 +78,16 @@ class EasyLogger {
     
     func warning(_ messsge: String) {
         logger.warning("\(messsge)")
+        handler?(messsge)
     }
     
     func error(_ messsge: String) {
         logger.error("\(messsge)")
+        handler?(messsge)
+    }
+    
+    func setLogHandler(handler: @escaping (String) -> Void) {
+        self.handler = handler
     }
 }
 

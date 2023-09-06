@@ -72,6 +72,7 @@ final class Model: ObservableObject {
     var isTorchOn = false
     var isMuteOn = false
     var isMovieOn = false
+    var log: [String] = []
     
     var database: Database {
         get {
@@ -89,6 +90,13 @@ final class Model: ObservableObject {
         get {
             database.buttons.filter({button in button.enabled})
         }
+    }
+    
+    func debugLog(message: String) {
+        if log.count > 100 {
+            log.removeFirst()
+        }
+        log.append(message)
     }
     
     func setStreamResolution() {
@@ -115,6 +123,7 @@ final class Model: ObservableObject {
     }
     
     func setup(settings: Settings) {
+        logger.setLogHandler(handler: debugLog)
         updateCurrentTime(now: Date())
         self.settings = settings
         rtmpStream = RTMPStream(connection: rtmpConnection)

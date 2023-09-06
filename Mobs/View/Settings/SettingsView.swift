@@ -89,6 +89,11 @@ struct SettingsView: View {
             Section("About") {
                 TextItemView(name: "Version", value: version())
             }
+            Section("Debug") {
+                NavigationLink(destination: LogSettingsView(model: model)) {
+                    Text("Log")
+                }
+            }
             Section {
                 HStack {
                     Spacer()
