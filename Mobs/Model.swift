@@ -144,13 +144,38 @@ final class Model: ObservableObject {
         srtla.start(uri: "srt://192.168.50.72:10000")
         srtDummySender = DummySender(srtla: srtla)
         updateThermalState()
-        registerForPublishEvent()
+        
+        nc.publisher(for: ProcessInfo.thermalStateDidChangeNotification, object: nil)
+            .sink { notification in
+                DispatchQueue.main.async {
+                    self.updateThermalState()
+                }
+            }
+            .store(in: &subscriptions)
+        
+        rtmpStream.publisher(for: \.currentFPS)
+            .sink { [weak self] currentFPS in
+                guard let self = self else {
+                    return
+                }
+                DispatchQueue.main.async {
+                    self.fps = self.liveState == .stopped ? "" : "\(currentFPS)"
+                }
+            }
+            .store(in: &subscriptions)
+        
+        rtmpStream.attachAudio(AVCaptureDevice.default(for: .audio)) { error in
+            logger.error("model: Attach audio error: \(error)")
+        }
+        
+        attachCamera(position: .back)
     }
     
     func resetSelectedScene() {
         if !enabledScenes.isEmpty {
             selectedSceneId = enabledScenes[0].id
             sceneIndex = 0
+            sceneUpdated()
         }
     }
     
@@ -221,13 +246,55 @@ final class Model: ObservableObject {
         reloadTwitchViewers()
     }
 
-    func sceneUpdated() {
+    func findWidget(id: UUID) -> SettingsWidget? {
+        for widget in database.widgets {
+            if widget.id == id {
+                return widget
+            }
+        }
+        return nil
+    }
+    
+    func findEnabledScene(id: UUID) -> SettingsScene? {
         for scene in enabledScenes {
-            if selectedSceneId == scene.id {
-                logger.info("model: Found scene \(scene.name)")
-                for widget in scene.widgets {
-                    logger.info("model: \(widget.id), \(widget.x), \(widget.y), \(widget.w), \(widget.h)")
+            if id == scene.id {
+                return scene
+            }
+        }
+        return nil
+    }
+    
+    func sceneUpdated() {
+        guard let scene = findEnabledScene(id: selectedSceneId) else {
+            return
+        }
+        monochromeEffectOff()
+        iconEffectOff()
+        movieEffectOff()
+        for sceneWidget in scene.widgets {
+            if let widget = findWidget(id: sceneWidget.widgetId) {
+                switch widget.type {
+                case "Camera":
+                    switch widget.camera.direction {
+                    case "Back":
+                        attachCamera(position: .back)
+                    case "Front":
+                        attachCamera(position: .front)
+                    default:
+                        logger.error("model: Unknown camera widget type \(widget.type).")
+                    }
+                case "Video effect":
+                    switch widget.videoEffect.type {
+                    case "Movie":
+                        movieEffectOn()
+                    default:
+                        logger.error("model: Unknown video effect \(widget.videoEffect.type).")
+                    }
+                default:
+                    logger.error("model: Unknown widget type \(widget.type)")
                 }
+            } else {
+                logger.error("model: Widget not found.")
             }
         }
     }
@@ -286,55 +353,15 @@ final class Model: ObservableObject {
         }
     }
 
-    func registerForPublishEvent() {
-        rtmpStream.attachAudio(AVCaptureDevice.default(for: .audio)) { error in
-            logger.error("model: \(error)")
-        }
-        rtmpStream.attachMultiCamera(AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front)) { error in
-            logger.error("model: \(error)")
-        }
-        rtmpStream.attachCamera(AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)) { error in
-            logger.error("model: \(error)")
-        }
-        rtmpStream.publisher(for: \.currentFPS)
-            .sink { [weak self] currentFPS in
-                guard let self = self else {
-                    return
-                }
-                DispatchQueue.main.async {
-                    self.fps = self.liveState == .stopped ? "" : "\(currentFPS)"
-                }
-            }
-            .store(in: &subscriptions)
-
-        nc.publisher(for: AVAudioSession.interruptionNotification, object: nil)
-            .sink { notification in
-                logger.info("model: \(notification)")
-            }
-            .store(in: &subscriptions)
-
-        nc.publisher(for: AVAudioSession.routeChangeNotification, object: nil)
-            .sink { notification in
-                logger.info("model: \(notification)")
-            }
-            .store(in: &subscriptions)
-        
-        nc.publisher(for: ProcessInfo.thermalStateDidChangeNotification, object: nil)
-            .sink { notification in
-                DispatchQueue.main.async {
-                    self.updateThermalState()
-                }
-            }
-            .store(in: &subscriptions)
-    }
-
     func updateThermalState() {
         thermalState = ProcessInfo.processInfo.thermalState
         logger.info("model: Thermal state is \(thermalState)")
     }
     
-    func unregisterForPublishEvent() {
-        rtmpStream.close()
+    func attachCamera(position: AVCaptureDevice.Position) {
+        rtmpStream.attachCamera(AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: position)) { error in
+            logger.error("model: Attach camera error: \(error)")
+        }
     }
 
     func startPublish() {

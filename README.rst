@@ -15,10 +15,6 @@ inspired by it.
 ToDo
 ====
 
-- Clock hours with two digits.
-
-- Emoji chat.
-
 - Actually change scene.
 
 - Make UI update after buttons reordering and enable/disable.
@@ -33,6 +29,8 @@ ToDo
   
 Ideas/plan
 ==========
+
+- Emoji chat.
 
 - Pause and scroll chat.
 
