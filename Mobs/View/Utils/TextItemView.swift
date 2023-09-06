@@ -16,7 +16,9 @@ struct TextItemView: View {
         HStack {
             Text(name)
             Spacer()
-            Text(replaceSensitive(value: value, sensitive: sensitive)).foregroundColor(.gray)
+            Text(replaceSensitive(value: value, sensitive: sensitive))
+                .foregroundColor(.gray)
+                .lineLimit(1)
         }
     }
 }
