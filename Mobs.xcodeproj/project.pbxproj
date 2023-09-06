@@ -30,6 +30,9 @@
 		0379BB762AA6345400B718B6 /* ButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB752AA6345400B718B6 /* ButtonSettingsView.swift */; };
 		0379BB792AA64C9500B718B6 /* WidgetVideoEffectSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB782AA64C9500B718B6 /* WidgetVideoEffectSettingsView.swift */; };
 		0379BB7E2AA7C55000B718B6 /* ButtonImagePickerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB7D2AA7C55000B718B6 /* ButtonImagePickerSettingsView.swift */; };
+		0379BB862AA8363E00B718B6 /* ConnectionVideoResolutionSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB852AA8363E00B718B6 /* ConnectionVideoResolutionSettingsView.swift */; };
+		0379BB882AA836B500B718B6 /* ConnectionVideoSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB872AA836B500B718B6 /* ConnectionVideoSettingsView.swift */; };
+		0379BB8A2AA83A8B00B718B6 /* ConnectionVideoFpsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB892AA83A8B00B718B6 /* ConnectionVideoFpsSettingsView.swift */; };
 		0382933B2A9A73ED008963AA /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0382933A2A9A73ED008963AA /* Settings.swift */; };
 		03A983422A9A03D3008FF0DB /* TwitchChat in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983412A9A03D3008FF0DB /* TwitchChat */; };
 		03A983452A9A03EA008FF0DB /* HaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983442A9A03EA008FF0DB /* HaishinKit */; };
@@ -85,6 +88,9 @@
 		0379BB752AA6345400B718B6 /* ButtonSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonSettingsView.swift; sourceTree = "<group>"; };
 		0379BB782AA64C9500B718B6 /* WidgetVideoEffectSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetVideoEffectSettingsView.swift; sourceTree = "<group>"; };
 		0379BB7D2AA7C55000B718B6 /* ButtonImagePickerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonImagePickerSettingsView.swift; sourceTree = "<group>"; };
+		0379BB852AA8363E00B718B6 /* ConnectionVideoResolutionSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionVideoResolutionSettingsView.swift; sourceTree = "<group>"; };
+		0379BB872AA836B500B718B6 /* ConnectionVideoSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionVideoSettingsView.swift; sourceTree = "<group>"; };
+		0379BB892AA83A8B00B718B6 /* ConnectionVideoFpsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionVideoFpsSettingsView.swift; sourceTree = "<group>"; };
 		0382933A2A9A73ED008963AA /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		03A983552A9A05D7008FF0DB /* ConnectionsSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionsSettingsView.swift; sourceTree = "<group>"; };
 		03A983562A9A05D7008FF0DB /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -140,6 +146,7 @@
 		0315A3402AA31ADC00295443 /* Connection */ = {
 			isa = PBXGroup;
 			children = (
+				0379BB842AA8362E00B718B6 /* Video */,
 				0315A35D2AA32ADA00295443 /* Rtmp */,
 				0315A3582AA3264800295443 /* Srt */,
 				0315A3472AA31EC800295443 /* Twitch */,
@@ -306,6 +313,16 @@
 			path = VideoEffect;
 			sourceTree = "<group>";
 		};
+		0379BB842AA8362E00B718B6 /* Video */ = {
+			isa = PBXGroup;
+			children = (
+				0379BB852AA8363E00B718B6 /* ConnectionVideoResolutionSettingsView.swift */,
+				0379BB872AA836B500B718B6 /* ConnectionVideoSettingsView.swift */,
+				0379BB892AA83A8B00B718B6 /* ConnectionVideoFpsSettingsView.swift */,
+			);
+			path = Video;
+			sourceTree = "<group>";
+		};
 		03A983542A9A0582008FF0DB /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -450,6 +467,7 @@
 				03A983712A9A0659008FF0DB /* TwitchPubSub.swift in Sources */,
 				03A9836C2A9A05D7008FF0DB /* WidgetSettingsView.swift in Sources */,
 				0315A3622AA33A2C00295443 /* WidgetTextSettingsView.swift in Sources */,
+				0379BB882AA836B500B718B6 /* ConnectionVideoSettingsView.swift in Sources */,
 				0315A33F2AA3173000295443 /* DummySender.swift in Sources */,
 				03A983642A9A05D7008FF0DB /* StreamView.swift in Sources */,
 				0315A3672AA33C6A00295443 /* WidgetImageSettingsView.swift in Sources */,
@@ -458,6 +476,7 @@
 				03B374042AA036D10028DDD5 /* ButtonsView.swift in Sources */,
 				0315A3462AA31E9000295443 /* ConnectionTwitchSettingsView.swift in Sources */,
 				03B373F92A9EFB340028DDD5 /* BatteryView.swift in Sources */,
+				0379BB8A2AA83A8B00B718B6 /* ConnectionVideoFpsSettingsView.swift in Sources */,
 				03B373FD2A9F35EF0028DDD5 /* Utils.swift in Sources */,
 				0379BB732AA5149F00B718B6 /* ButtonsSettingsView.swift in Sources */,
 				03B374072AA0EA650028DDD5 /* MovieEffect.swift in Sources */,
@@ -489,6 +508,7 @@
 				03A983662A9A05D7008FF0DB /* AddButtonView.swift in Sources */,
 				03A983612A9A05D7008FF0DB /* ConnectionsSettingsView.swift in Sources */,
 				0315A3702AA3771F00295443 /* SceneWidgetSettingsView.swift in Sources */,
+				0379BB862AA8363E00B718B6 /* ConnectionVideoResolutionSettingsView.swift in Sources */,
 				0379BB792AA64C9500B718B6 /* WidgetVideoEffectSettingsView.swift in Sources */,
 				0315A33B2AA2FA7100295443 /* LocalListener.swift in Sources */,
 			);

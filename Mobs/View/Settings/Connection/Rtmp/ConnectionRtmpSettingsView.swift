@@ -25,7 +25,9 @@ struct ConnectionRtmpSettingsView: View {
         }
         connection.rtmpUrl = value
         model.store()
-        model.rtmpUrlChanged()
+        if connection.enabled {
+            model.rtmpUrlChanged()
+        }
     }
     
     var body: some View {

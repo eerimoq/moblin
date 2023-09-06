@@ -67,6 +67,8 @@ final class Model: ObservableObject {
     var isTorchOn = false
     var isMuteOn = false
     var isMovieOn = false
+    var streamResolution = "1920x1080"
+    var streamFPS = 30
     
     var database: Database {
         get {
@@ -86,11 +88,32 @@ final class Model: ObservableObject {
         }
     }
     
+    func setStreamResolution() {
+        guard let connection = connection else {
+            return
+        }
+        streamResolution = connection.resolution
+        streamFPS = connection.fps
+        switch connection.resolution {
+        case "1920x1080":
+            rtmpStream.sessionPreset = .hd1920x1080
+        case "1280x720":
+            rtmpStream.sessionPreset = .hd1280x720
+        default:
+            logger.error("Unknoen resolution \(connection.resolution).")
+        }
+    }
+    
+    func setStreamFPS() {
+        rtmpStream.frameRate = Double(streamFPS)
+    }
+    
     func setup(settings: Settings) {
         self.settings = settings
         rtmpStream = RTMPStream(connection: rtmpConnection)
         rtmpStream.videoOrientation = .landscapeRight
-        rtmpStream.sessionPreset = .hd1920x1080
+        setStreamResolution()
+        setStreamFPS()
         rtmpStream.mixer.recorder.delegate = self
         checkDeviceAuthorization()
         twitchChat = TwitchChatMobs(model: self)
@@ -113,6 +136,7 @@ final class Model: ObservableObject {
         })
         srtla.start(uri: "srt://192.168.50.72:10000")
         srtDummySender = DummySender(srtla: srtla)
+        updateThermalState()
         registerForPublishEvent()
     }
     
@@ -141,6 +165,8 @@ final class Model: ObservableObject {
     
     func reloadConnection() {
         stopStream()
+        setStreamResolution()
+        setStreamFPS()
         reloadTwitchChat()
         reloadTwitchViewers()
     }
@@ -257,6 +283,9 @@ final class Model: ObservableObject {
         rtmpStream.attachAudio(AVCaptureDevice.default(for: .audio)) { error in
             logger.error("model: \(error)")
         }
+        rtmpStream.attachMultiCamera(AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front)) { error in
+            logger.error("model: \(error)")
+        }
         rtmpStream.attachCamera(AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)) { error in
             logger.error("model: \(error)")
         }
@@ -286,12 +315,17 @@ final class Model: ObservableObject {
         nc.publisher(for: ProcessInfo.thermalStateDidChangeNotification, object: nil)
             .sink { notification in
                 DispatchQueue.main.async {
-                    self.thermalState = ProcessInfo.processInfo.thermalState
+                    self.updateThermalState()
                 }
             }
             .store(in: &subscriptions)
     }
 
+    func updateThermalState() {
+        thermalState = ProcessInfo.processInfo.thermalState
+        logger.info("model: Thermal state is \(thermalState)")
+    }
+    
     func unregisterForPublishEvent() {
         rtmpStream.close()
     }

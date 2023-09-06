@@ -9,6 +9,9 @@ class SettingsConnection: Codable, Identifiable {
     var srtla: Bool = false
     var twitchChannelName: String = ""
     var twitchChannelId: String = ""
+    var proto: String = "RTMP"
+    var resolution: String = "1920x1080"
+    var fps: Int = 30
 
     init(name: String) {
         self.name = name
@@ -162,7 +165,6 @@ class Show: Codable {
     var uptime: Bool = true
     var connection: Bool = true
     var speed: Bool = true
-    var resolution: Bool = true
     var fps: Bool = true
 }
 

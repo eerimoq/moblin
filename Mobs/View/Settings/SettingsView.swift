@@ -67,12 +67,6 @@ struct SettingsView: View {
                     database.show.speed = value
                     model.store()
                 }))
-                Toggle("Resolution", isOn: Binding(get: {
-                    database.show.resolution
-                }, set: { value in
-                    database.show.resolution = value
-                    model.store()
-                }))
                 Toggle("FPS", isOn: Binding(get: {
                     database.show.fps
                 }, set: { value in

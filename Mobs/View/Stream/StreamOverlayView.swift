@@ -74,10 +74,22 @@ struct LeadingOverlayView: View {
         }
     }
 
+    func connectionText() -> String {
+        guard let connection = model.connection else {
+            return ""
+        }
+        var proto = connection.proto
+        if proto == "SRT" && connection.srtla {
+            proto = "SRTLA"
+        }
+        return "\(connection.name) (\(connection.resolution), \(connection.fps), \(proto))"
+    }
+    
     var body: some View {
         VStack(alignment: .leading) {
             if database.show.connection {
-                IconAndText(icon: "app.connected.to.app.below.fill", text: model.connection?.name ?? "")
+                
+                IconAndText(icon: "app.connected.to.app.below.fill", text: connectionText())
             }
             if database.show.viewers {
                 IconAndText(icon: "eye", text: model.numberOfViewers)
@@ -113,9 +125,6 @@ struct TrailingOverlayView: View {
         VStack(alignment: .trailing) {
             if database.show.speed {
                 IconAndText(icon: "speedometer", text: model.speed, textFirst: true)
-            }
-            if database.show.resolution {
-                IconAndText(icon: "display", text: "1920x1080", textFirst: true)
             }
             if database.show.fps {
                 IconAndText(icon: "film.stack", text: model.fps, textFirst: true)

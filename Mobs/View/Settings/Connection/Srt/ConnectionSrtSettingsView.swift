@@ -35,7 +35,9 @@ struct ConnectionSrtSettingsView: View {
             }, set: { value in
                 connection.srtla = value
                 model.store()
-                model.srtlaChanged()
+                if connection.enabled {
+                    model.srtlaChanged()
+                }
             }))
         }
         .navigationTitle("SRT")

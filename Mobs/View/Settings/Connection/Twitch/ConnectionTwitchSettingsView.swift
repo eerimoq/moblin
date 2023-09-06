@@ -19,13 +19,17 @@ struct ConnectionTwitchSettingsView: View {
     func submitChannelName(value: String) {
         connection.twitchChannelName = value
         model.store()
-        model.twitchChannelNameUpdated()
+        if connection.enabled {
+            model.twitchChannelNameUpdated()
+        }
     }
     
     func submitChannelId(value: String) {
         connection.twitchChannelId = value
         model.store()
-        model.twitchChannelIdUpdated()
+        if connection.enabled {
+            model.twitchChannelIdUpdated()
+        }
     }
     
     var body: some View {
