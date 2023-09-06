@@ -96,7 +96,8 @@ final class Model: ObservableObject {
         if log.count > 100 {
             log.removeFirst()
         }
-        log.append(message)
+        let timestamp = Date().formatted(date: .omitted, time: .standard)
+        log.append("\(timestamp) \(message)")
     }
     
     func setStreamResolution() {

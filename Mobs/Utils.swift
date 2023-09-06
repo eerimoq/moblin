@@ -74,6 +74,7 @@ class EasyLogger {
     
     func info(_ messsge: String) {
         logger.info("\(messsge)")
+        handler?(messsge)
     }
     
     func warning(_ messsge: String) {
