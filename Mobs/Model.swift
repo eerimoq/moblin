@@ -34,7 +34,7 @@ final class Model: ObservableObject {
     }
     private var currentTimeFormatter: DateFormatter {
         let formatter = DateFormatter()
-        formatter.dateFormat = "HH:MM"
+        formatter.dateFormat = "HH:mm"
         return formatter
     }
     private var sizeFormatter : ByteCountFormatter {
