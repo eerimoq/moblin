@@ -175,8 +175,8 @@ final class Model: ObservableObject {
         if !enabledScenes.isEmpty {
             selectedSceneId = enabledScenes[0].id
             sceneIndex = 0
-            sceneUpdated()
         }
+        sceneUpdated()
     }
     
     func store() {
@@ -194,7 +194,7 @@ final class Model: ObservableObject {
         stopPublish()
         updateSpeed()
     }
-    
+
     func reloadStream() {
         stopStream()
         setStreamResolution()
@@ -265,12 +265,12 @@ final class Model: ObservableObject {
     }
     
     func sceneUpdated() {
-        guard let scene = findEnabledScene(id: selectedSceneId) else {
-            return
-        }
         monochromeEffectOff()
         iconEffectOff()
         movieEffectOff()
+        guard let scene = findEnabledScene(id: selectedSceneId) else {
+            return
+        }
         for sceneWidget in scene.widgets {
             if let widget = findWidget(id: sceneWidget.widgetId) {
                 switch widget.type {

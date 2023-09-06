@@ -240,12 +240,6 @@ func addDefaultScenes(database: Database) {
     scene.widgets.append(createSceneWidgetFrontCameraFull(database: database))
     scene.widgets.append(createSceneWidgetVideoEffectMovie(database: database))
     database.scenes.append(scene)
-    
-    scene = SettingsScene(name: "Both")
-    scene.widgets.append(createSceneWidgetBackCamera(database: database))
-    scene.widgets.append(createSceneWidgetVideoEffectMovie(database: database))
-    scene.widgets.append(createSceneWidgetFrontCamera(database: database))
-    database.scenes.append(scene)
 }
 
 func addDefaultStreams(database: Database) {
