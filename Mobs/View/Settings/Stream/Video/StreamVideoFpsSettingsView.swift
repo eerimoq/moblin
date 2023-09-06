@@ -9,15 +9,15 @@ import SwiftUI
 
 var fpss = [60, 30, 15, 5]
 
-struct ConnectionVideoFpsSettingsView: View {
+struct StreamVideoFpsSettingsView: View {
     @ObservedObject var model: Model
-    private var connection: SettingsConnection
+    private var stream: SettingsStream
     @State private var selection: Int
     
-    init(model: Model, connection: SettingsConnection) {
+    init(model: Model, stream: SettingsStream) {
         self.model = model
-        self.connection = connection
-        self.selection = connection.fps
+        self.stream = stream
+        self.selection = stream.fps
     }
     
     var body: some View {
@@ -29,16 +29,16 @@ struct ConnectionVideoFpsSettingsView: View {
                     }
                 }
                 .onChange(of: selection) { fps in
-                    connection.fps = fps
+                    stream.fps = fps
                     model.store()
-                    if connection.enabled {
-                        model.reloadConnection()
+                    if stream.enabled {
+                        model.reloadStream()
                     }
                 }
                 .pickerStyle(.inline)
                 .labelsHidden()
             }
         }
-        .navigationTitle("Resolution")
+        .navigationTitle("FPS")
     }
 }

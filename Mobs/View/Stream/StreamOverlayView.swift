@@ -74,22 +74,22 @@ struct LeadingOverlayView: View {
         }
     }
 
-    func connectionText() -> String {
-        guard let connection = model.connection else {
+    func streamText() -> String {
+        guard let stream = model.stream else {
             return ""
         }
-        var proto = connection.proto
-        if proto == "SRT" && connection.srtla {
+        var proto = stream.proto
+        if proto == "SRT" && stream.srtla {
             proto = "SRTLA"
         }
-        return "\(connection.name) (\(connection.resolution), \(connection.fps), \(proto))"
+        return "\(stream.name) (\(stream.resolution), \(stream.fps), \(proto))"
     }
     
     var body: some View {
         VStack(alignment: .leading) {
-            if database.show.connection {
+            if database.show.stream {
                 
-                IconAndText(icon: "app.connected.to.app.below.fill", text: connectionText())
+                IconAndText(icon: "app.connected.to.app.below.fill", text: streamText())
             }
             if database.show.viewers {
                 IconAndText(icon: "eye", text: model.numberOfViewers)

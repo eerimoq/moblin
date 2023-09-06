@@ -1,5 +1,5 @@
 //
-//  ConnectionNameSettingsView.swift
+//  streamNameSettingsView.swift
 //  Mobs
 //
 //  Created by Erik Moqvist on 2023-09-02.
@@ -7,35 +7,35 @@
 
 import SwiftUI
 
-struct ConnectionSrtSettingsView: View {
+struct StreamSrtSettingsView: View {
     @ObservedObject private var model: Model
-    private var connection: SettingsConnection
+    private var stream: SettingsStream
     
-    init(model: Model, connection: SettingsConnection) {
+    init(model: Model, stream: SettingsStream) {
         self.model = model
-        self.connection = connection
+        self.stream = stream
     }
     
     func submitUrl(value: String) {
         if URL(string: value) == nil {
             return
         }
-        connection.srtUrl = value
+        stream.srtUrl = value
         model.store()
         model.srtUrlChanged()
     }
     
     var body: some View {
         Form {
-            NavigationLink(destination: TextEditView(title: "URL", value: connection.srtUrl, onSubmit: submitUrl)) {
-                TextItemView(name: "URL", value: connection.srtUrl)
+            NavigationLink(destination: TextEditView(title: "URL", value: stream.srtUrl, onSubmit: submitUrl)) {
+                TextItemView(name: "URL", value: stream.srtUrl)
             }
             Toggle("SRTLA", isOn: Binding(get: {
-                connection.srtla
+                stream.srtla
             }, set: { value in
-                connection.srtla = value
+                stream.srtla = value
                 model.store()
-                if connection.enabled {
+                if stream.enabled {
                     model.srtlaChanged()
                 }
             }))

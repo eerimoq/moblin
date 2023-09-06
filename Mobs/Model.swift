@@ -51,11 +51,11 @@ final class Model: ObservableObject {
     private var monochromeEffect: MonochromeEffect = MonochromeEffect()
     private var iconEffect: IconEffect = IconEffect()
     private var movieEffect: MovieEffect = MovieEffect()
-    var connection: SettingsConnection? {
+    var stream: SettingsStream? {
         get {
-            for connection in database.connections {
-                if connection.enabled {
-                    return connection
+            for stream in database.streams {
+                if stream.enabled {
+                    return stream
                 }
             }
             return nil
@@ -89,18 +89,18 @@ final class Model: ObservableObject {
     }
     
     func setStreamResolution() {
-        guard let connection = connection else {
+        guard let stream = stream else {
             return
         }
-        streamResolution = connection.resolution
-        streamFPS = connection.fps
-        switch connection.resolution {
+        streamResolution = stream.resolution
+        streamFPS = stream.fps
+        switch stream.resolution {
         case "1920x1080":
             rtmpStream.sessionPreset = .hd1920x1080
         case "1280x720":
             rtmpStream.sessionPreset = .hd1280x720
         default:
-            logger.error("Unknoen resolution \(connection.resolution).")
+            logger.error("Unknoen resolution \(stream.resolution).")
         }
     }
     
@@ -117,9 +117,9 @@ final class Model: ObservableObject {
         rtmpStream.mixer.recorder.delegate = self
         checkDeviceAuthorization()
         twitchChat = TwitchChatMobs(model: self)
-        if let connection = connection {
-            twitchChat!.start(channelName: connection.twitchChannelName)
-            twitchPubSub = TwitchPubSub(model: self, channelId: connection.twitchChannelId)
+        if let stream = stream {
+            twitchChat!.start(channelName: stream.twitchChannelName)
+            twitchPubSub = TwitchPubSub(model: self, channelId: stream.twitchChannelId)
             twitchPubSub!.start()
         }
         resetSelectedScene()
@@ -163,7 +163,7 @@ final class Model: ObservableObject {
         updateSpeed()
     }
     
-    func reloadConnection() {
+    func reloadStream() {
         stopStream()
         setStreamResolution()
         setStreamFPS()
@@ -173,23 +173,23 @@ final class Model: ObservableObject {
     
     func reloadTwitchChat() {
         twitchChat!.stop()
-        guard let connection = connection else {
+        guard let stream = stream else {
             return
         }
-        twitchChat!.start(channelName: connection.twitchChannelName)
+        twitchChat!.start(channelName: stream.twitchChannelName)
         twitchChatPosts = []
         twitchChatPostsPerSecond = 0.0
         numberOfTwitchChatPosts = 0
     }
     
     func reloadTwitchViewers() {
-        guard let connection = connection else {
+        guard let stream = stream else {
             return
         }
         if let twitchPubSub = twitchPubSub {
             twitchPubSub.stop()
         }
-        twitchPubSub = TwitchPubSub(model: self, channelId: connection.twitchChannelId)
+        twitchPubSub = TwitchPubSub(model: self, channelId: stream.twitchChannelId)
         twitchPubSub!.start()
         numberOfViewers = ""
     }
@@ -338,24 +338,24 @@ final class Model: ObservableObject {
     }
 
     func rtmpUri() -> String {
-        guard let connection = connection else {
+        guard let stream = stream else {
             return ""
         }
-        return makeRtmpUri(url: connection.rtmpUrl)
+        return makeRtmpUri(url: stream.rtmpUrl)
     }
 
     func rtmpStreamName() -> String {
-        guard let connection = connection else {
+        guard let stream = stream else {
             return ""
         }
-        return makeRtmpStreamName(url: connection.rtmpUrl)
+        return makeRtmpStreamName(url: stream.rtmpUrl)
     }
 
     func stopPublish() {
         UIApplication.shared.isIdleTimerDisabled = false
-        rtmpConnection.close()
-        rtmpConnection.removeEventListener(.rtmpStatus, selector: #selector(rtmpStatusHandler), observer: self)
-        rtmpConnection.removeEventListener(.ioError, selector: #selector(rtmpErrorHandler), observer: self)
+        rtmpStream.close()
+        rtmpStream.removeEventListener(.rtmpStatus, selector: #selector(rtmpStatusHandler), observer: self)
+        rtmpStream.removeEventListener(.ioError, selector: #selector(rtmpErrorHandler), observer: self)
         startDate = nil
         updateUptimeFromNonMain()
     }

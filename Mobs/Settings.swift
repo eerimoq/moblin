@@ -1,6 +1,6 @@
 import SwiftUI
 
-class SettingsConnection: Codable, Identifiable {
+class SettingsStream: Codable, Identifiable {
     var name: String
     var id: UUID = UUID()
     var enabled: Bool = false
@@ -163,13 +163,13 @@ class Show: Codable {
     var chat: Bool = true
     var viewers: Bool = true
     var uptime: Bool = true
-    var connection: Bool = true
+    var stream: Bool = true
     var speed: Bool = true
     var fps: Bool = true
 }
 
 class Database: Codable {
-    var connections: [SettingsConnection] = []
+    var streams: [SettingsStream] = []
     var scenes: [SettingsScene] = []
     var widgets: [SettingsWidget] = []
     var variables: [SettingsVariable] = []
@@ -248,15 +248,15 @@ func addDefaultScenes(database: Database) {
     database.scenes.append(scene)
 }
 
-func addDefaultConnections(database: Database) {
-    let connection = SettingsConnection(name: "Twitch")
-    connection.id = UUID()
-    connection.enabled = true
-    connection.rtmpUrl = "rtmp://arn03.contribute.live-video.net/app/your_stream_key"
-    connection.srtUrl = "srt://192.168.202.169:5000"
-    connection.twitchChannelName = "jinnytty"
-    connection.twitchChannelId = "159498717"
-    database.connections.append(connection)
+func addDefaultStreams(database: Database) {
+    let stream = SettingsStream(name: "Twitch")
+    stream.id = UUID()
+    stream.enabled = true
+    stream.rtmpUrl = "rtmp://arn03.contribute.live-video.net/app/your_stream_key"
+    stream.srtUrl = "srt://192.168.202.169:5000"
+    stream.twitchChannelName = "jinnytty"
+    stream.twitchChannelId = "159498717"
+    database.streams.append(stream)
 }
 
 func addDefaultButtons(database: Database) {
@@ -302,7 +302,7 @@ func createDefault() -> Database {
     let database = Database()
     addDefaultWidgets(database: database)
     addDefaultScenes(database: database)
-    addDefaultConnections(database: database)
+    addDefaultStreams(database: database)
     addDefaultButtons(database: database)
     return database
 }

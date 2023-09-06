@@ -1,5 +1,5 @@
 //
-//  ConnectionNameSettingsView.swift
+//  StreamNameSettingsView.swift
 //  Mobs
 //
 //  Created by Erik Moqvist on 2023-09-02.
@@ -7,13 +7,13 @@
 
 import SwiftUI
 
-struct ConnectionRtmpSettingsView: View {
+struct StreamRtmpSettingsView: View {
     @ObservedObject private var model: Model
-    private var connection: SettingsConnection
+    private var stream: SettingsStream
     
-    init(model: Model, connection: SettingsConnection) {
+    init(model: Model, stream: SettingsStream) {
         self.model = model
-        self.connection = connection
+        self.stream = stream
     }
     
     func submitUrl(value: String) {
@@ -23,17 +23,17 @@ struct ConnectionRtmpSettingsView: View {
         if makeRtmpStreamName(url: value) == "" {
             return
         }
-        connection.rtmpUrl = value
+        stream.rtmpUrl = value
         model.store()
-        if connection.enabled {
+        if stream.enabled {
             model.rtmpUrlChanged()
         }
     }
     
     var body: some View {
         Form {
-            NavigationLink(destination: TextEditView(title: "URL", value: connection.rtmpUrl, onSubmit: submitUrl)) {
-                TextItemView(name: "URL", value: connection.rtmpUrl)
+            NavigationLink(destination: TextEditView(title: "URL", value: stream.rtmpUrl, onSubmit: submitUrl)) {
+                TextItemView(name: "URL", value: stream.rtmpUrl)
             }
         }
         .navigationTitle("RTMP")

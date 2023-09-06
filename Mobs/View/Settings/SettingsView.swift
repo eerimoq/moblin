@@ -26,8 +26,8 @@ struct SettingsView: View {
     var body: some View {
         Form {
             Section("General") {
-                NavigationLink(destination: ConnectionsSettingsView(model: model)) {
-                    Text("Connections")
+                NavigationLink(destination: StreamsSettingsView(model: model)) {
+                    Text("Streams")
                 }
                 NavigationLink(destination: ScenesSettingsView(model: model)) {
                     Text("Scenes")
@@ -37,10 +37,10 @@ struct SettingsView: View {
                 }
             }
             Section("Local overlays") {
-                Toggle("Connection", isOn: Binding(get: {
-                    database.show.connection
+                Toggle("Stream", isOn: Binding(get: {
+                    database.show.stream
                 }, set: { value in
-                    database.show.connection = value
+                    database.show.stream  = value
                     model.store()
                 }))
                 Toggle("Viewers", isOn: Binding(get: {

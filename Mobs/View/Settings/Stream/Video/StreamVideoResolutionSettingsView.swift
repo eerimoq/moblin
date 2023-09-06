@@ -9,15 +9,15 @@ import SwiftUI
 
 var resolutions = ["1920x1080", "1280x720"]
 
-struct ConnectionVideoResolutionSettingsView: View {
+struct StreamVideoResolutionSettingsView: View {
     @ObservedObject var model: Model
-    var connection: SettingsConnection
+    var stream: SettingsStream
     @State private var selection: String
     
-    init(model: Model, connection: SettingsConnection) {
+    init(model: Model, stream: SettingsStream) {
         self.model = model
-        self.connection = connection
-        self.selection = connection.resolution
+        self.stream = stream
+        self.selection = stream.resolution
     }
     
     var body: some View {
@@ -29,10 +29,10 @@ struct ConnectionVideoResolutionSettingsView: View {
                     }
                 }
                 .onChange(of: selection) { resolution in
-                    connection.resolution = resolution
+                    stream.resolution = resolution
                     model.store()
-                    if connection.enabled {
-                        model.reloadConnection()
+                    if stream.enabled {
+                        model.reloadStream()
                     }
                 }
                 .pickerStyle(.inline)
