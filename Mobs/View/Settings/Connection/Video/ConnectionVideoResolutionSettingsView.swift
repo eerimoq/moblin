@@ -17,7 +17,7 @@ struct ConnectionVideoResolutionSettingsView: View {
     init(model: Model, connection: SettingsConnection) {
         self.model = model
         self.connection = connection
-        self.selection = model.streamResolution
+        self.selection = connection.resolution
     }
     
     var body: some View {

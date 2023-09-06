@@ -17,7 +17,7 @@ struct ConnectionVideoFpsSettingsView: View {
     init(model: Model, connection: SettingsConnection) {
         self.model = model
         self.connection = connection
-        self.selection = model.streamFPS
+        self.selection = connection.fps
     }
     
     var body: some View {
