@@ -43,7 +43,12 @@ struct ButtonsSettingsView: View {
                     })
                 }
                 CreateButtonView(action: {
-                    database.buttons.append(SettingsButton(name: "My button"))
+                    let button = SettingsButton(name: "My button")
+                    button.enabled = true
+                    for scene in model.database.scenes {
+                        button.scenes.append(scene.id)
+                    }
+                    database.buttons.append(button)
                     model.store()
                     model.objectWillChange.send()
                 })
