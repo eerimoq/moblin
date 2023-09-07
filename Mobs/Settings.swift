@@ -279,7 +279,6 @@ func addDefaultButtons(database: Database) {
     button.systemImageNameOn = "lightbulb.fill"
     button.systemImageNameOff = "lightbulb"
     button.scenes.append(database.scenes[0].id)
-    button.scenes.append(database.scenes[1].id)
     database.buttons.append(button)
     
     button = SettingsButton(name: "Mute")
@@ -302,6 +301,7 @@ func addDefaultButtons(database: Database) {
     button.systemImageNameOff = "film"
     button.widget.widgetId = database.widgets[2].id
     button.scenes.append(database.scenes[0].id)
+    button.scenes.append(database.scenes[1].id)
     database.buttons.append(button)
     
     /*button = SettingsButton(name: "Grayscale")

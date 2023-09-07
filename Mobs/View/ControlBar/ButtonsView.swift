@@ -125,8 +125,8 @@ struct ButtonsView: View {
         VStack {
             ForEach(rowIndexes) { rowIndex in
                 HStack {
-                    let evenNumberOfRows = ((rowIndex.id + 1) * 2 <= model.enabledButtons.count)
-                    if evenNumberOfRows {
+                    let evenNumberOfColumns = ((rowIndex.id + 1) * 2 <= model.enabledButtons.count)
+                    if evenNumberOfColumns {
                         buildButton(index: 2 * rowIndex.id + 1)
                         buildButton(index: 2 * rowIndex.id)
                     } else {
