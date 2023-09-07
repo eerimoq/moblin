@@ -12,6 +12,10 @@ enum LiveState {
     case live
 }
 
+struct RowIndex: Identifiable {
+    var id: Int
+}
+
 final class Model: ObservableObject {
     private let maxRetryCount: Int = 5
     private var rtmpConnection = RTMPConnection()
@@ -90,6 +94,14 @@ final class Model: ObservableObject {
         get {
             database.buttons.filter({button in button.enabled && button.scenes.contains(selectedSceneId)})
         }
+    }
+    
+    @Published var rowIndexes: [RowIndex] = []
+    
+    func updateRowIndexes() {
+        rowIndexes = (0..<min((enabledButtons.count + 1) / 2, 4))
+            .map({i in RowIndex(id: i)})
+            .reversed()
     }
     
     func debugLog(message: String) {
@@ -179,6 +191,7 @@ final class Model: ObservableObject {
         }
         
         attachCamera(position: .back)
+        updateRowIndexes()
     }
     
     func resetSelectedScene() {
@@ -275,6 +288,7 @@ final class Model: ObservableObject {
     }
     
     func sceneUpdated() {
+        updateRowIndexes()
         // Only turn off effects that are not controlled by buttons.
         //monochromeEffectOff()
         //iconEffectOff()

@@ -68,19 +68,11 @@ struct GenericButton: View {
     }
 }
 
-struct RowIndex: Identifiable {
-    var id: Int
-}
-
 struct ButtonsView: View {
     @ObservedObject var model: Model
-    private var rowIndexes: [RowIndex]
     
     init(model: Model) {
         self.model = model
-        self.rowIndexes = (0..<min((model.enabledButtons.count + 1) / 2, 4))
-            .map({i in RowIndex(id: i)})
-            .reversed()
     }
     
     func buildButton(index: Int) -> GenericButton {
@@ -123,16 +115,15 @@ struct ButtonsView: View {
     
     var body: some View {
         VStack {
-            ForEach(rowIndexes) { rowIndex in
+            ForEach(model.rowIndexes) { rowIndex in
                 HStack {
                     let evenNumberOfColumns = ((rowIndex.id + 1) * 2 <= model.enabledButtons.count)
                     if evenNumberOfColumns {
                         buildButton(index: 2 * rowIndex.id + 1)
-                        buildButton(index: 2 * rowIndex.id)
                     } else {
                         ButtonPlaceholderImage()
-                        buildButton(index: 2 * rowIndex.id)
                     }
+                    buildButton(index: 2 * rowIndex.id)
                 }
             }
         }
