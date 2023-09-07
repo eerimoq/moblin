@@ -22,12 +22,15 @@ struct ButtonsSettingsView: View {
                 List {
                     ForEach(database.buttons) { button in
                         NavigationLink(destination: ButtonSettingsView(button: button, model: model)) {
-                            Toggle(button.name, isOn: Binding(get: {
-                                button.enabled
-                            }, set: { value in
-                                button.enabled = value
-                                model.store()
-                            }))
+                            HStack {
+                                Image(systemName: button.systemImageNameOff)
+                                Toggle(button.name, isOn: Binding(get: {
+                                    button.enabled
+                                }, set: { value in
+                                    button.enabled = value
+                                    model.store()
+                                }))
+                            }
                         }
                     }
                     .onMove(perform: { (froms, to) in

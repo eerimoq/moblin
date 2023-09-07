@@ -7,6 +7,19 @@
 
 import SwiftUI
 
+struct ImageItemView: View {
+    var name: String
+    var image: String
+    
+    var body: some View {
+        HStack {
+            Text(name)
+            Spacer()
+            Image(systemName: image)
+        }
+    }
+}
+
 struct ButtonSettingsView: View {
     @ObservedObject var model: Model
     private var button: SettingsButton
@@ -53,10 +66,10 @@ struct ButtonSettingsView: View {
             }
             Section("Image") {
                 NavigationLink(destination: ButtonImagePickerSettingsView(title: "System name on", value: button.systemImageNameOn, onChange: onSystemImageNameOn)) {
-                    TextItemView(name: "System name on", value: button.systemImageNameOn)
+                    ImageItemView(name: "On", image: button.systemImageNameOn)
                 }
                 NavigationLink(destination: ButtonImagePickerSettingsView(title: "System name off", value: button.systemImageNameOff, onChange: onSystemImageNameOff)) {
-                    TextItemView(name: "System name off", value: button.systemImageNameOff)
+                    ImageItemView(name: "Off", image: button.systemImageNameOff)
                 }
             }
         }
