@@ -37,5 +37,6 @@ final class TwitchChatMobs {
     func stop() {
         task?.cancel()
         task = nil
+        twitchChat = nil
     }
 }
