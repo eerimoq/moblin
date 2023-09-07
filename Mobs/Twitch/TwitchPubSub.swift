@@ -62,6 +62,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     }
 
     func start() {
+        logger.info("pubsub: start")
         reconnectTime = 2.0
         setupWebsocket()
     }
@@ -78,6 +79,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     }
         
     func stop() {
+        logger.info("pubsub: stop")
         webSocket.cancel()
         keepAliveTimer?.invalidate()
         reconnectTimer?.invalidate()

@@ -35,9 +35,7 @@ final class TwitchChatMobs {
     }
 
     func stop() {
-        if let task = task {
-            task.cancel()
-        }
+        task?.cancel()
         task = nil
     }
 }
