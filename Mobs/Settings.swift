@@ -35,7 +35,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable {
     }
 }
 
-class SettingsScene: Codable, Identifiable {
+class SettingsScene: Codable, Identifiable, Equatable {
     var name: String
     var id: UUID = UUID()
     var enabled: Bool = true
@@ -43,6 +43,10 @@ class SettingsScene: Codable, Identifiable {
 
     init(name: String) {
         self.name = name
+    }
+    
+    static func == (lhs: SettingsScene, rhs: SettingsScene) -> Bool {
+        return lhs.id == rhs.id
     }
 }
 
@@ -153,9 +157,22 @@ class SettingsButton: Codable, Identifiable {
     var systemImageNameOn: String = "mic.slash"
     var systemImageNameOff: String = "mic"
     var widget: SettingsButtonWidget = SettingsButtonWidget(widgetId: UUID())
-
+    var scenes: [UUID] = []
+    
     init(name: String) {
         self.name = name
+    }
+    
+    func addScene(id: UUID) {
+        if !scenes.contains(id) {
+            scenes.append(id)
+        }
+    }
+    
+    func removeScene(id: UUID) {
+        if let index = scenes.firstIndex(of: id) {
+            scenes.remove(at: index)
+        }
     }
 }
 
@@ -261,6 +278,8 @@ func addDefaultButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "lightbulb.fill"
     button.systemImageNameOff = "lightbulb"
+    button.scenes.append(database.scenes[0].id)
+    button.scenes.append(database.scenes[1].id)
     database.buttons.append(button)
     
     button = SettingsButton(name: "Mute")
@@ -270,6 +289,8 @@ func addDefaultButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "mic.slash"
     button.systemImageNameOff = "mic"
+    button.scenes.append(database.scenes[0].id)
+    button.scenes.append(database.scenes[1].id)
     database.buttons.append(button)
 
     button = SettingsButton(name: "Movie")
@@ -280,6 +301,7 @@ func addDefaultButtons(database: Database) {
     button.systemImageNameOn = "film.fill"
     button.systemImageNameOff = "film"
     button.widget.widgetId = database.widgets[2].id
+    button.scenes.append(database.scenes[0].id)
     database.buttons.append(button)
     
     /*button = SettingsButton(name: "Grayscale")

@@ -24,11 +24,13 @@ struct ButtonSettingsView: View {
     @ObservedObject var model: Model
     private var button: SettingsButton
     @State private var selection: String
+    @State private var selectedWidget: Int
     
     init(button: SettingsButton, model: Model) {
         self.button = button
         self.model = model
         self.selection = button.type
+        self.selectedWidget = 0
     }
     
     func submitName(name: String) {
@@ -64,12 +66,42 @@ struct ButtonSettingsView: View {
                 .pickerStyle(.inline)
                 .labelsHidden()
             }
+            switch selection {
+            case "Widget":
+                Section("Widget") {
+                    Picker("", selection: $selectedWidget) {
+                        ForEach(model.database.widgets) { widget in
+                            Text(widget.name).tag(model.database.widgets.firstIndex(of: widget)!)
+                        }
+                    }
+                    .onChange(of: selectedWidget) { index in
+                        print(index)
+                    }
+                    .pickerStyle(.inline)
+                    .labelsHidden()
+                }
+            default:
+                EmptyView()
+            }
             Section("Image") {
                 NavigationLink(destination: ButtonImagePickerSettingsView(title: "System name on", value: button.systemImageNameOn, onChange: onSystemImageNameOn)) {
                     ImageItemView(name: "On", image: button.systemImageNameOn)
                 }
                 NavigationLink(destination: ButtonImagePickerSettingsView(title: "System name off", value: button.systemImageNameOff, onChange: onSystemImageNameOff)) {
                     ImageItemView(name: "Off", image: button.systemImageNameOff)
+                }
+            }
+            Section("Scene") {
+                ForEach(model.database.scenes) { scene in
+                    Toggle(scene.name, isOn: Binding(get: {
+                        button.scenes.contains(scene.id)
+                    }, set: { value in
+                        if value {
+                            button.addScene(id: scene.id)
+                        } else {
+                            button.removeScene(id: scene.id)
+                        }
+                    }))
                 }
             }
         }
