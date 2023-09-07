@@ -30,7 +30,7 @@ struct ButtonSettingsView: View {
         self.button = button
         self.model = model
         self.selection = button.type
-        self.selectedWidget = 0
+        self.selectedWidget = model.database.widgets.firstIndex(where: {widget in widget.id == button.widget.widgetId}) ?? 0
     }
     
     func submitName(name: String) {
@@ -75,7 +75,8 @@ struct ButtonSettingsView: View {
                         }
                     }
                     .onChange(of: selectedWidget) { index in
-                        print(index)
+                        button.widget.widgetId = model.database.widgets[index].id
+                        model.store()
                     }
                     .pickerStyle(.inline)
                     .labelsHidden()
@@ -83,7 +84,7 @@ struct ButtonSettingsView: View {
             default:
                 EmptyView()
             }
-            Section("Image") {
+            Section("Images") {
                 NavigationLink(destination: ButtonImagePickerSettingsView(title: "System name on", value: button.systemImageNameOn, onChange: onSystemImageNameOn)) {
                     ImageItemView(name: "On", image: button.systemImageNameOn)
                 }
@@ -91,7 +92,7 @@ struct ButtonSettingsView: View {
                     ImageItemView(name: "Off", image: button.systemImageNameOff)
                 }
             }
-            Section("Scene") {
+            Section("Scenes") {
                 ForEach(model.database.scenes) { scene in
                     Toggle(scene.name, isOn: Binding(get: {
                         button.scenes.contains(scene.id)
@@ -101,6 +102,7 @@ struct ButtonSettingsView: View {
                         } else {
                             button.removeScene(id: scene.id)
                         }
+                        model.store()
                     }))
                 }
             }
