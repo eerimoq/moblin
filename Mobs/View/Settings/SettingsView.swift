@@ -36,7 +36,7 @@ struct SettingsView: View {
                     Text("Buttons")
                 }
             }
-            Section("Local overlays") {
+            Section {
                 Toggle("Stream", isOn: Binding(get: {
                     database.show.stream
                 }, set: { value in
@@ -73,6 +73,10 @@ struct SettingsView: View {
                     database.show.fps = value
                     model.store()
                 }))
+            } header: {
+                Text("Local overlays")
+            } footer: {
+                Text("Local overlays do not appear on stream.")
             }
             Section("Help & support") {
                 Button(action: {

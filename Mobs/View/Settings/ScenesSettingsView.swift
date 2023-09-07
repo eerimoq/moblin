@@ -27,6 +27,19 @@ struct ScenesSettingsView: View {
         return false
     }
     
+    func widgetImage(widget: SettingsWidget) -> String {
+        switch widget.type {
+        case "Image":
+            return "photo"
+        case "Video effect":
+            return "camera.filters"
+        case "Camera":
+            return "camera"
+        default:
+            return ""
+        }
+    }
+    
     var body: some View {
         Form {
             Section {
@@ -56,7 +69,10 @@ struct ScenesSettingsView: View {
             Section {
                 ForEach(database.widgets) { widget in
                     NavigationLink(destination: WidgetSettingsView(widget: widget, model: model)) {
-                        Text(widget.name)
+                        HStack {
+                            Image(systemName: widgetImage(widget: widget))
+                            Text(widget.name)
+                        }
                     }
                     .deleteDisabled(isWidgetUsed(widget: widget))
                 }

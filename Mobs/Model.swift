@@ -297,8 +297,8 @@ final class Model: ObservableObject {
                 case "Video effect":
                     // Only turn on effects that are not controlled by buttons.
                     switch widget.videoEffect.type {
-                    //case "Movie":
-                    //    movieEffectOn()
+                    case "Movie":
+                        logger.info("model: Ignoring movie video effect")
                     default:
                         logger.error("model: Unknown video effect \(widget.videoEffect.type).")
                     }
