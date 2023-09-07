@@ -88,7 +88,7 @@ final class Model: ObservableObject {
     
     var enabledButtons: [SettingsButton] {
         get {
-            database.buttons.filter({button in button.enabled})
+            database.buttons.filter({button in button.enabled && button.scenes.contains(selectedSceneId)})
         }
     }
     
