@@ -275,9 +275,10 @@ final class Model: ObservableObject {
     }
     
     func sceneUpdated() {
-        monochromeEffectOff()
-        iconEffectOff()
-        movieEffectOff()
+        // Only turn off effects that are not controlled by buttons.
+        //monochromeEffectOff()
+        //iconEffectOff()
+        //movieEffectOff()
         guard let scene = findEnabledScene(id: selectedSceneId) else {
             return
         }
@@ -294,9 +295,10 @@ final class Model: ObservableObject {
                         logger.error("model: Unknown camera widget type \(widget.type).")
                     }
                 case "Video effect":
+                    // Only turn on effects that are not controlled by buttons.
                     switch widget.videoEffect.type {
-                    case "Movie":
-                        movieEffectOn()
+                    //case "Movie":
+                    //    movieEffectOn()
                     default:
                         logger.error("model: Unknown video effect \(widget.videoEffect.type).")
                     }
