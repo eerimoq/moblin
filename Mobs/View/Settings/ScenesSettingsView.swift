@@ -26,20 +26,7 @@ struct ScenesSettingsView: View {
         }
         return false
     }
-    
-    func widgetImage(widget: SettingsWidget) -> String {
-        switch widget.type {
-        case "Image":
-            return "photo"
-        case "Video effect":
-            return "camera.filters"
-        case "Camera":
-            return "camera"
-        default:
-            return ""
-        }
-    }
-    
+
     var body: some View {
         Form {
             Section {
