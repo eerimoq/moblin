@@ -13,8 +13,8 @@ enum LiveState {
 }
 
 struct ButtonState {
-    var buttonIndex: Int
     var isOn: Bool
+    var button: SettingsButton
 }
 
 struct ButtonStateRow: Identifiable {
@@ -108,8 +108,7 @@ final class Model: ObservableObject {
     func updateButtonStates() {
         let states = enabledButtons
             .prefix(8)
-            .enumerated()
-            .map({index, button in ButtonState(buttonIndex: index, isOn: button.isOn)})
+            .map({button in ButtonState(isOn: button.isOn, button: button)})
         var buttonStates: [ButtonStateRow] = []
         let rowCount = (states.count + 1) / 2
         for rowIndex in 0..<rowCount {

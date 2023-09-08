@@ -105,28 +105,26 @@ struct ButtonsView: View {
             ForEach(model.buttonStates) { stateRow in
                 HStack {
                     if let second = stateRow.second {
-                        let button = model.enabledButtons[second.buttonIndex]
-                        switch button.type {
+                        switch second.button.type {
                         case "Torch":
-                             ButtonView(model: model, state: second, button: button)
+                            ButtonView(model: model, state: second, button: second.button)
                         case "Mute":
-                             ButtonView(model: model, state: second, button: button)
+                            ButtonView(model: model, state: second, button: second.button)
                         case "Widget":
-                             ButtonView(model: model, state: second, button: button)
+                            ButtonView(model: model, state: second, button: second.button)
                         default:
                             EmptyView()
                         }
                     } else {
                         ButtonPlaceholderImage()
                     }
-                    let button = model.enabledButtons[stateRow.first.buttonIndex]
-                    switch button.type {
+                    switch stateRow.first.button.type {
                     case "Torch":
-                         ButtonView(model: model, state: stateRow.first, button: button)
+                        ButtonView(model: model, state: stateRow.first, button: stateRow.first.button)
                     case "Mute":
-                         ButtonView(model: model, state: stateRow.first, button: button)
+                        ButtonView(model: model, state: stateRow.first, button: stateRow.first.button)
                     case "Widget":
-                         ButtonView(model: model, state: stateRow.first, button: button)
+                        ButtonView(model: model, state: stateRow.first, button: stateRow.first.button)
                     default:
                         EmptyView()
                     }
