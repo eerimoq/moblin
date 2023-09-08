@@ -12,10 +12,6 @@ enum LiveState {
     case live
 }
 
-struct RowIndex: Identifiable {
-    var id: Int
-}
-
 struct ButtonState {
     var buttonIndex: Int
     var isOn: Bool
