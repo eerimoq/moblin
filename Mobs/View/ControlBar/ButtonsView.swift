@@ -39,11 +39,11 @@ struct ButtonPlaceholderImage: View {
 struct ButtonsView: View {
     @ObservedObject var model: Model
     
-    func getImage(button: SettingsButton, on: Bool) -> String {
-        if on {
-            return button.systemImageNameOn
+    func getImage(state: ButtonState) -> String {
+        if state.isOn {
+            return state.button.systemImageNameOn
         } else {
-            return button.systemImageNameOff
+            return state.button.systemImageNameOff
         }
     }
     
@@ -73,25 +73,25 @@ struct ButtonsView: View {
         VStack {
             ForEach(model.buttonStates) { stateRow in
                 HStack {
-                    if var second = stateRow.second {
+                    if let second = stateRow.second {
                         switch second.button.type {
                         case "Torch":
                             Button(action: {
                                 torchAction(state: second)
                             }, label: {
-                                ButtonImage(image: getImage(button: second.button, on: second.isOn), on: second.isOn)
+                                ButtonImage(image: getImage(state: second), on: second.isOn)
                             })
                         case "Mute":
                             Button(action: {
                                 muteAction(state: second)
                             }, label: {
-                                ButtonImage(image: getImage(button: second.button, on: second.isOn), on: second.isOn)
+                                ButtonImage(image: getImage(state: second), on: second.isOn)
                             })
                         case "Widget":
                             Button(action: {
                                 widgetAction(state: second)
                             }, label: {
-                                ButtonImage(image: getImage(button: second.button, on: second.isOn), on: second.isOn)
+                                ButtonImage(image: getImage(state: second), on: second.isOn)
                             })
                         default:
                             EmptyView()
@@ -104,19 +104,19 @@ struct ButtonsView: View {
                         Button(action: {
                             torchAction(state: stateRow.first)
                         }, label: {
-                            ButtonImage(image: getImage(button: stateRow.first.button, on: stateRow.first.isOn), on: stateRow.first.isOn)
+                            ButtonImage(image: getImage(state: stateRow.first), on: stateRow.first.isOn)
                         })
                     case "Mute":
                         Button(action: {
                             muteAction(state: stateRow.first)
                         }, label: {
-                            ButtonImage(image: getImage(button: stateRow.first.button, on: stateRow.first.isOn), on: stateRow.first.isOn)
+                            ButtonImage(image: getImage(state: stateRow.first), on: stateRow.first.isOn)
                         })
                     case "Widget":
                         Button(action: {
                             widgetAction(state: stateRow.first)
                         }, label: {
-                            ButtonImage(image: getImage(button: stateRow.first.button, on: stateRow.first.isOn), on: stateRow.first.isOn)
+                            ButtonImage(image: getImage(state: stateRow.first), on: stateRow.first.isOn)
                         })
                     default:
                         EmptyView()
