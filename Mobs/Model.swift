@@ -102,7 +102,7 @@ final class Model: ObservableObject {
         }
     }
     
-    var enabledButtons: [SettingsButton] {
+    var sceneButtons: [SettingsButton] {
         get {
             database.buttons.filter({button in button.enabled && button.scenes.contains(selectedSceneId)})
         }
@@ -111,7 +111,7 @@ final class Model: ObservableObject {
     @Published var buttonPairs: [ButtonPair] = []
     
     func updateButtonStates() {
-        let states = enabledButtons
+        let states = sceneButtons
             .prefix(8)
             .map({button in ButtonState(isOn: button.isOn, button: button)})
         var pairs: [ButtonPair] = []
@@ -308,15 +308,41 @@ final class Model: ObservableObject {
         return nil
     }
     
-    func sceneUpdated() {
-        updateButtonStates()
-        // Only turn off effects that are not controlled by buttons.
-        //monochromeEffectOff()
-        //iconEffectOff()
-        //movieEffectOff()
-        guard let scene = findEnabledScene(id: selectedSceneId) else {
-            return
+    func getButtonForWidgetControlledByScene(widget: SettingsWidget, scene: SettingsScene) -> SettingsButton? {
+        for button in database.buttons {
+            if button.scenes.contains(scene.id) {
+                if widget.id == button.widget.widgetId {
+                    return button
+                }
+            }
         }
+        return nil
+    }
+
+    func sceneUpdatedOff(scene: SettingsScene) {
+        for widget in database.widgets {
+            switch widget.type {
+            case "Camera":
+                break
+            case "Video effect":
+                if let button = getButtonForWidgetControlledByScene(widget: widget, scene: scene) {
+                    if button.isOn {
+                        continue
+                    }
+                }
+                switch widget.videoEffect.type {
+                case "Movie":
+                    movieEffectOff()
+                default:
+                    logger.error("model: Unknown video effect \(widget.videoEffect.type).")
+                }
+            default:
+                logger.error("model: Unknown widget type \(widget.type)")
+            }
+        }
+    }
+    
+    func sceneUpdatedOn(scene: SettingsScene) {
         for sceneWidget in scene.widgets {
             if let widget = findWidget(id: sceneWidget.widgetId) {
                 switch widget.type {
@@ -330,10 +356,14 @@ final class Model: ObservableObject {
                         logger.error("model: Unknown camera widget type \(widget.type).")
                     }
                 case "Video effect":
-                    // Only turn on effects that are not controlled by buttons.
+                    if let button = getButtonForWidgetControlledByScene(widget: widget, scene: scene) {
+                        if !button.isOn {
+                            continue
+                        }
+                    }
                     switch widget.videoEffect.type {
                     case "Movie":
-                        logger.info("model: Ignoring movie video effect")
+                        movieEffectOn()
                     default:
                         logger.error("model: Unknown video effect \(widget.videoEffect.type).")
                     }
@@ -344,6 +374,15 @@ final class Model: ObservableObject {
                 logger.error("model: Widget not found.")
             }
         }
+    }
+    
+    func sceneUpdated() {
+        updateButtonStates()
+        guard let scene = findEnabledScene(id: selectedSceneId) else {
+            return
+        }
+        sceneUpdatedOff(scene: scene)
+        sceneUpdatedOn(scene: scene)
     }
     
     func updateUptimeFromNonMain() {

@@ -129,7 +129,6 @@ struct TrailingOverlayView: View {
                 IconAndText(icon: "film.stack", text: model.fps, textFirst: true)
             }
             Spacer()
-            // Variable(name: "Earnings", value: "10.32")
             Picker("", selection: $model.sceneIndex) {
                 ForEach(0..<model.enabledScenes.count, id: \.self) { id in
                     let scene = model.enabledScenes[id]

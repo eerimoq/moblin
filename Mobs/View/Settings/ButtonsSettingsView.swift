@@ -29,7 +29,7 @@ struct ButtonsSettingsView: View {
                                 }, set: { value in
                                     button.enabled = value
                                     model.store()
-                                    model.updateButtonStates()
+                                    model.sceneUpdated()
                                 }))
                             }
                         }
@@ -37,11 +37,12 @@ struct ButtonsSettingsView: View {
                     .onMove(perform: { (froms, to) in
                         database.buttons.move(fromOffsets: froms, toOffset: to)
                         model.store()
+                        model.sceneUpdated()
                     })
                     .onDelete(perform: { offsets in
                         database.buttons.remove(atOffsets: offsets)
                         model.store()
-                        model.updateButtonStates()
+                        model.sceneUpdated()
                     })
                 }
                 CreateButtonView(action: {
@@ -52,8 +53,7 @@ struct ButtonsSettingsView: View {
                     }
                     database.buttons.append(button)
                     model.store()
-                    model.updateButtonStates()
-                    model.objectWillChange.send()
+                    model.sceneUpdated()
                 })
             } footer: {
                 Text("Buttons appear in given order in the main view.")
