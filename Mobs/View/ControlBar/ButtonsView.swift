@@ -36,7 +36,7 @@ struct ButtonPlaceholderImage: View {
     }
 }
 
-struct GenericButton: View {
+struct ButtonView: View {
     @ObservedObject var model: Model
     private var state: ButtonState
     private var button: SettingsButton
@@ -44,16 +44,39 @@ struct GenericButton: View {
     private var actionOn: () -> Void
     private var actionOff: () -> Void
 
-    init(model: Model, state: ButtonState, button: SettingsButton, actionOn: @escaping () -> Void, actionOff: @escaping () -> Void) {
+    init(model: Model, state: ButtonState, button: SettingsButton) {
         self.model = model
         self.state = state
         self.button = button
-        self.actionOn = actionOn
-        self.actionOff = actionOff
         if state.isOn {
             self.image = state.imageOn
         } else {
             self.image = state.imageOff
+        }
+        switch button.type {
+        case "Torch":
+            self.actionOn = {
+                model.toggleTorch()
+            }
+            self.actionOff = {
+                model.toggleTorch()
+            }
+        case "Mute":
+            self.actionOn = {
+                model.toggleMute()
+            }
+            self.actionOff = {
+                model.toggleMute()
+            }
+        case "Widget":
+            self.actionOn = {
+                model.movieEffectOn()
+            }
+            self.actionOff = {
+                model.movieEffectOff()
+            }
+        default:
+            fatalError("Unknown button type \(button.type)")
         }
     }
     
@@ -87,35 +110,11 @@ struct ButtonsView: View {
                         let button = model.enabledButtons[second.buttonIndex]
                         switch button.type {
                         case "Torch":
-                             GenericButton(model: model,
-                                           state: second,
-                                           button: button,
-                                           actionOn: {
-                                               model.toggleTorch()
-                                           },
-                                           actionOff: {
-                                               model.toggleTorch()
-                                           })
+                             ButtonView(model: model, state: second, button: button)
                         case "Mute":
-                             GenericButton(model: model,
-                                           state: second,
-                                           button: button,
-                                           actionOn: {
-                                               model.toggleMute()
-                                           },
-                                           actionOff: {
-                                               model.toggleMute()
-                                           })
+                             ButtonView(model: model, state: second, button: button)
                         case "Widget":
-                             GenericButton(model: model,
-                                           state: second,
-                                           button: button,
-                                           actionOn: {
-                                               model.movieEffectOn()
-                                           },
-                                           actionOff: {
-                                               model.movieEffectOff()
-                                           })
+                             ButtonView(model: model, state: second, button: button)
                         default:
                             EmptyView()
                         }
@@ -125,35 +124,11 @@ struct ButtonsView: View {
                     let button = model.enabledButtons[stateRow.first.buttonIndex]
                     switch button.type {
                     case "Torch":
-                         GenericButton(model: model,
-                                       state: stateRow.first,
-                                       button: button,
-                                       actionOn: {
-                                           model.toggleTorch()
-                                       },
-                                       actionOff: {
-                                           model.toggleTorch()
-                                       })
+                         ButtonView(model: model, state: stateRow.first, button: button)
                     case "Mute":
-                         GenericButton(model: model,
-                                       state: stateRow.first,
-                                       button: button,
-                                       actionOn: {
-                                           model.toggleMute()
-                                       },
-                                       actionOff: {
-                                           model.toggleMute()
-                                       })
+                         ButtonView(model: model, state: stateRow.first, button: button)
                     case "Widget":
-                         GenericButton(model: model,
-                                       state: stateRow.first,
-                                       button: button,
-                                       actionOn: {
-                                           model.movieEffectOn()
-                                       },
-                                       actionOff: {
-                                           model.movieEffectOff()
-                                       })
+                         ButtonView(model: model, state: stateRow.first, button: button)
                     default:
                         EmptyView()
                     }
