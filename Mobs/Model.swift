@@ -546,7 +546,7 @@ final class Model: ObservableObject {
     }
 
     @objc
-    private func rtmpErrorHandler(_ notification: Notification) {
+    private func rtmpErrorHandler(_: Notification) {
         rtmpConnection.connect(rtmpUri())
     }
 }
