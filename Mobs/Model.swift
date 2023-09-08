@@ -12,9 +12,14 @@ enum LiveState {
     case live
 }
 
-struct ButtonState {
+class ButtonState {
     var isOn: Bool
     var button: SettingsButton
+    
+    init(isOn: Bool, button: SettingsButton) {
+        self.isOn = isOn
+        self.button = button
+    }
 }
 
 struct ButtonPair: Identifiable {
