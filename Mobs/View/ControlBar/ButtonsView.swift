@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ButtonImage: View {
     var image: String
-    var on: Bool = false
+    var on: Bool
     
     var body: some View {
         let image = Image(systemName: image)
@@ -36,82 +36,63 @@ struct ButtonPlaceholderImage: View {
     }
 }
 
-struct ButtonView: View {
+struct ButtonsView: View {
     @ObservedObject var model: Model
-    private var state: ButtonState
-    private var button: SettingsButton
-    @State private var image: String
-    private var actionOn: () -> Void
-    private var actionOff: () -> Void
-
-    init(model: Model, state: ButtonState, button: SettingsButton) {
-        self.model = model
-        self.state = state
-        self.button = button
-        if state.isOn {
-            self.image = button.systemImageNameOn
+    
+    func getImage(button: SettingsButton, on: Bool) -> String {
+        if on {
+            return button.systemImageNameOn
         } else {
-            self.image = button.systemImageNameOff
-        }
-        switch button.type {
-        case "Torch":
-            self.actionOn = {
-                model.toggleTorch()
-            }
-            self.actionOff = {
-                model.toggleTorch()
-            }
-        case "Mute":
-            self.actionOn = {
-                model.toggleMute()
-            }
-            self.actionOff = {
-                model.toggleMute()
-            }
-        case "Widget":
-            self.actionOn = {
-                model.movieEffectOn()
-            }
-            self.actionOff = {
-                model.movieEffectOff()
-            }
-        default:
-            fatalError("Unknown button type \(button.type)")
+            return button.systemImageNameOff
         }
     }
     
-    var body: some View {
-        Button(action: {
-            if state.isOn {
-                image = button.systemImageNameOff
-                actionOff()
-            } else {
-                image = button.systemImageNameOn
-                actionOn()
-            }
-            button.isOn = !state.isOn
-            model.updateButtonStates()
-        }, label: {
-            ButtonImage(image: image, on: state.isOn)
-        })
+    func torchAction(state: ButtonState) {
+        state.button.isOn = !state.button.isOn
+        model.toggleTorch()
+        model.updateButtonStates()
     }
-}
-
-struct ButtonsView: View {
-    @ObservedObject var model: Model
+    
+    func muteAction(state: ButtonState) {
+        state.button.isOn = !state.button.isOn
+        model.toggleMute()
+        model.updateButtonStates()
+    }
+    
+    func widgetAction(state: ButtonState) {
+        state.button.isOn = !state.button.isOn
+        if state.isOn {
+            model.movieEffectOn()
+        } else {
+            model.movieEffectOff()
+        }
+        model.updateButtonStates()
+    }
     
     var body: some View {
         VStack {
             ForEach(model.buttonStates) { stateRow in
                 HStack {
-                    if let second = stateRow.second {
+                    if var second = stateRow.second {
                         switch second.button.type {
                         case "Torch":
-                            ButtonView(model: model, state: second, button: second.button)
+                            Button(action: {
+                                torchAction(state: second)
+                            }, label: {
+                                ButtonImage(image: getImage(button: second.button, on: second.isOn), on: second.isOn)
+                            })
                         case "Mute":
-                            ButtonView(model: model, state: second, button: second.button)
+                            Button(action: {
+                                muteAction(state: second)
+                            }, label: {
+                                ButtonImage(image: getImage(button: second.button, on: second.isOn), on: second.isOn)
+                            })
                         case "Widget":
-                            ButtonView(model: model, state: second, button: second.button)
+                            Button(action: {
+                                widgetAction(state: second)
+                            }, label: {
+                                ButtonImage(image: getImage(button: second.button, on: second.isOn), on: second.isOn)
+                            })
                         default:
                             EmptyView()
                         }
@@ -120,11 +101,23 @@ struct ButtonsView: View {
                     }
                     switch stateRow.first.button.type {
                     case "Torch":
-                        ButtonView(model: model, state: stateRow.first, button: stateRow.first.button)
+                        Button(action: {
+                            torchAction(state: stateRow.first)
+                        }, label: {
+                            ButtonImage(image: getImage(button: stateRow.first.button, on: stateRow.first.isOn), on: stateRow.first.isOn)
+                        })
                     case "Mute":
-                        ButtonView(model: model, state: stateRow.first, button: stateRow.first.button)
+                        Button(action: {
+                            muteAction(state: stateRow.first)
+                        }, label: {
+                            ButtonImage(image: getImage(button: stateRow.first.button, on: stateRow.first.isOn), on: stateRow.first.isOn)
+                        })
                     case "Widget":
-                        ButtonView(model: model, state: stateRow.first, button: stateRow.first.button)
+                        Button(action: {
+                            widgetAction(state: stateRow.first)
+                        }, label: {
+                            ButtonImage(image: getImage(button: stateRow.first.button, on: stateRow.first.isOn), on: stateRow.first.isOn)
+                        })
                     default:
                         EmptyView()
                     }
