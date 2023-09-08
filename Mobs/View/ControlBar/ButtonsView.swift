@@ -84,15 +84,13 @@ struct ButtonView: View {
         Button(action: {
             if state.isOn {
                 image = state.imageOff
-                button.isOn = false
-                model.updateButtonStates()
                 actionOff()
             } else {
                 image = state.imageOn
-                button.isOn = true
-                model.updateButtonStates()
                 actionOn()
             }
+            button.isOn = !state.isOn
+            model.updateButtonStates()
         }, label: {
             ButtonImage(image: image, on: state.isOn)
         })
