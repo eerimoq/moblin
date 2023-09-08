@@ -15,8 +15,6 @@ enum LiveState {
 struct ButtonState {
     var buttonIndex: Int
     var isOn: Bool
-    var imageOn: String
-    var imageOff: String
 }
 
 struct ButtonStateRow: Identifiable {
@@ -111,10 +109,7 @@ final class Model: ObservableObject {
         let states = enabledButtons
             .prefix(8)
             .enumerated()
-            .map({index, button in ButtonState(buttonIndex: index,
-                                               isOn: button.isOn,
-                                               imageOn: button.systemImageNameOn,
-                                               imageOff: button.systemImageNameOff)})
+            .map({index, button in ButtonState(buttonIndex: index, isOn: button.isOn)})
         var buttonStates: [ButtonStateRow] = []
         let rowCount = (states.count + 1) / 2
         for rowIndex in 0..<rowCount {

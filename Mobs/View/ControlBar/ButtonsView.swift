@@ -49,9 +49,9 @@ struct ButtonView: View {
         self.state = state
         self.button = button
         if state.isOn {
-            self.image = state.imageOn
+            self.image = button.systemImageNameOn
         } else {
-            self.image = state.imageOff
+            self.image = button.systemImageNameOff
         }
         switch button.type {
         case "Torch":
@@ -83,10 +83,10 @@ struct ButtonView: View {
     var body: some View {
         Button(action: {
             if state.isOn {
-                image = state.imageOff
+                image = button.systemImageNameOff
                 actionOff()
             } else {
-                image = state.imageOn
+                image = button.systemImageNameOn
                 actionOn()
             }
             button.isOn = !state.isOn
