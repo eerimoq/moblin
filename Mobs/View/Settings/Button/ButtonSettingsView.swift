@@ -107,6 +107,7 @@ struct ButtonSettingsView: View {
                             button.removeScene(id: scene.id)
                         }
                         model.store()
+                        model.sceneUpdated()
                     }))
                 }
             } header: {
