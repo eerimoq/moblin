@@ -15,13 +15,13 @@ inspired by it.
 ToDo
 ====
 
-- Integrate SRT stack.
-
-- Implement SRTLA.
-
 - Selector in image widget.
 
 - Widget button selector.
+
+- Integrate SRT stack.
+
+- Implement SRTLA.
   
 Ideas/plan
 ==========
@@ -33,9 +33,9 @@ Ideas/plan
 - Buffering for short disconnections. Show as picture in picture or
   other layout once reconnected. Possible a record button.
 
-- Geolocation (with map?).
-
 - Play music and short sound samples.
+
+- Geolocation (with map?).
 
 - Record to disk.
 

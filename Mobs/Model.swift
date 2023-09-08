@@ -87,6 +87,7 @@ final class Model: ObservableObject {
     var isMuteOn = false
     var isMovieOn = false
     var log: [String] = []
+    var location: Location = Location()
     
     var database: Database {
         get {
@@ -211,6 +212,7 @@ final class Model: ObservableObject {
         
         attachCamera(position: .back)
         updateButtonStates()
+        //location.start()
     }
     
     func resetSelectedScene() {

@@ -36,6 +36,7 @@
 		0379BB8C2AA904BB00B718B6 /* SensitiveUrlEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB8B2AA904BB00B718B6 /* SensitiveUrlEditView.swift */; };
 		0379BB8E2AA90D1900B718B6 /* LogSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB8D2AA90D1900B718B6 /* LogSettingsView.swift */; };
 		0379BB902AABA7DC00B718B6 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB8F2AABA7DC00B718B6 /* Log.swift */; };
+		0379BB922AABAA6600B718B6 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB912AABAA6600B718B6 /* Location.swift */; };
 		0382933B2A9A73ED008963AA /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0382933A2A9A73ED008963AA /* Settings.swift */; };
 		03A983422A9A03D3008FF0DB /* TwitchChat in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983412A9A03D3008FF0DB /* TwitchChat */; };
 		03A983452A9A03EA008FF0DB /* HaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983442A9A03EA008FF0DB /* HaishinKit */; };
@@ -97,6 +98,7 @@
 		0379BB8B2AA904BB00B718B6 /* SensitiveUrlEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SensitiveUrlEditView.swift; sourceTree = "<group>"; };
 		0379BB8D2AA90D1900B718B6 /* LogSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogSettingsView.swift; sourceTree = "<group>"; };
 		0379BB8F2AABA7DC00B718B6 /* Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
+		0379BB912AABAA6600B718B6 /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 		0382933A2A9A73ED008963AA /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		03A983552A9A05D7008FF0DB /* StreamsSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamsSettingsView.swift; sourceTree = "<group>"; };
 		03A983562A9A05D7008FF0DB /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -277,6 +279,7 @@
 				0315A3392AA2FA0A00295443 /* Srtla */,
 				03A983542A9A0582008FF0DB /* View */,
 				035E9E3C2A9A02D7009D4F5A /* Preview Content */,
+				0379BB912AABAA6600B718B6 /* Location.swift */,
 				0379BB8F2AABA7DC00B718B6 /* Log.swift */,
 				035E9E362A9A02D6009D4F5A /* MobsApp.swift */,
 				03A9836D2A9A05F9008FF0DB /* Model.swift */,
@@ -510,6 +513,7 @@
 				0315A33D2AA2FA7D00295443 /* RemoteConnection.swift in Sources */,
 				0379BB7E2AA7C55000B718B6 /* ButtonImagePickerSettingsView.swift in Sources */,
 				03B373FF2A9FCA790028DDD5 /* ThermalStateView.swift in Sources */,
+				0379BB922AABAA6600B718B6 /* Location.swift in Sources */,
 				03A983682A9A05D7008FF0DB /* SceneSettingsView.swift in Sources */,
 				03B374022AA0354C0028DDD5 /* MonochromeEffect.swift in Sources */,
 				03A983632A9A05D7008FF0DB /* SettingsView.swift in Sources */,
