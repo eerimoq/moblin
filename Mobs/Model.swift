@@ -59,7 +59,6 @@ final class Model: ObservableObject {
         formatter.countStyle = .decimal
         return formatter
     }
-    private var updateTimer: Timer? = nil
     private var twitchChat: TwitchChatMobs?
     private var twitchPubSub: TwitchPubSub?
     @Published var twitchChatPosts: [Post] = []
@@ -70,7 +69,6 @@ final class Model: ObservableObject {
     @Published var speed = ""
     @Published var thermalState: ProcessInfo.ThermalState = ProcessInfo.processInfo.thermalState
     private var monochromeEffect: MonochromeEffect = MonochromeEffect()
-    private var iconEffect: IconEffect = IconEffect()
     private var movieEffect: MovieEffect = MovieEffect()
     var stream: SettingsStream? {
         get {
@@ -173,7 +171,7 @@ final class Model: ObservableObject {
             twitchPubSub!.start()
         }
         resetSelectedScene()
-        updateTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             DispatchQueue.main.async {
                 let now = Date()
                 self.updateUptime(now: now)
@@ -189,7 +187,7 @@ final class Model: ObservableObject {
         updateThermalState()
         
         nc.publisher(for: ProcessInfo.thermalStateDidChangeNotification, object: nil)
-            .sink { notification in
+            .sink { _ in
                 DispatchQueue.main.async {
                     self.updateThermalState()
                 }
@@ -496,14 +494,6 @@ final class Model: ObservableObject {
 
     func monochromeEffectOff() {
         _ = rtmpStream.unregisterVideoEffect(monochromeEffect)
-    }
-
-    func iconEffectOn() {
-        _ = rtmpStream.registerVideoEffect(iconEffect)
-    }
-
-    func iconEffectOff() {
-        _ = rtmpStream.unregisterVideoEffect(iconEffect)
     }
 
     func movieEffectOn() {

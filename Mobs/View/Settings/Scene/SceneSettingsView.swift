@@ -31,7 +31,7 @@ struct SceneSettingsView: View {
         return widgetColors[index % widgetColors.count]
     }
     
-    func drawWidgets(context: GraphicsContext, canvasSize: CGSize) {
+    func drawWidgets(context: GraphicsContext) {
         let stroke = 4.0
         let xScale = (1920.0 / 6 - stroke) / 100
         let yScale = (1080.0 / 6 - stroke) / 100
@@ -58,7 +58,7 @@ struct SceneSettingsView: View {
                 HStack {
                     Spacer()
                     Canvas { context, size in
-                        drawWidgets(context: context, canvasSize: size)
+                        drawWidgets(context: context)
                     }
                     .frame(width: 1920 / 6, height: 1080 / 6)
                     .border(.black)

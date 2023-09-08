@@ -1,19 +1,14 @@
 import Foundation
 
 struct MessageData: Decodable {
-    var topic: String
     var message: String
 }
 
 struct Message: Decodable {
-    var type: String
     var data: MessageData
 }
 
 struct Response: Decodable {
-    var type: String
-    var nonce: String
-    var error: String
 }
 
 struct MessageViewCount: Decodable {

@@ -221,15 +221,6 @@ func createSceneWidgetBackCamera(database: Database) -> SettingsSceneWidget {
     return widget
 }
 
-func createSceneWidgetFrontCamera(database: Database) -> SettingsSceneWidget {
-    let widget = SettingsSceneWidget(widgetId: database.widgets[1].id)
-    widget.x = 67
-    widget.y = 0
-    widget.h = 33
-    widget.w = 33
-    return widget
-}
-
 func createSceneWidgetFrontCameraFull(database: Database) -> SettingsSceneWidget {
     let widget = SettingsSceneWidget(widgetId: database.widgets[1].id)
     widget.x = 0
