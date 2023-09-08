@@ -30,7 +30,9 @@ struct ButtonSettingsView: View {
         self.button = button
         self.model = model
         self.selection = button.type
-        self.selectedWidget = model.database.widgets.firstIndex(where: {widget in widget.id == button.widget.widgetId}) ?? 0
+        self.selectedWidget = model.database.widgets.firstIndex(where: {
+            widget in widget.id == button.widget.widgetId
+        }) ?? 0
     }
     
     func submitName(name: String) {

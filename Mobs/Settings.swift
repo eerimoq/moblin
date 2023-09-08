@@ -80,7 +80,7 @@ class SettingsWidgetVideoEffect: Codable {
     var type: String = "Movie"
 }
 
-let widgetTypes = ["Camera", /*"Text", */ "Image", "Video effect"/*, "Video", "Chat", "Recording", "Webview"*/]
+let widgetTypes = ["Camera", "Image", "Video effect"]
 
 class SettingsWidget: Codable, Identifiable, Equatable {
     var name: String
