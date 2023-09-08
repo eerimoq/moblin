@@ -17,7 +17,7 @@ struct ButtonState {
     var button: SettingsButton
 }
 
-struct ButtonStateRow: Identifiable {
+struct ButtonPair: Identifiable {
     var id: Int
     var first: ButtonState
     var second: ButtonState? = nil
@@ -103,22 +103,21 @@ final class Model: ObservableObject {
         }
     }
     
-    @Published var buttonStates: [ButtonStateRow] = []
+    @Published var buttonPairs: [ButtonPair] = []
     
     func updateButtonStates() {
         let states = enabledButtons
             .prefix(8)
             .map({button in ButtonState(isOn: button.isOn, button: button)})
-        var buttonStates: [ButtonStateRow] = []
-        let rowCount = (states.count + 1) / 2
-        for rowIndex in 0..<rowCount {
-            if rowIndex < rowCount - 1 || ((states.count % 2) == 0) {
-                buttonStates.append(ButtonStateRow(id: rowIndex, first: states[2 * rowIndex], second: states[2 * rowIndex + 1]))
+        var pairs: [ButtonPair] = []
+        for index in stride(from: 0, to: states.count, by: 2) {
+            if states.count - index > 1 {
+                pairs.append(ButtonPair(id: index / 2, first: states[index], second: states[index + 1]))
             } else {
-                buttonStates.append(ButtonStateRow(id: rowIndex, first: states[2 * rowIndex]))
+                pairs.append(ButtonPair(id: index / 2, first: states[index]))
             }
         }
-        self.buttonStates = buttonStates.reversed()
+        self.buttonPairs = pairs.reversed()
     }
     
     func debugLog(message: String) {
