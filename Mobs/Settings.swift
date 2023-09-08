@@ -331,6 +331,9 @@ final class Settings {
     func load() {
         do {
             database = try JSONDecoder().decode(Database.self, from: storage.data(using: .utf8)!)
+            for button in database.buttons {
+                button.isOn = false
+            }
         } catch {
             logger.info("settings: Failed to load. Using default.")
             database = createDefault()
