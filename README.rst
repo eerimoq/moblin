@@ -15,10 +15,6 @@ inspired by it.
 ToDo
 ====
 
-- Actually change scene.
-
-- Make UI update after buttons reordering and enable/disable.
-
 - Integrate SRT stack.
 
 - Implement SRTLA.
