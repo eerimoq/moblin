@@ -19,13 +19,13 @@ struct MobsApp: App {
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
-    let session = AVAudioSession.sharedInstance()
-    do {
+        let session = AVAudioSession.sharedInstance()
+        do {
             try session.setCategory(.playAndRecord, mode: .voiceChat, options: [.defaultToSpeaker, .allowBluetooth])
             try session.setActive(true)
-    } catch {
-        logger.error("app: Session error \(error)")
-    }
+        } catch {
+            logger.error("app: Session error \(error)")
+        }
         return true
     }
 }
