@@ -37,33 +37,41 @@ struct ButtonPlaceholderImage: View {
 }
 
 struct GenericButton: View {
+    @ObservedObject var model: Model
+    private var state: ButtonState
+    private var button: SettingsButton
     @State private var image: String
-    private var imageOn: String
-    private var imageOff: String
     private var actionOn: () -> Void
     private var actionOff: () -> Void
-    private var isOn: Binding<Bool>
 
-    init(isOn: Binding<Bool>, imageOn: String, imageOff: String, actionOn: @escaping () -> Void, actionOff: @escaping () -> Void) {
-        self.isOn = isOn
-        self.imageOn = imageOn
-        self.imageOff = imageOff
+    init(model: Model, state: ButtonState, button: SettingsButton, actionOn: @escaping () -> Void, actionOff: @escaping () -> Void) {
+        self.model = model
+        self.state = state
+        self.button = button
         self.actionOn = actionOn
         self.actionOff = actionOff
-        self.image = imageOff
+        if state.isOn {
+            self.image = state.imageOn
+        } else {
+            self.image = state.imageOff
+        }
     }
     
     var body: some View {
         Button(action: {
-            if isOn.wrappedValue {
-                image = imageOff
+            if state.isOn {
+                image = state.imageOff
+                button.isOn = false
+                model.updateButtonStates()
                 actionOff()
             } else {
-                image = imageOn
+                image = state.imageOn
+                button.isOn = true
+                model.updateButtonStates()
                 actionOn()
             }
         }, label: {
-            ButtonImage(image: image, on: isOn.wrappedValue)
+            ButtonImage(image: image, on: state.isOn)
         })
     }
 }
@@ -71,59 +79,84 @@ struct GenericButton: View {
 struct ButtonsView: View {
     @ObservedObject var model: Model
     
-    init(model: Model) {
-        self.model = model
-    }
-    
-    func buildButton(index: Int) -> GenericButton {
-        let button = model.enabledButtons[index]
-        switch button.type {
-        case "Torch":
-            return GenericButton(isOn: $model.isTorchOn,
-                                 imageOn: button.systemImageNameOn,
-                                 imageOff: button.systemImageNameOff,
-                                 actionOn: {
-                                     model.toggleTorch()
-                                 },
-                                 actionOff: {
-                                     model.toggleTorch()
-                                 })
-        case "Mute":
-            return GenericButton(isOn: $model.isMuteOn,
-                                 imageOn: button.systemImageNameOn,
-                                 imageOff: button.systemImageNameOff,
-                                 actionOn: {
-                                     model.toggleMute()
-                                 },
-                                 actionOff: {
-                                     model.toggleMute()
-                                 })
-        case "Widget":
-            return GenericButton(isOn: $model.isMovieOn,
-                                 imageOn: button.systemImageNameOn,
-                                 imageOff: button.systemImageNameOff,
-                                 actionOn: {
-                                     model.movieEffectOn()
-                                 },
-                                 actionOff: {
-                                     model.movieEffectOff()
-                                 })
-        default:
-            fatalError("Should never be executed")
-        }
-    }
-    
     var body: some View {
         VStack {
-            ForEach(model.rowIndexes) { rowIndex in
+            ForEach(model.buttonStates) { stateRow in
                 HStack {
-                    let evenNumberOfColumns = ((rowIndex.id + 1) * 2 <= model.enabledButtons.count)
-                    if evenNumberOfColumns {
-                        buildButton(index: 2 * rowIndex.id + 1)
+                    if let second = stateRow.second {
+                        let button = model.enabledButtons[second.buttonIndex]
+                        switch button.type {
+                        case "Torch":
+                             GenericButton(model: model,
+                                           state: second,
+                                           button: button,
+                                           actionOn: {
+                                               model.toggleTorch()
+                                           },
+                                           actionOff: {
+                                               model.toggleTorch()
+                                           })
+                        case "Mute":
+                             GenericButton(model: model,
+                                           state: second,
+                                           button: button,
+                                           actionOn: {
+                                               model.toggleMute()
+                                           },
+                                           actionOff: {
+                                               model.toggleMute()
+                                           })
+                        case "Widget":
+                             GenericButton(model: model,
+                                           state: second,
+                                           button: button,
+                                           actionOn: {
+                                               model.movieEffectOn()
+                                           },
+                                           actionOff: {
+                                               model.movieEffectOff()
+                                           })
+                        default:
+                            EmptyView()
+                        }
                     } else {
                         ButtonPlaceholderImage()
                     }
-                    buildButton(index: 2 * rowIndex.id)
+                    let button = model.enabledButtons[stateRow.first.buttonIndex]
+                    switch button.type {
+                    case "Torch":
+                         GenericButton(model: model,
+                                       state: stateRow.first,
+                                       button: button,
+                                       actionOn: {
+                                           model.toggleTorch()
+                                       },
+                                       actionOff: {
+                                           model.toggleTorch()
+                                       })
+                    case "Mute":
+                         GenericButton(model: model,
+                                       state: stateRow.first,
+                                       button: button,
+                                       actionOn: {
+                                           model.toggleMute()
+                                       },
+                                       actionOff: {
+                                           model.toggleMute()
+                                       })
+                    case "Widget":
+                         GenericButton(model: model,
+                                       state: stateRow.first,
+                                       button: button,
+                                       actionOn: {
+                                           model.movieEffectOn()
+                                       },
+                                       actionOff: {
+                                           model.movieEffectOff()
+                                       })
+                    default:
+                        EmptyView()
+                    }
                 }
             }
         }

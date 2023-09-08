@@ -16,6 +16,19 @@ struct RowIndex: Identifiable {
     var id: Int
 }
 
+struct ButtonState {
+    var buttonIndex: Int
+    var isOn: Bool
+    var imageOn: String
+    var imageOff: String
+}
+
+struct ButtonStateRow: Identifiable {
+    var id: Int
+    var first: ButtonState
+    var second: ButtonState? = nil
+}
+
 final class Model: ObservableObject {
     private let maxRetryCount: Int = 5
     private var rtmpConnection = RTMPConnection()
@@ -96,12 +109,26 @@ final class Model: ObservableObject {
         }
     }
     
-    @Published var rowIndexes: [RowIndex] = []
+    @Published var buttonStates: [ButtonStateRow] = []
     
-    func updateRowIndexes() {
-        rowIndexes = (0..<min((enabledButtons.count + 1) / 2, 4))
-            .map({i in RowIndex(id: i)})
-            .reversed()
+    func updateButtonStates() {
+        let states = enabledButtons
+            .prefix(8)
+            .enumerated()
+            .map({index, button in ButtonState(buttonIndex: index,
+                                               isOn: button.isOn,
+                                               imageOn: button.systemImageNameOn,
+                                               imageOff: button.systemImageNameOff)})
+        var buttonStates: [ButtonStateRow] = []
+        let rowCount = (states.count + 1) / 2
+        for rowIndex in 0..<rowCount {
+            if rowIndex < rowCount - 1 || ((states.count % 2) == 0) {
+                buttonStates.append(ButtonStateRow(id: rowIndex, first: states[2 * rowIndex], second: states[2 * rowIndex + 1]))
+            } else {
+                buttonStates.append(ButtonStateRow(id: rowIndex, first: states[2 * rowIndex]))
+            }
+        }
+        self.buttonStates = buttonStates.reversed()
     }
     
     func debugLog(message: String) {
@@ -191,7 +218,7 @@ final class Model: ObservableObject {
         }
         
         attachCamera(position: .back)
-        updateRowIndexes()
+        updateButtonStates()
     }
     
     func resetSelectedScene() {
@@ -288,7 +315,7 @@ final class Model: ObservableObject {
     }
     
     func sceneUpdated() {
-        updateRowIndexes()
+        updateButtonStates()
         // Only turn off effects that are not controlled by buttons.
         //monochromeEffectOff()
         //iconEffectOff()

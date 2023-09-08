@@ -158,6 +158,7 @@ class SettingsButton: Codable, Identifiable {
     var systemImageNameOff: String = "mic"
     var widget: SettingsButtonWidget = SettingsButtonWidget(widgetId: UUID())
     var scenes: [UUID] = []
+    var isOn: Bool = false
     
     init(name: String) {
         self.name = name

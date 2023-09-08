@@ -29,7 +29,7 @@ struct ButtonsSettingsView: View {
                                 }, set: { value in
                                     button.enabled = value
                                     model.store()
-                                    model.updateRowIndexes()
+                                    model.updateButtonStates()
                                 }))
                             }
                         }
@@ -41,7 +41,7 @@ struct ButtonsSettingsView: View {
                     .onDelete(perform: { offsets in
                         database.buttons.remove(atOffsets: offsets)
                         model.store()
-                        model.updateRowIndexes()
+                        model.updateButtonStates()
                     })
                 }
                 CreateButtonView(action: {
@@ -52,7 +52,7 @@ struct ButtonsSettingsView: View {
                     }
                     database.buttons.append(button)
                     model.store()
-                    model.updateRowIndexes()
+                    model.updateButtonStates()
                     model.objectWillChange.send()
                 })
             } footer: {
