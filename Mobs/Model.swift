@@ -393,6 +393,11 @@ final class Model: ObservableObject {
         sceneUpdatedOn(scene: scene)
     }
     
+    func allWidgetsOff() {
+        movieEffectOff()
+        grayScaleEffectOff()
+    }
+    
     func updateUptimeFromNonMain() {
         DispatchQueue.main.async {
             self.updateUptime(now: Date())

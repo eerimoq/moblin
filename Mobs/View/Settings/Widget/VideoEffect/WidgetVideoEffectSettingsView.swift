@@ -14,14 +14,16 @@ struct WidgetVideoEffectSettingsView: View {
     }
     
     var body: some View {
-        Section(widget.name) {
+        Section("Video effect") {
             Picker("", selection: $selection) {
                 ForEach(videoEffects, id: \.self) { videoEffect in
                     Text(videoEffect)
                 }
             }
             .onChange(of: selection) { videoEffect in
+                model.allWidgetsOff()
                 widget.videoEffect.type = videoEffect
+                model.sceneUpdated()
                 model.store()
             }
             .pickerStyle(.inline)
