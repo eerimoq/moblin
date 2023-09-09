@@ -34,7 +34,7 @@ struct WidgetSettingsView: View {
                 WidgetTextSettingsView(model: model, widget: widget)
             case "Image":
                 WidgetImageSettingsView(model: model, widget: widget)
-            case "VideoEffect":
+            case "Video effect":
                 WidgetVideoEffectSettingsView(model: model, widget: widget)
             case "Video":
                 Section("URL") {

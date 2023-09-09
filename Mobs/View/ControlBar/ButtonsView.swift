@@ -56,12 +56,8 @@ struct ButtonsView: View {
     
     func widgetAction(state: ButtonState) {
         state.button.isOn = !state.button.isOn
-        if state.button.isOn {
-            model.movieEffectOn()
-        } else {
-            model.movieEffectOff()
-        }
         model.updateButtonStates()
+        model.sceneUpdated()
         model.store()
     }
     

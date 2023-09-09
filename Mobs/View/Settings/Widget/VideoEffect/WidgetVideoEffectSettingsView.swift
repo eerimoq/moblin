@@ -11,22 +11,23 @@ struct WidgetVideoEffectSettingsView: View {
         self.model = model
         self.widget = widget
         self.selection = widget.videoEffect.type
+        print(self.selection, videoEffects)
     }
     
     var body: some View {
-        Form {
+        Section(widget.name) {
             Picker("", selection: $selection) {
                 ForEach(videoEffects, id: \.self) { videoEffect in
                     Text(videoEffect)
                 }
             }
-            .onChange(of: selection) { direction in
-                widget.camera.direction = direction
+            .onChange(of: selection) { videoEffect in
+                widget.videoEffect.type = videoEffect
                 model.store()
             }
             .pickerStyle(.inline)
             .labelsHidden()
         }
-        .navigationTitle("Direction")
+        .navigationTitle("Video effect")
     }
 }

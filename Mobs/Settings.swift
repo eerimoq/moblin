@@ -226,6 +226,11 @@ func addDefaultWidgets(database: Database) {
     widget.type = "Video effect"
     widget.videoEffect.type = "Movie"
     database.widgets.append(widget)
+    
+    widget = SettingsWidget(name: "Gray scale")
+    widget.type = "Video effect"
+    widget.videoEffect.type = "Gray scale"
+    database.widgets.append(widget)
 }
 
 func createSceneWidgetBackCamera(database: Database) -> SettingsSceneWidget {
@@ -255,13 +260,24 @@ func createSceneWidgetVideoEffectMovie(database: Database) -> SettingsSceneWidge
     return widget
 }
 
+func createSceneWidgetVideoEffectGrayScale(database: Database) -> SettingsSceneWidget {
+    let widget = SettingsSceneWidget(widgetId: database.widgets[3].id)
+    widget.x = 0
+    widget.y = 0
+    widget.h = 100
+    widget.w = 100
+    return widget
+}
+
 func addDefaultScenes(database: Database) {
     var scene = SettingsScene(name: "Back")
     scene.widgets.append(createSceneWidgetBackCamera(database: database))
     scene.widgets.append(createSceneWidgetVideoEffectMovie(database: database))
+    scene.widgets.append(createSceneWidgetVideoEffectGrayScale(database: database))
     scene.addButton(id: database.buttons[0].id)
     scene.addButton(id: database.buttons[1].id)
     scene.addButton(id: database.buttons[2].id)
+    scene.addButton(id: database.buttons[3].id)
     database.scenes.append(scene)
     
     scene = SettingsScene(name: "Front")
@@ -309,14 +325,14 @@ func addDefaultButtons(database: Database) {
     button.widget.widgetId = database.widgets[2].id
     database.buttons.append(button)
     
-    /*button = SettingsButton(name: "Grayscale")
+    button = SettingsButton(name: "Gray scale")
     button.id = UUID()
-    button.enabled = true
     button.type = "Widget"
     button.imageType = "System name"
     button.systemImageNameOn = "moon.fill"
     button.systemImageNameOff = "moon"
-    database.buttons.append(button)*/
+    button.widget.widgetId = database.widgets[3].id
+    database.buttons.append(button)
 }
 
 func createDefault() -> Database {

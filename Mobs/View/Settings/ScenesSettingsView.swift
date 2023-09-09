@@ -121,7 +121,7 @@ struct ScenesSettingsView: View {
             } footer: {
                 Text("Only unused buttons can be deleted.")
             }
-            Section {
+            /*Section {
                 ForEach(database.variables) { variable in
                     NavigationLink(destination: VariableSettingsView(variable: variable, model: model)) {
                         Text(variable.name)
@@ -141,7 +141,7 @@ struct ScenesSettingsView: View {
                 Text("Variables")
             } footer: {
                 Text("Only unused variables can be deleted.")
-            }
+            }*/
         }
         .navigationTitle("Scenes")
     }

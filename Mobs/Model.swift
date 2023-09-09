@@ -62,14 +62,14 @@ final class Model: ObservableObject {
     private var twitchChat: TwitchChatMobs?
     private var twitchPubSub: TwitchPubSub?
     @Published var twitchChatPosts: [Post] = []
-    var numberOfTwitchChatPosts: Int = 0
+    var numberOfTwitchChatPosts = 0
     @Published var twitchChatPostsPerSecond: Float = 0.0
     @Published var numberOfViewers = ""
     @Published var batteryLevel = UIDevice.current.batteryLevel
     @Published var speed = ""
-    @Published var thermalState: ProcessInfo.ThermalState = ProcessInfo.processInfo.thermalState
-    private var monochromeEffect: MonochromeEffect = MonochromeEffect()
-    private var movieEffect: MovieEffect = MovieEffect()
+    @Published var thermalState = ProcessInfo.processInfo.thermalState
+    private var grayScaleEffect = GrayScaleEffect()
+    private var movieEffect = MovieEffect()
     var stream: SettingsStream? {
         get {
             for stream in database.streams {
@@ -337,6 +337,8 @@ final class Model: ObservableObject {
                 switch widget.videoEffect.type {
                 case "Movie":
                     movieEffectOff()
+                case "Gray scale":
+                    grayScaleEffectOff()
                 default:
                     logger.error("model: Unknown video effect \(widget.videoEffect.type).")
                 }
@@ -368,6 +370,8 @@ final class Model: ObservableObject {
                     switch widget.videoEffect.type {
                     case "Movie":
                         movieEffectOn()
+                    case "Gray scale":
+                        grayScaleEffectOn()
                     default:
                         logger.error("model: Unknown video effect \(widget.videoEffect.type).")
                     }
@@ -494,12 +498,12 @@ final class Model: ObservableObject {
         rtmpStream.hasAudio.toggle()
     }
 
-    func monochromeEffectOn() {
-        _ = rtmpStream.registerVideoEffect(monochromeEffect)
+    func grayScaleEffectOn() {
+        _ = rtmpStream.registerVideoEffect(grayScaleEffect)
     }
 
-    func monochromeEffectOff() {
-        _ = rtmpStream.unregisterVideoEffect(monochromeEffect)
+    func grayScaleEffectOff() {
+        _ = rtmpStream.unregisterVideoEffect(grayScaleEffect)
     }
 
     func movieEffectOn() {
