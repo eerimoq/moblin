@@ -35,11 +35,25 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable {
     }
 }
 
+class SettingsSceneButton: Codable, Identifiable, Equatable {
+    static func == (lhs: SettingsSceneButton, rhs: SettingsSceneButton) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
+    var buttonId: UUID
+    var id: UUID = UUID()
+    
+    init(buttonId: UUID) {
+        self.buttonId = buttonId
+    }
+}
+
 class SettingsScene: Codable, Identifiable, Equatable {
     var name: String
     var id: UUID = UUID()
     var enabled: Bool = true
     var widgets: [SettingsSceneWidget] = []
+    var buttons: [SettingsSceneButton] = []
 
     init(name: String) {
         self.name = name
@@ -47,6 +61,18 @@ class SettingsScene: Codable, Identifiable, Equatable {
     
     static func == (lhs: SettingsScene, rhs: SettingsScene) -> Bool {
         return lhs.id == rhs.id
+    }
+    
+    func addButton(id: UUID) {
+        if !buttons.contains(SettingsSceneButton(buttonId: id)) {
+            buttons.append(SettingsSceneButton(buttonId: id))
+        }
+    }
+    
+    func removeButton(id: UUID) {
+        if let index = buttons.firstIndex(of: SettingsSceneButton(buttonId: id)) {
+            buttons.remove(at: index)
+        }
     }
 }
 
@@ -148,32 +174,22 @@ class SettingsButtonWidget: Codable, Identifiable {
     }
 }
 
-class SettingsButton: Codable, Identifiable {
+class SettingsButton: Codable, Identifiable, Equatable {
     var name: String
     var id: UUID = UUID()
-    var enabled: Bool = false
     var type: String = "Torch"
     var imageType: String = "System name"
     var systemImageNameOn: String = "mic.slash"
     var systemImageNameOff: String = "mic"
     var widget: SettingsButtonWidget = SettingsButtonWidget(widgetId: UUID())
-    var scenes: [UUID] = []
     var isOn: Bool = false
     
     init(name: String) {
         self.name = name
     }
     
-    func addScene(id: UUID) {
-        if !scenes.contains(id) {
-            scenes.append(id)
-        }
-    }
-    
-    func removeScene(id: UUID) {
-        if let index = scenes.firstIndex(of: id) {
-            scenes.remove(at: index)
-        }
+    static func == (lhs: SettingsButton, rhs: SettingsButton) -> Bool {
+        return lhs.id == rhs.id
     }
 }
 
@@ -243,11 +259,16 @@ func addDefaultScenes(database: Database) {
     var scene = SettingsScene(name: "Back")
     scene.widgets.append(createSceneWidgetBackCamera(database: database))
     scene.widgets.append(createSceneWidgetVideoEffectMovie(database: database))
+    scene.addButton(id: database.buttons[0].id)
+    scene.addButton(id: database.buttons[1].id)
+    scene.addButton(id: database.buttons[2].id)
     database.scenes.append(scene)
     
     scene = SettingsScene(name: "Front")
     scene.widgets.append(createSceneWidgetFrontCameraFull(database: database))
     scene.widgets.append(createSceneWidgetVideoEffectMovie(database: database))
+    scene.addButton(id: database.buttons[1].id)
+    scene.addButton(id: database.buttons[2].id)
     database.scenes.append(scene)
 }
 
@@ -265,35 +286,27 @@ func addDefaultStreams(database: Database) {
 func addDefaultButtons(database: Database) {
     var button = SettingsButton(name: "Torch")
     button.id = UUID()
-    button.enabled = true
     button.type = "Torch"
     button.imageType = "System name"
     button.systemImageNameOn = "lightbulb.fill"
     button.systemImageNameOff = "lightbulb"
-    button.scenes.append(database.scenes[0].id)
     database.buttons.append(button)
     
     button = SettingsButton(name: "Mute")
     button.id = UUID()
-    button.enabled = true
     button.type = "Mute"
     button.imageType = "System name"
     button.systemImageNameOn = "mic.slash"
     button.systemImageNameOff = "mic"
-    button.scenes.append(database.scenes[0].id)
-    button.scenes.append(database.scenes[1].id)
     database.buttons.append(button)
 
     button = SettingsButton(name: "Movie")
     button.id = UUID()
-    button.enabled = true
     button.type = "Widget"
     button.imageType = "System name"
     button.systemImageNameOn = "film.fill"
     button.systemImageNameOff = "film"
     button.widget.widgetId = database.widgets[2].id
-    button.scenes.append(database.scenes[0].id)
-    button.scenes.append(database.scenes[1].id)
     database.buttons.append(button)
     
     /*button = SettingsButton(name: "Grayscale")
@@ -309,9 +322,9 @@ func addDefaultButtons(database: Database) {
 func createDefault() -> Database {
     let database = Database()
     addDefaultWidgets(database: database)
+    addDefaultButtons(database: database)
     addDefaultScenes(database: database)
     addDefaultStreams(database: database)
-    addDefaultButtons(database: database)
     return database
 }
 

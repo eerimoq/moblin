@@ -4,8 +4,10 @@ var widgetColors: [Color] = [.red, .blue, .green, .brown, .mint, .pink]
 
 struct SceneSettingsView: View {
     @ObservedObject var model: Model
-    @State private var showingAdd = false
-    @State private var selected = 0
+    @State private var showingAddWidget = false
+    @State private var showingAddButton = false
+    @State private var selectedWidget = 0
+    @State private var selectedButton = 0
     private var scene: SettingsScene
     
     init(scene: SettingsScene, model: Model) {
@@ -16,6 +18,12 @@ struct SceneSettingsView: View {
     var widgets: [SettingsWidget] {
         get {
             model.database.widgets
+        }
+    }
+    
+    var buttons: [SettingsButton] {
+        get {
+            model.database.buttons
         }
     }
     
@@ -47,6 +55,10 @@ struct SceneSettingsView: View {
                 with: .color(colorOf(widget: widget)),
                 lineWidth: stroke)
         }
+    }
+    
+    func buttonIndex(button: SettingsButton) -> Int {
+        return buttons.firstIndex(of: button)!
     }
     
     var body: some View {
@@ -91,13 +103,13 @@ struct SceneSettingsView: View {
                     })
                 }
                 AddButtonView(action: {
-                    showingAdd = true
+                    showingAddWidget = true
                 })
-                .popover(isPresented: $showingAdd) {
+                .popover(isPresented: $showingAddWidget) {
                     VStack {
                         Form {
                             Section("Name") {
-                                Picker("", selection: $selected) {
+                                Picker("", selection: $selectedWidget) {
                                     ForEach(widgets) { widget in
                                         Text(widget.name).tag(widgets.firstIndex(of: widget)!)
                                     }
@@ -109,16 +121,16 @@ struct SceneSettingsView: View {
                         HStack {
                             Spacer()
                             Button(action: {
-                                showingAdd = false
+                                showingAddWidget = false
                             }, label: {
                                 Text("Cancel")
                             })
                             Spacer()
                             Button(action: {
-                                scene.widgets.append(SettingsSceneWidget(widgetId: widgets[selected].id))
+                                scene.widgets.append(SettingsSceneWidget(widgetId: widgets[selectedWidget].id))
                                 model.store()
                                 model.objectWillChange.send()
-                                showingAdd = false
+                                showingAddWidget = false
                             }, label: {
                                 Text("Done")
                             })
@@ -130,6 +142,68 @@ struct SceneSettingsView: View {
                 Text("Widgets")
             } footer: {
                 Text("Widgets are stacked from back to front.")
+            }
+            Section {
+                List {
+                    ForEach(scene.buttons) { button in
+                        if let realButton = model.findButton(id: button.buttonId) {
+                            HStack {
+                                Image(systemName: realButton.systemImageNameOff)
+                                Text(realButton.name)
+                            }
+                        }
+                    }
+                    .onMove(perform: { (froms, to) in
+                        scene.buttons.move(fromOffsets: froms, toOffset: to)
+                        model.store()
+                        model.sceneUpdated()
+                    })
+                    .onDelete(perform: { offsets in
+                        scene.buttons.remove(atOffsets: offsets)
+                        model.store()
+                        model.sceneUpdated()
+                    })
+                }
+                AddButtonView(action: {
+                    showingAddButton = true
+                })
+                .popover(isPresented: $showingAddButton) {
+                    VStack {
+                        Form {
+                            Section("Name") {
+                                Picker("", selection: $selectedButton) {
+                                    ForEach(buttons) { button in
+                                        Text(button.name).tag(buttonIndex(button: button))
+                                    }
+                                }
+                                .pickerStyle(.inline)
+                                .labelsHidden()
+                            }
+                        }
+                        HStack {
+                            Spacer()
+                            Button(action: {
+                                showingAddButton = false
+                            }, label: {
+                                Text("Cancel")
+                            })
+                            Spacer()
+                            Button(action: {
+                                scene.buttons.append(SettingsSceneButton(buttonId: buttons[selectedButton].id))
+                                model.store()
+                                model.sceneUpdated()
+                                showingAddButton = false
+                            }, label: {
+                                Text("Done")
+                            })
+                            Spacer()
+                        }
+                    }
+                }
+            } header: {
+                Text("Buttons")
+            } footer: {
+                Text("Buttons appear from bottom to top.")
             }
         }
         .navigationTitle("Scene")

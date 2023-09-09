@@ -27,6 +27,17 @@ struct ScenesSettingsView: View {
         return false
     }
 
+    func isButtonUsed(button: SettingsButton) -> Bool {
+        for scene in database.scenes {
+            for sceneButton in scene.buttons {
+                if sceneButton.buttonId == button.id {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
     var body: some View {
         Form {
             Section {
@@ -84,15 +95,10 @@ struct ScenesSettingsView: View {
                         NavigationLink(destination: ButtonSettingsView(button: button, model: model)) {
                             HStack {
                                 Image(systemName: button.systemImageNameOff)
-                                Toggle(button.name, isOn: Binding(get: {
-                                    button.enabled
-                                }, set: { value in
-                                    button.enabled = value
-                                    model.store()
-                                    model.sceneUpdated()
-                                }))
+                                Text(button.name)
                             }
                         }
+                        .deleteDisabled(isButtonUsed(button: button))
                     }
                     .onMove(perform: { (froms, to) in
                         database.buttons.move(fromOffsets: froms, toOffset: to)
@@ -107,10 +113,6 @@ struct ScenesSettingsView: View {
                 }
                 CreateButtonView(action: {
                     let button = SettingsButton(name: "My button")
-                    button.enabled = true
-                    for scene in model.database.scenes {
-                        button.scenes.append(scene.id)
-                    }
                     database.buttons.append(button)
                     model.store()
                     model.sceneUpdated()
@@ -118,7 +120,7 @@ struct ScenesSettingsView: View {
             } header: {
                 Text("Buttons")
             } footer: {
-                Text("Buttons appear in given order in the main view.")
+                Text("Only unused buttons can be deleted.")
             }
             Section {
                 ForEach(database.variables) { variable in

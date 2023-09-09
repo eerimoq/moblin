@@ -98,25 +98,6 @@ struct ButtonSettingsView: View {
                     ImageItemView(name: "Off", image: button.systemImageNameOff)
                 }
             }
-            Section {
-                ForEach(model.database.scenes) { scene in
-                    Toggle(scene.name, isOn: Binding(get: {
-                        button.scenes.contains(scene.id)
-                    }, set: { value in
-                        if value {
-                            button.addScene(id: scene.id)
-                        } else {
-                            button.removeScene(id: scene.id)
-                        }
-                        model.store()
-                        model.sceneUpdated()
-                    }))
-                }
-            } header: {
-                Text("Scenes")
-            } footer: {
-                Text("The button appears when any selected scene is active.")
-            }
         }
         .navigationTitle("Button")
     }

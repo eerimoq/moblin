@@ -101,18 +101,23 @@ final class Model: ObservableObject {
         }
     }
     
-    var sceneButtons: [SettingsButton] {
-        get {
-            database.buttons.filter({button in button.enabled && button.scenes.contains(selectedSceneId)})
-        }
-    }
-    
     @Published var buttonPairs: [ButtonPair] = []
     
+    func findButton(id: UUID) -> SettingsButton? {
+        return database.buttons.first(where: {button in button.id == id})
+    }
+    
     func updateButtonStates() {
-        let states = sceneButtons
+        guard let scene = findEnabledScene(id: selectedSceneId) else {
+            return
+        }
+        let states = scene
+            .buttons
             .prefix(8)
-            .map({button in ButtonState(isOn: button.isOn, button: button)})
+            .map({button in
+                let button = findButton(id: button.buttonId)!
+                return ButtonState(isOn: button.isOn, button: button)
+            })
         var pairs: [ButtonPair] = []
         for index in stride(from: 0, to: states.count, by: 2) {
             if states.count - index > 1 {
@@ -309,11 +314,10 @@ final class Model: ObservableObject {
     }
     
     func getButtonForWidgetControlledByScene(widget: SettingsWidget, scene: SettingsScene) -> SettingsButton? {
-        for button in database.buttons {
-            if button.scenes.contains(scene.id) {
-                if widget.id == button.widget.widgetId {
-                    return button
-                }
+        for button in scene.buttons {
+            let button = findButton(id: button.buttonId)!
+            if widget.id == button.widget.widgetId {
+                return button
             }
         }
         return nil
