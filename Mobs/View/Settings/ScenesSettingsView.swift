@@ -79,6 +79,48 @@ struct ScenesSettingsView: View {
                 Text("Only unused widgets can be deleted.")
             }
             Section {
+                List {
+                    ForEach(database.buttons) { button in
+                        NavigationLink(destination: ButtonSettingsView(button: button, model: model)) {
+                            HStack {
+                                Image(systemName: button.systemImageNameOff)
+                                Toggle(button.name, isOn: Binding(get: {
+                                    button.enabled
+                                }, set: { value in
+                                    button.enabled = value
+                                    model.store()
+                                    model.sceneUpdated()
+                                }))
+                            }
+                        }
+                    }
+                    .onMove(perform: { (froms, to) in
+                        database.buttons.move(fromOffsets: froms, toOffset: to)
+                        model.store()
+                        model.sceneUpdated()
+                    })
+                    .onDelete(perform: { offsets in
+                        database.buttons.remove(atOffsets: offsets)
+                        model.store()
+                        model.sceneUpdated()
+                    })
+                }
+                CreateButtonView(action: {
+                    let button = SettingsButton(name: "My button")
+                    button.enabled = true
+                    for scene in model.database.scenes {
+                        button.scenes.append(scene.id)
+                    }
+                    database.buttons.append(button)
+                    model.store()
+                    model.sceneUpdated()
+                })
+            } header: {
+                Text("Buttons")
+            } footer: {
+                Text("Buttons appear in given order in the main view.")
+            }
+            Section {
                 ForEach(database.variables) { variable in
                     NavigationLink(destination: VariableSettingsView(variable: variable, model: model)) {
                         Text(variable.name)

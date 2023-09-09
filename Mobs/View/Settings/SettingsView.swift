@@ -32,9 +32,6 @@ struct SettingsView: View {
                 NavigationLink(destination: ScenesSettingsView(model: model)) {
                     Text("Scenes")
                 }
-                NavigationLink(destination: ButtonsSettingsView(model: model)) {
-                    Text("Buttons")
-                }
             }
             Section {
                 Toggle("Stream", isOn: Binding(get: {
