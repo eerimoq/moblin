@@ -30,32 +30,12 @@ struct WidgetSettingsView: View {
                 .labelsHidden()
             }
             switch widget.type {
-            case "Text":
-                WidgetTextSettingsView(model: model, widget: widget)
             case "Image":
                 WidgetImageSettingsView(model: model, widget: widget)
             case "Video effect":
                 WidgetVideoEffectSettingsView(model: model, widget: widget)
-            case "Video":
-                Section("URL") {
-                    TextField("", text: Binding(get: {
-                        widget.video.url
-                    }, set: { value in
-                        widget.video.url = value.trim()
-                        model.store()
-                    }))
-                }
             case "Camera":
                 WidgetCameraSettingsView(model: model, widget: widget)
-            case "Webview":
-                Section("URL") {
-                    TextField("", text: Binding(get: {
-                        widget.webview.url
-                    }, set: { value in
-                        widget.webview.url = value.trim()
-                        model.store()
-                    }))
-                }
             default:
                 EmptyView()
             }
