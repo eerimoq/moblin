@@ -370,8 +370,8 @@ func addDefaultButtons(database: Database) {
     button.id = UUID()
     button.type = "Widget"
     button.imageType = "System name"
-    button.systemImageNameOn = "moon.fill"
-    button.systemImageNameOff = "moon"
+    button.systemImageNameOn = "moonphase.waxing.crescent"
+    button.systemImageNameOff = "moonphase.waning.crescent"
     button.widget.widgetId = database.widgets[4].id
     database.buttons.append(button)
     
@@ -379,8 +379,8 @@ func addDefaultButtons(database: Database) {
     button.id = UUID()
     button.type = "Widget"
     button.imageType = "System name"
-    button.systemImageNameOn = "moon.fill"
-    button.systemImageNameOff = "moon"
+    button.systemImageNameOn = "drop.fill"
+    button.systemImageNameOff = "drop"
     button.widget.widgetId = database.widgets[5].id
     database.buttons.append(button)
 }

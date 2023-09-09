@@ -44,7 +44,11 @@ var imageSystemNames = [
     "flashlight.on.fill",
     "flashlight.off.fill",
     "lightbulb",
-    "lightbulb.fill"
+    "lightbulb.fill",
+    "moonphase.waxing.crescent",
+    "moonphase.waning.crescent",
+    "drop",
+    "drop.fill"
 ]
 
 struct ButtonImagePickerSettingsView: View {
