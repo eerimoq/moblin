@@ -1,10 +1,3 @@
-//
-//  WidgetTextSettingsView.swift
-//  Mobs
-//
-//  Created by Erik Moqvist on 2023-09-02.
-//
-
 import SwiftUI
 
 struct WidgetTextSettingsView: View {

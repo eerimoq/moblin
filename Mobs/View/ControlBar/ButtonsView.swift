@@ -1,10 +1,3 @@
-//
-//  ButtonsView.swift
-//  Mobs
-//
-//  Created by Erik Moqvist on 2023-08-31.
-//
-
 import SwiftUI
 
 struct ButtonImage: View {

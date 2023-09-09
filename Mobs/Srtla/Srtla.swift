@@ -1,10 +1,3 @@
-//
-//  Srtla.swift
-//  Mobs
-//
-//  Created by Erik Moqvist on 2023-09-01.
-//
-
 import Foundation
 import Network
 

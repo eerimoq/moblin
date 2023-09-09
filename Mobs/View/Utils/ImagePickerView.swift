@@ -1,10 +1,3 @@
-//
-//  PhotoLibraryPickerView.swift
-//  Mobs
-//
-//  Created by Erik Moqvist on 2023-09-03.
-//
-
 import SwiftUI
 
 final class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {

@@ -1,10 +1,3 @@
-//
-//  VideoSettingsView.swift
-//  Mobs
-//
-//  Created by Erik Moqvist on 2023-09-06.
-//
-
 import SwiftUI
 
 struct StreamVideoSettingsView: View {

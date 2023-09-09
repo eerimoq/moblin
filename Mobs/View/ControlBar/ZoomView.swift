@@ -1,10 +1,3 @@
-//
-//  ZoomView.swift
-//  Mobs
-//
-//  Created by Erik Moqvist on 2023-08-30.
-//
-
 import SwiftUI
 
 struct ZoomView: View {

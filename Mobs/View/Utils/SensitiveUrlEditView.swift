@@ -1,10 +1,3 @@
-//
-//  PhotoLibraryPickerView.swift
-//  Mobs
-//
-//  Created by Erik Moqvist on 2023-09-03.
-//
-
 import SwiftUI
 
 var sensitiveUrlFooter = "Do not share your URL with anyone or they can hijack your channel!"

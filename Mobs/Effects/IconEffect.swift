@@ -1,10 +1,3 @@
-//
-//  IconEffect.swift
-//  Mobs
-//
-//  Created by Erik Moqvist on 2023-08-31.
-//
-
 import AVFoundation
 import HaishinKit
 import UIKit

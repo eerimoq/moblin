@@ -1,10 +1,3 @@
-//
-//  ImagePickerView.swift
-//  Mobs
-//
-//  Created by Erik Moqvist on 2023-09-05.
-//
-
 import SwiftUI
 
 var imageSystemNames = [

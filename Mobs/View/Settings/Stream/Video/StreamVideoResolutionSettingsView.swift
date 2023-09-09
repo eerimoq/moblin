@@ -1,10 +1,3 @@
-//
-//  ButtonSettingsView.swift
-//  Mobs
-//
-//  Created by Erik Moqvist on 2023-09-04.
-//
-
 import SwiftUI
 
 var resolutions = ["1920x1080", "1280x720"]

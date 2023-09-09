@@ -112,8 +112,7 @@ struct ScenesSettingsView: View {
                     })
                 }
                 CreateButtonView(action: {
-                    let button = SettingsButton(name: "My button")
-                    database.buttons.append(button)
+                    database.buttons.append(SettingsButton(name: "My button"))
                     model.store()
                     model.sceneUpdated()
                 })

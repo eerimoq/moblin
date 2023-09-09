@@ -1,10 +1,3 @@
-//
-//  ChatView.swift
-//  Mobs
-//
-//  Created by Erik Moqvist on 2023-08-28.
-//
-
 import SwiftUI
 
 struct LineView: View {
