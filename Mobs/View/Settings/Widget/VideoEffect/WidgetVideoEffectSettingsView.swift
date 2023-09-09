@@ -1,6 +1,6 @@
 import SwiftUI
 
-var videoEffects = ["Movie", "Gray scale"]
+var videoEffects = ["Movie", "Gray scale", "Seipa", "Bloom"]
 
 struct WidgetVideoEffectSettingsView: View {
     @ObservedObject var model: Model

@@ -36,6 +36,8 @@
 		0379BB8E2AA90D1900B718B6 /* LogSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB8D2AA90D1900B718B6 /* LogSettingsView.swift */; };
 		0379BB902AABA7DC00B718B6 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB8F2AABA7DC00B718B6 /* Log.swift */; };
 		0379BB922AABAA6600B718B6 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB912AABAA6600B718B6 /* Location.swift */; };
+		0379BB942AACF16600B718B6 /* SeipaEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB932AACF16600B718B6 /* SeipaEffect.swift */; };
+		0379BB962AACF2D700B718B6 /* BloomEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB952AACF2D700B718B6 /* BloomEffect.swift */; };
 		0382933B2A9A73ED008963AA /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0382933A2A9A73ED008963AA /* Settings.swift */; };
 		03A983422A9A03D3008FF0DB /* TwitchChat in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983412A9A03D3008FF0DB /* TwitchChat */; };
 		03A983452A9A03EA008FF0DB /* HaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983442A9A03EA008FF0DB /* HaishinKit */; };
@@ -97,6 +99,8 @@
 		0379BB8D2AA90D1900B718B6 /* LogSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogSettingsView.swift; sourceTree = "<group>"; };
 		0379BB8F2AABA7DC00B718B6 /* Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
 		0379BB912AABAA6600B718B6 /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
+		0379BB932AACF16600B718B6 /* SeipaEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeipaEffect.swift; sourceTree = "<group>"; };
+		0379BB952AACF2D700B718B6 /* BloomEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BloomEffect.swift; sourceTree = "<group>"; };
 		0382933A2A9A73ED008963AA /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		03A983552A9A05D7008FF0DB /* StreamsSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamsSettingsView.swift; sourceTree = "<group>"; };
 		03A983562A9A05D7008FF0DB /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -388,6 +392,8 @@
 				03B374012AA0354C0028DDD5 /* GrayScaleEffect.swift */,
 				03B374062AA0EA650028DDD5 /* MovieEffect.swift */,
 				03B374082AA0EA700028DDD5 /* IconEffect.swift */,
+				0379BB932AACF16600B718B6 /* SeipaEffect.swift */,
+				0379BB952AACF2D700B718B6 /* BloomEffect.swift */,
 			);
 			path = VideoEffects;
 			sourceTree = "<group>";
@@ -473,6 +479,7 @@
 				03A9836B2A9A05D7008FF0DB /* StreamOverlayView.swift in Sources */,
 				0315A37A2AA39DA800295443 /* TextItemView.swift in Sources */,
 				0315A36C2AA33F2100295443 /* WidgetCameraSettingsView.swift in Sources */,
+				0379BB962AACF2D700B718B6 /* BloomEffect.swift in Sources */,
 				03A983712A9A0659008FF0DB /* TwitchPubSub.swift in Sources */,
 				03A9836C2A9A05D7008FF0DB /* WidgetSettingsView.swift in Sources */,
 				0315A3622AA33A2C00295443 /* WidgetTextSettingsView.swift in Sources */,
@@ -511,6 +518,7 @@
 				03B373FF2A9FCA790028DDD5 /* ThermalStateView.swift in Sources */,
 				0379BB922AABAA6600B718B6 /* Location.swift in Sources */,
 				03A983682A9A05D7008FF0DB /* SceneSettingsView.swift in Sources */,
+				0379BB942AACF16600B718B6 /* SeipaEffect.swift in Sources */,
 				03B374022AA0354C0028DDD5 /* GrayScaleEffect.swift in Sources */,
 				03A983632A9A05D7008FF0DB /* SettingsView.swift in Sources */,
 				03B374132AA277570028DDD5 /* Srtla.swift in Sources */,

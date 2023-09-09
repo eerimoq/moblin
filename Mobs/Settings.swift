@@ -231,6 +231,16 @@ func addDefaultWidgets(database: Database) {
     widget.type = "Video effect"
     widget.videoEffect.type = "Gray scale"
     database.widgets.append(widget)
+    
+    widget = SettingsWidget(name: "Seipa")
+    widget.type = "Video effect"
+    widget.videoEffect.type = "Seipa"
+    database.widgets.append(widget)
+    
+    widget = SettingsWidget(name: "Bloom")
+    widget.type = "Video effect"
+    widget.videoEffect.type = "Bloom"
+    database.widgets.append(widget)
 }
 
 func createSceneWidgetBackCamera(database: Database) -> SettingsSceneWidget {
@@ -269,15 +279,37 @@ func createSceneWidgetVideoEffectGrayScale(database: Database) -> SettingsSceneW
     return widget
 }
 
+func createSceneWidgetVideoEffectSeipa(database: Database) -> SettingsSceneWidget {
+    let widget = SettingsSceneWidget(widgetId: database.widgets[4].id)
+    widget.x = 0
+    widget.y = 0
+    widget.h = 100
+    widget.w = 100
+    return widget
+}
+
+func createSceneWidgetVideoEffectBloom(database: Database) -> SettingsSceneWidget {
+    let widget = SettingsSceneWidget(widgetId: database.widgets[5].id)
+    widget.x = 0
+    widget.y = 0
+    widget.h = 100
+    widget.w = 100
+    return widget
+}
+
 func addDefaultScenes(database: Database) {
     var scene = SettingsScene(name: "Back")
     scene.widgets.append(createSceneWidgetBackCamera(database: database))
     scene.widgets.append(createSceneWidgetVideoEffectMovie(database: database))
     scene.widgets.append(createSceneWidgetVideoEffectGrayScale(database: database))
+    scene.widgets.append(createSceneWidgetVideoEffectSeipa(database: database))
+    scene.widgets.append(createSceneWidgetVideoEffectBloom(database: database))
     scene.addButton(id: database.buttons[0].id)
     scene.addButton(id: database.buttons[1].id)
     scene.addButton(id: database.buttons[2].id)
     scene.addButton(id: database.buttons[3].id)
+    scene.addButton(id: database.buttons[4].id)
+    scene.addButton(id: database.buttons[5].id)
     database.scenes.append(scene)
     
     scene = SettingsScene(name: "Front")
@@ -332,6 +364,24 @@ func addDefaultButtons(database: Database) {
     button.systemImageNameOn = "moon.fill"
     button.systemImageNameOff = "moon"
     button.widget.widgetId = database.widgets[3].id
+    database.buttons.append(button)
+    
+    button = SettingsButton(name: "Seipa")
+    button.id = UUID()
+    button.type = "Widget"
+    button.imageType = "System name"
+    button.systemImageNameOn = "moon.fill"
+    button.systemImageNameOff = "moon"
+    button.widget.widgetId = database.widgets[4].id
+    database.buttons.append(button)
+    
+    button = SettingsButton(name: "Bloom")
+    button.id = UUID()
+    button.type = "Widget"
+    button.imageType = "System name"
+    button.systemImageNameOn = "moon.fill"
+    button.systemImageNameOff = "moon"
+    button.widget.widgetId = database.widgets[5].id
     database.buttons.append(button)
 }
 

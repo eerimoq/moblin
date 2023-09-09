@@ -70,6 +70,8 @@ final class Model: ObservableObject {
     @Published var thermalState = ProcessInfo.processInfo.thermalState
     private var grayScaleEffect = GrayScaleEffect()
     private var movieEffect = MovieEffect()
+    private var seipaEffect = SeipaEffect()
+    private var bloomEffect = BloomEffect()
     var stream: SettingsStream? {
         get {
             for stream in database.streams {
@@ -85,7 +87,6 @@ final class Model: ObservableObject {
     @Published var sceneIndex = 0
     var isTorchOn = false
     var isMuteOn = false
-    var isMovieOn = false
     var log: [String] = []
     var location: Location = Location()
     
@@ -339,6 +340,10 @@ final class Model: ObservableObject {
                     movieEffectOff()
                 case "Gray scale":
                     grayScaleEffectOff()
+                case "Seipa":
+                    seipaEffectOff()
+                case "Bloom":
+                    bloomEffectOff()
                 default:
                     logger.error("model: Unknown video effect \(widget.videoEffect.type).")
                 }
@@ -372,6 +377,10 @@ final class Model: ObservableObject {
                         movieEffectOn()
                     case "Gray scale":
                         grayScaleEffectOn()
+                    case "Seipa":
+                        seipaEffectOn()
+                    case "Bloom":
+                        bloomEffectOn()
                     default:
                         logger.error("model: Unknown video effect \(widget.videoEffect.type).")
                     }
@@ -512,13 +521,27 @@ final class Model: ObservableObject {
     }
 
     func movieEffectOn() {
-        isMovieOn = true
         _ = rtmpStream.registerVideoEffect(movieEffect)
     }
 
     func movieEffectOff() {
-        isMovieOn = false
         _ = rtmpStream.unregisterVideoEffect(movieEffect)
+    }
+
+    func seipaEffectOn() {
+        _ = rtmpStream.registerVideoEffect(seipaEffect)
+    }
+
+    func seipaEffectOff() {
+        _ = rtmpStream.unregisterVideoEffect(seipaEffect)
+    }
+
+    func bloomEffectOn() {
+        _ = rtmpStream.registerVideoEffect(bloomEffect)
+    }
+
+    func bloomEffectOff() {
+        _ = rtmpStream.unregisterVideoEffect(bloomEffect)
     }
 
     func setBackCameraZoomLevel(level: CGFloat) {
