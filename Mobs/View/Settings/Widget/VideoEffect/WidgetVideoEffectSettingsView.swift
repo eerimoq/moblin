@@ -11,7 +11,6 @@ struct WidgetVideoEffectSettingsView: View {
         self.model = model
         self.widget = widget
         self.selection = widget.videoEffect.type
-        print(self.selection, videoEffects)
     }
     
     var body: some View {
