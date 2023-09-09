@@ -17,14 +17,12 @@ ToDo
 
 - Selector in image widget.
 
-- Widget button selector.
-
-- Integrate SRT stack.
-
-- Implement SRTLA.
+- Widgets.
   
 Ideas/plan
 ==========
+
+- Integrate SRT stack.
 
 - Emoji chat.
 
@@ -37,11 +35,11 @@ Ideas/plan
 
 - Geolocation (with map?).
 
+- Implement `SRTLA`_.
+
 - Record to disk.
 
 - Lookup Twitch channel id from channel name.
-  
-- `SRTLA`_.
 
 - AV1 codec (to complement H264).
 
@@ -84,6 +82,10 @@ Resources
 - https://twitchapps.com/tmi/
 
   Create Twitch (chat) token.
+
+- https://irl.run
+
+  IRL Toolkit.
 
 .. _OBS: https://obsproject.com
 
