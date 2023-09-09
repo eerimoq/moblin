@@ -95,10 +95,12 @@ struct SceneSettingsView: View {
                     }
                     .onMove(perform: { (froms, to) in
                         scene.widgets.move(fromOffsets: froms, toOffset: to)
+                        model.sceneUpdated()
                         model.store()
                     })
                     .onDelete(perform: { offsets in
                         scene.widgets.remove(atOffsets: offsets)
+                        model.sceneUpdated()
                         model.store()
                     })
                 }
@@ -129,7 +131,7 @@ struct SceneSettingsView: View {
                             Button(action: {
                                 scene.widgets.append(SettingsSceneWidget(widgetId: widgets[selectedWidget].id))
                                 model.store()
-                                model.objectWillChange.send()
+                                model.sceneUpdated()
                                 showingAddWidget = false
                             }, label: {
                                 Text("Done")
