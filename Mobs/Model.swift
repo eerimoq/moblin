@@ -329,6 +329,8 @@ final class Model: ObservableObject {
             switch widget.type {
             case "Camera":
                 break
+            case "Image":
+                break
             case "Video effect":
                 if let button = getButtonForWidgetControlledByScene(widget: widget, scene: scene) {
                     if button.isOn {
@@ -366,6 +368,8 @@ final class Model: ObservableObject {
                     default:
                         logger.error("model: Unknown camera widget type \(widget.type).")
                     }
+                case "Image":
+                    break
                 case "Video effect":
                     if let button = getButtonForWidgetControlledByScene(widget: widget, scene: scene) {
                         if !button.isOn {

@@ -86,6 +86,7 @@ struct SceneSettingsView: View {
                                     Circle()
                                         .frame(width: 15, height: 15)
                                         .foregroundColor(colorOf(widget: widget))
+                                    Image(systemName: widgetImage(widget: realWidget))
                                     Text(realWidget.name)
                                     Spacer()
                                     Text("(\(widget.x), \(widget.y))").foregroundColor(.gray)
