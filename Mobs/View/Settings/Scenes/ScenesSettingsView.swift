@@ -43,27 +43,6 @@ struct ScenesSettingsView: View {
                    Text("Buttons")
                 }
             }
-            /*Section {
-                ForEach(database.variables) { variable in
-                    NavigationLink(destination: VariableSettingsView(variable: variable, model: model)) {
-                        Text(variable.name)
-                    }
-                }
-                .onDelete(perform: { offsets in
-                    database.variables.remove(atOffsets: offsets)
-                    model.store()
-                    model.objectWillChange.send()
-                })
-                CreateButtonView(action: {
-                    database.variables.append(SettingsVariable(name: "My variable"))
-                    model.store()
-                    model.objectWillChange.send()
-                })
-            } header: {
-                Text("Variables")
-            } footer: {
-                Text("Only unused variables can be deleted.")
-            }*/
         }
         .navigationTitle("Scenes")
     }

@@ -20,11 +20,11 @@ ToDo
 - Selector in image widget.
 
 - Force camera widgets to the back.
-
-- Preview buttons.
   
 Ideas/plan
 ==========
+
+- Preview buttons.
 
 - Integrate SRT stack.
 
