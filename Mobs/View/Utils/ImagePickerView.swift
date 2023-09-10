@@ -1,31 +1,22 @@
 import SwiftUI
 
-final class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    var parent: ImagePickerView
- 
-    init(_ parent: ImagePickerView) {
-        self.parent = parent
-    }
- 
+final class PickerCoordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
- 
-        if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
-            parent.selectedImage = image
-        }
- 
-        parent.presentationMode.wrappedValue.dismiss()
+        print("foobar")
     }
 }
 
 struct ImagePickerView: UIViewControllerRepresentable {
     var sourceType: UIImagePickerController.SourceType = .photoLibrary
-    @Binding var selectedImage: UIImage
-    @Environment(\.presentationMode) var presentationMode
+    var selectedImage: UIImage? = nil
+    var coordinator = PickerCoordinator()
 
     func makeUIViewController(context: UIViewControllerRepresentableContext<ImagePickerView>) -> UIImagePickerController {
+        print(UIImagePickerController.isSourceTypeAvailable(.photoLibrary))
         let imagePicker = UIImagePickerController()
         imagePicker.allowsEditing = false
         imagePicker.sourceType = sourceType
+        imagePicker.delegate = coordinator
         return imagePicker
     }
  
