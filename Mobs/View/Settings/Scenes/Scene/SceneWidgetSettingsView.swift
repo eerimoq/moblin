@@ -41,17 +41,21 @@ struct SceneWidgetSettingsView: View {
     
     var body: some View {
         Form {
-            NavigationLink(destination: TextEditView(title: "X", value: "\(widget.x)", onSubmit: submitX)) {
+            Section {
+                //NavigationLink(destination: TextEditView(title: "X", value: "\(widget.x)", onSubmit: submitX)) {
                 TextItemView(name: "X", value: "\(widget.x)")
-            }
-            NavigationLink(destination: TextEditView(title: "Y", value: "\(widget.y)", onSubmit: submitY)) {
+                //}
+                //NavigationLink(destination: TextEditView(title: "Y", value: "\(widget.y)", onSubmit: submitY)) {
                 TextItemView(name: "Y", value: "\(widget.y)")
-            }
-            NavigationLink(destination: TextEditView(title: "Width", value: "\(widget.w)", onSubmit: submitW)) {
+                //}
+                //NavigationLink(destination: TextEditView(title: "Width", value: "\(widget.w)", onSubmit: submitW)) {
                 TextItemView(name: "Width", value: "\(widget.w)")
-            }
-            NavigationLink(destination: TextEditView(title: "Height", value: "\(widget.h)", onSubmit: submitH)) {
+                //}
+                //NavigationLink(destination: TextEditView(title: "Height", value: "\(widget.h)", onSubmit: submitH)) {
                 TextItemView(name: "Height", value: "\(widget.h)")
+                //}
+            } footer: {
+                Text("Only full screen widgets are supported.")
             }
         }
         .navigationTitle("Widget")

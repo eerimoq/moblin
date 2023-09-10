@@ -27,8 +27,8 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable {
     var id: UUID = UUID()
     var x: Int = 0
     var y: Int = 0
-    var w: Int = 10
-    var h: Int = 10
+    var w: Int = 100
+    var h: Int = 100
     
     init(widgetId: UUID) {
         self.widgetId = widgetId
