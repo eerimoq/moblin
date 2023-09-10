@@ -24,6 +24,12 @@ struct ContentView: View {
                 }
                 ControlBarView(model: model)
             }
+            .onAppear {
+                AppDelegate.setAllowedOrientations(mask: .landscapeRight)
+            }
+            .onDisappear {
+                AppDelegate.setAllowedOrientations(mask: .all)
+            }
             .foregroundColor(.white)
         }
     }

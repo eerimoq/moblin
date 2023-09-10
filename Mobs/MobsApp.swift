@@ -18,6 +18,19 @@ struct MobsApp: App {
 }
 
 class AppDelegate: NSObject, UIApplicationDelegate {
+    static var orientationLock = UIInterfaceOrientationMask.all
+    
+    static func setAllowedOrientations(mask: UIInterfaceOrientationMask) {
+        AppDelegate.orientationLock = mask
+        if let controller = UIApplication.shared.windows[0].rootViewController {
+            controller.setNeedsUpdateOfSupportedInterfaceOrientations()
+        }
+    }
+    
+    func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+        return AppDelegate.orientationLock
+    }
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         let session = AVAudioSession.sharedInstance()
         do {
