@@ -79,10 +79,6 @@ Testing with local streaming server
 Resources
 =========
 
-- https://github.com/gwuhaolin/livego
-
-  Streaming server for testing.
-
 - https://twitchapps.com/tmi/
 
   Create Twitch (chat) token.
