@@ -4,7 +4,6 @@ struct SettingsView: View {
     @ObservedObject var model: Model
     @State private var isPresentingResetConfirm: Bool = false
 
-
     var database: Database {
         get {
             model.settings.database
@@ -15,84 +14,28 @@ struct SettingsView: View {
         return Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "-"
     }
     
-    func openGithub() {
-        UIApplication.shared.open(URL(string: "https://github.com/eerimoq/mobs")!)
-    }
-    
-    func openDiscord() {
-        UIApplication.shared.open(URL(string: "https://discord.gg/kRCXKuRu")!)
-    }
-    
     var body: some View {
         Form {
-            Section("General") {
+            Section {
                 NavigationLink(destination: StreamsSettingsView(model: model)) {
                     Text("Streams")
                 }
                 NavigationLink(destination: ScenesSettingsView(model: model)) {
                     Text("Scenes")
                 }
+                NavigationLink(destination: LocalOverlaysSettingsView(model: model)) {
+                    Text("Local overlays")
+                }
             }
             Section {
-                Toggle("Stream", isOn: Binding(get: {
-                    database.show.stream
-                }, set: { value in
-                    database.show.stream  = value
-                    model.store()
-                }))
-                Toggle("Viewers", isOn: Binding(get: {
-                    database.show.viewers
-                }, set: { value in
-                    database.show.viewers = value
-                    model.store()
-                }))
-                Toggle("Uptime", isOn: Binding(get: {
-                    database.show.uptime
-                }, set: { value in
-                    database.show.uptime = value
-                    model.store()
-                }))
-                Toggle("Chat", isOn: Binding(get: {
-                    database.show.chat
-                }, set: { value in
-                    database.show.chat = value
-                    model.store()
-                }))
-                Toggle("Speed", isOn: Binding(get: {
-                    database.show.speed
-                }, set: { value in
-                    database.show.speed = value
-                    model.store()
-                }))
-                Toggle("FPS", isOn: Binding(get: {
-                    database.show.fps
-                }, set: { value in
-                    database.show.fps = value
-                    model.store()
-                }))
-            } header: {
-                Text("Local overlays")
-            } footer: {
-                Text("Local overlays do not appear on stream.")
-            }
-            Section("Help & support") {
-                Button(action: {
-                    openDiscord()
-                }, label: {
-                    Text("Discord")
-                })
-                Button(action: {
-                    openGithub()
-                }, label: {
-                    Text("Github")
-                })
-            }
-            Section("About") {
-                TextItemView(name: "Version", value: version())
-            }
-            Section("Debug") {
-                NavigationLink(destination: LogSettingsView(model: model)) {
-                    Text("Log")
+                NavigationLink(destination: HelpAndSupportSettingsView()) {
+                    Text("Help & support")
+                }
+                NavigationLink(destination: AboutSettingsView()) {
+                    Text("About")
+                }
+                NavigationLink(destination: DebugSettingsView(model: model)) {
+                    Text("Debug")
                 }
             }
             Section {

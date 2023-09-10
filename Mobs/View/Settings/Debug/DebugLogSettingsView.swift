@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct LogSettingsView: View {
+struct DebugLogSettingsView: View {
     @ObservedObject var model: Model
     
     var body: some View {
