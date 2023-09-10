@@ -15,6 +15,8 @@ inspired by it.
 ToDo
 ====
 
+- Lock landscape mode except in settings.
+
 - Selector in image widget.
 
 - Force camera widgets to the back.
