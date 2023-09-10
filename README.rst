@@ -17,7 +17,9 @@ ToDo
 
 - Selector in image widget.
 
-- Widgets.
+- Force camera widgets to the back.
+
+- Preview buttons.
   
 Ideas/plan
 ==========

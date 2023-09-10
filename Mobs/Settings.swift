@@ -303,13 +303,11 @@ func addDefaultScenes(database: Database) {
     scene.widgets.append(createSceneWidgetVideoEffectMovie(database: database))
     scene.widgets.append(createSceneWidgetVideoEffectGrayScale(database: database))
     scene.widgets.append(createSceneWidgetVideoEffectSeipa(database: database))
-    scene.widgets.append(createSceneWidgetVideoEffectBloom(database: database))
     scene.addButton(id: database.buttons[0].id)
     scene.addButton(id: database.buttons[1].id)
     scene.addButton(id: database.buttons[2].id)
     scene.addButton(id: database.buttons[3].id)
     scene.addButton(id: database.buttons[4].id)
-    scene.addButton(id: database.buttons[5].id)
     database.scenes.append(scene)
     
     scene = SettingsScene(name: "Front")
