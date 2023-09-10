@@ -165,7 +165,9 @@ final class Model: ObservableObject {
     
     func setup(settings: Settings) {
         if let data = imageStorage.read(name: "1") {
-            imageEffect = ImageEffect(image: UIImage(data: data)!)
+            if let image = UIImage(data: data) {
+                imageEffect = ImageEffect(image: image, x: 59, y: 2, width: 40, height: 40)
+            }
         }
         logger.setLogHandler(handler: debugLog)
         updateCurrentTime(now: Date())

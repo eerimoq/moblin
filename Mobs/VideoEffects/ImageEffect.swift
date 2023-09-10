@@ -27,12 +27,12 @@ final class ImageEffect: VideoEffect {
     private var width: Int
     private var height: Int
     
-    init(image: UIImage) {
+    init(image: UIImage, x: Int, y: Int, width: Int, height: Int) {
         self.originalImage = image
-        self.x = 80
-        self.y = 80
-        self.width = 20
-        self.height = 20
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
     }
 
     override func execute(_ image: CIImage, info: CMSampleBuffer?) -> CIImage {
