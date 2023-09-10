@@ -9,35 +9,6 @@ struct ScenesSettingsView: View {
         }
     }
 
-    func isWidgetUsed(widget: SettingsWidget) -> Bool {
-        for scene in database.scenes {
-            for sceneWidget in scene.widgets {
-                if sceneWidget.widgetId == widget.id {
-                    return true
-                }
-            }
-        }
-        for button in database.buttons {
-            if button.type == "Widget" {
-                if button.widget.widgetId == widget.id {
-                    return true
-                }
-            }
-        }
-        return false
-    }
-
-    func isButtonUsed(button: SettingsButton) -> Bool {
-        for scene in database.scenes {
-            for sceneButton in scene.buttons {
-                if sceneButton.buttonId == button.id {
-                    return true
-                }
-            }
-        }
-        return false
-    }
-
     var body: some View {
         Form {
             Section {
@@ -65,61 +36,12 @@ struct ScenesSettingsView: View {
                 })
             }
             Section {
-                ForEach(database.widgets) { widget in
-                    NavigationLink(destination: WidgetSettingsView(widget: widget, model: model)) {
-                        HStack {
-                            Image(systemName: widgetImage(widget: widget))
-                            Text(widget.name)
-                        }
-                    }
-                    .deleteDisabled(isWidgetUsed(widget: widget))
+                NavigationLink(destination: WidgetsSettingsView(model: model)) {
+                   Text("Widgets")
                 }
-                .onDelete(perform: { offsets in
-                    database.widgets.remove(atOffsets: offsets)
-                    model.store()
-                    model.objectWillChange.send()
-                })
-                CreateButtonView(action: {
-                    database.widgets.append(SettingsWidget(name: "My widget"))
-                    model.store()
-                    model.objectWillChange.send()
-                })
-            } header: {
-                Text("Widgets")
-            } footer: {
-                Text("Only unused widgets can be deleted.")
-            }
-            Section {
-                List {
-                    ForEach(database.buttons) { button in
-                        NavigationLink(destination: ButtonSettingsView(button: button, model: model)) {
-                            HStack {
-                                Image(systemName: button.systemImageNameOff)
-                                Text(button.name)
-                            }
-                        }
-                        .deleteDisabled(isButtonUsed(button: button))
-                    }
-                    .onMove(perform: { (froms, to) in
-                        database.buttons.move(fromOffsets: froms, toOffset: to)
-                        model.store()
-                        model.sceneUpdated()
-                    })
-                    .onDelete(perform: { offsets in
-                        database.buttons.remove(atOffsets: offsets)
-                        model.store()
-                        model.sceneUpdated()
-                    })
+                NavigationLink(destination: ButtonsSettingsView(model: model)) {
+                   Text("Buttons")
                 }
-                CreateButtonView(action: {
-                    database.buttons.append(SettingsButton(name: "My button"))
-                    model.store()
-                    model.sceneUpdated()
-                })
-            } header: {
-                Text("Buttons")
-            } footer: {
-                Text("Only unused buttons can be deleted.")
             }
             /*Section {
                 ForEach(database.variables) { variable in

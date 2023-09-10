@@ -47,6 +47,8 @@
 		0379BBAD2AAD964000B718B6 /* AboutSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBAC2AAD964000B718B6 /* AboutSettingsView.swift */; };
 		0379BBAF2AAD96B200B718B6 /* DebugSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBAE2AAD96B200B718B6 /* DebugSettingsView.swift */; };
 		0379BBB22AAD97FB00B718B6 /* ResetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBB12AAD97FB00B718B6 /* ResetSettingsView.swift */; };
+		0379BBB62AAD9B5B00B718B6 /* ButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBB52AAD9B5B00B718B6 /* ButtonsSettingsView.swift */; };
+		0379BBB82AAD9B7200B718B6 /* WidgetsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBB72AAD9B7200B718B6 /* WidgetsSettingsView.swift */; };
 		0382933B2A9A73ED008963AA /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0382933A2A9A73ED008963AA /* Settings.swift */; };
 		03A983422A9A03D3008FF0DB /* TwitchChat in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983412A9A03D3008FF0DB /* TwitchChat */; };
 		03A983452A9A03EA008FF0DB /* HaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983442A9A03EA008FF0DB /* HaishinKit */; };
@@ -119,6 +121,8 @@
 		0379BBAC2AAD964000B718B6 /* AboutSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutSettingsView.swift; sourceTree = "<group>"; };
 		0379BBAE2AAD96B200B718B6 /* DebugSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSettingsView.swift; sourceTree = "<group>"; };
 		0379BBB12AAD97FB00B718B6 /* ResetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetSettingsView.swift; sourceTree = "<group>"; };
+		0379BBB52AAD9B5B00B718B6 /* ButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonsSettingsView.swift; sourceTree = "<group>"; };
+		0379BBB72AAD9B7200B718B6 /* WidgetsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetsSettingsView.swift; sourceTree = "<group>"; };
 		0382933A2A9A73ED008963AA /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		03A983552A9A05D7008FF0DB /* StreamsSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamsSettingsView.swift; sourceTree = "<group>"; };
 		03A983562A9A05D7008FF0DB /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -357,9 +361,9 @@
 		0379BB972AAD802C00B718B6 /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
+				0379BBB42AAD9B4A00B718B6 /* Buttons */,
+				0379BBB32AAD9B4000B718B6 /* Widgets */,
 				0315A3502AA3233000295443 /* Variable */,
-				0315A3512AA3233700295443 /* Widget */,
-				0379BB742AA6343E00B718B6 /* Button */,
 				0315A34C2AA3217500295443 /* Scene */,
 				03A9835B2A9A05D7008FF0DB /* ScenesSettingsView.swift */,
 			);
@@ -426,6 +430,24 @@
 				0379BBB12AAD97FB00B718B6 /* ResetSettingsView.swift */,
 			);
 			path = Reset;
+			sourceTree = "<group>";
+		};
+		0379BBB32AAD9B4000B718B6 /* Widgets */ = {
+			isa = PBXGroup;
+			children = (
+				0315A3512AA3233700295443 /* Widget */,
+				0379BBB72AAD9B7200B718B6 /* WidgetsSettingsView.swift */,
+			);
+			path = Widgets;
+			sourceTree = "<group>";
+		};
+		0379BBB42AAD9B4A00B718B6 /* Buttons */ = {
+			isa = PBXGroup;
+			children = (
+				0379BB742AA6343E00B718B6 /* Button */,
+				0379BBB52AAD9B5B00B718B6 /* ButtonsSettingsView.swift */,
+			);
+			path = Buttons;
 			sourceTree = "<group>";
 		};
 		03A983542A9A0582008FF0DB /* View */ = {
@@ -583,6 +605,7 @@
 				030947C32A9C0496003FC387 /* StreamOverlayChatView.swift in Sources */,
 				03A983622A9A05D7008FF0DB /* ContentView.swift in Sources */,
 				03B374042AA036D10028DDD5 /* ButtonsView.swift in Sources */,
+				0379BBB62AAD9B5B00B718B6 /* ButtonsSettingsView.swift in Sources */,
 				0315A3462AA31E9000295443 /* StreamTwitchSettingsView.swift in Sources */,
 				0379BBAF2AAD96B200B718B6 /* DebugSettingsView.swift in Sources */,
 				03B373F92A9EFB340028DDD5 /* BatteryView.swift in Sources */,
@@ -601,6 +624,7 @@
 				0315A36E2AA33F3400295443 /* WidgetCameraDirectionSettingsView.swift in Sources */,
 				0315A3442AA31D0100295443 /* StreamRtmpSettingsView.swift in Sources */,
 				0379BBB22AAD97FB00B718B6 /* ResetSettingsView.swift in Sources */,
+				0379BBB82AAD9B7200B718B6 /* WidgetsSettingsView.swift in Sources */,
 				0379BBAA2AAD953200B718B6 /* HelpAndSupportSettingsView.swift in Sources */,
 				03A9836E2A9A05F9008FF0DB /* Model.swift in Sources */,
 				03A983722A9A0659008FF0DB /* TwitchChatMobs.swift in Sources */,
