@@ -10,17 +10,29 @@ final class ImageEffect: VideoEffect {
                 return
             }
             UIGraphicsBeginImageContext(extent.size)
-            var image = originalImage.scalePreservingAspectRatio(targetSize: CGSize(width: 192, height: 108))
-            image.draw(at: CGPoint(x: extent.size.width - 192, y: extent.size.height - 108))
+            let x = (extent.size.width * CGFloat(self.x)) / 100
+            let y = (extent.size.height * CGFloat(self.y)) / 100
+            let width = (extent.size.width * CGFloat(self.width)) / 100
+            let height = (extent.size.height * CGFloat(self.height)) / 100
+            var image = originalImage.scalePreservingAspectRatio(targetSize: CGSize(width: width, height: height))
+            image.draw(at: CGPoint(x: x, y: y))
             overlay = CIImage(image: UIGraphicsGetImageFromCurrentImageContext()!, options: nil)
             UIGraphicsEndImageContext()
         }
     }
     private var overlay: CIImage?
     private var originalImage: UIImage
+    private var x: Int
+    private var y: Int
+    private var width: Int
+    private var height: Int
     
     init(image: UIImage) {
         self.originalImage = image
+        self.x = 80
+        self.y = 80
+        self.width = 20
+        self.height = 20
     }
 
     override func execute(_ image: CIImage, info: CMSampleBuffer?) -> CIImage {

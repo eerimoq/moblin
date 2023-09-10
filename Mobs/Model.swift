@@ -331,11 +331,6 @@ final class Model: ObservableObject {
 
     func sceneUpdatedOff(scene: SettingsScene) {
         for widget in database.widgets {
-            if let button = getButtonForWidgetControlledByScene(widget: widget, scene: scene) {
-                if button.isOn {
-                    continue
-                }
-            }
             switch widget.type {
             case "Camera":
                 break
