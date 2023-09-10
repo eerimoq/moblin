@@ -6,14 +6,17 @@ struct StreamOverlayIconAndTextView: View {
     var textFirst = false
 
     var body: some View {
-        HStack {
+        HStack(spacing: 1) {
             if textFirst {
                 StreamOverlayTextView(text: text)
                     .font(.system(size: 13))
             }
             Image(systemName: icon)
-                .frame(width: 12)
+                .frame(width: 15)
                 .font(.system(size: 13))
+                .padding([.leading, .trailing], 2)
+                .background(Color(white: 0, opacity: 0.6))
+                .cornerRadius(5)
             if !textFirst {
                 StreamOverlayTextView(text: text)
                     .font(.system(size: 13))

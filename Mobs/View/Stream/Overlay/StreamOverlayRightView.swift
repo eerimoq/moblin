@@ -40,7 +40,7 @@ struct RightOverlayView: View {
     }
 
     var body: some View {
-        VStack(alignment: .trailing) {
+        VStack(alignment: .trailing, spacing: 1) {
             if database.show.speed {
                 StreamOverlayIconAndTextView(icon: "speedometer", text: model.speed, textFirst: true)
             }

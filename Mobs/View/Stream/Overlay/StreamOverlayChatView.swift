@@ -26,7 +26,7 @@ struct StreamOverlayChatView: View {
     var posts: [Post]
 
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 1) {
             ForEach(posts, id: \.self) {post in
                 LineView(user: post.user, message: post.message)
             }

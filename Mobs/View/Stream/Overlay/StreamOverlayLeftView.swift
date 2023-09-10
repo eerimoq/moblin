@@ -21,7 +21,7 @@ struct LeftOverlayView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 1) {
             if database.show.stream {
                 StreamOverlayIconAndTextView(icon: "dot.radiowaves.left.and.right", text: streamText())
             }
@@ -33,13 +33,7 @@ struct LeftOverlayView: View {
             }
             Spacer()
             if database.show.chat {
-                HStack {
-                    Image(systemName: "message")
-                        .frame(width: 12)
-                    StreamOverlayTextView(text: String(format: "%.2f m/s", model.twitchChatPostsPerSecond))
-                }
-                .font(.system(size: 13))
-                .padding([.bottom], 1)
+                StreamOverlayIconAndTextView(icon: "message", text: String(format: "%.2f m/s", model.twitchChatPostsPerSecond))
                 StreamOverlayChatView(posts: model.twitchChatPosts)
             }
         }
