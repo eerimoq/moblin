@@ -4,22 +4,23 @@ import PhotosUI
 struct WidgetImageSettingsView: View {
     @ObservedObject var model: Model
     var widget: SettingsWidget
-    @State var selectedItems: [PhotosPickerItem] = []
+    @State var selectedImageItem: PhotosPickerItem? = nil
 
     var body: some View {
         Section(widget.type) {
-            PhotosPicker(selection: $selectedItems, maxSelectionCount: 1, matching: .images) {
-                Text("Select an image")
+            PhotosPicker(selection: $selectedImageItem, matching: .images) {
+                Text("Select image")
             }
-            .onChange(of: selectedItems) { items in
-                items[0].loadTransferable(type: Image.self) { result in
+            .onChange(of: selectedImageItem) { imageItem in
+                imageItem!.loadTransferable(type: Data.self) { result in
                     switch result {
-                    case .success(let image?):
-                        print("success", image)
+                    case .success(let data?):
+                        logger.info("widget: image success: \(data)")
+                        model.imageStorage.write(name: "1", data: data)
                     case .success(nil):
-                        print("nil")
+                        logger.error("widget: image nil")
                     case .failure(let error):
-                        print("error", error)
+                        logger.error("widget: image error: \(error)")
                     }
                 }
             }

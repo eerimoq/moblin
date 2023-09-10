@@ -26,6 +26,7 @@
 		035E9E372A9A02D6009D4F5A /* MobsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035E9E362A9A02D6009D4F5A /* MobsApp.swift */; };
 		035E9E3B2A9A02D7009D4F5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */; };
 		035E9E3E2A9A02D7009D4F5A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3D2A9A02D7009D4F5A /* Preview Assets.xcassets */; };
+		036333282AAE2E5100FF1231 /* ImageStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036333272AAE2E5100FF1231 /* ImageStorage.swift */; };
 		0379BB762AA6345400B718B6 /* ButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB752AA6345400B718B6 /* ButtonSettingsView.swift */; };
 		0379BB792AA64C9500B718B6 /* WidgetVideoEffectSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB782AA64C9500B718B6 /* WidgetVideoEffectSettingsView.swift */; };
 		0379BB7E2AA7C55000B718B6 /* ButtonImagePickerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB7D2AA7C55000B718B6 /* ButtonImagePickerSettingsView.swift */; };
@@ -77,7 +78,7 @@
 		03B374022AA0354C0028DDD5 /* GrayScaleEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374012AA0354C0028DDD5 /* GrayScaleEffect.swift */; };
 		03B374042AA036D10028DDD5 /* ButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374032AA036D10028DDD5 /* ButtonsView.swift */; };
 		03B374072AA0EA650028DDD5 /* MovieEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374062AA0EA650028DDD5 /* MovieEffect.swift */; };
-		03B374092AA0EA700028DDD5 /* IconEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374082AA0EA700028DDD5 /* IconEffect.swift */; };
+		03B374092AA0EA700028DDD5 /* ImageEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374082AA0EA700028DDD5 /* ImageEffect.swift */; };
 		03B374132AA277570028DDD5 /* Srtla.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374122AA277570028DDD5 /* Srtla.swift */; };
 /* End PBXBuildFile section */
 
@@ -102,6 +103,7 @@
 		035E9E362A9A02D6009D4F5A /* MobsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobsApp.swift; sourceTree = "<group>"; };
 		035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		035E9E3D2A9A02D7009D4F5A /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		036333272AAE2E5100FF1231 /* ImageStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStorage.swift; sourceTree = "<group>"; };
 		0379BB752AA6345400B718B6 /* ButtonSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonSettingsView.swift; sourceTree = "<group>"; };
 		0379BB782AA64C9500B718B6 /* WidgetVideoEffectSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetVideoEffectSettingsView.swift; sourceTree = "<group>"; };
 		0379BB7D2AA7C55000B718B6 /* ButtonImagePickerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonImagePickerSettingsView.swift; sourceTree = "<group>"; };
@@ -150,7 +152,7 @@
 		03B374012AA0354C0028DDD5 /* GrayScaleEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrayScaleEffect.swift; sourceTree = "<group>"; };
 		03B374032AA036D10028DDD5 /* ButtonsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonsView.swift; sourceTree = "<group>"; };
 		03B374062AA0EA650028DDD5 /* MovieEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieEffect.swift; sourceTree = "<group>"; };
-		03B374082AA0EA700028DDD5 /* IconEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconEffect.swift; sourceTree = "<group>"; };
+		03B374082AA0EA700028DDD5 /* ImageEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEffect.swift; sourceTree = "<group>"; };
 		03B374122AA277570028DDD5 /* Srtla.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Srtla.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -309,6 +311,7 @@
 				035E9E3C2A9A02D7009D4F5A /* Preview Content */,
 				0379BB912AABAA6600B718B6 /* Location.swift */,
 				0379BB8F2AABA7DC00B718B6 /* Log.swift */,
+				036333272AAE2E5100FF1231 /* ImageStorage.swift */,
 				035E9E362A9A02D6009D4F5A /* MobsApp.swift */,
 				03A9836D2A9A05F9008FF0DB /* Model.swift */,
 				0382933A2A9A73ED008963AA /* Settings.swift */,
@@ -509,7 +512,7 @@
 			children = (
 				03B374012AA0354C0028DDD5 /* GrayScaleEffect.swift */,
 				03B374062AA0EA650028DDD5 /* MovieEffect.swift */,
-				03B374082AA0EA700028DDD5 /* IconEffect.swift */,
+				03B374082AA0EA700028DDD5 /* ImageEffect.swift */,
 				0379BB932AACF16600B718B6 /* SeipaEffect.swift */,
 				0379BB952AACF2D700B718B6 /* BloomEffect.swift */,
 			);
@@ -627,7 +630,7 @@
 				0379BB8E2AA90D1900B718B6 /* DebugLogSettingsView.swift in Sources */,
 				0315A3572AA3261900295443 /* StreamSrtSettingsView.swift in Sources */,
 				0382933B2A9A73ED008963AA /* Settings.swift in Sources */,
-				03B374092AA0EA700028DDD5 /* IconEffect.swift in Sources */,
+				03B374092AA0EA700028DDD5 /* ImageEffect.swift in Sources */,
 				03A983692A9A05D7008FF0DB /* CreateButtonView.swift in Sources */,
 				0315A36E2AA33F3400295443 /* WidgetCameraDirectionSettingsView.swift in Sources */,
 				0315A3442AA31D0100295443 /* StreamRtmpSettingsView.swift in Sources */,
@@ -658,6 +661,7 @@
 				0315A3802AA457FC00295443 /* ImagePickerView.swift in Sources */,
 				03A983662A9A05D7008FF0DB /* AddButtonView.swift in Sources */,
 				03A983612A9A05D7008FF0DB /* StreamsSettingsView.swift in Sources */,
+				036333282AAE2E5100FF1231 /* ImageStorage.swift in Sources */,
 				0379BB8C2AA904BB00B718B6 /* SensitiveUrlEditView.swift in Sources */,
 				0315A3702AA3771F00295443 /* SceneWidgetSettingsView.swift in Sources */,
 				0379BB9E2AAD81AA00B718B6 /* StreamOverlayRightView.swift in Sources */,

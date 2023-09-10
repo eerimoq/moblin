@@ -72,6 +72,7 @@ final class Model: ObservableObject {
     private var movieEffect = MovieEffect()
     private var seipaEffect = SeipaEffect()
     private var bloomEffect = BloomEffect()
+    private var imageEffect: ImageEffect?
     var stream: SettingsStream? {
         get {
             for stream in database.streams {
@@ -102,6 +103,7 @@ final class Model: ObservableObject {
         }
     }
     
+    var imageStorage = ImageStorage()
     @Published var buttonPairs: [ButtonPair] = []
     
     func findButton(id: UUID) -> SettingsButton? {
@@ -162,6 +164,9 @@ final class Model: ObservableObject {
     }
     
     func setup(settings: Settings) {
+        if let data = imageStorage.read(name: "1") {
+            imageEffect = ImageEffect(image: UIImage(data: data)!)
+        }
         logger.setLogHandler(handler: debugLog)
         updateCurrentTime(now: Date())
         self.settings = settings
@@ -326,17 +331,19 @@ final class Model: ObservableObject {
 
     func sceneUpdatedOff(scene: SettingsScene) {
         for widget in database.widgets {
+            if let button = getButtonForWidgetControlledByScene(widget: widget, scene: scene) {
+                if button.isOn {
+                    continue
+                }
+            }
             switch widget.type {
             case "Camera":
                 break
             case "Image":
-                break
-            case "Video effect":
-                if let button = getButtonForWidgetControlledByScene(widget: widget, scene: scene) {
-                    if button.isOn {
-                        continue
-                    }
+                if let effect = imageEffect {
+                    _ = rtmpStream.unregisterVideoEffect(effect)
                 }
+            case "Video effect":
                 switch widget.videoEffect.type {
                 case "Movie":
                     movieEffectOff()
@@ -358,6 +365,11 @@ final class Model: ObservableObject {
     func sceneUpdatedOn(scene: SettingsScene) {
         for sceneWidget in scene.widgets {
             if let widget = findWidget(id: sceneWidget.widgetId) {
+                if let button = getButtonForWidgetControlledByScene(widget: widget, scene: scene) {
+                    if !button.isOn {
+                        continue
+                    }
+                }
                 switch widget.type {
                 case "Camera":
                     switch widget.camera.direction {
@@ -369,13 +381,10 @@ final class Model: ObservableObject {
                         logger.error("model: Unknown camera widget type \(widget.type).")
                     }
                 case "Image":
-                    break
-                case "Video effect":
-                    if let button = getButtonForWidgetControlledByScene(widget: widget, scene: scene) {
-                        if !button.isOn {
-                            continue
-                        }
+                    if let effect = imageEffect {
+                        _ = rtmpStream.registerVideoEffect(effect)
                     }
+                case "Video effect":
                     switch widget.videoEffect.type {
                     case "Movie":
                         movieEffectOn()
