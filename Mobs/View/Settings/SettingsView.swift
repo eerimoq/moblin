@@ -2,18 +2,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @ObservedObject var model: Model
-    @State private var isPresentingResetConfirm: Bool = false
 
-    var database: Database {
-        get {
-            model.settings.database
-        }
-    }
-
-    func version() -> String {
-        return Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "-"
-    }
-    
     var body: some View {
         Form {
             Section {
@@ -39,20 +28,7 @@ struct SettingsView: View {
                 }
             }
             Section {
-                HStack {
-                    Spacer()
-                    Button("Reset settings", role: .destructive) {
-                        isPresentingResetConfirm = true
-                    }
-                    .confirmationDialog("Are you sure?", isPresented: $isPresentingResetConfirm) {
-                        Button("Reset settings", role: .destructive) {
-                            model.settings.reset()
-                            model.reloadStream()
-                            model.resetSelectedScene()
-                         }
-                    }
-                    Spacer()
-                }
+                ResetSettingsView(model: model)
             }
         }
         .navigationTitle("Settings")

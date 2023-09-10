@@ -46,6 +46,7 @@
 		0379BBAA2AAD953200B718B6 /* HelpAndSupportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBA92AAD953200B718B6 /* HelpAndSupportSettingsView.swift */; };
 		0379BBAD2AAD964000B718B6 /* AboutSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBAC2AAD964000B718B6 /* AboutSettingsView.swift */; };
 		0379BBAF2AAD96B200B718B6 /* DebugSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBAE2AAD96B200B718B6 /* DebugSettingsView.swift */; };
+		0379BBB22AAD97FB00B718B6 /* ResetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBB12AAD97FB00B718B6 /* ResetSettingsView.swift */; };
 		0382933B2A9A73ED008963AA /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0382933A2A9A73ED008963AA /* Settings.swift */; };
 		03A983422A9A03D3008FF0DB /* TwitchChat in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983412A9A03D3008FF0DB /* TwitchChat */; };
 		03A983452A9A03EA008FF0DB /* HaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983442A9A03EA008FF0DB /* HaishinKit */; };
@@ -117,6 +118,7 @@
 		0379BBA92AAD953200B718B6 /* HelpAndSupportSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpAndSupportSettingsView.swift; sourceTree = "<group>"; };
 		0379BBAC2AAD964000B718B6 /* AboutSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutSettingsView.swift; sourceTree = "<group>"; };
 		0379BBAE2AAD96B200B718B6 /* DebugSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSettingsView.swift; sourceTree = "<group>"; };
+		0379BBB12AAD97FB00B718B6 /* ResetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetSettingsView.swift; sourceTree = "<group>"; };
 		0382933A2A9A73ED008963AA /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		03A983552A9A05D7008FF0DB /* StreamsSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamsSettingsView.swift; sourceTree = "<group>"; };
 		03A983562A9A05D7008FF0DB /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -418,6 +420,14 @@
 			path = About;
 			sourceTree = "<group>";
 		};
+		0379BBB02AAD97EA00B718B6 /* Reset */ = {
+			isa = PBXGroup;
+			children = (
+				0379BBB12AAD97FB00B718B6 /* ResetSettingsView.swift */,
+			);
+			path = Reset;
+			sourceTree = "<group>";
+		};
 		03A983542A9A0582008FF0DB /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -433,6 +443,7 @@
 		03B373F42A9EF8BD0028DDD5 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				0379BBB02AAD97EA00B718B6 /* Reset */,
 				0379BBAB2AAD962700B718B6 /* About */,
 				0379BBA82AAD951400B718B6 /* HelpAndSupport */,
 				0379BBA32AAD944000B718B6 /* LocalOverlays */,
@@ -589,6 +600,7 @@
 				03A983692A9A05D7008FF0DB /* CreateButtonView.swift in Sources */,
 				0315A36E2AA33F3400295443 /* WidgetCameraDirectionSettingsView.swift in Sources */,
 				0315A3442AA31D0100295443 /* StreamRtmpSettingsView.swift in Sources */,
+				0379BBB22AAD97FB00B718B6 /* ResetSettingsView.swift in Sources */,
 				0379BBAA2AAD953200B718B6 /* HelpAndSupportSettingsView.swift in Sources */,
 				03A9836E2A9A05F9008FF0DB /* Model.swift in Sources */,
 				03A983722A9A0659008FF0DB /* TwitchChatMobs.swift in Sources */,
