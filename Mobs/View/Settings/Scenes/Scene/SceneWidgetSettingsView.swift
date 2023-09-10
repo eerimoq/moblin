@@ -43,19 +43,30 @@ struct SceneWidgetSettingsView: View {
         }
     }
     
+    func widgetType() -> String {
+        return model.findWidget(id: widget.widgetId)?.type ?? ""
+    }
+    
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: TextEditView(title: "X", value: "\(widget.x)", onSubmit: submitX)) {
+                if widgetType() == "Image" {
+                    NavigationLink(destination: TextEditView(title: "X", value: "\(widget.x)", onSubmit: submitX)) {
+                        TextItemView(name: "X", value: "\(widget.x)")
+                    }
+                    NavigationLink(destination: TextEditView(title: "Y", value: "\(widget.y)", onSubmit: submitY)) {
+                        TextItemView(name: "Y", value: "\(widget.y)")
+                    }
+                    NavigationLink(destination: TextEditView(title: "Width", value: "\(widget.width)", onSubmit: submitW)) {
+                        TextItemView(name: "Width", value: "\(widget.width)")
+                    }
+                    NavigationLink(destination: TextEditView(title: "Height", value: "\(widget.height)", onSubmit: submitH)) {
+                        TextItemView(name: "Height", value: "\(widget.height)")
+                    }
+                } else {
                     TextItemView(name: "X", value: "\(widget.x)")
-                }
-                NavigationLink(destination: TextEditView(title: "Y", value: "\(widget.y)", onSubmit: submitY)) {
                     TextItemView(name: "Y", value: "\(widget.y)")
-                }
-                NavigationLink(destination: TextEditView(title: "Width", value: "\(widget.width)", onSubmit: submitW)) {
                     TextItemView(name: "Width", value: "\(widget.width)")
-                }
-                NavigationLink(destination: TextEditView(title: "Height", value: "\(widget.height)", onSubmit: submitH)) {
                     TextItemView(name: "Height", value: "\(widget.height)")
                 }
             } footer: {

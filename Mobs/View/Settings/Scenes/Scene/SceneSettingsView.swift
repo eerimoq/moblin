@@ -115,7 +115,11 @@ struct SceneSettingsView: View {
                             Section("Name") {
                                 Picker("", selection: $selectedWidget) {
                                     ForEach(widgets) { widget in
-                                        Text(widget.name).tag(widgets.firstIndex(of: widget)!)
+                                        HStack {
+                                            Image(systemName: widgetImage(widget: widget))
+                                            Text(widget.name)
+                                        }
+                                        .tag(widgets.firstIndex(of: widget)!)
                                     }
                                 }
                                 .pickerStyle(.inline)
@@ -177,7 +181,11 @@ struct SceneSettingsView: View {
                             Section("Name") {
                                 Picker("", selection: $selectedButton) {
                                     ForEach(buttons) { button in
-                                        Text(button.name).tag(buttonIndex(button: button))
+                                        HStack {
+                                            Image(systemName: button.systemImageNameOff)
+                                            Text(button.name)
+                                        }
+                                        .tag(buttonIndex(button: button))
                                     }
                                 }
                                 .pickerStyle(.inline)
