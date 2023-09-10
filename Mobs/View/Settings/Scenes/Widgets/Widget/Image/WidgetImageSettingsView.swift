@@ -15,10 +15,10 @@ struct WidgetImageSettingsView: View {
                 imageItem!.loadTransferable(type: Data.self) { result in
                     switch result {
                     case .success(let data?):
-                        logger.info("widget: image success: \(data)")
-                        model.imageStorage.write(name: "1", data: data)
+                        model.imageStorage.write(id: widget.id, data: data)
+                        model.sceneUpdated()
                     case .success(nil):
-                        logger.error("widget: image nil")
+                        logger.error("widget: image is nil")
                     case .failure(let error):
                         logger.error("widget: image error: \(error)")
                     }

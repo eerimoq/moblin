@@ -72,7 +72,7 @@ final class Model: ObservableObject {
     private var movieEffect = MovieEffect()
     private var seipaEffect = SeipaEffect()
     private var bloomEffect = BloomEffect()
-    private var imageEffect: ImageEffect?
+    private var imageEffects: [UUID: ImageEffect] = [:]
     var stream: SettingsStream? {
         get {
             for stream in database.streams {
@@ -164,11 +164,6 @@ final class Model: ObservableObject {
     }
     
     func setup(settings: Settings) {
-        if let data = imageStorage.read(name: "1") {
-            if let image = UIImage(data: data) {
-                imageEffect = ImageEffect(image: image, x: 59, y: 2, width: 40, height: 40)
-            }
-        }
         logger.setLogHandler(handler: debugLog)
         updateCurrentTime(now: Date())
         self.settings = settings
@@ -226,6 +221,26 @@ final class Model: ObservableObject {
         attachCamera(position: .back)
         updateButtonStates()
         //location.start()
+        sceneUpdated()
+    }
+    
+    func setupImageEffects(scene: SettingsScene) {
+        imageEffects.removeAll()
+        for widget in scene.widgets {
+            guard let realWidget = findWidget(id: widget.widgetId) else {
+                continue
+            }
+            if realWidget.type != "Image" {
+                continue
+            }
+            guard let data = imageStorage.read(id: widget.widgetId) else {
+                continue
+            }
+            guard let image = UIImage(data: data) else {
+                continue
+            }
+            imageEffects[widget.id] = ImageEffect(image: image, x: widget.x, y: widget.y, width: widget.width, height: widget.height)
+        }
     }
     
     func resetSelectedScene() {
@@ -337,9 +352,7 @@ final class Model: ObservableObject {
             case "Camera":
                 break
             case "Image":
-                if let effect = imageEffect {
-                    _ = rtmpStream.unregisterVideoEffect(effect)
-                }
+                break
             case "Video effect":
                 switch widget.videoEffect.type {
                 case "Movie":
@@ -356,6 +369,9 @@ final class Model: ObservableObject {
             default:
                 logger.error("model: Unknown widget type \(widget.type)")
             }
+        }
+        for imageEffect in imageEffects.values {
+            _ = rtmpStream.unregisterVideoEffect(imageEffect)
         }
     }
     
@@ -378,8 +394,8 @@ final class Model: ObservableObject {
                         logger.error("model: Unknown camera widget type \(widget.type).")
                     }
                 case "Image":
-                    if let effect = imageEffect {
-                        _ = rtmpStream.registerVideoEffect(effect)
+                    if let imageEffect = imageEffects[sceneWidget.id] {
+                        _ = rtmpStream.registerVideoEffect(imageEffect)
                     }
                 case "Video effect":
                     switch widget.videoEffect.type {
@@ -409,6 +425,7 @@ final class Model: ObservableObject {
             return
         }
         sceneUpdatedOff(scene: scene)
+        setupImageEffects(scene: scene)
         sceneUpdatedOn(scene: scene)
     }
     

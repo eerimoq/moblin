@@ -25,10 +25,10 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable {
     
     var widgetId: UUID
     var id: UUID = UUID()
-    var x: Int = 0
-    var y: Int = 0
-    var w: Int = 100
-    var h: Int = 100
+    var x: Double = 0
+    var y: Double = 0
+    var width: Double = 100
+    var height: Double = 100
     
     init(widgetId: UUID) {
         self.widgetId = widgetId
@@ -247,8 +247,8 @@ func createSceneWidgetBackCamera(database: Database) -> SettingsSceneWidget {
     let widget = SettingsSceneWidget(widgetId: database.widgets[0].id)
     widget.x = 0
     widget.y = 0
-    widget.h = 100
-    widget.w = 100
+    widget.width = 100
+    widget.height = 100
     return widget
 }
 
@@ -256,8 +256,8 @@ func createSceneWidgetFrontCameraFull(database: Database) -> SettingsSceneWidget
     let widget = SettingsSceneWidget(widgetId: database.widgets[1].id)
     widget.x = 0
     widget.y = 0
-    widget.h = 100
-    widget.w = 100
+    widget.width = 100
+    widget.height = 100
     return widget
 }
 
@@ -265,8 +265,8 @@ func createSceneWidgetVideoEffectMovie(database: Database) -> SettingsSceneWidge
     let widget = SettingsSceneWidget(widgetId: database.widgets[2].id)
     widget.x = 0
     widget.y = 0
-    widget.h = 100
-    widget.w = 100
+    widget.width = 100
+    widget.height = 100
     return widget
 }
 
@@ -274,8 +274,8 @@ func createSceneWidgetVideoEffectGrayScale(database: Database) -> SettingsSceneW
     let widget = SettingsSceneWidget(widgetId: database.widgets[3].id)
     widget.x = 0
     widget.y = 0
-    widget.h = 100
-    widget.w = 100
+    widget.width = 100
+    widget.height = 100
     return widget
 }
 
@@ -283,8 +283,8 @@ func createSceneWidgetVideoEffectSeipa(database: Database) -> SettingsSceneWidge
     let widget = SettingsSceneWidget(widgetId: database.widgets[4].id)
     widget.x = 0
     widget.y = 0
-    widget.h = 100
-    widget.w = 100
+    widget.width = 100
+    widget.height = 100
     return widget
 }
 
@@ -292,8 +292,8 @@ func createSceneWidgetVideoEffectBloom(database: Database) -> SettingsSceneWidge
     let widget = SettingsSceneWidget(widgetId: database.widgets[5].id)
     widget.x = 0
     widget.y = 0
-    widget.h = 100
-    widget.w = 100
+    widget.width = 100
+    widget.height = 100
     return widget
 }
 

@@ -46,10 +46,10 @@ struct SceneSettingsView: View {
         for widget in scene.widgets {
             let x = CGFloat(widget.x) * xScale + stroke / 2
             let y = CGFloat(widget.y) * yScale + stroke / 2
-            let w = CGFloat(widget.w) * xScale
-            let h = CGFloat(widget.h) * yScale
+            let width = CGFloat(widget.width) * xScale
+            let height = CGFloat(widget.height) * yScale
             let origin = CGPoint(x: x, y: y)
-            let size = CGSize(width: w, height: h)
+            let size = CGSize(width: width, height: height)
             context.stroke(
                 Path(roundedRect: CGRect(origin: origin, size: size), cornerRadius: 2.0),
                 with: .color(colorOf(widget: widget)),
@@ -89,7 +89,8 @@ struct SceneSettingsView: View {
                                     Image(systemName: widgetImage(widget: realWidget))
                                     Text(realWidget.name)
                                     Spacer()
-                                    Text("(\(widget.x), \(widget.y))").foregroundColor(.gray)
+                                    Text("(\(Int(widget.x)), \(Int(widget.y)))")
+                                        .foregroundColor(.gray)
                                 }
                             }
                         }

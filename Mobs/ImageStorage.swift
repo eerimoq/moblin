@@ -11,25 +11,25 @@ class ImageStorage {
         do {
             try fileManager.createDirectory(at: imagesUrl, withIntermediateDirectories: true, attributes: nil)
         } catch {
-            logger.error("Error creating images directory: \(error)")
+            logger.error("image-storage: Error creating images directory: \(error)")
         }
     }
     
-    func write(name: String, data: Data) {
-        let path = imagesUrl.appendingPathComponent(name)
+    func write(id: UUID, data: Data) {
+        let path = imagesUrl.appendingPathComponent(id.uuidString)
         do {
             try data.write(to: path)
         } catch {
-            logger.error("images-storage: write failed with error \(error)")
+            logger.error("image-storage: write failed with error \(error)")
         }
     }
     
-    func read(name: String) -> Data? {
+    func read(id: UUID) -> Data? {
         do {
-            let path = imagesUrl.appendingPathComponent(name)
+            let path = imagesUrl.appendingPathComponent(id.uuidString)
             return try Data(contentsOf: path)
         } catch {
-            logger.error("images-storage: read failed with error \(error)")
+            logger.error("image-storage: read failed with error \(error)")
         }
         return nil
     }
