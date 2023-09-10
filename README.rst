@@ -16,8 +16,6 @@ inspired by it.
 ToDo
 ====
 
-- Selector in image widget.
-
 - Force camera widgets to the back.
   
 Ideas/plan
