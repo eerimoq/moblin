@@ -22,7 +22,7 @@ struct LineView: View {
     }
 }
 
-struct ChatView: View {
+struct StreamOverlayChatView: View {
     var posts: [Post]
 
     var body: some View {
