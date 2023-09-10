@@ -5,22 +5,22 @@ import VideoToolbox
 
 struct ContentView: View {
     @ObservedObject var model = Model()
-    private var videoView: StreamView!
-    private var videoOverlayView: StreamOverlayView!
+    private var streamView: StreamView!
+    private var streamOverlayView: StreamOverlayView!
 
     init(settings: Settings) {
         model.setup(settings: settings)
-        videoView = StreamView(rtmpStream: $model.rtmpStream)
-        videoOverlayView = StreamOverlayView(model: model)
+        streamView = StreamView(rtmpStream: $model.rtmpStream)
+        streamOverlayView = StreamOverlayView(model: model)
     }
 
     var body: some View {
         NavigationView {
             HStack(spacing: 0) {
                 ZStack {
-                    videoView
+                    streamView
                         .ignoresSafeArea()
-                    videoOverlayView
+                    streamOverlayView
                 }
                 ControlBarView(model: model)
             }

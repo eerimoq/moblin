@@ -378,7 +378,6 @@
 			children = (
 				030947C22A9C0496003FC387 /* StreamOverlayChatView.swift */,
 				0379BBA12AAD824600B718B6 /* StreamOverlayIconAndTextView.swift */,
-				03A9835F2A9A05D7008FF0DB /* StreamOverlayView.swift */,
 				0379BB9B2AAD819800B718B6 /* StreamOverlayLeftView.swift */,
 				0379BB9D2AAD81AA00B718B6 /* StreamOverlayRightView.swift */,
 				0379BB9F2AAD823900B718B6 /* StreamOverlayTextView.swift */,
@@ -425,6 +424,7 @@
 			isa = PBXGroup;
 			children = (
 				0379BB9A2AAD811100B718B6 /* Overlay */,
+				03A9835F2A9A05D7008FF0DB /* StreamOverlayView.swift */,
 				03A983582A9A05D7008FF0DB /* StreamView.swift */,
 			);
 			path = Stream;
