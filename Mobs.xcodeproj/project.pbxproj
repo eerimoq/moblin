@@ -49,6 +49,8 @@
 		0379BBB22AAD97FB00B718B6 /* ResetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBB12AAD97FB00B718B6 /* ResetSettingsView.swift */; };
 		0379BBB62AAD9B5B00B718B6 /* ButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBB52AAD9B5B00B718B6 /* ButtonsSettingsView.swift */; };
 		0379BBB82AAD9B7200B718B6 /* WidgetsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBB72AAD9B7200B718B6 /* WidgetsSettingsView.swift */; };
+		0379BBBB2AADC3D900B718B6 /* LicenseList in Frameworks */ = {isa = PBXBuildFile; productRef = 0379BBBA2AADC3D900B718B6 /* LicenseList */; };
+		0379BBC02AADC4EC00B718B6 /* AboutLicensesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBBF2AADC4EC00B718B6 /* AboutLicensesSettingsView.swift */; };
 		0382933B2A9A73ED008963AA /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0382933A2A9A73ED008963AA /* Settings.swift */; };
 		03A983422A9A03D3008FF0DB /* TwitchChat in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983412A9A03D3008FF0DB /* TwitchChat */; };
 		03A983452A9A03EA008FF0DB /* HaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983442A9A03EA008FF0DB /* HaishinKit */; };
@@ -123,6 +125,7 @@
 		0379BBB12AAD97FB00B718B6 /* ResetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetSettingsView.swift; sourceTree = "<group>"; };
 		0379BBB52AAD9B5B00B718B6 /* ButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonsSettingsView.swift; sourceTree = "<group>"; };
 		0379BBB72AAD9B7200B718B6 /* WidgetsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetsSettingsView.swift; sourceTree = "<group>"; };
+		0379BBBF2AADC4EC00B718B6 /* AboutLicensesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutLicensesSettingsView.swift; sourceTree = "<group>"; };
 		0382933A2A9A73ED008963AA /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		03A983552A9A05D7008FF0DB /* StreamsSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamsSettingsView.swift; sourceTree = "<group>"; };
 		03A983562A9A05D7008FF0DB /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -158,6 +161,7 @@
 			files = (
 				03A983452A9A03EA008FF0DB /* HaishinKit in Frameworks */,
 				03A983422A9A03D3008FF0DB /* TwitchChat in Frameworks */,
+				0379BBBB2AADC3D900B718B6 /* LicenseList in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -420,6 +424,7 @@
 			isa = PBXGroup;
 			children = (
 				0379BBAC2AAD964000B718B6 /* AboutSettingsView.swift */,
+				0379BBBF2AADC4EC00B718B6 /* AboutLicensesSettingsView.swift */,
 			);
 			path = About;
 			sourceTree = "<group>";
@@ -525,11 +530,13 @@
 			buildRules = (
 			);
 			dependencies = (
+				0379BBBD2AADC42000B718B6 /* PBXTargetDependency */,
 			);
 			name = Mobs;
 			packageProductDependencies = (
 				03A983412A9A03D3008FF0DB /* TwitchChat */,
 				03A983442A9A03EA008FF0DB /* HaishinKit */,
+				0379BBBA2AADC3D900B718B6 /* LicenseList */,
 			);
 			productName = Mobs;
 			productReference = 035E9E332A9A02D6009D4F5A /* Mobs.app */;
@@ -562,6 +569,7 @@
 			packageReferences = (
 				03A983402A9A03D3008FF0DB /* XCRemoteSwiftPackageReference "twitch-chat" */,
 				03A983432A9A03EA008FF0DB /* XCRemoteSwiftPackageReference "HaishinKit" */,
+				0379BBB92AADC3D900B718B6 /* XCRemoteSwiftPackageReference "LicenseList" */,
 			);
 			productRefGroup = 035E9E342A9A02D6009D4F5A /* Products */;
 			projectDirPath = "";
@@ -623,6 +631,7 @@
 				03A983692A9A05D7008FF0DB /* CreateButtonView.swift in Sources */,
 				0315A36E2AA33F3400295443 /* WidgetCameraDirectionSettingsView.swift in Sources */,
 				0315A3442AA31D0100295443 /* StreamRtmpSettingsView.swift in Sources */,
+				0379BBC02AADC4EC00B718B6 /* AboutLicensesSettingsView.swift in Sources */,
 				0379BBB22AAD97FB00B718B6 /* ResetSettingsView.swift in Sources */,
 				0379BBB82AAD9B7200B718B6 /* WidgetsSettingsView.swift in Sources */,
 				0379BBAA2AAD953200B718B6 /* HelpAndSupportSettingsView.swift in Sources */,
@@ -659,6 +668,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		0379BBBD2AADC42000B718B6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 0379BBBC2AADC42000B718B6 /* PrepareLicenseList */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		035E9E3F2A9A02D7009D4F5A /* Debug */ = {
@@ -869,6 +885,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		0379BBB92AADC3D900B718B6 /* XCRemoteSwiftPackageReference "LicenseList" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/cybozu/LicenseList.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.2.1;
+			};
+		};
 		03A983402A9A03D3008FF0DB /* XCRemoteSwiftPackageReference "twitch-chat" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/eerimoq/twitch-chat";
@@ -888,6 +912,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0379BBBA2AADC3D900B718B6 /* LicenseList */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0379BBB92AADC3D900B718B6 /* XCRemoteSwiftPackageReference "LicenseList" */;
+			productName = LicenseList;
+		};
+		0379BBBC2AADC42000B718B6 /* PrepareLicenseList */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0379BBB92AADC3D900B718B6 /* XCRemoteSwiftPackageReference "LicenseList" */;
+			productName = "plugin:PrepareLicenseList";
+		};
 		03A983412A9A03D3008FF0DB /* TwitchChat */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 03A983402A9A03D3008FF0DB /* XCRemoteSwiftPackageReference "twitch-chat" */;

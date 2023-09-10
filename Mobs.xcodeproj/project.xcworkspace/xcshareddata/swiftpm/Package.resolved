@@ -10,6 +10,15 @@
       }
     },
     {
+      "identity" : "licenselist",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/cybozu/LicenseList.git",
+      "state" : {
+        "revision" : "4cbf80b821167042e562639dd875c3b81e8ba1c7",
+        "version" : "0.2.1"
+      }
+    },
+    {
       "identity" : "logboard",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/shogo4405/Logboard.git",
