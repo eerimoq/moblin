@@ -336,6 +336,35 @@
 			path = Video;
 			sourceTree = "<group>";
 		};
+		0379BB972AAD802C00B718B6 /* Scenes */ = {
+			isa = PBXGroup;
+			children = (
+				0315A3502AA3233000295443 /* Variable */,
+				0315A3512AA3233700295443 /* Widget */,
+				0379BB742AA6343E00B718B6 /* Button */,
+				0315A34C2AA3217500295443 /* Scene */,
+				03A9835B2A9A05D7008FF0DB /* ScenesSettingsView.swift */,
+			);
+			path = Scenes;
+			sourceTree = "<group>";
+		};
+		0379BB982AAD804F00B718B6 /* Streams */ = {
+			isa = PBXGroup;
+			children = (
+				0315A3402AA31ADC00295443 /* Stream */,
+				03A983552A9A05D7008FF0DB /* StreamsSettingsView.swift */,
+			);
+			path = Streams;
+			sourceTree = "<group>";
+		};
+		0379BB992AAD80AF00B718B6 /* Debug */ = {
+			isa = PBXGroup;
+			children = (
+				0379BB8D2AA90D1900B718B6 /* LogSettingsView.swift */,
+			);
+			path = Debug;
+			sourceTree = "<group>";
+		};
 		03A983542A9A0582008FF0DB /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -351,14 +380,9 @@
 		03B373F42A9EF8BD0028DDD5 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				0379BB742AA6343E00B718B6 /* Button */,
-				0315A3512AA3233700295443 /* Widget */,
-				0315A3502AA3233000295443 /* Variable */,
-				0315A34C2AA3217500295443 /* Scene */,
-				0315A3402AA31ADC00295443 /* Stream */,
-				0379BB8D2AA90D1900B718B6 /* LogSettingsView.swift */,
-				03A983552A9A05D7008FF0DB /* StreamsSettingsView.swift */,
-				03A9835B2A9A05D7008FF0DB /* ScenesSettingsView.swift */,
+				0379BB992AAD80AF00B718B6 /* Debug */,
+				0379BB982AAD804F00B718B6 /* Streams */,
+				0379BB972AAD802C00B718B6 /* Scenes */,
 				03A983572A9A05D7008FF0DB /* SettingsView.swift */,
 			);
 			path = Settings;
