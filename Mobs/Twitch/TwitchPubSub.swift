@@ -58,13 +58,13 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     }
 
     func start() {
-        logger.info("pubsub: \(channelId): Starting.")
+        logger.info("twitch: pubsub: \(channelId): Starting.")
         reconnectTime = 2.0
         setupWebsocket()
     }
 
     func stop() {
-        logger.info("pubsub: \(channelId): Stopping.")
+        logger.info("twitch: pubsub: \(channelId): Stopping.")
         webSocket.cancel()
         keepAliveTimer?.invalidate()
         reconnectTimer?.invalidate()
@@ -100,7 +100,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
             let message = try decodeMessageViewCount(message: message.data.message)
             self.model.numberOfViewers = "\(message.viewers)"
         } else {
-            logger.debug("pubsub: \(channelId): Unsupported message type \(type) (message: \(message))")
+            logger.debug("twitch: pubsub: \(channelId): Unsupported message type \(type) (message: \(message))")
         }
     }
 
@@ -114,10 +114,10 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
             } else if type == "MESSAGE" {
                 try handleMessage(message: message)
             } else {
-                logger.debug("pubsub: \(channelId): Unsupported type: \(type)")
+                logger.debug("twitch: pubsub: \(channelId): Unsupported type: \(type)")
             }
         } catch {
-            logger.error("pubsub: \(channelId): Failed to process message \"\(message)\" with error \(error)")
+            logger.error("twitch: pubsub: \(channelId): Failed to process message \"\(message)\" with error \(error)")
         }
     }
 
@@ -125,7 +125,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         self.webSocket.cancel()
         self.reconnectTimer?.invalidate()
         self.reconnectTimer = Timer.scheduledTimer(withTimeInterval: self.reconnectTime, repeats: false) { _ in
-            logger.warning("pubsub: \(self.channelId): Reconnecting...")
+            logger.warning("twitch: pubsub: \(self.channelId): Reconnecting...")
             self.setupWebsocket()
             self.reconnectTime += 2
             self.reconnectTime = min(self.reconnectTime, 20)
@@ -136,18 +136,18 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         webSocket.receive { result in
             switch result {
             case .failure(_):
-                // logger.warning("pubsub: \(self.channelId): Receive failed with error: \(error)")
+                // logger.warning("twitch: pubsub: \(self.channelId): Receive failed with error: \(error)")
                 self.reconnect()
                 return
             case .success(let message):
                 switch message {
                 case .string(let text):
-                    logger.debug("pubsub: \(self.channelId): Received string \(text)")
+                    logger.debug("twitch: pubsub: \(self.channelId): Received string \(text)")
                     self.handleStringMessage(message: text)
                 case .data(let data):
-                    logger.error("pubsub: \(self.channelId): Received binary message: \(data)")
+                    logger.error("twitch: pubsub: \(self.channelId): Received binary message: \(data)")
                 @unknown default:
-                    logger.warning("pubsub: \(self.channelId): Unknown message type.")
+                    logger.warning("twitch: pubsub: \(self.channelId): Unknown message type.")
                 }
                 self.readMessage()
             }
@@ -155,11 +155,11 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     }
 
     func sendMessage(message: String) {
-        logger.debug("pubsub: \(channelId): Sending \(message)")
+        logger.debug("twitch: pubsub: \(channelId): Sending \(message)")
         let message = URLSessionWebSocketTask.Message.string(message)
         webSocket.send(message) { error in
             if let error = error {
-                logger.error("pubsub: \(self.channelId): Failed to send message to server with error \(error)")
+                logger.error("twitch: pubsub: \(self.channelId): Failed to send message to server with error \(error)")
                 self.reconnect()
             }
         }
@@ -169,30 +169,30 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         sendMessage(message: "{\"type\":\"PING\"}")
         keepAliveTimer?.invalidate()
         keepAliveTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { _ in
-            logger.warning("pubsub: \(self.channelId): Timeout waiting for pong. Reconnecting...")
+            logger.warning("twitch: pubsub: \(self.channelId): Timeout waiting for pong. Reconnecting...")
             self.webSocket.cancel()
             self.setupWebsocket()
         }
     }
     
     func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol proto: String?) {
-        logger.info("pubsub: \(channelId): Connected to \(url)")
+        logger.info("twitch: pubsub: \(channelId): Connected to \(url)")
         reconnectTime = 2.0
         sendPing()
         sendMessage(message: "{\"type\":\"LISTEN\",\"data\":{\"topics\":[\"video-playback-by-id.\(channelId)\"]}}")
     }
 
     func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
-        logger.warning("pubsub: \(channelId): Disconnected from server with close code \(closeCode) and reason \(String(describing: reason))")
+        logger.warning("twitch: pubsub: \(channelId): Disconnected from server with close code \(closeCode) and reason \(String(describing: reason))")
         reconnect()
     }
     
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        // logger.warning("pubsub: \(channelId): Disconnected from server with reason \(String(describing: error))")
+        // logger.warning("twitch: pubsub: \(channelId): Disconnected from server with reason \(String(describing: error))")
         if running {
             reconnect()
         } else {
-            logger.info("pubsub: \(channelId): Completed.")
+            logger.info("twitch: pubsub: \(channelId): Completed.")
         }
     }
 }

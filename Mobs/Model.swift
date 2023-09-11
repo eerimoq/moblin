@@ -83,8 +83,8 @@ final class Model: ObservableObject {
             return nil
         }
     }
-    private var srtla = Srtla()
-    private var srtDummySender: DummySender?
+    // private var srtla = Srtla()
+    // private var srtDummySender: DummySender?
     @Published var sceneIndex = 0
     var isTorchOn = false
     var isMuteOn = false
@@ -188,11 +188,11 @@ final class Model: ObservableObject {
                 self.updateBatteryLevel()
                 self.updateTwitchChatSpeed()
                 self.updateSpeed()
-                self.srtDummySender!.sendPacket()
+                // self.srtDummySender!.sendPacket()
             }
         })
-        srtla.start(uri: "srt://192.168.50.72:10000")
-        srtDummySender = DummySender(srtla: srtla)
+        // srtla.start(uri: "srt://192.168.50.72:10000")
+        // srtDummySender = DummySender(srtla: srtla)
         updateThermalState()
         
         nc.publisher(for: ProcessInfo.thermalStateDidChangeNotification, object: nil)

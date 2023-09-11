@@ -20,10 +20,10 @@ final class TwitchChatMobs {
 
     func start(channelName: String) {
         self.channelName = channelName
-        logger.info("twitch-chat: Starting channel \(channelName).")
+        logger.info("twitch: chat: \(channelName): Starting")
         task = Task.init {
             var reconnectTime: UInt64 = 2
-            logger.info("twitch-chat: Connecting to channel \(channelName).")
+            logger.info("twitch: chat: \(channelName): Connecting")
             while true {
                 twitchChat = TwitchChat(token: "SCHMOOPIIE", nick: "justinfan67420", name: channelName)
                 do {
@@ -40,19 +40,19 @@ final class TwitchChatMobs {
                         }
                     }
                 } catch {
-                    logger.warning("twitch-chat: Got error \(error) for channel \(channelName)")
+                    logger.warning("twitch: chat: \(channelName): Got error \(error)")
                 }
-                logger.info("twitch-chat: Disconnected from channel \(channelName).")
+                logger.info("twitch: chat: \(channelName): Disconnected")
                 try await Task.sleep(nanoseconds: reconnectTime)
                 reconnectTime += 2
                 reconnectTime = min(reconnectTime, 20)
-                logger.info("twitch-chat: Reconnecting to channel \(channelName).")
+                logger.info("twitch: chat: \(channelName): Reconnecting")
             }
         }
     }
 
     func stop() {
-        logger.info("twitch-chat: Stopping channel \(self.channelName ?? "").")
+        logger.info("twitch: chat: \(channelName ?? "?"): Stopping")
         task?.cancel()
         task = nil
         twitchChat = nil

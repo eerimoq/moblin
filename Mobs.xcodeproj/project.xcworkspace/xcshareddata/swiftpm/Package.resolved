@@ -6,7 +6,7 @@
       "location" : "https://github.com/eerimoq/HaishinKit.swift",
       "state" : {
         "branch" : "main",
-        "revision" : "d4f96874e154940d13253f7789e524a261826a41"
+        "revision" : "58dce6ed0f161d33b76b9c47ee440e10e764ef2a"
       }
     },
     {
@@ -51,7 +51,7 @@
       "location" : "https://github.com/eerimoq/twitch-chat",
       "state" : {
         "branch" : "trunk",
-        "revision" : "5ce9b518b234f047071b1fb32b451227b78b49ab"
+        "revision" : "5831324c53e405283335c1647509be82dedd342d"
       }
     }
   ],
