@@ -28,11 +28,26 @@ struct LeftOverlayView: View {
         }
     }
     
+    func messageColor() -> Color {
+        if model.isTwitchChatConnected() {
+            return .white
+        } else {
+            return .red
+        }
+    }
     func viewersText() -> String {
         if model.isTwitchPubSubConnected() {
             return model.numberOfViewers
         } else {
             return ""
+        }
+    }
+    
+    func viewersColor() -> Color {
+        if model.isTwitchPubSubConnected() {
+            return .white
+        } else {
+            return .red
         }
     }
     
@@ -42,14 +57,14 @@ struct LeftOverlayView: View {
                 StreamOverlayIconAndTextView(icon: "dot.radiowaves.left.and.right", text: streamText())
             }
             if database.show.viewers {
-                StreamOverlayIconAndTextView(icon: "eye", text: viewersText())
+                StreamOverlayIconAndTextView(icon: "eye", text: viewersText(), color: viewersColor())
             }
             if database.show.uptime {
                 StreamOverlayIconAndTextView(icon: "deskclock", text: model.uptime)
             }
             Spacer()
             if database.show.chat {
-                StreamOverlayIconAndTextView(icon: "message", text: messageText())
+                StreamOverlayIconAndTextView(icon: "message", text: messageText(), color: messageColor())
                 StreamOverlayChatView(posts: model.twitchChatPosts)
             }
         }
