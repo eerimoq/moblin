@@ -17,6 +17,8 @@ ToDo
 ====
 
 - Force camera widgets to the back.
+
+- Zoom per camera.
   
 Ideas/plan
 ==========
