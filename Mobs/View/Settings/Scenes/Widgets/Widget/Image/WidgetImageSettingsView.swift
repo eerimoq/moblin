@@ -9,6 +9,12 @@ struct WidgetImageSettingsView: View {
     var body: some View {
         Section(widget.type) {
             PhotosPicker(selection: $selectedImageItem, matching: .images) {
+                if let data = model.imageStorage.read(id: widget.id) {
+                    Image(uiImage: UIImage(data: data)!)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 1920 / 6, height: 1080 / 6)
+                }
                 Text("Select image")
             }
             .onChange(of: selectedImageItem) { imageItem in
@@ -16,7 +22,9 @@ struct WidgetImageSettingsView: View {
                     switch result {
                     case .success(let data?):
                         model.imageStorage.write(id: widget.id, data: data)
-                        model.sceneUpdated()
+                        DispatchQueue.main.async {
+                            model.sceneUpdated()
+                        }
                     case .success(nil):
                         logger.error("widget: image is nil")
                     case .failure(let error):

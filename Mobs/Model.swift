@@ -220,8 +220,8 @@ final class Model: ObservableObject {
         
         attachCamera(position: .back)
         updateButtonStates()
-        //location.start()
         sceneUpdated()
+        //location.start()
     }
     
     func setupImageEffects(scene: SettingsScene) {
