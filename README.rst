@@ -16,8 +16,6 @@ inspired by it.
 ToDo
 ====
 
-- Fix Twitch chat reconnect.
-
 - Force camera widgets to the back.
   
 Ideas/plan
