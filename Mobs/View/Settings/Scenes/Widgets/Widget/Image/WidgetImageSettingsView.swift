@@ -15,7 +15,11 @@ struct WidgetImageSettingsView: View {
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 1920 / 6, height: 1080 / 6)
                 }
-                Text("Select image")
+                HStack {
+                    Spacer()
+                    Text("Select image")
+                    Spacer()
+                }
             }
             .onChange(of: selectedImageItem) { imageItem in
                 imageItem!.loadTransferable(type: Data.self) { result in
@@ -23,7 +27,7 @@ struct WidgetImageSettingsView: View {
                     case .success(let data?):
                         model.imageStorage.write(id: widget.id, data: data)
                         DispatchQueue.main.async {
-                            model.sceneUpdated()
+                            model.sceneUpdated(imageEffectChanged: true)
                         }
                     case .success(nil):
                         logger.error("widget: image is nil")

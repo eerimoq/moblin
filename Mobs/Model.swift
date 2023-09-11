@@ -221,7 +221,7 @@ final class Model: ObservableObject {
         
         attachCamera(position: .back)
         updateButtonStates()
-        sceneUpdated()
+        sceneUpdated(imageEffectChanged: true)
         //location.start()
     }
     
@@ -242,9 +242,6 @@ final class Model: ObservableObject {
     }
     
     func setupImageEffects(scene: SettingsScene) {
-        if !didImageEffectsChange(scene: scene) {
-            return
-        }
         imageEffects.removeAll()
         for widget in scene.widgets {
             guard let realWidget = findWidget(id: widget.widgetId) else {
@@ -269,7 +266,7 @@ final class Model: ObservableObject {
             selectedSceneId = enabledScenes[0].id
             sceneIndex = 0
         }
-        sceneUpdated()
+        sceneUpdated(imageEffectChanged: true)
     }
     
     func store() {
@@ -440,13 +437,15 @@ final class Model: ObservableObject {
         }
     }
     
-    func sceneUpdated() {
+    func sceneUpdated(imageEffectChanged: Bool = false) {
         updateButtonStates()
         guard let scene = findEnabledScene(id: selectedSceneId) else {
             return
         }
         sceneUpdatedOff()
-        setupImageEffects(scene: scene)
+        if imageEffectChanged {
+            setupImageEffects(scene: scene)
+        }
         sceneUpdatedOn(scene: scene)
     }
     

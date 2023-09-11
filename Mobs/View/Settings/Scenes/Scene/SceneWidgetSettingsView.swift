@@ -4,18 +4,25 @@ struct SceneWidgetSettingsView: View {
     @ObservedObject private var model: Model
     private var widget: SettingsSceneWidget
     private var name: String
+    private var isImage: Bool
     
     init(model: Model, widget: SettingsSceneWidget, name: String) {
         self.model = model
         self.widget = widget
         self.name = name
+        if let widget = model.findWidget(id: widget.widgetId) {
+            self.isImage = widget.type == "Image"
+        } else {
+            logger.error("Unable to find widget type")
+            self.isImage = false
+        }
     }
     
     func submitX(value: String) {
         if let value = Double(value) {
             widget.x = min(max(value, 0), 99)
             model.store()
-            model.sceneUpdated()
+            model.sceneUpdated(imageEffectChanged: isImage)
         }
     }
     
@@ -23,7 +30,7 @@ struct SceneWidgetSettingsView: View {
         if let value = Double(value) {
             widget.y = min(max(value, 0), 99)
             model.store()
-            model.sceneUpdated()
+            model.sceneUpdated(imageEffectChanged: isImage)
         }
     }
     
@@ -31,7 +38,7 @@ struct SceneWidgetSettingsView: View {
         if let value = Double(value) {
             widget.width = min(max(value, 1), 100)
             model.store()
-            model.sceneUpdated()
+            model.sceneUpdated(imageEffectChanged: isImage)
         }
     }
     
@@ -39,18 +46,14 @@ struct SceneWidgetSettingsView: View {
         if let value = Double(value) {
             widget.height = min(max(value, 1), 100)
             model.store()
-            model.sceneUpdated()
+            model.sceneUpdated(imageEffectChanged: isImage)
         }
-    }
-    
-    func widgetType() -> String {
-        return model.findWidget(id: widget.widgetId)?.type ?? ""
     }
     
     var body: some View {
         Form {
             Section {
-                if widgetType() == "Image" {
+                if isImage {
                     NavigationLink(destination: TextEditView(title: "X", value: "\(widget.x)", onSubmit: submitX)) {
                         TextItemView(name: "X", value: "\(widget.x)")
                     }
