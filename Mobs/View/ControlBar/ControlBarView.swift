@@ -85,9 +85,7 @@ struct ControlBarView: View {
                 }
                 Spacer()
                 ButtonsView(model: model)
-                ZoomView(onChange: { (level) in
-                    model.setBackCameraZoomLevel(level: level)
-                })
+                ZoomView(model: model)
                 StreamButton(model: model)
                     .padding([.top], 10)
             }

@@ -69,6 +69,7 @@ final class Model: ObservableObject {
     @Published var batteryLevel = UIDevice.current.batteryLevel
     @Published var speed = ""
     @Published var thermalState = ProcessInfo.processInfo.thermalState
+    @Published var zoomLevel: CGFloat = 1.0
     private var grayScaleEffect = GrayScaleEffect()
     private var movieEffect = MovieEffect()
     private var seipaEffect = SeipaEffect()
@@ -513,9 +514,12 @@ final class Model: ObservableObject {
     }
     
     func attachCamera(position: AVCaptureDevice.Position) {
-        rtmpStream.attachCamera(AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: position)) { error in
+        let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: position)
+        rtmpStream.attachCamera(device) { error in
             logger.error("model: Attach camera error: \(error)")
         }
+        zoomLevel = device?.videoZoomFactor ?? 1.0
+        setCameraZoomLevel(level: zoomLevel)
     }
 
     func startPublish() {
@@ -590,7 +594,7 @@ final class Model: ObservableObject {
         _ = rtmpStream.unregisterVideoEffect(bloomEffect)
     }
 
-    func setBackCameraZoomLevel(level: CGFloat) {
+    func setCameraZoomLevel(level: CGFloat) {
         guard let device = rtmpStream.videoCapture(for: 0)?.device, 1 <= level && level < device.activeFormat.videoMaxZoomFactor else {
             return
         }

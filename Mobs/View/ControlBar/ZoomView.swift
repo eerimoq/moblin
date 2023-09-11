@@ -1,21 +1,12 @@
 import SwiftUI
 
 struct ZoomView: View {
-    var onChange: (_ level: CGFloat) -> Void
-    @State var level: CGFloat = 1.0
-
+    @ObservedObject var model: Model
+    
     var body: some View {
-        Slider(
-            value: Binding(get: {
-                level
-            }, set: { (level) in
-                if level != self.level {
-                    onChange(level)
-                    self.level = level
-                }
-            }),
-            in: 1...5,
-            step: 0.1
-        )
+        Slider(value: $model.zoomLevel, in: 1...5, step: 0.1)
+            .onChange(of: model.zoomLevel) { level in
+                model.setCameraZoomLevel(level: level)
+            }
     }
 }
