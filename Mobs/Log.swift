@@ -4,6 +4,7 @@ import os
 class EasyLogger {
     var logger: Logger = Logger()
     private var handler: ((String) -> Void)? = nil
+    private var lock = NSLock()
     
     func debug(_ messsge: String) {
         logger.debug("\(messsge)")
@@ -11,21 +12,29 @@ class EasyLogger {
     
     func info(_ messsge: String) {
         logger.info("\(messsge)")
-        handler?(messsge)
+        lock.withLock {
+            handler?(messsge)
+        }
     }
     
     func warning(_ messsge: String) {
         logger.warning("\(messsge)")
-        handler?(messsge)
+        lock.withLock {
+            handler?(messsge)
+        }
     }
     
     func error(_ messsge: String) {
         logger.error("\(messsge)")
-        handler?(messsge)
+        lock.withLock {
+            handler?(messsge)
+        }
     }
     
     func setLogHandler(handler: @escaping (String) -> Void) {
-        self.handler = handler
+        lock.withLock {
+            self.handler = handler
+        }
     }
 }
 
