@@ -24,6 +24,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable {
     }
     
     var widgetId: UUID
+    var enabled: Bool = true
     var id: UUID = UUID()
     var x: Double = 0
     var y: Double = 0
@@ -42,6 +43,7 @@ class SettingsSceneButton: Codable, Identifiable, Equatable {
     
     var buttonId: UUID
     var id: UUID = UUID()
+    var enabled: Bool = true
     
     init(buttonId: UUID) {
         self.buttonId = buttonId

@@ -82,15 +82,20 @@ struct SceneSettingsView: View {
                     ForEach(scene.widgets) { widget in
                         if let realWidget = widgets.first(where: {item in item.id == widget.widgetId}) {
                             NavigationLink(destination: SceneWidgetSettingsView(model: model, widget: widget, name: realWidget.name)) {
-                                HStack {
-                                    Circle()
-                                        .frame(width: 15, height: 15)
-                                        .foregroundColor(colorOf(widget: widget))
-                                    Image(systemName: widgetImage(widget: realWidget))
-                                    Text(realWidget.name)
-                                    Spacer()
-                                    Text("(\(Int(widget.x)), \(Int(widget.y)))")
-                                        .foregroundColor(.gray)
+                                Toggle(isOn: Binding(get: {
+                                    widget.enabled
+                                }, set: { value in
+                                    widget.enabled = value
+                                    model.store()
+                                    model.sceneUpdated()
+                                })) {
+                                    HStack {
+                                        Circle()
+                                            .frame(width: 15, height: 15)
+                                            .foregroundColor(colorOf(widget: widget))
+                                        Image(systemName: widgetImage(widget: realWidget))
+                                        Text(realWidget.name)
+                                    }
                                 }
                             }
                         }
@@ -155,9 +160,17 @@ struct SceneSettingsView: View {
                 List {
                     ForEach(scene.buttons) { button in
                         if let realButton = model.findButton(id: button.buttonId) {
-                            HStack {
-                                Image(systemName: realButton.systemImageNameOff)
-                                Text(realButton.name)
+                            Toggle(isOn: Binding(get: {
+                                button.enabled
+                            }, set: { value in
+                                button.enabled = value
+                                model.store()
+                                model.sceneUpdated()
+                            })) {
+                                HStack {
+                                    Image(systemName: realButton.systemImageNameOff)
+                                    Text(realButton.name)
+                                }
                             }
                         }
                     }

@@ -116,6 +116,7 @@ final class Model: ObservableObject {
         }
         let states = scene
             .buttons
+            .filter({button in button.enabled})
             .prefix(8)
             .map({button in
                 let button = findButton(id: button.buttonId)!
@@ -366,7 +367,7 @@ final class Model: ObservableObject {
         return nil
     }
 
-    func sceneUpdatedOff(scene: SettingsScene) {
+    func sceneUpdatedOff() {
         for widget in database.widgets {
             switch widget.type {
             case "Camera":
@@ -396,7 +397,7 @@ final class Model: ObservableObject {
     }
     
     func sceneUpdatedOn(scene: SettingsScene) {
-        for sceneWidget in scene.widgets {
+        for sceneWidget in scene.widgets.filter({widget in widget.enabled}) {
             if let widget = findWidget(id: sceneWidget.widgetId) {
                 if let button = getButtonForWidgetControlledByScene(widget: widget, scene: scene) {
                     if !button.isOn {
@@ -444,7 +445,7 @@ final class Model: ObservableObject {
         guard let scene = findEnabledScene(id: selectedSceneId) else {
             return
         }
-        sceneUpdatedOff(scene: scene)
+        sceneUpdatedOff()
         setupImageEffects(scene: scene)
         sceneUpdatedOn(scene: scene)
     }
