@@ -242,7 +242,6 @@ final class Model: ObservableObject {
             if realWidget.type != "Image" {
                 continue
             }
-            logger.info("model: Setting up image \(widget.id)")
             guard let data = imageStorage.read(id: widget.widgetId) else {
                 continue
             }
