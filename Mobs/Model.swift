@@ -233,22 +233,6 @@ final class Model: ObservableObject {
         }
     }
     
-    func didImageEffectsChange(scene: SettingsScene) -> Bool {
-        // Should set a flag on settings and scene change instead as this does not really work.
-        var sceneImageEffects: Set<UUID> = []
-        for widget in scene.widgets {
-            guard let realWidget = findWidget(id: widget.widgetId) else {
-                continue
-            }
-            if realWidget.type != "Image" {
-                continue
-            }
-            sceneImageEffects.insert(widget.id)
-        }
-        
-        return Set(imageEffects.keys) != sceneImageEffects
-    }
-    
     func setupImageEffects(scene: SettingsScene) {
         imageEffects.removeAll()
         for widget in scene.widgets {
