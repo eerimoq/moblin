@@ -43,7 +43,7 @@ final class TwitchChatMobs {
                     logger.warning("twitch: chat: \(channelName): Got error \(error)")
                 }
                 logger.info("twitch: chat: \(channelName): Disconnected")
-                try await Task.sleep(nanoseconds: reconnectTime)
+                try await Task.sleep(nanoseconds: reconnectTime * 1_000_000_000)
                 reconnectTime += 2
                 reconnectTime = min(reconnectTime, 20)
                 logger.info("twitch: chat: \(channelName): Reconnecting")
