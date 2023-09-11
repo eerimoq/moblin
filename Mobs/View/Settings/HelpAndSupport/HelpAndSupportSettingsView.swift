@@ -6,7 +6,7 @@ struct HelpAndSupportSettingsView: View {
     }
     
     func openDiscord() {
-        UIApplication.shared.open(URL(string: "https://discord.gg/kRCXKuRu")!)
+        UIApplication.shared.open(URL(string: "https://discord.gg/nt3UwHqbMM")!)
     }
     
     var body: some View {

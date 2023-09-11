@@ -6,7 +6,7 @@ stream to any RTMP endpoint.
 
 .. image:: https://github.com/eerimoq/mobs/raw/main/Docs/main.jpg
 
-Discord: https://discord.gg/kRCXKuRu
+Discord: https://discord.gg/nt3UwHqbMM
 
 Github: https://github.com/eerimoq/mobs
 
