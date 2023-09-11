@@ -48,7 +48,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     private var channelId: String
     private var keepAliveTimer: Timer? = nil
     private var reconnectTimer: Timer? = nil
-    private var reconnectTime = 2.0
+    private var reconnectTime = 0.0
     private var running = true
     
     init(model: Model, channelId: String) {
@@ -59,7 +59,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
 
     func start() {
         logger.info("twitch: pubsub: \(channelId): Starting.")
-        reconnectTime = 2.0
+        reconnectTime = 0.0
         setupWebsocket()
     }
 
@@ -127,7 +127,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         self.reconnectTimer = Timer.scheduledTimer(withTimeInterval: self.reconnectTime, repeats: false) { _ in
             logger.warning("twitch: pubsub: \(self.channelId): Reconnecting...")
             self.setupWebsocket()
-            self.reconnectTime += 2
+            self.reconnectTime += 0.5
             self.reconnectTime = min(self.reconnectTime, 20)
         }
     }
@@ -177,7 +177,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     
     func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol proto: String?) {
         logger.info("twitch: pubsub: \(channelId): Connected to \(url)")
-        reconnectTime = 2.0
+        reconnectTime = 0.0
         sendPing()
         sendMessage(message: "{\"type\":\"LISTEN\",\"data\":{\"topics\":[\"video-playback-by-id.\(channelId)\"]}}")
     }
@@ -188,11 +188,11 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     }
     
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        // logger.warning("twitch: pubsub: \(channelId): Disconnected from server with reason \(String(describing: error))")
         if running {
+            logger.info("twitch: pubsub: \(channelId): Completed.")
             reconnect()
         } else {
-            logger.info("twitch: pubsub: \(channelId): Completed.")
+            logger.info("twitch: pubsub: \(channelId): Completed by us.")
         }
     }
 }

@@ -22,13 +22,13 @@ final class TwitchChatMobs {
         self.channelName = channelName
         logger.info("twitch: chat: \(channelName): Starting")
         task = Task.init {
-            var reconnectTime: UInt64 = 2
+            var reconnectTime: UInt64 = 0
             logger.info("twitch: chat: \(channelName): Connecting")
             while true {
                 twitchChat = TwitchChat(token: "SCHMOOPIIE", nick: "justinfan67420", name: channelName)
                 do {
                     for try await message in self.twitchChat!.messages {
-                        reconnectTime = 2
+                        reconnectTime = 0
                         await MainActor.run {
                             if self.model.twitchChatPosts.count > 6 {
                                 self.model.twitchChatPosts.removeFirst()
@@ -43,8 +43,8 @@ final class TwitchChatMobs {
                     logger.warning("twitch: chat: \(channelName): Got error \(error)")
                 }
                 logger.info("twitch: chat: \(channelName): Disconnected")
-                try await Task.sleep(nanoseconds: reconnectTime * 1_000_000_000)
-                reconnectTime += 2
+                try await Task.sleep(nanoseconds: reconnectTime)
+                reconnectTime += 500_000_000
                 reconnectTime = min(reconnectTime, 20)
                 logger.info("twitch: chat: \(channelName): Reconnecting")
             }
