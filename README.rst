@@ -17,7 +17,7 @@ ToDo
 ====
 
 - Force camera widgets to the back.
-  
+
 Ideas/plan
 ==========
 
@@ -83,6 +83,13 @@ Resources
 - https://irl.run
 
   IRL Toolkit.
+
+Similar apps
+============
+
+- https://irlpro.app/
+
+- Twitch app.
 
 .. _OBS: https://obsproject.com
 
