@@ -21,12 +21,15 @@ ToDo
 Ideas/plan
 ==========
 
-- Notifications. Both visually and with sound. Sound most improtant
-  probably.
-
 - Integrate SRT stack.
 
 - Implement `SRTLA`_.
+
+- AV1 and/or HVEC codec (to complement H264). Sending less data is
+  important for stream quality and cost.
+
+- Notifications. Both visually and with sound. Sound most improtant
+  probably.
 
 - Emoji chat.
 
@@ -43,9 +46,12 @@ Ideas/plan
 
 - Record to disk.
 
-- Lookup Twitch channel id from channel name.
+- Setup scenes with editable main view? However, scenes will probably
+  be added server side by most streamers, so not that important to
+  change.
 
-- AV1 and/or HVEC codec (to complement H264).
+- Lookup Twitch channel id from channel name. Possibly login to
+  Twitch.
 
 - LIDAR, altitude.
 
