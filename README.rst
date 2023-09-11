@@ -18,8 +18,6 @@ ToDo
 
 - Force camera widgets to the back.
 
-- Enable/disable widget in scene.
-  
 Ideas/plan
 ==========
 
