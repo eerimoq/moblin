@@ -49,6 +49,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     private var keepAliveTimer: Timer? = nil
     private var reconnectTimer: Timer? = nil
     private var reconnectTime = 2.0
+    private var running = true
     
     init(model: Model, channelId: String) {
         self.model = model
@@ -57,11 +58,19 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     }
 
     func start() {
-        logger.info("pubsub: start")
+        logger.info("pubsub: \(channelId): Starting.")
         reconnectTime = 2.0
         setupWebsocket()
     }
 
+    func stop() {
+        logger.info("pubsub: \(channelId): Stopping.")
+        webSocket.cancel()
+        keepAliveTimer?.invalidate()
+        reconnectTimer?.invalidate()
+        running = false
+    }
+    
     func setupWebsocket() {
         keepAliveTimer?.invalidate()
         reconnectTimer?.invalidate()
@@ -73,13 +82,6 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         readMessage()
     }
         
-    func stop() {
-        logger.info("pubsub: stop")
-        webSocket.cancel()
-        keepAliveTimer?.invalidate()
-        reconnectTimer?.invalidate()
-    }
-    
     func handlePong() {
         keepAliveTimer?.invalidate()
         keepAliveTimer = Timer.scheduledTimer(withTimeInterval: 4 * 60 + 30, repeats: false) { _ in
@@ -98,7 +100,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
             let message = try decodeMessageViewCount(message: message.data.message)
             self.model.numberOfViewers = "\(message.viewers)"
         } else {
-            logger.debug("pubsub: Unsupported message type \(type) (message: \(message))")
+            logger.debug("pubsub: \(channelId): Unsupported message type \(type) (message: \(message))")
         }
     }
 
@@ -112,36 +114,40 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
             } else if type == "MESSAGE" {
                 try handleMessage(message: message)
             } else {
-                logger.debug("pubsub: Unsupported type: \(type)")
+                logger.debug("pubsub: \(channelId): Unsupported type: \(type)")
             }
         } catch {
-            logger.error("pubsub: Failed to process message \"\(message)\" with error \(error)")
+            logger.error("pubsub: \(channelId): Failed to process message \"\(message)\" with error \(error)")
         }
     }
 
+    func reconnect() {
+        self.webSocket.cancel()
+        self.reconnectTimer?.invalidate()
+        self.reconnectTimer = Timer.scheduledTimer(withTimeInterval: self.reconnectTime, repeats: false) { _ in
+            logger.warning("pubsub: \(self.channelId): Reconnecting...")
+            self.setupWebsocket()
+            self.reconnectTime += 2
+            self.reconnectTime = min(self.reconnectTime, 20)
+        }
+    }
+    
     func readMessage()  {
         webSocket.receive { result in
             switch result {
-            case .failure(let error):
-                logger.error("pubsub: Receive failed with error: \(error)")
-                self.reconnectTimer?.invalidate()
-                self.reconnectTimer = Timer.scheduledTimer(withTimeInterval: self.reconnectTime, repeats: false) { _ in
-                    logger.warning("pubsub: Reconnecting...")
-                    self.webSocket.cancel()
-                    self.setupWebsocket()
-                    self.reconnectTime *= 2
-                    self.reconnectTime = min(self.reconnectTime, 10 * 60)
-                }
+            case .failure(_):
+                // logger.warning("pubsub: \(self.channelId): Receive failed with error: \(error)")
+                self.reconnect()
                 return
             case .success(let message):
                 switch message {
                 case .string(let text):
-                    logger.debug("pubsub: Received \(text)")
+                    logger.debug("pubsub: \(self.channelId): Received string \(text)")
                     self.handleStringMessage(message: text)
                 case .data(let data):
-                    logger.error("pubsub: Received binary message: \(data)")
+                    logger.error("pubsub: \(self.channelId): Received binary message: \(data)")
                 @unknown default:
-                    logger.warning("pubsub: Unknown message type.")
+                    logger.warning("pubsub: \(self.channelId): Unknown message type.")
                 }
                 self.readMessage()
             }
@@ -149,11 +155,12 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     }
 
     func sendMessage(message: String) {
-        logger.debug("pubsub: Sending \(message)")
+        logger.debug("pubsub: \(channelId): Sending \(message)")
         let message = URLSessionWebSocketTask.Message.string(message)
         webSocket.send(message) { error in
             if let error = error {
-                logger.error("pubsub: Failed to send message to server with error \(error)")
+                logger.error("pubsub: \(self.channelId): Failed to send message to server with error \(error)")
+                self.reconnect()
             }
         }
     }
@@ -162,21 +169,30 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         sendMessage(message: "{\"type\":\"PING\"}")
         keepAliveTimer?.invalidate()
         keepAliveTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { _ in
-            logger.warning("pubsub: Timeout waiting for pong. Reconnecting...")
+            logger.warning("pubsub: \(self.channelId): Timeout waiting for pong. Reconnecting...")
             self.webSocket.cancel()
             self.setupWebsocket()
         }
     }
     
     func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol proto: String?) {
-        logger.info("pubsub: Connected to \(url)")
+        logger.info("pubsub: \(channelId): Connected to \(url)")
         reconnectTime = 2.0
         sendPing()
         sendMessage(message: "{\"type\":\"LISTEN\",\"data\":{\"topics\":[\"video-playback-by-id.\(channelId)\"]}}")
     }
 
     func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
-        logger.warning("pubsub: Disconnect from server: \(String(describing: reason))")
+        logger.warning("pubsub: \(channelId): Disconnected from server with close code \(closeCode) and reason \(String(describing: reason))")
+        reconnect()
     }
-
+    
+    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        // logger.warning("pubsub: \(channelId): Disconnected from server with reason \(String(describing: error))")
+        if running {
+            reconnect()
+        } else {
+            logger.info("pubsub: \(channelId): Completed.")
+        }
+    }
 }
