@@ -13,9 +13,14 @@ final class TwitchChatMobs {
     private var task: Task<Void, Error>? = nil
     private var id = 0
     private var channelName: String? = nil
+    private var connected: Bool = false
 
     init(model: Model) {
         self.model = model
+    }
+    
+    func isConnected() -> Bool {
+        return connected
     }
 
     func start(channelName: String) {
@@ -27,6 +32,7 @@ final class TwitchChatMobs {
             while true {
                 twitchChat = TwitchChat(token: "SCHMOOPIIE", nick: "justinfan67420", name: channelName)
                 do {
+                    connected = true
                     for try await message in self.twitchChat!.messages {
                         reconnectTime = 0
                         await MainActor.run {
@@ -42,6 +48,7 @@ final class TwitchChatMobs {
                 } catch {
                     logger.warning("twitch: chat: \(channelName): Got error \(error)")
                 }
+                connected = false
                 logger.info("twitch: chat: \(channelName): Disconnected")
                 try await Task.sleep(nanoseconds: reconnectTime)
                 reconnectTime += 500_000_000

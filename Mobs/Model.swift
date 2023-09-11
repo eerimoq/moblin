@@ -63,8 +63,9 @@ final class Model: ObservableObject {
     private var twitchPubSub: TwitchPubSub?
     @Published var twitchChatPosts: [Post] = []
     var numberOfTwitchChatPosts = 0
-    @Published var twitchChatPostsPerSecond: Float = 0.0
-    @Published var numberOfViewers = ""
+    @Published var twitchChatPostsPerSecond: Float = 0
+    @Published var numberOfViewers = "0"
+    var numberOfViewersDate = Date()
     @Published var batteryLevel = UIDevice.current.batteryLevel
     @Published var speed = ""
     @Published var thermalState = ProcessInfo.processInfo.thermalState
@@ -189,6 +190,7 @@ final class Model: ObservableObject {
                 self.updateBatteryLevel()
                 self.updateTwitchChatSpeed()
                 self.updateSpeed()
+                self.updateTwitchPubSub()
                 // self.srtDummySender!.sendPacket()
             }
         })
@@ -223,6 +225,12 @@ final class Model: ObservableObject {
         updateButtonStates()
         sceneUpdated(imageEffectChanged: true)
         //location.start()
+    }
+    
+    func updateTwitchPubSub() {
+        if numberOfViewersDate + 60 < Date() {
+            numberOfViewers = "0"
+        }
     }
     
     func didImageEffectsChange(scene: SettingsScene) -> Bool {
@@ -293,14 +301,22 @@ final class Model: ObservableObject {
         reloadTwitchViewers()
     }
     
+    func isTwitchChatConnected() -> Bool {
+        return twitchChat?.isConnected() ?? false
+    }
+    
+    func isTwitchPubSubConnected() -> Bool {
+        return twitchPubSub?.isConnected() ?? false
+    }
+    
     func reloadTwitchChat() {
         twitchChat!.stop()
+        twitchChatPostsPerSecond = 0
         guard let stream = stream else {
             return
         }
         twitchChat!.start(channelName: stream.twitchChannelName)
         twitchChatPosts = []
-        twitchChatPostsPerSecond = 0.0
         numberOfTwitchChatPosts = 0
     }
     
@@ -311,9 +327,9 @@ final class Model: ObservableObject {
         if let twitchPubSub = twitchPubSub {
             twitchPubSub.stop()
         }
+        numberOfViewers = "0"
         twitchPubSub = TwitchPubSub(model: self, channelId: stream.twitchChannelId)
         twitchPubSub!.start()
-        numberOfViewers = ""
     }
 
     func rtmpUrlChanged() {
@@ -480,7 +496,7 @@ final class Model: ObservableObject {
     func updateTwitchChatSpeed() {
         twitchChatPostsPerSecond = twitchChatPostsPerSecond * 0.8 + Float(numberOfTwitchChatPosts) * 0.2
         numberOfTwitchChatPosts = 0
-    }
+   }
 
     func updateSpeed() {
         if liveState == .live {

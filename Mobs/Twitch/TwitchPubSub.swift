@@ -71,6 +71,10 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         running = false
     }
     
+    func isConnected() -> Bool {
+        return self.webSocket.state == .running
+    }
+    
     func setupWebsocket() {
         keepAliveTimer?.invalidate()
         reconnectTimer?.invalidate()
@@ -99,6 +103,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         if type == "viewcount" {
             let message = try decodeMessageViewCount(message: message.data.message)
             self.model.numberOfViewers = "\(message.viewers)"
+            self.model.numberOfViewersDate = Date()
         } else {
             logger.debug("twitch: pubsub: \(channelId): Unsupported message type \(type) (message: \(message))")
         }
