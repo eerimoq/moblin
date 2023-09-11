@@ -21,11 +21,16 @@ ToDo
 Ideas/plan
 ==========
 
-- Preview buttons.
+- Notifications. Both visually and with sound. Sound most improtant
+  probably.
 
 - Integrate SRT stack.
 
+- Implement `SRTLA`_.
+
 - Emoji chat.
+
+- Preview buttons.
 
 - Pause and scroll chat.
 
@@ -36,18 +41,15 @@ Ideas/plan
 
 - Geolocation (with map?).
 
-- Implement `SRTLA`_.
-
 - Record to disk.
 
 - Lookup Twitch channel id from channel name.
 
-- AV1 codec (to complement H264).
+- AV1 and/or HVEC codec (to complement H264).
 
 - LIDAR, altitude.
 
-- Subscription and donation notifications. Both visually and with
-  sound.
+- WebRTC.
 
 Testing with local streaming server
 ===================================
