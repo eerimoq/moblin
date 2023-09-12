@@ -23,6 +23,8 @@ Ideas/plan
 
 - Implement `SRTLA`_.
 
+- Lens selection.
+  
 - AV1 and/or HVEC codec (to complement H264). Sending less data is
   important for stream quality and cost.
 
