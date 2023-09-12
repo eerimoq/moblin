@@ -19,7 +19,7 @@ ToDo
 Ideas/plan
 ==========
 
-- Integrate `SRT stack`_, but archived now?
+- Integrate SRT stack.
 
 - Implement `SRTLA`_.
 
@@ -101,8 +101,6 @@ Similar apps
 .. _OBS: https://obsproject.com
 
 .. _go: https://go.dev
-
-.. _SRT stack: https://github.com/shogo4405/SRTHaishinKit.swift
 
 .. _SRTLA: https://github.com/BELABOX/srtla
 
