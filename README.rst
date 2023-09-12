@@ -43,9 +43,8 @@ Ideas/plan
 
 - Record to disk.
 
-- Setup scenes with editable main view? However, scenes will probably
-  be added server side by most streamers, so not that important to
-  change.
+- Graphical scene setup? However, overlays will probably be added
+  server side by most streamers, so not that important to change.
 
 - Lookup Twitch channel id from channel name. Possibly login to
   Twitch.
