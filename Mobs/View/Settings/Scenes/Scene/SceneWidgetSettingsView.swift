@@ -11,7 +11,7 @@ struct SceneWidgetSettingsView: View {
         self.widget = widget
         self.name = name
         if let widget = model.findWidget(id: widget.widgetId) {
-            self.isImage = widget.type == "Image"
+            self.isImage = widget.type == .image
         } else {
             logger.error("Unable to find widget type")
             self.isImage = false

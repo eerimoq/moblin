@@ -66,13 +66,11 @@ func replaceSensitive(value: String, sensitive: Bool) -> String {
 
 func widgetImage(widget: SettingsWidget) -> String {
     switch widget.type {
-    case "Image":
+    case .image:
         return "photo"
-    case "Video effect":
+    case .videoEffect:
         return "camera.filters"
-    case "Camera":
+    case .camera:
         return "camera"
-    default:
-        return ""
     }
 }

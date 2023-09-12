@@ -5,7 +5,7 @@ struct WidgetCameraSettingsView: View {
     var widget: SettingsWidget
     
     var body: some View {
-        Section(widget.type) {
+        Section(widget.type.rawValue) {
             NavigationLink(destination: WidgetCameraDirectionSettingsView(model: model, widget: widget)) {
                 TextItemView(name: "Direction", value: widget.camera.direction)
             }

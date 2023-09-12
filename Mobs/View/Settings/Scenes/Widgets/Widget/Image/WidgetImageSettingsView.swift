@@ -7,7 +7,7 @@ struct WidgetImageSettingsView: View {
     @State var selectedImageItem: PhotosPickerItem? = nil
 
     var body: some View {
-        Section(widget.type) {
+        Section(widget.type.rawValue) {
             PhotosPicker(selection: $selectedImageItem, matching: .images) {
                 if let data = model.imageStorage.tryRead(id: widget.id) {
                     Image(uiImage: UIImage(data: data)!)

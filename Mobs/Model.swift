@@ -254,7 +254,7 @@ final class Model: ObservableObject {
         for id in imageStorage.ids() {
             var used = false
             for widget in database.widgets {
-                if widget.type != "Image" {
+                if widget.type != .image {
                     continue
                 }
                 if widget.id == id {
@@ -281,7 +281,7 @@ final class Model: ObservableObject {
             guard let realWidget = findWidget(id: widget.widgetId) else {
                 continue
             }
-            if realWidget.type != "Image" {
+            if realWidget.type != .image {
                 continue
             }
             guard let data = imageStorage.read(id: widget.widgetId) else {
@@ -413,11 +413,11 @@ final class Model: ObservableObject {
     func sceneUpdatedOff() {
         for widget in database.widgets {
             switch widget.type {
-            case "Camera":
+            case .camera:
                 break
-            case "Image":
+            case .image:
                 break
-            case "Video effect":
+            case .videoEffect:
                 switch widget.videoEffect.type {
                 case "Movie":
                     movieEffectOff()
@@ -430,8 +430,6 @@ final class Model: ObservableObject {
                 default:
                     logger.error("model: Unknown video effect \(widget.videoEffect.type).")
                 }
-            default:
-                logger.error("model: Unknown widget type \(widget.type)")
             }
         }
         for imageEffect in imageEffects.values {
@@ -448,7 +446,7 @@ final class Model: ObservableObject {
                     }
                 }
                 switch widget.type {
-                case "Camera":
+                case .camera:
                     switch widget.camera.direction {
                     case "Back":
                         attachCamera(position: .back)
@@ -457,11 +455,11 @@ final class Model: ObservableObject {
                     default:
                         logger.error("model: Unknown camera widget type \(widget.type).")
                     }
-                case "Image":
+                case .image:
                     if let imageEffect = imageEffects[sceneWidget.id] {
                         _ = rtmpStream.registerVideoEffect(imageEffect)
                     }
-                case "Video effect":
+                case .videoEffect:
                     switch widget.videoEffect.type {
                     case "Movie":
                         movieEffectOn()
@@ -474,8 +472,6 @@ final class Model: ObservableObject {
                     default:
                         logger.error("model: Unknown video effect \(widget.videoEffect.type).")
                     }
-                default:
-                    logger.error("model: Unknown widget type \(widget.type)")
                 }
             } else {
                 logger.error("model: Widget not found.")

@@ -16,9 +16,9 @@ struct WidgetSettingsView: View {
             }
             Section("Type") {
                 Picker("", selection: Binding(get: {
-                    widget.type
+                    widget.type.rawValue
                 }, set: { value in
-                    widget.type = value.trim()
+                    widget.type =  SettingsWidgetType(rawValue: value)!
                     model.store()
                     model.objectWillChange.send()
                 })) {
@@ -30,14 +30,12 @@ struct WidgetSettingsView: View {
                 .labelsHidden()
             }
             switch widget.type {
-            case "Image":
+            case .image:
                 WidgetImageSettingsView(model: model, widget: widget)
-            case "Video effect":
+            case .videoEffect:
                 WidgetVideoEffectSettingsView(model: model, widget: widget)
-            case "Camera":
+            case .camera:
                 WidgetCameraSettingsView(model: model, widget: widget)
-            default:
-                EmptyView()
             }
         }
         .navigationTitle("Widget")

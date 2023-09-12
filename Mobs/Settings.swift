@@ -111,10 +111,16 @@ class SettingsWidgetVideoEffect: Codable {
 
 let widgetTypes = ["Camera", "Image", "Video effect"]
 
+enum SettingsWidgetType: String, Codable {
+    case camera = "Camera"
+    case image = "Image"
+    case videoEffect = "Video effect"
+}
+
 class SettingsWidget: Codable, Identifiable, Equatable {
     var name: String
     var id: UUID = UUID()
-    var type: String = widgetTypes[0]
+    var type: SettingsWidgetType = .camera
     var text: SettingsWidgetText = SettingsWidgetText()
     var image: SettingsWidgetImage = SettingsWidgetImage()
     var video: SettingsWidgetVideo = SettingsWidgetVideo()
@@ -216,32 +222,32 @@ class Database: Codable {
 
 func addDefaultWidgets(database: Database) {
     var widget = SettingsWidget(name: "Back camera")
-    widget.type = "Camera"
+    widget.type = .camera
     widget.camera.direction = "Back"
     database.widgets.append(widget)
     
     widget = SettingsWidget(name: "Front camera")
-    widget.type = "Camera"
+    widget.type = .camera
     widget.camera.direction = "Front"
     database.widgets.append(widget)
     
     widget = SettingsWidget(name: "Movie")
-    widget.type = "Video effect"
+    widget.type = .videoEffect
     widget.videoEffect.type = "Movie"
     database.widgets.append(widget)
     
     widget = SettingsWidget(name: "Gray scale")
-    widget.type = "Video effect"
+    widget.type = .videoEffect
     widget.videoEffect.type = "Gray scale"
     database.widgets.append(widget)
     
     widget = SettingsWidget(name: "Seipa")
-    widget.type = "Video effect"
+    widget.type = .videoEffect
     widget.videoEffect.type = "Seipa"
     database.widgets.append(widget)
     
     widget = SettingsWidget(name: "Bloom")
-    widget.type = "Video effect"
+    widget.type = .videoEffect
     widget.videoEffect.type = "Bloom"
     database.widgets.append(widget)
 }
