@@ -170,6 +170,21 @@ final class Model: ObservableObject {
         rtmpStream.frameRate = Double(stream.fps)
     }
     
+    func setStreamCodec() {
+        guard let stream = stream else {
+            logger.warning("Cannot set stream codec.")
+            return
+        }
+        switch stream.codec {
+        case "H.264/AVC":
+            rtmpStream.videoSettings.profileLevel = kVTProfileLevel_H264_Baseline_3_1 as String
+        case "H.265/HEVC":
+            rtmpStream.videoSettings.profileLevel = kVTProfileLevel_HEVC_Main_AutoLevel as String
+        default:
+            logger.error("Unknown codec \(stream.codec).")
+        }
+    }
+    
     func setup(settings: Settings) {
         logger.setLogHandler(handler: debugLog)
         updateCurrentTime(now: Date())
@@ -227,6 +242,8 @@ final class Model: ObservableObject {
         
         attachCamera(position: .back)
         setStreamResolution()
+        setStreamFPS()
+        setStreamCodec()
         updateButtonStates()
         sceneUpdated(imageEffectChanged: true)
         removeUnusedImages()
@@ -305,6 +322,7 @@ final class Model: ObservableObject {
         stopStream()
         setStreamResolution()
         setStreamFPS()
+        setStreamCodec()
         reloadTwitchChat()
         reloadTwitchViewers()
     }

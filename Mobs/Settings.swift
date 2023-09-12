@@ -12,6 +12,7 @@ class SettingsStream: Codable, Identifiable {
     var proto: String = "RTMP"
     var resolution: String = "1280x720"
     var fps: Int = 30
+    var codec: String = "H.264/AVC"
 
     init(name: String) {
         self.name = name
