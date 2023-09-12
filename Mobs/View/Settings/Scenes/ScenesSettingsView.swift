@@ -27,12 +27,10 @@ struct ScenesSettingsView: View {
                     database.scenes.remove(atOffsets: offsets)
                     model.store()
                     model.resetSelectedScene()
-                    model.objectWillChange.send()
                 })
                 CreateButtonView(action: {
                     database.scenes.append(SettingsScene(name: "My scene"))
                     model.store()
-                    model.objectWillChange.send()
                 })
             }
             Section {
