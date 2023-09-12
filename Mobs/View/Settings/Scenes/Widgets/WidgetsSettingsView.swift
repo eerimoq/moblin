@@ -32,10 +32,7 @@ struct WidgetsSettingsView: View {
             Section {
                 ForEach(database.widgets) { widget in
                     NavigationLink(destination: WidgetSettingsView(widget: widget, model: model)) {
-                        HStack {
-                            Image(systemName: widgetImage(widget: widget))
-                            Text(widget.name)
-                        }
+                        IconAndTextView(image: widgetImage(widget: widget), text: widget.name)
                     }
                     .deleteDisabled(isWidgetUsed(widget: widget))
                 }

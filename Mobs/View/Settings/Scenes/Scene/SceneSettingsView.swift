@@ -120,11 +120,8 @@ struct SceneSettingsView: View {
                             Section("Widget name") {
                                 Picker("", selection: $selectedWidget) {
                                     ForEach(widgets) { widget in
-                                        HStack {
-                                            Image(systemName: widgetImage(widget: widget))
-                                            Text(widget.name)
-                                        }
-                                        .tag(widgets.firstIndex(of: widget)!)
+                                        IconAndTextView(image: widgetImage(widget: widget), text: widget.name)
+                                            .tag(widgets.firstIndex(of: widget)!)
                                     }
                                 }
                                 .pickerStyle(.inline)
@@ -167,10 +164,7 @@ struct SceneSettingsView: View {
                                 model.store()
                                 model.sceneUpdated()
                             })) {
-                                HStack {
-                                    Image(systemName: realButton.systemImageNameOff)
-                                    Text(realButton.name)
-                                }
+                                IconAndTextView(image: realButton.systemImageNameOff, text: realButton.name)
                             }
                         }
                     }
@@ -194,11 +188,8 @@ struct SceneSettingsView: View {
                             Section("Button name") {
                                 Picker("", selection: $selectedButton) {
                                     ForEach(buttons) { button in
-                                        HStack {
-                                            Image(systemName: button.systemImageNameOff)
-                                            Text(button.name)
-                                        }
-                                        .tag(buttonIndex(button: button))
+                                        IconAndTextView(image: button.systemImageNameOff, text: button.name)
+                                            .tag(buttonIndex(button: button))
                                     }
                                 }
                                 .pickerStyle(.inline)

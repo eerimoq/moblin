@@ -62,7 +62,8 @@ struct ButtonImagePickerSettingsView: View {
                 ForEach(imageSystemNames, id: \.self) { imageSystemName in
                     HStack {
                         Image(systemName: imageSystemName)
-                        Text(imageSystemName).foregroundColor(.gray)
+                        Text(imageSystemName)
+                            .foregroundColor(.gray)
                     }
                 }
             }

@@ -66,11 +66,8 @@ struct ButtonSettingsView: View {
                 Section("Widget") {
                     Picker("", selection: $selectedWidget) {
                         ForEach(model.database.widgets) { widget in
-                            HStack {
-                                Image(systemName: widgetImage(widget: widget))
-                                Text(widget.name)
-                            }
-                            .tag(model.database.widgets.firstIndex(of: widget)!)
+                            IconAndTextView(image: widgetImage(widget: widget), text: widget.name)
+                                .tag(model.database.widgets.firstIndex(of: widget)!)
                         }
                     }
                     .onChange(of: selectedWidget) { index in

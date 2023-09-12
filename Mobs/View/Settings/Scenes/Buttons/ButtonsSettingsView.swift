@@ -26,10 +26,7 @@ struct ButtonsSettingsView: View {
                 List {
                     ForEach(database.buttons) { button in
                         NavigationLink(destination: ButtonSettingsView(button: button, model: model)) {
-                            HStack {
-                                Image(systemName: button.systemImageNameOff)
-                                Text(button.name)
-                            }
+                            IconAndTextView(image: button.systemImageNameOff, text: button.name)
                         }
                         .deleteDisabled(isButtonUsed(button: button))
                     }
