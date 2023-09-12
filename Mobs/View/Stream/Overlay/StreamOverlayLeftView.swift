@@ -17,7 +17,7 @@ struct LeftOverlayView: View {
         if proto == "SRT" && stream.srtla {
             proto = "SRTLA"
         }
-        return "\(stream.name) (\(stream.resolution), \(stream.fps), \(stream.codec), \(proto))"
+        return "\(stream.name) (\(stream.resolution.rawValue), \(stream.fps), \(stream.codec.rawValue), \(proto))"
     }
     
     func messageText() -> String {
