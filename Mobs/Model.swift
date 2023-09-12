@@ -7,6 +7,8 @@ import VideoToolbox
 import TwitchChat
 import Network
 
+let unknownNumberOfViewers = ""
+
 enum LiveState {
     case stopped
     case live
@@ -64,7 +66,7 @@ final class Model: ObservableObject {
     @Published var twitchChatPosts: [Post] = []
     var numberOfTwitchChatPosts = 0
     @Published var twitchChatPostsPerSecond: Float = 0
-    @Published var numberOfViewers = "0"
+    @Published var numberOfViewers = unknownNumberOfViewers
     var numberOfViewersDate = Date()
     @Published var batteryLevel = UIDevice.current.batteryLevel
     @Published var speed = ""
@@ -250,7 +252,7 @@ final class Model: ObservableObject {
     
     func updateTwitchPubSub() {
         if numberOfViewersDate + 60 < Date() {
-            numberOfViewers = "0"
+            numberOfViewers = unknownNumberOfViewers
         }
     }
     
@@ -331,7 +333,7 @@ final class Model: ObservableObject {
         if let twitchPubSub = twitchPubSub {
             twitchPubSub.stop()
         }
-        numberOfViewers = "0"
+        numberOfViewers = unknownNumberOfViewers
         twitchPubSub = TwitchPubSub(model: self, channelId: stream.twitchChannelId)
         twitchPubSub!.start()
     }
