@@ -324,10 +324,18 @@ final class Model: ObservableObject {
         setStreamResolution()
         setStreamFPS()
         setStreamCodec()
+        reloadStreamProtocol()
         reloadTwitchChat()
         reloadTwitchViewers()
     }
-    
+
+    func reloadStreamProtocol() {
+        guard let stream = stream else {
+            return
+        }
+        logger.info("model: stream protocol: \(stream.proto)")
+    }
+
     func isTwitchChatConnected() -> Bool {
         return twitchChat?.isConnected() ?? false
     }
