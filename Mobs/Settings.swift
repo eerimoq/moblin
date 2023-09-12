@@ -10,7 +10,7 @@ class SettingsStream: Codable, Identifiable {
     var twitchChannelName: String = ""
     var twitchChannelId: String = ""
     var proto: String = "RTMP"
-    var resolution: String = "1920x1080"
+    var resolution: String = "1280x720"
     var fps: Int = 30
 
     init(name: String) {
@@ -321,13 +321,20 @@ func addDefaultScenes(database: Database) {
 }
 
 func addDefaultStreams(database: Database) {
-    let stream = SettingsStream(name: "Twitch")
-    stream.id = UUID()
+    var stream = SettingsStream(name: "Twitch")
     stream.enabled = true
     stream.rtmpUrl = "rtmp://arn03.contribute.live-video.net/app/your_stream_key"
     stream.srtUrl = "srt://192.168.202.169:5000"
     stream.twitchChannelName = "jinnytty"
     stream.twitchChannelId = "159498717"
+    database.streams.append(stream)
+    
+    stream = SettingsStream(name: "Dev")
+    stream.enabled = false
+    stream.rtmpUrl = "rtmp://192.168.50.72:1935/live/1234"
+    stream.srtUrl = "srt://192.168.50.72:5000"
+    stream.twitchChannelName = "eerimoq"
+    stream.twitchChannelId = "63482386"
     database.streams.append(stream)
 }
 

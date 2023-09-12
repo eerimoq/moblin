@@ -153,8 +153,10 @@ final class Model: ObservableObject {
         switch stream.resolution {
         case "1920x1080":
             rtmpStream.sessionPreset = .hd1920x1080
+            rtmpStream.videoSettings.videoSize = .init(width: 1920, height: 1080)
         case "1280x720":
             rtmpStream.sessionPreset = .hd1280x720
+            rtmpStream.videoSettings.videoSize = .init(width: 1280, height: 720)
         default:
             logger.error("Unknown resolution \(stream.resolution).")
         }
@@ -174,7 +176,6 @@ final class Model: ObservableObject {
         self.settings = settings
         rtmpStream = RTMPStream(connection: rtmpConnection)
         rtmpStream.videoOrientation = .landscapeRight
-        setStreamResolution()
         setStreamFPS()
         rtmpStream.mixer.recorder.delegate = self
         checkDeviceAuthorization()
@@ -225,6 +226,7 @@ final class Model: ObservableObject {
         }
         
         attachCamera(position: .back)
+        setStreamResolution()
         updateButtonStates()
         sceneUpdated(imageEffectChanged: true)
         removeUnusedImages()
