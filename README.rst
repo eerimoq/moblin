@@ -19,7 +19,7 @@ ToDo
 Ideas/plan
 ==========
 
-- Integrate `SRT stack`_.
+- Integrate `SRT stack`_, but archived now?
 
 - Implement `SRTLA`_.
 
