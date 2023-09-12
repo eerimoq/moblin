@@ -72,8 +72,7 @@ Testing with local streaming server
 
       $ wget 'http://localhost:8090/control/get?room=movie'
 
-#. Start streaming with iOS app. Build and run the iOS application in
-   xcode.
+#. Start streaming with Dev stream.
 
 #. Watch stream in VLC:
 
