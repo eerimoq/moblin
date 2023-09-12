@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 import HaishinKit
+import SRTHaishinKit
 import PhotosUI
 import SwiftUI
 import VideoToolbox
@@ -33,7 +34,9 @@ struct ButtonPair: Identifiable {
 final class Model: ObservableObject {
     private let maxRetryCount: Int = 5
     private var rtmpConnection = RTMPConnection()
-    @Published var rtmpStream: RTMPStream!
+    var rtmpStream: RTMPStream!
+    private var srtConnection = SRTConnection()
+    var srtStream: SRTStream!
     private var retryCount: Int = 0
     @Published var liveState: LiveState = .stopped
     @Published var fps: String = "FPS"
