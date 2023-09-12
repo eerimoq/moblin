@@ -10,7 +10,7 @@ struct MainView: View {
 
     init(settings: Settings) {
         model.setup(settings: settings)
-        streamView = StreamView(rtmpStream: $model.rtmpStream)
+        streamView = StreamView(netStream: $model.netStream)
         streamOverlayView = StreamOverlayView(model: model)
     }
 

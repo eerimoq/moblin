@@ -3,7 +3,7 @@ import SwiftUI
 
 struct StreamView: UIViewRepresentable {
     var mthkView = MTHKView(frame: .zero)
-    @Binding var rtmpStream: RTMPStream
+    @Binding var netStream: NetStream
 
     func makeUIView(context: Context) -> MTHKView {
         mthkView.videoGravity = .resizeAspect
@@ -11,6 +11,6 @@ struct StreamView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: MTHKView, context: Context) {
-        mthkView.attachStream(rtmpStream)
+        mthkView.attachStream(netStream)
     }
 }

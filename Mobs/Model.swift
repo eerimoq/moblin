@@ -34,9 +34,10 @@ struct ButtonPair: Identifiable {
 final class Model: ObservableObject {
     private let maxRetryCount: Int = 5
     private var rtmpConnection = RTMPConnection()
-    var rtmpStream: RTMPStream!
+    var rtmpStream: RTMPStream! = nil
     private var srtConnection = SRTConnection()
-    var srtStream: SRTStream!
+    var srtStream: SRTStream! = nil
+    var netStream: NetStream! = nil
     private var retryCount: Int = 0
     @Published var liveState: LiveState = .stopped
     @Published var fps: String = "FPS"
@@ -155,11 +156,11 @@ final class Model: ObservableObject {
         }
         switch stream.resolution {
         case .r1920x1080:
-            rtmpStream.sessionPreset = .hd1920x1080
-            rtmpStream.videoSettings.videoSize = .init(width: 1920, height: 1080)
+            netStream.sessionPreset = .hd1920x1080
+            netStream.videoSettings.videoSize = .init(width: 1920, height: 1080)
         case .r1280x720:
-            rtmpStream.sessionPreset = .hd1280x720
-            rtmpStream.videoSettings.videoSize = .init(width: 1280, height: 720)
+            netStream.sessionPreset = .hd1280x720
+            netStream.videoSettings.videoSize = .init(width: 1280, height: 720)
         }
     }
     
@@ -168,7 +169,7 @@ final class Model: ObservableObject {
             logger.warning("Cannot set stream FPS.")
             return
         }
-        rtmpStream.frameRate = Double(stream.fps)
+        netStream.frameRate = Double(stream.fps)
     }
     
     func setStreamCodec() {
@@ -178,9 +179,9 @@ final class Model: ObservableObject {
         }
         switch stream.codec {
         case .h264avc:
-            rtmpStream.videoSettings.profileLevel = kVTProfileLevel_H264_Baseline_3_1 as String
+            netStream.videoSettings.profileLevel = kVTProfileLevel_H264_Baseline_3_1 as String
         case .h265hevc:
-            rtmpStream.videoSettings.profileLevel = kVTProfileLevel_HEVC_Main_AutoLevel as String
+            netStream.videoSettings.profileLevel = kVTProfileLevel_HEVC_Main_AutoLevel as String
         }
     }
     
@@ -189,9 +190,10 @@ final class Model: ObservableObject {
         updateCurrentTime(now: Date())
         self.settings = settings
         rtmpStream = RTMPStream(connection: rtmpConnection)
-        rtmpStream.videoOrientation = .landscapeRight
+        netStream = rtmpStream
+        netStream.videoOrientation = .landscapeRight
         setStreamFPS()
-        rtmpStream.mixer.recorder.delegate = self
+        netStream.mixer.recorder.delegate = self
         checkDeviceAuthorization()
         twitchChat = TwitchChatMobs(model: self)
         if let stream = stream {
@@ -235,7 +237,7 @@ final class Model: ObservableObject {
             }
             .store(in: &subscriptions)
         
-        rtmpStream.attachAudio(AVCaptureDevice.default(for: .audio)) { error in
+        netStream.attachAudio(AVCaptureDevice.default(for: .audio)) { error in
             logger.error("model: Attach audio error: \(error)")
         }
         
@@ -430,7 +432,7 @@ final class Model: ObservableObject {
             }
         }
         for imageEffect in imageEffects.values {
-            _ = rtmpStream.unregisterVideoEffect(imageEffect)
+            _ = netStream.unregisterVideoEffect(imageEffect)
         }
     }
     
@@ -452,7 +454,7 @@ final class Model: ObservableObject {
                     }
                 case .image:
                     if let imageEffect = imageEffects[sceneWidget.id] {
-                        _ = rtmpStream.registerVideoEffect(imageEffect)
+                        _ = netStream.registerVideoEffect(imageEffect)
                     }
                 case .videoEffect:
                     switch widget.videoEffect.type {
@@ -550,7 +552,7 @@ final class Model: ObservableObject {
     
     func attachCamera(position: AVCaptureDevice.Position) {
         let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: position)
-        rtmpStream.attachCamera(device) { error in
+        netStream.attachCamera(device) { error in
             logger.error("model: Attach camera error: \(error)")
         }
         zoomLevel = device?.videoZoomFactor ?? 1.0
@@ -589,48 +591,48 @@ final class Model: ObservableObject {
 
     func toggleTorch() {
         isTorchOn.toggle()
-        rtmpStream.torch.toggle()
+        netStream.torch.toggle()
     }
 
     func toggleMute() {
         isMuteOn.toggle()
-        rtmpStream.hasAudio.toggle()
+        netStream.hasAudio.toggle()
     }
 
     func grayScaleEffectOn() {
-        _ = rtmpStream.registerVideoEffect(grayScaleEffect)
+        _ = netStream.registerVideoEffect(grayScaleEffect)
     }
 
     func grayScaleEffectOff() {
-        _ = rtmpStream.unregisterVideoEffect(grayScaleEffect)
+        _ = netStream.unregisterVideoEffect(grayScaleEffect)
     }
 
     func movieEffectOn() {
-        _ = rtmpStream.registerVideoEffect(movieEffect)
+        _ = netStream.registerVideoEffect(movieEffect)
     }
 
     func movieEffectOff() {
-        _ = rtmpStream.unregisterVideoEffect(movieEffect)
+        _ = netStream.unregisterVideoEffect(movieEffect)
     }
 
     func seipaEffectOn() {
-        _ = rtmpStream.registerVideoEffect(seipaEffect)
+        _ = netStream.registerVideoEffect(seipaEffect)
     }
 
     func seipaEffectOff() {
-        _ = rtmpStream.unregisterVideoEffect(seipaEffect)
+        _ = netStream.unregisterVideoEffect(seipaEffect)
     }
 
     func bloomEffectOn() {
-        _ = rtmpStream.registerVideoEffect(bloomEffect)
+        _ = netStream.registerVideoEffect(bloomEffect)
     }
 
     func bloomEffectOff() {
-        _ = rtmpStream.unregisterVideoEffect(bloomEffect)
+        _ = netStream.unregisterVideoEffect(bloomEffect)
     }
 
     func setCameraZoomLevel(level: CGFloat) {
-        guard let device = rtmpStream.videoCapture(for: 0)?.device, 1 <= level && level < device.activeFormat.videoMaxZoomFactor else {
+        guard let device = netStream.videoCapture(for: 0)?.device, 1 <= level && level < device.activeFormat.videoMaxZoomFactor else {
             return
         }
         do {
