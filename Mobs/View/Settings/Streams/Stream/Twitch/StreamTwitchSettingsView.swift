@@ -1,13 +1,8 @@
 import SwiftUI
 
 struct StreamTwitchSettingsView: View {
-    @ObservedObject private var model: Model
-    private var stream: SettingsStream
-    
-    init(model: Model, stream: SettingsStream) {
-        self.model = model
-        self.stream = stream
-    }
+    @ObservedObject var model: Model
+    var stream: SettingsStream
     
     func submitChannelName(value: String) {
         stream.twitchChannelName = value

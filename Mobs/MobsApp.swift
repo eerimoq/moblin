@@ -12,7 +12,7 @@ struct MobsApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView(settings: settings)
+            MainView(settings: settings)
         }
     }
 }

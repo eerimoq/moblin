@@ -2,12 +2,7 @@ import SwiftUI
 
 struct StreamVideoSettingsView: View {
     @ObservedObject var model: Model
-    private var stream: SettingsStream
-    
-    init(model: Model, stream: SettingsStream) {
-        self.model = model
-        self.stream = stream
-    }
+    var stream: SettingsStream
     
     var body: some View {
         Form {

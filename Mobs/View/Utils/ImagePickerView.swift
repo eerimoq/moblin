@@ -7,15 +7,13 @@ final class PickerCoordinator: NSObject, UIImagePickerControllerDelegate, UINavi
 }
 
 struct ImagePickerView: UIViewControllerRepresentable {
-    var sourceType: UIImagePickerController.SourceType = .photoLibrary
     var selectedImage: UIImage? = nil
     var coordinator = PickerCoordinator()
 
     func makeUIViewController(context: UIViewControllerRepresentableContext<ImagePickerView>) -> UIImagePickerController {
-        print(UIImagePickerController.isSourceTypeAvailable(.photoLibrary))
         let imagePicker = UIImagePickerController()
         imagePicker.allowsEditing = false
-        imagePicker.sourceType = sourceType
+        imagePicker.sourceType = .photoLibrary
         imagePicker.delegate = coordinator
         return imagePicker
     }

@@ -1,13 +1,8 @@
 import SwiftUI
 
 struct StreamSrtSettingsView: View {
-    @ObservedObject private var model: Model
-    private var stream: SettingsStream
-    
-    init(model: Model, stream: SettingsStream) {
-        self.model = model
-        self.stream = stream
-    }
+    @ObservedObject var model: Model
+    var stream: SettingsStream
     
     func submitUrl(value: String) {
         if URL(string: value) == nil {
@@ -15,7 +10,9 @@ struct StreamSrtSettingsView: View {
         }
         stream.srtUrl = value
         model.store()
-        model.srtUrlChanged()
+        if stream.enabled {
+            model.srtUrlChanged()
+        }
     }
     
     var body: some View {

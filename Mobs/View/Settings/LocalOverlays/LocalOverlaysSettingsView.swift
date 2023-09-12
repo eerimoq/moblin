@@ -2,11 +2,10 @@ import SwiftUI
 
 struct LocalOverlaysSettingsView: View {
     @ObservedObject var model: Model
-    @State private var isPresentingResetConfirm: Bool = false
 
-    var database: Database {
+    var show: SettingsShow {
         get {
-            model.settings.database
+            model.database.show
         }
     }
 
@@ -14,39 +13,39 @@ struct LocalOverlaysSettingsView: View {
         Form {
             Section {
                 Toggle("Stream", isOn: Binding(get: {
-                    database.show.stream
+                    show.stream
                 }, set: { value in
-                    database.show.stream  = value
+                    show.stream  = value
                     model.store()
                 }))
                 Toggle("Viewers", isOn: Binding(get: {
-                    database.show.viewers
+                    show.viewers
                 }, set: { value in
-                    database.show.viewers = value
+                    show.viewers = value
                     model.store()
                 }))
                 Toggle("Uptime", isOn: Binding(get: {
-                    database.show.uptime
+                    show.uptime
                 }, set: { value in
-                    database.show.uptime = value
+                    show.uptime = value
                     model.store()
                 }))
                 Toggle("Chat", isOn: Binding(get: {
-                    database.show.chat
+                    show.chat
                 }, set: { value in
-                    database.show.chat = value
+                    show.chat = value
                     model.store()
                 }))
                 Toggle("Speed", isOn: Binding(get: {
-                    database.show.speed
+                    show.speed
                 }, set: { value in
-                    database.show.speed = value
+                    show.speed = value
                     model.store()
                 }))
                 Toggle("FPS", isOn: Binding(get: {
-                    database.show.fps
+                    show.fps
                 }, set: { value in
-                    database.show.fps = value
+                    show.fps = value
                     model.store()
                 }))
             } footer: {

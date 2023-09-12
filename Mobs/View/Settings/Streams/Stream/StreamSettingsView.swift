@@ -1,13 +1,13 @@
 import SwiftUI
 
 struct StreamSettingsView: View {
-    private var stream: SettingsStream
     @ObservedObject private var model: Model
+    private var stream: SettingsStream
     @State private var proto: String
 
     init(stream: SettingsStream, model: Model) {
-        self.stream = stream
         self.model = model
+        self.stream = stream
         self.proto = stream.proto
     }
     

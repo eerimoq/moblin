@@ -3,7 +3,7 @@ import HaishinKit
 import SwiftUI
 import VideoToolbox
 
-struct ContentView: View {
+struct MainView: View {
     @ObservedObject var model = Model()
     private var streamView: StreamView!
     private var streamOverlayView: StreamOverlayView!

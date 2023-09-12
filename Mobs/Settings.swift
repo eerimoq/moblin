@@ -195,7 +195,7 @@ class SettingsButton: Codable, Identifiable, Equatable {
     }
 }
 
-class Show: Codable {
+class SettingsShow: Codable {
     var chat: Bool = true
     var viewers: Bool = true
     var uptime: Bool = true
@@ -210,7 +210,7 @@ class Database: Codable {
     var widgets: [SettingsWidget] = []
     var variables: [SettingsVariable] = []
     var buttons: [SettingsButton] = []
-    var show: Show = Show()
+    var show: SettingsShow = SettingsShow()
 }
 
 func addDefaultWidgets(database: Database) {

@@ -1,24 +1,20 @@
 import SwiftUI
 
 struct HelpAndSupportSettingsView: View {
-    func openGithub() {
-        UIApplication.shared.open(URL(string: "https://github.com/eerimoq/mobs")!)
-    }
-    
-    func openDiscord() {
-        UIApplication.shared.open(URL(string: "https://discord.gg/nt3UwHqbMM")!)
+    func openUrl(url: String) {
+        UIApplication.shared.open(URL(string: url)!)
     }
     
     var body: some View {
         Form {
             Section {
                 Button(action: {
-                    openDiscord()
+                    openUrl(url: "https://discord.gg/nt3UwHqbMM")
                 }, label: {
                     Text("Discord")
                 })
                 Button(action: {
-                    openGithub()
+                    openUrl(url: "https://github.com/eerimoq/mobs")
                 }, label: {
                     Text("Github")
                 })
