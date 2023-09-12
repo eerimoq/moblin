@@ -1,8 +1,6 @@
 import SwiftUI
 
-var directions = ["Back", "Front"]
-
-struct WidgetCameraDirectionSettingsView: View {
+struct WidgetCameraTypeSettingsView: View {
     @ObservedObject var model: Model
     private var widget: SettingsWidget
     @State private var selection: String
@@ -10,23 +8,23 @@ struct WidgetCameraDirectionSettingsView: View {
     init(model: Model, widget: SettingsWidget) {
         self.model = model
         self.widget = widget
-        self.selection = widget.camera.direction
+        self.selection = widget.camera.type.rawValue
     }
     
     var body: some View {
         Form {
             Picker("", selection: $selection) {
-                ForEach(directions, id: \.self) { direction in
-                    Text(direction)
+                ForEach(cameraTypes, id: \.self) { type in
+                    Text(type)
                 }
             }
-            .onChange(of: selection) { direction in
-                widget.camera.direction = direction
+            .onChange(of: selection) { type in
+                widget.camera.type = SettingsWidgetCameraType(rawValue: type)!
                 model.store()
             }
             .pickerStyle(.inline)
             .labelsHidden()
         }
-        .navigationTitle("Direction")
+        .navigationTitle("Type")
     }
 }

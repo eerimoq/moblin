@@ -16,9 +16,9 @@ struct VariableSettingsView: View {
             }
             Section("Type") {
                 Picker("", selection: Binding(get: {
-                    variable.type
+                    variable.type.rawValue
                 }, set: { value in
-                    variable.type = value.trim()
+                    variable.type = SettingsVariableType(rawValue: value)!
                     model.store()
                     model.objectWillChange.send()
                 })) {
@@ -30,7 +30,7 @@ struct VariableSettingsView: View {
                 .labelsHidden()
             }
             switch variable.type {
-            case "Text":
+            case .text:
                 Section("Value") {
                     TextField("", text: Binding(get: {
                         variable.text.value
@@ -39,7 +39,7 @@ struct VariableSettingsView: View {
                         model.store()
                     }))
                 }
-            case "HTTP":
+            case .http:
                 Section("URL") {
                     TextField("", text: Binding(get: {
                         variable.http.url
@@ -48,7 +48,7 @@ struct VariableSettingsView: View {
                         model.store()
                     }))
                 }
-            case "Twitch PubSub":
+            case .twitchPubSub:
                 Section("Pattern") {
                     TextField("", text: Binding(get: {
                         variable.twitchPubSub.pattern
@@ -57,7 +57,7 @@ struct VariableSettingsView: View {
                         model.store()
                     }))
                 }
-            case "Websocket":
+            case .websocket:
                 Section("URL") {
                     TextField("", text: Binding(get: {
                         variable.websocket.url
@@ -74,8 +74,6 @@ struct VariableSettingsView: View {
                         model.store()
                     }))
                 }
-            default:
-                EmptyView()
             }
         }
         .navigationTitle("Variable")

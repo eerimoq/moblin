@@ -17,7 +17,7 @@
 		0315A3622AA33A2C00295443 /* WidgetTextSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3612AA33A2C00295443 /* WidgetTextSettingsView.swift */; };
 		0315A3672AA33C6A00295443 /* WidgetImageSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3662AA33C6A00295443 /* WidgetImageSettingsView.swift */; };
 		0315A36C2AA33F2100295443 /* WidgetCameraSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A36B2AA33F2100295443 /* WidgetCameraSettingsView.swift */; };
-		0315A36E2AA33F3400295443 /* WidgetCameraDirectionSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A36D2AA33F3400295443 /* WidgetCameraDirectionSettingsView.swift */; };
+		0315A36E2AA33F3400295443 /* WidgetCameraTypeSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A36D2AA33F3400295443 /* WidgetCameraTypeSettingsView.swift */; };
 		0315A3702AA3771F00295443 /* SceneWidgetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A36F2AA3771F00295443 /* SceneWidgetSettingsView.swift */; };
 		0315A37A2AA39DA800295443 /* TextItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3792AA39DA800295443 /* TextItemView.swift */; };
 		0315A37C2AA439B500295443 /* NameEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A37B2AA439B500295443 /* NameEditView.swift */; };
@@ -93,7 +93,7 @@
 		0315A3612AA33A2C00295443 /* WidgetTextSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetTextSettingsView.swift; sourceTree = "<group>"; };
 		0315A3662AA33C6A00295443 /* WidgetImageSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetImageSettingsView.swift; sourceTree = "<group>"; };
 		0315A36B2AA33F2100295443 /* WidgetCameraSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCameraSettingsView.swift; sourceTree = "<group>"; };
-		0315A36D2AA33F3400295443 /* WidgetCameraDirectionSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCameraDirectionSettingsView.swift; sourceTree = "<group>"; };
+		0315A36D2AA33F3400295443 /* WidgetCameraTypeSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCameraTypeSettingsView.swift; sourceTree = "<group>"; };
 		0315A36F2AA3771F00295443 /* SceneWidgetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneWidgetSettingsView.swift; sourceTree = "<group>"; };
 		0315A3792AA39DA800295443 /* TextItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextItemView.swift; sourceTree = "<group>"; };
 		0315A37B2AA439B500295443 /* NameEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameEditView.swift; sourceTree = "<group>"; };
@@ -279,7 +279,7 @@
 			isa = PBXGroup;
 			children = (
 				0315A36B2AA33F2100295443 /* WidgetCameraSettingsView.swift */,
-				0315A36D2AA33F3400295443 /* WidgetCameraDirectionSettingsView.swift */,
+				0315A36D2AA33F3400295443 /* WidgetCameraTypeSettingsView.swift */,
 			);
 			path = Camera;
 			sourceTree = "<group>";
@@ -633,7 +633,7 @@
 				0382933B2A9A73ED008963AA /* Settings.swift in Sources */,
 				03B374092AA0EA700028DDD5 /* ImageEffect.swift in Sources */,
 				03A983692A9A05D7008FF0DB /* CreateButtonView.swift in Sources */,
-				0315A36E2AA33F3400295443 /* WidgetCameraDirectionSettingsView.swift in Sources */,
+				0315A36E2AA33F3400295443 /* WidgetCameraTypeSettingsView.swift in Sources */,
 				0315A3442AA31D0100295443 /* StreamRtmpSettingsView.swift in Sources */,
 				0379BBC02AADC4EC00B718B6 /* AboutLicensesSettingsView.swift in Sources */,
 				0379BBB22AAD97FB00B718B6 /* ResetSettingsView.swift in Sources */,

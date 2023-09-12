@@ -1,7 +1,5 @@
 import SwiftUI
 
-var codecs = ["H.264/AVC", "H.265/HEVC"]
-
 struct StreamVideoCodecSettingsView: View {
     @ObservedObject var model: Model
     private var stream: SettingsStream
@@ -10,7 +8,7 @@ struct StreamVideoCodecSettingsView: View {
     init(model: Model, stream: SettingsStream) {
         self.model = model
         self.stream = stream
-        self.selection = stream.codec
+        self.selection = stream.codec.rawValue
     }
     
     var body: some View {
@@ -22,7 +20,7 @@ struct StreamVideoCodecSettingsView: View {
                     }
                 }
                 .onChange(of: selection) { codec in
-                    stream.codec = codec
+                    stream.codec = SettingsStreamCodec(rawValue: codec)!
                     model.store()
                     if stream.enabled {
                         model.reloadStream()

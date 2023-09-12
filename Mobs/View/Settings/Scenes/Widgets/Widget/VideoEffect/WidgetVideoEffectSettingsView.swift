@@ -1,7 +1,5 @@
 import SwiftUI
 
-var videoEffects = ["Movie", "Gray scale", "Seipa", "Bloom"]
-
 struct WidgetVideoEffectSettingsView: View {
     @ObservedObject var model: Model
     var widget: SettingsWidget
@@ -10,7 +8,7 @@ struct WidgetVideoEffectSettingsView: View {
     init(model: Model, widget: SettingsWidget) {
         self.model = model
         self.widget = widget
-        self.selection = widget.videoEffect.type
+        self.selection = widget.videoEffect.type.rawValue
     }
     
     var body: some View {
@@ -20,9 +18,9 @@ struct WidgetVideoEffectSettingsView: View {
                     Text(videoEffect)
                 }
             }
-            .onChange(of: selection) { videoEffect in
+            .onChange(of: selection) { type in
                 model.allWidgetsOff()
-                widget.videoEffect.type = videoEffect
+                widget.videoEffect.type = SettingsWidgetVideoEffectType(rawValue: type)!
                 model.sceneUpdated()
                 model.store()
             }

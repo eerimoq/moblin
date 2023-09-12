@@ -1,5 +1,19 @@
 import SwiftUI
 
+var codecs = ["H.264/AVC", "H.265/HEVC"]
+
+enum SettingsStreamCodec: String, Codable {
+    case h264avc = "H.264/AVC"
+    case h265hevc = "H.265/HEVC"
+}
+
+var resolutions = ["1920x1080", "1280x720"]
+
+enum SettingsStreamResolution: String, Codable {
+    case r1920x1080 = "1920x1080"
+    case r1280x720 = "1280x720"
+}
+
 class SettingsStream: Codable, Identifiable {
     var name: String
     var id: UUID = UUID()
@@ -10,9 +24,9 @@ class SettingsStream: Codable, Identifiable {
     var twitchChannelName: String = ""
     var twitchChannelId: String = ""
     var proto: String = "RTMP"
-    var resolution: String = "1280x720"
+    var resolution: SettingsStreamResolution = .r1280x720
     var fps: Int = 30
-    var codec: String = "H.264/AVC"
+    var codec: SettingsStreamCodec = .h264avc
 
     init(name: String) {
         self.name = name
@@ -91,8 +105,15 @@ class SettingsWidgetVideo: Codable {
     var url: String = "https://"
 }
 
+var cameraTypes = ["Main", "Front"]
+
+enum SettingsWidgetCameraType: String, Codable {
+    case main = "Main"
+    case front = "Front"
+}
+
 class SettingsWidgetCamera: Codable {
-    var direction: String = "Back"
+    var type: SettingsWidgetCameraType = .main
 }
 
 class SettingsWidgetChat: Codable {
@@ -105,8 +126,17 @@ class SettingsWidgetWebview: Codable {
     var url: String = "https://"
 }
 
+var videoEffects = ["Movie", "Gray scale", "Seipa", "Bloom"]
+
+enum SettingsWidgetVideoEffectType: String, Codable {
+    case movie = "Movie"
+    case grayScale = "Gray scale"
+    case seipa = "Seipa"
+    case bloom = "Bloom"
+}
+
 class SettingsWidgetVideoEffect: Codable {
-    var type: String = "Movie"
+    var type: SettingsWidgetVideoEffectType = .movie
 }
 
 let widgetTypes = ["Camera", "Image", "Video effect"]
@@ -158,10 +188,17 @@ class SettingsVariableTextWebsocket: Codable {
 
 let variableTypes = ["Text", "HTTP", "Twitch PubSub", "Websocket"]
 
+enum SettingsVariableType: String, Codable {
+    case text = "Camera"
+    case http = "HTTP"
+    case twitchPubSub = "Twitch PubSub"
+    case websocket = "Websocket"
+}
+
 class SettingsVariable: Codable, Identifiable {
     var name: String
     var id: UUID = UUID()
-    var type: String = "Text"
+    var type: SettingsVariableType = .text
     var text: SettingsVariableText = SettingsVariableText()
     var http: SettingsVariableHttp = SettingsVariableHttp()
     var twitchPubSub: SettingsVariableTwitchPubSub = SettingsVariableTwitchPubSub()
@@ -173,6 +210,12 @@ class SettingsVariable: Codable, Identifiable {
 }
 
 var buttonTypes = ["Torch", "Mute", "Widget"]
+
+enum SettingsButtonType: String, Codable {
+    case torch = "Torch"
+    case mute = "Mute"
+    case widget = "Widget"
+}
 
 class SettingsButtonWidget: Codable, Identifiable {
     var widgetId: UUID
@@ -186,7 +229,7 @@ class SettingsButtonWidget: Codable, Identifiable {
 class SettingsButton: Codable, Identifiable, Equatable {
     var name: String
     var id: UUID = UUID()
-    var type: String = "Torch"
+    var type: SettingsButtonType = .torch
     var imageType: String = "System name"
     var systemImageNameOn: String = "mic.slash"
     var systemImageNameOff: String = "mic"
@@ -221,38 +264,38 @@ class Database: Codable {
 }
 
 func addDefaultWidgets(database: Database) {
-    var widget = SettingsWidget(name: "Back camera")
+    var widget = SettingsWidget(name: "Main camera")
     widget.type = .camera
-    widget.camera.direction = "Back"
+    widget.camera.type = .main
     database.widgets.append(widget)
     
     widget = SettingsWidget(name: "Front camera")
     widget.type = .camera
-    widget.camera.direction = "Front"
+    widget.camera.type = .front
     database.widgets.append(widget)
     
     widget = SettingsWidget(name: "Movie")
     widget.type = .videoEffect
-    widget.videoEffect.type = "Movie"
+    widget.videoEffect.type = .movie
     database.widgets.append(widget)
     
     widget = SettingsWidget(name: "Gray scale")
     widget.type = .videoEffect
-    widget.videoEffect.type = "Gray scale"
+    widget.videoEffect.type = .grayScale
     database.widgets.append(widget)
     
     widget = SettingsWidget(name: "Seipa")
     widget.type = .videoEffect
-    widget.videoEffect.type = "Seipa"
+    widget.videoEffect.type = .seipa
     database.widgets.append(widget)
     
     widget = SettingsWidget(name: "Bloom")
     widget.type = .videoEffect
-    widget.videoEffect.type = "Bloom"
+    widget.videoEffect.type = .bloom
     database.widgets.append(widget)
 }
 
-func createSceneWidgetBackCamera(database: Database) -> SettingsSceneWidget {
+func createSceneWidgetMainCamera(database: Database) -> SettingsSceneWidget {
     let widget = SettingsSceneWidget(widgetId: database.widgets[0].id)
     widget.x = 0
     widget.y = 0
@@ -307,8 +350,8 @@ func createSceneWidgetVideoEffectBloom(database: Database) -> SettingsSceneWidge
 }
 
 func addDefaultScenes(database: Database) {
-    var scene = SettingsScene(name: "Back")
-    scene.widgets.append(createSceneWidgetBackCamera(database: database))
+    var scene = SettingsScene(name: "Main")
+    scene.widgets.append(createSceneWidgetMainCamera(database: database))
     scene.widgets.append(createSceneWidgetVideoEffectMovie(database: database))
     scene.widgets.append(createSceneWidgetVideoEffectGrayScale(database: database))
     scene.widgets.append(createSceneWidgetVideoEffectSeipa(database: database))
@@ -348,7 +391,7 @@ func addDefaultStreams(database: Database) {
 func addDefaultButtons(database: Database) {
     var button = SettingsButton(name: "Torch")
     button.id = UUID()
-    button.type = "Torch"
+    button.type = .torch
     button.imageType = "System name"
     button.systemImageNameOn = "lightbulb.fill"
     button.systemImageNameOff = "lightbulb"
@@ -356,7 +399,7 @@ func addDefaultButtons(database: Database) {
     
     button = SettingsButton(name: "Mute")
     button.id = UUID()
-    button.type = "Mute"
+    button.type = .mute
     button.imageType = "System name"
     button.systemImageNameOn = "mic.slash"
     button.systemImageNameOff = "mic"
@@ -364,7 +407,7 @@ func addDefaultButtons(database: Database) {
 
     button = SettingsButton(name: "Movie")
     button.id = UUID()
-    button.type = "Widget"
+    button.type = .widget
     button.imageType = "System name"
     button.systemImageNameOn = "film.fill"
     button.systemImageNameOff = "film"
@@ -373,7 +416,7 @@ func addDefaultButtons(database: Database) {
     
     button = SettingsButton(name: "Gray scale")
     button.id = UUID()
-    button.type = "Widget"
+    button.type = .widget
     button.imageType = "System name"
     button.systemImageNameOn = "moon.fill"
     button.systemImageNameOff = "moon"
@@ -382,7 +425,7 @@ func addDefaultButtons(database: Database) {
     
     button = SettingsButton(name: "Seipa")
     button.id = UUID()
-    button.type = "Widget"
+    button.type = .widget
     button.imageType = "System name"
     button.systemImageNameOn = "moonphase.waxing.crescent"
     button.systemImageNameOff = "moonphase.waning.crescent"
@@ -391,7 +434,7 @@ func addDefaultButtons(database: Database) {
     
     button = SettingsButton(name: "Bloom")
     button.id = UUID()
-    button.type = "Widget"
+    button.type = .widget
     button.imageType = "System name"
     button.systemImageNameOn = "drop.fill"
     button.systemImageNameOff = "drop"

@@ -18,7 +18,7 @@ struct WidgetsSettingsView: View {
             }
         }
         for button in database.buttons {
-            if button.type == "Widget" {
+            if button.type == .widget {
                 if button.widget.widgetId == widget.id {
                     return true
                 }

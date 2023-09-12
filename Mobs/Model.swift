@@ -151,14 +151,12 @@ final class Model: ObservableObject {
             return
         }
         switch stream.resolution {
-        case "1920x1080":
+        case .r1920x1080:
             rtmpStream.sessionPreset = .hd1920x1080
             rtmpStream.videoSettings.videoSize = .init(width: 1920, height: 1080)
-        case "1280x720":
+        case .r1280x720:
             rtmpStream.sessionPreset = .hd1280x720
             rtmpStream.videoSettings.videoSize = .init(width: 1280, height: 720)
-        default:
-            logger.error("Unknown resolution \(stream.resolution).")
         }
     }
     
@@ -176,12 +174,10 @@ final class Model: ObservableObject {
             return
         }
         switch stream.codec {
-        case "H.264/AVC":
+        case .h264avc:
             rtmpStream.videoSettings.profileLevel = kVTProfileLevel_H264_Baseline_3_1 as String
-        case "H.265/HEVC":
+        case .h265hevc:
             rtmpStream.videoSettings.profileLevel = kVTProfileLevel_HEVC_Main_AutoLevel as String
-        default:
-            logger.error("Unknown codec \(stream.codec).")
         }
     }
     
@@ -419,16 +415,14 @@ final class Model: ObservableObject {
                 break
             case .videoEffect:
                 switch widget.videoEffect.type {
-                case "Movie":
+                case .movie:
                     movieEffectOff()
-                case "Gray scale":
+                case .grayScale:
                     grayScaleEffectOff()
-                case "Seipa":
+                case .seipa:
                     seipaEffectOff()
-                case "Bloom":
+                case .bloom:
                     bloomEffectOff()
-                default:
-                    logger.error("model: Unknown video effect \(widget.videoEffect.type).")
                 }
             }
         }
@@ -447,13 +441,11 @@ final class Model: ObservableObject {
                 }
                 switch widget.type {
                 case .camera:
-                    switch widget.camera.direction {
-                    case "Back":
+                    switch widget.camera.type {
+                    case .main:
                         attachCamera(position: .back)
-                    case "Front":
+                    case .front:
                         attachCamera(position: .front)
-                    default:
-                        logger.error("model: Unknown camera widget type \(widget.type).")
                     }
                 case .image:
                     if let imageEffect = imageEffects[sceneWidget.id] {
@@ -461,16 +453,14 @@ final class Model: ObservableObject {
                     }
                 case .videoEffect:
                     switch widget.videoEffect.type {
-                    case "Movie":
+                    case .movie:
                         movieEffectOn()
-                    case "Gray scale":
+                    case .grayScale:
                         grayScaleEffectOn()
-                    case "Seipa":
+                    case .seipa:
                         seipaEffectOn()
-                    case "Bloom":
+                    case .bloom:
                         bloomEffectOn()
-                    default:
-                        logger.error("model: Unknown video effect \(widget.videoEffect.type).")
                     }
                 }
             } else {

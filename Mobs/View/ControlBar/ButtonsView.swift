@@ -67,51 +67,47 @@ struct ButtonsView: View {
                 HStack {
                     if let second = pair.second {
                         switch second.button.type {
-                        case "Torch":
+                        case .torch:
                             Button(action: {
                                 torchAction(state: second)
                             }, label: {
                                 ButtonImage(image: getImage(state: second), on: second.isOn)
                             })
-                        case "Mute":
+                        case .mute:
                             Button(action: {
                                 muteAction(state: second)
                             }, label: {
                                 ButtonImage(image: getImage(state: second), on: second.isOn)
                             })
-                        case "Widget":
+                        case .widget:
                             Button(action: {
                                 widgetAction(state: second)
                             }, label: {
                                 ButtonImage(image: getImage(state: second), on: second.isOn)
                             })
-                        default:
-                            EmptyView()
                         }
                     } else {
                         ButtonPlaceholderImage()
                     }
                     switch pair.first.button.type {
-                    case "Torch":
+                    case .torch:
                         Button(action: {
                             torchAction(state: pair.first)
                         }, label: {
                             ButtonImage(image: getImage(state: pair.first), on: pair.first.isOn)
                         })
-                    case "Mute":
+                    case .mute:
                         Button(action: {
                             muteAction(state: pair.first)
                         }, label: {
                             ButtonImage(image: getImage(state: pair.first), on: pair.first.isOn)
                         })
-                    case "Widget":
+                    case .widget:
                         Button(action: {
                             widgetAction(state: pair.first)
                         }, label: {
                             ButtonImage(image: getImage(state: pair.first), on: pair.first.isOn)
                         })
-                    default:
-                        EmptyView()
                     }
                 }
             }

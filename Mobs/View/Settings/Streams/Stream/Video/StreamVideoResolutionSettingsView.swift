@@ -1,7 +1,5 @@
 import SwiftUI
 
-var resolutions = ["1920x1080", "1280x720"]
-
 struct StreamVideoResolutionSettingsView: View {
     @ObservedObject var model: Model
     var stream: SettingsStream
@@ -10,7 +8,7 @@ struct StreamVideoResolutionSettingsView: View {
     init(model: Model, stream: SettingsStream) {
         self.model = model
         self.stream = stream
-        self.selection = stream.resolution
+        self.selection = stream.resolution.rawValue
     }
     
     var body: some View {
@@ -22,7 +20,7 @@ struct StreamVideoResolutionSettingsView: View {
                     }
                 }
                 .onChange(of: selection) { resolution in
-                    stream.resolution = resolution
+                    stream.resolution = SettingsStreamResolution(rawValue: resolution)!
                     model.store()
                     if stream.enabled {
                         model.reloadStream()

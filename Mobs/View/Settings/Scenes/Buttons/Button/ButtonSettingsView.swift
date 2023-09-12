@@ -22,7 +22,7 @@ struct ButtonSettingsView: View {
     init(button: SettingsButton, model: Model) {
         self.button = button
         self.model = model
-        self.selection = button.type
+        self.selection = button.type.rawValue
         self.selectedWidget = model.database.widgets.firstIndex(where: {
             widget in widget.id == button.widget.widgetId
         }) ?? 0
@@ -55,7 +55,7 @@ struct ButtonSettingsView: View {
                     }
                 }
                 .onChange(of: selection) { type in
-                    button.type = type
+                    button.type = SettingsButtonType(rawValue: type)!
                     model.store()
                 }
                 .pickerStyle(.inline)
