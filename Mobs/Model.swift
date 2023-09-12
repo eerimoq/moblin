@@ -225,7 +225,27 @@ final class Model: ObservableObject {
         attachCamera(position: .back)
         updateButtonStates()
         sceneUpdated(imageEffectChanged: true)
+        removeUnusedImages()
         //location.start()
+    }
+    
+    func removeUnusedImages() {
+        for id in imageStorage.ids() {
+            var used = false
+            for widget in database.widgets {
+                if widget.type != "Image" {
+                    continue
+                }
+                if widget.id == id {
+                    used = true
+                    break
+                }
+            }
+            if !used {
+                logger.info("model: Removing unused image \(id)")
+                imageStorage.remove(id: id)
+            }
+        }
     }
     
     func updateTwitchPubSub() {

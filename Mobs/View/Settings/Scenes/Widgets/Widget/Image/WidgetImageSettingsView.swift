@@ -9,7 +9,7 @@ struct WidgetImageSettingsView: View {
     var body: some View {
         Section(widget.type) {
             PhotosPicker(selection: $selectedImageItem, matching: .images) {
-                if let data = model.imageStorage.read(id: widget.id) {
+                if let data = model.imageStorage.tryRead(id: widget.id) {
                     Image(uiImage: UIImage(data: data)!)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
