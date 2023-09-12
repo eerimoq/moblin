@@ -213,7 +213,7 @@ final class Model: ObservableObject {
                     return
                 }
                 DispatchQueue.main.async {
-                    self.fps = self.liveState == .stopped ? "" : "\(currentFPS)"
+                    self.fps = self.liveState == .stopped ? "" : String(currentFPS)
                 }
             }
             .store(in: &subscriptions)

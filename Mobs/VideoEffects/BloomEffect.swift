@@ -3,7 +3,7 @@ import HaishinKit
 import UIKit
 
 final class BloomEffect: VideoEffect {
-    private let filter: CIFilter? = CIFilter(name: "CIBloom")
+    private let filter = CIFilter(name: "CIBloom")
 
     override func execute(_ image: CIImage, info: CMSampleBuffer?) -> CIImage {
         guard let filter = filter else {

@@ -16,7 +16,7 @@ struct StreamVideoSettingsView: View {
                     TextItemView(name: "Resolution", value: stream.resolution)
                 }
                 NavigationLink(destination: StreamVideoFpsSettingsView(model: model, stream: stream)) {
-                    TextItemView(name: "FPS", value: "\(stream.fps)")
+                    TextItemView(name: "FPS", value: String(stream.fps))
                 }
             }
         }

@@ -18,7 +18,7 @@ struct StreamVideoFpsSettingsView: View {
             Section {
                 Picker("", selection: $selection) {
                     ForEach(fpss, id: \.self) { fps in
-                        Text("\(fps)")
+                        Text(String(fps))
                     }
                 }
                 .onChange(of: selection) { fps in

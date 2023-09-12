@@ -3,7 +3,7 @@ import HaishinKit
 import UIKit
 
 final class MovieEffect: VideoEffect {
-    private let filter: CIFilter? = CIFilter(name: "CISourceOverCompositing")
+    private let filter = CIFilter(name: "CISourceOverCompositing")
     private var extent = CGRect.zero {
         didSet {
             if extent == oldValue {
