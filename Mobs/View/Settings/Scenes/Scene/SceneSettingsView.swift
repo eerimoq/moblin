@@ -117,7 +117,7 @@ struct SceneSettingsView: View {
                 .popover(isPresented: $showingAddWidget) {
                     VStack {
                         Form {
-                            Section("Name") {
+                            Section("Widget name") {
                                 Picker("", selection: $selectedWidget) {
                                     ForEach(widgets) { widget in
                                         HStack {
@@ -191,7 +191,7 @@ struct SceneSettingsView: View {
                 .popover(isPresented: $showingAddButton) {
                     VStack {
                         Form {
-                            Section("Name") {
+                            Section("Button name") {
                                 Picker("", selection: $selectedButton) {
                                     ForEach(buttons) { button in
                                         HStack {

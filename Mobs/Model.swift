@@ -374,11 +374,15 @@ final class Model: ObservableObject {
         return nil
     }
     
-    func getButtonForWidgetControlledByScene(widget: SettingsWidget, scene: SettingsScene) -> SettingsButton? {
+    func getEnabledButtonForWidgetControlledByScene(widget: SettingsWidget, scene: SettingsScene) -> SettingsButton? {
         for button in scene.buttons {
-            let button = findButton(id: button.buttonId)!
-            if widget.id == button.widget.widgetId {
-                return button
+            if !button.enabled {
+                continue
+            }
+            if let button = findButton(id: button.buttonId) {
+                if widget.id == button.widget.widgetId {
+                    return button
+                }
             }
         }
         return nil
@@ -416,7 +420,7 @@ final class Model: ObservableObject {
     func sceneUpdatedOn(scene: SettingsScene) {
         for sceneWidget in scene.widgets.filter({widget in widget.enabled}) {
             if let widget = findWidget(id: sceneWidget.widgetId) {
-                if let button = getButtonForWidgetControlledByScene(widget: widget, scene: scene) {
+                if let button = getEnabledButtonForWidgetControlledByScene(widget: widget, scene: scene) {
                     if !button.isOn {
                         continue
                     }
