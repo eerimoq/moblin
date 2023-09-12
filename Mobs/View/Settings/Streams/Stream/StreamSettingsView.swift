@@ -42,9 +42,7 @@ struct StreamSettingsView: View {
                 .onChange(of: proto) { proto in
                     stream.proto = proto
                     model.store()
-                    if stream.enabled {
-                        model.reloadStream()
-                    }
+                    model.reloadStreamIfEnabled(stream: stream)
                 }
                 .pickerStyle(.inline)
                 .labelsHidden()

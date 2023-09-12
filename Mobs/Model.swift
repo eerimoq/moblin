@@ -328,7 +328,13 @@ final class Model: ObservableObject {
         reloadTwitchChat()
         reloadTwitchViewers()
     }
-
+    
+    func reloadStreamIfEnabled(stream: SettingsStream) {
+        if stream.enabled {
+            reloadStream()
+        }
+    }
+    
     func reloadStreamProtocol() {
         guard let stream = stream else {
             return
