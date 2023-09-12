@@ -25,7 +25,6 @@ final class TwitchChatMobs {
 
     func start(channelName: String) {
         self.channelName = channelName
-        logger.info("twitch: chat: \(channelName): Starting")
         task = Task.init {
             var reconnectTime: UInt64 = 0
             logger.info("twitch: chat: \(channelName): Connecting")
@@ -59,7 +58,6 @@ final class TwitchChatMobs {
     }
 
     func stop() {
-        logger.info("twitch: chat: \(channelName ?? "?"): Stopping")
         task?.cancel()
         task = nil
         twitchChat = nil

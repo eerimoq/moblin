@@ -58,13 +58,11 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     }
 
     func start() {
-        logger.info("twitch: pubsub: \(channelId): Starting.")
         reconnectTime = 0.0
         setupWebsocket()
     }
 
     func stop() {
-        logger.info("twitch: pubsub: \(channelId): Stopping.")
         webSocket.cancel()
         keepAliveTimer?.invalidate()
         reconnectTimer?.invalidate()
@@ -152,7 +150,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
                 case .data(let data):
                     logger.error("twitch: pubsub: \(self.channelId): Received binary message: \(data)")
                 @unknown default:
-                    logger.warning("twitch: pubsub: \(self.channelId): Unknown message type.")
+                    logger.warning("twitch: pubsub: \(self.channelId): Unknown message type")
                 }
                 self.readMessage()
             }
@@ -194,10 +192,10 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         if running {
-            logger.info("twitch: pubsub: \(channelId): Completed.")
+            logger.info("twitch: pubsub: \(channelId): Completed")
             reconnect()
         } else {
-            logger.info("twitch: pubsub: \(channelId): Completed by us.")
+            logger.info("twitch: pubsub: \(channelId): Completed by us")
         }
     }
 }
