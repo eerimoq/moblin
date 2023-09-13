@@ -31,7 +31,7 @@ struct ButtonPair: Identifiable {
     var second: ButtonState? = nil
 }
 
-final class Model: ObservableObject {
+final class Model: ObservableObject, NetStreamDelegate {
     private let maxRetryCount: Int = 5
     private var rtmpConnection = RTMPConnection()
     var rtmpStream: RTMPStream! = nil
@@ -193,6 +193,7 @@ final class Model: ObservableObject {
         rtmpStream = RTMPStream(connection: rtmpConnection)
         srtStream = SRTStream(srtConnection)
         netStream = rtmpStream
+        netStream.delegate = self
         // netStream = srtStream
         netStream.videoOrientation = .landscapeRight
         setStreamFPS()
@@ -747,5 +748,40 @@ extension Model: IORecorderDelegate {
                 logger.error("model: \(error)")
             }
         })
+    }
+
+    func stream(_ stream: NetStream, didOutput audio: AVAudioBuffer, presentationTimeStamp: CMTime) {
+        logger.debug("model: Playback an audio packet incoming.")
+    }
+    
+    func stream(_ stream: NetStream, didOutput video: CMSampleBuffer) {
+        logger.debug("model: Playback a video packet incoming.")
+    }
+
+    #if os(iOS)
+    func stream(_ stream: NetStream, sessionWasInterrupted session: AVCaptureSession, reason: AVCaptureSession.InterruptionReason?) {
+        logger.info("model: Session was interrupted.")
+    }
+
+    func stream(_ stream: NetStream, sessionInterruptionEnded session: AVCaptureSession) {
+        logger.info("model: Session interrupted ended.")
+    }
+    #endif
+
+    func stream(_ stream: NetStream, videoCodecErrorOccurred error: VideoCodec.Error) {
+        logger.error("model: Video codec error: \(error)")
+    }
+
+    func stream(_ stream: NetStream, audioCodecErrorOccurred error: HaishinKit.AudioCodec.Error) {
+        logger.error("model: Audio codec error: \(error)")
+    }
+
+    func streamWillDropFrame(_ stream: NetStream) -> Bool {
+        // logger.warning("model: Drop video frame.")
+        return false
+    }
+
+    func streamDidOpen(_ stream: NetStream) {
+        logger.info("model: Stream opened.")
     }
 }
