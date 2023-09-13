@@ -14,6 +14,20 @@ enum SettingsStreamResolution: String, Codable {
     case r1280x720 = "1280x720"
 }
 
+let bitrates: [UInt32] = [
+    40_000_000,
+    25_000_000,
+    15_000_000,
+    10_000_000,
+    7_500_000,
+    5_000_000,
+    3_000_000,
+    2_000_000,
+    1_500_000,
+    1_000_000,
+    500_000
+]
+
 class SettingsStream: Codable, Identifiable {
     var name: String
     var id: UUID = UUID()
@@ -26,7 +40,7 @@ class SettingsStream: Codable, Identifiable {
     var proto: String = "RTMP"
     var resolution: SettingsStreamResolution = .r1280x720
     var fps: Int = 30
-    var bitrate: UInt32 = 2_000_000
+    var bitrate: UInt32 = 3_000_000
     var codec: SettingsStreamCodec = .h264avc
 
     init(name: String) {

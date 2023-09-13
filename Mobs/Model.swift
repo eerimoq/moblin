@@ -60,12 +60,6 @@ final class Model: ObservableObject, NetStreamDelegate {
         formatter.dateFormat = "HH:mm"
         return formatter
     }
-    private var sizeFormatter : ByteCountFormatter {
-        let formatter = ByteCountFormatter()
-        formatter.allowsNonnumericFormatting = false
-        formatter.countStyle = .decimal
-        return formatter
-    }
     private var twitchChat: TwitchChatMobs?
     private var twitchPubSub: TwitchPubSub?
     @Published var twitchChatPosts: [Post] = []
@@ -586,11 +580,9 @@ final class Model: ObservableObject, NetStreamDelegate {
     
     func updateSpeed() {
         if liveState == .live {
-            var speed = sizeFormatter.string(fromByteCount: streamSpeed())
-            speed = speed.replacingOccurrences(of: "bytes", with: "b")
-            speed = speed.replacingOccurrences(of: "B", with: "b")
+            var speed = formatBytesPerSecond(speed: streamSpeed())
             let total = sizeFormatter.string(fromByteCount: streamTotal())
-            self.speed = "\(speed)ps (\(total))"
+            self.speed = "\(speed) (\(total))"
         } else {
             self.speed = ""
         }

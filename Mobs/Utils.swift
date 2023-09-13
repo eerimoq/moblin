@@ -74,3 +74,16 @@ func widgetImage(widget: SettingsWidget) -> String {
         return "camera"
     }
 }
+
+var sizeFormatter : ByteCountFormatter {
+    let formatter = ByteCountFormatter()
+    formatter.allowsNonnumericFormatting = false
+    formatter.countStyle = .decimal
+    return formatter
+}
+
+func formatBytesPerSecond(speed: Int64) -> String {
+    var speed = sizeFormatter.string(fromByteCount: speed)
+    speed = speed.replacingOccurrences(of: "bytes", with: "b")
+    return speed.replacingOccurrences(of: "B", with: "b") + "ps"
+}

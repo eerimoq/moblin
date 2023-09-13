@@ -3,18 +3,33 @@ import SwiftUI
 struct StreamVideoBitrateSettingsView: View {
     @ObservedObject var model: Model
     var stream: SettingsStream
-
-    func onSubmit(value: String) {
-        if let value = UInt32(value) {
-            stream.bitrate = value
-            model.store()
-            if stream.enabled {
-                model.setStreamBitrate()
-            }
-        }
+    @State private var selection: UInt32
+    
+    init(model: Model, stream: SettingsStream) {
+        self.model = model
+        self.stream = stream
+        self.selection = stream.bitrate
     }
     
     var body: some View {
-        TextEditView(title: "Bitrate", value: String(stream.bitrate), onSubmit: onSubmit)
+        Form {
+            Section {
+                Picker("", selection: $selection) {
+                    ForEach(bitrates, id: \.self) { bitrate in
+                        Text(formatBytesPerSecond(speed: Int64(bitrate))).tag(bitrate)
+                    }
+                }
+                .onChange(of: selection) { bitrate in
+                    stream.bitrate = bitrate
+                    model.store()
+                    if stream.enabled {
+                        model.setStreamBitrate()
+                    }
+                }
+                .pickerStyle(.inline)
+                .labelsHidden()
+            }
+        }
+        .navigationTitle("Bitrate")
     }
 }

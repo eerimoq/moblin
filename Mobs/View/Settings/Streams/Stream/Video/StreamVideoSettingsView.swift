@@ -17,7 +17,7 @@ struct StreamVideoSettingsView: View {
                     TextItemView(name: "Codec", value: stream.codec.rawValue)
                 }
                 NavigationLink(destination: StreamVideoBitrateSettingsView(model: model, stream: stream)) {
-                    TextItemView(name: "Bitrate", value: String(stream.bitrate))
+                    TextItemView(name: "Bitrate", value: formatBytesPerSecond(speed: Int64(stream.bitrate)))
                 }
             }
         }
