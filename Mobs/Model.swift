@@ -41,9 +41,9 @@ final class Model: ObservableObject {
     private var keyValueObservations: [NSKeyValueObservation] = []
     private var retryCount: Int = 0
     @Published var liveState: LiveState = .stopped
-    @Published var fps: String = "FPS"
     private var nc = NotificationCenter.default
     private var subscriptions = Set<AnyCancellable>()
+    private var publishing = false
     private var startDate: Date? = nil
     @Published var uptime: String = ""
     var settings: Settings = Settings()
@@ -229,17 +229,6 @@ final class Model: ObservableObject {
             }
             .store(in: &subscriptions)
         
-        rtmpStream.publisher(for: \.currentFPS)
-            .sink { [weak self] currentFPS in
-                guard let self = self else {
-                    return
-                }
-                DispatchQueue.main.async {
-                    self.fps = self.liveState == .stopped ? "" : String(currentFPS)
-                }
-            }
-            .store(in: &subscriptions)
-        
         netStream.attachAudio(AVCaptureDevice.default(for: .audio)) { error in
             logger.error("model: Attach audio error: \(error)")
         }
@@ -374,6 +363,14 @@ final class Model: ObservableObject {
     
     func isTwitchPubSubConnected() -> Bool {
         return twitchPubSub?.isConnected() ?? false
+    }
+    
+    func isNetStreamConnected() -> Bool {
+        return startDate != nil
+    }
+    
+    func isPublishing() -> Bool {
+        return publishing
     }
     
     func reloadTwitchChat() {
@@ -616,6 +613,7 @@ final class Model: ObservableObject {
     }
 
     func startPublish() {
+        publishing = true
         UIApplication.shared.isIdleTimerDisabled = true
         rtmpConnection.addEventListener(.rtmpStatus, selector: #selector(rtmpStatusHandler), observer: self)
         rtmpConnection.addEventListener(.ioError, selector: #selector(rtmpErrorHandler), observer: self)
@@ -637,6 +635,7 @@ final class Model: ObservableObject {
     }
 
     func stopPublish() {
+        publishing = false
         UIApplication.shared.isIdleTimerDisabled = false
         rtmpConnection.close()
         rtmpConnection.removeEventListener(.rtmpStatus, selector: #selector(rtmpStatusHandler), observer: self)
@@ -728,6 +727,7 @@ final class Model: ObservableObject {
 
     @objc
     private func rtmpErrorHandler(_: Notification) {
+        logger.error("model: RTMP error")
         rtmpConnection.connect(rtmpUri())
     }
 }

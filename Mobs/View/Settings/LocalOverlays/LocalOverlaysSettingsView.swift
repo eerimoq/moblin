@@ -42,12 +42,6 @@ struct LocalOverlaysSettingsView: View {
                     show.speed = value
                     model.store()
                 }))
-                Toggle("FPS", isOn: Binding(get: {
-                    show.fps
-                }, set: { value in
-                    show.fps = value
-                    model.store()
-                }))
             } footer: {
                 Text("Local overlays do not appear on stream.")
             }

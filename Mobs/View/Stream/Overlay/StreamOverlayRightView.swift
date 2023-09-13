@@ -38,14 +38,22 @@ struct RightOverlayView: View {
             model.settings.database
         }
     }
-
+    
+    func netStreamColor() -> Color {
+        if model.isPublishing() && !model.isNetStreamConnected() {
+            return .red
+        } else {
+            return .white
+        }
+    }
+    
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
             if database.show.speed {
-                StreamOverlayIconAndTextView(icon: "speedometer", text: model.speed, textFirst: true)
+                StreamOverlayIconAndTextView(icon: "speedometer", text: model.speed, textFirst: true, color: netStreamColor())
             }
-            if database.show.fps {
-                StreamOverlayIconAndTextView(icon: "film.stack", text: model.fps, textFirst: true)
+            if database.show.uptime {
+                StreamOverlayIconAndTextView(icon: "deskclock", text: model.uptime, textFirst: true, color: netStreamColor())
             }
             Spacer()
             Picker("", selection: $model.sceneIndex) {

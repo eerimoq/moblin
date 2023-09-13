@@ -251,7 +251,6 @@ class SettingsShow: Codable {
     var uptime: Bool = true
     var stream: Bool = true
     var speed: Bool = true
-    var fps: Bool = true
 }
 
 class Database: Codable {

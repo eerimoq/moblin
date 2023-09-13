@@ -59,9 +59,6 @@ struct LeftOverlayView: View {
             if database.show.viewers {
                 StreamOverlayIconAndTextView(icon: "eye", text: viewersText(), color: viewersColor())
             }
-            if database.show.uptime {
-                StreamOverlayIconAndTextView(icon: "deskclock", text: model.uptime)
-            }
             Spacer()
             if database.show.chat {
                 StreamOverlayIconAndTextView(icon: "message", text: messageText(), color: messageColor())
