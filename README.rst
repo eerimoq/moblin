@@ -25,7 +25,7 @@ Ideas/plan
 
 - Implement `SRTLA`_.
 
-- Lens selection.
+- Audio only when bad connection.
 
 - Notifications. Both visually and with sound. Sound most improtant
   probably.
