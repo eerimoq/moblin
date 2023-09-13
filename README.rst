@@ -20,8 +20,6 @@ ToDo
 
 - Find out why 1080p does not work.
 
-- Scene picker seems to have wrong colors in dark mode.
-
 - Test with cellular connection, not only WiFi.
   
 Ideas/plan
