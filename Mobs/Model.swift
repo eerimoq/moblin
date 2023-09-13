@@ -38,6 +38,7 @@ final class Model: ObservableObject {
     private var srtConnection = SRTConnection()
     var srtStream: SRTStream! = nil
     var netStream: NetStream! = nil
+    private var keyValueObservations: [NSKeyValueObservation] = []
     private var retryCount: Int = 0
     @Published var liveState: LiveState = .stopped
     @Published var fps: String = "FPS"
@@ -190,7 +191,9 @@ final class Model: ObservableObject {
         updateCurrentTime(now: Date())
         self.settings = settings
         rtmpStream = RTMPStream(connection: rtmpConnection)
+        srtStream = SRTStream(srtConnection)
         netStream = rtmpStream
+        // netStream = srtStream
         netStream.videoOrientation = .landscapeRight
         setStreamFPS()
         netStream.mixer.recorder.delegate = self
@@ -241,6 +244,14 @@ final class Model: ObservableObject {
             logger.error("model: Attach audio error: \(error)")
         }
         
+        let keyValueObservation = srtConnection.observe(\.connected, options: [.new, .old]) { [weak self] _, _ in
+            guard let self = self else {
+                return
+            }
+            logger.info("model: SRT connection state \(srtConnection.connected)")
+        }
+        keyValueObservations.append(keyValueObservation)
+        
         attachCamera(position: .back)
         setStreamResolution()
         setStreamFPS()
@@ -248,6 +259,21 @@ final class Model: ObservableObject {
         updateButtonStates()
         sceneUpdated(imageEffectChanged: true)
         removeUnusedImages()
+        if let stream = stream {
+            if stream.srtla {
+                //if let srtlaPort = srtla.localPort() {
+                //    let url = "srt://localhost:\(srtlaPort)"
+                //    logger.info("model: SRTLA connect to \(url)")
+                //    //srtConnection.open(URL(string: url))
+                //} else {
+                logger.error("model: Local SRTLA port missing")
+                //}
+            } else {
+                logger.info("model: SRT connect to \(stream.srtUrl)")
+                //srtConnection.open(URL(string: stream.srtUrl))
+                //srtStream.publish()
+            }
+        }
         //location.start()
     }
     
@@ -531,14 +557,30 @@ final class Model: ObservableObject {
     func updateTwitchChatSpeed() {
         twitchChatPostsPerSecond = twitchChatPostsPerSecond * 0.8 + Float(numberOfTwitchChatPosts) * 0.2
         numberOfTwitchChatPosts = 0
-   }
+    }
 
+    func streamSpeed() -> Int64 {
+        if netStream === rtmpStream {
+            return Int64(8 * rtmpStream.info.currentBytesPerSecond)
+        } else {
+            return Int64(srtConnection.performanceData.mbpsBandwidth)
+        }
+    }
+    
+    func streamTotal() -> Int64 {
+        if netStream === rtmpStream {
+            return rtmpStream.info.byteCount.value
+        } else {
+            return Int64(srtConnection.performanceData.byteRecvTotal + srtConnection.performanceData.byteSentTotal)
+        }
+    }
+    
     func updateSpeed() {
         if liveState == .live {
-            var speed = sizeFormatter.string(fromByteCount: Int64(8 * rtmpStream.info.currentBytesPerSecond))
+            var speed = sizeFormatter.string(fromByteCount: streamSpeed())
             speed = speed.replacingOccurrences(of: "bytes", with: "b")
             speed = speed.replacingOccurrences(of: "B", with: "b")
-            let total = sizeFormatter.string(fromByteCount: rtmpStream.info.byteCount.value)
+            let total = sizeFormatter.string(fromByteCount: streamTotal())
             self.speed = "\(speed)ps (\(total))"
         } else {
             self.speed = ""

@@ -47,11 +47,11 @@ class RemoteConnection {
     }
     
     private func handleViabilityChange(to viability: Bool) {
-        logger.info("srtla: \(type): Connection viability changed to \(viability)")
+        logger.info("srtla: remote: \(type): Connection viability changed to \(viability)")
     }
 
     private func handleStateChange(to state: NWConnection.State) {
-        logger.info("srtla: \(type): Connection state changed to \(state)")
+        logger.info("srtla: remote: \(type): Connection state changed to \(state)")
     }
     
     private func receivePacket() {
@@ -60,19 +60,19 @@ class RemoteConnection {
         }
         connection.receive(minimumIncompleteLength: 1, maximumLength: 65536) { data, _, isDone, error in
             if let data = data, !data.isEmpty {
-                logger.debug("srtla: \(self.type): Receive \(data)")
+                logger.debug("srtla: remote: \(self.type): Receive \(data)")
                 if let packetHandler = self.packetHandler {
                     packetHandler(data)
                 } else {
-                    logger.warning("srtla: \(self.type): Discarding packet.")
+                    logger.warning("srtla: remote: \(self.type): Discarding packet.")
                 }
             }
             if let error = error {
-                logger.warning("srtla: \(self.type): Receive \(error)")
+                logger.warning("srtla: remote: \(self.type): Receive \(error)")
                 return
             }
             if isDone {
-                logger.info("srtla: \(self.type): Receive done")
+                logger.info("srtla: remote: \(self.type): Receive done")
                 return
             }
             self.receivePacket()
@@ -85,7 +85,9 @@ class RemoteConnection {
         }
         connection.send(content: packet, completion: .contentProcessed { error in
             if let error = error {
-                logger.error("srtla: \(self.type): Remote send error: \(error)")
+                logger.error("srtla: remote: \(self.type): Remote send error: \(error)")
+            } else {
+                logger.debug("srtla: remote: Sent \(packet)")
             }
         })
     }

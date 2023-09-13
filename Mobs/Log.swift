@@ -1,10 +1,16 @@
 import Foundation
 import os
+import Logboard
 
 class EasyLogger {
-    var logger: Logger = Logger()
+    private var logger: Logger = Logger()
     private var handler: ((String) -> Void)? = nil
     private var lock = NSLock()
+    
+    init() {
+        LBLogger.with("com.haishinkit.HaishinKit").level = .debug
+        LBLogger.with("com.haishinkit.SRTHaishinKit").level = .trace
+    }
     
     func debug(_ messsge: String) {
         logger.debug("\(messsge)")
