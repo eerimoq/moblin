@@ -18,9 +18,9 @@ ToDo
 
 - Make SRT work.
 
-- Find out why 1080p does not work.
-
 - Test with cellular connection, not only WiFi.
+
+- Bitrate selection.
   
 Ideas/plan
 ==========
