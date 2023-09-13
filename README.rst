@@ -4,6 +4,8 @@ MOBS
 An iOS app for IRL streaming. Mainly targetting `Twitch`_, but can
 stream to any RTMP endpoint.
 
+Not yet in `App Store`_, but hopefully soonish!
+
 .. image:: https://github.com/eerimoq/mobs/raw/main/Docs/main.jpg
 
 Discord: https://discord.gg/nt3UwHqbMM
@@ -103,3 +105,5 @@ Similar apps
 .. _SRTLA: https://github.com/BELABOX/srtla
 
 .. _Twitch: https://twitch.tv
+
+.. _App Store: https://www.apple.com/app-store/
