@@ -15,11 +15,11 @@ inspired by it.
 
 ToDo
 ====
+
+- Make SRT work.
   
 Ideas/plan
 ==========
-
-- Integrate SRT stack.
 
 - Implement `SRTLA`_.
 
