@@ -151,7 +151,7 @@ final class Model: ObservableObject {
     }
     
     func setStreamResolution() {
-        guard let stream = stream else {
+        guard let stream else {
             logger.warning("Cannot set stream resolution.")
             return
         }
@@ -166,7 +166,7 @@ final class Model: ObservableObject {
     }
     
     func setStreamFPS() {
-        guard let stream = stream else {
+        guard let stream else {
             logger.warning("Cannot set stream FPS.")
             return
         }
@@ -174,7 +174,7 @@ final class Model: ObservableObject {
     }
     
     func setStreamCodec() {
-        guard let stream = stream else {
+        guard let stream else {
             logger.warning("Cannot set stream codec.")
             return
         }
@@ -234,7 +234,7 @@ final class Model: ObservableObject {
         }
         
         let keyValueObservation = srtConnection.observe(\.connected, options: [.new, .old]) { [weak self] _, _ in
-            guard let self = self else {
+            guard let self else {
                 return
             }
             logger.info("model: SRT connection state \(srtConnection.connected)")
@@ -351,7 +351,7 @@ final class Model: ObservableObject {
     }
     
     func reloadStreamProtocol() {
-        guard let stream = stream else {
+        guard let stream else {
             return
         }
         logger.info("model: stream protocol: \(stream.proto)")
@@ -376,7 +376,7 @@ final class Model: ObservableObject {
     func reloadTwitchChat() {
         twitchChat!.stop()
         twitchChatPostsPerSecond = 0
-        guard let stream = stream else {
+        guard let stream else {
             return
         }
         twitchChat!.start(channelName: stream.twitchChannelName)
@@ -385,7 +385,7 @@ final class Model: ObservableObject {
     }
     
     func reloadTwitchViewers() {
-        guard let stream = stream else {
+        guard let stream else {
             return
         }
         if let twitchPubSub = twitchPubSub {
@@ -621,14 +621,14 @@ final class Model: ObservableObject {
     }
 
     func rtmpUri() -> String {
-        guard let stream = stream else {
+        guard let stream else {
             return ""
         }
         return makeRtmpUri(url: stream.rtmpUrl)
     }
 
     func rtmpStreamName() -> String {
-        guard let stream = stream else {
+        guard let stream else {
             return ""
         }
         return makeRtmpStreamName(url: stream.rtmpUrl)

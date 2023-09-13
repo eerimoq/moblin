@@ -6,7 +6,7 @@ final class SeipaEffect: VideoEffect {
     private let filter = CIFilter(name: "CISepiaTone")
 
     override func execute(_ image: CIImage, info: CMSampleBuffer?) -> CIImage {
-        guard let filter = filter else {
+        guard let filter else {
             return image
         }
         filter.setValue(image, forKey: kCIInputImageKey)

@@ -65,7 +65,7 @@ class LocalListener {
     }
     
     private func receivePacket() {
-        guard let connection = connection else {
+        guard let connection else {
             return
         }
         connection.receive(minimumIncompleteLength: 1, maximumLength: 32768) { data, _, isDone, error in
@@ -86,7 +86,7 @@ class LocalListener {
     }
     
     func sendPacket(packet: Data) {
-        guard let connection = connection else {
+        guard let connection else {
             return
         }
         connection.send(content: packet, completion: .contentProcessed { error in

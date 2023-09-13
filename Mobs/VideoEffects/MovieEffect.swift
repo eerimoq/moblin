@@ -25,7 +25,7 @@ final class MovieEffect: VideoEffect {
     private var black: CIImage?
 
     override func execute(_ image: CIImage, info: CMSampleBuffer?) -> CIImage {
-        guard let filter = filter else {
+        guard let filter else {
             return image
         }
         extent = image.extent

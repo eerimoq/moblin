@@ -55,7 +55,7 @@ class RemoteConnection {
     }
     
     private func receivePacket() {
-        guard let connection = connection else {
+        guard let connection else {
             return
         }
         connection.receive(minimumIncompleteLength: 1, maximumLength: 65536) { data, _, isDone, error in
@@ -80,7 +80,7 @@ class RemoteConnection {
     }
     
     func sendPacket(packet: Data) {
-        guard let connection = connection else {
+        guard let connection else {
             return
         }
         connection.send(content: packet, completion: .contentProcessed { error in
