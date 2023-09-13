@@ -19,8 +19,6 @@ ToDo
 - Make SRT work.
 
 - Test with cellular connection, not only WiFi.
-
-- Bitrate selection.
   
 Ideas/plan
 ==========
