@@ -173,6 +173,14 @@ final class Model: ObservableObject, NetStreamDelegate {
         netStream.frameRate = Double(stream.fps)
     }
     
+    func setStreamBitrate() {
+        guard let stream else {
+            logger.warning("Cannot set stream bitrate.")
+            return
+        }
+        netStream.videoSettings.bitRate = stream.bitrate
+    }
+    
     func setStreamCodec() {
         guard let stream else {
             logger.warning("Cannot set stream codec.")
@@ -197,6 +205,7 @@ final class Model: ObservableObject, NetStreamDelegate {
         // netStream = srtStream
         netStream.videoOrientation = .landscapeRight
         setStreamFPS()
+        setStreamBitrate()
         netStream.mixer.recorder.delegate = self
         checkDeviceAuthorization()
         twitchChat = TwitchChatMobs(model: self)
@@ -245,6 +254,7 @@ final class Model: ObservableObject, NetStreamDelegate {
         attachCamera(position: .back)
         setStreamResolution()
         setStreamFPS()
+        setStreamBitrate()
         setStreamCodec()
         updateButtonStates()
         sceneUpdated(imageEffectChanged: true)
@@ -339,6 +349,7 @@ final class Model: ObservableObject, NetStreamDelegate {
         stopStream()
         setStreamResolution()
         setStreamFPS()
+        setStreamBitrate()
         setStreamCodec()
         reloadStreamProtocol()
         reloadTwitchChat()
