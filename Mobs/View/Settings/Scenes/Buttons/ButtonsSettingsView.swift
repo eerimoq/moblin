@@ -9,10 +9,8 @@ struct ButtonsSettingsView: View {
 
     func isButtonUsed(button: SettingsButton) -> Bool {
         for scene in database.scenes {
-            for sceneButton in scene.buttons {
-                if sceneButton.buttonId == button.id {
-                    return true
-                }
+            for sceneButton in scene.buttons where sceneButton.buttonId == button.id {
+                return true
             }
         }
         return false

@@ -20,10 +20,10 @@ struct StreamsSettingsView: View {
                                 stream.enabled
                             }, set: { value in
                                 stream.enabled = value
-                                for ostream in database.streams {
-                                    if ostream.id != stream.id {
-                                        ostream.enabled = false
-                                    }
+                                for ostream in database.streams
+                                    where ostream.id != stream.id
+                                {
+                                    ostream.enabled = false
                                 }
                                 model.store()
                                 model.reloadStream()

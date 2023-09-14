@@ -164,7 +164,10 @@ struct SceneSettingsView: View {
                 Text("Widgets")
             } footer: {
                 Text(
-                    "Widgets are stacked from back to front. There must be exactly one camera widget. The camera widget must be in the back."
+                    """
+                    Widgets are stacked from back to front. There must be exactly \
+                    one camera widget. The camera widget must be in the back.
+                    """
                 )
             }
             Section {

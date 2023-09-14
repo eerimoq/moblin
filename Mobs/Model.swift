@@ -81,10 +81,8 @@ final class Model: ObservableObject, NetStreamDelegate {
     }
 
     var stream: SettingsStream? {
-        for stream in database.streams {
-            if stream.enabled {
-                return stream
-            }
+        for stream in database.streams where stream.enabled {
+            return stream
         }
         return nil
     }
@@ -385,19 +383,15 @@ final class Model: ObservableObject, NetStreamDelegate {
     }
 
     func findWidget(id: UUID) -> SettingsWidget? {
-        for widget in database.widgets {
-            if widget.id == id {
-                return widget
-            }
+        for widget in database.widgets where widget.id == id {
+            return widget
         }
         return nil
     }
 
     func findEnabledScene(id: UUID) -> SettingsScene? {
-        for scene in enabledScenes {
-            if id == scene.id {
-                return scene
-            }
+        for scene in enabledScenes where id == scene.id {
+            return scene
         }
         return nil
     }

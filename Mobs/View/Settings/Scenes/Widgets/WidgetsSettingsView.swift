@@ -9,17 +9,13 @@ struct WidgetsSettingsView: View {
 
     func isWidgetUsed(widget: SettingsWidget) -> Bool {
         for scene in database.scenes {
-            for sceneWidget in scene.widgets {
-                if sceneWidget.widgetId == widget.id {
-                    return true
-                }
+            for sceneWidget in scene.widgets where sceneWidget.widgetId == widget.id {
+                return true
             }
         }
         for button in database.buttons {
-            if button.type == .widget {
-                if button.widget.widgetId == widget.id {
-                    return true
-                }
+            if button.type == .widget && button.widget.widgetId == widget.id {
+                return true
             }
         }
         return false

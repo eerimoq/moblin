@@ -23,8 +23,8 @@ struct ButtonSettingsView: View {
         self.button = button
         self.model = model
         selection = button.type.rawValue
-        selectedWidget = model.database.widgets.firstIndex(where: {
-            widget in widget.id == button.widget.widgetId
+        selectedWidget = model.database.widgets.firstIndex(where: { widget in
+            widget.id == button.widget.widgetId
         }) ?? 0
     }
 

@@ -57,8 +57,8 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     private var model: Model
     private var webSocket: URLSessionWebSocketTask
     private var channelId: String
-    private var keepAliveTimer: Timer? = nil
-    private var reconnectTimer: Timer? = nil
+    private var keepAliveTimer: Timer?
+    private var reconnectTimer: Timer?
     private var reconnectTime = 0.0
     private var running = true
 
@@ -233,7 +233,10 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     ) {
         logger
             .warning(
-                "twitch: pubsub: \(channelId): Disconnected from server with close code \(closeCode) and reason \(String(describing: reason))"
+                """
+                twitch: pubsub: \(channelId): Disconnected from server with close \
+                code \(closeCode) and reason \(String(describing: reason))
+                """
             )
         reconnect()
     }

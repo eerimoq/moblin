@@ -4,7 +4,7 @@ import SwiftUI
 struct WidgetImageSettingsView: View {
     @ObservedObject var model: Model
     var widget: SettingsWidget
-    @State var selectedImageItem: PhotosPickerItem? = nil
+    @State var selectedImageItem: PhotosPickerItem?
 
     var body: some View {
         Section(widget.type.rawValue) {
