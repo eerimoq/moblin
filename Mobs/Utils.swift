@@ -87,3 +87,16 @@ func formatBytesPerSecond(speed: Int64) -> String {
     speed = speed.replacingOccurrences(of: "bytes", with: "b")
     return speed.replacingOccurrences(of: "B", with: "b") + "ps"
 }
+
+var uptimeFormatter: DateComponentsFormatter {
+    let formatter = DateComponentsFormatter()
+    formatter.allowedUnits = [.hour, .minute, .second]
+    formatter.zeroFormattingBehavior = .pad
+    return formatter
+}
+
+var currentTimeFormatter: DateFormatter {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "HH:mm"
+    return formatter
+}

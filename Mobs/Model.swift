@@ -32,36 +32,24 @@ struct ButtonPair: Identifiable {
 }
 
 final class Model: ObservableObject, NetStreamDelegate {
+    private var retryCount: Int = 0
     private let maxRetryCount: Int = 5
     private var rtmpConnection = RTMPConnection()
     private var srtConnection = SRTConnection()
     private var rtmpStream: RTMPStream! = nil
     private var srtStream: SRTStream! = nil
     var netStream: NetStream! = nil
+    // private var srtla = Srtla()
     private var keyValueObservations: [NSKeyValueObservation] = []
-    private var retryCount: Int = 0
     @Published var liveState: LiveState = .stopped
     private var nc = NotificationCenter.default
     private var subscriptions = Set<AnyCancellable>()
     private var publishing = false
     private var startDate: Date? = nil
-    @Published var uptime: String = ""
-    var settings: Settings = .init()
-    var currentTime: String = ""
+    @Published var uptime = ""
+    var settings = Settings()
+    var currentTime = ""
     var selectedSceneId = UUID()
-    private var uptimeFormatter: DateComponentsFormatter {
-        let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = [.hour, .minute, .second]
-        formatter.zeroFormattingBehavior = .pad
-        return formatter
-    }
-
-    private var currentTimeFormatter: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm"
-        return formatter
-    }
-
     private var twitchChat: TwitchChatMobs!
     private var twitchPubSub: TwitchPubSub?
     @Published var twitchChatPosts: [Post] = []
@@ -78,6 +66,18 @@ final class Model: ObservableObject, NetStreamDelegate {
     private var seipaEffect = SeipaEffect()
     private var bloomEffect = BloomEffect()
     private var imageEffects: [UUID: ImageEffect] = [:]
+    @Published var sceneIndex = 0
+    private var isTorchOn = false
+    private var isMuteOn = false
+    var log: [String] = []
+    private var location = Location()
+    var imageStorage = ImageStorage()
+    @Published var buttonPairs: [ButtonPair] = []
+    
+    var database: Database {
+        settings.database
+    }
+    
     var stream: SettingsStream? {
         for stream in database.streams {
             if stream.enabled {
@@ -87,24 +87,10 @@ final class Model: ObservableObject, NetStreamDelegate {
         return nil
     }
 
-    // private var srtla = Srtla()
-    // private var srtDummySender: DummySender?
-    @Published var sceneIndex = 0
-    var isTorchOn = false
-    var isMuteOn = false
-    var log: [String] = []
-    var location: Location = .init()
-
-    var database: Database {
-        settings.database
-    }
-
     var enabledScenes: [SettingsScene] {
         database.scenes.filter { scene in scene.enabled }
     }
 
-    var imageStorage = ImageStorage()
-    @Published var buttonPairs: [ButtonPair] = []
 
     func findButton(id: UUID) -> SettingsButton? {
         return database.buttons.first(where: { button in button.id == id })
@@ -170,11 +156,9 @@ final class Model: ObservableObject, NetStreamDelegate {
                 self.updateTwitchChatSpeed()
                 self.updateSpeed()
                 self.updateTwitchPubSub()
-                // self.srtDummySender!.sendPacket()
             }
         })
         // srtla.start(uri: "srt://192.168.50.72:10000")
-        // srtDummySender = DummySender(srtla: srtla)
         updateThermalState()
 
         nc.publisher(for: ProcessInfo.thermalStateDidChangeNotification, object: nil)
@@ -446,38 +430,38 @@ final class Model: ObservableObject, NetStreamDelegate {
             logger.error("model: Attach audio error: \(error)")
         }
         for sceneWidget in scene.widgets.filter({ widget in widget.enabled }) {
-            if let widget = findWidget(id: sceneWidget.widgetId) {
-                if let button = getEnabledButtonForWidgetControlledByScene(widget: widget, scene: scene) {
-                    if !button.isOn {
-                        continue
-                    }
-                }
-                switch widget.type {
-                case .camera:
-                    switch widget.camera.type {
-                    case .main:
-                        attachCamera(position: .back)
-                    case .front:
-                        attachCamera(position: .front)
-                    }
-                case .image:
-                    if let imageEffect = imageEffects[sceneWidget.id] {
-                        _ = netStream.registerVideoEffect(imageEffect)
-                    }
-                case .videoEffect:
-                    switch widget.videoEffect.type {
-                    case .movie:
-                        movieEffectOn()
-                    case .grayScale:
-                        grayScaleEffectOn()
-                    case .seipa:
-                        seipaEffectOn()
-                    case .bloom:
-                        bloomEffectOn()
-                    }
-                }
-            } else {
+            guard let widget = findWidget(id: sceneWidget.widgetId) else {
                 logger.error("model: Widget not found.")
+                continue
+            }
+            if let button = getEnabledButtonForWidgetControlledByScene(widget: widget, scene: scene) {
+                if !button.isOn {
+                    continue
+                }
+            }
+            switch widget.type {
+            case .camera:
+                switch widget.camera.type {
+                case .main:
+                    attachCamera(position: .back)
+                case .front:
+                    attachCamera(position: .front)
+                }
+            case .image:
+                if let imageEffect = imageEffects[sceneWidget.id] {
+                    _ = netStream.registerVideoEffect(imageEffect)
+                }
+            case .videoEffect:
+                switch widget.videoEffect.type {
+                case .movie:
+                    movieEffectOn()
+                case .grayScale:
+                    grayScaleEffectOn()
+                case .seipa:
+                    seipaEffectOn()
+                case .bloom:
+                    bloomEffectOn()
+                }
             }
         }
     }

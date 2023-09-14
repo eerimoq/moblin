@@ -10,7 +10,6 @@
 		030947C32A9C0496003FC387 /* StreamOverlayChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030947C22A9C0496003FC387 /* StreamOverlayChatView.swift */; };
 		0315A33B2AA2FA7100295443 /* LocalListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33A2AA2FA7100295443 /* LocalListener.swift */; };
 		0315A33D2AA2FA7D00295443 /* RemoteConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */; };
-		0315A33F2AA3173000295443 /* DummySender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33E2AA3173000295443 /* DummySender.swift */; };
 		0315A3442AA31D0100295443 /* StreamRtmpSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3432AA31D0100295443 /* StreamRtmpSettingsView.swift */; };
 		0315A3462AA31E9000295443 /* StreamTwitchSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3452AA31E9000295443 /* StreamTwitchSettingsView.swift */; };
 		0315A3572AA3261900295443 /* StreamSrtSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3562AA3261900295443 /* StreamSrtSettingsView.swift */; };
@@ -89,7 +88,6 @@
 		030947C22A9C0496003FC387 /* StreamOverlayChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOverlayChatView.swift; sourceTree = "<group>"; };
 		0315A33A2AA2FA7100295443 /* LocalListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalListener.swift; sourceTree = "<group>"; };
 		0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteConnection.swift; sourceTree = "<group>"; };
-		0315A33E2AA3173000295443 /* DummySender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DummySender.swift; sourceTree = "<group>"; };
 		0315A3432AA31D0100295443 /* StreamRtmpSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamRtmpSettingsView.swift; sourceTree = "<group>"; };
 		0315A3452AA31E9000295443 /* StreamTwitchSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamTwitchSettingsView.swift; sourceTree = "<group>"; };
 		0315A3562AA3261900295443 /* StreamSrtSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamSrtSettingsView.swift; sourceTree = "<group>"; };
@@ -182,7 +180,6 @@
 				03B374122AA277570028DDD5 /* Srtla.swift */,
 				0315A33A2AA2FA7100295443 /* LocalListener.swift */,
 				0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */,
-				0315A33E2AA3173000295443 /* DummySender.swift */,
 			);
 			path = Srtla;
 			sourceTree = "<group>";
@@ -627,7 +624,6 @@
 				03A9836C2A9A05D7008FF0DB /* WidgetSettingsView.swift in Sources */,
 				0315A3622AA33A2C00295443 /* WidgetTextSettingsView.swift in Sources */,
 				0379BB882AA836B500B718B6 /* StreamVideoSettingsView.swift in Sources */,
-				0315A33F2AA3173000295443 /* DummySender.swift in Sources */,
 				03A983642A9A05D7008FF0DB /* StreamView.swift in Sources */,
 				0379BB9C2AAD819800B718B6 /* StreamOverlayLeftView.swift in Sources */,
 				0315A3672AA33C6A00295443 /* WidgetImageSettingsView.swift in Sources */,
