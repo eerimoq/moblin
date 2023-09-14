@@ -41,21 +41,21 @@ struct ButtonsView: View {
     }
 
     func torchAction(state: ButtonState) {
-        state.button.isOn = !state.button.isOn
+        state.button.isOn.toggle()
         model.toggleTorch()
         model.updateButtonStates()
         model.store()
     }
 
     func muteAction(state: ButtonState) {
-        state.button.isOn = !state.button.isOn
+        state.button.isOn.toggle()
         model.toggleMute()
         model.updateButtonStates()
         model.store()
     }
 
     func widgetAction(state: ButtonState) {
-        state.button.isOn = !state.button.isOn
+        state.button.isOn.toggle()
         model.updateButtonStates()
         model.sceneUpdated()
     }
