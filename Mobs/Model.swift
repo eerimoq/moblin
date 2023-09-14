@@ -162,10 +162,6 @@ final class Model: ObservableObject, NetStreamDelegate {
             twitchChat.start(channelName: stream.twitchChannelName)
             twitchPubSub = TwitchPubSub(model: self, channelId: stream.twitchChannelId)
             twitchPubSub!.start()
-            netStream.attachAudio(AVCaptureDevice.default(for: .audio)) { error in
-                logger.error("model: Attach audio error: \(error)")
-            }
-            attachCamera(position: .back)
         }
         resetSelectedScene()
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
@@ -449,6 +445,9 @@ final class Model: ObservableObject, NetStreamDelegate {
     }
     
     func sceneUpdatedOn(scene: SettingsScene) {
+        netStream.attachAudio(AVCaptureDevice.default(for: .audio)) { error in
+            logger.error("model: Attach audio error: \(error)")
+        }
         for sceneWidget in scene.widgets.filter({widget in widget.enabled}) {
             if let widget = findWidget(id: sceneWidget.widgetId) {
                 if let button = getEnabledButtonForWidgetControlledByScene(widget: widget, scene: scene) {
