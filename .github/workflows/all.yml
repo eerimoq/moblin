@@ -9,3 +9,5 @@ jobs:
       - uses: actions/checkout@v3
       - name: Source code styling
         run: swiftformat Mobs --maxwidth 90
+      - name: Linting
+        run: swiftlint lint --strict

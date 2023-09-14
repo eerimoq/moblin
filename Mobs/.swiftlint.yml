@@ -1,2 +1,8 @@
 disabled_rules:
   - identifier_name
+  - file_length
+  - trailing_comma
+  - opening_brace
+  - type_body_length
+  - cyclomatic_complexity
+  - function_body_length

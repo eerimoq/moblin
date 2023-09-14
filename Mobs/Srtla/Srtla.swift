@@ -52,11 +52,9 @@ class Srtla {
     func findBestRemoteConnection() -> RemoteConnection? {
         var bestConnection: RemoteConnection?
         var bestScore = -1
-        for connection in remoteConnections {
-            if connection.score() > bestScore {
-                bestConnection = connection
-                bestScore = connection.score()
-            }
+        for connection in remoteConnections where connection.score() > bestScore {
+            bestConnection = connection
+            bestScore = connection.score()
         }
         return bestConnection
     }

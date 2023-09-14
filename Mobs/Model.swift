@@ -29,7 +29,7 @@ enum NetStreamState {
 struct ButtonPair: Identifiable {
     var id: Int
     var first: ButtonState
-    var second: ButtonState? = nil
+    var second: ButtonState?
 }
 
 final class Model: ObservableObject, NetStreamDelegate {
@@ -37,9 +37,9 @@ final class Model: ObservableObject, NetStreamDelegate {
     private let maxRetryCount: Int = 5
     private var rtmpConnection = RTMPConnection()
     private var srtConnection = SRTConnection()
-    private var rtmpStream: RTMPStream! = nil
-    private var srtStream: SRTStream! = nil
-    var netStream: NetStream! = nil
+    private var rtmpStream: RTMPStream!
+    private var srtStream: SRTStream!
+    var netStream: NetStream!
     private var netStreamState: NetStreamState = .disconnected
     // private var srtla = Srtla()
     private var keyValueObservations: [NSKeyValueObservation] = []
@@ -47,7 +47,7 @@ final class Model: ObservableObject, NetStreamDelegate {
     private var nc = NotificationCenter.default
     private var subscriptions = Set<AnyCancellable>()
     private var publishing = false
-    private var startDate: Date? = nil
+    private var startDate: Date?
     @Published var uptime = ""
     var settings = Settings()
     var currentTime = ""
