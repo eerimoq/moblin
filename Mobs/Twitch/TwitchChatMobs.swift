@@ -27,7 +27,11 @@ final class TwitchChatMobs {
             var reconnectTime: UInt64 = 0
             logger.info("twitch: chat: \(channelName): Connecting")
             while true {
-                twitchChat = TwitchChat(token: "SCHMOOPIIE", nick: "justinfan67420", name: channelName)
+                twitchChat = TwitchChat(
+                    token: "SCHMOOPIIE",
+                    nick: "justinfan67420",
+                    name: channelName
+                )
                 do {
                     connected = true
                     for try await message in self.twitchChat.messages {
@@ -36,7 +40,11 @@ final class TwitchChatMobs {
                             if self.model.twitchChatPosts.count > 6 {
                                 self.model.twitchChatPosts.removeFirst()
                             }
-                            let post = Post(id: self.id, user: message.sender, message: message.text)
+                            let post = Post(
+                                id: self.id,
+                                user: message.sender,
+                                message: message.text
+                            )
                             self.model.twitchChatPosts.append(post)
                             self.model.numberOfTwitchChatPosts += 1
                             self.id += 1

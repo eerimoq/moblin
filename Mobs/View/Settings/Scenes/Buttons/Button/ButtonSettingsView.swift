@@ -45,7 +45,10 @@ struct ButtonSettingsView: View {
 
     var body: some View {
         Form {
-            NavigationLink(destination: NameEditView(name: button.name, onSubmit: submitName)) {
+            NavigationLink(destination: NameEditView(
+                name: button.name,
+                onSubmit: submitName
+            )) {
                 TextItemView(name: "Name", value: button.name)
             }
             Section("Type") {
@@ -66,8 +69,11 @@ struct ButtonSettingsView: View {
                 Section("Widget") {
                     Picker("", selection: $selectedWidget) {
                         ForEach(model.database.widgets) { widget in
-                            IconAndTextView(image: widgetImage(widget: widget), text: widget.name)
-                                .tag(model.database.widgets.firstIndex(of: widget)!)
+                            IconAndTextView(
+                                image: widgetImage(widget: widget),
+                                text: widget.name
+                            )
+                            .tag(model.database.widgets.firstIndex(of: widget)!)
                         }
                     }
                     .onChange(of: selectedWidget) { index in
@@ -81,10 +87,18 @@ struct ButtonSettingsView: View {
                 EmptyView()
             }
             Section("Images") {
-                NavigationLink(destination: ButtonImagePickerSettingsView(title: "On", value: button.systemImageNameOn, onChange: onSystemImageNameOn)) {
+                NavigationLink(destination: ButtonImagePickerSettingsView(
+                    title: "On",
+                    value: button.systemImageNameOn,
+                    onChange: onSystemImageNameOn
+                )) {
                     ImageItemView(name: "On", image: button.systemImageNameOn)
                 }
-                NavigationLink(destination: ButtonImagePickerSettingsView(title: "Off", value: button.systemImageNameOff, onChange: onSystemImageNameOff)) {
+                NavigationLink(destination: ButtonImagePickerSettingsView(
+                    title: "Off",
+                    value: button.systemImageNameOff,
+                    onChange: onSystemImageNameOff
+                )) {
                     ImageItemView(name: "Off", image: button.systemImageNameOff)
                 }
             }

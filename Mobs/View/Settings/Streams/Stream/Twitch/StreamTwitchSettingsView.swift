@@ -22,10 +22,18 @@ struct StreamTwitchSettingsView: View {
 
     var body: some View {
         Form {
-            NavigationLink(destination: TextEditView(title: "Channel name", value: stream.twitchChannelName, onSubmit: submitChannelName)) {
+            NavigationLink(destination: TextEditView(
+                title: "Channel name",
+                value: stream.twitchChannelName,
+                onSubmit: submitChannelName
+            )) {
                 TextItemView(name: "Channel name", value: stream.twitchChannelName)
             }
-            NavigationLink(destination: TextEditView(title: "Channel id", value: stream.twitchChannelId, onSubmit: submitChannelId)) {
+            NavigationLink(destination: TextEditView(
+                title: "Channel id",
+                value: stream.twitchChannelId,
+                onSubmit: submitChannelId
+            )) {
                 TextItemView(name: "Channel id", value: stream.twitchChannelId)
             }
         }

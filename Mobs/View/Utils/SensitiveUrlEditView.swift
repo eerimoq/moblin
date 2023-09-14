@@ -1,6 +1,7 @@
 import SwiftUI
 
-var sensitiveUrlFooter = "Do not share your URL with anyone or they can hijack your channel!"
+var sensitiveUrlFooter =
+    "Do not share your URL with anyone or they can hijack your channel!"
 
 struct SensitiveUrlEditView: View {
     @State var value: String

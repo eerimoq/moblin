@@ -75,11 +75,11 @@ final class Model: ObservableObject, NetStreamDelegate {
     private var location = Location()
     var imageStorage = ImageStorage()
     @Published var buttonPairs: [ButtonPair] = []
-    
+
     var database: Database {
         settings.database
     }
-    
+
     var stream: SettingsStream? {
         for stream in database.streams {
             if stream.enabled {
@@ -92,7 +92,6 @@ final class Model: ObservableObject, NetStreamDelegate {
     var enabledScenes: [SettingsScene] {
         database.scenes.filter { scene in scene.enabled }
     }
-
 
     func findButton(id: UUID) -> SettingsButton? {
         return database.buttons.first(where: { button in button.id == id })
@@ -114,7 +113,11 @@ final class Model: ObservableObject, NetStreamDelegate {
         var pairs: [ButtonPair] = []
         for index in stride(from: 0, to: states.count, by: 2) {
             if states.count - index > 1 {
-                pairs.append(ButtonPair(id: index / 2, first: states[index], second: states[index + 1]))
+                pairs.append(ButtonPair(
+                    id: index / 2,
+                    first: states[index],
+                    second: states[index + 1]
+                ))
             } else {
                 pairs.append(ButtonPair(id: index / 2, first: states[index]))
             }
@@ -166,7 +169,10 @@ final class Model: ObservableObject, NetStreamDelegate {
             }
             .store(in: &subscriptions)
 
-        let keyValueObservation = srtConnection.observe(\.connected, options: [.new, .old]) { [weak self] _, _ in
+        let keyValueObservation = srtConnection.observe(\.connected, options: [
+            .new,
+            .old,
+        ]) { [weak self] _, _ in
             guard let self else {
                 return
             }
@@ -235,7 +241,13 @@ final class Model: ObservableObject, NetStreamDelegate {
             guard let image = UIImage(data: data) else {
                 continue
             }
-            imageEffects[widget.id] = ImageEffect(image: image, x: widget.x, y: widget.y, width: widget.width, height: widget.height)
+            imageEffects[widget.id] = ImageEffect(
+                image: image,
+                x: widget.x,
+                y: widget.y,
+                width: widget.width,
+                height: widget.height
+            )
         }
     }
 
@@ -277,7 +289,7 @@ final class Model: ObservableObject, NetStreamDelegate {
     }
 
     func reloadStreamIfEnabled(stream: SettingsStream) {
-        self.store()
+        store()
         if stream.enabled {
             reloadStream()
         }
@@ -314,9 +326,11 @@ final class Model: ObservableObject, NetStreamDelegate {
     func setStreamCodec(stream: SettingsStream) {
         switch stream.codec {
         case .h264avc:
-            netStream.videoSettings.profileLevel = kVTProfileLevel_H264_Baseline_3_1 as String
+            netStream.videoSettings
+                .profileLevel = kVTProfileLevel_H264_Baseline_3_1 as String
         case .h265hevc:
-            netStream.videoSettings.profileLevel = kVTProfileLevel_HEVC_Main_AutoLevel as String
+            netStream.videoSettings
+                .profileLevel = kVTProfileLevel_HEVC_Main_AutoLevel as String
         }
     }
 
@@ -388,7 +402,10 @@ final class Model: ObservableObject, NetStreamDelegate {
         return nil
     }
 
-    func getEnabledButtonForWidgetControlledByScene(widget: SettingsWidget, scene: SettingsScene) -> SettingsButton? {
+    func getEnabledButtonForWidgetControlledByScene(
+        widget: SettingsWidget,
+        scene: SettingsScene
+    ) -> SettingsButton? {
         for button in scene.buttons {
             if !button.enabled {
                 continue
@@ -436,7 +453,10 @@ final class Model: ObservableObject, NetStreamDelegate {
                 logger.error("model: Widget not found.")
                 continue
             }
-            if let button = getEnabledButtonForWidgetControlledByScene(widget: widget, scene: scene) {
+            if let button = getEnabledButtonForWidgetControlledByScene(
+                widget: widget,
+                scene: scene
+            ) {
                 if !button.isOn {
                     continue
                 }
@@ -507,7 +527,8 @@ final class Model: ObservableObject, NetStreamDelegate {
     }
 
     func updateTwitchChatSpeed() {
-        twitchChatPostsPerSecond = twitchChatPostsPerSecond * 0.8 + Float(numberOfTwitchChatPosts) * 0.2
+        twitchChatPostsPerSecond = twitchChatPostsPerSecond * 0.8 +
+            Float(numberOfTwitchChatPosts) * 0.2
         numberOfTwitchChatPosts = 0
     }
 
@@ -523,7 +544,8 @@ final class Model: ObservableObject, NetStreamDelegate {
         if netStream === rtmpStream {
             return rtmpStream.info.byteCount.value
         } else {
-            return Int64(srtConnection.performanceData.byteRecvTotal + srtConnection.performanceData.byteSentTotal)
+            return Int64(srtConnection.performanceData.byteRecvTotal + srtConnection
+                .performanceData.byteSentTotal)
         }
     }
 
@@ -539,16 +561,17 @@ final class Model: ObservableObject, NetStreamDelegate {
 
     func checkDeviceAuthorization() {
         let requiredAccessLevel: PHAccessLevel = .readWrite
-        PHPhotoLibrary.requestAuthorization(for: requiredAccessLevel) { authorizationStatus in
-            switch authorizationStatus {
-            case .limited:
-                logger.warning("model: limited authorization granted")
-            case .authorized:
-                logger.info("model: authorization granted")
-            default:
-                logger.error("model: Unimplemented")
+        PHPhotoLibrary
+            .requestAuthorization(for: requiredAccessLevel) { authorizationStatus in
+                switch authorizationStatus {
+                case .limited:
+                    logger.warning("model: limited authorization granted")
+                case .authorized:
+                    logger.info("model: authorization granted")
+                default:
+                    logger.error("model: Unimplemented")
+                }
             }
-        }
     }
 
     func updateThermalState() {
@@ -557,7 +580,11 @@ final class Model: ObservableObject, NetStreamDelegate {
     }
 
     func attachCamera(position: AVCaptureDevice.Position) {
-        let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: position)
+        let device = AVCaptureDevice.default(
+            .builtInWideAngleCamera,
+            for: .video,
+            position: position
+        )
         netStream.attachCamera(device) { error in
             logger.error("model: Attach camera error: \(error)")
         }
@@ -571,8 +598,16 @@ final class Model: ObservableObject, NetStreamDelegate {
         UIApplication.shared.isIdleTimerDisabled = true
         switch stream?.proto {
         case .rtmp:
-            rtmpConnection.addEventListener(.rtmpStatus, selector: #selector(rtmpStatusHandler), observer: self)
-            rtmpConnection.addEventListener(.ioError, selector: #selector(rtmpErrorHandler), observer: self)
+            rtmpConnection.addEventListener(
+                .rtmpStatus,
+                selector: #selector(rtmpStatusHandler),
+                observer: self
+            )
+            rtmpConnection.addEventListener(
+                .ioError,
+                selector: #selector(rtmpErrorHandler),
+                observer: self
+            )
             rtmpConnection.connect(rtmpUri())
         case .srt:
             logger.info("model: Should start publishing using SRT")
@@ -589,8 +624,16 @@ final class Model: ObservableObject, NetStreamDelegate {
         publishing = false
         UIApplication.shared.isIdleTimerDisabled = false
         rtmpConnection.close()
-        rtmpConnection.removeEventListener(.rtmpStatus, selector: #selector(rtmpStatusHandler), observer: self)
-        rtmpConnection.removeEventListener(.ioError, selector: #selector(rtmpErrorHandler), observer: self)
+        rtmpConnection.removeEventListener(
+            .rtmpStatus,
+            selector: #selector(rtmpStatusHandler),
+            observer: self
+        )
+        rtmpConnection.removeEventListener(
+            .ioError,
+            selector: #selector(rtmpErrorHandler),
+            observer: self
+        )
         logger.info("model: Should stop publishing using SRT")
         // srtStream.close()
         // srtConnection.close()
@@ -655,7 +698,9 @@ final class Model: ObservableObject, NetStreamDelegate {
     }
 
     func setCameraZoomLevel(level: CGFloat) {
-        guard let device = netStream.videoCapture(for: 0)?.device, level >= 1 && level < device.activeFormat.videoMaxZoomFactor else {
+        guard let device = netStream.videoCapture(for: 0)?.device,
+              level >= 1 && level < device.activeFormat.videoMaxZoomFactor
+        else {
             return
         }
         do {
@@ -670,7 +715,9 @@ final class Model: ObservableObject, NetStreamDelegate {
     @objc
     private func rtmpStatusHandler(_ notification: Notification) {
         let e = Event.from(notification)
-        guard let data: ASObject = e.data as? ASObject, let code: String = data["code"] as? String else {
+        guard let data: ASObject = e.data as? ASObject,
+              let code: String = data["code"] as? String
+        else {
             return
         }
         switch code {
@@ -680,7 +727,8 @@ final class Model: ObservableObject, NetStreamDelegate {
             startDate = Date()
             netStreamState = .connected
             updateUptimeFromNonMain()
-        case RTMPConnection.Code.connectFailed.rawValue, RTMPConnection.Code.connectClosed.rawValue:
+        case RTMPConnection.Code.connectFailed.rawValue,
+             RTMPConnection.Code.connectClosed.rawValue:
             netStreamState = .disconnected
             startDate = nil
             updateUptimeFromNonMain()
@@ -710,7 +758,8 @@ extension Model: IORecorderDelegate {
 
     func recorder(_: IORecorder, finishWriting writer: AVAssetWriter) {
         PHPhotoLibrary.shared().performChanges({ () in
-            PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: writer.outputURL)
+            PHAssetChangeRequest
+                .creationRequestForAssetFromVideo(atFileURL: writer.outputURL)
         }, completionHandler: { _, error in
             do {
                 try FileManager.default.removeItem(at: writer.outputURL)
@@ -719,9 +768,13 @@ extension Model: IORecorderDelegate {
             }
         })
     }
-    
+
     // NetStreamDelegate
-    func stream(_: NetStream, didOutput _: AVAudioBuffer, presentationTimeStamp _: CMTime) {
+    func stream(
+        _: NetStream,
+        didOutput _: AVAudioBuffer,
+        presentationTimeStamp _: CMTime
+    ) {
         logger.debug("model: Playback an audio packet incoming.")
     }
 
@@ -730,7 +783,11 @@ extension Model: IORecorderDelegate {
     }
 
     #if os(iOS)
-        func stream(_: NetStream, sessionWasInterrupted _: AVCaptureSession, reason _: AVCaptureSession.InterruptionReason?) {
+        func stream(
+            _: NetStream,
+            sessionWasInterrupted _: AVCaptureSession,
+            reason _: AVCaptureSession.InterruptionReason?
+        ) {
             logger.info("model: Session was interrupted.")
         }
 
@@ -743,7 +800,9 @@ extension Model: IORecorderDelegate {
         logger.error("model: Video codec error: \(error)")
     }
 
-    func stream(_: NetStream, audioCodecErrorOccurred error: HaishinKit.AudioCodec.Error) {
+    func stream(_: NetStream,
+                audioCodecErrorOccurred error: HaishinKit.AudioCodec.Error)
+    {
         logger.error("model: Audio codec error: \(error)")
     }
 

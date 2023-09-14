@@ -29,7 +29,9 @@ struct SceneSettingsView: View {
     }
 
     func colorOf(widget: SettingsSceneWidget) -> Color {
-        guard let index = model.database.widgets.firstIndex(where: { item in item.id == widget.widgetId }) else {
+        guard let index = model.database.widgets
+            .firstIndex(where: { item in item.id == widget.widgetId })
+        else {
             return .blue
         }
         return widgetColors[index % widgetColors.count]
@@ -60,7 +62,10 @@ struct SceneSettingsView: View {
 
     var body: some View {
         Form {
-            NavigationLink(destination: NameEditView(name: scene.name, onSubmit: submitName)) {
+            NavigationLink(destination: NameEditView(
+                name: scene.name,
+                onSubmit: submitName
+            )) {
                 TextItemView(name: "Name", value: scene.name)
             }
             Section("Preview") {
@@ -77,8 +82,13 @@ struct SceneSettingsView: View {
             Section {
                 List {
                     ForEach(scene.widgets) { widget in
-                        if let realWidget = widgets.first(where: { item in item.id == widget.widgetId }) {
-                            NavigationLink(destination: SceneWidgetSettingsView(model: model, widget: widget)) {
+                        if let realWidget = widgets
+                            .first(where: { item in item.id == widget.widgetId })
+                        {
+                            NavigationLink(destination: SceneWidgetSettingsView(
+                                model: model,
+                                widget: widget
+                            )) {
                                 Toggle(isOn: Binding(get: {
                                     widget.enabled
                                 }, set: { value in
@@ -114,8 +124,11 @@ struct SceneSettingsView: View {
                             Section("Widget name") {
                                 Picker("", selection: $selectedWidget) {
                                     ForEach(widgets) { widget in
-                                        IconAndTextView(image: widgetImage(widget: widget), text: widget.name)
-                                            .tag(widgets.firstIndex(of: widget)!)
+                                        IconAndTextView(
+                                            image: widgetImage(widget: widget),
+                                            text: widget.name
+                                        )
+                                        .tag(widgets.firstIndex(of: widget)!)
                                     }
                                 }
                                 .pickerStyle(.inline)
@@ -131,7 +144,13 @@ struct SceneSettingsView: View {
                             })
                             Spacer()
                             Button(action: {
-                                scene.widgets.append(SettingsSceneWidget(widgetId: widgets[selectedWidget].id))
+                                scene.widgets
+                                    .append(
+                                        SettingsSceneWidget(widgetId: widgets[
+                                            selectedWidget
+                                        ]
+                                        .id)
+                                    )
                                 model.sceneUpdated()
                                 showingAddWidget = false
                             }, label: {
@@ -144,7 +163,9 @@ struct SceneSettingsView: View {
             } header: {
                 Text("Widgets")
             } footer: {
-                Text("Widgets are stacked from back to front. There must be exactly one camera widget. The camera widget must be in the back.")
+                Text(
+                    "Widgets are stacked from back to front. There must be exactly one camera widget. The camera widget must be in the back."
+                )
             }
             Section {
                 List {
@@ -156,7 +177,10 @@ struct SceneSettingsView: View {
                                 button.enabled = value
                                 model.sceneUpdated()
                             })) {
-                                IconAndTextView(image: realButton.systemImageNameOff, text: realButton.name)
+                                IconAndTextView(
+                                    image: realButton.systemImageNameOff,
+                                    text: realButton.name
+                                )
                             }
                         }
                     }
@@ -178,8 +202,11 @@ struct SceneSettingsView: View {
                             Section("Button name") {
                                 Picker("", selection: $selectedButton) {
                                     ForEach(buttons) { button in
-                                        IconAndTextView(image: button.systemImageNameOff, text: button.name)
-                                            .tag(buttonIndex(button: button))
+                                        IconAndTextView(
+                                            image: button.systemImageNameOff,
+                                            text: button.name
+                                        )
+                                        .tag(buttonIndex(button: button))
                                     }
                                 }
                                 .pickerStyle(.inline)

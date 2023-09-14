@@ -12,7 +12,10 @@ struct StreamsSettingsView: View {
             Form {
                 Section {
                     ForEach(database.streams) { stream in
-                        NavigationLink(destination: StreamSettingsView(stream: stream, model: model)) {
+                        NavigationLink(destination: StreamSettingsView(
+                            stream: stream,
+                            model: model
+                        )) {
                             Toggle(stream.name, isOn: Binding(get: {
                                 stream.enabled
                             }, set: { value in

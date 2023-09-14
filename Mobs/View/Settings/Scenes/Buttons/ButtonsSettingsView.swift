@@ -23,8 +23,14 @@ struct ButtonsSettingsView: View {
             Section {
                 List {
                     ForEach(database.buttons) { button in
-                        NavigationLink(destination: ButtonSettingsView(button: button, model: model)) {
-                            IconAndTextView(image: button.systemImageNameOff, text: button.name)
+                        NavigationLink(destination: ButtonSettingsView(
+                            button: button,
+                            model: model
+                        )) {
+                            IconAndTextView(
+                                image: button.systemImageNameOff,
+                                text: button.name
+                            )
                         }
                         .deleteDisabled(isButtonUsed(button: button))
                     }

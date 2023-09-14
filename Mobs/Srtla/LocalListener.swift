@@ -68,7 +68,10 @@ class LocalListener {
         guard let connection else {
             return
         }
-        connection.receive(minimumIncompleteLength: 1, maximumLength: 32768) { data, _, _, error in
+        connection
+            .receive(minimumIncompleteLength: 1,
+                     maximumLength: 32768)
+        { data, _, _, error in
             if let data, !data.isEmpty {
                 logger.debug("srtla: local: Received \(data)")
                 if let packetHandler = self.packetHandler {

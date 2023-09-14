@@ -24,7 +24,11 @@ class RemoteConnection {
         let params = NWParameters(dtls: .none, udp: options)
         params.requiredInterfaceType = type
         params.prohibitExpensivePaths = false
-        connection = NWConnection(host: NWEndpoint.Host(host), port: NWEndpoint.Port(integerLiteral: port), using: params)
+        connection = NWConnection(
+            host: NWEndpoint.Host(host),
+            port: NWEndpoint.Port(integerLiteral: port),
+            using: params
+        )
         if let connection {
             connection.viabilityUpdateHandler = handleViabilityChange(to:)
             connection.stateUpdateHandler = handleStateChange(to:)
@@ -49,7 +53,8 @@ class RemoteConnection {
     }
 
     private func handleViabilityChange(to viability: Bool) {
-        logger.info("srtla: remote: \(type): Connection viability changed to \(viability)")
+        logger
+            .info("srtla: remote: \(type): Connection viability changed to \(viability)")
     }
 
     private func handleStateChange(to state: NWConnection.State) {
@@ -60,7 +65,10 @@ class RemoteConnection {
         guard let connection else {
             return
         }
-        connection.receive(minimumIncompleteLength: 1, maximumLength: 65536) { data, _, isDone, error in
+        connection
+            .receive(minimumIncompleteLength: 1,
+                     maximumLength: 65536)
+        { data, _, isDone, error in
             if let data, !data.isEmpty {
                 logger.debug("srtla: remote: \(self.type): Receive \(data)")
                 if let packetHandler = self.packetHandler {

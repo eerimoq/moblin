@@ -11,7 +11,10 @@ import Network
 class NetworkTestType {
     private var typeName: String
     private var type: NWInterface.InterfaceType
-    private var networkQueue = DispatchQueue(label: "com.eerimoq.network", qos: .userInitiated)
+    private var networkQueue = DispatchQueue(
+        label: "com.eerimoq.network",
+        qos: .userInitiated
+    )
     private var connection: NWConnection? {
         didSet {
             oldValue?.viabilityUpdateHandler = nil
@@ -58,7 +61,10 @@ class NetworkTestType {
 class NetworkTest {
     private var cellular: NetworkTestType = .init(typeName: "cellular", type: .cellular)
     private var wifi: NetworkTestType = .init(typeName: "wifi", type: .wifi)
-    private var wiredEthernet: NetworkTestType = .init(typeName: "wiredEthernet", type: .wiredEthernet)
+    private var wiredEthernet: NetworkTestType = .init(
+        typeName: "wiredEthernet",
+        type: .wiredEthernet
+    )
 
     func connect() {
         cellular.connect()

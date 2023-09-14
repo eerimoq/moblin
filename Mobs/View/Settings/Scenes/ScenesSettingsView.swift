@@ -11,7 +11,10 @@ struct ScenesSettingsView: View {
         Form {
             Section {
                 ForEach(database.scenes) { scene in
-                    NavigationLink(destination: SceneSettingsView(scene: scene, model: model)) {
+                    NavigationLink(destination: SceneSettingsView(
+                        scene: scene,
+                        model: model
+                    )) {
                         Toggle(scene.name, isOn: Binding(get: {
                             scene.enabled
                         }, set: { value in

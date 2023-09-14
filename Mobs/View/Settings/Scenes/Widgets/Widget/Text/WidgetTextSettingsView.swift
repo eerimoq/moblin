@@ -11,7 +11,11 @@ struct WidgetTextSettingsView: View {
 
     var body: some View {
         Section(widget.type.rawValue) {
-            NavigationLink(destination: TextEditView(title: "Format string", value: widget.text.formatString, onSubmit: submitFormatString)) {
+            NavigationLink(destination: TextEditView(
+                title: "Format string",
+                value: widget.text.formatString,
+                onSubmit: submitFormatString
+            )) {
                 TextItemView(name: "Format string", value: widget.text.formatString)
             }
         }

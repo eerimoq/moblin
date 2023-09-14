@@ -14,7 +14,11 @@ class DummySender {
             guard let port = srtla.localPort() else {
                 return
             }
-            connection = NWConnection(host: "localhost", port: NWEndpoint.Port(integerLiteral: port), using: .udp)
+            connection = NWConnection(
+                host: "localhost",
+                port: NWEndpoint.Port(integerLiteral: port),
+                using: .udp
+            )
             connection!.stateUpdateHandler = handleDummySrtStateChange(to:)
             connection!.start(queue: DispatchQueue.main)
         }

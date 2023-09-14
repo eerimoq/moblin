@@ -48,16 +48,32 @@ struct SceneWidgetSettingsView: View {
         Form {
             Section {
                 if isImage {
-                    NavigationLink(destination: TextEditView(title: "X", value: String(widget.x), onSubmit: submitX)) {
+                    NavigationLink(destination: TextEditView(
+                        title: "X",
+                        value: String(widget.x),
+                        onSubmit: submitX
+                    )) {
                         TextItemView(name: "X", value: String(widget.x))
                     }
-                    NavigationLink(destination: TextEditView(title: "Y", value: String(widget.y), onSubmit: submitY)) {
+                    NavigationLink(destination: TextEditView(
+                        title: "Y",
+                        value: String(widget.y),
+                        onSubmit: submitY
+                    )) {
                         TextItemView(name: "Y", value: String(widget.y))
                     }
-                    NavigationLink(destination: TextEditView(title: "Width", value: String(widget.width), onSubmit: submitW)) {
+                    NavigationLink(destination: TextEditView(
+                        title: "Width",
+                        value: String(widget.width),
+                        onSubmit: submitW
+                    )) {
                         TextItemView(name: "Width", value: String(widget.width))
                     }
-                    NavigationLink(destination: TextEditView(title: "Height", value: String(widget.height), onSubmit: submitH)) {
+                    NavigationLink(destination: TextEditView(
+                        title: "Height",
+                        value: String(widget.height),
+                        onSubmit: submitH
+                    )) {
                         TextItemView(name: "Height", value: String(widget.height))
                     }
                 } else {

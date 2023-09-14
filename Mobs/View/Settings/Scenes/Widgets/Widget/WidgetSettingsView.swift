@@ -11,7 +11,10 @@ struct WidgetSettingsView: View {
 
     var body: some View {
         Form {
-            NavigationLink(destination: NameEditView(name: widget.name, onSubmit: submitName)) {
+            NavigationLink(destination: NameEditView(
+                name: widget.name,
+                onSubmit: submitName
+            )) {
                 TextItemView(name: "Name", value: widget.name)
             }
             Section("Type") {

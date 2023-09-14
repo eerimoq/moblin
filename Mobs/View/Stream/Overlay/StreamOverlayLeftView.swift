@@ -55,14 +55,25 @@ struct LeftOverlayView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 1) {
             if database.show.stream {
-                StreamOverlayIconAndTextView(icon: "dot.radiowaves.left.and.right", text: streamText())
+                StreamOverlayIconAndTextView(
+                    icon: "dot.radiowaves.left.and.right",
+                    text: streamText()
+                )
             }
             if database.show.viewers {
-                StreamOverlayIconAndTextView(icon: "eye", text: viewersText(), color: viewersColor())
+                StreamOverlayIconAndTextView(
+                    icon: "eye",
+                    text: viewersText(),
+                    color: viewersColor()
+                )
             }
             Spacer()
             if database.show.chat {
-                StreamOverlayIconAndTextView(icon: "message", text: messageText(), color: messageColor())
+                StreamOverlayIconAndTextView(
+                    icon: "message",
+                    text: messageText(),
+                    color: messageColor()
+                )
                 StreamOverlayChatView(posts: model.twitchChatPosts)
             }
         }

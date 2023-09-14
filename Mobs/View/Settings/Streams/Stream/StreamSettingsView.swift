@@ -18,19 +18,34 @@ struct StreamSettingsView: View {
 
     var body: some View {
         Form {
-            NavigationLink(destination: NameEditView(name: stream.name, onSubmit: submitName)) {
+            NavigationLink(destination: NameEditView(
+                name: stream.name,
+                onSubmit: submitName
+            )) {
                 TextItemView(name: "Name", value: stream.name)
             }
-            NavigationLink(destination: StreamTwitchSettingsView(model: model, stream: stream)) {
+            NavigationLink(destination: StreamTwitchSettingsView(
+                model: model,
+                stream: stream
+            )) {
                 Text("Twitch")
             }
-            NavigationLink(destination: StreamVideoSettingsView(model: model, stream: stream)) {
+            NavigationLink(destination: StreamVideoSettingsView(
+                model: model,
+                stream: stream
+            )) {
                 Text("Video")
             }
-            NavigationLink(destination: StreamRtmpSettingsView(model: model, stream: stream)) {
+            NavigationLink(destination: StreamRtmpSettingsView(
+                model: model,
+                stream: stream
+            )) {
                 Text("RTMP")
             }
-            NavigationLink(destination: StreamSrtSettingsView(model: model, stream: stream)) {
+            NavigationLink(destination: StreamSrtSettingsView(
+                model: model,
+                stream: stream
+            )) {
                 Text("SRT")
             }
             Section("Protocol") {

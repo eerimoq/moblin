@@ -1,7 +1,12 @@
 import SwiftUI
 
-final class PickerCoordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    func imagePickerController(_: UIImagePickerController, didFinishPickingMediaWithInfo _: [UIImagePickerController.InfoKey: Any]) {
+final class PickerCoordinator: NSObject, UIImagePickerControllerDelegate,
+    UINavigationControllerDelegate
+{
+    func imagePickerController(
+        _: UIImagePickerController,
+        didFinishPickingMediaWithInfo _: [UIImagePickerController.InfoKey: Any]
+    ) {
         print("foobar")
     }
 }
@@ -10,7 +15,11 @@ struct ImagePickerView: UIViewControllerRepresentable {
     var selectedImage: UIImage? = nil
     var coordinator = PickerCoordinator()
 
-    func makeUIViewController(context _: UIViewControllerRepresentableContext<ImagePickerView>) -> UIImagePickerController {
+    func makeUIViewController(
+        context _: UIViewControllerRepresentableContext<ImagePickerView>
+    )
+        -> UIImagePickerController
+    {
         let imagePicker = UIImagePickerController()
         imagePicker.allowsEditing = false
         imagePicker.sourceType = .photoLibrary
@@ -18,5 +27,8 @@ struct ImagePickerView: UIViewControllerRepresentable {
         return imagePicker
     }
 
-    func updateUIViewController(_: UIImagePickerController, context _: UIViewControllerRepresentableContext<ImagePickerView>) {}
+    func updateUIViewController(
+        _: UIImagePickerController,
+        context _: UIViewControllerRepresentableContext<ImagePickerView>
+    ) {}
 }

@@ -23,6 +23,9 @@ struct ConnectionSrtSrtlaSettingsView: View {
 
 struct ConnectionSrtSrtlaSettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        ConnectionSrtSrtlaSettingsView(model: Model(), connection: SettingsConnection(name: ""))
+        ConnectionSrtSrtlaSettingsView(
+            model: Model(),
+            connection: SettingsConnection(name: "")
+        )
     }
 }

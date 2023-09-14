@@ -18,7 +18,10 @@ class Location: NSObject, CLLocationManagerDelegate {
         logger.error("location: \(error)")
     }
 
-    func locationManager(_: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    func locationManager(
+        _: CLLocationManager,
+        didUpdateLocations locations: [CLLocation]
+    ) {
         for location in locations {
             logger.info("location: \(location)")
         }

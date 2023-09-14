@@ -70,19 +70,28 @@ struct ButtonsView: View {
                             Button(action: {
                                 torchAction(state: second)
                             }, label: {
-                                ButtonImage(image: getImage(state: second), on: second.isOn)
+                                ButtonImage(
+                                    image: getImage(state: second),
+                                    on: second.isOn
+                                )
                             })
                         case .mute:
                             Button(action: {
                                 muteAction(state: second)
                             }, label: {
-                                ButtonImage(image: getImage(state: second), on: second.isOn)
+                                ButtonImage(
+                                    image: getImage(state: second),
+                                    on: second.isOn
+                                )
                             })
                         case .widget:
                             Button(action: {
                                 widgetAction(state: second)
                             }, label: {
-                                ButtonImage(image: getImage(state: second), on: second.isOn)
+                                ButtonImage(
+                                    image: getImage(state: second),
+                                    on: second.isOn
+                                )
                             })
                         }
                     } else {
@@ -93,19 +102,28 @@ struct ButtonsView: View {
                         Button(action: {
                             torchAction(state: pair.first)
                         }, label: {
-                            ButtonImage(image: getImage(state: pair.first), on: pair.first.isOn)
+                            ButtonImage(
+                                image: getImage(state: pair.first),
+                                on: pair.first.isOn
+                            )
                         })
                     case .mute:
                         Button(action: {
                             muteAction(state: pair.first)
                         }, label: {
-                            ButtonImage(image: getImage(state: pair.first), on: pair.first.isOn)
+                            ButtonImage(
+                                image: getImage(state: pair.first),
+                                on: pair.first.isOn
+                            )
                         })
                     case .widget:
                         Button(action: {
                             widgetAction(state: pair.first)
                         }, label: {
-                            ButtonImage(image: getImage(state: pair.first), on: pair.first.isOn)
+                            ButtonImage(
+                                image: getImage(state: pair.first),
+                                on: pair.first.isOn
+                            )
                         })
                     }
                 }

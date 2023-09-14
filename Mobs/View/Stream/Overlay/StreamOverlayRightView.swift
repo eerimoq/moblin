@@ -48,10 +48,20 @@ struct RightOverlayView: View {
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
             if database.show.speed {
-                StreamOverlayIconAndTextView(icon: "speedometer", text: model.speed, textFirst: true, color: netStreamColor())
+                StreamOverlayIconAndTextView(
+                    icon: "speedometer",
+                    text: model.speed,
+                    textFirst: true,
+                    color: netStreamColor()
+                )
             }
             if database.show.uptime {
-                StreamOverlayIconAndTextView(icon: "deskclock", text: model.uptime, textFirst: true, color: netStreamColor())
+                StreamOverlayIconAndTextView(
+                    icon: "deskclock",
+                    text: model.uptime,
+                    textFirst: true,
+                    color: netStreamColor()
+                )
             }
             Spacer()
             Picker("", selection: $model.sceneIndex) {
@@ -65,7 +75,9 @@ struct RightOverlayView: View {
                 model.sceneUpdated()
             }
             .pickerStyle(.segmented)
-            .frame(width: CGFloat(50 * database.scenes.filter { scene in scene.enabled }.count))
+            .frame(width: CGFloat(50 * database.scenes.filter { scene in
+                scene.enabled
+            }.count))
             .cornerRadius(7)
             .overlay(
                 RoundedRectangle(cornerRadius: 7)

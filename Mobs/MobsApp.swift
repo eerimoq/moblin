@@ -27,14 +27,24 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         }
     }
 
-    func application(_: UIApplication, supportedInterfaceOrientationsFor _: UIWindow?) -> UIInterfaceOrientationMask {
+    func application(_: UIApplication,
+                     supportedInterfaceOrientationsFor _: UIWindow?)
+        -> UIInterfaceOrientationMask
+    {
         return AppDelegate.orientationLock
     }
 
-    func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+    func application(
+        _: UIApplication,
+        didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]? = nil
+    ) -> Bool {
         let session = AVAudioSession.sharedInstance()
         do {
-            try session.setCategory(.playAndRecord, mode: .voiceChat, options: [.defaultToSpeaker, .allowBluetooth])
+            try session.setCategory(
+                .playAndRecord,
+                mode: .voiceChat,
+                options: [.defaultToSpeaker, .allowBluetooth]
+            )
             try session.setActive(true)
         } catch {
             logger.error("app: Session error \(error)")

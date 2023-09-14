@@ -8,4 +8,4 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Source code styling
-        run: swiftformat Mobs
+        run: swiftformat Mobs --maxwidth 90

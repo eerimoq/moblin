@@ -14,9 +14,15 @@ final class ImageEffect: VideoEffect {
             let y = (extent.size.height * self.y) / 100
             let width = (extent.size.width * self.width) / 100
             let height = (extent.size.height * self.height) / 100
-            let image = originalImage.scalePreservingAspectRatio(targetSize: CGSize(width: width, height: height))
+            let image = originalImage.scalePreservingAspectRatio(targetSize: CGSize(
+                width: width,
+                height: height
+            ))
             image.draw(at: CGPoint(x: x, y: y))
-            overlay = CIImage(image: UIGraphicsGetImageFromCurrentImageContext()!, options: nil)
+            overlay = CIImage(
+                image: UIGraphicsGetImageFromCurrentImageContext()!,
+                options: nil
+            )
             UIGraphicsEndImageContext()
         }
     }

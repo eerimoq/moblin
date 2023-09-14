@@ -29,8 +29,14 @@ struct WidgetsSettingsView: View {
         Form {
             Section {
                 ForEach(database.widgets) { widget in
-                    NavigationLink(destination: WidgetSettingsView(widget: widget, model: model)) {
-                        IconAndTextView(image: widgetImage(widget: widget), text: widget.name)
+                    NavigationLink(destination: WidgetSettingsView(
+                        widget: widget,
+                        model: model
+                    )) {
+                        IconAndTextView(
+                            image: widgetImage(widget: widget),
+                            text: widget.name
+                        )
                     }
                     .deleteDisabled(isWidgetUsed(widget: widget))
                 }
