@@ -587,9 +587,33 @@ final class Model: ObservableObject, NetStreamDelegate {
     func startPublish() {
         publishing = true
         UIApplication.shared.isIdleTimerDisabled = true
-        rtmpConnection.addEventListener(.rtmpStatus, selector: #selector(rtmpStatusHandler), observer: self)
-        rtmpConnection.addEventListener(.ioError, selector: #selector(rtmpErrorHandler), observer: self)
-        rtmpConnection.connect(rtmpUri())
+        switch stream?.proto {
+        case .rtmp:
+            rtmpConnection.addEventListener(.rtmpStatus, selector: #selector(rtmpStatusHandler), observer: self)
+            rtmpConnection.addEventListener(.ioError, selector: #selector(rtmpErrorHandler), observer: self)
+            rtmpConnection.connect(rtmpUri())
+        case .srt:
+            break
+        case nil:
+            break
+        }
+    }
+
+    func stopPublish() {
+        publishing = false
+        UIApplication.shared.isIdleTimerDisabled = false
+        switch stream?.proto {
+        case .rtmp:
+            rtmpConnection.close()
+            rtmpConnection.removeEventListener(.rtmpStatus, selector: #selector(rtmpStatusHandler), observer: self)
+            rtmpConnection.removeEventListener(.ioError, selector: #selector(rtmpErrorHandler), observer: self)
+        case .srt:
+            break
+        case nil:
+            break
+        }
+        startDate = nil
+        updateUptime(now: Date())
     }
 
     func rtmpUri() -> String {
@@ -604,16 +628,6 @@ final class Model: ObservableObject, NetStreamDelegate {
             return ""
         }
         return makeRtmpStreamName(url: stream.rtmpUrl)
-    }
-
-    func stopPublish() {
-        publishing = false
-        UIApplication.shared.isIdleTimerDisabled = false
-        rtmpConnection.close()
-        rtmpConnection.removeEventListener(.rtmpStatus, selector: #selector(rtmpStatusHandler), observer: self)
-        rtmpConnection.removeEventListener(.ioError, selector: #selector(rtmpErrorHandler), observer: self)
-        startDate = nil
-        updateUptimeFromNonMain()
     }
 
     func toggleTorch() {
