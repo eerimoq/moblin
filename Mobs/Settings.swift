@@ -103,15 +103,7 @@ class SettingsScene: Codable, Identifiable, Equatable {
     }
     
     func addButton(id: UUID) {
-        if !buttons.contains(SettingsSceneButton(buttonId: id)) {
-            buttons.append(SettingsSceneButton(buttonId: id))
-        }
-    }
-    
-    func removeButton(id: UUID) {
-        if let index = buttons.firstIndex(of: SettingsSceneButton(buttonId: id)) {
-            buttons.remove(at: index)
-        }
+        buttons.append(SettingsSceneButton(buttonId: id))
     }
 }
 
@@ -225,10 +217,6 @@ class SettingsVariable: Codable, Identifiable {
     var http: SettingsVariableHttp = SettingsVariableHttp()
     var twitchPubSub: SettingsVariableTwitchPubSub = SettingsVariableTwitchPubSub()
     var websocket: SettingsVariableTextWebsocket = SettingsVariableTextWebsocket()
-
-    init(name: String) {
-        self.name = name
-    }
 }
 
 var buttonTypes = ["Torch", "Mute", "Widget"]
@@ -354,15 +342,6 @@ func createSceneWidgetVideoEffectGrayScale(database: Database) -> SettingsSceneW
 
 func createSceneWidgetVideoEffectSeipa(database: Database) -> SettingsSceneWidget {
     let widget = SettingsSceneWidget(widgetId: database.widgets[4].id)
-    widget.x = 0
-    widget.y = 0
-    widget.width = 100
-    widget.height = 100
-    return widget
-}
-
-func createSceneWidgetVideoEffectBloom(database: Database) -> SettingsSceneWidget {
-    let widget = SettingsSceneWidget(widgetId: database.widgets[5].id)
     widget.x = 0
     widget.y = 0
     widget.width = 100

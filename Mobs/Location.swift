@@ -2,7 +2,7 @@ import Foundation
 import CoreLocation
 
 class Location: NSObject, CLLocationManagerDelegate {
-    var manager: CLLocationManager = CLLocationManager()
+    private var manager: CLLocationManager = CLLocationManager()
     
     func start() {
         manager.delegate = self

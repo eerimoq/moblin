@@ -81,7 +81,7 @@ struct SceneSettingsView: View {
                 List {
                     ForEach(scene.widgets) { widget in
                         if let realWidget = widgets.first(where: {item in item.id == widget.widgetId}) {
-                            NavigationLink(destination: SceneWidgetSettingsView(model: model, widget: widget, name: realWidget.name)) {
+                            NavigationLink(destination: SceneWidgetSettingsView(model: model, widget: widget)) {
                                 Toggle(isOn: Binding(get: {
                                     widget.enabled
                                 }, set: { value in
@@ -205,7 +205,7 @@ struct SceneSettingsView: View {
                             })
                             Spacer()
                             Button(action: {
-                                scene.buttons.append(SettingsSceneButton(buttonId: buttons[selectedButton].id))
+                                scene.addButton(id: buttons[selectedButton].id)
                                 model.store()
                                 model.sceneUpdated()
                                 showingAddButton = false

@@ -12,7 +12,6 @@ final class TwitchChatMobs {
     private var model: Model
     private var task: Task<Void, Error>? = nil
     private var id = 0
-    private var channelName: String? = nil
     private var connected: Bool = false
 
     init(model: Model) {
@@ -24,7 +23,6 @@ final class TwitchChatMobs {
     }
 
     func start(channelName: String) {
-        self.channelName = channelName
         task = Task.init {
             var reconnectTime: UInt64 = 0
             logger.info("twitch: chat: \(channelName): Connecting")

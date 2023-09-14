@@ -3,13 +3,11 @@ import SwiftUI
 struct SceneWidgetSettingsView: View {
     @ObservedObject private var model: Model
     private var widget: SettingsSceneWidget
-    private var name: String
     private var isImage: Bool
     
-    init(model: Model, widget: SettingsSceneWidget, name: String) {
+    init(model: Model, widget: SettingsSceneWidget) {
         self.model = model
         self.widget = widget
-        self.name = name
         if let widget = model.findWidget(id: widget.widgetId) {
             self.isImage = widget.type == .image
         } else {
