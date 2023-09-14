@@ -143,11 +143,6 @@ final class Model: ObservableObject, NetStreamDelegate {
         checkDeviceAuthorization()
         twitchChat = TwitchChatMobs(model: self)
         reloadStream()
-        if let stream {
-            twitchChat.start(channelName: stream.twitchChannelName)
-            twitchPubSub = TwitchPubSub(model: self, channelId: stream.twitchChannelId)
-            twitchPubSub!.start()
-        }
         resetSelectedScene()
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             DispatchQueue.main.async {
