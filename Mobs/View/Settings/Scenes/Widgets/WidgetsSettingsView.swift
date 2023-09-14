@@ -4,9 +4,7 @@ struct WidgetsSettingsView: View {
     @ObservedObject var model: Model
 
     var database: Database {
-        get {
-            model.database
-        }
+        model.database
     }
 
     func isWidgetUsed(widget: SettingsWidget) -> Bool {
@@ -53,4 +51,3 @@ struct WidgetsSettingsView: View {
         .navigationTitle("Widgets")
     }
 }
-

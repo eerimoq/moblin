@@ -4,9 +4,7 @@ struct StreamsSettingsView: View {
     @ObservedObject var model: Model
 
     var database: Database {
-        get {
-            model.database
-        }
+        model.database
     }
 
     var body: some View {

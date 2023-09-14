@@ -75,7 +75,7 @@ func widgetImage(widget: SettingsWidget) -> String {
     }
 }
 
-var sizeFormatter : ByteCountFormatter {
+var sizeFormatter: ByteCountFormatter {
     let formatter = ByteCountFormatter()
     formatter.allowsNonnumericFormatting = false
     formatter.countStyle = .decimal

@@ -4,13 +4,13 @@ struct StreamVideoResolutionSettingsView: View {
     @ObservedObject var model: Model
     var stream: SettingsStream
     @State private var selection: String
-    
+
     init(model: Model, stream: SettingsStream) {
         self.model = model
         self.stream = stream
-        self.selection = stream.resolution.rawValue
+        selection = stream.resolution.rawValue
     }
-    
+
     var body: some View {
         Form {
             Section {

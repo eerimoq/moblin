@@ -25,7 +25,7 @@ let bitrates: [UInt32] = [
     2_000_000,
     1_500_000,
     1_000_000,
-    500_000
+    500_000,
 ]
 
 let protocols = ["RTMP", "SRT"]
@@ -37,7 +37,7 @@ enum SettingsStreamProtocol: String, Codable {
 
 class SettingsStream: Codable, Identifiable {
     var name: String
-    var id: UUID = UUID()
+    var id: UUID = .init()
     var enabled: Bool = false
     var rtmpUrl: String = "rtmp://arn03.contribute.live-video.net/app/your_stream_key"
     var srtUrl: String = "srt://platform.com:5000"
@@ -59,15 +59,15 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable {
     static func == (lhs: SettingsSceneWidget, rhs: SettingsSceneWidget) -> Bool {
         return lhs.id == rhs.id
     }
-    
+
     var widgetId: UUID
     var enabled: Bool = true
-    var id: UUID = UUID()
+    var id: UUID = .init()
     var x: Double = 0
     var y: Double = 0
     var width: Double = 100
     var height: Double = 100
-    
+
     init(widgetId: UUID) {
         self.widgetId = widgetId
     }
@@ -77,11 +77,11 @@ class SettingsSceneButton: Codable, Identifiable, Equatable {
     static func == (lhs: SettingsSceneButton, rhs: SettingsSceneButton) -> Bool {
         return lhs.id == rhs.id
     }
-    
+
     var buttonId: UUID
-    var id: UUID = UUID()
+    var id: UUID = .init()
     var enabled: Bool = true
-    
+
     init(buttonId: UUID) {
         self.buttonId = buttonId
     }
@@ -89,7 +89,7 @@ class SettingsSceneButton: Codable, Identifiable, Equatable {
 
 class SettingsScene: Codable, Identifiable, Equatable {
     var name: String
-    var id: UUID = UUID()
+    var id: UUID = .init()
     var enabled: Bool = true
     var widgets: [SettingsSceneWidget] = []
     var buttons: [SettingsSceneButton] = []
@@ -97,11 +97,11 @@ class SettingsScene: Codable, Identifiable, Equatable {
     init(name: String) {
         self.name = name
     }
-    
+
     static func == (lhs: SettingsScene, rhs: SettingsScene) -> Bool {
         return lhs.id == rhs.id
     }
-    
+
     func addButton(id: UUID) {
         buttons.append(SettingsSceneButton(buttonId: id))
     }
@@ -130,11 +130,9 @@ class SettingsWidgetCamera: Codable {
     var type: SettingsWidgetCameraType = .main
 }
 
-class SettingsWidgetChat: Codable {
-}
+class SettingsWidgetChat: Codable {}
 
-class SettingsWidgetRecording: Codable {
-}
+class SettingsWidgetRecording: Codable {}
 
 class SettingsWidgetWebview: Codable {
     var url: String = "https://"
@@ -163,21 +161,21 @@ enum SettingsWidgetType: String, Codable {
 
 class SettingsWidget: Codable, Identifiable, Equatable {
     var name: String
-    var id: UUID = UUID()
+    var id: UUID = .init()
     var type: SettingsWidgetType = .camera
-    var text: SettingsWidgetText = SettingsWidgetText()
-    var image: SettingsWidgetImage = SettingsWidgetImage()
-    var video: SettingsWidgetVideo = SettingsWidgetVideo()
-    var camera: SettingsWidgetCamera = SettingsWidgetCamera()
-    var chat: SettingsWidgetChat = SettingsWidgetChat()
-    var recording: SettingsWidgetRecording = SettingsWidgetRecording()
-    var webview: SettingsWidgetWebview = SettingsWidgetWebview()
-    var videoEffect: SettingsWidgetVideoEffect = SettingsWidgetVideoEffect()
+    var text: SettingsWidgetText = .init()
+    var image: SettingsWidgetImage = .init()
+    var video: SettingsWidgetVideo = .init()
+    var camera: SettingsWidgetCamera = .init()
+    var chat: SettingsWidgetChat = .init()
+    var recording: SettingsWidgetRecording = .init()
+    var webview: SettingsWidgetWebview = .init()
+    var videoEffect: SettingsWidgetVideoEffect = .init()
 
     init(name: String) {
         self.name = name
     }
-    
+
     static func == (lhs: SettingsWidget, rhs: SettingsWidget) -> Bool {
         return lhs.id == rhs.id
     }
@@ -211,12 +209,12 @@ enum SettingsVariableType: String, Codable {
 
 class SettingsVariable: Codable, Identifiable {
     var name: String
-    var id: UUID = UUID()
+    var id: UUID = .init()
     var type: SettingsVariableType = .text
-    var text: SettingsVariableText = SettingsVariableText()
-    var http: SettingsVariableHttp = SettingsVariableHttp()
-    var twitchPubSub: SettingsVariableTwitchPubSub = SettingsVariableTwitchPubSub()
-    var websocket: SettingsVariableTextWebsocket = SettingsVariableTextWebsocket()
+    var text: SettingsVariableText = .init()
+    var http: SettingsVariableHttp = .init()
+    var twitchPubSub: SettingsVariableTwitchPubSub = .init()
+    var websocket: SettingsVariableTextWebsocket = .init()
 }
 
 var buttonTypes = ["Torch", "Mute", "Widget"]
@@ -229,8 +227,8 @@ enum SettingsButtonType: String, Codable {
 
 class SettingsButtonWidget: Codable, Identifiable {
     var widgetId: UUID
-    var id: UUID = UUID()
-    
+    var id: UUID = .init()
+
     init(widgetId: UUID) {
         self.widgetId = widgetId
     }
@@ -238,18 +236,18 @@ class SettingsButtonWidget: Codable, Identifiable {
 
 class SettingsButton: Codable, Identifiable, Equatable {
     var name: String
-    var id: UUID = UUID()
+    var id: UUID = .init()
     var type: SettingsButtonType = .torch
     var imageType: String = "System name"
     var systemImageNameOn: String = "mic.slash"
     var systemImageNameOff: String = "mic"
-    var widget: SettingsButtonWidget = SettingsButtonWidget(widgetId: UUID())
+    var widget: SettingsButtonWidget = .init(widgetId: UUID())
     var isOn: Bool = false
-    
+
     init(name: String) {
         self.name = name
     }
-    
+
     static func == (lhs: SettingsButton, rhs: SettingsButton) -> Bool {
         return lhs.id == rhs.id
     }
@@ -269,7 +267,7 @@ class Database: Codable {
     var widgets: [SettingsWidget] = []
     var variables: [SettingsVariable] = []
     var buttons: [SettingsButton] = []
-    var show: SettingsShow = SettingsShow()
+    var show: SettingsShow = .init()
 }
 
 func addDefaultWidgets(database: Database) {
@@ -277,27 +275,27 @@ func addDefaultWidgets(database: Database) {
     widget.type = .camera
     widget.camera.type = .main
     database.widgets.append(widget)
-    
+
     widget = SettingsWidget(name: "Front camera")
     widget.type = .camera
     widget.camera.type = .front
     database.widgets.append(widget)
-    
+
     widget = SettingsWidget(name: "Movie")
     widget.type = .videoEffect
     widget.videoEffect.type = .movie
     database.widgets.append(widget)
-    
+
     widget = SettingsWidget(name: "Gray scale")
     widget.type = .videoEffect
     widget.videoEffect.type = .grayScale
     database.widgets.append(widget)
-    
+
     widget = SettingsWidget(name: "Seipa")
     widget.type = .videoEffect
     widget.videoEffect.type = .seipa
     database.widgets.append(widget)
-    
+
     widget = SettingsWidget(name: "Bloom")
     widget.type = .videoEffect
     widget.videoEffect.type = .bloom
@@ -361,7 +359,7 @@ func addDefaultScenes(database: Database) {
     scene.addButton(id: database.buttons[3].id)
     scene.addButton(id: database.buttons[4].id)
     database.scenes.append(scene)
-    
+
     scene = SettingsScene(name: "Front")
     scene.widgets.append(createSceneWidgetFrontCameraFull(database: database))
     scene.widgets.append(createSceneWidgetVideoEffectMovie(database: database))
@@ -378,7 +376,7 @@ func addDefaultStreams(database: Database) {
     stream.twitchChannelName = "jinnytty"
     stream.twitchChannelId = "159498717"
     database.streams.append(stream)
-    
+
     stream = SettingsStream(name: "Dev")
     stream.enabled = false
     stream.rtmpUrl = "rtmp://192.168.50.72:1935/live/1234"
@@ -396,7 +394,7 @@ func addDefaultButtons(database: Database) {
     button.systemImageNameOn = "lightbulb.fill"
     button.systemImageNameOff = "lightbulb"
     database.buttons.append(button)
-    
+
     button = SettingsButton(name: "Mute")
     button.id = UUID()
     button.type = .mute
@@ -413,7 +411,7 @@ func addDefaultButtons(database: Database) {
     button.systemImageNameOff = "film"
     button.widget.widgetId = database.widgets[2].id
     database.buttons.append(button)
-    
+
     button = SettingsButton(name: "Gray scale")
     button.id = UUID()
     button.type = .widget
@@ -422,7 +420,7 @@ func addDefaultButtons(database: Database) {
     button.systemImageNameOff = "moon"
     button.widget.widgetId = database.widgets[3].id
     database.buttons.append(button)
-    
+
     button = SettingsButton(name: "Seipa")
     button.id = UUID()
     button.type = .widget
@@ -431,7 +429,7 @@ func addDefaultButtons(database: Database) {
     button.systemImageNameOff = "moonphase.waning.crescent"
     button.widget.widgetId = database.widgets[4].id
     database.buttons.append(button)
-    
+
     button = SettingsButton(name: "Bloom")
     button.id = UUID()
     button.type = .widget
@@ -472,12 +470,12 @@ final class Settings {
 
     func store() {
         do {
-            storage = String(decoding: try JSONEncoder().encode(database), as: UTF8.self)
+            storage = try String(decoding: JSONEncoder().encode(database), as: UTF8.self)
         } catch {
             logger.error("settings: Failed to store.")
         }
     }
-    
+
     func reset() {
         database = createDefault()
         store()

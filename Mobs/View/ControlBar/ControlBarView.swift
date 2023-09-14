@@ -2,7 +2,7 @@ import SwiftUI
 
 struct StreamButtonText: View {
     var text: String
-    
+
     var body: some View {
         Text(text)
             .frame(width: 60)
@@ -44,7 +44,7 @@ struct StreamButton: View {
             .confirmationDialog("", isPresented: $isPresentingStopConfirm) {
                 Button("Stop") {
                     model.stopStream()
-                 }
+                }
             }
         }
     }
@@ -52,7 +52,7 @@ struct StreamButton: View {
 
 struct ControlBarView: View {
     @ObservedObject var model: Model
-    
+
     var body: some View {
         VStack {
             VStack {

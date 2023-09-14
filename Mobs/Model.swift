@@ -1,12 +1,12 @@
-import Foundation
 import Combine
+import Foundation
 import HaishinKit
-import SRTHaishinKit
-import PhotosUI
-import SwiftUI
-import VideoToolbox
-import TwitchChat
 import Network
+import PhotosUI
+import SRTHaishinKit
+import SwiftUI
+import TwitchChat
+import VideoToolbox
 
 let unknownNumberOfViewers = ""
 
@@ -18,7 +18,7 @@ enum LiveState {
 class ButtonState {
     var isOn: Bool
     var button: SettingsButton
-    
+
     init(isOn: Bool, button: SettingsButton) {
         self.isOn = isOn
         self.button = button
@@ -46,7 +46,7 @@ final class Model: ObservableObject, NetStreamDelegate {
     private var publishing = false
     private var startDate: Date? = nil
     @Published var uptime: String = ""
-    var settings: Settings = Settings()
+    var settings: Settings = .init()
     var currentTime: String = ""
     var selectedSceneId = UUID()
     private var uptimeFormatter: DateComponentsFormatter {
@@ -55,11 +55,13 @@ final class Model: ObservableObject, NetStreamDelegate {
         formatter.zeroFormattingBehavior = .pad
         return formatter
     }
+
     private var currentTimeFormatter: DateFormatter {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
         return formatter
     }
+
     private var twitchChat: TwitchChatMobs!
     private var twitchPubSub: TwitchPubSub?
     @Published var twitchChatPosts: [Post] = []
@@ -77,55 +79,50 @@ final class Model: ObservableObject, NetStreamDelegate {
     private var bloomEffect = BloomEffect()
     private var imageEffects: [UUID: ImageEffect] = [:]
     var stream: SettingsStream? {
-        get {
-            for stream in database.streams {
-                if stream.enabled {
-                    return stream
-                }
+        for stream in database.streams {
+            if stream.enabled {
+                return stream
             }
-            return nil
         }
+        return nil
     }
+
     // private var srtla = Srtla()
     // private var srtDummySender: DummySender?
     @Published var sceneIndex = 0
     var isTorchOn = false
     var isMuteOn = false
     var log: [String] = []
-    var location: Location = Location()
-    
+    var location: Location = .init()
+
     var database: Database {
-        get {
-            settings.database
-        }
+        settings.database
     }
-    
+
     var enabledScenes: [SettingsScene] {
-        get {
-            database.scenes.filter({scene in scene.enabled})
-        }
+        database.scenes.filter { scene in scene.enabled }
     }
-    
+
     var imageStorage = ImageStorage()
     @Published var buttonPairs: [ButtonPair] = []
-    
+
     func findButton(id: UUID) -> SettingsButton? {
-        return database.buttons.first(where: {button in button.id == id})
+        return database.buttons.first(where: { button in button.id == id })
     }
-    
+
     func updateButtonStates() {
         guard let scene = findEnabledScene(id: selectedSceneId) else {
-            self.buttonPairs = []
+            buttonPairs = []
             return
         }
         let states = scene
             .buttons
-            .filter({button in button.enabled})
+            .filter { button in button.enabled }
             .prefix(8)
-            .map({button in
+            .map { button in
                 let button = findButton(id: button.buttonId)!
                 return ButtonState(isOn: button.isOn, button: button)
-            })
+            }
         var pairs: [ButtonPair] = []
         for index in stride(from: 0, to: states.count, by: 2) {
             if states.count - index > 1 {
@@ -134,9 +131,9 @@ final class Model: ObservableObject, NetStreamDelegate {
                 pairs.append(ButtonPair(id: index / 2, first: states[index]))
             }
         }
-        self.buttonPairs = pairs.reversed()
+        buttonPairs = pairs.reversed()
     }
-    
+
     func debugLog(message: String) {
         if log.count > 100 {
             log.removeFirst()
@@ -144,7 +141,7 @@ final class Model: ObservableObject, NetStreamDelegate {
         let timestamp = Date().formatted(date: .omitted, time: .standard)
         log.append("\(timestamp) \(message)")
     }
-    
+
     func setup(settings: Settings) {
         logger.setLogHandler(handler: debugLog)
         updateCurrentTime(now: Date())
@@ -179,7 +176,7 @@ final class Model: ObservableObject, NetStreamDelegate {
         // srtla.start(uri: "srt://192.168.50.72:10000")
         // srtDummySender = DummySender(srtla: srtla)
         updateThermalState()
-        
+
         nc.publisher(for: ProcessInfo.thermalStateDidChangeNotification, object: nil)
             .sink { _ in
                 DispatchQueue.main.async {
@@ -187,7 +184,7 @@ final class Model: ObservableObject, NetStreamDelegate {
                 }
             }
             .store(in: &subscriptions)
-        
+
         let keyValueObservation = srtConnection.observe(\.connected, options: [.new, .old]) { [weak self] _, _ in
             guard let self else {
                 return
@@ -195,28 +192,28 @@ final class Model: ObservableObject, NetStreamDelegate {
             logger.info("model: SRT connection state \(srtConnection.connected)")
         }
         keyValueObservations.append(keyValueObservation)
-        
+
         updateButtonStates()
         sceneUpdated(imageEffectChanged: true)
         removeUnusedImages()
         if let stream {
             if stream.srtla {
-                //if let srtlaPort = srtla.localPort() {
+                // if let srtlaPort = srtla.localPort() {
                 //    let url = "srt://localhost:\(srtlaPort)"
                 //    logger.info("model: SRTLA connect to \(url)")
                 //    //srtConnection.open(URL(string: url))
-                //} else {
+                // } else {
                 logger.error("model: Local SRTLA port missing")
-                //}
+                // }
             } else {
                 logger.info("model: SRT connect to \(stream.srtUrl)")
-                //srtConnection.open(URL(string: stream.srtUrl))
-                //srtStream.publish()
+                // srtConnection.open(URL(string: stream.srtUrl))
+                // srtStream.publish()
             }
         }
-        //location.start()
+        // location.start()
     }
-    
+
     func removeUnusedImages() {
         for id in imageStorage.ids() {
             var used = false
@@ -235,13 +232,13 @@ final class Model: ObservableObject, NetStreamDelegate {
             }
         }
     }
-    
+
     func updateTwitchPubSub() {
         if numberOfViewersDate + 60 < Date() {
             numberOfViewers = unknownNumberOfViewers
         }
     }
-    
+
     func setupImageEffects(scene: SettingsScene) {
         imageEffects.removeAll()
         for widget in scene.widgets {
@@ -260,7 +257,7 @@ final class Model: ObservableObject, NetStreamDelegate {
             imageEffects[widget.id] = ImageEffect(image: image, x: widget.x, y: widget.y, width: widget.width, height: widget.height)
         }
     }
-    
+
     func resetSelectedScene() {
         if !enabledScenes.isEmpty {
             selectedSceneId = enabledScenes[0].id
@@ -268,7 +265,7 @@ final class Model: ObservableObject, NetStreamDelegate {
         }
         sceneUpdated(imageEffectChanged: true)
     }
-    
+
     func store() {
         settings.store()
     }
@@ -278,7 +275,7 @@ final class Model: ObservableObject, NetStreamDelegate {
         startPublish()
         updateSpeed()
     }
-    
+
     func stopStream() {
         liveState = .stopped
         stopPublish()
@@ -297,13 +294,13 @@ final class Model: ObservableObject, NetStreamDelegate {
         reloadTwitchChat()
         reloadTwitchViewers()
     }
-    
+
     func reloadStreamIfEnabled(stream: SettingsStream) {
         if stream.enabled {
             reloadStream()
         }
     }
-    
+
     func setNetStream(stream: SettingsStream) {
         switch stream.proto {
         case .rtmp:
@@ -312,7 +309,7 @@ final class Model: ObservableObject, NetStreamDelegate {
             netStream = srtStream
         }
     }
-    
+
     func setStreamResolution(stream: SettingsStream) {
         switch stream.resolution {
         case .r1920x1080:
@@ -323,15 +320,15 @@ final class Model: ObservableObject, NetStreamDelegate {
             netStream.videoSettings.videoSize = .init(width: 1280, height: 720)
         }
     }
-    
+
     func setStreamFPS(stream: SettingsStream) {
         netStream.frameRate = Double(stream.fps)
     }
-    
+
     func setStreamBitrate(stream: SettingsStream) {
         netStream.videoSettings.bitRate = stream.bitrate
     }
-    
+
     func setStreamCodec(stream: SettingsStream) {
         switch stream.codec {
         case .h264avc:
@@ -340,33 +337,33 @@ final class Model: ObservableObject, NetStreamDelegate {
             netStream.videoSettings.profileLevel = kVTProfileLevel_HEVC_Main_AutoLevel as String
         }
     }
-    
+
     func isTwitchChatConnected() -> Bool {
         return twitchChat?.isConnected() ?? false
     }
-    
+
     func isTwitchPubSubConnected() -> Bool {
         return twitchPubSub?.isConnected() ?? false
     }
-    
+
     func isNetStreamConnected() -> Bool {
         return startDate != nil
     }
-    
+
     func isPublishing() -> Bool {
         return publishing
     }
-    
+
     func reloadTwitchChat() {
         twitchChat.stop()
-        if let stream  {
+        if let stream {
             twitchChat.start(channelName: stream.twitchChannelName)
         }
         twitchChatPostsPerSecond = 0
         twitchChatPosts = []
         numberOfTwitchChatPosts = 0
     }
-    
+
     func reloadTwitchViewers() {
         if let twitchPubSub {
             twitchPubSub.stop()
@@ -395,7 +392,7 @@ final class Model: ObservableObject, NetStreamDelegate {
         }
         return nil
     }
-    
+
     func findEnabledScene(id: UUID) -> SettingsScene? {
         for scene in enabledScenes {
             if id == scene.id {
@@ -404,7 +401,7 @@ final class Model: ObservableObject, NetStreamDelegate {
         }
         return nil
     }
-    
+
     func getEnabledButtonForWidgetControlledByScene(widget: SettingsWidget, scene: SettingsScene) -> SettingsButton? {
         for button in scene.buttons {
             if !button.enabled {
@@ -443,12 +440,12 @@ final class Model: ObservableObject, NetStreamDelegate {
             _ = netStream.unregisterVideoEffect(imageEffect)
         }
     }
-    
+
     func sceneUpdatedOn(scene: SettingsScene) {
         netStream.attachAudio(AVCaptureDevice.default(for: .audio)) { error in
             logger.error("model: Attach audio error: \(error)")
         }
-        for sceneWidget in scene.widgets.filter({widget in widget.enabled}) {
+        for sceneWidget in scene.widgets.filter({ widget in widget.enabled }) {
             if let widget = findWidget(id: sceneWidget.widgetId) {
                 if let button = getEnabledButtonForWidgetControlledByScene(widget: widget, scene: scene) {
                     if !button.isOn {
@@ -484,7 +481,7 @@ final class Model: ObservableObject, NetStreamDelegate {
             }
         }
     }
-    
+
     func sceneUpdated(imageEffectChanged: Bool = false) {
         updateButtonStates()
         guard let scene = findEnabledScene(id: selectedSceneId) else {
@@ -496,12 +493,12 @@ final class Model: ObservableObject, NetStreamDelegate {
         }
         sceneUpdatedOn(scene: scene)
     }
-    
+
     func allWidgetsOff() {
         movieEffectOff()
         grayScaleEffectOff()
     }
-    
+
     func updateUptimeFromNonMain() {
         DispatchQueue.main.async {
             self.updateUptime(now: Date())
@@ -509,7 +506,7 @@ final class Model: ObservableObject, NetStreamDelegate {
     }
 
     func updateUptime(now: Date) {
-        if self.startDate == nil {
+        if startDate == nil {
             uptime = ""
         } else {
             let elapsed = now.timeIntervalSince(startDate!)
@@ -524,7 +521,7 @@ final class Model: ObservableObject, NetStreamDelegate {
     func updateBatteryLevel() {
         batteryLevel = UIDevice.current.batteryLevel
     }
-    
+
     func updateTwitchChatSpeed() {
         twitchChatPostsPerSecond = twitchChatPostsPerSecond * 0.8 + Float(numberOfTwitchChatPosts) * 0.2
         numberOfTwitchChatPosts = 0
@@ -537,7 +534,7 @@ final class Model: ObservableObject, NetStreamDelegate {
             return Int64(srtConnection.performanceData.mbpsBandwidth)
         }
     }
-    
+
     func streamTotal() -> Int64 {
         if netStream === rtmpStream {
             return rtmpStream.info.byteCount.value
@@ -545,14 +542,14 @@ final class Model: ObservableObject, NetStreamDelegate {
             return Int64(srtConnection.performanceData.byteRecvTotal + srtConnection.performanceData.byteSentTotal)
         }
     }
-    
+
     func updateSpeed() {
         if liveState == .live {
             let speed = formatBytesPerSecond(speed: streamSpeed())
             let total = sizeFormatter.string(fromByteCount: streamTotal())
             self.speed = "\(speed) (\(total))"
         } else {
-            self.speed = ""
+            speed = ""
         }
     }
 
@@ -574,7 +571,7 @@ final class Model: ObservableObject, NetStreamDelegate {
         thermalState = ProcessInfo.processInfo.thermalState
         logger.info("model: Thermal state is \(thermalState)")
     }
-    
+
     func attachCamera(position: AVCaptureDevice.Position) {
         let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: position)
         netStream.attachCamera(device) { error in
@@ -594,10 +591,10 @@ final class Model: ObservableObject, NetStreamDelegate {
             rtmpConnection.connect(rtmpUri())
         case .srt:
             logger.info("model: Should start publishing using SRT")
-            //srtConnection.open(URL(string: stream!.srtUrl)!)
-            //srtStream.publish()
-            //startDate = Date()
-            //updateUptime(now: startDate!)
+        // srtConnection.open(URL(string: stream!.srtUrl)!)
+        // srtStream.publish()
+        // startDate = Date()
+        // updateUptime(now: startDate!)
         case nil:
             break
         }
@@ -610,8 +607,8 @@ final class Model: ObservableObject, NetStreamDelegate {
         rtmpConnection.removeEventListener(.rtmpStatus, selector: #selector(rtmpStatusHandler), observer: self)
         rtmpConnection.removeEventListener(.ioError, selector: #selector(rtmpErrorHandler), observer: self)
         logger.info("model: Should stop publishing using SRT")
-        //srtStream.close()
-        //srtConnection.close()
+        // srtStream.close()
+        // srtConnection.close()
         startDate = nil
         updateUptime(now: Date())
     }
@@ -673,7 +670,7 @@ final class Model: ObservableObject, NetStreamDelegate {
     }
 
     func setCameraZoomLevel(level: CGFloat) {
-        guard let device = netStream.videoCapture(for: 0)?.device, 1 <= level && level < device.activeFormat.videoMaxZoomFactor else {
+        guard let device = netStream.videoCapture(for: 0)?.device, level >= 1 && level < device.activeFormat.videoMaxZoomFactor else {
             return
         }
         do {
@@ -719,14 +716,14 @@ final class Model: ObservableObject, NetStreamDelegate {
 }
 
 extension Model: IORecorderDelegate {
-    func recorder(_ recorder: IORecorder, errorOccured error: IORecorder.Error) {
+    func recorder(_: IORecorder, errorOccured error: IORecorder.Error) {
         logger.error("model: \(error)")
     }
 
-    func recorder(_ recorder: IORecorder, finishWriting writer: AVAssetWriter) {
-        PHPhotoLibrary.shared().performChanges({() -> Void in
+    func recorder(_: IORecorder, finishWriting writer: AVAssetWriter) {
+        PHPhotoLibrary.shared().performChanges({ () in
             PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: writer.outputURL)
-        }, completionHandler: { _, error -> Void in
+        }, completionHandler: { _, error in
             do {
                 try FileManager.default.removeItem(at: writer.outputURL)
             } catch {
@@ -735,38 +732,38 @@ extension Model: IORecorderDelegate {
         })
     }
 
-    func stream(_ stream: NetStream, didOutput audio: AVAudioBuffer, presentationTimeStamp: CMTime) {
+    func stream(_: NetStream, didOutput _: AVAudioBuffer, presentationTimeStamp _: CMTime) {
         logger.debug("model: Playback an audio packet incoming.")
     }
-    
-    func stream(_ stream: NetStream, didOutput video: CMSampleBuffer) {
+
+    func stream(_: NetStream, didOutput _: CMSampleBuffer) {
         logger.debug("model: Playback a video packet incoming.")
     }
 
     #if os(iOS)
-    func stream(_ stream: NetStream, sessionWasInterrupted session: AVCaptureSession, reason: AVCaptureSession.InterruptionReason?) {
-        logger.info("model: Session was interrupted.")
-    }
+        func stream(_: NetStream, sessionWasInterrupted _: AVCaptureSession, reason _: AVCaptureSession.InterruptionReason?) {
+            logger.info("model: Session was interrupted.")
+        }
 
-    func stream(_ stream: NetStream, sessionInterruptionEnded session: AVCaptureSession) {
-        logger.info("model: Session interrupted ended.")
-    }
+        func stream(_: NetStream, sessionInterruptionEnded _: AVCaptureSession) {
+            logger.info("model: Session interrupted ended.")
+        }
     #endif
 
-    func stream(_ stream: NetStream, videoCodecErrorOccurred error: VideoCodec.Error) {
+    func stream(_: NetStream, videoCodecErrorOccurred error: VideoCodec.Error) {
         logger.error("model: Video codec error: \(error)")
     }
 
-    func stream(_ stream: NetStream, audioCodecErrorOccurred error: HaishinKit.AudioCodec.Error) {
+    func stream(_: NetStream, audioCodecErrorOccurred error: HaishinKit.AudioCodec.Error) {
         logger.error("model: Audio codec error: \(error)")
     }
 
-    func streamWillDropFrame(_ stream: NetStream) -> Bool {
+    func streamWillDropFrame(_: NetStream) -> Bool {
         // logger.warning("model: Drop video frame.")
         return false
     }
 
-    func streamDidOpen(_ stream: NetStream) {
+    func streamDidOpen(_: NetStream) {
         logger.info("model: Stream opened.")
     }
 }

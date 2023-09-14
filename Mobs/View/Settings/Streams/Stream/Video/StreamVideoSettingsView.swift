@@ -3,7 +3,7 @@ import SwiftUI
 struct StreamVideoSettingsView: View {
     @ObservedObject var model: Model
     var stream: SettingsStream
-    
+
     var body: some View {
         Form {
             Section {

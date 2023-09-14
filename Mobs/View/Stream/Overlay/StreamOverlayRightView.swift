@@ -32,13 +32,11 @@ struct Variable: View {
 
 struct RightOverlayView: View {
     @ObservedObject var model: Model
-    
+
     var database: Database {
-        get {
-            model.settings.database
-        }
+        model.settings.database
     }
-    
+
     func netStreamColor() -> Color {
         if model.isPublishing() && !model.isNetStreamConnected() {
             return .red
@@ -46,7 +44,7 @@ struct RightOverlayView: View {
             return .white
         }
     }
-    
+
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
             if database.show.speed {
@@ -57,7 +55,7 @@ struct RightOverlayView: View {
             }
             Spacer()
             Picker("", selection: $model.sceneIndex) {
-                ForEach(0..<model.enabledScenes.count, id: \.self) { id in
+                ForEach(0 ..< model.enabledScenes.count, id: \.self) { id in
                     let scene = model.enabledScenes[id]
                     Text(scene.name).tag(scene.id)
                 }
@@ -67,7 +65,7 @@ struct RightOverlayView: View {
                 model.sceneUpdated()
             }
             .pickerStyle(.segmented)
-            .frame(width: CGFloat(50 * database.scenes.filter({scene in scene.enabled}).count))
+            .frame(width: CGFloat(50 * database.scenes.filter { scene in scene.enabled }.count))
             .cornerRadius(7)
             .overlay(
                 RoundedRectangle(cornerRadius: 7)

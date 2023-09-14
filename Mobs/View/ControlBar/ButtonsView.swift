@@ -3,7 +3,7 @@ import SwiftUI
 struct ButtonImage: View {
     var image: String
     var on: Bool
-    
+
     var body: some View {
         let image = Image(systemName: image)
             .frame(width: 40, height: 40)
@@ -31,7 +31,7 @@ struct ButtonPlaceholderImage: View {
 
 struct ButtonsView: View {
     @ObservedObject var model: Model
-    
+
     func getImage(state: ButtonState) -> String {
         if state.isOn {
             return state.button.systemImageNameOn
@@ -39,28 +39,28 @@ struct ButtonsView: View {
             return state.button.systemImageNameOff
         }
     }
-    
+
     func torchAction(state: ButtonState) {
         state.button.isOn = !state.button.isOn
         model.toggleTorch()
         model.updateButtonStates()
         model.store()
     }
-    
+
     func muteAction(state: ButtonState) {
         state.button.isOn = !state.button.isOn
         model.toggleMute()
         model.updateButtonStates()
         model.store()
     }
-    
+
     func widgetAction(state: ButtonState) {
         state.button.isOn = !state.button.isOn
         model.updateButtonStates()
         model.sceneUpdated()
         model.store()
     }
-    
+
     var body: some View {
         VStack {
             ForEach(model.buttonPairs) { pair in

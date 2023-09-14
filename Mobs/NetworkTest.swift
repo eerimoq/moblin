@@ -19,12 +19,12 @@ class NetworkTestType {
             oldValue?.forceCancel()
         }
     }
-    
+
     init(typeName: String, type: NWInterface.InterfaceType) {
         self.typeName = typeName
         self.type = type
     }
-    
+
     func connect() {
         // let options = NWProtocolTCP.Options()
         // let params = NWParameters(tls: .init(), tcp: options)
@@ -56,9 +56,9 @@ class NetworkTestType {
 }
 
 class NetworkTest {
-    private var cellular: NetworkTestType = NetworkTestType(typeName: "cellular", type: .cellular)
-    private var wifi: NetworkTestType = NetworkTestType(typeName: "wifi", type: .wifi)
-    private var wiredEthernet: NetworkTestType = NetworkTestType(typeName: "wiredEthernet", type: .wiredEthernet)
+    private var cellular: NetworkTestType = .init(typeName: "cellular", type: .cellular)
+    private var wifi: NetworkTestType = .init(typeName: "wifi", type: .wifi)
+    private var wiredEthernet: NetworkTestType = .init(typeName: "wiredEthernet", type: .wiredEthernet)
 
     func connect() {
         cellular.connect()

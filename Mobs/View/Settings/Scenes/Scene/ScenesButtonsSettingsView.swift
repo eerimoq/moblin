@@ -1,5 +1,5 @@
 //
-//  ButtonsSettingsView.swift
+//  ScenesButtonsSettingsView.swift
 //  Mobs
 //
 //  Created by Erik Moqvist on 2023-09-03.
@@ -11,15 +11,11 @@ struct ButtonsSettingsView: View {
     @ObservedObject var model: Model
 
     var database: Database {
-        get {
-            model.database
-        }
+        model.database
     }
-    
+
     var body: some View {
-        Form {
-            
-        }
-        .navigationTitle("Buttons")
+        Form {}
+            .navigationTitle("Buttons")
     }
 }

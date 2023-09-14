@@ -4,7 +4,7 @@ struct TextItemView: View {
     var name: String
     var value: String
     var sensitive: Bool = false
-    
+
     var body: some View {
         HStack {
             Text(name)

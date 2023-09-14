@@ -3,7 +3,7 @@ import SwiftUI
 struct StreamRtmpSettingsView: View {
     @ObservedObject var model: Model
     var stream: SettingsStream
-    
+
     func submitUrl(value: String) {
         if makeRtmpUri(url: value) == "" {
             return
@@ -15,7 +15,7 @@ struct StreamRtmpSettingsView: View {
         model.store()
         model.reloadStreamIfEnabled(stream: stream)
     }
-    
+
     var body: some View {
         Form {
             NavigationLink(destination: SensitiveUrlEditView(value: stream.rtmpUrl, onSubmit: submitUrl)) {

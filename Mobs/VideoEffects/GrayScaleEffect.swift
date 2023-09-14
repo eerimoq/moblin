@@ -5,7 +5,7 @@ import UIKit
 final class GrayScaleEffect: VideoEffect {
     private let filter = CIFilter(name: "CIColorMonochrome")
 
-    override func execute(_ image: CIImage, info: CMSampleBuffer?) -> CIImage {
+    override func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {
         guard let filter else {
             return image
         }

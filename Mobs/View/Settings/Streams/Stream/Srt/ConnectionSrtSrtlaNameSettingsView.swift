@@ -10,12 +10,12 @@ import SwiftUI
 struct ConnectionSrtSrtlaSettingsView: View {
     @ObservedObject private var model: Model
     private var connection: SettingsConnection
-    
+
     init(model: Model, connection: SettingsConnection) {
         self.model = model
         self.connection = connection
     }
-    
+
     var body: some View {
         Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
     }

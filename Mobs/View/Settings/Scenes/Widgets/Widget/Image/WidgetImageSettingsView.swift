@@ -1,5 +1,5 @@
-import SwiftUI
 import PhotosUI
+import SwiftUI
 
 struct WidgetImageSettingsView: View {
     @ObservedObject var model: Model
@@ -24,14 +24,14 @@ struct WidgetImageSettingsView: View {
             .onChange(of: selectedImageItem) { imageItem in
                 imageItem!.loadTransferable(type: Data.self) { result in
                     switch result {
-                    case .success(let data?):
+                    case let .success(data?):
                         model.imageStorage.write(id: widget.id, data: data)
                         DispatchQueue.main.async {
                             model.sceneUpdated(imageEffectChanged: true)
                         }
                     case .success(nil):
                         logger.error("widget: image is nil")
-                    case .failure(let error):
+                    case let .failure(error):
                         logger.error("widget: image error: \(error)")
                     }
                 }

@@ -5,12 +5,12 @@ struct StreamView: UIViewRepresentable {
     var mthkView = MTHKView(frame: .zero)
     @Binding var netStream: NetStream
 
-    func makeUIView(context: Context) -> MTHKView {
+    func makeUIView(context _: Context) -> MTHKView {
         mthkView.videoGravity = .resizeAspect
         return mthkView
     }
 
-    func updateUIView(_ uiView: MTHKView, context: Context) {
+    func updateUIView(_: MTHKView, context _: Context) {
         mthkView.attachStream(netStream)
     }
 }

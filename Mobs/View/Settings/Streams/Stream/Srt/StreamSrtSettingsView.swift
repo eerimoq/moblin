@@ -3,7 +3,7 @@ import SwiftUI
 struct StreamSrtSettingsView: View {
     @ObservedObject var model: Model
     var stream: SettingsStream
-    
+
     func submitUrl(value: String) {
         if URL(string: value) == nil {
             return
@@ -12,7 +12,7 @@ struct StreamSrtSettingsView: View {
         model.store()
         model.reloadStreamIfEnabled(stream: stream)
     }
-    
+
     var body: some View {
         Form {
             NavigationLink(destination: SensitiveUrlEditView(value: stream.srtUrl, onSubmit: submitUrl)) {

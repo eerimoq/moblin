@@ -11,13 +11,14 @@ class RemoteConnection {
             oldValue?.forceCancel()
         }
     }
+
     var packetHandler: ((_ packet: Data) -> Void)?
-    
+
     init(queue: DispatchQueue, type: NWInterface.InterfaceType) {
         self.queue = queue
         self.type = type
     }
-    
+
     func start(host: String, port: UInt16) {
         let options = NWProtocolUDP.Options()
         let params = NWParameters(dtls: .none, udp: options)
@@ -36,16 +37,17 @@ class RemoteConnection {
         connection?.cancel()
         connection = nil
     }
-    
+
     func score() -> Int {
         guard
             let connection = connection,
-            connection.state == .ready else {
+            connection.state == .ready
+        else {
             return -1
         }
         return 1
     }
-    
+
     private func handleViabilityChange(to viability: Bool) {
         logger.info("srtla: remote: \(type): Connection viability changed to \(viability)")
     }
@@ -53,7 +55,7 @@ class RemoteConnection {
     private func handleStateChange(to state: NWConnection.State) {
         logger.info("srtla: remote: \(type): Connection state changed to \(state)")
     }
-    
+
     private func receivePacket() {
         guard let connection else {
             return
@@ -78,7 +80,7 @@ class RemoteConnection {
             self.receivePacket()
         }
     }
-    
+
     func sendPacket(packet: Data) {
         guard let connection else {
             return

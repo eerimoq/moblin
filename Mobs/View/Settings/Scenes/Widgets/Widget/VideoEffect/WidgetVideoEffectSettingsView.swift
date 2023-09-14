@@ -4,13 +4,13 @@ struct WidgetVideoEffectSettingsView: View {
     @ObservedObject var model: Model
     var widget: SettingsWidget
     @State private var selection: String
-    
+
     init(model: Model, widget: SettingsWidget) {
         self.model = model
         self.widget = widget
-        self.selection = widget.videoEffect.type.rawValue
+        selection = widget.videoEffect.type.rawValue
     }
-    
+
     var body: some View {
         Section("Video effect") {
             Picker("", selection: $selection) {

@@ -8,14 +8,14 @@ struct StreamSettingsView: View {
     init(stream: SettingsStream, model: Model) {
         self.model = model
         self.stream = stream
-        self.proto = stream.proto.rawValue
+        proto = stream.proto.rawValue
     }
-    
+
     func submitName(name: String) {
         stream.name = name
         model.store()
     }
-    
+
     var body: some View {
         Form {
             NavigationLink(destination: NameEditView(name: stream.name, onSubmit: submitName)) {

@@ -4,9 +4,7 @@ struct LocalOverlaysSettingsView: View {
     @ObservedObject var model: Model
 
     var show: SettingsShow {
-        get {
-            model.database.show
-        }
+        model.database.show
     }
 
     var body: some View {
@@ -15,7 +13,7 @@ struct LocalOverlaysSettingsView: View {
                 Toggle("Stream", isOn: Binding(get: {
                     show.stream
                 }, set: { value in
-                    show.stream  = value
+                    show.stream = value
                     model.store()
                 }))
                 Toggle("Viewers", isOn: Binding(get: {

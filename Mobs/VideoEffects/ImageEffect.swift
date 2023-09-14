@@ -20,22 +20,23 @@ final class ImageEffect: VideoEffect {
             UIGraphicsEndImageContext()
         }
     }
+
     private var overlay: CIImage?
     private let originalImage: UIImage
     private let x: Double
     private let y: Double
     private let width: Double
     private let height: Double
-    
+
     init(image: UIImage, x: Double, y: Double, width: Double, height: Double) {
-        self.originalImage = image
+        originalImage = image
         self.x = x
         self.y = y
         self.width = width
         self.height = height
     }
 
-    override func execute(_ image: CIImage, info: CMSampleBuffer?) -> CIImage {
+    override func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {
         guard let filter else {
             return image
         }

@@ -8,7 +8,7 @@ struct VariableSettingsView: View {
         variable.name = name
         model.store()
     }
-    
+
     var body: some View {
         Form {
             NavigationLink(destination: NameEditView(name: variable.name, onSubmit: submitName)) {

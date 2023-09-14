@@ -4,9 +4,7 @@ struct ScenesSettingsView: View {
     @ObservedObject var model: Model
 
     var database: Database {
-        get {
-            model.database
-        }
+        model.database
     }
 
     var body: some View {
@@ -36,10 +34,10 @@ struct ScenesSettingsView: View {
             }
             Section {
                 NavigationLink(destination: WidgetsSettingsView(model: model)) {
-                   Text("Widgets")
+                    Text("Widgets")
                 }
                 NavigationLink(destination: ButtonsSettingsView(model: model)) {
-                   Text("Buttons")
+                    Text("Buttons")
                 }
             }
         }

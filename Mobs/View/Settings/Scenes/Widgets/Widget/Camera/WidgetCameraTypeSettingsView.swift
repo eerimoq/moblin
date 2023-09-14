@@ -4,13 +4,13 @@ struct WidgetCameraTypeSettingsView: View {
     @ObservedObject var model: Model
     private var widget: SettingsWidget
     @State private var selection: String
-    
+
     init(model: Model, widget: SettingsWidget) {
         self.model = model
         self.widget = widget
-        self.selection = widget.camera.type.rawValue
+        selection = widget.camera.type.rawValue
     }
-    
+
     var body: some View {
         Form {
             Picker("", selection: $selection) {

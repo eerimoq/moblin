@@ -9,36 +9,32 @@ struct SceneSettingsView: View {
     @State private var selectedWidget = 0
     @State private var selectedButton = 0
     private var scene: SettingsScene
-    
+
     init(scene: SettingsScene, model: Model) {
         self.scene = scene
         self.model = model
     }
-    
+
     var widgets: [SettingsWidget] {
-        get {
-            model.database.widgets
-        }
+        model.database.widgets
     }
-    
+
     var buttons: [SettingsButton] {
-        get {
-            model.database.buttons
-        }
+        model.database.buttons
     }
-    
+
     func submitName(name: String) {
         scene.name = name
         model.store()
     }
-    
+
     func colorOf(widget: SettingsSceneWidget) -> Color {
-        guard let index = model.database.widgets.firstIndex(where: {item in item.id == widget.widgetId}) else {
+        guard let index = model.database.widgets.firstIndex(where: { item in item.id == widget.widgetId }) else {
             return .blue
         }
         return widgetColors[index % widgetColors.count]
     }
-    
+
     func drawWidgets(context: GraphicsContext) {
         let stroke = 4.0
         let xScale = (1920.0 / 6 - stroke) / 100
@@ -53,14 +49,15 @@ struct SceneSettingsView: View {
             context.stroke(
                 Path(roundedRect: CGRect(origin: origin, size: size), cornerRadius: 2.0),
                 with: .color(colorOf(widget: widget)),
-                lineWidth: stroke)
+                lineWidth: stroke
+            )
         }
     }
-    
+
     func buttonIndex(button: SettingsButton) -> Int {
         return buttons.firstIndex(of: button)!
     }
-    
+
     var body: some View {
         Form {
             NavigationLink(destination: NameEditView(name: scene.name, onSubmit: submitName)) {
@@ -69,7 +66,7 @@ struct SceneSettingsView: View {
             Section("Preview") {
                 HStack {
                     Spacer()
-                    Canvas { context, size in
+                    Canvas { context, _ in
                         drawWidgets(context: context)
                     }
                     .frame(width: 1920 / 6, height: 1080 / 6)
@@ -80,7 +77,7 @@ struct SceneSettingsView: View {
             Section {
                 List {
                     ForEach(scene.widgets) { widget in
-                        if let realWidget = widgets.first(where: {item in item.id == widget.widgetId}) {
+                        if let realWidget = widgets.first(where: { item in item.id == widget.widgetId }) {
                             NavigationLink(destination: SceneWidgetSettingsView(model: model, widget: widget)) {
                                 Toggle(isOn: Binding(get: {
                                     widget.enabled
@@ -100,7 +97,7 @@ struct SceneSettingsView: View {
                             }
                         }
                     }
-                    .onMove(perform: { (froms, to) in
+                    .onMove(perform: { froms, to in
                         scene.widgets.move(fromOffsets: froms, toOffset: to)
                         model.sceneUpdated()
                         model.store()
@@ -168,7 +165,7 @@ struct SceneSettingsView: View {
                             }
                         }
                     }
-                    .onMove(perform: { (froms, to) in
+                    .onMove(perform: { froms, to in
                         scene.buttons.move(fromOffsets: froms, toOffset: to)
                         model.store()
                         model.sceneUpdated()

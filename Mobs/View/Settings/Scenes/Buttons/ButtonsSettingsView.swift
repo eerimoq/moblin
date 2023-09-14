@@ -4,9 +4,7 @@ struct ButtonsSettingsView: View {
     @ObservedObject var model: Model
 
     var database: Database {
-        get {
-            model.database
-        }
+        model.database
     }
 
     func isButtonUsed(button: SettingsButton) -> Bool {
@@ -30,7 +28,7 @@ struct ButtonsSettingsView: View {
                         }
                         .deleteDisabled(isButtonUsed(button: button))
                     }
-                    .onMove(perform: { (froms, to) in
+                    .onMove(perform: { froms, to in
                         database.buttons.move(fromOffsets: froms, toOffset: to)
                         model.store()
                         model.sceneUpdated()
@@ -53,4 +51,3 @@ struct ButtonsSettingsView: View {
         .navigationTitle("Buttons")
     }
 }
-

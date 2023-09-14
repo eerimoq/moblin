@@ -4,9 +4,7 @@ struct LeftOverlayView: View {
     @ObservedObject var model: Model
 
     var database: Database {
-        get {
-            model.settings.database
-        }
+        model.settings.database
     }
 
     func streamText() -> String {
@@ -21,7 +19,7 @@ struct LeftOverlayView: View {
         }
         return "\(stream.name) (\(stream.resolution.rawValue), \(stream.fps), \(stream.codec.rawValue), \(proto))"
     }
-    
+
     func messageText() -> String {
         if model.isTwitchChatConnected() {
             return String(format: "%.2f m/s", model.twitchChatPostsPerSecond)
@@ -29,7 +27,7 @@ struct LeftOverlayView: View {
             return ""
         }
     }
-    
+
     func messageColor() -> Color {
         if model.isTwitchChatConnected() {
             return .white
@@ -37,6 +35,7 @@ struct LeftOverlayView: View {
             return .red
         }
     }
+
     func viewersText() -> String {
         if model.isTwitchPubSubConnected() {
             return model.numberOfViewers
@@ -44,7 +43,7 @@ struct LeftOverlayView: View {
             return ""
         }
     }
-    
+
     func viewersColor() -> Color {
         if model.isTwitchPubSubConnected() {
             return .white
@@ -52,7 +51,7 @@ struct LeftOverlayView: View {
             return .red
         }
     }
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 1) {
             if database.show.stream {

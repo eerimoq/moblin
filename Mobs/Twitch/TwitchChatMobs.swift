@@ -10,14 +10,14 @@ struct Post: Hashable {
 final class TwitchChatMobs {
     private var twitchChat: TwitchChat!
     private var model: Model
-    private var task: Task<Void, Error>? = nil
+    private var task: Task<Void, Error>?
     private var id = 0
     private var connected: Bool = false
 
     init(model: Model) {
         self.model = model
     }
-    
+
     func isConnected() -> Bool {
         return connected
     }

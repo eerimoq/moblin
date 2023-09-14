@@ -6,12 +6,12 @@ class LocalListener {
     private var listener: NWListener?
     private var connection: NWConnection?
     var packetHandler: ((_ packet: Data) -> Void)?
-    var port: UInt16? = nil
-    
+    var port: UInt16?
+
     init(queue: DispatchQueue) {
         self.queue = queue
     }
-    
+
     func start() {
         do {
             let options = NWProtocolUDP.Options()
@@ -41,18 +41,18 @@ class LocalListener {
                 logger.info("srtla: local: Listener ready at port \(self.port!)")
             }
         default:
-            self.port = nil
+            port = nil
         }
     }
-    
+
     func handleNewListenerConnection(connection: NWConnection) {
         self.connection = connection
         logger.info("srtla: local: New connection \(connection.debugDescription)")
-        connection.stateUpdateHandler = { (state) in
+        connection.stateUpdateHandler = { state in
             switch state {
             case .ready:
                 logger.info("srtla: local: Connection ready")
-            case .failed(let error):
+            case let .failed(error):
                 logger.info("srtla: local: Connection failed with error \(error)")
             case .cancelled:
                 logger.info("srtla: local: Connection cancelled")
@@ -63,12 +63,12 @@ class LocalListener {
         connection.start(queue: queue)
         receivePacket()
     }
-    
+
     private func receivePacket() {
         guard let connection else {
             return
         }
-        connection.receive(minimumIncompleteLength: 1, maximumLength: 32768) { data, _, isDone, error in
+        connection.receive(minimumIncompleteLength: 1, maximumLength: 32768) { data, _, _, error in
             if let data, !data.isEmpty {
                 logger.debug("srtla: local: Received \(data)")
                 if let packetHandler = self.packetHandler {
@@ -84,7 +84,7 @@ class LocalListener {
             self.receivePacket()
         }
     }
-    
+
     func sendPacket(packet: Data) {
         guard let connection else {
             return

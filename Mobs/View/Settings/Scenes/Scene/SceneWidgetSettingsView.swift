@@ -4,18 +4,18 @@ struct SceneWidgetSettingsView: View {
     @ObservedObject private var model: Model
     private var widget: SettingsSceneWidget
     private var isImage: Bool
-    
+
     init(model: Model, widget: SettingsSceneWidget) {
         self.model = model
         self.widget = widget
         if let widget = model.findWidget(id: widget.widgetId) {
-            self.isImage = widget.type == .image
+            isImage = widget.type == .image
         } else {
             logger.error("Unable to find widget type")
-            self.isImage = false
+            isImage = false
         }
     }
-    
+
     func submitX(value: String) {
         if let value = Double(value) {
             widget.x = min(max(value, 0), 99)
@@ -23,7 +23,7 @@ struct SceneWidgetSettingsView: View {
             model.sceneUpdated(imageEffectChanged: isImage)
         }
     }
-    
+
     func submitY(value: String) {
         if let value = Double(value) {
             widget.y = min(max(value, 0), 99)
@@ -31,7 +31,7 @@ struct SceneWidgetSettingsView: View {
             model.sceneUpdated(imageEffectChanged: isImage)
         }
     }
-    
+
     func submitW(value: String) {
         if let value = Double(value) {
             widget.width = min(max(value, 1), 100)
@@ -39,7 +39,7 @@ struct SceneWidgetSettingsView: View {
             model.sceneUpdated(imageEffectChanged: isImage)
         }
     }
-    
+
     func submitH(value: String) {
         if let value = Double(value) {
             widget.height = min(max(value, 1), 100)
@@ -47,7 +47,7 @@ struct SceneWidgetSettingsView: View {
             model.sceneUpdated(imageEffectChanged: isImage)
         }
     }
-    
+
     var body: some View {
         Form {
             Section {

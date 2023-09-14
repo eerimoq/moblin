@@ -16,15 +16,16 @@ final class MovieEffect: VideoEffect {
             context.setFillColor(UIColor.black.cgColor)
             context.fill([
                 CGRect(x: 0, y: 0, width: width, height: height),
-                CGRect(x: 0, y: 5 * height, width: width, height: height)
+                CGRect(x: 0, y: 5 * height, width: width, height: height),
             ])
             black = CIImage(image: UIGraphicsGetImageFromCurrentImageContext()!)
             UIGraphicsEndImageContext()
         }
     }
+
     private var black: CIImage?
 
-    override func execute(_ image: CIImage, info: CMSampleBuffer?) -> CIImage {
+    override func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {
         guard let filter else {
             return image
         }

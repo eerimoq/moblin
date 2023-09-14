@@ -8,7 +8,7 @@ struct WidgetSettingsView: View {
         widget.name = name
         model.store()
     }
-    
+
     var body: some View {
         Form {
             NavigationLink(destination: NameEditView(name: widget.name, onSubmit: submitName)) {
@@ -18,7 +18,7 @@ struct WidgetSettingsView: View {
                 Picker("", selection: Binding(get: {
                     widget.type.rawValue
                 }, set: { value in
-                    widget.type =  SettingsWidgetType(rawValue: value)!
+                    widget.type = SettingsWidgetType(rawValue: value)!
                     model.store()
                     model.objectWillChange.send()
                 })) {

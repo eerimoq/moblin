@@ -3,7 +3,7 @@ import SwiftUI
 struct ImageItemView: View {
     var name: String
     var image: String
-    
+
     var body: some View {
         HStack {
             Text(name)
@@ -18,31 +18,31 @@ struct ButtonSettingsView: View {
     private var button: SettingsButton
     @State private var selection: String
     @State private var selectedWidget: Int
-    
+
     init(button: SettingsButton, model: Model) {
         self.button = button
         self.model = model
-        self.selection = button.type.rawValue
-        self.selectedWidget = model.database.widgets.firstIndex(where: {
+        selection = button.type.rawValue
+        selectedWidget = model.database.widgets.firstIndex(where: {
             widget in widget.id == button.widget.widgetId
         }) ?? 0
     }
-    
+
     func submitName(name: String) {
         button.name = name
         model.store()
     }
-    
+
     func onSystemImageNameOn(name: String) {
         button.systemImageNameOn = name
         model.store()
     }
-    
+
     func onSystemImageNameOff(name: String) {
         button.systemImageNameOff = name
         model.store()
     }
-    
+
     var body: some View {
         Form {
             NavigationLink(destination: NameEditView(name: button.name, onSubmit: submitName)) {

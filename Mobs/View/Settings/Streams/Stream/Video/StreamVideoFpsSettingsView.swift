@@ -6,13 +6,13 @@ struct StreamVideoFpsSettingsView: View {
     @ObservedObject var model: Model
     private var stream: SettingsStream
     @State private var selection: Int
-    
+
     init(model: Model, stream: SettingsStream) {
         self.model = model
         self.stream = stream
-        self.selection = stream.fps
+        selection = stream.fps
     }
-    
+
     var body: some View {
         Form {
             Section {

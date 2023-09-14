@@ -2,7 +2,7 @@ import SwiftUI
 
 struct DebugLogSettingsView: View {
     @ObservedObject var model: Model
-    
+
     var body: some View {
         if model.log.isEmpty {
             Text("The log is empty.")

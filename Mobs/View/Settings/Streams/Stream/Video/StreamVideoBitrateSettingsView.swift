@@ -4,13 +4,13 @@ struct StreamVideoBitrateSettingsView: View {
     @ObservedObject var model: Model
     var stream: SettingsStream
     @State private var selection: UInt32
-    
+
     init(model: Model, stream: SettingsStream) {
         self.model = model
         self.stream = stream
-        self.selection = stream.bitrate
+        selection = stream.bitrate
     }
-    
+
     var body: some View {
         Form {
             Section {
