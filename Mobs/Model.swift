@@ -44,7 +44,7 @@ final class Model: ObservableObject, NetStreamDelegate {
     // private var srtla = Srtla()
     private var keyValueObservations: [NSKeyValueObservation] = []
     @Published var isLive = false
-    private var nc = NotificationCenter.default
+    private var notificationCenter = NotificationCenter.default
     private var subscriptions = Set<AnyCancellable>()
     private var publishing = false
     private var startDate: Date?
@@ -145,6 +145,18 @@ final class Model: ObservableObject, NetStreamDelegate {
         twitchChat = TwitchChatMobs(model: self)
         reloadStream()
         resetSelectedScene()
+        setupPeriodicTimer()
+        // srtla.start(uri: "srt://192.168.50.72:10000")
+        updateThermalState()
+        setupThermalStateListener()
+        setupSrtConnectionStateListener()
+        updateButtonStates()
+        sceneUpdated(imageEffectChanged: true, store: false)
+        removeUnusedImages()
+        // location.start()
+    }
+
+    func setupPeriodicTimer() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             DispatchQueue.main.async {
                 let now = Date()
@@ -156,47 +168,41 @@ final class Model: ObservableObject, NetStreamDelegate {
                 self.updateTwitchPubSub()
             }
         })
-        // srtla.start(uri: "srt://192.168.50.72:10000")
-        updateThermalState()
+    }
 
-        nc.publisher(for: ProcessInfo.thermalStateDidChangeNotification, object: nil)
-            .sink { _ in
-                DispatchQueue.main.async {
-                    self.updateThermalState()
-                }
-            }
-            .store(in: &subscriptions)
-
+    func setupSrtConnectionStateListener() {
         let keyValueObservation = srtConnection.observe(\.connected, options: [
             .new,
             .old,
-        ]) { [weak self] _, _ in
+        ]) { [weak self] _, connected in
             guard let self else {
                 return
             }
-            logger.info("model: SRT connection state \(srtConnection.connected)")
+            if connected.newValue! {
+                srtStream.publish()
+                startDate = Date()
+                netStreamState = .connected
+            } else {
+                srtStream.close()
+                startDate = nil
+                netStreamState = .disconnected
+            }
+            updateUptimeFromNonMain()
         }
         keyValueObservations.append(keyValueObservation)
+    }
 
-        updateButtonStates()
-        sceneUpdated(imageEffectChanged: true, store: false)
-        removeUnusedImages()
-        if let stream {
-            if stream.srtla {
-                // if let srtlaPort = srtla.localPort() {
-                //    let url = "srt://localhost:\(srtlaPort)"
-                //    logger.info("model: SRTLA connect to \(url)")
-                //    //srtConnection.open(URL(string: url))
-                // } else {
-                logger.error("model: Local SRTLA port missing")
-                // }
-            } else {
-                logger.info("model: SRT connect to \(stream.srtUrl)")
-                // srtConnection.open(URL(string: stream.srtUrl))
-                // srtStream.publish()
+    func setupThermalStateListener() {
+        notificationCenter.publisher(
+            for: ProcessInfo.thermalStateDidChangeNotification,
+            object: nil
+        )
+        .sink { _ in
+            DispatchQueue.main.async {
+                self.updateThermalState()
             }
         }
-        // location.start()
+        .store(in: &subscriptions)
     }
 
     func removeUnusedImages() {
@@ -530,7 +536,8 @@ final class Model: ObservableObject, NetStreamDelegate {
         if netStream === rtmpStream {
             return Int64(8 * rtmpStream.info.currentBytesPerSecond)
         } else {
-            return Int64(srtConnection.performanceData.mbpsBandwidth)
+            // crashes!
+            return 0 // Int64(srtConnection.performanceData.mbpsBandwidth)
         }
     }
 
@@ -538,8 +545,9 @@ final class Model: ObservableObject, NetStreamDelegate {
         if netStream === rtmpStream {
             return rtmpStream.info.byteCount.value
         } else {
-            return Int64(srtConnection.performanceData.byteRecvTotal + srtConnection
-                .performanceData.byteSentTotal)
+            // crashes!
+            return 0 // Int64(srtConnection.performanceData.byteRecvTotal + srtConnection
+            // .performanceData.byteSentTotal)
         }
     }
 
@@ -605,10 +613,7 @@ final class Model: ObservableObject, NetStreamDelegate {
             rtmpConnection.connect(rtmpUri())
         case .srt:
             logger.info("model: Should start publishing using SRT")
-        // srtConnection.open(URL(string: stream!.srtUrl)!)
-        // srtStream.publish()
-        // startDate = Date()
-        // updateUptime(now: startDate!)
+            srtConnection.open(URL(string: stream!.srtUrl)!)
         case nil:
             break
         }
@@ -629,8 +634,7 @@ final class Model: ObservableObject, NetStreamDelegate {
             observer: self
         )
         logger.info("model: Should stop publishing using SRT")
-        // srtStream.close()
-        // srtConnection.close()
+        srtConnection.close()
         startDate = nil
         updateUptime(now: Date())
     }
