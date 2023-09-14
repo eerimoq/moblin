@@ -363,13 +363,10 @@ final class Model: ObservableObject, NetStreamDelegate {
     
     func reloadTwitchChat() {
         twitchChat.stop()
-        twitchChatPostsPerSecond = 0
-        twitchChatPosts = []
-        numberOfTwitchChatPosts = 0
-        guard let stream else {
-            return
+        if let stream  {
+            twitchChat.start(channelName: stream.twitchChannelName)
         }
-        twitchChat.start(channelName: stream.twitchChannelName)
+        twitchChatPostsPerSecond = 0
         twitchChatPosts = []
         numberOfTwitchChatPosts = 0
     }
