@@ -153,6 +153,8 @@ final class Model: ObservableObject, NetStreamDelegate {
         updateButtonStates()
         sceneUpdated(imageEffectChanged: true, store: false)
         removeUnusedImages()
+        //srtConnection.open(URL(string: stream!.srtUrl)!)
+        //srtStream.publish()
         // location.start()
     }
 
