@@ -368,13 +368,13 @@ final class Model: ObservableObject, NetStreamDelegate {
     }
     
     func reloadTwitchViewers() {
-        guard let stream else {
-            return
-        }
         if let twitchPubSub {
             twitchPubSub.stop()
         }
         numberOfViewers = unknownNumberOfViewers
+        guard let stream else {
+            return
+        }
         twitchPubSub = TwitchPubSub(model: self, channelId: stream.twitchChannelId)
         twitchPubSub!.start()
     }
