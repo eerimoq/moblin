@@ -24,7 +24,7 @@ class RemoteConnection {
         params.requiredInterfaceType = type
         params.prohibitExpensivePaths = false
         connection = NWConnection(host: NWEndpoint.Host(host), port: NWEndpoint.Port(integerLiteral: port), using: params)
-        if let connection = connection {
+        if let connection {
             connection.viabilityUpdateHandler = handleViabilityChange(to:)
             connection.stateUpdateHandler = handleStateChange(to:)
             connection.start(queue: queue)
@@ -59,7 +59,7 @@ class RemoteConnection {
             return
         }
         connection.receive(minimumIncompleteLength: 1, maximumLength: 65536) { data, _, isDone, error in
-            if let data = data, !data.isEmpty {
+            if let data, !data.isEmpty {
                 logger.debug("srtla: remote: \(self.type): Receive \(data)")
                 if let packetHandler = self.packetHandler {
                     packetHandler(data)
@@ -67,7 +67,7 @@ class RemoteConnection {
                     logger.warning("srtla: remote: \(self.type): Discarding packet.")
                 }
             }
-            if let error = error {
+            if let error {
                 logger.warning("srtla: remote: \(self.type): Receive \(error)")
                 return
             }
@@ -84,7 +84,7 @@ class RemoteConnection {
             return
         }
         connection.send(content: packet, completion: .contentProcessed { error in
-            if let error = error {
+            if let error {
                 logger.error("srtla: remote: \(self.type): Remote send error: \(error)")
             } else {
                 logger.debug("srtla: remote: Sent \(packet)")

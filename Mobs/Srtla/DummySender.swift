@@ -20,7 +20,7 @@ class DummySender {
         }
         let data = Data("An SRT packet".utf8)
         connection!.send(content: data, completion: .contentProcessed { error in
-            if let error = error {
+            if let error {
                 logger.error("srtla: Local dummy send error: \(error)")
             }
         })

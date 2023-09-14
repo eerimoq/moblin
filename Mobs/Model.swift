@@ -157,7 +157,7 @@ final class Model: ObservableObject, NetStreamDelegate {
         checkDeviceAuthorization()
         twitchChat = TwitchChatMobs(model: self)
         reloadStream()
-        if let stream = stream {
+        if let stream {
             twitchChat!.start(channelName: stream.twitchChannelName)
             twitchPubSub = TwitchPubSub(model: self, channelId: stream.twitchChannelId)
             twitchPubSub!.start()
@@ -203,7 +203,7 @@ final class Model: ObservableObject, NetStreamDelegate {
         updateButtonStates()
         sceneUpdated(imageEffectChanged: true)
         removeUnusedImages()
-        if let stream = stream {
+        if let stream {
             if stream.srtla {
                 //if let srtlaPort = srtla.localPort() {
                 //    let url = "srt://localhost:\(srtlaPort)"
@@ -376,7 +376,7 @@ final class Model: ObservableObject, NetStreamDelegate {
         guard let stream else {
             return
         }
-        if let twitchPubSub = twitchPubSub {
+        if let twitchPubSub {
             twitchPubSub.stop()
         }
         numberOfViewers = unknownNumberOfViewers

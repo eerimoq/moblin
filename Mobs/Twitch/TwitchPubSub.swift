@@ -161,7 +161,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         logger.debug("twitch: pubsub: \(channelId): Sending \(message)")
         let message = URLSessionWebSocketTask.Message.string(message)
         webSocket.send(message) { error in
-            if let error = error {
+            if let error {
                 logger.error("twitch: pubsub: \(self.channelId): Failed to send message to server with error \(error)")
                 self.reconnect()
             }

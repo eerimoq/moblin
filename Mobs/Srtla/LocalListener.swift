@@ -69,7 +69,7 @@ class LocalListener {
             return
         }
         connection.receive(minimumIncompleteLength: 1, maximumLength: 32768) { data, _, isDone, error in
-            if let data = data, !data.isEmpty {
+            if let data, !data.isEmpty {
                 logger.debug("srtla: local: Received \(data)")
                 if let packetHandler = self.packetHandler {
                     packetHandler(data)
@@ -77,7 +77,7 @@ class LocalListener {
                     logger.warning("srtla: local: Discarding local packet.")
                 }
             }
-            if let error = error {
+            if let error {
                 logger.info("srtla: local: Local error \(error)")
                 return
             }
@@ -90,7 +90,7 @@ class LocalListener {
             return
         }
         connection.send(content: packet, completion: .contentProcessed { error in
-            if let error = error {
+            if let error {
                 logger.warning("srtla: local: Local send error: \(error)")
             }
         })
