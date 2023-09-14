@@ -21,7 +21,6 @@ struct StreamVideoCodecSettingsView: View {
                 }
                 .onChange(of: selection) { codec in
                     stream.codec = SettingsStreamCodec(rawValue: codec)!
-                    model.store()
                     model.reloadStreamIfEnabled(stream: stream)
                 }
                 .pickerStyle(.inline)

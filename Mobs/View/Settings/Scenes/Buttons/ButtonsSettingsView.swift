@@ -30,18 +30,15 @@ struct ButtonsSettingsView: View {
                     }
                     .onMove(perform: { froms, to in
                         database.buttons.move(fromOffsets: froms, toOffset: to)
-                        model.store()
                         model.sceneUpdated()
                     })
                     .onDelete(perform: { offsets in
                         database.buttons.remove(atOffsets: offsets)
-                        model.store()
                         model.sceneUpdated()
                     })
                 }
                 CreateButtonView(action: {
                     database.buttons.append(SettingsButton(name: "My button"))
-                    model.store()
                     model.sceneUpdated()
                 })
             } footer: {

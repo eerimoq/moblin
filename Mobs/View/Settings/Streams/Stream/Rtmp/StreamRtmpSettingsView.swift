@@ -12,7 +12,6 @@ struct StreamRtmpSettingsView: View {
             return
         }
         stream.rtmpUrl = value
-        model.store()
         model.reloadStreamIfEnabled(stream: stream)
     }
 

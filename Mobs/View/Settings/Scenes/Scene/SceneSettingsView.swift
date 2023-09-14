@@ -83,7 +83,6 @@ struct SceneSettingsView: View {
                                     widget.enabled
                                 }, set: { value in
                                     widget.enabled = value
-                                    model.store()
                                     model.sceneUpdated()
                                 })) {
                                     HStack {
@@ -100,12 +99,10 @@ struct SceneSettingsView: View {
                     .onMove(perform: { froms, to in
                         scene.widgets.move(fromOffsets: froms, toOffset: to)
                         model.sceneUpdated()
-                        model.store()
                     })
                     .onDelete(perform: { offsets in
                         scene.widgets.remove(atOffsets: offsets)
                         model.sceneUpdated()
-                        model.store()
                     })
                 }
                 AddButtonView(action: {
@@ -135,7 +132,6 @@ struct SceneSettingsView: View {
                             Spacer()
                             Button(action: {
                                 scene.widgets.append(SettingsSceneWidget(widgetId: widgets[selectedWidget].id))
-                                model.store()
                                 model.sceneUpdated()
                                 showingAddWidget = false
                             }, label: {
@@ -158,7 +154,6 @@ struct SceneSettingsView: View {
                                 button.enabled
                             }, set: { value in
                                 button.enabled = value
-                                model.store()
                                 model.sceneUpdated()
                             })) {
                                 IconAndTextView(image: realButton.systemImageNameOff, text: realButton.name)
@@ -167,12 +162,10 @@ struct SceneSettingsView: View {
                     }
                     .onMove(perform: { froms, to in
                         scene.buttons.move(fromOffsets: froms, toOffset: to)
-                        model.store()
                         model.sceneUpdated()
                     })
                     .onDelete(perform: { offsets in
                         scene.buttons.remove(atOffsets: offsets)
-                        model.store()
                         model.sceneUpdated()
                     })
                 }
@@ -203,7 +196,6 @@ struct SceneSettingsView: View {
                             Spacer()
                             Button(action: {
                                 scene.addButton(id: buttons[selectedButton].id)
-                                model.store()
                                 model.sceneUpdated()
                                 showingAddButton = false
                             }, label: {

@@ -41,7 +41,6 @@ struct StreamSettingsView: View {
                 }
                 .onChange(of: proto) { proto in
                     stream.proto = SettingsStreamProtocol(rawValue: proto)!
-                    model.store()
                     model.reloadStreamIfEnabled(stream: stream)
                 }
                 .pickerStyle(.inline)

@@ -173,7 +173,7 @@ final class Model: ObservableObject, NetStreamDelegate {
         keyValueObservations.append(keyValueObservation)
 
         updateButtonStates()
-        sceneUpdated(imageEffectChanged: true)
+        sceneUpdated(imageEffectChanged: true, store: false)
         removeUnusedImages()
         if let stream {
             if stream.srtla {
@@ -242,7 +242,7 @@ final class Model: ObservableObject, NetStreamDelegate {
             selectedSceneId = enabledScenes[0].id
             sceneIndex = 0
         }
-        sceneUpdated(imageEffectChanged: true)
+        sceneUpdated(imageEffectChanged: true, store: false)
     }
 
     func store() {
@@ -275,6 +275,7 @@ final class Model: ObservableObject, NetStreamDelegate {
     }
 
     func reloadStreamIfEnabled(stream: SettingsStream) {
+        self.store()
         if stream.enabled {
             reloadStream()
         }
@@ -461,7 +462,10 @@ final class Model: ObservableObject, NetStreamDelegate {
         }
     }
 
-    func sceneUpdated(imageEffectChanged: Bool = false) {
+    func sceneUpdated(imageEffectChanged: Bool = false, store: Bool = true) {
+        if store {
+            self.store()
+        }
         updateButtonStates()
         guard let scene = findEnabledScene(id: selectedSceneId) else {
             return

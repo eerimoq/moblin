@@ -23,7 +23,6 @@ struct StreamVideoFpsSettingsView: View {
                 }
                 .onChange(of: selection) { fps in
                     stream.fps = fps
-                    model.store()
                     model.reloadStreamIfEnabled(stream: stream)
                 }
                 .pickerStyle(.inline)

@@ -58,7 +58,6 @@ struct ButtonsView: View {
         state.button.isOn = !state.button.isOn
         model.updateButtonStates()
         model.sceneUpdated()
-        model.store()
     }
 
     var body: some View {

@@ -9,7 +9,6 @@ struct StreamSrtSettingsView: View {
             return
         }
         stream.srtUrl = value
-        model.store()
         model.reloadStreamIfEnabled(stream: stream)
     }
 
@@ -22,7 +21,6 @@ struct StreamSrtSettingsView: View {
                 stream.srtla
             }, set: { value in
                 stream.srtla = value
-                model.store()
                 model.reloadStreamIfEnabled(stream: stream)
             }))
         }
