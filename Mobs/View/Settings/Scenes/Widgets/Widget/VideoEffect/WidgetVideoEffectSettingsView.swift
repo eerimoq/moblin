@@ -19,7 +19,6 @@ struct WidgetVideoEffectSettingsView: View {
                 }
             }
             .onChange(of: selection) { type in
-                model.allWidgetsOff()
                 widget.videoEffect.type = SettingsWidgetVideoEffectType(rawValue: type)!
                 model.sceneUpdated()
                 model.store()

@@ -18,20 +18,7 @@ struct StreamButton: View {
     @State private var isPresentingStopConfirm: Bool = false
 
     var body: some View {
-        switch model.liveState {
-        case .stopped:
-            Button(action: {
-                isPresentingGoLiveConfirm = true
-            }, label: {
-                StreamButtonText(text: "Go Live")
-            })
-            .disabled(model.stream == nil)
-            .confirmationDialog("", isPresented: $isPresentingGoLiveConfirm) {
-                Button("Go live") {
-                    model.startStream()
-                }
-            }
-        case .live:
+        if model.isLive {
             Button(action: {
                 isPresentingStopConfirm = true
             }, label: {
@@ -44,6 +31,18 @@ struct StreamButton: View {
             .confirmationDialog("", isPresented: $isPresentingStopConfirm) {
                 Button("Stop") {
                     model.stopStream()
+                }
+            }
+        } else {
+            Button(action: {
+                isPresentingGoLiveConfirm = true
+            }, label: {
+                StreamButtonText(text: "Go Live")
+            })
+            .disabled(model.stream == nil)
+            .confirmationDialog("", isPresented: $isPresentingGoLiveConfirm) {
+                Button("Go live") {
+                    model.startStream()
                 }
             }
         }

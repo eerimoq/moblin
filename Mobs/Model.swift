@@ -10,11 +10,6 @@ import VideoToolbox
 
 let unknownNumberOfViewers = ""
 
-enum LiveState {
-    case stopped
-    case live
-}
-
 class ButtonState {
     var isOn: Bool
     var button: SettingsButton
@@ -41,7 +36,7 @@ final class Model: ObservableObject, NetStreamDelegate {
     var netStream: NetStream! = nil
     // private var srtla = Srtla()
     private var keyValueObservations: [NSKeyValueObservation] = []
-    @Published var liveState: LiveState = .stopped
+    @Published var isLive = false
     private var nc = NotificationCenter.default
     private var subscriptions = Set<AnyCancellable>()
     private var publishing = false
@@ -255,13 +250,13 @@ final class Model: ObservableObject, NetStreamDelegate {
     }
 
     func startStream() {
-        liveState = .live
+        isLive = true
         startPublish()
         updateSpeed()
     }
 
     func stopStream() {
-        liveState = .stopped
+        isLive = false
         stopPublish()
         updateSpeed()
     }
@@ -478,11 +473,6 @@ final class Model: ObservableObject, NetStreamDelegate {
         sceneUpdatedOn(scene: scene)
     }
 
-    func allWidgetsOff() {
-        movieEffectOff()
-        grayScaleEffectOff()
-    }
-
     func updateUptimeFromNonMain() {
         DispatchQueue.main.async {
             self.updateUptime(now: Date())
@@ -528,7 +518,7 @@ final class Model: ObservableObject, NetStreamDelegate {
     }
 
     func updateSpeed() {
-        if liveState == .live {
+        if isLive {
             let speed = formatBytesPerSecond(speed: streamSpeed())
             let total = sizeFormatter.string(fromByteCount: streamTotal())
             self.speed = "\(speed) (\(total))"
@@ -715,7 +705,8 @@ extension Model: IORecorderDelegate {
             }
         })
     }
-
+    
+    // NetStreamDelegate
     func stream(_: NetStream, didOutput _: AVAudioBuffer, presentationTimeStamp _: CMTime) {
         logger.debug("model: Playback an audio packet incoming.")
     }
