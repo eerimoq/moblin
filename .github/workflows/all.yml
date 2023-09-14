@@ -3,7 +3,7 @@ name: All
 on: [push]
 
 jobs:
-  build:
+  all:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
