@@ -10,9 +10,7 @@ struct StreamSrtSettingsView: View {
         }
         stream.srtUrl = value
         model.store()
-        if stream.enabled {
-            model.srtUrlChanged()
-        }
+        model.reloadStreamIfEnabled(stream: stream)
     }
     
     var body: some View {
@@ -25,9 +23,7 @@ struct StreamSrtSettingsView: View {
             }, set: { value in
                 stream.srtla = value
                 model.store()
-                if stream.enabled {
-                    model.srtlaChanged()
-                }
+                model.reloadStreamIfEnabled(stream: stream)
             }))
         }
         .navigationTitle("SRT")

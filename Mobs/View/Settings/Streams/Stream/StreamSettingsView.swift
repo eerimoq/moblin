@@ -8,7 +8,7 @@ struct StreamSettingsView: View {
     init(stream: SettingsStream, model: Model) {
         self.model = model
         self.stream = stream
-        self.proto = stream.proto
+        self.proto = stream.proto.rawValue
     }
     
     func submitName(name: String) {
@@ -35,12 +35,12 @@ struct StreamSettingsView: View {
             }
             Section("Protocol") {
                 Picker("", selection: $proto) {
-                    ForEach(["RTMP", "SRT"], id: \.self) {
+                    ForEach(protocols, id: \.self) {
                         Text($0)
                     }
                 }
                 .onChange(of: proto) { proto in
-                    stream.proto = proto
+                    stream.proto = SettingsStreamProtocol(rawValue: proto)!
                     model.store()
                     model.reloadStreamIfEnabled(stream: stream)
                 }

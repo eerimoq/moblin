@@ -13,9 +13,11 @@ struct LeftOverlayView: View {
         guard let stream = model.stream else {
             return ""
         }
-        var proto = stream.proto
-        if proto == "SRT" && stream.srtla {
+        var proto: String
+        if stream.proto == .srt && stream.srtla {
             proto = "SRTLA"
+        } else {
+            proto = stream.proto.rawValue
         }
         return "\(stream.name) (\(stream.resolution.rawValue), \(stream.fps), \(stream.codec.rawValue), \(proto))"
     }

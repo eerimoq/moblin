@@ -34,9 +34,9 @@ struct ButtonPair: Identifiable {
 final class Model: ObservableObject, NetStreamDelegate {
     private let maxRetryCount: Int = 5
     private var rtmpConnection = RTMPConnection()
-    var rtmpStream: RTMPStream! = nil
     private var srtConnection = SRTConnection()
-    var srtStream: SRTStream! = nil
+    private var rtmpStream: RTMPStream! = nil
+    private var srtStream: SRTStream! = nil
     var netStream: NetStream! = nil
     private var keyValueObservations: [NSKeyValueObservation] = []
     private var retryCount: Int = 0
@@ -144,65 +144,19 @@ final class Model: ObservableObject, NetStreamDelegate {
         log.append("\(timestamp) \(message)")
     }
     
-    func setStreamResolution() {
-        guard let stream else {
-            logger.warning("Cannot set stream resolution.")
-            return
-        }
-        switch stream.resolution {
-        case .r1920x1080:
-            netStream.sessionPreset = .hd1920x1080
-            netStream.videoSettings.videoSize = .init(width: 1920, height: 1080)
-        case .r1280x720:
-            netStream.sessionPreset = .hd1280x720
-            netStream.videoSettings.videoSize = .init(width: 1280, height: 720)
-        }
-    }
-    
-    func setStreamFPS() {
-        guard let stream else {
-            logger.warning("Cannot set stream FPS.")
-            return
-        }
-        netStream.frameRate = Double(stream.fps)
-    }
-    
-    func setStreamBitrate() {
-        guard let stream else {
-            logger.warning("Cannot set stream bitrate.")
-            return
-        }
-        netStream.videoSettings.bitRate = stream.bitrate
-    }
-    
-    func setStreamCodec() {
-        guard let stream else {
-            logger.warning("Cannot set stream codec.")
-            return
-        }
-        switch stream.codec {
-        case .h264avc:
-            netStream.videoSettings.profileLevel = kVTProfileLevel_H264_Baseline_3_1 as String
-        case .h265hevc:
-            netStream.videoSettings.profileLevel = kVTProfileLevel_HEVC_Main_AutoLevel as String
-        }
-    }
-    
     func setup(settings: Settings) {
         logger.setLogHandler(handler: debugLog)
         updateCurrentTime(now: Date())
         self.settings = settings
         rtmpStream = RTMPStream(connection: rtmpConnection)
+        rtmpStream.delegate = self
+        rtmpStream.videoOrientation = .landscapeRight
         srtStream = SRTStream(srtConnection)
-        netStream = rtmpStream
-        netStream.delegate = self
-        // netStream = srtStream
-        netStream.videoOrientation = .landscapeRight
-        setStreamFPS()
-        setStreamBitrate()
-        netStream.mixer.recorder.delegate = self
+        srtStream.delegate = self
+        srtStream.videoOrientation = .landscapeRight
         checkDeviceAuthorization()
         twitchChat = TwitchChatMobs(model: self)
+        reloadStream()
         if let stream = stream {
             twitchChat!.start(channelName: stream.twitchChannelName)
             twitchPubSub = TwitchPubSub(model: self, channelId: stream.twitchChannelId)
@@ -246,10 +200,6 @@ final class Model: ObservableObject, NetStreamDelegate {
         keyValueObservations.append(keyValueObservation)
         
         attachCamera(position: .back)
-        setStreamResolution()
-        setStreamFPS()
-        setStreamBitrate()
-        setStreamCodec()
         updateButtonStates()
         sceneUpdated(imageEffectChanged: true)
         removeUnusedImages()
@@ -341,11 +291,13 @@ final class Model: ObservableObject, NetStreamDelegate {
 
     func reloadStream() {
         stopStream()
-        setStreamResolution()
-        setStreamFPS()
-        setStreamBitrate()
-        setStreamCodec()
-        reloadStreamProtocol()
+        if let stream {
+            setNetStream(stream: stream)
+            setStreamResolution(stream: stream)
+            setStreamFPS(stream: stream)
+            setStreamCodec(stream: stream)
+            setStreamBitrate(stream: stream)
+        }
         reloadTwitchChat()
         reloadTwitchViewers()
     }
@@ -356,13 +308,43 @@ final class Model: ObservableObject, NetStreamDelegate {
         }
     }
     
-    func reloadStreamProtocol() {
-        guard let stream else {
-            return
+    func setNetStream(stream: SettingsStream) {
+        switch stream.proto {
+        case .rtmp:
+            netStream = rtmpStream
+        case .srt:
+            netStream = srtStream
         }
-        logger.info("model: stream protocol: \(stream.proto)")
     }
-
+    
+    func setStreamResolution(stream: SettingsStream) {
+        switch stream.resolution {
+        case .r1920x1080:
+            netStream.sessionPreset = .hd1920x1080
+            netStream.videoSettings.videoSize = .init(width: 1920, height: 1080)
+        case .r1280x720:
+            netStream.sessionPreset = .hd1280x720
+            netStream.videoSettings.videoSize = .init(width: 1280, height: 720)
+        }
+    }
+    
+    func setStreamFPS(stream: SettingsStream) {
+        netStream.frameRate = Double(stream.fps)
+    }
+    
+    func setStreamBitrate(stream: SettingsStream) {
+        netStream.videoSettings.bitRate = stream.bitrate
+    }
+    
+    func setStreamCodec(stream: SettingsStream) {
+        switch stream.codec {
+        case .h264avc:
+            netStream.videoSettings.profileLevel = kVTProfileLevel_H264_Baseline_3_1 as String
+        case .h265hevc:
+            netStream.videoSettings.profileLevel = kVTProfileLevel_HEVC_Main_AutoLevel as String
+        }
+    }
+    
     func isTwitchChatConnected() -> Bool {
         return twitchChat?.isConnected() ?? false
     }
@@ -400,18 +382,6 @@ final class Model: ObservableObject, NetStreamDelegate {
         numberOfViewers = unknownNumberOfViewers
         twitchPubSub = TwitchPubSub(model: self, channelId: stream.twitchChannelId)
         twitchPubSub!.start()
-    }
-
-    func rtmpUrlChanged() {
-        stopStream()
-    }
-
-    func srtUrlChanged() {
-        stopStream()
-    }
-
-    func srtlaChanged() {
-        stopStream()
     }
 
     func twitchChannelNameUpdated() {
@@ -580,7 +550,7 @@ final class Model: ObservableObject, NetStreamDelegate {
     
     func updateSpeed() {
         if liveState == .live {
-            var speed = formatBytesPerSecond(speed: streamSpeed())
+            let speed = formatBytesPerSecond(speed: streamSpeed())
             let total = sizeFormatter.string(fromByteCount: streamTotal())
             self.speed = "\(speed) (\(total))"
         } else {

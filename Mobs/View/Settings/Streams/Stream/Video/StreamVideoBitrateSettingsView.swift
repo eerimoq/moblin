@@ -23,7 +23,7 @@ struct StreamVideoBitrateSettingsView: View {
                     stream.bitrate = bitrate
                     model.store()
                     if stream.enabled {
-                        model.setStreamBitrate()
+                        model.setStreamBitrate(stream: stream)
                     }
                 }
                 .pickerStyle(.inline)

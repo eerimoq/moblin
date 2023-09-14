@@ -27,6 +27,12 @@ Ideas/plan
 
 - Implement `SRTLA`_.
 
+- Reconnect immediately when connected to a network.
+
+- Network status (WiFi, cellular, ...).
+  
+- Audio level indicator.
+
 - Audio only when bad connection.
 
 - Notifications. Both visually and with sound. Sound most improtant

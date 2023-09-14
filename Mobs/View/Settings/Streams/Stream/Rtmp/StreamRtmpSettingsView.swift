@@ -13,9 +13,7 @@ struct StreamRtmpSettingsView: View {
         }
         stream.rtmpUrl = value
         model.store()
-        if stream.enabled {
-            model.rtmpUrlChanged()
-        }
+        model.reloadStreamIfEnabled(stream: stream)
     }
     
     var body: some View {

@@ -28,6 +28,13 @@ let bitrates: [UInt32] = [
     500_000
 ]
 
+let protocols = ["RTMP", "SRT"]
+
+enum SettingsStreamProtocol: String, Codable {
+    case rtmp = "RTMP"
+    case srt = "SRT"
+}
+
 class SettingsStream: Codable, Identifiable {
     var name: String
     var id: UUID = UUID()
@@ -37,7 +44,7 @@ class SettingsStream: Codable, Identifiable {
     var srtla: Bool = false
     var twitchChannelName: String = ""
     var twitchChannelId: String = ""
-    var proto: String = "RTMP"
+    var proto: SettingsStreamProtocol = .rtmp
     var resolution: SettingsStreamResolution = .r1280x720
     var fps: Int = 30
     var bitrate: UInt32 = 3_000_000
