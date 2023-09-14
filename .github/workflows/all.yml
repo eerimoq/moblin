@@ -8,4 +8,4 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Source code styling
-        run: swiftformat
+        run: swiftformat Mobs
