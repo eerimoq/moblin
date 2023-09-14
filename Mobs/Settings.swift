@@ -482,6 +482,9 @@ final class Settings {
             for button in database.buttons {
                 button.isOn = false
             }
+            if database.streams.isEmpty {
+                addDefaultStreams(database: database)
+            }
         } catch {
             logger.info("settings: Failed to load. Using default.")
             database = createDefault()

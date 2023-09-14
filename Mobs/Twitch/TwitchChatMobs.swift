@@ -8,7 +8,7 @@ struct Post: Hashable {
 }
 
 final class TwitchChatMobs {
-    private var twitchChat: TwitchChat?
+    private var twitchChat: TwitchChat!
     private var model: Model
     private var task: Task<Void, Error>? = nil
     private var id = 0
@@ -32,7 +32,7 @@ final class TwitchChatMobs {
                 twitchChat = TwitchChat(token: "SCHMOOPIIE", nick: "justinfan67420", name: channelName)
                 do {
                     connected = true
-                    for try await message in self.twitchChat!.messages {
+                    for try await message in self.twitchChat.messages {
                         reconnectTime = 0
                         await MainActor.run {
                             if self.model.twitchChatPosts.count > 6 {
@@ -60,6 +60,5 @@ final class TwitchChatMobs {
     func stop() {
         task?.cancel()
         task = nil
-        twitchChat = nil
     }
 }

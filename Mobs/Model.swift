@@ -60,7 +60,7 @@ final class Model: ObservableObject, NetStreamDelegate {
         formatter.dateFormat = "HH:mm"
         return formatter
     }
-    private var twitchChat: TwitchChatMobs?
+    private var twitchChat: TwitchChatMobs!
     private var twitchPubSub: TwitchPubSub?
     @Published var twitchChatPosts: [Post] = []
     var numberOfTwitchChatPosts = 0
@@ -115,6 +115,7 @@ final class Model: ObservableObject, NetStreamDelegate {
     
     func updateButtonStates() {
         guard let scene = findEnabledScene(id: selectedSceneId) else {
+            self.buttonPairs = []
             return
         }
         let states = scene
@@ -158,9 +159,13 @@ final class Model: ObservableObject, NetStreamDelegate {
         twitchChat = TwitchChatMobs(model: self)
         reloadStream()
         if let stream {
-            twitchChat!.start(channelName: stream.twitchChannelName)
+            twitchChat.start(channelName: stream.twitchChannelName)
             twitchPubSub = TwitchPubSub(model: self, channelId: stream.twitchChannelId)
             twitchPubSub!.start()
+            netStream.attachAudio(AVCaptureDevice.default(for: .audio)) { error in
+                logger.error("model: Attach audio error: \(error)")
+            }
+            attachCamera(position: .back)
         }
         resetSelectedScene()
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
@@ -187,10 +192,6 @@ final class Model: ObservableObject, NetStreamDelegate {
             }
             .store(in: &subscriptions)
         
-        netStream.attachAudio(AVCaptureDevice.default(for: .audio)) { error in
-            logger.error("model: Attach audio error: \(error)")
-        }
-        
         let keyValueObservation = srtConnection.observe(\.connected, options: [.new, .old]) { [weak self] _, _ in
             guard let self else {
                 return
@@ -199,7 +200,6 @@ final class Model: ObservableObject, NetStreamDelegate {
         }
         keyValueObservations.append(keyValueObservation)
         
-        attachCamera(position: .back)
         updateButtonStates()
         sceneUpdated(imageEffectChanged: true)
         removeUnusedImages()
@@ -362,12 +362,14 @@ final class Model: ObservableObject, NetStreamDelegate {
     }
     
     func reloadTwitchChat() {
-        twitchChat!.stop()
+        twitchChat.stop()
         twitchChatPostsPerSecond = 0
+        twitchChatPosts = []
+        numberOfTwitchChatPosts = 0
         guard let stream else {
             return
         }
-        twitchChat!.start(channelName: stream.twitchChannelName)
+        twitchChat.start(channelName: stream.twitchChannelName)
         twitchChatPosts = []
         numberOfTwitchChatPosts = 0
     }

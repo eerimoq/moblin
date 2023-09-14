@@ -30,10 +30,12 @@ struct StreamsSettingsView: View {
                             }))
                             .disabled(stream.enabled)
                         }
+                        .deleteDisabled(stream.enabled)
                     }
                     .onDelete(perform: { offsets in
                         database.streams.remove(atOffsets: offsets)
                         model.store()
+                        model.reloadStream()
                         model.objectWillChange.send()
                     })
                     CreateButtonView(action: {
