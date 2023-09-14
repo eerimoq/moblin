@@ -13,7 +13,7 @@ struct StreamOverlayIconAndTextView: View {
                     .font(.system(size: 13))
             }
             Image(systemName: icon)
-                .frame(width: 15, height: 15)
+                .frame(width: 17, height: 17)
                 .font(.system(size: 13))
                 .padding([.leading, .trailing], 2)
                 .foregroundColor(color)

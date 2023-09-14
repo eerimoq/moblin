@@ -20,6 +20,12 @@ class ButtonState {
     }
 }
 
+enum NetStreamState {
+    case connecting
+    case connected
+    case disconnected
+}
+
 struct ButtonPair: Identifiable {
     var id: Int
     var first: ButtonState
@@ -34,6 +40,7 @@ final class Model: ObservableObject, NetStreamDelegate {
     private var rtmpStream: RTMPStream! = nil
     private var srtStream: SRTStream! = nil
     var netStream: NetStream! = nil
+    private var netStreamState: NetStreamState = .disconnected
     // private var srtla = Srtla()
     private var keyValueObservations: [NSKeyValueObservation] = []
     @Published var isLive = false
@@ -326,8 +333,8 @@ final class Model: ObservableObject, NetStreamDelegate {
         return twitchPubSub?.isConnected() ?? false
     }
 
-    func isNetStreamConnected() -> Bool {
-        return startDate != nil
+    func isNetStreamOk() -> Bool {
+        return netStreamState != .disconnected
     }
 
     func isPublishing() -> Bool {
@@ -561,6 +568,7 @@ final class Model: ObservableObject, NetStreamDelegate {
 
     func startPublish() {
         publishing = true
+        netStreamState = .connecting
         UIApplication.shared.isIdleTimerDisabled = true
         switch stream?.proto {
         case .rtmp:
@@ -671,14 +679,17 @@ final class Model: ObservableObject, NetStreamDelegate {
             retryCount = 0
             rtmpStream.publish(rtmpStreamName())
             startDate = Date()
+            netStreamState = .connected
             updateUptimeFromNonMain()
         case RTMPConnection.Code.connectFailed.rawValue, RTMPConnection.Code.connectClosed.rawValue:
+            netStreamState = .disconnected
             startDate = nil
             updateUptimeFromNonMain()
             guard retryCount <= maxRetryCount else {
+                logger.error("model: failed to connect to RTMP server")
                 return
             }
-            Thread.sleep(forTimeInterval: pow(2.0, Double(retryCount)))
+            Thread.sleep(forTimeInterval: 2.0)
             rtmpConnection.connect(rtmpUri())
             retryCount += 1
         default:
