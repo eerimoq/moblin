@@ -332,6 +332,10 @@ final class Model: ObservableObject, NetStreamDelegate {
         return netStreamState != .disconnected
     }
 
+    func isNetStreamConnceted() -> Bool {
+        return netStreamState == .connected
+    }
+
     func isPublishing() -> Bool {
         return publishing
     }
@@ -486,11 +490,11 @@ final class Model: ObservableObject, NetStreamDelegate {
     }
 
     func updateUptime(now: Date) {
-        if startDate == nil {
-            uptime = ""
-        } else {
+        if startDate != nil && isNetStreamConnceted() {
             let elapsed = now.timeIntervalSince(startDate!)
             uptime = uptimeFormatter.string(from: elapsed)!
+        } else {
+            uptime = ""
         }
     }
 
