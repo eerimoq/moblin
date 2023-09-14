@@ -1,0 +1,11 @@
+name: All
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Source code styling
+        run: swiftformat
