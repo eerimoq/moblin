@@ -593,7 +593,11 @@ final class Model: ObservableObject, NetStreamDelegate {
             rtmpConnection.addEventListener(.ioError, selector: #selector(rtmpErrorHandler), observer: self)
             rtmpConnection.connect(rtmpUri())
         case .srt:
-            break
+            logger.info("model: Should start publishing using SRT")
+            //srtConnection.open(URL(string: stream!.srtUrl)!)
+            //srtStream.publish()
+            //startDate = Date()
+            //updateUptime(now: startDate!)
         case nil:
             break
         }
@@ -602,16 +606,12 @@ final class Model: ObservableObject, NetStreamDelegate {
     func stopPublish() {
         publishing = false
         UIApplication.shared.isIdleTimerDisabled = false
-        switch stream?.proto {
-        case .rtmp:
-            rtmpConnection.close()
-            rtmpConnection.removeEventListener(.rtmpStatus, selector: #selector(rtmpStatusHandler), observer: self)
-            rtmpConnection.removeEventListener(.ioError, selector: #selector(rtmpErrorHandler), observer: self)
-        case .srt:
-            break
-        case nil:
-            break
-        }
+        rtmpConnection.close()
+        rtmpConnection.removeEventListener(.rtmpStatus, selector: #selector(rtmpStatusHandler), observer: self)
+        rtmpConnection.removeEventListener(.ioError, selector: #selector(rtmpErrorHandler), observer: self)
+        logger.info("model: Should stop publishing using SRT")
+        //srtStream.close()
+        //srtConnection.close()
         startDate = nil
         updateUptime(now: Date())
     }
