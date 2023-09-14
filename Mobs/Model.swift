@@ -553,7 +553,7 @@ final class Model: ObservableObject, NetStreamDelegate {
 
     func updateThermalState() {
         thermalState = ProcessInfo.processInfo.thermalState
-        logger.info("model: Thermal state is \(thermalState)")
+        logger.info("model: Thermal state is \(thermalState.string())")
     }
 
     func attachCamera(position: AVCaptureDevice.Position) {

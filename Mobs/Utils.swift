@@ -100,3 +100,20 @@ var currentTimeFormatter: DateFormatter {
     formatter.dateFormat = "HH:mm"
     return formatter
 }
+
+extension ProcessInfo.ThermalState {
+    func string() -> String {
+        switch self {
+        case .nominal:
+            return "nominal"
+        case .fair:
+            return "fair"
+        case .serious:
+            return "serious"
+        case .critical:
+            return "critical"
+        default:
+            return "unknown"
+        }
+    }
+}
