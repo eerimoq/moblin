@@ -31,6 +31,7 @@ struct ScenesSettingsView: View {
                 CreateButtonView(action: {
                     database.scenes.append(SettingsScene(name: "My scene"))
                     model.store()
+                    model.resetSelectedScene()
                 })
             }
             Section {
