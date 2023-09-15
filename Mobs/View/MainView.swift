@@ -6,12 +6,11 @@ import VideoToolbox
 struct MainView: View {
     @ObservedObject var model = Model()
     private var streamView: StreamView!
-    private var streamOverlayView: StreamOverlayView!
 
     init(settings: Settings) {
+        logger.info("main view init")
         model.setup(settings: settings)
         streamView = StreamView(netStream: $model.netStream)
-        streamOverlayView = StreamOverlayView(model: model)
     }
 
     var body: some View {
@@ -20,7 +19,7 @@ struct MainView: View {
                 ZStack {
                     streamView
                         .ignoresSafeArea()
-                    streamOverlayView
+                    StreamOverlayView(model: model)
                 }
                 ControlBarView(model: model)
             }

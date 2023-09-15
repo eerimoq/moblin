@@ -8,7 +8,7 @@ class EasyLogger {
     private var lock = NSLock()
 
     init() {
-        LBLogger.with("com.haishinkit.HaishinKit").level = .debug
+        LBLogger.with("com.haishinkit.HaishinKit").level = .info
         LBLogger.with("com.haishinkit.SRTHaishinKit").level = .trace
     }
 

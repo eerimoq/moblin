@@ -42,7 +42,7 @@ final class Model: ObservableObject, NetStreamDelegate {
     var netStream: NetStream!
     private var netStreamState: NetStreamState = .disconnected
     // private var srtla = Srtla()
-    private var keyValueObservations: [NSKeyValueObservation] = []
+    private var srtConnectedObservation: NSKeyValueObservation?
     @Published var isLive = false
     private var notificationCenter = NotificationCenter.default
     private var subscriptions = Set<AnyCancellable>()
@@ -149,13 +149,12 @@ final class Model: ObservableObject, NetStreamDelegate {
         // srtla.start(uri: "srt://192.168.50.72:10000")
         updateThermalState()
         setupThermalStateListener()
-        setupSrtConnectionStateListener()
         updateButtonStates()
         sceneUpdated(imageEffectChanged: true, store: false)
         removeUnusedImages()
         //srtConnection.open(URL(string: stream!.srtUrl)!)
         //srtStream.publish()
-        // location.start()
+        // location.start()        
     }
 
     func setupPeriodicTimer() {
@@ -173,7 +172,8 @@ final class Model: ObservableObject, NetStreamDelegate {
     }
 
     func setupSrtConnectionStateListener() {
-        let keyValueObservation = srtConnection.observe(\.connected, options: [
+        srtConnectedObservation?.invalidate()
+        srtConnectedObservation = srtConnection.observe(\.connected, options: [
             .new,
             .old,
         ]) { [weak self] _, connected in
@@ -181,17 +181,20 @@ final class Model: ObservableObject, NetStreamDelegate {
                 return
             }
             if connected.newValue! {
+                logger.info("model: srt: Connected")
                 srtStream.publish()
                 startDate = Date()
                 netStreamState = .connected
+                updateUptimeFromNonMain()
+                retryCount = 0
             } else {
-                srtStream.close()
+                logger.info("model: srt: Disconnected")
                 startDate = nil
                 netStreamState = .disconnected
+                updateUptimeFromNonMain()
+                srtReconnect()
             }
-            updateUptimeFromNonMain()
         }
-        keyValueObservations.append(keyValueObservation)
     }
 
     func setupThermalStateListener() {
@@ -614,17 +617,33 @@ final class Model: ObservableObject, NetStreamDelegate {
             )
             rtmpConnection.connect(rtmpUri())
         case .srt:
-            logger.info("model: Should start publishing using SRT")
-            srtConnection.open(URL(string: stream!.srtUrl)!)
+            srtConnect()
         case nil:
             break
         }
     }
 
+    func srtConnect() {
+        self.setupSrtConnectionStateListener()
+        DispatchQueue(label: "com.eerimoq.srt").async {
+            self.srtConnection.open(URL(string: self.stream!.srtUrl)!)
+        }
+    }
+    
+    func srtReconnect() {
+        guard retryCount <= maxRetryCount else {
+            logger.error("model: srt: Failed to connect to server")
+            return
+        }
+        Thread.sleep(forTimeInterval: 2.0)
+        logger.info("model: srt: Reconnecting")
+        retryCount += 1
+        srtConnect()
+    }
+    
     func stopPublish() {
         publishing = false
         UIApplication.shared.isIdleTimerDisabled = false
-        rtmpConnection.close()
         rtmpConnection.removeEventListener(
             .rtmpStatus,
             selector: #selector(rtmpStatusHandler),
@@ -635,7 +654,8 @@ final class Model: ObservableObject, NetStreamDelegate {
             selector: #selector(rtmpErrorHandler),
             observer: self
         )
-        logger.info("model: Should stop publishing using SRT")
+        rtmpConnection.close()
+        srtConnectedObservation?.invalidate()
         srtConnection.close()
         startDate = nil
         updateUptime(now: Date())
@@ -722,6 +742,7 @@ final class Model: ObservableObject, NetStreamDelegate {
         }
         switch code {
         case RTMPConnection.Code.connectSuccess.rawValue:
+            logger.info("model: rtmp: Connected")
             retryCount = 0
             rtmpStream.publish(rtmpStreamName())
             startDate = Date()
@@ -729,14 +750,16 @@ final class Model: ObservableObject, NetStreamDelegate {
             updateUptimeFromNonMain()
         case RTMPConnection.Code.connectFailed.rawValue,
              RTMPConnection.Code.connectClosed.rawValue:
+            logger.info("model: rtmp: Disconnected")
             netStreamState = .disconnected
             startDate = nil
             updateUptimeFromNonMain()
             guard retryCount <= maxRetryCount else {
-                logger.error("model: failed to connect to RTMP server")
+                logger.error("model: rtmp: Failed to connect to server")
                 return
             }
             Thread.sleep(forTimeInterval: 2.0)
+            logger.info("model: rtmp: Reconnecting")
             rtmpConnection.connect(rtmpUri())
             retryCount += 1
         default:
@@ -812,6 +835,6 @@ extension Model: IORecorderDelegate {
     }
 
     func streamDidOpen(_: NetStream) {
-        logger.info("model: Stream opened.")
+        // logger.info("model: Stream opened.")
     }
 }
