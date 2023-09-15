@@ -1,17 +1,15 @@
 import HaishinKit
 import SwiftUI
 
+var attachedNetStream: NetStream?
+
 struct StreamView: UIViewRepresentable {
-    var mthkView = MTHKView(frame: .zero)
-    @Binding var netStream: NetStream
+    @ObservedObject var model: Model
 
     func makeUIView(context _: Context) -> MTHKView {
-        mthkView.videoGravity = .resizeAspect
-        return mthkView
+        return model.mthkView
     }
 
     func updateUIView(_: MTHKView, context _: Context) {
-        // logger.info("stream: Attach stream")
-        mthkView.attachStream(netStream)
     }
 }

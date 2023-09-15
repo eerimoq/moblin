@@ -10,7 +10,7 @@ struct MainView: View {
     init(settings: Settings) {
         logger.info("main view init")
         model.setup(settings: settings)
-        streamView = StreamView(netStream: $model.netStream)
+        streamView = StreamView(model: model)
     }
 
     var body: some View {

@@ -37,11 +37,10 @@ final class Model: ObservableObject, NetStreamDelegate {
     private let maxRetryCount: Int = 5
     private var rtmpConnection = RTMPConnection()
     private var srtConnection = SRTConnection()
-    private var rtmpStream: RTMPStream!
-    private var srtStream: SRTStream!
+    private var rtmpStream: RTMPStream?
+    private var srtStream: SRTStream?
     var netStream: NetStream!
     private var netStreamState: NetStreamState = .disconnected
-    // private var srtla = Srtla()
     private var srtConnectedObservation: NSKeyValueObservation?
     @Published var isLive = false
     private var notificationCenter = NotificationCenter.default
@@ -75,6 +74,7 @@ final class Model: ObservableObject, NetStreamDelegate {
     private var location = Location()
     var imageStorage = ImageStorage()
     @Published var buttonPairs: [ButtonPair] = []
+    var mthkView = MTHKView(frame: .zero)
 
     var database: Database {
         settings.database
@@ -132,29 +132,19 @@ final class Model: ObservableObject, NetStreamDelegate {
     }
 
     func setup(settings: Settings) {
+        mthkView.videoGravity = .resizeAspect
         logger.setLogHandler(handler: debugLog)
         updateCurrentTime(now: Date())
         self.settings = settings
-        rtmpStream = RTMPStream(connection: rtmpConnection)
-        rtmpStream.delegate = self
-        rtmpStream.videoOrientation = .landscapeRight
-        srtStream = SRTStream(srtConnection)
-        srtStream.delegate = self
-        srtStream.videoOrientation = .landscapeRight
         checkDeviceAuthorization()
         twitchChat = TwitchChatMobs(model: self)
         reloadStream()
         resetSelectedScene()
         setupPeriodicTimer()
-        // srtla.start(uri: "srt://192.168.50.72:10000")
-        updateThermalState()
-        setupThermalStateListener()
+        setupThermalState()
         updateButtonStates()
         sceneUpdated(imageEffectChanged: true, store: false)
         removeUnusedImages()
-        //srtConnection.open(URL(string: stream!.srtUrl)!)
-        //srtStream.publish()
-        // location.start()        
     }
 
     func setupPeriodicTimer() {
@@ -172,7 +162,6 @@ final class Model: ObservableObject, NetStreamDelegate {
     }
 
     func setupSrtConnectionStateListener() {
-        srtConnectedObservation?.invalidate()
         srtConnectedObservation = srtConnection.observe(\.connected, options: [
             .new,
             .old,
@@ -182,7 +171,7 @@ final class Model: ObservableObject, NetStreamDelegate {
             }
             if connected.newValue! {
                 logger.info("model: srt: Connected")
-                srtStream.publish()
+                srtStream!.publish()
                 startDate = Date()
                 netStreamState = .connected
                 updateUptimeFromNonMain()
@@ -197,7 +186,8 @@ final class Model: ObservableObject, NetStreamDelegate {
         }
     }
 
-    func setupThermalStateListener() {
+    func setupThermalState() {
+        updateThermalState()
         notificationCenter.publisher(
             for: ProcessInfo.thermalStateDidChangeNotification,
             object: nil
@@ -307,10 +297,19 @@ final class Model: ObservableObject, NetStreamDelegate {
     func setNetStream(stream: SettingsStream) {
         switch stream.proto {
         case .rtmp:
-            netStream = rtmpStream
+            logger.info("model: srt: Destory stream")
+            srtStream = nil
+            rtmpStream = RTMPStream(connection: rtmpConnection)
+            netStream = rtmpStream!
         case .srt:
-            netStream = srtStream
+            rtmpStream = nil
+            logger.info("model: srt: Create stream")
+            srtStream = SRTStream(srtConnection)
+            netStream = srtStream!
         }
+        netStream.delegate = self
+        netStream.videoOrientation = .landscapeRight
+        //mthkView.attachStream(netStream)
     }
 
     func setStreamResolution(stream: SettingsStream) {
@@ -538,8 +537,11 @@ final class Model: ObservableObject, NetStreamDelegate {
     }
 
     func streamSpeed() -> Int64 {
+        if netStreamState != .connected {
+            return 0
+        }
         if netStream === rtmpStream {
-            return Int64(8 * rtmpStream.info.currentBytesPerSecond)
+            return Int64(8 * rtmpStream!.info.currentBytesPerSecond)
         } else {
             // crashes!
             return 0 // Int64(srtConnection.performanceData.mbpsBandwidth)
@@ -547,8 +549,11 @@ final class Model: ObservableObject, NetStreamDelegate {
     }
 
     func streamTotal() -> Int64 {
+        if netStreamState != .connected {
+            return 0
+        }
         if netStream === rtmpStream {
-            return rtmpStream.info.byteCount.value
+            return rtmpStream!.info.byteCount.value
         } else {
             // crashes!
             return 0 // Int64(srtConnection.performanceData.byteRecvTotal + srtConnection
@@ -592,6 +597,7 @@ final class Model: ObservableObject, NetStreamDelegate {
             for: .video,
             position: position
         )
+        logger.info("model: Attach camera")
         netStream.attachCamera(device) { error in
             logger.error("model: Attach camera error: \(error)")
         }
@@ -599,6 +605,22 @@ final class Model: ObservableObject, NetStreamDelegate {
         setCameraZoomLevel(level: zoomLevel)
     }
 
+    func srtConnect() {
+        setupSrtConnectionStateListener()
+        srtConnection.open(URL(string: stream!.srtUrl)!)
+    }
+    
+    func srtReconnect() {
+        guard retryCount <= maxRetryCount else {
+            logger.error("model: srt: Failed to connect to server")
+            return
+        }
+        Thread.sleep(forTimeInterval: 2.0)
+        logger.info("model: srt: Reconnecting")
+        retryCount += 1
+        srtConnect()
+    }
+    
     func startPublish() {
         publishing = true
         netStreamState = .connecting
@@ -623,25 +645,10 @@ final class Model: ObservableObject, NetStreamDelegate {
         }
     }
 
-    func srtConnect() {
-        self.setupSrtConnectionStateListener()
-        DispatchQueue(label: "com.eerimoq.srt").async {
-            self.srtConnection.open(URL(string: self.stream!.srtUrl)!)
-        }
-    }
-    
-    func srtReconnect() {
-        guard retryCount <= maxRetryCount else {
-            logger.error("model: srt: Failed to connect to server")
+    func stopPublish() {
+        if !publishing {
             return
         }
-        Thread.sleep(forTimeInterval: 2.0)
-        logger.info("model: srt: Reconnecting")
-        retryCount += 1
-        srtConnect()
-    }
-    
-    func stopPublish() {
         publishing = false
         UIApplication.shared.isIdleTimerDisabled = false
         rtmpConnection.removeEventListener(
@@ -654,8 +661,10 @@ final class Model: ObservableObject, NetStreamDelegate {
             selector: #selector(rtmpErrorHandler),
             observer: self
         )
+        rtmpStream = nil
         rtmpConnection.close()
-        srtConnectedObservation?.invalidate()
+        srtConnectedObservation = nil
+        srtStream = nil
         srtConnection.close()
         startDate = nil
         updateUptime(now: Date())
@@ -744,7 +753,7 @@ final class Model: ObservableObject, NetStreamDelegate {
         case RTMPConnection.Code.connectSuccess.rawValue:
             logger.info("model: rtmp: Connected")
             retryCount = 0
-            rtmpStream.publish(rtmpStreamName())
+            rtmpStream!.publish(rtmpStreamName())
             startDate = Date()
             netStreamState = .connected
             updateUptimeFromNonMain()
@@ -769,7 +778,7 @@ final class Model: ObservableObject, NetStreamDelegate {
 
     @objc
     private func rtmpErrorHandler(_: Notification) {
-        logger.error("model: RTMP error")
+        logger.error("model: rtmp: error")
         rtmpConnection.connect(rtmpUri())
     }
 }

@@ -25,8 +25,8 @@ struct StreamsSettingsView: View {
                                 {
                                     ostream.enabled = false
                                 }
-                                model.store()
                                 model.reloadStream()
+                                model.sceneUpdated()
                                 model.objectWillChange.send()
                             }))
                             .disabled(stream.enabled)
