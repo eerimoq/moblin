@@ -18,7 +18,7 @@ inspired by it.
 ToDo
 ====
 
-- Make SRT work.
+- Make SRT work. Unknown why is fails so often.
 
 - Test with cellular connection, not only WiFi.
   
