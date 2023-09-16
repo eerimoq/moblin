@@ -316,7 +316,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         }
         netStream.delegate = self
         netStream.videoOrientation = .landscapeRight
-        //mthkView.attachStream(netStream)
+        mthkView.attachStream(netStream)
     }
 
     func setStreamResolution(stream: SettingsStream) {
