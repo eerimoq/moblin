@@ -3,7 +3,7 @@ import Logboard
 import os
 
 class EasyLogger {
-    private var logger: Logger = .init()
+    private var logger = Logger()
     private var handler: ((String) -> Void)?
     private var lock = NSLock()
 
