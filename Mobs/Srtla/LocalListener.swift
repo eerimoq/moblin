@@ -3,13 +3,14 @@ import Network
 
 class LocalListener {
     private var queue: DispatchQueue
-    private var listener: NWListener?
+    private var listener: NWListener!
     private var connection: NWConnection?
     var packetHandler: ((_ packet: Data) -> Void)?
-    var port: UInt16?
+    private weak var delegate: (any SrtlaDelegate)?
 
-    init(queue: DispatchQueue) {
+    init(queue: DispatchQueue, delegate: SrtlaDelegate) {
         self.queue = queue
+        self.delegate = delegate
     }
 
     func start() {
@@ -22,9 +23,9 @@ class LocalListener {
             logger.error("srtla: local: Failed to create listener with error \(error)")
             return
         }
-        listener!.stateUpdateHandler = handleListenerStateChange(to:)
-        listener!.newConnectionHandler = handleNewListenerConnection(connection:)
-        listener!.start(queue: queue)
+        listener.stateUpdateHandler = handleListenerStateChange(to:)
+        listener.newConnectionHandler = handleNewListenerConnection(connection:)
+        listener.start(queue: queue)
     }
 
     func stop() {
@@ -36,12 +37,11 @@ class LocalListener {
         case .setup:
             break
         case .ready:
-            if let port = listener!.port {
-                self.port = port.rawValue
-                logger.info("srtla: local: Listener ready at port \(self.port!)")
-            }
+            let port = listener.port!.rawValue
+            logger.info("srtla: local: Listener ready at port \(port)")
+            delegate?.listenerReady(port: port)
         default:
-            port = nil
+            delegate?.listenerError()
         }
     }
 
@@ -73,7 +73,7 @@ class LocalListener {
                      maximumLength: 32768)
         { data, _, _, error in
             if let data, !data.isEmpty {
-                logger.debug("srtla: local: Received \(data)")
+                // logger.debug("srtla: local: Received \(data)")
                 if let packetHandler = self.packetHandler {
                     packetHandler(data)
                 } else {

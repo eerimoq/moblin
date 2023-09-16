@@ -8,7 +8,6 @@ struct MainView: View {
     private var streamView: StreamView!
 
     init(settings: Settings) {
-        logger.info("main view init")
         model.setup(settings: settings)
         streamView = StreamView(model: model)
     }

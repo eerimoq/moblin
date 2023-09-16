@@ -1,20 +1,29 @@
 import Foundation
 import Network
 
+protocol SrtlaDelegate: AnyObject {
+    func listenerReady(port: UInt16)
+    func listenerError()
+    func packetSent(byteCount: Int)
+    func packetReceived(byteCount: Int)
+}
+
 class Srtla {
     private var queue = DispatchQueue(label: "com.eerimoq.network", qos: .userInitiated)
     private var remoteConnections: [RemoteConnection] = []
     private var localListener: LocalListener
-
-    init() {
-        localListener = LocalListener(queue: queue)
-        remoteConnections.append(RemoteConnection(queue: queue, type: .cellular))
-        remoteConnections.append(RemoteConnection(queue: queue, type: .wifi))
-        remoteConnections.append(RemoteConnection(queue: queue, type: .wiredEthernet))
-    }
-
-    func localPort() -> UInt16? {
-        return localListener.port
+    private weak var delegate: (any SrtlaDelegate)?
+    
+    init(delegate: SrtlaDelegate, passThrough: Bool) {
+        self.delegate = delegate
+        localListener = LocalListener(queue: queue, delegate: delegate)
+        if passThrough {
+            remoteConnections.append(RemoteConnection(queue: queue, type: nil))
+        } else {
+            remoteConnections.append(RemoteConnection(queue: queue, type: .cellular))
+            remoteConnections.append(RemoteConnection(queue: queue, type: .wifi))
+            remoteConnections.append(RemoteConnection(queue: queue, type: .wiredEthernet))
+        }
     }
 
     func start(uri: String) {
@@ -42,11 +51,17 @@ class Srtla {
     }
 
     func handleLocalPacket(packet: Data) {
-        findBestRemoteConnection()?.sendPacket(packet: packet)
+        guard let connection = findBestRemoteConnection() else {
+            logger.warning("srtla: No connection found. Dropping packet.")
+            return
+        }
+        connection.sendPacket(packet: packet)
+        delegate?.packetSent(byteCount: packet.count)
     }
 
     func handleRemotePacket(packet: Data) {
         localListener.sendPacket(packet: packet)
+        delegate?.packetReceived(byteCount: packet.count)
     }
 
     func findBestRemoteConnection() -> RemoteConnection? {

@@ -32,7 +32,7 @@ struct ButtonPair: Identifiable {
     var second: ButtonState?
 }
 
-final class Model: ObservableObject, NetStreamDelegate {
+final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     private var retryCount: Int = 0
     private let maxRetryCount: Int = 5
     private var rtmpConnection = RTMPConnection()
@@ -75,7 +75,11 @@ final class Model: ObservableObject, NetStreamDelegate {
     var imageStorage = ImageStorage()
     @Published var buttonPairs: [ButtonPair] = []
     var mthkView = MTHKView(frame: .zero)
-
+    private var srtla: Srtla?
+    private var srtTotalByteCount: Int64 = 0
+    private var srtPreviousTotalByteCount: Int64 = 0
+    private var srtSpeed: Int64 = 0
+    
     var database: Database {
         settings.database
     }
@@ -155,6 +159,7 @@ final class Model: ObservableObject, NetStreamDelegate {
                 self.updateCurrentTime(now: now)
                 self.updateBatteryLevel()
                 self.updateTwitchChatSpeed()
+                self.updateSrtSpeed()
                 self.updateSpeed()
                 self.updateTwitchPubSub()
             }
@@ -169,19 +174,21 @@ final class Model: ObservableObject, NetStreamDelegate {
             guard let self else {
                 return
             }
-            if connected.newValue! {
-                logger.info("model: srt: Connected")
-                srtStream!.publish()
-                startDate = Date()
-                netStreamState = .connected
-                updateUptimeFromNonMain()
-                retryCount = 0
-            } else {
-                logger.info("model: srt: Disconnected")
-                startDate = nil
-                netStreamState = .disconnected
-                updateUptimeFromNonMain()
-                srtReconnect()
+            DispatchQueue.main.async {
+                if connected.newValue! {
+                    logger.info("model: srt: Connected")
+                    self.srtStream!.publish()
+                    self.startDate = Date()
+                    self.netStreamState = .connected
+                    self.updateUptimeFromNonMain()
+                    self.retryCount = 0
+                } else {
+                    logger.info("model: srt: Disconnected")
+                    self.startDate = nil
+                    self.netStreamState = .disconnected
+                    self.updateUptimeFromNonMain()
+                    self.srtReconnect()
+                }
             }
         }
     }
@@ -297,19 +304,17 @@ final class Model: ObservableObject, NetStreamDelegate {
     func setNetStream(stream: SettingsStream) {
         switch stream.proto {
         case .rtmp:
-            logger.info("model: srt: Destory stream")
             srtStream = nil
             rtmpStream = RTMPStream(connection: rtmpConnection)
             netStream = rtmpStream!
         case .srt:
             rtmpStream = nil
-            logger.info("model: srt: Create stream")
             srtStream = SRTStream(srtConnection)
             netStream = srtStream!
         }
         netStream.delegate = self
         netStream.videoOrientation = .landscapeRight
-        //mthkView.attachStream(netStream)
+        mthkView.attachStream(netStream)
     }
 
     func setStreamResolution(stream: SettingsStream) {
@@ -536,6 +541,11 @@ final class Model: ObservableObject, NetStreamDelegate {
         numberOfTwitchChatPosts = 0
     }
 
+    func updateSrtSpeed() {
+        srtSpeed = srtTotalByteCount - srtPreviousTotalByteCount
+        srtPreviousTotalByteCount = srtTotalByteCount
+    }
+    
     func streamSpeed() -> Int64 {
         if netStreamState != .connected {
             return 0
@@ -543,11 +553,10 @@ final class Model: ObservableObject, NetStreamDelegate {
         if netStream === rtmpStream {
             return Int64(8 * rtmpStream!.info.currentBytesPerSecond)
         } else {
-            // crashes!
-            return 0 // Int64(srtConnection.performanceData.mbpsBandwidth)
+            return 8 * srtSpeed
         }
     }
-
+    
     func streamTotal() -> Int64 {
         if netStreamState != .connected {
             return 0
@@ -555,9 +564,7 @@ final class Model: ObservableObject, NetStreamDelegate {
         if netStream === rtmpStream {
             return rtmpStream!.info.byteCount.value
         } else {
-            // crashes!
-            return 0 // Int64(srtConnection.performanceData.byteRecvTotal + srtConnection
-            // .performanceData.byteSentTotal)
+            return srtTotalByteCount
         }
     }
 
@@ -597,7 +604,6 @@ final class Model: ObservableObject, NetStreamDelegate {
             for: .video,
             position: position
         )
-        logger.info("model: Attach camera")
         netStream.attachCamera(device) { error in
             logger.error("model: Attach camera error: \(error)")
         }
@@ -606,8 +612,11 @@ final class Model: ObservableObject, NetStreamDelegate {
     }
 
     func srtConnect() {
-        setupSrtConnectionStateListener()
-        srtConnection.open(URL(string: stream!.srtUrl)!)
+        srtTotalByteCount = 0
+        srtPreviousTotalByteCount = 0
+        srtla?.stop()
+        srtla = Srtla(delegate: self, passThrough: !stream!.srtla)
+        srtla!.start(uri: stream!.srtUrl)
     }
     
     func srtReconnect() {
@@ -661,11 +670,11 @@ final class Model: ObservableObject, NetStreamDelegate {
             selector: #selector(rtmpErrorHandler),
             observer: self
         )
-        rtmpStream = nil
         rtmpConnection.close()
         srtConnectedObservation = nil
-        srtStream = nil
         srtConnection.close()
+        srtla?.stop()
+        srtla = nil
         startDate = nil
         updateUptime(now: Date())
     }
@@ -845,5 +854,28 @@ extension Model: IORecorderDelegate {
 
     func streamDidOpen(_: NetStream) {
         // logger.info("model: Stream opened.")
+    }
+    
+    func listenerReady(port: UInt16) {
+        DispatchQueue.main.async {
+            self.setupSrtConnectionStateListener()
+            self.srtConnection.open(URL(string: "srt://localhost:\(port)")!)
+        }
+    }
+    
+    func listenerError() {
+        logger.info("model: srtla: listener error")
+    }
+    
+    func packetSent(byteCount: Int) {
+        DispatchQueue.main.async {
+            self.srtTotalByteCount += Int64(byteCount)
+        }
+    }
+    
+    func packetReceived(byteCount: Int) {
+        DispatchQueue.main.async {
+            self.srtTotalByteCount += Int64(byteCount)
+        }
     }
 }
