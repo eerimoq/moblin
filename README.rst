@@ -20,8 +20,6 @@ ToDo
 
 - Make SRT work. Unknown why is fails to send video so often. Audio
   seems to work?
-
-- Test with cellular connection, not only WiFi.
   
 Ideas/plan
 ==========
