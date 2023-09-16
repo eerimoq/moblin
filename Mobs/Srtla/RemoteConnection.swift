@@ -11,6 +11,7 @@ class RemoteConnection {
             oldValue?.forceCancel()
         }
     }
+
     private var typeString: String
     var packetHandler: ((_ packet: Data) -> Void)?
 
@@ -23,7 +24,7 @@ class RemoteConnection {
             typeString = "any"
         }
     }
-    
+
     func start(host: String, port: UInt16) {
         let options = NWProtocolUDP.Options()
         let params = NWParameters(dtls: .none, udp: options)
@@ -58,10 +59,12 @@ class RemoteConnection {
         }
         return 1
     }
-    
+
     private func handleViabilityChange(to viability: Bool) {
         logger
-            .info("srtla: remote: \(typeString): Connection viability changed to \(viability)")
+            .info(
+                "srtla: remote: \(typeString): Connection viability changed to \(viability)"
+            )
     }
 
     private func handleStateChange(to state: NWConnection.State) {
@@ -81,7 +84,8 @@ class RemoteConnection {
                 if let packetHandler = self.packetHandler {
                     packetHandler(data)
                 } else {
-                    logger.warning("srtla: remote: \(self.typeString): Discarding packet.")
+                    logger
+                        .warning("srtla: remote: \(self.typeString): Discarding packet.")
                 }
             }
             if let error {
@@ -99,7 +103,10 @@ class RemoteConnection {
         }
         connection.send(content: packet, completion: .contentProcessed { error in
             if let error {
-                logger.error("srtla: remote: \(self.typeString): Remote send error: \(error)")
+                logger
+                    .error(
+                        "srtla: remote: \(self.typeString): Remote send error: \(error)"
+                    )
             } else {
                 // logger.debug("srtla: remote: Sent \(packet)")
             }

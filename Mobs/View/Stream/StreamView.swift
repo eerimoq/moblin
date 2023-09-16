@@ -10,6 +10,5 @@ struct StreamView: UIViewRepresentable {
         return model.mthkView
     }
 
-    func updateUIView(_: MTHKView, context _: Context) {
-    }
+    func updateUIView(_: MTHKView, context _: Context) {}
 }

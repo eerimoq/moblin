@@ -12,7 +12,7 @@ class LocalListener {
         self.queue = queue
         self.delegate = delegate
     }
-    
+
     func start() {
         do {
             let options = NWProtocolUDP.Options()

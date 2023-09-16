@@ -79,7 +79,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     private var srtTotalByteCount: Int64 = 0
     private var srtPreviousTotalByteCount: Int64 = 0
     private var srtSpeed: Int64 = 0
-    
+
     var database: Database {
         settings.database
     }
@@ -149,8 +149,8 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         updateButtonStates()
         sceneUpdated(imageEffectChanged: true, store: false)
         removeUnusedImages()
-        //srtConnection.open(URL(string: stream!.srtUrl))
-        //srtStream?.publish()
+        // srtConnection.open(URL(string: stream!.srtUrl))
+        // srtStream?.publish()
     }
 
     func setupPeriodicTimer() {
@@ -179,7 +179,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             DispatchQueue.main.async {
                 if connected.newValue! {
                     logger.info("model: srt: Connected")
-                    //self.srtStream!.publish()
+                    // self.srtStream!.publish()
                     self.startDate = Date()
                     self.netStreamState = .connected
                     self.updateUptimeFromNonMain()
@@ -189,7 +189,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
                     self.startDate = nil
                     self.netStreamState = .disconnected
                     self.updateUptimeFromNonMain()
-                    //self.srtReconnect()
+                    // self.srtReconnect()
                 }
             }
         }
@@ -547,7 +547,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         srtSpeed = srtTotalByteCount - srtPreviousTotalByteCount
         srtPreviousTotalByteCount = srtTotalByteCount
     }
-    
+
     func streamSpeed() -> Int64 {
         if netStreamState != .connected {
             return 0
@@ -558,7 +558,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             return 8 * srtSpeed
         }
     }
-    
+
     func streamTotal() -> Int64 {
         if netStreamState != .connected {
             return 0
@@ -621,7 +621,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         srtla = Srtla(delegate: self, passThrough: !stream!.srtla)
         srtla!.start(uri: stream!.srtUrl)
     }
-    
+
     func srtReconnect() {
         guard retryCount <= maxRetryCount else {
             logger.error("model: srt: Failed to connect to server")
@@ -632,7 +632,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         retryCount += 1
         srtConnect()
     }
-    
+
     func startPublish() {
         publishing = true
         netStreamState = .connecting
@@ -858,7 +858,7 @@ extension Model: IORecorderDelegate {
     func streamDidOpen(_: NetStream) {
         // logger.info("model: Stream opened.")
     }
-    
+
     func listenerReady(port: UInt16) {
         DispatchQueue.main.async {
             self.setupSrtConnectionStateListener()
@@ -866,17 +866,17 @@ extension Model: IORecorderDelegate {
             self.srtStream?.publish()
         }
     }
-    
+
     func listenerError() {
         logger.info("model: srtla: listener error")
     }
-    
+
     func packetSent(byteCount: Int) {
         DispatchQueue.main.async {
             self.srtTotalByteCount += Int64(byteCount)
         }
     }
-    
+
     func packetReceived(byteCount: Int) {
         DispatchQueue.main.async {
             self.srtTotalByteCount += Int64(byteCount)

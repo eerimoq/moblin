@@ -120,14 +120,10 @@ extension ProcessInfo.ThermalState {
 
 extension Data {
     var uint32: UInt32 {
-        get {
-            return self.withUnsafeBytes { $0.load(as: UInt32.self) }
-        }
+        return withUnsafeBytes { $0.load(as: UInt32.self) }
     }
-    
+
     var uint16: UInt16 {
-        get {
-            return self.withUnsafeBytes { $0.load(as: UInt16.self) }
-        }
+        return withUnsafeBytes { $0.load(as: UInt16.self) }
     }
 }
