@@ -12,7 +12,7 @@ class LocalListener {
         self.queue = queue
         self.delegate = delegate
     }
-
+    
     func start() {
         do {
             let options = NWProtocolUDP.Options()
@@ -30,6 +30,9 @@ class LocalListener {
 
     func stop() {
         listener?.cancel()
+        listener = nil
+        connection?.cancel()
+        connection = nil
     }
 
     private func handleListenerStateChange(to state: NWListener.State) {

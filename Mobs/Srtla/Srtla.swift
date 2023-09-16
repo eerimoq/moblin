@@ -8,6 +8,47 @@ protocol SrtlaDelegate: AnyObject {
     func packetReceived(byteCount: Int)
 }
 
+func isDataPacket(packet: Data) -> Bool {
+    return (packet[0] & 0x80) == 0
+}
+
+func getDataPacketSn(packet: Data) -> UInt32 {
+    return packet.uint32.bigEndian
+}
+
+func getControlPacketType(packet: Data) -> UInt16 {
+    return packet.uint16.bigEndian & 0x7fff
+}
+
+enum ControlType: UInt16 {
+    case handshake = 0
+    case keepalive = 1
+    case ack = 2
+    case nak = 3
+    case congestion_warning = 4
+    case shutdown = 5
+    case ackack = 6
+    case dropreq = 7
+    case peererror = 8
+}
+
+func logPacket(packet: Data, direction: String) {
+    if packet.count >= 16 {
+        if isDataPacket(packet: packet) {
+            //logger.debug("srtla: \(direction): Data packet SN \(getDataPacketSn(packet: packet))")
+        } else {
+            let controlType = getControlPacketType(packet: packet)
+            if let controlType = ControlType(rawValue: controlType) {
+                //logger.debug("srtla: \(direction): Control packet type \(controlType)")
+            } else {
+                logger.warning("srtla: \(direction): Unknown control type \(controlType)")
+            }
+        }
+    } else {
+        logger.error("srtla: \(direction): Packet too short.")
+    }
+}
+
 class Srtla {
     private var queue = DispatchQueue(label: "com.eerimoq.network", qos: .userInitiated)
     private var remoteConnections: [RemoteConnection] = []
@@ -46,13 +87,16 @@ class Srtla {
     func stop() {
         for connection in remoteConnections {
             connection.stop()
+            connection.packetHandler = nil
         }
+        localListener.packetHandler = nil
         localListener.stop()
     }
-
+    
     func handleLocalPacket(packet: Data) {
+        logPacket(packet: packet, direction: "local")
         guard let connection = findBestRemoteConnection() else {
-            logger.warning("srtla: No connection found. Dropping packet.")
+            logger.warning("srtla: local: No connection found. Dropping packet.")
             return
         }
         connection.sendPacket(packet: packet)
@@ -60,6 +104,7 @@ class Srtla {
     }
 
     func handleRemotePacket(packet: Data) {
+        logPacket(packet: packet, direction: "remote")
         localListener.sendPacket(packet: packet)
         delegate?.packetReceived(byteCount: packet.count)
     }

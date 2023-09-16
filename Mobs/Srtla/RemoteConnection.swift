@@ -23,7 +23,7 @@ class RemoteConnection {
             typeString = "any"
         }
     }
-
+    
     func start(host: String, port: UInt16) {
         let options = NWProtocolUDP.Options()
         let params = NWParameters(dtls: .none, udp: options)

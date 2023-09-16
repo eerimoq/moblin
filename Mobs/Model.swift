@@ -149,6 +149,8 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         updateButtonStates()
         sceneUpdated(imageEffectChanged: true, store: false)
         removeUnusedImages()
+        //srtConnection.open(URL(string: stream!.srtUrl))
+        //srtStream?.publish()
     }
 
     func setupPeriodicTimer() {
@@ -177,7 +179,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             DispatchQueue.main.async {
                 if connected.newValue! {
                     logger.info("model: srt: Connected")
-                    self.srtStream!.publish()
+                    //self.srtStream!.publish()
                     self.startDate = Date()
                     self.netStreamState = .connected
                     self.updateUptimeFromNonMain()
@@ -187,7 +189,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
                     self.startDate = nil
                     self.netStreamState = .disconnected
                     self.updateUptimeFromNonMain()
-                    self.srtReconnect()
+                    //self.srtReconnect()
                 }
             }
         }
@@ -314,7 +316,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         }
         netStream.delegate = self
         netStream.videoOrientation = .landscapeRight
-        mthkView.attachStream(netStream)
+        //mthkView.attachStream(netStream)
     }
 
     func setStreamResolution(stream: SettingsStream) {
@@ -604,6 +606,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             for: .video,
             position: position
         )
+        logger.info("model: Attach camera")
         netStream.attachCamera(device) { error in
             logger.error("model: Attach camera error: \(error)")
         }
@@ -860,6 +863,7 @@ extension Model: IORecorderDelegate {
         DispatchQueue.main.async {
             self.setupSrtConnectionStateListener()
             self.srtConnection.open(URL(string: "srt://localhost:\(port)")!)
+            self.srtStream?.publish()
         }
     }
     
