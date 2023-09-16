@@ -18,7 +18,8 @@ inspired by it.
 ToDo
 ====
 
-- Make SRT work. Unknown why is fails so often.
+- Make SRT work. Unknown why is fails to send video so often. Audio
+  seems to work?
 
 - Test with cellular connection, not only WiFi.
   
