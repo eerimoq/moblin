@@ -35,8 +35,8 @@ struct ButtonPair: Identifiable {
 final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     private var rtmpConnection = RTMPConnection()
     private var srtConnection = SRTConnection()
-    private var rtmpStream: RTMPStream?
-    private var srtStream: SRTStream?
+    private var rtmpStream: RTMPStream!
+    private var srtStream: SRTStream!
     private var srtla: Srtla?
     private var srtTotalByteCount: Int64 = 0
     private var srtPreviousTotalByteCount: Int64 = 0
@@ -260,7 +260,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         setStreamCodec()
         setStreamBitrate(stream: stream)
         reloadTwitchChat()
-        reloadTwitchViewers()
+        reloadTwitchPubSub()
     }
 
     func reloadStreamIfEnabled(stream: SettingsStream) {
@@ -275,11 +275,11 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         case .rtmp:
             srtStream = nil
             rtmpStream = RTMPStream(connection: rtmpConnection)
-            netStream = rtmpStream!
+            netStream = rtmpStream
         case .srt:
             rtmpStream = nil
             srtStream = SRTStream(srtConnection)
-            netStream = srtStream!
+            netStream = srtStream
         }
         netStream.delegate = self
         netStream.videoOrientation = .landscapeRight
@@ -346,10 +346,8 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         numberOfTwitchChatPosts = 0
     }
 
-    func reloadTwitchViewers() {
-        if let twitchPubSub {
-            twitchPubSub.stop()
-        }
+    func reloadTwitchPubSub() {
+        twitchPubSub?.stop()
         numberOfViewers = unknownNumberOfViewers
         twitchPubSub = TwitchPubSub(model: self, channelId: stream.twitchChannelId)
         twitchPubSub!.start()
@@ -360,7 +358,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func twitchChannelIdUpdated() {
-        reloadTwitchViewers()
+        reloadTwitchPubSub()
     }
 
     func findWidget(id: UUID) -> SettingsWidget? {
@@ -514,7 +512,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
 
     func streamSpeed() -> Int64 {
         if netStream === rtmpStream {
-            return Int64(8 * rtmpStream!.info.currentBytesPerSecond)
+            return Int64(8 * rtmpStream.info.currentBytesPerSecond)
         } else {
             return 8 * srtSpeed
         }
@@ -522,7 +520,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
 
     func streamTotal() -> Int64 {
         if netStream === rtmpStream {
-            return rtmpStream!.info.byteCount.value
+            return rtmpStream.info.byteCount.value
         } else {
             return srtTotalByteCount
         }
@@ -698,7 +696,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             switch code {
             case RTMPConnection.Code.connectSuccess.rawValue:
                 logger.info("model: rtmp: Connected")
-                self.rtmpStream!.publish(self.rtmpStreamName())
+                self.rtmpStream.publish(self.rtmpStreamName())
                 self.startDate = Date()
                 self.streamState = .connected
             case RTMPConnection.Code.connectFailed.rawValue,
