@@ -37,12 +37,10 @@ class RemoteConnection {
             port: NWEndpoint.Port(integerLiteral: port),
             using: params
         )
-        if let connection {
-            connection.viabilityUpdateHandler = handleViabilityChange(to:)
-            connection.stateUpdateHandler = handleStateChange(to:)
-            connection.start(queue: queue)
-            receivePacket()
-        }
+        connection!.viabilityUpdateHandler = handleViabilityChange(to:)
+        connection!.stateUpdateHandler = handleStateChange(to:)
+        connection!.start(queue: queue)
+        receivePacket()
     }
 
     func stop() {

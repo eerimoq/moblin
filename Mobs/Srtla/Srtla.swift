@@ -35,11 +35,14 @@ enum ControlType: UInt16 {
 func logPacket(packet: Data, direction: String) {
     if packet.count >= 16 {
         if isDataPacket(packet: packet) {
-            // logger.debug("srtla: \(direction): Data packet SN \(getDataPacketSn(packet: packet))")
+            logger
+                .debug(
+                    "srtla: \(direction): Data packet SN \(getDataPacketSn(packet: packet))"
+                )
         } else {
             let controlType = getControlPacketType(packet: packet)
-            if let _controlType = ControlType(rawValue: controlType) {
-                // logger.debug("srtla: \(direction): Control packet type \(controlType)")
+            if let controlType = ControlType(rawValue: controlType) {
+                logger.debug("srtla: \(direction): Control packet type \(controlType)")
             } else {
                 logger.warning("srtla: \(direction): Unknown control type \(controlType)")
             }
@@ -89,12 +92,12 @@ class Srtla {
             connection.stop()
             connection.packetHandler = nil
         }
-        localListener.packetHandler = nil
         localListener.stop()
+        localListener.packetHandler = nil
     }
 
     func handleLocalPacket(packet: Data) {
-        logPacket(packet: packet, direction: "local")
+        // logPacket(packet: packet, direction: "local")
         guard let connection = findBestRemoteConnection() else {
             logger.warning("srtla: local: No connection found. Dropping packet.")
             return
@@ -104,7 +107,7 @@ class Srtla {
     }
 
     func handleRemotePacket(packet: Data) {
-        logPacket(packet: packet, direction: "remote")
+        // logPacket(packet: packet, direction: "remote")
         localListener.sendPacket(packet: packet)
         delegate?.packetReceived(byteCount: packet.count)
     }
