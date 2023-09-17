@@ -255,10 +255,10 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
 
     func reloadStream() {
         stopStream()
-        setNetStream(stream: stream)
-        setStreamResolution(stream: stream)
-        setStreamFPS(stream: stream)
-        setStreamCodec(stream: stream)
+        setNetStream()
+        setStreamResolution()
+        setStreamFPS()
+        setStreamCodec()
         setStreamBitrate(stream: stream)
         reloadTwitchChat()
         reloadTwitchViewers()
@@ -271,7 +271,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         }
     }
 
-    func setNetStream(stream: SettingsStream) {
+    func setNetStream() {
         switch stream.proto {
         case .rtmp:
             srtStream = nil
@@ -289,7 +289,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         mthkView.attachStream(netStream)
     }
 
-    func setStreamResolution(stream: SettingsStream) {
+    func setStreamResolution() {
         switch stream.resolution {
         case .r1920x1080:
             netStream.sessionPreset = .hd1920x1080
@@ -300,7 +300,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         }
     }
 
-    func setStreamFPS(stream: SettingsStream) {
+    func setStreamFPS() {
         netStream.frameRate = Double(stream.fps)
     }
 
@@ -308,7 +308,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         netStream.videoSettings.bitRate = stream.bitrate
     }
 
-    func setStreamCodec(stream: SettingsStream) {
+    func setStreamCodec() {
         switch stream.codec {
         case .h264avc:
             netStream.videoSettings
