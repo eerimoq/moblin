@@ -8,7 +8,7 @@ import SwiftUI
 import TwitchChat
 import VideoToolbox
 
-let unknownNumberOfViewers = ""
+let noValue = ""
 
 class ButtonState {
     var isOn: Bool
@@ -48,19 +48,19 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     private var srtConnectedObservation: NSKeyValueObservation?
     @Published var isLive = false
     private var subscriptions = Set<AnyCancellable>()
-    @Published var uptime = ""
+    @Published var uptime = noValue
     var settings = Settings()
-    var digitalClock = ""
+    var digitalClock = noValue
     var selectedSceneId = UUID()
     private var twitchChat: TwitchChatMobs!
     private var twitchPubSub: TwitchPubSub?
     @Published var twitchChatPosts: [Post] = []
     var numberOfTwitchChatPosts = 0
     @Published var twitchChatPostsPerSecond = 0.0
-    @Published var numberOfViewers = unknownNumberOfViewers
+    @Published var numberOfViewers = noValue
     var numberOfViewersUpdateDate = Date()
     @Published var batteryLevel = Double(UIDevice.current.batteryLevel)
-    @Published var speedAndTotal = ""
+    @Published var speedAndTotal = noValue
     @Published var thermalState = ProcessInfo.processInfo.thermalState
     @Published var zoomLevel = 1.0
     var mthkView = MTHKView(frame: .zero)
@@ -183,7 +183,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
 
     func updateTwitchPubSub(now: Date) {
         if numberOfViewersUpdateDate + 60 < now {
-            numberOfViewers = unknownNumberOfViewers
+            numberOfViewers = noValue
         }
     }
 
@@ -348,7 +348,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
 
     func reloadTwitchPubSub() {
         twitchPubSub?.stop()
-        numberOfViewers = unknownNumberOfViewers
+        numberOfViewers = noValue
         twitchPubSub = TwitchPubSub(model: self, channelId: stream.twitchChannelId)
         twitchPubSub!.start()
     }
@@ -487,7 +487,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             let elapsed = now.timeIntervalSince(streamStartDate!)
             uptime = uptimeFormatter.string(from: elapsed)!
         } else {
-            uptime = ""
+            uptime = noValue
         }
     }
 
@@ -532,7 +532,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             let total = sizeFormatter.string(fromByteCount: streamTotal())
             speedAndTotal = "\(speed) (\(total))"
         } else {
-            speedAndTotal = ""
+            speedAndTotal = noValue
         }
     }
 
@@ -785,7 +785,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         srtla = nil
     }
 
-    func listenerReady(port: UInt16) {
+    func srtlaReady(port: UInt16) {
         DispatchQueue.main.async {
             self.setupSrtConnectionStateListener()
             self.srtConnection.open(URL(string: "srt://localhost:\(port)")!)
@@ -798,17 +798,17 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         }
     }
 
-    func listenerError() {
+    func srtlaError() {
         logger.info("model: srtla: listener error")
     }
 
-    func packetSent(byteCount: Int) {
+    func srtlaPacketSent(byteCount: Int) {
         DispatchQueue.main.async {
             self.srtTotalByteCount += Int64(byteCount)
         }
     }
 
-    func packetReceived(byteCount: Int) {
+    func srtlaPacketReceived(byteCount: Int) {
         DispatchQueue.main.async {
             self.srtTotalByteCount += Int64(byteCount)
         }

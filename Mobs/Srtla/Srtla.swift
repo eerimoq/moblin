@@ -2,10 +2,10 @@ import Foundation
 import Network
 
 protocol SrtlaDelegate: AnyObject {
-    func listenerReady(port: UInt16)
-    func listenerError()
-    func packetSent(byteCount: Int)
-    func packetReceived(byteCount: Int)
+    func srtlaReady(port: UInt16)
+    func srtlaError()
+    func srtlaPacketSent(byteCount: Int)
+    func srtlaPacketReceived(byteCount: Int)
 }
 
 func isDataPacket(packet: Data) -> Bool {
@@ -103,13 +103,13 @@ class Srtla {
             return
         }
         connection.sendPacket(packet: packet)
-        delegate?.packetSent(byteCount: packet.count)
+        delegate?.srtlaPacketSent(byteCount: packet.count)
     }
 
     func handleRemotePacket(packet: Data) {
         // logPacket(packet: packet, direction: "remote")
         localListener.sendPacket(packet: packet)
-        delegate?.packetReceived(byteCount: packet.count)
+        delegate?.srtlaPacketReceived(byteCount: packet.count)
     }
 
     func findBestRemoteConnection() -> RemoteConnection? {

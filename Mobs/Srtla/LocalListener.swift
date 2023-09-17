@@ -42,9 +42,9 @@ class LocalListener {
         case .ready:
             let port = listener.port!.rawValue
             logger.info("srtla: local: Listener ready at port \(port)")
-            delegate?.listenerReady(port: port)
+            delegate?.srtlaReady(port: port)
         default:
-            delegate?.listenerError()
+            delegate?.srtlaError()
         }
     }
 
