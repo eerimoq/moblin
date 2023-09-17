@@ -99,15 +99,22 @@ Resources
 - https://github.com/matthew1000/gstreamer-cheat-sheet/blob/master/srt.md
 
   GStreamer SRT stuff.
-  
-Various
-=======
 
-SRT server that can receive and display stream from MOBS:
+SRT debug
+=========
+
+GStreamer SRT server that can receive and display stream from
+MOBS. Work 100% of the time.
 
 .. code-block::
-   
+
    gst-launch-1.0 -v srtsrc uri="srt://:5000?mode=listener" ! decodebin ! autovideosink
+
+Stream from GStreamer to OBS works 100% of the time:
+
+.. code-block::
+
+   gst-launch-1.0 -v videotestsrc ! video/x-raw, height=720, width=1280 ! videoconvert ! x264enc tune=zerolatency ! video/x-h264, profile=high ! mpegtsmux ! srtsink uri=srt://192.168.50.72:5000
 
 Similar apps
 ============
