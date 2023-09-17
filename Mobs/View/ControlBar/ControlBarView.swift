@@ -60,7 +60,7 @@ struct ControlBarView: View {
                     Spacer()
                     ThermalStateView(thermalState: model.thermalState)
                     Spacer()
-                    Text(model.currentTime)
+                    Text(model.digitalClock)
                         .font(.system(size: 13))
                 }
                 HStack {

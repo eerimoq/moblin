@@ -95,7 +95,7 @@ var uptimeFormatter: DateComponentsFormatter {
     return formatter
 }
 
-var currentTimeFormatter: DateFormatter {
+var digitalClockFormatter: DateFormatter {
     let formatter = DateFormatter()
     formatter.dateFormat = "HH:mm"
     return formatter

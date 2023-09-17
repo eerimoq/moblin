@@ -37,6 +37,10 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     private var srtConnection = SRTConnection()
     private var rtmpStream: RTMPStream?
     private var srtStream: SRTStream?
+    private var srtla: Srtla?
+    private var srtTotalByteCount: Int64 = 0
+    private var srtPreviousTotalByteCount: Int64 = 0
+    private var srtSpeed: Int64 = 0
     var netStream: NetStream!
     private var streamState: StreamState = .disconnected
     private var streaming = false
@@ -46,7 +50,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     private var subscriptions = Set<AnyCancellable>()
     @Published var uptime = ""
     var settings = Settings()
-    var currentTime = ""
+    var digitalClock = ""
     var selectedSceneId = UUID()
     private var twitchChat: TwitchChatMobs!
     private var twitchPubSub: TwitchPubSub?
@@ -56,9 +60,10 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     @Published var numberOfViewers = unknownNumberOfViewers
     var numberOfViewersDate = Date()
     @Published var batteryLevel = UIDevice.current.batteryLevel
-    @Published var speed = ""
+    @Published var speedAndTotal = ""
     @Published var thermalState = ProcessInfo.processInfo.thermalState
     @Published var zoomLevel: CGFloat = 1.0
+    var mthkView = MTHKView(frame: .zero)
     private var grayScaleEffect = GrayScaleEffect()
     private var movieEffect = MovieEffect()
     private var seipaEffect = SeipaEffect()
@@ -68,14 +73,8 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     private var isTorchOn = false
     private var isMuteOn = false
     var log: [String] = []
-    private var location = Location()
     var imageStorage = ImageStorage()
     @Published var buttonPairs: [ButtonPair] = []
-    var mthkView = MTHKView(frame: .zero)
-    private var srtla: Srtla?
-    private var srtTotalByteCount: Int64 = 0
-    private var srtPreviousTotalByteCount: Int64 = 0
-    private var srtSpeed: Int64 = 0
 
     var database: Database {
         settings.database
@@ -135,7 +134,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     func setup(settings: Settings) {
         mthkView.videoGravity = .resizeAspect
         logger.setLogHandler(handler: debugLog)
-        updateCurrentTime(now: Date())
+        updateDigitalClock(now: Date())
         self.settings = settings
         checkDeviceAuthorization()
         twitchChat = TwitchChatMobs(model: self)
@@ -153,7 +152,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             DispatchQueue.main.async {
                 let now = Date()
                 self.updateUptime(now: now)
-                self.updateCurrentTime(now: now)
+                self.updateDigitalClock(now: now)
                 self.updateBatteryLevel()
                 self.updateTwitchChatSpeed()
                 self.updateSrtSpeed()
@@ -494,8 +493,8 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         }
     }
 
-    func updateCurrentTime(now: Date) {
-        currentTime = currentTimeFormatter.string(from: now)
+    func updateDigitalClock(now: Date) {
+        digitalClock = digitalClockFormatter.string(from: now)
     }
 
     func updateBatteryLevel() {
@@ -533,9 +532,9 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         if isLive {
             let speed = formatBytesPerSecond(speed: streamSpeed())
             let total = sizeFormatter.string(fromByteCount: streamTotal())
-            self.speed = "\(speed) (\(total))"
+            speedAndTotal = "\(speed) (\(total))"
         } else {
-            speed = ""
+            speedAndTotal = ""
         }
     }
 

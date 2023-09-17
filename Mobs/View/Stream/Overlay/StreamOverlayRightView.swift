@@ -50,7 +50,7 @@ struct RightOverlayView: View {
             if database.show.speed {
                 StreamOverlayIconAndTextView(
                     icon: "speedometer",
-                    text: model.speed,
+                    text: model.speedAndTotal,
                     textFirst: true,
                     color: netStreamColor()
                 )
