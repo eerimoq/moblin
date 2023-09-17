@@ -217,11 +217,12 @@ class SettingsVariable: Codable, Identifiable {
     var websocket: SettingsVariableTextWebsocket = .init()
 }
 
-var buttonTypes = ["Torch", "Mute", "Widget"]
+var buttonTypes = ["Torch", "Mute", "Bitrate", "Widget"]
 
 enum SettingsButtonType: String, Codable {
     case torch = "Torch"
     case mute = "Mute"
+    case bitrate = "Bitrate"
     case widget = "Widget"
 }
 
@@ -358,6 +359,7 @@ func addDefaultScenes(database: Database) {
     scene.addButton(id: database.buttons[2].id)
     scene.addButton(id: database.buttons[3].id)
     scene.addButton(id: database.buttons[4].id)
+    scene.addButton(id: database.buttons[5].id)
     database.scenes.append(scene)
 
     scene = SettingsScene(name: "Front")
@@ -365,6 +367,7 @@ func addDefaultScenes(database: Database) {
     scene.widgets.append(createSceneWidgetVideoEffectMovie(database: database))
     scene.addButton(id: database.buttons[1].id)
     scene.addButton(id: database.buttons[2].id)
+    scene.addButton(id: database.buttons[3].id)
     database.scenes.append(scene)
 }
 
@@ -401,6 +404,14 @@ func addDefaultButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "mic.slash"
     button.systemImageNameOff = "mic"
+    database.buttons.append(button)
+
+    button = SettingsButton(name: "Bitrate")
+    button.id = UUID()
+    button.type = .bitrate
+    button.imageType = "System name"
+    button.systemImageNameOn = "speedometer"
+    button.systemImageNameOff = "speedometer"
     database.buttons.append(button)
 
     button = SettingsButton(name: "Movie")

@@ -24,8 +24,6 @@ ToDo
 Ideas/plan
 ==========
 
-- Adaptive bitrate or at least easily change it manually.
-
 - Implement `SRTLA`_.
 
 - Reconnect immediately when connected to a network.

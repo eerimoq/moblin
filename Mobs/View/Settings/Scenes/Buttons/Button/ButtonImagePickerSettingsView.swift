@@ -49,6 +49,7 @@ var imageSystemNames = [
     "moonphase.waning.crescent",
     "drop",
     "drop.fill",
+    "speedometer",
 ]
 
 struct ButtonImagePickerSettingsView: View {

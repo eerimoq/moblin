@@ -31,6 +31,7 @@ struct ButtonPlaceholderImage: View {
 
 struct ButtonsView: View {
     @ObservedObject var model: Model
+    @State var showingBitrate = false
 
     func getImage(state: ButtonState) -> String {
         if state.isOn {
@@ -44,15 +45,15 @@ struct ButtonsView: View {
         state.button.isOn.toggle()
         model.toggleTorch()
         model.updateButtonStates()
-        model.store()
     }
 
     func muteAction(state: ButtonState) {
         state.button.isOn.toggle()
         model.toggleMute()
         model.updateButtonStates()
-        model.store()
     }
+
+    func bitrateAction(state _: ButtonState) {}
 
     func widgetAction(state: ButtonState) {
         state.button.isOn.toggle()
@@ -84,6 +85,20 @@ struct ButtonsView: View {
                                     on: second.isOn
                                 )
                             })
+                        case .bitrate:
+                            Button(action: {
+                                showingBitrate = true
+                            }, label: {
+                                ButtonImage(
+                                    image: getImage(state: second),
+                                    on: second.isOn
+                                )
+                            })
+                            .popover(isPresented: $showingBitrate) {
+                                StreamVideoBitrateSettingsButtonView(model: model, done: {
+                                    showingBitrate = false
+                                })
+                            }
                         case .widget:
                             Button(action: {
                                 widgetAction(state: second)
@@ -116,6 +131,20 @@ struct ButtonsView: View {
                                 on: pair.first.isOn
                             )
                         })
+                    case .bitrate:
+                        Button(action: {
+                            showingBitrate = true
+                        }, label: {
+                            ButtonImage(
+                                image: getImage(state: pair.first),
+                                on: pair.first.isOn
+                            )
+                        })
+                        .popover(isPresented: $showingBitrate) {
+                            StreamVideoBitrateSettingsButtonView(model: model, done: {
+                                showingBitrate = false
+                            })
+                        }
                     case .widget:
                         Button(action: {
                             widgetAction(state: pair.first)
