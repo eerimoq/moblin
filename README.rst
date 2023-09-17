@@ -103,8 +103,10 @@ Resources
 SRT debug
 =========
 
-GStreamer SRT server that can receive and display stream from
-MOBS. Work 100% of the time.
+Stream from MOBS to OBS fails most of the time. Audio is fine
+though. Just video is bad somehow.
+
+Stream from MOBS to GStreamer works 100% of the time.
 
 .. code-block::
 
