@@ -103,7 +103,7 @@ Resources
 Various
 =======
 
-SRT server that can receive and display stream:
+SRT server that can receive and display stream from MOBS:
 
 .. code-block::
    
