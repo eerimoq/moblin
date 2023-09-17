@@ -611,7 +611,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         )
         rtmpConnection.connect(rtmpUri())
     }
-    
+
     func rtmpStopStream() {
         rtmpConnection.removeEventListener(
             .rtmpStatus,
@@ -625,7 +625,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         )
         rtmpConnection.close()
     }
-    
+
     func rtmpUri() -> String {
         return makeRtmpUri(url: stream!.rtmpUrl)
     }
@@ -642,7 +642,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     func updateTorch() {
         netStream.torch = isTorchOn
     }
-    
+
     func toggleMute() {
         isMuteOn.toggle()
         updateMute()
@@ -651,7 +651,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     func updateMute() {
         netStream.hasAudio = !isMuteOn
     }
-    
+
     func grayScaleEffectOn() {
         _ = netStream.registerVideoEffect(grayScaleEffect)
     }
@@ -715,7 +715,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
                 self.startDate = Date()
                 self.streamState = .connected
             case RTMPConnection.Code.connectFailed.rawValue,
-                RTMPConnection.Code.connectClosed.rawValue:
+                 RTMPConnection.Code.connectClosed.rawValue:
                 logger.info("model: rtmp: Disconnected")
                 self.streamState = .disconnected
                 self.startDate = nil
@@ -828,14 +828,14 @@ extension Model: IORecorderDelegate {
         srtla = Srtla(delegate: self, passThrough: !stream!.srtla)
         srtla!.start(uri: stream!.srtUrl)
     }
-    
+
     func srtStopStream() {
         srtConnectedObservation = nil
         srtConnection.close()
         srtla?.stop()
         srtla = nil
     }
-    
+
     func listenerReady(port: UInt16) {
         DispatchQueue.main.async {
             self.setupSrtConnectionStateListener()
