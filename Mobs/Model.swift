@@ -20,7 +20,7 @@ class ButtonState {
     }
 }
 
-enum NetStreamState {
+enum StreamState {
     case connecting
     case connected
     case disconnected
@@ -38,7 +38,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     private var rtmpStream: RTMPStream?
     private var srtStream: SRTStream?
     var netStream: NetStream!
-    private var netStreamState: NetStreamState = .disconnected
+    private var streamState: StreamState = .disconnected
     private var streaming = false
     private var startDate: Date?
     private var srtConnectedObservation: NSKeyValueObservation?
@@ -233,7 +233,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         }
         isLive = true
         streaming = true
-        netStreamState = .connecting
+        streamState = .connecting
         UIApplication.shared.isIdleTimerDisabled = true
         switch stream.proto {
         case .rtmp:
@@ -332,15 +332,15 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         return twitchPubSub?.isConnected() ?? false
     }
 
-    func isNetStreamOk() -> Bool {
-        return netStreamState != .disconnected
+    func isStreamOk() -> Bool {
+        return streamState != .disconnected
     }
 
-    func isNetStreamConnceted() -> Bool {
-        return netStreamState == .connected
+    func isStreamConnceted() -> Bool {
+        return streamState == .connected
     }
 
-    func isPublishing() -> Bool {
+    func isStreaming() -> Bool {
         return streaming
     }
 
@@ -496,7 +496,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func updateUptime(now: Date) {
-        if startDate != nil && isNetStreamConnceted() {
+        if startDate != nil && isStreamConnceted() {
             let elapsed = now.timeIntervalSince(startDate!)
             uptime = uptimeFormatter.string(from: elapsed)!
         } else {
@@ -703,11 +703,11 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
                 logger.info("model: rtmp: Connected")
                 self.rtmpStream!.publish(self.rtmpStreamName())
                 self.startDate = Date()
-                self.netStreamState = .connected
+                self.streamState = .connected
             case RTMPConnection.Code.connectFailed.rawValue,
                 RTMPConnection.Code.connectClosed.rawValue:
                 logger.info("model: rtmp: Disconnected")
-                self.netStreamState = .disconnected
+                self.streamState = .disconnected
                 self.startDate = nil
             default:
                 break
@@ -800,11 +800,11 @@ extension Model: IORecorderDelegate {
                 if connected.newValue! {
                     logger.info("model: srt: Connected")
                     self.startDate = Date()
-                    self.netStreamState = .connected
+                    self.streamState = .connected
                 } else {
                     logger.info("model: srt: Disconnected")
                     self.startDate = nil
-                    self.netStreamState = .disconnected
+                    self.streamState = .disconnected
                 }
                 self.updateUptime(now: Date())
             }
@@ -832,7 +832,7 @@ extension Model: IORecorderDelegate {
             self.srtConnection.open(URL(string: "srt://localhost:\(port)")!)
             self.srtStream?.publish()
             if !self.srtConnection.connected {
-                self.netStreamState = .disconnected
+                self.streamState = .disconnected
                 self.startDate = nil
                 self.updateUptime(now: Date())
             }

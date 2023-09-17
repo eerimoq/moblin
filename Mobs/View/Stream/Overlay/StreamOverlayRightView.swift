@@ -38,7 +38,7 @@ struct RightOverlayView: View {
     }
 
     func netStreamColor() -> Color {
-        if model.isPublishing() && !model.isNetStreamOk() {
+        if model.isStreaming() && !model.isStreamOk() {
             return .red
         } else {
             return .white
