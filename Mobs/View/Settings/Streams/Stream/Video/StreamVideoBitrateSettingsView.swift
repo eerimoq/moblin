@@ -69,7 +69,11 @@ struct StreamVideoBitrateSettingsButtonView: View {
             Section {
                 HStack {
                     Spacer()
-                    Button(action: { done() }, label: { Text("Close") })
+                    Button(action: {
+                        done()
+                    }, label: {
+                        Text("Close")
+                    })
                     Spacer()
                 }
             }

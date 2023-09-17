@@ -38,7 +38,7 @@ func logPacket(packet: Data, direction: String) {
             // logger.debug("srtla: \(direction): Data packet SN \(getDataPacketSn(packet: packet))")
         } else {
             let controlType = getControlPacketType(packet: packet)
-            if let controlType = ControlType(rawValue: controlType) {
+            if let _controlType = ControlType(rawValue: controlType) {
                 // logger.debug("srtla: \(direction): Control packet type \(controlType)")
             } else {
                 logger.warning("srtla: \(direction): Unknown control type \(controlType)")
