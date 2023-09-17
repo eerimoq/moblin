@@ -105,9 +105,9 @@ Various
 
 SRT server that can receive and display stream:
 
-```
-gst-launch-1.0 -v srtsrc uri="srt://:5000?mode=listener" ! decodebin ! autovideosink
-```
+.. code-block::
+   
+   gst-launch-1.0 -v srtsrc uri="srt://:5000?mode=listener" ! decodebin ! autovideosink
 
 Similar apps
 ============
