@@ -44,7 +44,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     var netStream: NetStream!
     private var streamState: StreamState = .disconnected
     private var streaming = false
-    private var startDate: Date?
+    private var streamStartDate: Date?
     private var srtConnectedObservation: NSKeyValueObservation?
     @Published var isLive = false
     private var subscriptions = Set<AnyCancellable>()
@@ -58,7 +58,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     var numberOfTwitchChatPosts = 0
     @Published var twitchChatPostsPerSecond = 0.0
     @Published var numberOfViewers = unknownNumberOfViewers
-    var numberOfViewersDate = Date()
+    var numberOfViewersUpdateDate = Date()
     @Published var batteryLevel = Double(UIDevice.current.batteryLevel)
     @Published var speedAndTotal = ""
     @Published var thermalState = ProcessInfo.processInfo.thermalState
@@ -157,7 +157,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
                 self.updateTwitchChatSpeed()
                 self.updateSrtSpeed()
                 self.updateSpeed()
-                self.updateTwitchPubSub()
+                self.updateTwitchPubSub(now: now)
             }
         })
     }
@@ -181,8 +181,8 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         }
     }
 
-    func updateTwitchPubSub() {
-        if numberOfViewersDate + 60 < Date() {
+    func updateTwitchPubSub(now: Date) {
+        if numberOfViewersUpdateDate + 60 < now {
             numberOfViewers = unknownNumberOfViewers
         }
     }
@@ -247,7 +247,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         UIApplication.shared.isIdleTimerDisabled = false
         rtmpStopStream()
         srtStopStream()
-        startDate = nil
+        streamStartDate = nil
         updateUptime(now: Date())
         updateSpeed()
     }
@@ -483,8 +483,8 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func updateUptime(now: Date) {
-        if startDate != nil && isStreamConnceted() {
-            let elapsed = now.timeIntervalSince(startDate!)
+        if streamStartDate != nil && isStreamConnceted() {
+            let elapsed = now.timeIntervalSince(streamStartDate!)
             uptime = uptimeFormatter.string(from: elapsed)!
         } else {
             uptime = ""
@@ -537,9 +537,8 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func checkDeviceAuthorization() {
-        let requiredAccessLevel: PHAccessLevel = .readWrite
         PHPhotoLibrary
-            .requestAuthorization(for: requiredAccessLevel) { authorizationStatus in
+            .requestAuthorization(for: .readWrite) { authorizationStatus in
                 switch authorizationStatus {
                 case .limited:
                     logger.warning("model: limited authorization granted")
@@ -589,11 +588,6 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             selector: #selector(rtmpStatusHandler),
             observer: self
         )
-        rtmpConnection.addEventListener(
-            .ioError,
-            selector: #selector(rtmpErrorHandler),
-            observer: self
-        )
         rtmpConnection.connect(rtmpUri())
     }
 
@@ -601,11 +595,6 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         rtmpConnection.removeEventListener(
             .rtmpStatus,
             selector: #selector(rtmpStatusHandler),
-            observer: self
-        )
-        rtmpConnection.removeEventListener(
-            .ioError,
-            selector: #selector(rtmpErrorHandler),
             observer: self
         )
         rtmpConnection.close()
@@ -697,43 +686,18 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             case RTMPConnection.Code.connectSuccess.rawValue:
                 logger.info("model: rtmp: Connected")
                 self.rtmpStream.publish(self.rtmpStreamName())
-                self.startDate = Date()
+                self.streamStartDate = Date()
                 self.streamState = .connected
             case RTMPConnection.Code.connectFailed.rawValue,
                  RTMPConnection.Code.connectClosed.rawValue:
                 logger.info("model: rtmp: Disconnected")
                 self.streamState = .disconnected
-                self.startDate = nil
+                self.streamStartDate = nil
             default:
                 break
             }
             self.updateUptime(now: Date())
         }
-    }
-
-    @objc
-    private func rtmpErrorHandler(_: Notification) {
-        logger.error("model: rtmp: error")
-        rtmpConnection.connect(rtmpUri())
-    }
-}
-
-extension Model: IORecorderDelegate {
-    func recorder(_: IORecorder, errorOccured error: IORecorder.Error) {
-        logger.error("model: \(error)")
-    }
-
-    func recorder(_: IORecorder, finishWriting writer: AVAssetWriter) {
-        PHPhotoLibrary.shared().performChanges({ () in
-            PHAssetChangeRequest
-                .creationRequestForAssetFromVideo(atFileURL: writer.outputURL)
-        }, completionHandler: { _, error in
-            do {
-                try FileManager.default.removeItem(at: writer.outputURL)
-            } catch {
-                logger.error("model: \(error)")
-            }
-        })
     }
 
     // NetStreamDelegate
@@ -794,11 +758,11 @@ extension Model: IORecorderDelegate {
             DispatchQueue.main.async {
                 if connected.newValue! {
                     logger.info("model: srt: Connected")
-                    self.startDate = Date()
+                    self.streamStartDate = Date()
                     self.streamState = .connected
                 } else {
                     logger.info("model: srt: Disconnected")
-                    self.startDate = nil
+                    self.streamStartDate = nil
                     self.streamState = .disconnected
                 }
                 self.updateUptime(now: Date())
@@ -828,7 +792,7 @@ extension Model: IORecorderDelegate {
             self.srtStream?.publish()
             if !self.srtConnection.connected {
                 self.streamState = .disconnected
-                self.startDate = nil
+                self.streamStartDate = nil
                 self.updateUptime(now: Date())
             }
         }

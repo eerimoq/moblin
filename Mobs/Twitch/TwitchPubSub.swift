@@ -113,7 +113,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         if type == "viewcount" {
             let message = try decodeMessageViewCount(message: message.data.message)
             model.numberOfViewers = String(message.viewers)
-            model.numberOfViewersDate = Date()
+            model.numberOfViewersUpdateDate = Date()
         } else {
             logger
                 .debug(
