@@ -17,7 +17,10 @@ struct LeftOverlayView: View {
         } else {
             proto = stream.proto.rawValue
         }
-        return "\(stream.name) (\(stream.resolution.rawValue), \(stream.fps), \(stream.codec.rawValue), \(proto))"
+        let bitrate = formatBytesPerSecond(speed: Int64(stream.bitrate))
+        let resolution = stream.resolution.rawValue
+        let codec = stream.codec.rawValue
+        return "\(stream.name) (\(resolution), \(stream.fps), \(codec), \(proto), \(bitrate)"
     }
 
     func messageText() -> String {
