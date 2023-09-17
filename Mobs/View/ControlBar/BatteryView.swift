@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct BatteryView: View {
-    var level: Float
+    var level: Double
 
     var body: some View {
         ZStack(alignment: .leading) {

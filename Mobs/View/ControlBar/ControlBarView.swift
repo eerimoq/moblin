@@ -39,7 +39,6 @@ struct StreamButton: View {
             }, label: {
                 StreamButtonText(text: "Go Live")
             })
-            .disabled(model.stream == nil)
             .confirmationDialog("", isPresented: $isPresentingGoLiveConfirm) {
                 Button("Go live") {
                     model.startStream()

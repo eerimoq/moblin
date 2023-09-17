@@ -63,10 +63,10 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable {
     var widgetId: UUID
     var enabled: Bool = true
     var id: UUID = .init()
-    var x: Double = 0
-    var y: Double = 0
-    var width: Double = 100
-    var height: Double = 100
+    var x: Double = 0.0
+    var y: Double = 0.0
+    var width: Double = 100.0
+    var height: Double = 100.0
 
     init(widgetId: UUID) {
         self.widgetId = widgetId

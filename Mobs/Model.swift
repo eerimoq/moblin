@@ -56,13 +56,13 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     private var twitchPubSub: TwitchPubSub?
     @Published var twitchChatPosts: [Post] = []
     var numberOfTwitchChatPosts = 0
-    @Published var twitchChatPostsPerSecond: Float = 0
+    @Published var twitchChatPostsPerSecond = 0.0
     @Published var numberOfViewers = unknownNumberOfViewers
     var numberOfViewersDate = Date()
-    @Published var batteryLevel = UIDevice.current.batteryLevel
+    @Published var batteryLevel = Double(UIDevice.current.batteryLevel)
     @Published var speedAndTotal = ""
     @Published var thermalState = ProcessInfo.processInfo.thermalState
-    @Published var zoomLevel: CGFloat = 1.0
+    @Published var zoomLevel = 1.0
     var mthkView = MTHKView(frame: .zero)
     private var grayScaleEffect = GrayScaleEffect()
     private var movieEffect = MovieEffect()
@@ -496,12 +496,12 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func updateBatteryLevel() {
-        batteryLevel = UIDevice.current.batteryLevel
+        batteryLevel = Double(UIDevice.current.batteryLevel)
     }
 
     func updateTwitchChatSpeed() {
         twitchChatPostsPerSecond = twitchChatPostsPerSecond * 0.8 +
-            Float(numberOfTwitchChatPosts) * 0.2
+            Double(numberOfTwitchChatPosts) * 0.2
         numberOfTwitchChatPosts = 0
     }
 
@@ -579,7 +579,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         netStream.attachCamera(device) { error in
             logger.error("model: Attach camera error: \(error)")
         }
-        zoomLevel = device?.videoZoomFactor ?? 1.0
+        zoomLevel = Double(device?.videoZoomFactor ?? 1.0)
         setCameraZoomLevel(level: zoomLevel)
     }
 
@@ -669,7 +669,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         _ = netStream.unregisterVideoEffect(bloomEffect)
     }
 
-    func setCameraZoomLevel(level: CGFloat) {
+    func setCameraZoomLevel(level: Double) {
         guard let device = netStream.videoCapture(for: 0)?.device,
               level >= 1 && level < device.activeFormat.videoMaxZoomFactor
         else {
