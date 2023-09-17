@@ -10,7 +10,7 @@ struct LeftOverlayView: View {
     var stream: SettingsStream {
         model.stream
     }
-    
+
     func streamText() -> String {
         var proto: String
         if stream.proto == .srt && stream.srtla {
