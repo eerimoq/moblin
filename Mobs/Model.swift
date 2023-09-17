@@ -606,7 +606,6 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             for: .video,
             position: position
         )
-        logger.info("model: Attach camera")
         netStream.attachCamera(device) { error in
             logger.error("model: Attach camera error: \(error)")
         }
