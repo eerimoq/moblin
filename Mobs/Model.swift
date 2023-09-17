@@ -788,12 +788,16 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     func srtlaReady(port: UInt16) {
         DispatchQueue.main.async {
             self.setupSrtConnectionStateListener()
-            self.srtConnection.open(URL(string: "srt://localhost:\(port)")!)
-            self.srtStream?.publish()
-            if !self.srtConnection.connected {
-                self.streamState = .disconnected
-                self.streamStartDate = nil
-                self.updateUptime(now: Date())
+            DispatchQueue(label: "com.eerimoq.srt").async {
+                self.srtConnection.open(URL(string: "srt://localhost:\(port)")!)
+                self.srtStream?.publish()
+                DispatchQueue.main.async {
+                    if !self.srtConnection.connected {
+                        self.streamState = .disconnected
+                        self.streamStartDate = nil
+                        self.updateUptime(now: Date())
+                    }
+                }
             }
         }
     }
