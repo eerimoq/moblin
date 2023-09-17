@@ -289,10 +289,10 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             srtStream = SRTStream(srtConnection)
             netStream = srtStream!
         }
-        updateTorch()
-        updateMute()
         netStream.delegate = self
         netStream.videoOrientation = .landscapeRight
+        updateTorch()
+        updateMute()
         mthkView.attachStream(netStream)
     }
 
