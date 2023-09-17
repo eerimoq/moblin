@@ -36,15 +36,13 @@ struct StreamVideoBitrateSettingsView: View {
 
 struct StreamVideoBitrateSettingsButtonView: View {
     @ObservedObject var model: Model
-    var stream: SettingsStream
     @State private var selection: UInt32
     private var done: () -> Void
 
     init(model: Model, done: @escaping () -> Void) {
         self.model = model
-        stream = model.stream!
         self.done = done
-        selection = stream.bitrate
+        selection = model.stream.bitrate
     }
 
     var body: some View {
@@ -56,10 +54,10 @@ struct StreamVideoBitrateSettingsButtonView: View {
                     }
                 }
                 .onChange(of: selection) { bitrate in
-                    stream.bitrate = bitrate
+                    model.stream.bitrate = bitrate
                     model.store()
-                    if stream.enabled {
-                        model.setStreamBitrate(stream: stream)
+                    if model.stream.enabled {
+                        model.setStreamBitrate(stream: model.stream)
                     }
                     done()
                 }

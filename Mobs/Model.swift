@@ -81,11 +81,11 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         settings.database
     }
 
-    var stream: SettingsStream? {
+    var stream: SettingsStream {
         for stream in database.streams where stream.enabled {
             return stream
         }
-        return nil
+        fatalError("model: There is no stream!")
     }
 
     var enabledScenes: [SettingsScene] {
@@ -146,8 +146,6 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         updateButtonStates()
         sceneUpdated(imageEffectChanged: true, store: false)
         removeUnusedImages()
-        // srtConnection.open(URL(string: stream!.srtUrl))
-        // srtStream?.publish()
     }
 
     func setupPeriodicTimer() {
@@ -228,9 +226,6 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func startStream() {
-        guard let stream else {
-            return
-        }
         isLive = true
         streaming = true
         streamState = .connecting
@@ -260,13 +255,11 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
 
     func reloadStream() {
         stopStream()
-        if let stream {
-            setNetStream(stream: stream)
-            setStreamResolution(stream: stream)
-            setStreamFPS(stream: stream)
-            setStreamCodec(stream: stream)
-            setStreamBitrate(stream: stream)
-        }
+        setNetStream(stream: stream)
+        setStreamResolution(stream: stream)
+        setStreamFPS(stream: stream)
+        setStreamCodec(stream: stream)
+        setStreamBitrate(stream: stream)
         reloadTwitchChat()
         reloadTwitchViewers()
     }
@@ -348,9 +341,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
 
     func reloadTwitchChat() {
         twitchChat.stop()
-        if let stream {
-            twitchChat.start(channelName: stream.twitchChannelName)
-        }
+        twitchChat.start(channelName: stream.twitchChannelName)
         twitchChatPostsPerSecond = 0
         twitchChatPosts = []
         numberOfTwitchChatPosts = 0
@@ -361,9 +352,6 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             twitchPubSub.stop()
         }
         numberOfViewers = unknownNumberOfViewers
-        guard let stream else {
-            return
-        }
         twitchPubSub = TwitchPubSub(model: self, channelId: stream.twitchChannelId)
         twitchPubSub!.start()
     }
@@ -627,11 +615,11 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func rtmpUri() -> String {
-        return makeRtmpUri(url: stream!.rtmpUrl)
+        return makeRtmpUri(url: stream.rtmpUrl)
     }
 
     func rtmpStreamName() -> String {
-        return makeRtmpStreamName(url: stream!.rtmpUrl)
+        return makeRtmpStreamName(url: stream.rtmpUrl)
     }
 
     func toggleTorch() {
@@ -825,8 +813,8 @@ extension Model: IORecorderDelegate {
         srtTotalByteCount = 0
         srtPreviousTotalByteCount = 0
         srtla?.stop()
-        srtla = Srtla(delegate: self, passThrough: !stream!.srtla)
-        srtla!.start(uri: stream!.srtUrl)
+        srtla = Srtla(delegate: self, passThrough: !stream.srtla)
+        srtla!.start(uri: stream.srtUrl)
     }
 
     func srtStopStream() {

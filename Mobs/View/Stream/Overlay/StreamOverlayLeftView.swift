@@ -7,10 +7,11 @@ struct LeftOverlayView: View {
         model.settings.database
     }
 
+    var stream: SettingsStream {
+        model.stream
+    }
+    
     func streamText() -> String {
-        guard let stream = model.stream else {
-            return ""
-        }
         var proto: String
         if stream.proto == .srt && stream.srtla {
             proto = "SRTLA"
