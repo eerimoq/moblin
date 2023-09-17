@@ -3,7 +3,7 @@ all:
 	$(MAKE) lint
 
 style:
-	swiftformat Mobs --maxwidth 90 --lint
+	swiftformat --maxwidth 90 --lint Mobs
 
 lint:
 	swiftlint lint --strict Mobs
