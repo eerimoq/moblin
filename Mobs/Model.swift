@@ -33,8 +33,6 @@ struct ButtonPair: Identifiable {
 }
 
 final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
-    private var retryCount: Int = 0
-    private let maxRetryCount: Int = 5
     private var rtmpConnection = RTMPConnection()
     private var srtConnection = SRTConnection()
     private var rtmpStream: RTMPStream?
@@ -179,18 +177,14 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             DispatchQueue.main.async {
                 if connected.newValue! {
                     logger.info("model: srt: Connected")
-                    // self.srtStream!.publish()
                     self.startDate = Date()
                     self.netStreamState = .connected
-                    self.updateUptimeFromNonMain()
-                    self.retryCount = 0
                 } else {
                     logger.info("model: srt: Disconnected")
                     self.startDate = nil
                     self.netStreamState = .disconnected
-                    self.updateUptimeFromNonMain()
-                    // self.srtReconnect()
                 }
+                self.updateUptime(now: Date())
             }
         }
     }
@@ -621,17 +615,6 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         srtla!.start(uri: stream!.srtUrl)
     }
 
-    func srtReconnect() {
-        guard retryCount <= maxRetryCount else {
-            logger.error("model: srt: Failed to connect to server")
-            return
-        }
-        Thread.sleep(forTimeInterval: 2.0)
-        logger.info("model: srt: Reconnecting")
-        retryCount += 1
-        srtConnect()
-    }
-
     func startPublish() {
         publishing = true
         netStreamState = .connecting
@@ -760,30 +743,22 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         else {
             return
         }
-        switch code {
-        case RTMPConnection.Code.connectSuccess.rawValue:
-            logger.info("model: rtmp: Connected")
-            retryCount = 0
-            rtmpStream!.publish(rtmpStreamName())
-            startDate = Date()
-            netStreamState = .connected
-            updateUptimeFromNonMain()
-        case RTMPConnection.Code.connectFailed.rawValue,
-             RTMPConnection.Code.connectClosed.rawValue:
-            logger.info("model: rtmp: Disconnected")
-            netStreamState = .disconnected
-            startDate = nil
-            updateUptimeFromNonMain()
-            guard retryCount <= maxRetryCount else {
-                logger.error("model: rtmp: Failed to connect to server")
-                return
+        DispatchQueue.main.async {
+            switch code {
+            case RTMPConnection.Code.connectSuccess.rawValue:
+                logger.info("model: rtmp: Connected")
+                self.rtmpStream!.publish(self.rtmpStreamName())
+                self.startDate = Date()
+                self.netStreamState = .connected
+            case RTMPConnection.Code.connectFailed.rawValue,
+                RTMPConnection.Code.connectClosed.rawValue:
+                logger.info("model: rtmp: Disconnected")
+                self.netStreamState = .disconnected
+                self.startDate = nil
+            default:
+                break
             }
-            Thread.sleep(forTimeInterval: 2.0)
-            logger.info("model: rtmp: Reconnecting")
-            rtmpConnection.connect(rtmpUri())
-            retryCount += 1
-        default:
-            break
+            self.updateUptime(now: Date())
         }
     }
 
