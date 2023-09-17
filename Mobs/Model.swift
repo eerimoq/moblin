@@ -41,7 +41,6 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     private var netStreamState: NetStreamState = .disconnected
     private var srtConnectedObservation: NSKeyValueObservation?
     @Published var isLive = false
-    private var notificationCenter = NotificationCenter.default
     private var subscriptions = Set<AnyCancellable>()
     private var publishing = false
     private var startDate: Date?
@@ -187,20 +186,6 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
                 self.updateUptime(now: Date())
             }
         }
-    }
-
-    func setupThermalState() {
-        updateThermalState()
-        notificationCenter.publisher(
-            for: ProcessInfo.thermalStateDidChangeNotification,
-            object: nil
-        )
-        .sink { _ in
-            DispatchQueue.main.async {
-                self.updateThermalState()
-            }
-        }
-        .store(in: &subscriptions)
     }
 
     func removeUnusedImages() {
@@ -587,6 +572,20 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
                     logger.error("model: Unimplemented")
                 }
             }
+    }
+
+    func setupThermalState() {
+        updateThermalState()
+        NotificationCenter.default.publisher(
+            for: ProcessInfo.thermalStateDidChangeNotification,
+            object: nil
+        )
+        .sink { _ in
+            DispatchQueue.main.async {
+                self.updateThermalState()
+            }
+        }
+        .store(in: &subscriptions)
     }
 
     func updateThermalState() {
