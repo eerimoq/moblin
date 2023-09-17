@@ -20,7 +20,7 @@ ToDo
 
 - Make SRT work. Unknown why is fails to send video so often. Audio
   seems to work?
-  
+
 Ideas/plan
 ==========
 
@@ -29,7 +29,7 @@ Ideas/plan
 - Reconnect immediately when connected to a network.
 
 - Network status (WiFi, cellular, ...).
-  
+
 - Audio level indicator.
 
 - Audio only when bad connection.
@@ -95,6 +95,15 @@ Resources
 - https://irl.run
 
   IRL Toolkit.
+
+Various
+=======
+
+SRT server that can receive and display stream:
+
+```
+gst-launch-1.0 -v srtsrc uri="srt://:5000?mode=listener" ! decodebin ! autovideosink
+```
 
 Similar apps
 ============
