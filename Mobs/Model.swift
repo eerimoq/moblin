@@ -289,6 +289,8 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             srtStream = SRTStream(srtConnection)
             netStream = srtStream!
         }
+        updateTorch()
+        updateMute()
         netStream.delegate = self
         netStream.videoOrientation = .landscapeRight
         mthkView.attachStream(netStream)
@@ -634,14 +636,22 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
 
     func toggleTorch() {
         isTorchOn.toggle()
-        netStream.torch.toggle()
+        updateTorch()
     }
 
+    func updateTorch() {
+        netStream.torch = isTorchOn
+    }
+    
     func toggleMute() {
         isMuteOn.toggle()
-        netStream.hasAudio.toggle()
+        updateMute()
     }
 
+    func updateMute() {
+        netStream.hasAudio = !isMuteOn
+    }
+    
     func grayScaleEffectOn() {
         _ = netStream.registerVideoEffect(grayScaleEffect)
     }
