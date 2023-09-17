@@ -39,11 +39,11 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     private var srtStream: SRTStream?
     var netStream: NetStream!
     private var netStreamState: NetStreamState = .disconnected
+    private var streaming = false
+    private var startDate: Date?
     private var srtConnectedObservation: NSKeyValueObservation?
     @Published var isLive = false
     private var subscriptions = Set<AnyCancellable>()
-    private var publishing = false
-    private var startDate: Date?
     @Published var uptime = ""
     var settings = Settings()
     var currentTime = ""
@@ -165,29 +165,6 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         })
     }
 
-    func setupSrtConnectionStateListener() {
-        srtConnectedObservation = srtConnection.observe(\.connected, options: [
-            .new,
-            .old,
-        ]) { [weak self] _, connected in
-            guard let self else {
-                return
-            }
-            DispatchQueue.main.async {
-                if connected.newValue! {
-                    logger.info("model: srt: Connected")
-                    self.startDate = Date()
-                    self.netStreamState = .connected
-                } else {
-                    logger.info("model: srt: Disconnected")
-                    self.startDate = nil
-                    self.netStreamState = .disconnected
-                }
-                self.updateUptime(now: Date())
-            }
-        }
-    }
-
     func removeUnusedImages() {
         for id in imageStorage.ids() {
             var used = false
@@ -251,14 +228,33 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func startStream() {
+        guard let stream else {
+            return
+        }
         isLive = true
-        startPublish()
+        streaming = true
+        netStreamState = .connecting
+        UIApplication.shared.isIdleTimerDisabled = true
+        switch stream.proto {
+        case .rtmp:
+            rtmpStartStream()
+        case .srt:
+            srtStartStream()
+        }
         updateSpeed()
     }
 
     func stopStream() {
         isLive = false
-        stopPublish()
+        if !streaming {
+            return
+        }
+        streaming = false
+        UIApplication.shared.isIdleTimerDisabled = false
+        rtmpStopStream()
+        srtStopStream()
+        startDate = nil
+        updateUptime(now: Date())
         updateSpeed()
     }
 
@@ -345,7 +341,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func isPublishing() -> Bool {
-        return publishing
+        return streaming
     }
 
     func reloadTwitchChat() {
@@ -528,9 +524,6 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func streamSpeed() -> Int64 {
-        if netStreamState != .connected {
-            return 0
-        }
         if netStream === rtmpStream {
             return Int64(8 * rtmpStream!.info.currentBytesPerSecond)
         } else {
@@ -539,9 +532,6 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func streamTotal() -> Int64 {
-        if netStreamState != .connected {
-            return 0
-        }
         if netStream === rtmpStream {
             return rtmpStream!.info.byteCount.value
         } else {
@@ -606,44 +596,21 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         setCameraZoomLevel(level: zoomLevel)
     }
 
-    func srtConnect() {
-        srtTotalByteCount = 0
-        srtPreviousTotalByteCount = 0
-        srtla?.stop()
-        srtla = Srtla(delegate: self, passThrough: !stream!.srtla)
-        srtla!.start(uri: stream!.srtUrl)
+    func rtmpStartStream() {
+        rtmpConnection.addEventListener(
+            .rtmpStatus,
+            selector: #selector(rtmpStatusHandler),
+            observer: self
+        )
+        rtmpConnection.addEventListener(
+            .ioError,
+            selector: #selector(rtmpErrorHandler),
+            observer: self
+        )
+        rtmpConnection.connect(rtmpUri())
     }
-
-    func startPublish() {
-        publishing = true
-        netStreamState = .connecting
-        UIApplication.shared.isIdleTimerDisabled = true
-        switch stream?.proto {
-        case .rtmp:
-            rtmpConnection.addEventListener(
-                .rtmpStatus,
-                selector: #selector(rtmpStatusHandler),
-                observer: self
-            )
-            rtmpConnection.addEventListener(
-                .ioError,
-                selector: #selector(rtmpErrorHandler),
-                observer: self
-            )
-            rtmpConnection.connect(rtmpUri())
-        case .srt:
-            srtConnect()
-        case nil:
-            break
-        }
-    }
-
-    func stopPublish() {
-        if !publishing {
-            return
-        }
-        publishing = false
-        UIApplication.shared.isIdleTimerDisabled = false
+    
+    func rtmpStopStream() {
         rtmpConnection.removeEventListener(
             .rtmpStatus,
             selector: #selector(rtmpStatusHandler),
@@ -655,26 +622,14 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             observer: self
         )
         rtmpConnection.close()
-        srtConnectedObservation = nil
-        srtConnection.close()
-        srtla?.stop()
-        srtla = nil
-        startDate = nil
-        updateUptime(now: Date())
     }
-
+    
     func rtmpUri() -> String {
-        guard let stream else {
-            return ""
-        }
-        return makeRtmpUri(url: stream.rtmpUrl)
+        return makeRtmpUri(url: stream!.rtmpUrl)
     }
 
     func rtmpStreamName() -> String {
-        guard let stream else {
-            return ""
-        }
-        return makeRtmpStreamName(url: stream.rtmpUrl)
+        return makeRtmpStreamName(url: stream!.rtmpUrl)
     }
 
     func toggleTorch() {
@@ -832,11 +787,55 @@ extension Model: IORecorderDelegate {
         // logger.info("model: Stream opened.")
     }
 
+    /// SRT
+    func setupSrtConnectionStateListener() {
+        srtConnectedObservation = srtConnection.observe(\.connected, options: [
+            .new,
+            .old,
+        ]) { [weak self] _, connected in
+            guard let self else {
+                return
+            }
+            DispatchQueue.main.async {
+                if connected.newValue! {
+                    logger.info("model: srt: Connected")
+                    self.startDate = Date()
+                    self.netStreamState = .connected
+                } else {
+                    logger.info("model: srt: Disconnected")
+                    self.startDate = nil
+                    self.netStreamState = .disconnected
+                }
+                self.updateUptime(now: Date())
+            }
+        }
+    }
+
+    func srtStartStream() {
+        srtTotalByteCount = 0
+        srtPreviousTotalByteCount = 0
+        srtla?.stop()
+        srtla = Srtla(delegate: self, passThrough: !stream!.srtla)
+        srtla!.start(uri: stream!.srtUrl)
+    }
+    
+    func srtStopStream() {
+        srtConnectedObservation = nil
+        srtConnection.close()
+        srtla?.stop()
+        srtla = nil
+    }
+    
     func listenerReady(port: UInt16) {
         DispatchQueue.main.async {
             self.setupSrtConnectionStateListener()
             self.srtConnection.open(URL(string: "srt://localhost:\(port)")!)
             self.srtStream?.publish()
+            if !self.srtConnection.connected {
+                self.netStreamState = .disconnected
+                self.startDate = nil
+                self.updateUptime(now: Date())
+            }
         }
     }
 
