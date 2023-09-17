@@ -8,6 +8,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Source code styling
-        run: swiftformat Mobs --maxwidth 90 --lint
+        run: make style
       - name: Linting
-        run: swiftlint lint --strict
+        run: make lint
