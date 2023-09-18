@@ -12,6 +12,8 @@ Discord: https://discord.gg/nt3UwHqbMM
 
 Github: https://github.com/eerimoq/mobs
 
+TestFlight: https://testflight.apple.com/join/PDpxEaGh
+
 This project is **not** part of `OBS`_. It's just the name that is
 inspired by it.
 
