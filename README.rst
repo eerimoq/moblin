@@ -30,7 +30,7 @@ ToDo
 - Find out why 1080p does not work.
 
 - Find out why H.265 does not work.
-  
+
 Ideas/plan
 ==========
 
@@ -54,7 +54,7 @@ Ideas/plan
 - Emoji chat.
 
 - Bigger chat text? Bigger text in general?
-  
+
 - Preview buttons.
 
 - Pause and scroll chat.
@@ -133,6 +133,22 @@ Stream from GStreamer to OBS works 100% of the time:
 .. code-block::
 
    gst-launch-1.0 -v videotestsrc ! video/x-raw, height=720, width=1280 ! videoconvert ! x264enc tune=zerolatency ! video/x-h264, profile=high ! mpegtsmux ! srtsink uri=srt://192.168.50.72:5000
+
+Twitch user to id
+=================
+
+Run on own server. Or possibly make the user login to Twitch with own
+account.
+
+.. code-block::
+
+   SECRET=<my-app-secret>
+   TOKEN=$(curl -s -X POST 'https://id.twitch.tv/oauth2/token' \
+       -H 'Content-Type: application/x-www-form-urlencoded' \
+       -d "client_id=9y23ws4svxsu2tm17ksvtp6ze3zytl&client_secret=$SECRET&grant_type=client_credentials" | jq -r '.access_token')
+   curl -s -X GET 'https://api.twitch.tv/helix/users?login=eerimoq' \
+       -H "Authorization: Bearer $TOKEN" \
+       -H 'Client-Id: 9y23ws4svxsu2tm17ksvtp6ze3zytl' | jq -r '.data[0].id'
 
 Similar apps
 ============
