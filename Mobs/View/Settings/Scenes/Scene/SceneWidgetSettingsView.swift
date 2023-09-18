@@ -52,48 +52,51 @@ struct ValueEditView: View {
     var widget: SettingsSceneWidget
     var title: String
     @State var value: String
+    var minimum: Double
+    var maximum: Double
     var onSubmit: (String) -> Void
 
     func add(offset: Double) {
-        if let value = Double(value) {
-            self.value = String(value + offset)
+        if var value = Double(value) {
+            value += offset
+            if value >= minimum && value <= maximum {
+                self.value = String(value)
+            }
         }
     }
 
     var body: some View {
-        Form {
-            PreviewSectionView(model: model, widget: widget)
-            Section {
-                HStack {
-                    TextField("", text: $value)
-                        .onSubmit {
-                            onSubmit(value.trim())
-                        }
-                    Spacer()
-                    Divider()
-                    Button(action: {
-                        add(offset: -1)
-                        onSubmit(value.trim())
-                    }, label: {
-                        Text("-")
-                            .frame(width: 40)
-                            .font(.system(size: 25))
-                    })
-                    Divider()
-                    Button(action: {
-                        add(offset: 1)
-                        onSubmit(value.trim())
-                    }, label: {
-                        Text("+")
-                            .frame(width: 40)
-                            .font(.system(size: 25))
-                    })
-                    Divider()
-                }
-                .buttonStyle(BorderlessButtonStyle())
+        HStack {
+            HStack {
+                Text(title)
+                Spacer()
             }
+            .frame(width: 70)
+            TextField("", text: $value)
+                .onSubmit {
+                    onSubmit(value.trim())
+                }
+            Divider()
+            Button(action: {
+                add(offset: -1)
+                onSubmit(value.trim())
+            }, label: {
+                Text("-")
+                    .frame(width: 40)
+                    .font(.system(size: 25))
+            })
+            Divider()
+            Button(action: {
+                add(offset: 1)
+                onSubmit(value.trim())
+            }, label: {
+                Text("+")
+                    .frame(width: 40)
+                    .font(.system(size: 25))
+            })
+            Divider()
         }
-        .navigationTitle(title)
+        .buttonStyle(BorderlessButtonStyle())
     }
 }
 
@@ -144,58 +147,45 @@ struct SceneWidgetSettingsView: View {
     var body: some View {
         Form {
             PreviewSectionView(model: model, widget: widget)
-            if isImage {
-                Section {
-                    NavigationLink(destination: ValueEditView(
-                        model: model,
-                        widget: widget,
-                        title: "X",
-                        value: String(widget.x),
-                        onSubmit: submitX
-                    )) {
-                        TextItemView(name: "X", value: String(widget.x))
-                    }
-                    NavigationLink(destination: ValueEditView(
-                        model: model,
-                        widget: widget,
-                        title: "Y",
-                        value: String(widget.y),
-                        onSubmit: submitY
-                    )) {
-                        TextItemView(name: "Y", value: String(widget.y))
-                    }
-                    NavigationLink(destination: ValueEditView(
-                        model: model,
-                        widget: widget,
-                        title: "Width",
-                        value: String(widget.width),
-                        onSubmit: submitW
-                    )) {
-                        TextItemView(name: "Width", value: String(widget.width))
-                    }
-                    NavigationLink(destination: ValueEditView(
-                        model: model,
-                        widget: widget,
-                        title: "Height",
-                        value: String(widget.height),
-                        onSubmit: submitH
-                    )) {
-                        TextItemView(name: "Height", value: String(widget.height))
-                    }
-                } footer: {
-                    Text(
-                        "Origo is in the top left corner. Leave width and/or height empty to expand to border."
-                    )
-                }
-            } else {
-                Section {
-                    TextItemView(name: "X", value: String(widget.x))
-                    TextItemView(name: "Y", value: String(widget.y))
-                    TextItemView(name: "Width", value: String(widget.width))
-                    TextItemView(name: "Height", value: String(widget.height))
-                } footer: {
-                    Text("Only full screen cameras and video effects are supported.")
-                }
+            Section {
+                ValueEditView(
+                    model: model,
+                    widget: widget,
+                    title: "X",
+                    value: String(widget.x),
+                    minimum: 0,
+                    maximum: 99,
+                    onSubmit: submitX
+                )
+                ValueEditView(
+                    model: model,
+                    widget: widget,
+                    title: "Y",
+                    value: String(widget.y),
+                    minimum: 0,
+                    maximum: 99,
+                    onSubmit: submitY
+                )
+                ValueEditView(
+                    model: model,
+                    widget: widget,
+                    title: "Width",
+                    value: String(widget.width),
+                    minimum: 1,
+                    maximum: 100,
+                    onSubmit: submitW
+                )
+                ValueEditView(
+                    model: model,
+                    widget: widget,
+                    title: "Height",
+                    value: String(widget.height),
+                    minimum: 1,
+                    maximum: 100,
+                    onSubmit: submitH
+                )
+            } footer: {
+                Text("Origo is in the top left corner.")
             }
         }
         .navigationTitle("Widget")

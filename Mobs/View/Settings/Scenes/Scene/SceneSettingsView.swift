@@ -38,6 +38,15 @@ struct SceneSettingsView: View {
         return buttons.firstIndex(of: button)!
     }
 
+    func isImage(id: UUID) -> Bool {
+        if let widget = model.findWidget(id: id) {
+            return widget.type == .image
+        } else {
+            logger.error("Unable to find widget type")
+            return false
+        }
+    }
+
     var body: some View {
         Form {
             NavigationLink(destination: NameEditView(
@@ -65,10 +74,34 @@ struct SceneSettingsView: View {
                         if let realWidget = widgets
                             .first(where: { item in item.id == widget.widgetId })
                         {
-                            NavigationLink(destination: SceneWidgetSettingsView(
-                                model: model,
-                                widget: widget
-                            )) {
+                            if isImage(id: realWidget.id) {
+                                NavigationLink(destination: SceneWidgetSettingsView(
+                                    model: model,
+                                    widget: widget
+                                )) {
+                                    Toggle(isOn: Binding(get: {
+                                        widget.enabled
+                                    }, set: { value in
+                                        widget.enabled = value
+                                        model.sceneUpdated()
+                                    })) {
+                                        HStack {
+                                            Circle()
+                                                .frame(width: 15, height: 15)
+                                                .foregroundColor(colorOf(
+                                                    model: model,
+                                                    widget: widget
+                                                ))
+                                            Image(
+                                                systemName: widgetImage(
+                                                    widget: realWidget
+                                                )
+                                            )
+                                            Text(realWidget.name)
+                                        }
+                                    }
+                                }
+                            } else {
                                 Toggle(isOn: Binding(get: {
                                     widget.enabled
                                 }, set: { value in
