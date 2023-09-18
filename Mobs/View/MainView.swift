@@ -13,7 +13,7 @@ struct MainView: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             HStack(spacing: 0) {
                 ZStack {
                     streamView

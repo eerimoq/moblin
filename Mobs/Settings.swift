@@ -14,6 +14,8 @@ enum SettingsStreamResolution: String, Codable {
     case r1280x720 = "1280x720"
 }
 
+var fpss = [60, 30, 15, 5]
+
 let bitrates: [UInt32] = [
     40_000_000,
     25_000_000,
@@ -25,6 +27,7 @@ let bitrates: [UInt32] = [
     2_000_000,
     1_500_000,
     1_000_000,
+    750_000,
     500_000,
 ]
 

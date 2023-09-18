@@ -1,7 +1,5 @@
 import SwiftUI
 
-var fpss = [60, 30, 15, 5]
-
 struct StreamVideoFpsSettingsView: View {
     @ObservedObject var model: Model
     private var stream: SettingsStream
