@@ -308,11 +308,13 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         case .r1920x1080:
             netStream.sessionPreset = .hd1920x1080
             netStream.videoSettings.videoSize = .init(width: 1920, height: 1080)
-            // netStream.videoSettings.profileLevel = kVTProfileLevel_H264_High_AutoLevel as String
+        // netStream.videoSettings.profileLevel = kVTProfileLevel_H264_High_AutoLevel as
+        // String
         case .r1280x720:
             netStream.sessionPreset = .hd1280x720
             netStream.videoSettings.videoSize = .init(width: 1280, height: 720)
-            // netStream.videoSettings.profileLevel = kVTProfileLevel_H264_Baseline_3_1 as String
+            // netStream.videoSettings.profileLevel = kVTProfileLevel_H264_Baseline_3_1 as
+            // String
         }
     }
 
@@ -705,7 +707,6 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
                 self.onConnected()
             case RTMPConnection.Code.connectFailed.rawValue,
                  RTMPConnection.Code.connectClosed.rawValue:
-                logger.info("model: rtmp disconnect")
                 self.onDisconnected()
             default:
                 break
@@ -795,12 +796,9 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
                 return
             }
             DispatchQueue.main.async {
-                logger
-                    .info("model: \(self.srtConnection.connected) \(connected.newValue!)")
                 if connected.newValue! {
                     self.onConnected()
                 } else {
-                    logger.info("model: srt disconnect")
                     self.onDisconnected()
                 }
             }
