@@ -53,6 +53,8 @@ Ideas/plan
 
 - Emoji chat.
 
+- Bigger chat text? Bigger text in general?
+  
 - Preview buttons.
 
 - Pause and scroll chat.
