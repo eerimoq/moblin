@@ -75,6 +75,8 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     var log: [String] = []
     var imageStorage = ImageStorage()
     @Published var buttonPairs: [ButtonPair] = []
+    private var reconnectTimer: Timer?
+    private var reconnectTime = 2.0
 
     var database: Database {
         settings.database
@@ -227,15 +229,9 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     func startStream() {
         isLive = true
         streaming = true
-        streamState = .connecting
+        reconnectTime = 2.0
         UIApplication.shared.isIdleTimerDisabled = true
-        switch stream.proto {
-        case .rtmp:
-            rtmpStartStream()
-        case .srt:
-            srtStartStream()
-        }
-        updateSpeed()
+        startNetStream()
     }
 
     func stopStream() {
@@ -245,6 +241,21 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         }
         streaming = false
         UIApplication.shared.isIdleTimerDisabled = false
+        stopNetStream()
+    }
+
+    func startNetStream() {
+        streamState = .connecting
+        switch stream.proto {
+        case .rtmp:
+            rtmpStartStream()
+        case .srt:
+            srtStartStream()
+        }
+        updateSpeed()
+    }
+
+    func stopNetStream() {
         rtmpStopStream()
         srtStopStream()
         streamStartDate = nil
@@ -684,20 +695,40 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         DispatchQueue.main.async {
             switch code {
             case RTMPConnection.Code.connectSuccess.rawValue:
-                logger.info("model: rtmp: Connected")
                 self.rtmpStream.publish(self.rtmpStreamName())
-                self.streamStartDate = Date()
-                self.streamState = .connected
+                self.onConnected()
             case RTMPConnection.Code.connectFailed.rawValue,
                  RTMPConnection.Code.connectClosed.rawValue:
-                logger.info("model: rtmp: Disconnected")
-                self.streamState = .disconnected
-                self.streamStartDate = nil
+                logger.info("model: rtmp disconnect")
+                self.onDisconnected()
             default:
                 break
             }
-            self.updateUptime(now: Date())
         }
+    }
+
+    func onConnected() {
+        logger.info("model: Connected")
+        reconnectTime = 2.0
+        streamStartDate = Date()
+        streamState = .connected
+        updateUptime(now: Date())
+    }
+
+    func onDisconnected() {
+        logger.info("model: Disconnected")
+        streamState = .disconnected
+        streamStartDate = nil
+        updateUptime(now: Date())
+        stopNetStream()
+        reconnectTimer?.invalidate()
+        reconnectTimer = Timer
+            .scheduledTimer(withTimeInterval: reconnectTime, repeats: false) { _ in
+                logger.info("model: Reconnecting...")
+                self.startNetStream()
+                self.reconnectTime += 1.0
+                self.reconnectTime = min(self.reconnectTime, 20)
+            }
     }
 
     // NetStreamDelegate
@@ -756,16 +787,14 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
                 return
             }
             DispatchQueue.main.async {
+                logger
+                    .info("model: \(self.srtConnection.connected) \(connected.newValue!)")
                 if connected.newValue! {
-                    logger.info("model: srt: Connected")
-                    self.streamStartDate = Date()
-                    self.streamState = .connected
+                    self.onConnected()
                 } else {
-                    logger.info("model: srt: Disconnected")
-                    self.streamStartDate = nil
-                    self.streamState = .disconnected
+                    logger.info("model: srt disconnect")
+                    self.onDisconnected()
                 }
-                self.updateUptime(now: Date())
             }
         }
     }
@@ -789,13 +818,12 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         DispatchQueue.main.async {
             self.setupSrtConnectionStateListener()
             DispatchQueue(label: "com.eerimoq.srt").async {
-                self.srtConnection.open(URL(string: "srt://localhost:\(port)")!)
-                self.srtStream?.publish()
-                DispatchQueue.main.async {
-                    if !self.srtConnection.connected {
-                        self.streamState = .disconnected
-                        self.streamStartDate = nil
-                        self.updateUptime(now: Date())
+                do {
+                    try self.srtConnection.open(URL(string: "srt://localhost:\(port)")!)
+                    self.srtStream?.publish()
+                } catch {
+                    DispatchQueue.main.async {
+                        self.onDisconnected()
                     }
                 }
             }
