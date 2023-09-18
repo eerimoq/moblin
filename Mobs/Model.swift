@@ -206,8 +206,8 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
                 image: image,
                 x: widget.x,
                 y: widget.y,
-                width: widget.width ?? 100 - widget.x,
-                height: widget.height ?? 100 - widget.y
+                width: widget.width,
+                height: widget.height
             )
         }
     }

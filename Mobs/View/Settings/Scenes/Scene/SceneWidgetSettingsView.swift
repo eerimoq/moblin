@@ -1,52 +1,5 @@
 import SwiftUI
 
-func colorOf(model: Model, widget: SettingsSceneWidget) -> Color {
-    guard let index = model.database.widgets
-        .firstIndex(where: { item in item.id == widget.widgetId })
-    else {
-        return .blue
-    }
-    return widgetColors[index % widgetColors.count]
-}
-
-func drawWidget(model: Model, context: GraphicsContext, widget: SettingsSceneWidget) {
-    let stroke = 4.0
-    let xScale = (1920.0 / 6 - stroke) / 100
-    let yScale = (1080.0 / 6 - stroke) / 100
-    let x = CGFloat(widget.x) * xScale + stroke / 2
-    let y = CGFloat(widget.y) * yScale + stroke / 2
-    let width = CGFloat(widget.width) * xScale
-    let height = CGFloat(widget.height) * yScale
-    let origin = CGPoint(x: x, y: y)
-    let size = CGSize(width: width, height: height)
-    context.stroke(
-        Path(roundedRect: CGRect(origin: origin, size: size), cornerRadius: 2.0),
-        with: .color(colorOf(model: model, widget: widget)),
-        lineWidth: stroke
-    )
-}
-
-struct PreviewSectionView: View {
-    @ObservedObject var model: Model
-    var widget: SettingsSceneWidget
-
-    var body: some View {
-        Section {
-            HStack {
-                Spacer()
-                Canvas { context, _ in
-                    drawWidget(model: model, context: context, widget: widget)
-                }
-                .frame(width: 1920 / 6, height: 1080 / 6)
-                .border(.secondary)
-                Spacer()
-            }
-        } header: {
-            Text("Preview")
-        }
-    }
-}
-
 struct ValueEditView: View {
     @ObservedObject var model: Model
     var widget: SettingsSceneWidget
@@ -145,49 +98,43 @@ struct SceneWidgetSettingsView: View {
     }
 
     var body: some View {
-        Form {
-            PreviewSectionView(model: model, widget: widget)
-            Section {
-                ValueEditView(
-                    model: model,
-                    widget: widget,
-                    title: "X",
-                    value: String(widget.x),
-                    minimum: 0,
-                    maximum: 99,
-                    onSubmit: submitX
-                )
-                ValueEditView(
-                    model: model,
-                    widget: widget,
-                    title: "Y",
-                    value: String(widget.y),
-                    minimum: 0,
-                    maximum: 99,
-                    onSubmit: submitY
-                )
-                ValueEditView(
-                    model: model,
-                    widget: widget,
-                    title: "Width",
-                    value: String(widget.width),
-                    minimum: 1,
-                    maximum: 100,
-                    onSubmit: submitW
-                )
-                ValueEditView(
-                    model: model,
-                    widget: widget,
-                    title: "Height",
-                    value: String(widget.height),
-                    minimum: 1,
-                    maximum: 100,
-                    onSubmit: submitH
-                )
-            } footer: {
-                Text("Origo is in the top left corner.")
-            }
+        Section {
+            ValueEditView(
+                model: model,
+                widget: widget,
+                title: "X",
+                value: String(widget.x),
+                minimum: 0,
+                maximum: 99,
+                onSubmit: submitX
+            )
+            ValueEditView(
+                model: model,
+                widget: widget,
+                title: "Y",
+                value: String(widget.y),
+                minimum: 0,
+                maximum: 99,
+                onSubmit: submitY
+            )
+            ValueEditView(
+                model: model,
+                widget: widget,
+                title: "Width",
+                value: String(widget.width),
+                minimum: 1,
+                maximum: 100,
+                onSubmit: submitW
+            )
+            ValueEditView(
+                model: model,
+                widget: widget,
+                title: "Height",
+                value: String(widget.height),
+                minimum: 1,
+                maximum: 100,
+                onSubmit: submitH
+            )
         }
-        .navigationTitle("Widget")
     }
 }

@@ -8,6 +8,7 @@ struct SceneSettingsView: View {
     @State private var showingAddButton = false
     @State private var selectedWidget = 0
     @State private var selectedButton = 0
+    @State private var expandedWidget: SettingsSceneWidget?
     private var scene: SettingsScene
 
     init(scene: SettingsScene, model: Model) {
@@ -28,9 +29,31 @@ struct SceneSettingsView: View {
         model.store()
     }
 
+    func colorOf(widget: SettingsSceneWidget) -> Color {
+        guard let index = model.database.widgets
+            .firstIndex(where: { item in item.id == widget.widgetId })
+        else {
+            return .blue
+        }
+        return widgetColors[index % widgetColors.count]
+    }
+
     func drawWidgets(context: GraphicsContext) {
         for widget in scene.widgets.filter({ widget in widget.enabled }) {
-            drawWidget(model: model, context: context, widget: widget)
+            let stroke = 4.0
+            let xScale = (1920.0 / 6 - stroke) / 100
+            let yScale = (1080.0 / 6 - stroke) / 100
+            let x = CGFloat(widget.x) * xScale + stroke / 2
+            let y = CGFloat(widget.y) * yScale + stroke / 2
+            let width = CGFloat(widget.width) * xScale
+            let height = CGFloat(widget.height) * yScale
+            let origin = CGPoint(x: x, y: y)
+            let size = CGSize(width: width, height: height)
+            context.stroke(
+                Path(roundedRect: CGRect(origin: origin, size: size), cornerRadius: 2.0),
+                with: .color(colorOf(widget: widget)),
+                lineWidth: stroke
+            )
         }
     }
 
@@ -74,34 +97,13 @@ struct SceneSettingsView: View {
                         if let realWidget = widgets
                             .first(where: { item in item.id == widget.widgetId })
                         {
-                            if isImage(id: realWidget.id) {
-                                NavigationLink(destination: SceneWidgetSettingsView(
-                                    model: model,
-                                    widget: widget
-                                )) {
-                                    Toggle(isOn: Binding(get: {
-                                        widget.enabled
-                                    }, set: { value in
-                                        widget.enabled = value
-                                        model.sceneUpdated()
-                                    })) {
-                                        HStack {
-                                            Circle()
-                                                .frame(width: 15, height: 15)
-                                                .foregroundColor(colorOf(
-                                                    model: model,
-                                                    widget: widget
-                                                ))
-                                            Image(
-                                                systemName: widgetImage(
-                                                    widget: realWidget
-                                                )
-                                            )
-                                            Text(realWidget.name)
-                                        }
-                                    }
+                            Button(action: {
+                                if expandedWidget !== widget {
+                                    expandedWidget = widget
+                                } else {
+                                    expandedWidget = nil
                                 }
-                            } else {
+                            }, label: {
                                 Toggle(isOn: Binding(get: {
                                     widget.enabled
                                 }, set: { value in
@@ -111,14 +113,19 @@ struct SceneSettingsView: View {
                                     HStack {
                                         Circle()
                                             .frame(width: 15, height: 15)
-                                            .foregroundColor(colorOf(
-                                                model: model,
-                                                widget: widget
-                                            ))
-                                        Image(systemName: widgetImage(widget: realWidget))
+                                            .foregroundColor(colorOf(widget: widget))
+                                        Image(
+                                            systemName: widgetImage(
+                                                widget: realWidget
+                                            )
+                                        )
                                         Text(realWidget.name)
                                     }
                                 }
+                            })
+                            .foregroundColor(.primary)
+                            if expandedWidget === widget && isImage(id: realWidget.id) {
+                                SceneWidgetSettingsView(model: model, widget: widget)
                             }
                         }
                     }
@@ -167,7 +174,7 @@ struct SceneSettingsView: View {
                                         ]
                                         .id)
                                     )
-                                model.sceneUpdated()
+                                model.sceneUpdated(imageEffectChanged: true)
                                 showingAddWidget = false
                             }, label: {
                                 Text("Done")
