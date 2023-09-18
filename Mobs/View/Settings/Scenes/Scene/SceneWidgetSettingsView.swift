@@ -1,8 +1,6 @@
 import SwiftUI
 
 struct ValueEditView: View {
-    @ObservedObject var model: Model
-    var widget: SettingsSceneWidget
     var title: String
     @State var value: String
     var minimum: Double
@@ -100,8 +98,6 @@ struct SceneWidgetSettingsView: View {
     var body: some View {
         Section {
             ValueEditView(
-                model: model,
-                widget: widget,
                 title: "X",
                 value: String(widget.x),
                 minimum: 0,
@@ -109,8 +105,6 @@ struct SceneWidgetSettingsView: View {
                 onSubmit: submitX
             )
             ValueEditView(
-                model: model,
-                widget: widget,
                 title: "Y",
                 value: String(widget.y),
                 minimum: 0,
@@ -118,8 +112,6 @@ struct SceneWidgetSettingsView: View {
                 onSubmit: submitY
             )
             ValueEditView(
-                model: model,
-                widget: widget,
                 title: "Width",
                 value: String(widget.width),
                 minimum: 1,
@@ -127,8 +119,6 @@ struct SceneWidgetSettingsView: View {
                 onSubmit: submitW
             )
             ValueEditView(
-                model: model,
-                widget: widget,
                 title: "Height",
                 value: String(widget.height),
                 minimum: 1,
