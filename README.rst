@@ -21,8 +21,14 @@ ToDo
 - Make SRT work. Unknown why is fails to send video so often. Audio
   seems to work?
 
+- Sometimes the screen freezes after settings updates. Unknown why.
+
+- Receonnect, or change button text from "Stop" to "Go live".
+
 Ideas/plan
 ==========
+
+- Big F on screen when disconnected.
 
 - Implement `SRTLA`_.
 
@@ -33,6 +39,8 @@ Ideas/plan
 - Audio level indicator.
 
 - Audio only when bad connection.
+
+- Adaptive bitrate, but based on what?
 
 - Notifications. Both visually and with sound. Sound most improtant
   probably.
