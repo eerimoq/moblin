@@ -227,6 +227,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func startStream() {
+        logger.info("model: Start stream")
         isLive = true
         streaming = true
         reconnectTime = 2.0
@@ -239,6 +240,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         if !streaming {
             return
         }
+        logger.info("model: Stop stream")
         streaming = false
         UIApplication.shared.isIdleTimerDisabled = false
         stopNetStream()
@@ -256,6 +258,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func stopNetStream() {
+        reconnectTimer?.invalidate()
         rtmpStopStream()
         srtStopStream()
         streamStartDate = nil
@@ -278,6 +281,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         store()
         if stream.enabled {
             reloadStream()
+            sceneUpdated()
         }
     }
 
@@ -304,9 +308,11 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         case .r1920x1080:
             netStream.sessionPreset = .hd1920x1080
             netStream.videoSettings.videoSize = .init(width: 1920, height: 1080)
+            // netStream.videoSettings.profileLevel = kVTProfileLevel_H264_High_AutoLevel as String
         case .r1280x720:
             netStream.sessionPreset = .hd1280x720
             netStream.videoSettings.videoSize = .init(width: 1280, height: 720)
+            // netStream.videoSettings.profileLevel = kVTProfileLevel_H264_Baseline_3_1 as String
         }
     }
 
@@ -717,11 +723,13 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
 
     func onDisconnected() {
         logger.info("model: Disconnected")
+        guard streaming else {
+            return
+        }
         streamState = .disconnected
         streamStartDate = nil
         updateUptime(now: Date())
         stopNetStream()
-        reconnectTimer?.invalidate()
         reconnectTimer = Timer
             .scheduledTimer(withTimeInterval: reconnectTime, repeats: false) { _ in
                 logger.info("model: Reconnecting...")
