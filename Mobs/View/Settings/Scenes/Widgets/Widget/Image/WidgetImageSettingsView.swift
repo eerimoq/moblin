@@ -1,6 +1,10 @@
 import PhotosUI
 import SwiftUI
 
+func formatInt(_ value: CGFloat) -> String {
+    return String(format: "%d", Int(value))
+}
+
 struct WidgetImageSettingsView: View {
     @ObservedObject var model: Model
     var widget: SettingsWidget
@@ -8,13 +12,21 @@ struct WidgetImageSettingsView: View {
 
     var body: some View {
         Section(widget.type.rawValue) {
-            PhotosPicker(selection: $selectedImageItem, matching: .images) {
-                if let data = model.imageStorage.tryRead(id: widget.id) {
-                    Image(uiImage: UIImage(data: data)!)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 1920 / 6, height: 1080 / 6)
+            if let data = model.imageStorage.tryRead(id: widget.id) {
+                let image = UIImage(data: data)!
+                    HStack {
+                        Spacer()
+                        Image(uiImage: image)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 1920 / 6, height: 1080 / 6)
+                        Spacer()
+                    }
+                HStack {
+                    TextItemView(name: "Dimensions", value: "\(formatInt(image.size.width))x\(formatInt(image.size.height))")
                 }
+            }
+            PhotosPicker(selection: $selectedImageItem, matching: .images) {
                 HStack {
                     Spacer()
                     Text("Select image")

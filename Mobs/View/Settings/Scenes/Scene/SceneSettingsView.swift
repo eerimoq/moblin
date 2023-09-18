@@ -68,7 +68,7 @@ struct SceneSettingsView: View {
             )) {
                 TextItemView(name: "Name", value: scene.name)
             }
-            Section("Preview") {
+            Section {
                 HStack {
                     Spacer()
                     Canvas { context, _ in
@@ -78,6 +78,10 @@ struct SceneSettingsView: View {
                     .border(.black)
                     Spacer()
                 }
+            } header: {
+                Text("Preview")
+            } footer: {
+                Text("Origo is in the top left corner.")
             }
             Section {
                 List {
