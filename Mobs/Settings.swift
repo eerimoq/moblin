@@ -304,48 +304,23 @@ func addDefaultWidgets(database: Database) {
 }
 
 func createSceneWidgetMainCamera(database: Database) -> SettingsSceneWidget {
-    let widget = SettingsSceneWidget(widgetId: database.widgets[0].id)
-    widget.x = 0
-    widget.y = 0
-    widget.width = 100
-    widget.height = 100
-    return widget
+    return SettingsSceneWidget(widgetId: database.widgets[0].id)
 }
 
 func createSceneWidgetFrontCameraFull(database: Database) -> SettingsSceneWidget {
-    let widget = SettingsSceneWidget(widgetId: database.widgets[1].id)
-    widget.x = 0
-    widget.y = 0
-    widget.width = 100
-    widget.height = 100
-    return widget
+    return SettingsSceneWidget(widgetId: database.widgets[1].id)
 }
 
 func createSceneWidgetVideoEffectMovie(database: Database) -> SettingsSceneWidget {
-    let widget = SettingsSceneWidget(widgetId: database.widgets[2].id)
-    widget.x = 0
-    widget.y = 0
-    widget.width = 100
-    widget.height = 100
-    return widget
+    return SettingsSceneWidget(widgetId: database.widgets[2].id)
 }
 
 func createSceneWidgetVideoEffectGrayScale(database: Database) -> SettingsSceneWidget {
-    let widget = SettingsSceneWidget(widgetId: database.widgets[3].id)
-    widget.x = 0
-    widget.y = 0
-    widget.width = 100
-    widget.height = 100
-    return widget
+    return SettingsSceneWidget(widgetId: database.widgets[3].id)
 }
 
 func createSceneWidgetVideoEffectSeipa(database: Database) -> SettingsSceneWidget {
-    let widget = SettingsSceneWidget(widgetId: database.widgets[4].id)
-    widget.x = 0
-    widget.y = 0
-    widget.width = 100
-    widget.height = 100
-    return widget
+    return SettingsSceneWidget(widgetId: database.widgets[4].id)
 }
 
 func addDefaultScenes(database: Database) {

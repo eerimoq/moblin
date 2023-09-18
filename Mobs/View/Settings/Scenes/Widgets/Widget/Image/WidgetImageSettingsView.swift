@@ -10,10 +10,19 @@ struct WidgetImageSettingsView: View {
     var widget: SettingsWidget
     @State var selectedImageItem: PhotosPickerItem?
 
+    func loadImage() -> UIImage? {
+        if let data = model.imageStorage.tryRead(id: widget.id) {
+            return UIImage(data: data)!
+        } else {
+            return nil
+        }
+    }
+
     var body: some View {
         Section(widget.type.rawValue) {
-            if let data = model.imageStorage.tryRead(id: widget.id) {
-                let image = UIImage(data: data)!
+            let image = loadImage()
+            PhotosPicker(selection: $selectedImageItem, matching: .images) {
+                if let image {
                     HStack {
                         Spacer()
                         Image(uiImage: image)
@@ -22,15 +31,12 @@ struct WidgetImageSettingsView: View {
                             .frame(width: 1920 / 6, height: 1080 / 6)
                         Spacer()
                     }
-                HStack {
-                    TextItemView(name: "Dimensions", value: "\(formatInt(image.size.width))x\(formatInt(image.size.height))")
-                }
-            }
-            PhotosPicker(selection: $selectedImageItem, matching: .images) {
-                HStack {
-                    Spacer()
-                    Text("Select image")
-                    Spacer()
+                } else {
+                    HStack {
+                        Spacer()
+                        Text("Select image")
+                        Spacer()
+                    }
                 }
             }
             .onChange(of: selectedImageItem) { imageItem in
@@ -46,6 +52,14 @@ struct WidgetImageSettingsView: View {
                     case let .failure(error):
                         logger.error("widget: image error: \(error)")
                     }
+                }
+            }
+            if let image {
+                HStack {
+                    TextItemView(
+                        name: "Dimensions",
+                        value: "\(formatInt(image.size.width))x\(formatInt(image.size.height))"
+                    )
                 }
             }
         }

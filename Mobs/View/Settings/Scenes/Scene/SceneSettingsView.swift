@@ -28,31 +28,9 @@ struct SceneSettingsView: View {
         model.store()
     }
 
-    func colorOf(widget: SettingsSceneWidget) -> Color {
-        guard let index = model.database.widgets
-            .firstIndex(where: { item in item.id == widget.widgetId })
-        else {
-            return .blue
-        }
-        return widgetColors[index % widgetColors.count]
-    }
-
     func drawWidgets(context: GraphicsContext) {
-        let stroke = 4.0
-        let xScale = (1920.0 / 6 - stroke) / 100
-        let yScale = (1080.0 / 6 - stroke) / 100
-        for widget in scene.widgets {
-            let x = CGFloat(widget.x) * xScale + stroke / 2
-            let y = CGFloat(widget.y) * yScale + stroke / 2
-            let width = CGFloat(widget.width) * xScale
-            let height = CGFloat(widget.height) * yScale
-            let origin = CGPoint(x: x, y: y)
-            let size = CGSize(width: width, height: height)
-            context.stroke(
-                Path(roundedRect: CGRect(origin: origin, size: size), cornerRadius: 2.0),
-                with: .color(colorOf(widget: widget)),
-                lineWidth: stroke
-            )
+        for widget in scene.widgets.filter({ widget in widget.enabled }) {
+            drawWidget(model: model, context: context, widget: widget)
         }
     }
 
@@ -75,13 +53,11 @@ struct SceneSettingsView: View {
                         drawWidgets(context: context)
                     }
                     .frame(width: 1920 / 6, height: 1080 / 6)
-                    .border(.black)
+                    .border(.secondary)
                     Spacer()
                 }
             } header: {
                 Text("Preview")
-            } footer: {
-                Text("Origo is in the top left corner.")
             }
             Section {
                 List {
@@ -102,7 +78,10 @@ struct SceneSettingsView: View {
                                     HStack {
                                         Circle()
                                             .frame(width: 15, height: 15)
-                                            .foregroundColor(colorOf(widget: widget))
+                                            .foregroundColor(colorOf(
+                                                model: model,
+                                                widget: widget
+                                            ))
                                         Image(systemName: widgetImage(widget: realWidget))
                                         Text(realWidget.name)
                                     }
