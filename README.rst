@@ -23,12 +23,6 @@ ToDo
 - Make SRT work. Unknown why is fails to send video so often. Audio
   seems to work?
 
-- Sometimes the screen freezes after settings updates. Unknown why.
-
-- Reconnect, or change button text from "Stop" to "Go live".
-
-- Find out why 1080p does not work.
-
 - Find out why H.265 does not work.
 
 Ideas/plan

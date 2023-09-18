@@ -308,13 +308,9 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         case .r1920x1080:
             netStream.sessionPreset = .hd1920x1080
             netStream.videoSettings.videoSize = .init(width: 1920, height: 1080)
-        // netStream.videoSettings.profileLevel = kVTProfileLevel_H264_High_AutoLevel as
-        // String
         case .r1280x720:
             netStream.sessionPreset = .hd1280x720
             netStream.videoSettings.videoSize = .init(width: 1280, height: 720)
-            // netStream.videoSettings.profileLevel = kVTProfileLevel_H264_Baseline_3_1 as
-            // String
         }
     }
 
@@ -330,7 +326,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         switch stream.codec {
         case .h264avc:
             netStream.videoSettings
-                .profileLevel = kVTProfileLevel_H264_Baseline_3_1 as String
+                .profileLevel = kVTProfileLevel_H264_High_AutoLevel as String
         case .h265hevc:
             netStream.videoSettings
                 .profileLevel = kVTProfileLevel_HEVC_Main_AutoLevel as String
