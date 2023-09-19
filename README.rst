@@ -2,7 +2,7 @@ MOBS
 ====
 
 An iOS app for IRL streaming. Mainly targetting `Twitch`_, but can
-stream to any RTMP endpoint.
+stream to any RTMP or SRT endpoint.
 
 Not yet in `App Store`_, but hopefully soonish!
 
@@ -19,8 +19,6 @@ inspired by it.
 
 ToDo
 ====
-
-- Make SRT work with OBS. Video works sometimes. Audio always works.
 
 - Find out why H.265 does not work.
 
@@ -108,30 +106,6 @@ Resources
 - https://github.com/matthew1000/gstreamer-cheat-sheet/blob/master/srt.md
 
   GStreamer SRT stuff.
-
-SRT debug
-=========
-
-Stream from MOBS to OBS fails most of the time. Audio is fine
-though. Just video is bad somehow.
-
-Stream from MOBS to GStreamer works 100% of the time.
-
-.. code-block::
-
-   gst-launch-1.0 -v srtsrc uri="srt://:5000?mode=listener" ! decodebin ! autovideosink
-
-Stream from MOBS to FFmpeg works 100% of the time.
-
-.. code-block::
-
-   ffmpeg -i "srt://:5000/?mode=listener" -c copy video.mkv
-
-Stream from GStreamer to OBS works 100% of the time:
-
-.. code-block::
-
-   gst-launch-1.0 -v videotestsrc ! video/x-raw, height=720, width=1280 ! videoconvert ! x264enc tune=zerolatency ! video/x-h264, profile=high ! mpegtsmux ! srtsink uri=srt://192.168.50.72:5000
 
 Twitch user to id
 =================
