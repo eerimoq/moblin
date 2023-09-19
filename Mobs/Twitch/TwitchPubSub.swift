@@ -59,7 +59,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     private var channelId: String
     private var keepAliveTimer: Timer?
     private var reconnectTimer: Timer?
-    private var reconnectTime = 0.0
+    private var reconnectTime = firstReconnectTime
     private var running = true
 
     init(model: Model, channelId: String) {
@@ -69,7 +69,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     }
 
     func start() {
-        reconnectTime = 0.0
+        reconnectTime = firstReconnectTime
         setupWebsocket()
     }
 
@@ -147,10 +147,9 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         reconnectTimer?.invalidate()
         reconnectTimer = Timer
             .scheduledTimer(withTimeInterval: reconnectTime, repeats: false) { _ in
-                logger.warning("twitch: pubsub: \(self.channelId): Reconnecting...")
+                logger.warning("twitch: pubsub: \(self.channelId): Reconnecting")
                 self.setupWebsocket()
-                self.reconnectTime += 0.5
-                self.reconnectTime = min(self.reconnectTime, 20)
+                self.reconnectTime = nextReconnectTime(self.reconnectTime)
             }
     }
 
@@ -205,7 +204,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         keepAliveTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { _ in
             logger
                 .warning(
-                    "twitch: pubsub: \(self.channelId): Timeout waiting for pong. Reconnecting..."
+                    "twitch: pubsub: \(self.channelId): Timeout waiting for pong. Reconnecting"
                 )
             self.webSocket.cancel()
             self.setupWebsocket()
@@ -218,7 +217,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         didOpenWithProtocol _: String?
     ) {
         logger.info("twitch: pubsub: \(channelId): Connected to \(url)")
-        reconnectTime = 0.0
+        reconnectTime = firstReconnectTime
         sendPing()
         sendMessage(
             message: "{\"type\":\"LISTEN\",\"data\":{\"topics\":[\"video-playback-by-id.\(channelId)\"]}}"

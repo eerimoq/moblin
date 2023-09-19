@@ -24,7 +24,7 @@ final class TwitchChatMobs {
 
     func start(channelName: String) {
         task = Task.init {
-            var reconnectTime: UInt64 = 0
+            var reconnectTime = firstReconnectTime
             logger.info("twitch: chat: \(channelName): Connecting")
             while true {
                 twitchChat = TwitchChat(
@@ -35,7 +35,7 @@ final class TwitchChatMobs {
                 do {
                     connected = true
                     for try await message in self.twitchChat.messages {
-                        reconnectTime = 0
+                        reconnectTime = firstReconnectTime
                         await MainActor.run {
                             if self.model.twitchChatPosts.count > 6 {
                                 self.model.twitchChatPosts.removeFirst()
@@ -55,9 +55,8 @@ final class TwitchChatMobs {
                 }
                 connected = false
                 logger.info("twitch: chat: \(channelName): Disconnected")
-                try await Task.sleep(nanoseconds: reconnectTime)
-                reconnectTime += 500_000_000
-                reconnectTime = min(reconnectTime, 20_000_000_000)
+                try await Task.sleep(nanoseconds: UInt64(reconnectTime * 1_000_000_000))
+                reconnectTime = nextReconnectTime(reconnectTime)
                 logger.info("twitch: chat: \(channelName): Reconnecting")
             }
         }

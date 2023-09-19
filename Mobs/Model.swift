@@ -76,7 +76,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     var imageStorage = ImageStorage()
     @Published var buttonPairs: [ButtonPair] = []
     private var reconnectTimer: Timer?
-    private var reconnectTime = 2.0
+    private var reconnectTime = firstReconnectTime
 
     var database: Database {
         settings.database
@@ -86,7 +86,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         for stream in database.streams where stream.enabled {
             return stream
         }
-        fatalError("model: There is no stream!")
+        fatalError("stream: There is no stream!")
     }
 
     var enabledScenes: [SettingsScene] {
@@ -227,10 +227,12 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func startStream() {
-        logger.info("model: Start stream")
+        logger.info("stream: Start")
+        logger.info("stream: \(netStream.videoSettings)")
+        logger.info("stream: \(netStream.audioSettings)")
         isLive = true
         streaming = true
-        reconnectTime = 2.0
+        reconnectTime = firstReconnectTime
         UIApplication.shared.isIdleTimerDisabled = true
         startNetStream()
     }
@@ -240,7 +242,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         if !streaming {
             return
         }
-        logger.info("model: Stop stream")
+        logger.info("stream: Stop")
         streaming = false
         UIApplication.shared.isIdleTimerDisabled = false
         stopNetStream()
@@ -311,6 +313,15 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         case .r1280x720:
             netStream.sessionPreset = .hd1280x720
             netStream.videoSettings.videoSize = .init(width: 1280, height: 720)
+        case .r854x480:
+            netStream.sessionPreset = .hd1280x720
+            netStream.videoSettings.videoSize = .init(width: 854, height: 480)
+        case .r640x360:
+            netStream.sessionPreset = .hd1280x720
+            netStream.videoSettings.videoSize = .init(width: 640, height: 360)
+        case .r426x240:
+            netStream.sessionPreset = .hd1280x720
+            netStream.videoSettings.videoSize = .init(width: 426, height: 240)
         }
     }
 
@@ -434,7 +445,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
 
     func sceneUpdatedOn(scene: SettingsScene) {
         netStream.attachAudio(AVCaptureDevice.default(for: .audio)) { error in
-            logger.error("model: Attach audio error: \(error)")
+            logger.error("stream: Attach audio error: \(error)")
         }
         for sceneWidget in scene.widgets.filter({ widget in widget.enabled }) {
             guard let widget = findWidget(id: sceneWidget.widgetId) else {
@@ -591,7 +602,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             position: position
         )
         netStream.attachCamera(device) { error in
-            logger.error("model: Attach camera error: \(error)")
+            logger.error("stream: Attach camera error: \(error)")
         }
         zoomLevel = Double(device?.videoZoomFactor ?? 1.0)
         setCameraZoomLevel(level: zoomLevel)
@@ -711,15 +722,15 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func onConnected() {
-        logger.info("model: Connected")
-        reconnectTime = 2.0
+        logger.info("stream: Connected")
+        reconnectTime = firstReconnectTime
         streamStartDate = Date()
         streamState = .connected
         updateUptime(now: Date())
     }
 
     func onDisconnected() {
-        logger.info("model: Disconnected")
+        logger.info("stream: Disconnected")
         guard streaming else {
             return
         }
@@ -729,10 +740,9 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         stopNetStream()
         reconnectTimer = Timer
             .scheduledTimer(withTimeInterval: reconnectTime, repeats: false) { _ in
-                logger.info("model: Reconnecting...")
+                logger.info("stream: Reconnecting")
                 self.startNetStream()
-                self.reconnectTime += 1.0
-                self.reconnectTime = min(self.reconnectTime, 20)
+                self.reconnectTime = nextReconnectTime(self.reconnectTime)
             }
     }
 
@@ -742,11 +752,11 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         didOutput _: AVAudioBuffer,
         presentationTimeStamp _: CMTime
     ) {
-        logger.debug("model: Playback an audio packet incoming.")
+        logger.debug("stream: Playback an audio packet incoming.")
     }
 
     func stream(_: NetStream, didOutput _: CMSampleBuffer) {
-        logger.debug("model: Playback a video packet incoming.")
+        logger.debug("stream: Playback a video packet incoming.")
     }
 
     #if os(iOS)
@@ -755,31 +765,31 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             sessionWasInterrupted _: AVCaptureSession,
             reason _: AVCaptureSession.InterruptionReason?
         ) {
-            logger.info("model: Session was interrupted.")
+            logger.info("stream: Session was interrupted.")
         }
 
         func stream(_: NetStream, sessionInterruptionEnded _: AVCaptureSession) {
-            logger.info("model: Session interrupted ended.")
+            logger.info("stream: Session interrupted ended.")
         }
     #endif
 
     func stream(_: NetStream, videoCodecErrorOccurred error: VideoCodec.Error) {
-        logger.error("model: Video codec error: \(error)")
+        logger.error("stream: Video codec error: \(error)")
     }
 
     func stream(_: NetStream,
                 audioCodecErrorOccurred error: HaishinKit.AudioCodec.Error)
     {
-        logger.error("model: Audio codec error: \(error)")
+        logger.error("stream: Audio codec error: \(error)")
     }
 
     func streamWillDropFrame(_: NetStream) -> Bool {
-        // logger.warning("model: Drop video frame.")
+        // logger.warning("stream: Drop video frame.")
         return false
     }
 
     func streamDidOpen(_: NetStream) {
-        // logger.info("model: Stream opened.")
+        // logger.info("stream: Stream opened.")
     }
 
     /// SRT
@@ -833,7 +843,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func srtlaError() {
-        logger.info("model: srtla: listener error")
+        logger.info("stream: srtla: listener error")
     }
 
     func srtlaPacketSent(byteCount: Int) {

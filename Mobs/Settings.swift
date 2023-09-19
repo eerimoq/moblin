@@ -7,11 +7,14 @@ enum SettingsStreamCodec: String, Codable {
     case h265hevc = "H.265/HEVC"
 }
 
-var resolutions = ["1920x1080", "1280x720"]
+var resolutions = ["1920x1080", "1280x720", "854x480", "640x360", "426x240"]
 
 enum SettingsStreamResolution: String, Codable {
     case r1920x1080 = "1920x1080"
     case r1280x720 = "1280x720"
+    case r854x480 = "854x480"
+    case r640x360 = "640x360"
+    case r426x240 = "426x240"
 }
 
 var fpss = [60, 30, 15, 5]

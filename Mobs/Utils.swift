@@ -1,6 +1,12 @@
 import Foundation
 import UIKit
 
+let firstReconnectTime = 1.0
+
+func nextReconnectTime(_ reconnectTime: Double) -> Double {
+    return min(reconnectTime + 1, 10)
+}
+
 extension String: Error {}
 
 extension String {
