@@ -121,6 +121,12 @@ Stream from MOBS to GStreamer works 100% of the time.
 
    gst-launch-1.0 -v srtsrc uri="srt://:5000?mode=listener" ! decodebin ! autovideosink
 
+Stream from MOBS to FFmpeg works 100% of the time.
+
+.. code-block::
+
+   ffmpeg -i "srt://:5000/?mode=listener" -c copy video.mkv
+
 Stream from GStreamer to OBS works 100% of the time:
 
 .. code-block::
