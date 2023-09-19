@@ -20,8 +20,7 @@ inspired by it.
 ToDo
 ====
 
-- Make SRT work. Unknown why is fails to send video so often. Audio
-  seems to work?
+- Make SRT work with OBS. Video works sometimes. Audio always works.
 
 - Find out why H.265 does not work.
 
