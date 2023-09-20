@@ -23,7 +23,7 @@ ToDo
 - Find out why H.265 does not work.
 
 - Fix crashes =)
-  
+
 Ideas/plan
 ==========
 
