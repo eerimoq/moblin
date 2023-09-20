@@ -1,8 +1,5 @@
 import SwiftUI
 
-var sensitiveUrlFooter =
-    "Do not share your URL with anyone or they can hijack your channel!"
-
 struct SensitiveUrlEditView: View {
     @State var value: String
     var onSubmit: (String) -> Void
@@ -36,7 +33,7 @@ struct SensitiveUrlEditView: View {
                     Spacer()
                 }
             } footer: {
-                Text(sensitiveUrlFooter)
+                Text("Do not share your URL with anyone or they can hijack your channel!")
             }
         }
         .navigationTitle("URL")
