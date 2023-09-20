@@ -140,4 +140,62 @@ class Srtla {
         }
         return bestConnection
     }
+
+    // SRT packet types
+    //
+    // ack         0x8002
+    // nak         0x8003
+
+    // SRTLA packet types
+    //
+    // keepalive   0x9000
+    // ack         0x9100
+    // reg_1       0x9200
+    // reg_2       0x9201
+    // reg_3       0x9202
+    // reg_err     0x9210
+    // reg_ngp     0x9211
+    // reg_nak     0x9212
+
+    // full_id_length             256
+    // connection_timeout_seconds   4
+
+    // Send once to create a connection group. Contains our (unique)
+    // id.
+    func sendSrtlaReg1() {}
+
+    // Send once for each connection to register it.
+    func sendSrtlaReg2() {}
+
+    // Handle SRT Ack.
+    func handleSrtAck() {}
+
+    // Handle SRT Nak.
+    func handleSrtNak() {}
+
+    // Handle SRTLA keep alive.
+    func handleSrtlaKeepalive() {}
+
+    // Handle SRTLA ack.
+    func handleSrtlaAck() {}
+
+    // Handle SRTLA register 2. Received as response to
+    // reg_1. Contains full id (our id + server id).
+    func handleSrtlaReg2() {}
+
+    // Handle SRTLA register 3. Received as response to reg_2. A
+    // connection has been established.
+    func handleSrtlaReg3() {}
+
+    // Handle SRTLA register error.
+    func handleSrtlaRegErr() {}
+
+    // Handle SRTLA register no group.
+    func handleSrtlaRegNgp() {}
+
+    // Handle SRTLA register nak.
+    func handleSrtlaRegNak() {}
+
+    // Handle SRT and SRTLA packet.
+    func handleSrtAndSrtla() {}
 }
