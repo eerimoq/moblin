@@ -57,6 +57,7 @@ class Srtla {
     private var remoteConnections: [RemoteConnection] = []
     private var localListener: LocalListener
     private weak var delegate: (any SrtlaDelegate)?
+    private var currentConnection: RemoteConnection?
 
     init(delegate: SrtlaDelegate, passThrough: Bool) {
         self.delegate = delegate
@@ -99,7 +100,7 @@ class Srtla {
     func handleLocalPacket(packet: Data) {
         // logPacket(packet: packet, direction: "local")
         guard let connection = findBestRemoteConnection() else {
-            logger.warning("srtla: local: No connection found. Dropping packet.")
+            logger.warning("srtla: local: No remote connection found. Dropping packet.")
             return
         }
         connection.sendPacket(packet: packet)
@@ -112,12 +113,28 @@ class Srtla {
         delegate?.srtlaPacketReceived(byteCount: packet.count)
     }
 
+    func type(connection: RemoteConnection?) -> String {
+        return connection?.typeString ?? "none"
+    }
+
     func findBestRemoteConnection() -> RemoteConnection? {
         var bestConnection: RemoteConnection?
         var bestScore = -1
-        for connection in remoteConnections where connection.score() > bestScore {
-            bestConnection = connection
-            bestScore = connection.score()
+        for connection in remoteConnections {
+            let score = connection.score()
+            if score > bestScore {
+                bestConnection = connection
+                bestScore = score
+            }
+        }
+        if bestConnection !== currentConnection {
+            let lastType = type(connection: currentConnection)
+            let bestType = type(connection: bestConnection)
+            logger
+                .info(
+                    "srtla: remote: Best connection changed from \(lastType) to \(bestType)"
+                )
+            currentConnection = bestConnection
         }
         return bestConnection
     }

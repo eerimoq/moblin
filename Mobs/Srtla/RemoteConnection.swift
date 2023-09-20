@@ -12,7 +12,7 @@ class RemoteConnection {
         }
     }
 
-    private var typeString: String
+    var typeString: String
     var packetHandler: ((_ packet: Data) -> Void)?
 
     init(queue: DispatchQueue, type: NWInterface.InterfaceType?) {
@@ -49,24 +49,32 @@ class RemoteConnection {
     }
 
     func score() -> Int {
-        guard
-            let connection = connection,
-            connection.state == .ready
-        else {
+        guard let connection, connection.state == .ready else {
             return -1
         }
-        return 1
+        switch type {
+        case .cellular:
+            return 1
+        case .wifi:
+            return 1
+        case .wiredEthernet:
+            return 1
+        case nil:
+            return 1
+        default:
+            return -1
+        }
     }
 
     private func handleViabilityChange(to viability: Bool) {
         logger
             .info(
-                "srtla: remote: \(typeString): Connection viability changed to \(viability)"
+                "srtla: \(typeString): Connection viability changed to \(viability)"
             )
     }
 
     private func handleStateChange(to state: NWConnection.State) {
-        logger.info("srtla: remote: \(typeString): Connection state changed to \(state)")
+        logger.info("srtla: \(typeString): Connection state changed to \(state)")
     }
 
     private func receivePacket() {
@@ -75,19 +83,19 @@ class RemoteConnection {
         }
         connection
             .receive(minimumIncompleteLength: 1,
-                     maximumLength: 65536)
+                     maximumLength: 4096)
         { data, _, _, error in
             if let data, !data.isEmpty {
-                // logger.debug("srtla: remote: \(self.typeString): Receive \(data)")
+                // logger.debug("srtla: \(self.typeString): Receive \(data)")
                 if let packetHandler = self.packetHandler {
                     packetHandler(data)
                 } else {
                     logger
-                        .warning("srtla: remote: \(self.typeString): Discarding packet.")
+                        .warning("srtla: \(self.typeString): Discarding packet.")
                 }
             }
             if let error {
-                logger.warning("srtla: remote: \(self.typeString): Receive \(error)")
+                logger.warning("srtla: \(self.typeString): Receive \(error)")
                 return
             }
             self.receivePacket()
@@ -96,17 +104,18 @@ class RemoteConnection {
 
     func sendPacket(packet: Data) {
         guard let connection else {
-            logger.warning("srtla: remote: Dropping packet. No connection.")
+            logger
+                .warning("srtla: \(typeString): Dropping packet. No connection.")
             return
         }
         connection.send(content: packet, completion: .contentProcessed { error in
             if let error {
                 logger
                     .error(
-                        "srtla: remote: \(self.typeString): Remote send error: \(error)"
+                        "srtla: \(self.typeString): Remote send error: \(error)"
                     )
             } else {
-                // logger.debug("srtla: remote: Sent \(packet)")
+                // logger.debug("srtla: \(self.typeString): Sent \(packet)")
             }
         })
     }
