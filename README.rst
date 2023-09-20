@@ -140,4 +140,4 @@ Similar apps
 
 .. _Twitch: https://twitch.tv
 
-.. _TestFlight: https://github.com/BELABOX/srtla
+.. _TestFlight: https://testflight.apple.com/join/PDpxEaGh
