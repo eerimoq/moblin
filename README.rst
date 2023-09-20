@@ -24,7 +24,7 @@ ToDo
 
 - Fix crashes =)
 
-- rtmp(s)://, srt:// and srtla://. In single URL field?
+- ``rtmp(s)://``, ``srt://`` and ``srtla://``. In single URL field?
 
 Ideas/plan
 ==========
