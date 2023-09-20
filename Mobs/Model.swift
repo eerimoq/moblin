@@ -189,28 +189,30 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         }
     }
 
-    func setupImageEffects(scene: SettingsScene) {
+    func reloadImageEffects() {
         imageEffects.removeAll()
-        for widget in scene.widgets {
-            guard let realWidget = findWidget(id: widget.widgetId) else {
-                continue
+        for scene in database.scenes {
+            for widget in scene.widgets {
+                guard let realWidget = findWidget(id: widget.widgetId) else {
+                    continue
+                }
+                if realWidget.type != .image {
+                    continue
+                }
+                guard let data = imageStorage.read(id: widget.widgetId) else {
+                    continue
+                }
+                guard let image = UIImage(data: data) else {
+                    continue
+                }
+                imageEffects[widget.id] = ImageEffect(
+                    image: image,
+                    x: widget.x,
+                    y: widget.y,
+                    width: widget.width,
+                    height: widget.height
+                )
             }
-            if realWidget.type != .image {
-                continue
-            }
-            guard let data = imageStorage.read(id: widget.widgetId) else {
-                continue
-            }
-            guard let image = UIImage(data: data) else {
-                continue
-            }
-            imageEffects[widget.id] = ImageEffect(
-                image: image,
-                x: widget.x,
-                y: widget.y,
-                width: widget.width,
-                height: widget.height
-            )
         }
     }
 
@@ -488,16 +490,16 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func sceneUpdated(imageEffectChanged: Bool = false, store: Bool = true) {
+        sceneUpdatedOff()
+        if imageEffectChanged {
+            reloadImageEffects()
+        }
         if store {
             self.store()
         }
         updateButtonStates()
         guard let scene = findEnabledScene(id: selectedSceneId) else {
             return
-        }
-        sceneUpdatedOff()
-        if imageEffectChanged {
-            setupImageEffects(scene: scene)
         }
         sceneUpdatedOn(scene: scene)
     }

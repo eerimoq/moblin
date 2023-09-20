@@ -22,12 +22,14 @@ ToDo
 
 - Find out why H.265 does not work.
 
+- Paste URL does not work.
+  
 Ideas/plan
 ==========
 
-- Big F on screen when disconnected.
-
 - Implement `SRTLA`_.
+
+- Big F on screen when disconnected.
 
 - Reconnect immediately when connected to a network.
 
@@ -69,8 +71,8 @@ Ideas/plan
 
 - WebRTC.
 
-Testing with local streaming server
-===================================
+Testing with local RTMP streaming server
+========================================
 
 #. Start streaming server. You must have `go`_ installed.
 
