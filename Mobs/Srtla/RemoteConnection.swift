@@ -18,10 +18,15 @@ class RemoteConnection {
     init(queue: DispatchQueue, type: NWInterface.InterfaceType?) {
         self.queue = queue
         self.type = type
-        if let type {
-            typeString = "\(type)"
-        } else {
-            typeString = "any"
+        switch type {
+        case .wifi:
+            typeString = "WiFi"
+        case .wiredEthernet:
+            typeString = "Ethernet"
+        case .cellular:
+            typeString = "Cellular"
+        default:
+            typeString = "Any"
         }
     }
 

@@ -49,6 +49,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     @Published var isLive = false
     private var subscriptions = Set<AnyCancellable>()
     @Published var uptime = noValue
+    @Published var currentConnectionType = noValue
     var settings = Settings()
     var digitalClock = noValue
     var selectedSceneId = UUID()
@@ -268,6 +269,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         streamStartDate = nil
         updateUptime(now: Date())
         updateSpeed()
+        currentConnectionType = noValue
     }
 
     func reloadStream() {
@@ -737,8 +739,6 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             return
         }
         streamState = .disconnected
-        streamStartDate = nil
-        updateUptime(now: Date())
         stopNetStream()
         reconnectTimer = Timer
             .scheduledTimer(withTimeInterval: reconnectTime, repeats: false) { _ in
@@ -857,6 +857,12 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     func srtlaPacketReceived(byteCount: Int) {
         DispatchQueue.main.async {
             self.srtTotalByteCount += Int64(byteCount)
+        }
+    }
+
+    func srtlaConnectionTypeChanged(type: String) {
+        DispatchQueue.main.async {
+            self.currentConnectionType = type
         }
     }
 }

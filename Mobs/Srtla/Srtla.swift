@@ -6,6 +6,7 @@ protocol SrtlaDelegate: AnyObject {
     func srtlaError()
     func srtlaPacketSent(byteCount: Int)
     func srtlaPacketReceived(byteCount: Int)
+    func srtlaConnectionTypeChanged(type: String)
 }
 
 func isDataPacket(packet: Data) -> Bool {
@@ -114,7 +115,7 @@ class Srtla {
     }
 
     func type(connection: RemoteConnection?) -> String {
-        return connection?.typeString ?? "none"
+        return connection?.typeString ?? "None"
     }
 
     func findBestRemoteConnection() -> RemoteConnection? {
@@ -135,6 +136,7 @@ class Srtla {
                     "srtla: remote: Best connection changed from \(lastType) to \(bestType)"
                 )
             currentConnection = bestConnection
+            delegate?.srtlaConnectionTypeChanged(type: bestType)
         }
         return bestConnection
     }

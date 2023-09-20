@@ -63,6 +63,14 @@ struct RightOverlayView: View {
                     color: netStreamColor()
                 )
             }
+            if model.stream.srtla {
+                StreamOverlayIconAndTextView(
+                    icon: "phone.connection",
+                    text: model.currentConnectionType,
+                    textFirst: true,
+                    color: netStreamColor()
+                )
+            }
             Spacer()
             Picker("", selection: $model.sceneIndex) {
                 ForEach(0 ..< model.enabledScenes.count, id: \.self) { id in
