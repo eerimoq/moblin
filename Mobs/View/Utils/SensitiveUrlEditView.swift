@@ -11,14 +11,16 @@ struct SensitiveUrlEditView: View {
     var body: some View {
         Form {
             Section {
-                if show {
-                    TextField("", text: $value)
-                        .onSubmit {
-                            onSubmit(value.trim())
-                        }
-                } else {
-                    Text(replaceSensitive(value: value, sensitive: true))
-                        .lineLimit(1)
+                ZStack {
+                    if show {
+                        TextField("", text: $value)
+                            .onSubmit {
+                                onSubmit(value.trim())
+                            }
+                    } else {
+                        Text(replaceSensitive(value: value, sensitive: true))
+                            .lineLimit(1)
+                    }
                 }
                 HStack {
                     Spacer()
