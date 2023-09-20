@@ -133,3 +133,9 @@ extension Data {
         return withUnsafeBytes { $0.load(as: UInt16.self) }
     }
 }
+
+extension Data {
+    static func random(length: Int) -> Data {
+        return Data((0 ..< length).map { _ in UInt8.random(in: UInt8.min ... UInt8.max) })
+    }
+}

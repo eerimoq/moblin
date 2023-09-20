@@ -1,6 +1,26 @@
 import Foundation
 import Network
 
+enum SrtPacketType: UInt16 {
+    case ack = 0x0002
+    case nak = 0x0003
+}
+
+enum SrtlaPacketType: UInt16 {
+    case keepalive = 0x1000
+    case ack = 0x1100
+    case reg_1 = 0x1200
+    case reg_2 = 0x1201
+    case reg_3 = 0x1202
+    case reg_err = 0x1210
+    case reg_ngp = 0x1211
+    case reg_nak = 0x1212
+}
+
+let groupIdLength = 256
+let connectionTimeout = 4
+let headerSize = 16
+
 protocol SrtlaDelegate: AnyObject {
     func srtlaReady(port: UInt16)
     func srtlaError()
@@ -34,22 +54,22 @@ enum ControlType: UInt16 {
 }
 
 func logPacket(packet: Data, direction: String) {
-    if packet.count >= 16 {
-        if isDataPacket(packet: packet) {
-            logger
-                .debug(
-                    "srtla: \(direction): Data packet SN \(getDataPacketSn(packet: packet))"
-                )
-        } else {
-            let controlType = getControlPacketType(packet: packet)
-            if let controlType = ControlType(rawValue: controlType) {
-                logger.debug("srtla: \(direction): Control packet type \(controlType)")
-            } else {
-                logger.warning("srtla: \(direction): Unknown control type \(controlType)")
-            }
-        }
-    } else {
+    guard packet.count >= headerSize else {
         logger.error("srtla: \(direction): Packet too short.")
+        return
+    }
+    if isDataPacket(packet: packet) {
+        logger
+            .debug(
+                "srtla: \(direction): Data packet SN \(getDataPacketSn(packet: packet))"
+            )
+    } else {
+        let controlType = getControlPacketType(packet: packet)
+        if let controlType = ControlType(rawValue: controlType) {
+            logger.debug("srtla: \(direction): Control packet type \(controlType)")
+        } else {
+            logger.warning("srtla: \(direction): Unknown control type \(controlType)")
+        }
     }
 }
 
@@ -141,61 +161,104 @@ class Srtla {
         return bestConnection
     }
 
-    // SRT packet types
-    //
-    // ack         0x8002
-    // nak         0x8003
+    private var group_id = Data.random(length: groupIdLength)
 
-    // SRTLA packet types
-    //
-    // keepalive   0x9000
-    // ack         0x9100
-    // reg_1       0x9200
-    // reg_2       0x9201
-    // reg_3       0x9202
-    // reg_err     0x9210
-    // reg_ngp     0x9211
-    // reg_nak     0x9212
+    // Send to create a connection group. Contains our (unique) id.
+    func sendSrtlaReg1() {
+        logger.info("srtla: send register 1")
+    }
 
-    // full_id_length             256
-    // connection_timeout_seconds   4
+    // Send once on each connection to register it.
+    func sendSrtlaReg2() {
+        logger.info("srtla: send register 2")
+    }
 
-    // Send once to create a connection group. Contains our (unique)
-    // id.
-    func sendSrtlaReg1() {}
+    func handleSrtAck() {
+        logger.info("srtla: srt ack")
+    }
 
-    // Send once for each connection to register it.
-    func sendSrtlaReg2() {}
+    func handleSrtNak() {
+        logger.info("srtla: srt nak")
+    }
 
-    // Handle SRT Ack.
-    func handleSrtAck() {}
+    func handleSrtlaKeepalive() {
+        logger.info("srtla: keep alive")
+    }
 
-    // Handle SRT Nak.
-    func handleSrtNak() {}
+    func handleSrtlaAck() {
+        logger.info("srtla: ack")
+    }
 
-    // Handle SRTLA keep alive.
-    func handleSrtlaKeepalive() {}
+    // Received as response to reg_1. Contains group id (our id +
+    // server id).
+    func handleSrtlaReg2() {
+        logger.info("srtla: register 2")
+    }
 
-    // Handle SRTLA ack.
-    func handleSrtlaAck() {}
+    // Received as response to reg_2. A connection has been
+    // established.
+    func handleSrtlaReg3() {
+        logger.info("srtla: register 3")
+    }
 
-    // Handle SRTLA register 2. Received as response to
-    // reg_1. Contains full id (our id + server id).
-    func handleSrtlaReg2() {}
+    func handleSrtlaRegErr() {
+        logger.info("srtla: register error")
+    }
 
-    // Handle SRTLA register 3. Received as response to reg_2. A
-    // connection has been established.
-    func handleSrtlaReg3() {}
+    func handleSrtlaRegNgp() {
+        logger.info("srtla: register no group")
+    }
 
-    // Handle SRTLA register error.
-    func handleSrtlaRegErr() {}
+    func handleSrtlaRegNak() {
+        logger.info("srtla: register nak")
+    }
 
-    // Handle SRTLA register no group.
-    func handleSrtlaRegNgp() {}
+    func handleControlPacket(packet: Data) {
+        let type = getControlPacketType(packet: packet)
+        if let type = SrtPacketType(rawValue: type) {
+            switch type {
+            case .ack:
+                handleSrtAck()
+            case .nak:
+                handleSrtNak()
+            }
+        } else if let type = SrtlaPacketType(rawValue: type) {
+            switch type {
+            case .keepalive:
+                handleSrtlaKeepalive()
+            case .ack:
+                handleSrtlaAck()
+            case .reg_1:
+                logger.error("srtla: Received register 1 packet")
+            case .reg_2:
+                handleSrtlaReg2()
+            case .reg_3:
+                handleSrtlaReg3()
+            case .reg_err:
+                handleSrtlaRegErr()
+            case .reg_ngp:
+                handleSrtlaRegNgp()
+            case .reg_nak:
+                handleSrtlaRegNak()
+            }
+        } else {
+            logger.info("srtla: Received unhandled control packet")
+        }
+    }
 
-    // Handle SRTLA register nak.
-    func handleSrtlaRegNak() {}
+    func handleDataPacket(packet _: Data) {
+        logger.info("srtla: data packet")
+    }
 
-    // Handle SRT and SRTLA packet.
-    func handleSrtAndSrtla() {}
+    func handleSrtAndSrtla(packet: Data) {
+        guard packet.count >= headerSize else {
+            logger.error("srtla: Packet too short.")
+            return
+        }
+        if isDataPacket(packet: packet) {
+            handleDataPacket(packet: packet)
+        } else {
+            handleControlPacket(packet: packet)
+        }
+    }
 }
