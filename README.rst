@@ -4,7 +4,7 @@ MOBS
 An iOS app for IRL streaming. Mainly targetting `Twitch`_, but can
 stream to any RTMP or SRT endpoint.
 
-Not yet in `App Store`_, but hopefully soonish!
+Not yet in App Store, but on `TestFlight`_!
 
 .. image:: https://github.com/eerimoq/mobs/raw/main/Docs/main.jpg
 
@@ -140,4 +140,4 @@ Similar apps
 
 .. _Twitch: https://twitch.tv
 
-.. _App Store: https://www.apple.com/app-store/
+.. _TestFlight: https://github.com/BELABOX/srtla
