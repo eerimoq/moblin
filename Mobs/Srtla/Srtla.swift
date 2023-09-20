@@ -7,14 +7,14 @@ enum SrtPacketType: UInt16 {
 }
 
 enum SrtlaPacketType: UInt16 {
-    case keepalive = 0x1000
+    case keepAlive = 0x1000
     case ack = 0x1100
-    case reg_1 = 0x1200
-    case reg_2 = 0x1201
-    case reg_3 = 0x1202
-    case reg_err = 0x1210
-    case reg_ngp = 0x1211
-    case reg_nak = 0x1212
+    case reg1 = 0x1200
+    case reg2 = 0x1201
+    case reg3 = 0x1202
+    case regErr = 0x1210
+    case regNgp = 0x1211
+    case regNak = 0x1212
 }
 
 let groupIdLength = 256
@@ -222,32 +222,33 @@ class Srtla {
             case .nak:
                 handleSrtNak()
             }
+            logger.info("srtla: forward to SRT stack")
         } else if let type = SrtlaPacketType(rawValue: type) {
             switch type {
-            case .keepalive:
+            case .keepAlive:
                 handleSrtlaKeepalive()
             case .ack:
                 handleSrtlaAck()
-            case .reg_1:
+            case .reg1:
                 logger.error("srtla: Received register 1 packet")
-            case .reg_2:
+            case .reg2:
                 handleSrtlaReg2()
-            case .reg_3:
+            case .reg3:
                 handleSrtlaReg3()
-            case .reg_err:
+            case .regErr:
                 handleSrtlaRegErr()
-            case .reg_ngp:
+            case .regNgp:
                 handleSrtlaRegNgp()
-            case .reg_nak:
+            case .regNak:
                 handleSrtlaRegNak()
             }
         } else {
-            logger.info("srtla: Received unhandled control packet")
+            logger.info("srtla: forward to SRT stack")
         }
     }
 
     func handleDataPacket(packet _: Data) {
-        logger.info("srtla: data packet")
+        logger.info("srtla: data packet. forward to SRT stack")
     }
 
     func handleSrtAndSrtla(packet: Data) {
