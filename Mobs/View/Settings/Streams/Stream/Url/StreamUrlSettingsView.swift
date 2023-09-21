@@ -76,13 +76,25 @@ struct StreamUrlSettingsView: View {
                 VStack(alignment: .leading) {
                     Text(
                         "Do not share your URL with anyone or they can hijack your channel!"
-                    )
+                    ).bold()
                     Text("")
-                    Text("Example URLs:")
-                    Text("- rtmp://arn03.contribute.live-video.net/app/my_stream_key")
-                    Text("- rtmps://t0.contribute.live-video.net/app/my_stream_key")
-                    Text("- srt://134.20.32.2:5000/my_stream_key")
-                    Text("- srtla://foobar.org/my_stream_key")
+                    Text("Examples:")
+                    Group {
+                        Text("Twitch").underline()
+                        Text("- rtmp://arn03.contribute.live-video.net/app/my_stream_key")
+                    }
+                    Group {
+                        Text("Kick").underline()
+                        Text("- rtmps://fa723fc1b171.global-contribute.live-video.net/my_stream_key")
+                    }
+                    Group {
+                        Text("OBS Media Source").underline()
+                        Text("- srt://134.40.20.32.2:5000/my_stream_key")
+                    }
+                    Group {
+                        Text("SRTLA endpoint").underline()
+                        Text("- srtla://foobar.org/my_stream_key")
+                    }
                 }
             }
         }
