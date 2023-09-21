@@ -1,46 +1,6 @@
 import Foundation
 import Network
 
-enum SrtPacketType: UInt16 {
-    case ack = 0x0002
-    case nak = 0x0003
-}
-
-enum SrtlaPacketType: UInt16 {
-    case keepAlive = 0x1000
-    case ack = 0x1100
-    case reg1 = 0x1200
-    case reg2 = 0x1201
-    case reg3 = 0x1202
-    case regErr = 0x1210
-    case regNgp = 0x1211
-    case regNak = 0x1212
-}
-
-let groupIdLength = 256
-let connectionTimeout = 4
-let headerSize = 16
-
-protocol SrtlaDelegate: AnyObject {
-    func srtlaReady(port: UInt16)
-    func srtlaError()
-    func srtlaPacketSent(byteCount: Int)
-    func srtlaPacketReceived(byteCount: Int)
-    func srtlaConnectionTypeChanged(type: String)
-}
-
-func isDataPacket(packet: Data) -> Bool {
-    return (packet[0] & 0x80) == 0
-}
-
-func getDataPacketSn(packet: Data) -> UInt32 {
-    return packet.uint32.bigEndian
-}
-
-func getControlPacketType(packet: Data) -> UInt16 {
-    return packet.uint16.bigEndian & 0x7FFF
-}
-
 enum ControlType: UInt16 {
     case handshake = 0
     case keepalive = 1
@@ -51,26 +11,6 @@ enum ControlType: UInt16 {
     case ackack = 6
     case dropreq = 7
     case peererror = 8
-}
-
-func logPacket(packet: Data, direction: String) {
-    guard packet.count >= headerSize else {
-        logger.error("srtla: \(direction): Packet too short.")
-        return
-    }
-    if isDataPacket(packet: packet) {
-        logger
-            .debug(
-                "srtla: \(direction): Data packet SN \(getDataPacketSn(packet: packet))"
-            )
-    } else {
-        let controlType = getControlPacketType(packet: packet)
-        if let controlType = ControlType(rawValue: controlType) {
-            logger.debug("srtla: \(direction): Control packet type \(controlType)")
-        } else {
-            logger.warning("srtla: \(direction): Unknown control type \(controlType)")
-        }
-    }
 }
 
 class Srtla {
@@ -159,107 +99,5 @@ class Srtla {
             delegate?.srtlaConnectionTypeChanged(type: bestType)
         }
         return bestConnection
-    }
-
-    private var group_id = Data.random(length: groupIdLength)
-
-    // Send to create a connection group. Contains our (unique) id.
-    func sendSrtlaReg1() {
-        logger.info("srtla: send register 1")
-    }
-
-    // Send once on each connection to register it.
-    func sendSrtlaReg2() {
-        logger.info("srtla: send register 2")
-    }
-
-    func handleSrtAck() {
-        logger.info("srtla: srt ack")
-    }
-
-    func handleSrtNak() {
-        logger.info("srtla: srt nak")
-    }
-
-    func handleSrtlaKeepalive() {
-        logger.info("srtla: keep alive")
-    }
-
-    func handleSrtlaAck() {
-        logger.info("srtla: ack")
-    }
-
-    // Received as response to reg_1. Contains group id (our id +
-    // server id).
-    func handleSrtlaReg2() {
-        logger.info("srtla: register 2")
-    }
-
-    // Received as response to reg_2. A connection has been
-    // established.
-    func handleSrtlaReg3() {
-        logger.info("srtla: register 3")
-    }
-
-    func handleSrtlaRegErr() {
-        logger.info("srtla: register error")
-    }
-
-    func handleSrtlaRegNgp() {
-        logger.info("srtla: register no group")
-    }
-
-    func handleSrtlaRegNak() {
-        logger.info("srtla: register nak")
-    }
-
-    func handleControlPacket(packet: Data) {
-        let type = getControlPacketType(packet: packet)
-        if let type = SrtPacketType(rawValue: type) {
-            switch type {
-            case .ack:
-                handleSrtAck()
-            case .nak:
-                handleSrtNak()
-            }
-            logger.info("srtla: forward to SRT stack")
-        } else if let type = SrtlaPacketType(rawValue: type) {
-            switch type {
-            case .keepAlive:
-                handleSrtlaKeepalive()
-            case .ack:
-                handleSrtlaAck()
-            case .reg1:
-                logger.error("srtla: Received register 1 packet")
-            case .reg2:
-                handleSrtlaReg2()
-            case .reg3:
-                handleSrtlaReg3()
-            case .regErr:
-                handleSrtlaRegErr()
-            case .regNgp:
-                handleSrtlaRegNgp()
-            case .regNak:
-                handleSrtlaRegNak()
-            }
-        } else {
-            logger.info("srtla: forward to SRT stack")
-        }
-    }
-
-    func handleDataPacket(packet _: Data) {
-        logger.info("srtla: data packet. forward to SRT stack")
-    }
-
-    func handleSrtAndSrtla(packet: Data) {
-        guard packet.count >= headerSize else {
-            logger.error("srtla: Packet too short.")
-            return
-        }
-        if isDataPacket(packet: packet) {
-            handleDataPacket(packet: packet)
-        } else {
-            handleControlPacket(packet: packet)
-        }
     }
 }
