@@ -1,7 +1,7 @@
 MOBS
 ====
 
-An iOS app for IRL streaming. Mainly targetting `Twitch`_, but can
+A free iOS app for IRL streaming. Mainly targetting `Twitch`_, but can
 stream to any RTMP, RTMPS or SRT endpoint.
 
 Not yet in App Store, but on `TestFlight`_!
@@ -109,6 +109,10 @@ Resources
 - https://irl.run
 
   IRL Toolkit.
+
+- https://belabox.net/
+
+  BELABOX
 
 Twitch user to id
 =================
