@@ -5,6 +5,8 @@ struct StreamUrlSettingsView: View {
     var stream: SettingsStream
     @State var value: String
     @State var show: Bool = false
+    @State var showError: Bool = false
+    @State var errorMessage: String = ""
 
     init(model: Model, stream: SettingsStream) {
         self.model = model
@@ -14,20 +16,26 @@ struct StreamUrlSettingsView: View {
 
     func submitUrl(value: String) {
         guard let url = URL(string: value) else {
-            logger.warning("\(value) is not a valid URL")
+            showError = true
+            errorMessage = "Malformed URL."
             return
         }
         guard URLComponents(url: url, resolvingAgainstBaseURL: false) != nil else {
-            logger.warning("\(value) is not a valid URL")
+            showError = true
+            errorMessage = "Malformed URL."
             return
         }
         switch url.scheme {
         case "rtmp":
-            if !isValidRtmpUrl(url: value) {
+            if let message = isValidRtmpUrl(url: value) {
+                showError = true
+                errorMessage = message
                 return
             }
         case "rtmps":
-            if !isValidRtmpUrl(url: value) {
+            if let message = isValidRtmpUrl(url: value) {
+                showError = true
+                errorMessage = message
                 return
             }
         case "srt":
@@ -35,12 +43,16 @@ struct StreamUrlSettingsView: View {
         case "srtla":
             break
         case nil:
-            logger.warning("No scheme in URL \(value)")
+            errorMessage = "Scheme missing."
+            showError = true
             return
         default:
-            logger.warning("Unsupported scheme \(url.scheme!)")
+            showError = true
+            errorMessage = "Unsupported scheme \(url.scheme!)."
             return
         }
+        showError = false
+        errorMessage = ""
         stream.url = value
         model.reloadStreamIfEnabled(stream: stream)
     }
@@ -74,6 +86,12 @@ struct StreamUrlSettingsView: View {
                 }
             } footer: {
                 VStack(alignment: .leading) {
+                    if showError {
+                        Text(errorMessage)
+                            .bold()
+                            .font(.title)
+                            .foregroundColor(.red)
+                    }
                     Text(
                         "Do not share your URL with anyone or they can hijack your channel!"
                     ).bold()

@@ -62,8 +62,14 @@ func makeRtmpStreamName(url: String) -> String {
     return String(parts[parts.count - 1])
 }
 
-func isValidRtmpUrl(url: String) -> Bool {
-    return makeRtmpUri(url: url) != "" && makeRtmpStreamName(url: url) != ""
+func isValidRtmpUrl(url: String) -> String? {
+    if makeRtmpUri(url: url) == "" {
+        return "Malformed RTMP URL."
+    }
+    if makeRtmpStreamName(url: url) == "" {
+        return "RTMP stream name missing."
+    }
+    return nil
 }
 
 func schemeAndAddress(url: String) -> String {
