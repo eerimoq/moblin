@@ -213,36 +213,44 @@ class RemoteConnection {
         logger.info("srtla: \(typeString): Register nak")
     }
 
+    func handleSrtlaControlPacket(type: SrtlaPacketType, packet _: Data) {
+        switch type {
+        case .keepAlive:
+            handleSrtlaKeepalive()
+        case .ack:
+            handleSrtlaAck()
+        case .reg1:
+            logger.error("srtla: \(typeString): Received register 1 packet")
+        case .reg2:
+            handleSrtlaReg2()
+        case .reg3:
+            handleSrtlaReg3()
+        case .regErr:
+            handleSrtlaRegErr()
+        case .regNgp:
+            handleSrtlaRegNgp()
+        case .regNak:
+            handleSrtlaRegNak()
+        }
+    }
+
+    func handleSrtControlPacket(type: SrtPacketType, packet _: Data) {
+        switch type {
+        case .ack:
+            handleSrtAck()
+        case .nak:
+            handleSrtNak()
+        }
+    }
+
     func handleControlPacket(packet: Data) {
         let type = getControlPacketType(packet: packet)
-        if let type = SrtPacketType(rawValue: type) {
-            switch type {
-            case .ack:
-                handleSrtAck()
-            case .nak:
-                handleSrtNak()
-            }
-            packetHandler(packet)
-        } else if let type = SrtlaPacketType(rawValue: type) {
-            switch type {
-            case .keepAlive:
-                handleSrtlaKeepalive()
-            case .ack:
-                handleSrtlaAck()
-            case .reg1:
-                logger.error("srtla: \(typeString): Received register 1 packet")
-            case .reg2:
-                handleSrtlaReg2()
-            case .reg3:
-                handleSrtlaReg3()
-            case .regErr:
-                handleSrtlaRegErr()
-            case .regNgp:
-                handleSrtlaRegNgp()
-            case .regNak:
-                handleSrtlaRegNak()
-            }
+        if let type = SrtlaPacketType(rawValue: type) {
+            handleSrtlaControlPacket(type: type, packet: packet)
         } else {
+            if let type = SrtPacketType(rawValue: type) {
+                handleSrtControlPacket(type: type, packet: packet)
+            }
             packetHandler(packet)
         }
     }
