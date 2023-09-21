@@ -631,11 +631,11 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func rtmpUri() -> String {
-        return makeRtmpUri(url: stream.rtmpUrl)
+        return makeRtmpUri(url: stream.url!)
     }
 
     func rtmpStreamName() -> String {
-        return makeRtmpStreamName(url: stream.rtmpUrl)
+        return makeRtmpStreamName(url: stream.url!)
     }
 
     func toggleTorch() {
@@ -818,7 +818,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         srtPreviousTotalByteCount = 0
         srtla?.stop()
         srtla = Srtla(delegate: self, passThrough: !stream.isSrtla())
-        srtla!.start(uri: stream.srtUrl)
+        srtla!.start(uri: stream.url!)
     }
 
     func srtStopStream() {
