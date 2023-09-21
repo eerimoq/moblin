@@ -6,11 +6,11 @@ class LocalListener {
     private var listener: NWListener!
     private var connection: NWConnection?
     var packetHandler: ((_ packet: Data) -> Void)?
-    private weak var delegate: (any SrtlaDelegate)?
+    var onReady: ((_ port: UInt16) -> Void)?
+    var onError: (() -> Void)?
 
-    init(queue: DispatchQueue, delegate: SrtlaDelegate) {
+    init(queue: DispatchQueue) {
         self.queue = queue
-        self.delegate = delegate
     }
 
     func start() {
@@ -40,17 +40,14 @@ class LocalListener {
         case .setup:
             break
         case .ready:
-            let port = listener.port!.rawValue
-            logger.info("srtla: local: Listener ready at port \(port)")
-            delegate?.srtlaReady(port: port)
+            onReady?(listener.port!.rawValue)
         default:
-            delegate?.srtlaError()
+            onError?()
         }
     }
 
     func handleNewListenerConnection(connection: NWConnection) {
         self.connection = connection
-        logger.info("srtla: local: New connection \(connection.debugDescription)")
         connection.stateUpdateHandler = { state in
             switch state {
             case .ready:
@@ -76,7 +73,6 @@ class LocalListener {
                      maximumLength: 32768)
         { data, _, _, error in
             if let data, !data.isEmpty {
-                // logger.debug("srtla: local: Received \(data)")
                 if let packetHandler = self.packetHandler {
                     packetHandler(data)
                 } else {

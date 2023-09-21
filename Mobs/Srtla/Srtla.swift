@@ -1,28 +1,27 @@
 import Foundation
 import Network
 
-enum ControlType: UInt16 {
-    case handshake = 0
-    case keepalive = 1
-    case ack = 2
-    case nak = 3
-    case congestion_warning = 4
-    case shutdown = 5
-    case ackack = 6
-    case dropreq = 7
-    case peererror = 8
+protocol SrtlaDelegate: AnyObject {
+    func srtlaReady(port: UInt16)
+    func srtlaError()
+    func srtlaPacketSent(byteCount: Int)
+    func srtlaPacketReceived(byteCount: Int)
+    func srtlaConnectionTypeChanged(type: String)
 }
 
 class Srtla {
     private var queue = DispatchQueue(label: "com.eerimoq.network", qos: .userInitiated)
     private var remoteConnections: [RemoteConnection] = []
-    private var localListener: LocalListener
+    private var localListener: LocalListener?
     private weak var delegate: (any SrtlaDelegate)?
     private var currentConnection: RemoteConnection?
+    private var groupId: Data?
+    private let passThrough: Bool
+    private var connectTimer: Timer?
 
     init(delegate: SrtlaDelegate, passThrough: Bool) {
         self.delegate = delegate
-        localListener = LocalListener(queue: queue, delegate: delegate)
+        self.passThrough = passThrough
         if passThrough {
             remoteConnections.append(RemoteConnection(queue: queue, type: nil))
         } else {
@@ -38,14 +37,20 @@ class Srtla {
             let host = url.host,
             let port = url.port
         else {
-            logger.error("srtla: Failed to start srtla")
+            logger.error("srtla: Failed to start")
             return
         }
-        localListener.packetHandler = handleLocalPacket(packet:)
-        localListener.start()
         for connection in remoteConnections {
+            connection.onConnected = {
+                self.handleRemoteConnected(connection: connection)
+            }
             connection.packetHandler = handleRemotePacket(packet:)
+            connection.onReg2 = handleGroupId(groupId:)
             connection.start(host: host, port: UInt16(port))
+        }
+        connectTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { _ in
+            self.stop()
+            self.delegate?.srtlaError()
         }
     }
 
@@ -53,9 +58,39 @@ class Srtla {
         for connection in remoteConnections {
             connection.stop()
             connection.packetHandler = nil
+            connection.onReg2 = nil
         }
-        localListener.stop()
-        localListener.packetHandler = nil
+        stopListener()
+        connectTimer?.invalidate()
+        connectTimer = nil
+    }
+
+    func startListener() {
+        guard localListener == nil else {
+            return
+        }
+        localListener = LocalListener(queue: queue)
+        localListener!.packetHandler = handleLocalPacket(packet:)
+        localListener!.onReady = handleLocalReady(port:)
+        localListener!.onError = handleLocalError
+        localListener!.start()
+    }
+
+    func stopListener() {
+        localListener?.stop()
+        localListener?.packetHandler = nil
+        localListener?.onReady = nil
+        localListener?.onError = nil
+        localListener = nil
+    }
+
+    func handleLocalReady(port: UInt16) {
+        delegate?.srtlaReady(port: port)
+        connectTimer?.invalidate()
+    }
+
+    func handleLocalError() {
+        delegate?.srtlaError()
     }
 
     func handleLocalPacket(packet: Data) {
@@ -67,9 +102,28 @@ class Srtla {
         delegate?.srtlaPacketSent(byteCount: packet.count)
     }
 
+    func handleRemoteConnected(connection: RemoteConnection) {
+        if passThrough {
+            startListener()
+        } else {
+            connection.sendSrtlaReg1()
+        }
+    }
+
     func handleRemotePacket(packet: Data) {
-        localListener.sendPacket(packet: packet)
+        localListener?.sendPacket(packet: packet)
         delegate?.srtlaPacketReceived(byteCount: packet.count)
+    }
+
+    func handleGroupId(groupId: Data) {
+        guard self.groupId == nil else {
+            return
+        }
+        self.groupId = groupId
+        for connection in remoteConnections {
+            connection.register(groupId: groupId)
+        }
+        startListener()
     }
 
     func typeString(connection: RemoteConnection?) -> String {

@@ -164,3 +164,15 @@ extension Data {
         return Data((0 ..< length).map { _ in UInt8.random(in: UInt8.min ... UInt8.max) })
     }
 }
+
+extension Data {
+    struct HexEncodingOptions: OptionSet {
+        let rawValue: Int
+        static let upperCase = HexEncodingOptions(rawValue: 1 << 0)
+    }
+
+    func hex(options: HexEncodingOptions = []) -> String {
+        let format = options.contains(.upperCase) ? "%02hhX" : "%02hhx"
+        return map { String(format: format, $0) }.joined()
+    }
+}

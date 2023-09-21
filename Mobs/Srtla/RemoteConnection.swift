@@ -19,14 +19,6 @@ enum SrtlaPacketType: UInt16 {
 
 let connectionTimeout = 4.0
 
-protocol SrtlaDelegate: AnyObject {
-    func srtlaReady(port: UInt16)
-    func srtlaError()
-    func srtlaPacketSent(byteCount: Int)
-    func srtlaPacketReceived(byteCount: Int)
-    func srtlaConnectionTypeChanged(type: String)
-}
-
 func isDataPacket(packet: Data) -> Bool {
     return (packet[0] & 0x80) == 0
 }
@@ -37,6 +29,14 @@ func getDataPacketSn(packet: Data) -> UInt32 {
 
 func getControlPacketType(packet: Data) -> UInt16 {
     return packet.getUInt16Be() & 0x7FFF
+}
+
+private enum State {
+    case idle
+    case waitForSocket
+    case shouldSendReg2
+    case waitForReg3
+    case registered
 }
 
 class RemoteConnection {
@@ -50,8 +50,17 @@ class RemoteConnection {
         }
     }
 
+    private var groupId: Data!
+    private var state = State.idle {
+        didSet {
+            logger.info("srtla: \(typeString): State \(oldValue) -> \(state)")
+        }
+    }
+
     var typeString: String
-    var packetHandler: ((_ packet: Data) -> Void)!
+    var packetHandler: ((_ packet: Data) -> Void)?
+    var onReg2: ((_ groupId: Data) -> Void)?
+    var onConnected: (() -> Void)?
 
     init(queue: DispatchQueue, type: NWInterface.InterfaceType?) {
         self.queue = queue
@@ -81,14 +90,15 @@ class RemoteConnection {
             using: params
         )
         connection!.viabilityUpdateHandler = handleViabilityChange(to:)
-        connection!.stateUpdateHandler = handleStateChange(to:)
         connection!.start(queue: queue)
         receivePacket()
+        state = .waitForSocket
     }
 
     func stop() {
         connection?.cancel()
         connection = nil
+        state = .idle
     }
 
     func score() -> Int {
@@ -110,14 +120,15 @@ class RemoteConnection {
     }
 
     private func handleViabilityChange(to viability: Bool) {
-        logger
-            .info(
-                "srtla: \(typeString): Connection viability changed to \(viability)"
-            )
-    }
-
-    private func handleStateChange(to state: NWConnection.State) {
-        logger.info("srtla: \(typeString): Connection state changed to \(state)")
+        if viability {
+            onConnected?()
+            onConnected = nil
+            if state == .shouldSendReg2 {
+                sendSrtlaReg2()
+            } else {
+                state = .shouldSendReg2
+            }
+        }
     }
 
     private func receivePacket() {
@@ -151,30 +162,34 @@ class RemoteConnection {
                     .error(
                         "srtla: \(self.typeString): Remote send error: \(error)"
                     )
-            } else {
-                // logger.debug("srtla: \(self.typeString): Sent \(packet)")
             }
         })
     }
 
-    private var groupId = Data.random(length: 256)
+    func register(groupId: Data) {
+        self.groupId = groupId
+        if state == .shouldSendReg2 {
+            sendSrtlaReg2()
+        }
+    }
 
-    // Register a connection group.
     func sendSrtlaReg1() {
-        logger.info("srtla: \(typeString): Send register 1")
-        var packet = Data(capacity: 2 + groupId.count)
+        guard type != nil else {
+            return
+        }
+        groupId = Data.random(length: 256)
+        var packet = Data(count: 2 + groupId.count)
         packet.setUInt16Be(value: SrtlaPacketType.reg1.rawValue | 0x8000)
         packet[2...] = groupId
         sendPacket(packet: packet)
     }
 
-    // Register the connection.
     func sendSrtlaReg2() {
-        logger.info("srtla: \(typeString): Send register 2")
-        var packet = Data(capacity: 2 + groupId.count)
+        var packet = Data(count: 2 + groupId.count)
         packet.setUInt16Be(value: SrtlaPacketType.reg2.rawValue | 0x8000)
         packet[2...] = groupId
         sendPacket(packet: packet)
+        state = .waitForReg3
     }
 
     func handleSrtAck() {}
@@ -186,19 +201,20 @@ class RemoteConnection {
     }
 
     func handleSrtlaAck() {
-        logger.info("srtla: \(typeString): Ack")
+        // logger.info("srtla: \(typeString): Ack")
     }
 
-    // Received as response to reg_1. Contains group id (our id +
-    // server id).
-    func handleSrtlaReg2() {
-        logger.info("srtla: \(typeString): Register 2")
+    func handleSrtlaReg2(packet: Data) {
+        guard packet[2 ..< groupId.count / 2 + 2] == groupId[0 ..< groupId.count / 2]
+        else {
+            logger.warning("srtla: \(typeString): Wrong group id in reg 2")
+            return
+        }
+        onReg2?(packet[2...])
     }
 
-    // Received as response to reg_2. A connection has been
-    // established.
     func handleSrtlaReg3() {
-        logger.info("srtla: \(typeString): Register 3")
+        state = .registered
     }
 
     func handleSrtlaRegErr() {
@@ -213,7 +229,7 @@ class RemoteConnection {
         logger.info("srtla: \(typeString): Register nak")
     }
 
-    func handleSrtlaControlPacket(type: SrtlaPacketType, packet _: Data) {
+    func handleSrtlaControlPacket(type: SrtlaPacketType, packet: Data) {
         switch type {
         case .keepAlive:
             handleSrtlaKeepalive()
@@ -222,7 +238,7 @@ class RemoteConnection {
         case .reg1:
             logger.error("srtla: \(typeString): Received register 1 packet")
         case .reg2:
-            handleSrtlaReg2()
+            handleSrtlaReg2(packet: packet)
         case .reg3:
             handleSrtlaReg3()
         case .regErr:
@@ -251,16 +267,16 @@ class RemoteConnection {
             if let type = SrtPacketType(rawValue: type) {
                 handleSrtControlPacket(type: type, packet: packet)
             }
-            packetHandler(packet)
+            packetHandler?(packet)
         }
     }
 
     func handleDataPacket(packet: Data) {
-        packetHandler(packet)
+        packetHandler?(packet)
     }
 
     func handlePacket(packet: Data) {
-        guard packet.count >= 16 else {
+        guard packet.count >= 2 else {
             logger.error("srtla: \(typeString): Packet too short.")
             return
         }
