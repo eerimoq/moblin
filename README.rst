@@ -97,6 +97,10 @@ Testing with local RTMP streaming server
 Resources
 =========
 
+- https://pad.riseup.net/p/IRLstreamingforFreeorCheap-keep
+
+  How to IRL stream for free or cheap.
+
 - https://twitchapps.com/tmi/
 
   Create Twitch (chat) token.
@@ -104,11 +108,7 @@ Resources
 - https://irl.run
 
   IRL Toolkit.
-
-- https://github.com/matthew1000/gstreamer-cheat-sheet/blob/master/srt.md
-
-  GStreamer SRT stuff.
-
+  
 Twitch user to id
 =================
 
