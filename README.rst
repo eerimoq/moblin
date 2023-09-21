@@ -108,7 +108,7 @@ Resources
 - https://irl.run
 
   IRL Toolkit.
-  
+
 Twitch user to id
 =================
 
@@ -125,12 +125,14 @@ account.
        -H "Authorization: Bearer $TOKEN" \
        -H 'Client-Id: 9y23ws4svxsu2tm17ksvtp6ze3zytl' | jq -r '.data[0].id'
 
-Similar apps
-============
+Similar software
+================
 
 - https://irlpro.app/
 
 - Twitch app.
+
+- https://github.com/pedroSG94/RootEncoder-iOS
 
 .. _OBS: https://obsproject.com
 
