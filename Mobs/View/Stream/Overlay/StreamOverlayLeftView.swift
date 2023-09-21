@@ -15,6 +15,8 @@ struct LeftOverlayView: View {
         var proto: String
         if stream.getProtocol() == .srt && stream.isSrtla() {
             proto = "SRTLA"
+        } else if stream.getProtocol() == .rtmp && stream.isRtmps() {
+            proto = "RTMPS"
         } else {
             proto = stream.getProtocol().rawValue
         }

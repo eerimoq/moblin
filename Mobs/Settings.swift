@@ -76,6 +76,15 @@ class SettingsStream: Codable, Identifiable {
         }
     }
 
+    func isRtmps() -> Bool {
+        switch URL(string: url!)!.scheme {
+        case "rtmps":
+            return true
+        default:
+            return false
+        }
+    }
+
     func isSrtla() -> Bool {
         switch URL(string: url!)!.scheme {
         case "srtla":

@@ -22,6 +22,12 @@ struct StreamSettingsView: View {
             )) {
                 TextItemView(name: "Name", value: stream.name)
             }
+            NavigationLink(destination: StreamUrlSettingsView(
+                model: model,
+                stream: stream
+            )) {
+                TextItemView(name: "URL", value: schemeAndAddress(url: stream.url!))
+            }
             NavigationLink(destination: StreamTwitchSettingsView(
                 model: model,
                 stream: stream
@@ -33,12 +39,6 @@ struct StreamSettingsView: View {
                 stream: stream
             )) {
                 Text("Video")
-            }
-            NavigationLink(destination: StreamUrlSettingsView(
-                model: model,
-                stream: stream
-            )) {
-                TextItemView(name: "URL", value: schemeAndAddress(url: stream.url!))
             }
         }
         .navigationTitle("Stream")
