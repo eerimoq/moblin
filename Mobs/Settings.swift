@@ -45,6 +45,7 @@ class SettingsStream: Codable, Identifiable {
     var name: String
     var id: UUID = .init()
     var enabled: Bool = false
+    var url: String? = "rtmp://arn03.contribute.live-video.net/app/your_stream_key"
     var rtmpUrl: String = "rtmp://arn03.contribute.live-video.net/app/your_stream_key"
     var srtUrl: String = "srt://platform.com:5000"
     var srtla: Bool = false
@@ -58,6 +59,30 @@ class SettingsStream: Codable, Identifiable {
 
     init(name: String) {
         self.name = name
+    }
+
+    func getProtocol() -> SettingsStreamProtocol {
+        switch URL(string: url!)!.scheme {
+        case "rtmp":
+            return .rtmp
+        case "rtmps":
+            return .rtmp
+        case "srt":
+            return .srt
+        case "srtla":
+            return .srt
+        default:
+            return .rtmp
+        }
+    }
+
+    func isSrtla() -> Bool {
+        switch URL(string: url!)!.scheme {
+        case "srtla":
+            return true
+        default:
+            return false
+        }
     }
 }
 
@@ -456,6 +481,26 @@ final class Settings {
             }
             if database.streams.isEmpty {
                 addDefaultStreams(database: database)
+            }
+            for stream in database.streams {
+                if stream.url != nil {
+                    continue
+                }
+                switch stream.proto {
+                case .rtmp:
+                    stream.url = stream.rtmpUrl
+                case .srt:
+                    if stream.srtla {
+                        if let index = stream.srtUrl.firstIndex(of: ":") {
+                            stream.url = "srtla" + stream.srtUrl[index...]
+                        } else {
+                            stream.url = stream.srtUrl
+                        }
+                    } else {
+                        stream.url = stream.srtUrl
+                    }
+                }
+                store()
             }
         } catch {
             logger.info("settings: Failed to load. Using default.")

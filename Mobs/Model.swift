@@ -253,7 +253,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
 
     func startNetStream() {
         streamState = .connecting
-        switch stream.proto {
+        switch stream.getProtocol() {
         case .rtmp:
             rtmpStartStream()
         case .srt:
@@ -292,7 +292,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func setNetStream() {
-        switch stream.proto {
+        switch stream.getProtocol() {
         case .rtmp:
             srtStream = nil
             rtmpStream = RTMPStream(connection: rtmpConnection)
@@ -817,7 +817,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         srtTotalByteCount = 0
         srtPreviousTotalByteCount = 0
         srtla?.stop()
-        srtla = Srtla(delegate: self, passThrough: !stream.srtla)
+        srtla = Srtla(delegate: self, passThrough: !stream.isSrtla())
         srtla!.start(uri: stream.srtUrl)
     }
 

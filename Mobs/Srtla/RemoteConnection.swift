@@ -177,11 +177,9 @@ class RemoteConnection {
         sendPacket(packet: packet)
     }
 
-    func handleSrtAck() {
-    }
+    func handleSrtAck() {}
 
-    func handleSrtNak() {
-    }
+    func handleSrtNak() {}
 
     func handleSrtlaKeepalive() {
         logger.info("srtla: \(typeString): Keep alive")

@@ -10,9 +10,7 @@
 		030947C32A9C0496003FC387 /* StreamOverlayChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030947C22A9C0496003FC387 /* StreamOverlayChatView.swift */; };
 		0315A33B2AA2FA7100295443 /* LocalListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33A2AA2FA7100295443 /* LocalListener.swift */; };
 		0315A33D2AA2FA7D00295443 /* RemoteConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */; };
-		0315A3442AA31D0100295443 /* StreamRtmpSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3432AA31D0100295443 /* StreamRtmpSettingsView.swift */; };
 		0315A3462AA31E9000295443 /* StreamTwitchSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3452AA31E9000295443 /* StreamTwitchSettingsView.swift */; };
-		0315A3572AA3261900295443 /* StreamSrtSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3562AA3261900295443 /* StreamSrtSettingsView.swift */; };
 		0315A3622AA33A2C00295443 /* WidgetTextSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3612AA33A2C00295443 /* WidgetTextSettingsView.swift */; };
 		0315A3672AA33C6A00295443 /* WidgetImageSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3662AA33C6A00295443 /* WidgetImageSettingsView.swift */; };
 		0315A36C2AA33F2100295443 /* WidgetCameraSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A36B2AA33F2100295443 /* WidgetCameraSettingsView.swift */; };
@@ -29,6 +27,7 @@
 		035E9E3B2A9A02D7009D4F5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */; };
 		035E9E3E2A9A02D7009D4F5A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3D2A9A02D7009D4F5A /* Preview Assets.xcassets */; };
 		036333282AAE2E5100FF1231 /* ImageStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036333272AAE2E5100FF1231 /* ImageStorage.swift */; };
+		036BE2CC2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036BE2CB2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift */; };
 		0379BB762AA6345400B718B6 /* ButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB752AA6345400B718B6 /* ButtonSettingsView.swift */; };
 		0379BB792AA64C9500B718B6 /* WidgetVideoEffectSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB782AA64C9500B718B6 /* WidgetVideoEffectSettingsView.swift */; };
 		0379BB7E2AA7C55000B718B6 /* ButtonImagePickerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB7D2AA7C55000B718B6 /* ButtonImagePickerSettingsView.swift */; };
@@ -87,9 +86,7 @@
 		030947C22A9C0496003FC387 /* StreamOverlayChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOverlayChatView.swift; sourceTree = "<group>"; };
 		0315A33A2AA2FA7100295443 /* LocalListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalListener.swift; sourceTree = "<group>"; };
 		0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteConnection.swift; sourceTree = "<group>"; };
-		0315A3432AA31D0100295443 /* StreamRtmpSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamRtmpSettingsView.swift; sourceTree = "<group>"; };
 		0315A3452AA31E9000295443 /* StreamTwitchSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamTwitchSettingsView.swift; sourceTree = "<group>"; };
-		0315A3562AA3261900295443 /* StreamSrtSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamSrtSettingsView.swift; sourceTree = "<group>"; };
 		0315A3612AA33A2C00295443 /* WidgetTextSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetTextSettingsView.swift; sourceTree = "<group>"; };
 		0315A3662AA33C6A00295443 /* WidgetImageSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetImageSettingsView.swift; sourceTree = "<group>"; };
 		0315A36B2AA33F2100295443 /* WidgetCameraSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCameraSettingsView.swift; sourceTree = "<group>"; };
@@ -106,6 +103,7 @@
 		035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		035E9E3D2A9A02D7009D4F5A /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		036333272AAE2E5100FF1231 /* ImageStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStorage.swift; sourceTree = "<group>"; };
+		036BE2CB2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamUrlSettingsView.swift; sourceTree = "<group>"; };
 		0379BB752AA6345400B718B6 /* ButtonSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonSettingsView.swift; sourceTree = "<group>"; };
 		0379BB782AA64C9500B718B6 /* WidgetVideoEffectSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetVideoEffectSettingsView.swift; sourceTree = "<group>"; };
 		0379BB7D2AA7C55000B718B6 /* ButtonImagePickerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonImagePickerSettingsView.swift; sourceTree = "<group>"; };
@@ -185,9 +183,8 @@
 		0315A3402AA31ADC00295443 /* Stream */ = {
 			isa = PBXGroup;
 			children = (
+				036BE2CA2ABBF0A30048F9C5 /* Url */,
 				0379BB842AA8362E00B718B6 /* Video */,
-				0315A35D2AA32ADA00295443 /* Rtmp */,
-				0315A3582AA3264800295443 /* Srt */,
 				0315A3472AA31EC800295443 /* Twitch */,
 				03A983592A9A05D7008FF0DB /* StreamSettingsView.swift */,
 			);
@@ -243,22 +240,6 @@
 				03A983602A9A05D7008FF0DB /* WidgetSettingsView.swift */,
 			);
 			path = Widget;
-			sourceTree = "<group>";
-		};
-		0315A3582AA3264800295443 /* Srt */ = {
-			isa = PBXGroup;
-			children = (
-				0315A3562AA3261900295443 /* StreamSrtSettingsView.swift */,
-			);
-			path = Srt;
-			sourceTree = "<group>";
-		};
-		0315A35D2AA32ADA00295443 /* Rtmp */ = {
-			isa = PBXGroup;
-			children = (
-				0315A3432AA31D0100295443 /* StreamRtmpSettingsView.swift */,
-			);
-			path = Rtmp;
 			sourceTree = "<group>";
 		};
 		0315A3602AA33A1100295443 /* Text */ = {
@@ -336,6 +317,14 @@
 				035E9E3D2A9A02D7009D4F5A /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		036BE2CA2ABBF0A30048F9C5 /* Url */ = {
+			isa = PBXGroup;
+			children = (
+				036BE2CB2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift */,
+			);
+			path = Url;
 			sourceTree = "<group>";
 		};
 		0379BB712AA4BFA500B718B6 /* Twitch */ = {
@@ -618,6 +607,7 @@
 				03A983712A9A0659008FF0DB /* TwitchPubSub.swift in Sources */,
 				03A9836C2A9A05D7008FF0DB /* WidgetSettingsView.swift in Sources */,
 				0315A3622AA33A2C00295443 /* WidgetTextSettingsView.swift in Sources */,
+				036BE2CC2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift in Sources */,
 				0379BB882AA836B500B718B6 /* StreamVideoSettingsView.swift in Sources */,
 				03A983642A9A05D7008FF0DB /* StreamView.swift in Sources */,
 				0379BB9C2AAD819800B718B6 /* StreamOverlayLeftView.swift in Sources */,
@@ -638,12 +628,10 @@
 				0315A37C2AA439B500295443 /* NameEditView.swift in Sources */,
 				03B373F62A9EF98E0028DDD5 /* ControlBarView.swift in Sources */,
 				0379BB8E2AA90D1900B718B6 /* DebugLogSettingsView.swift in Sources */,
-				0315A3572AA3261900295443 /* StreamSrtSettingsView.swift in Sources */,
 				0382933B2A9A73ED008963AA /* Settings.swift in Sources */,
 				03B374092AA0EA700028DDD5 /* ImageEffect.swift in Sources */,
 				03A983692A9A05D7008FF0DB /* CreateButtonView.swift in Sources */,
 				0315A36E2AA33F3400295443 /* WidgetCameraTypeSettingsView.swift in Sources */,
-				0315A3442AA31D0100295443 /* StreamRtmpSettingsView.swift in Sources */,
 				0379BBC02AADC4EC00B718B6 /* AboutLicensesSettingsView.swift in Sources */,
 				0379BBB22AAD97FB00B718B6 /* ResetSettingsView.swift in Sources */,
 				0379BBB82AAD9B7200B718B6 /* WidgetsSettingsView.swift in Sources */,

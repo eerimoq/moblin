@@ -13,10 +13,10 @@ struct LeftOverlayView: View {
 
     func streamText() -> String {
         var proto: String
-        if stream.proto == .srt && stream.srtla {
+        if stream.getProtocol() == .srt && stream.isSrtla() {
             proto = "SRTLA"
         } else {
-            proto = stream.proto.rawValue
+            proto = stream.getProtocol().rawValue
         }
         let bitrate = formatBytesPerSecond(speed: Int64(stream.bitrate))
         let resolution = stream.resolution.rawValue

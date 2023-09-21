@@ -3,12 +3,10 @@ import SwiftUI
 struct StreamSettingsView: View {
     @ObservedObject private var model: Model
     private var stream: SettingsStream
-    @State private var proto: String
 
     init(stream: SettingsStream, model: Model) {
         self.model = model
         self.stream = stream
-        proto = stream.proto.rawValue
     }
 
     func submitName(name: String) {
@@ -36,30 +34,11 @@ struct StreamSettingsView: View {
             )) {
                 Text("Video")
             }
-            NavigationLink(destination: StreamRtmpSettingsView(
+            NavigationLink(destination: StreamUrlSettingsView(
                 model: model,
                 stream: stream
             )) {
-                Text("RTMP")
-            }
-            NavigationLink(destination: StreamSrtSettingsView(
-                model: model,
-                stream: stream
-            )) {
-                Text("SRT")
-            }
-            Section("Protocol") {
-                Picker("", selection: $proto) {
-                    ForEach(protocols, id: \.self) {
-                        Text($0)
-                    }
-                }
-                .onChange(of: proto) { proto in
-                    stream.proto = SettingsStreamProtocol(rawValue: proto)!
-                    model.reloadStreamIfEnabled(stream: stream)
-                }
-                .pickerStyle(.inline)
-                .labelsHidden()
+                TextItemView(name: "URL", value: schemeAndAddress(url: stream.url!))
             }
         }
         .navigationTitle("Stream")
