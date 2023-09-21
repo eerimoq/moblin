@@ -2,7 +2,7 @@ MOBS
 ====
 
 An iOS app for IRL streaming. Mainly targetting `Twitch`_, but can
-stream to any RTMP or SRT endpoint.
+stream to any RTMP, RTMPS or SRT endpoint.
 
 Not yet in App Store, but on `TestFlight`_!
 
@@ -17,6 +17,11 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
 This project is **not** part of `OBS`_. It's just the name that is
 inspired by it.
 
+Ongoing
+=======
+
+- Implement `SRTLA`_.
+
 ToDo
 ====
 
@@ -27,13 +32,9 @@ ToDo
 Ideas/plan
 ==========
 
-- Implement `SRTLA`_.
-
 - Big F on screen when disconnected.
 
 - Reconnect immediately when connected to a network.
-
-- Network status (WiFi, cellular, ...).
 
 - Audio level indicator.
 
