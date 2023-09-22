@@ -39,6 +39,10 @@ private var url =
         string: "wss://ws-us2.pusher.com/app/eb1d5f283081a78b932c?protocol=7&client=js&version=7.6.0&flash=false"
     )!
 
+func removeEmote(message: String) -> String {
+    return message.replacingOccurrences(of: "\\[emote:\\d+:(.*?)]", with: "$1", options: .regularExpression)
+}
+
 final class KickPusher: NSObject, URLSessionWebSocketDelegate {
     private var model: Model
     private var webSocket: URLSessionWebSocketTask
@@ -84,7 +88,8 @@ final class KickPusher: NSObject, URLSessionWebSocketDelegate {
 
     func handleChatMessageEvent(data: String) throws {
         let message = try decodeChatMessage(data: data)
-        model.appendChatMessage(user: message.sender.username, message: message.content)
+        let messageNoEmote = removeEmote(message: message.content)
+        model.appendChatMessage(user: message.sender.username, message: messageNoEmote)
     }
 
     func handleStringMessage(message: String) {
