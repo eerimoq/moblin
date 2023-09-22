@@ -52,6 +52,7 @@ class SettingsStream: Codable, Identifiable {
     var twitchChannelName: String = ""
     var twitchChannelId: String = ""
     var kickChannelId: String? = ""
+    var kickChatroomId: String? = ""
     var proto: SettingsStreamProtocol = .rtmp
     var resolution: SettingsStreamResolution = .r1280x720
     var fps: Int = 30
@@ -393,7 +394,7 @@ func addDefaultStreams(database: Database) {
     stream.url = "rtmp://arn03.contribute.live-video.net/app/your_stream_key"
     stream.twitchChannelName = "jinnytty"
     stream.twitchChannelId = "159498717"
-    stream.kickChannelId = "875062"
+    stream.kickChatroomId = "875062"
     database.streams.append(stream)
 }
 
@@ -505,10 +506,15 @@ final class Settings {
                 store()
             }
             for stream in database.streams {
-                if stream.kickChannelId != nil {
+                if stream.kickChatroomId != nil {
                     continue
                 }
-                stream.kickChannelId = ""
+                if let channelId = stream.kickChannelId {
+                    stream.kickChatroomId = channelId
+                    stream.kickChannelId = nil
+                } else {
+                    stream.kickChatroomId = ""
+                }
                 store()
             }
         } catch {

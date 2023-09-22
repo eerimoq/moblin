@@ -5,21 +5,25 @@ struct StreamKickSettingsView: View {
     var stream: SettingsStream
 
     func submitChannelId(value: String) {
-        stream.kickChannelId = value
+        stream.kickChatroomId = value
         model.store()
         if stream.enabled {
-            model.kickChannelIdUpdated()
+            model.kickChatroomIdUpdated()
         }
     }
 
     var body: some View {
         Form {
-            NavigationLink(destination: TextEditView(
-                title: "Channel id",
-                value: stream.kickChannelId!,
-                onSubmit: submitChannelId
-            )) {
-                TextItemView(name: "Channel id", value: stream.kickChannelId!)
+            Section {
+                NavigationLink(destination: TextEditView(
+                    title: "Chatroom id",
+                    value: stream.kickChatroomId!,
+                    onSubmit: submitChannelId
+                )) {
+                    TextItemView(name: "Chatroom id", value: stream.kickChatroomId!)
+                }
+            } footer: {
+                Text("Find your chatroom id at https://kick.com/api/v1/channels/my_user. Replace my_user with you user.")
             }
         }
         .navigationTitle("Kick")

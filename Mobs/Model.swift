@@ -396,8 +396,8 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
 
     func reloadKickPusher() {
         kickPusher?.stop()
-        if stream.kickChannelId != "" {
-            kickPusher = KickPusher(model: self, channelId: stream.kickChannelId!)
+        if stream.kickChatroomId != "" {
+            kickPusher = KickPusher(model: self, channelId: stream.kickChatroomId!)
             kickPusher!.start()
         }
     }
@@ -410,7 +410,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         reloadTwitchPubSub()
     }
 
-    func kickChannelIdUpdated() {
+    func kickChatroomIdUpdated() {
         reloadKickPusher()
     }
 
