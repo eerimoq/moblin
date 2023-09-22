@@ -33,9 +33,10 @@ func getControlPacketType(packet: Data) -> UInt16 {
 
 private enum State {
     case idle
-    case waitForSocket
-    case shouldSendReg2
-    case waitForReg3
+    case socketConnecting
+    case socketConnected
+    case shouldSendRegisterRequest
+    case waitForRegisterResponse
     case registered
 }
 
@@ -60,7 +61,7 @@ class RemoteConnection {
     var typeString: String
     var packetHandler: ((_ packet: Data) -> Void)?
     var onReg2: ((_ groupId: Data) -> Void)?
-    var onConnected: (() -> Void)?
+    var onSocketConnected: (() -> Void)?
 
     init(queue: DispatchQueue, type: NWInterface.InterfaceType?) {
         self.queue = queue
@@ -92,7 +93,7 @@ class RemoteConnection {
         connection!.viabilityUpdateHandler = handleViabilityChange(to:)
         connection!.start(queue: queue)
         receivePacket()
-        state = .waitForSocket
+        state = .socketConnecting
     }
 
     func stop() {
@@ -121,13 +122,13 @@ class RemoteConnection {
 
     private func handleViabilityChange(to viability: Bool) {
         if viability {
-            onConnected?()
-            onConnected = nil
-            if state == .shouldSendReg2 {
+            if state == .shouldSendRegisterRequest {
                 sendSrtlaReg2()
             } else {
-                state = .shouldSendReg2
+                state = .socketConnected
             }
+            onSocketConnected?()
+            onSocketConnected = nil
         }
     }
 
@@ -168,13 +169,13 @@ class RemoteConnection {
 
     func register(groupId: Data) {
         self.groupId = groupId
-        if state == .shouldSendReg2 {
+        if state == .shouldSendRegisterRequest {
             sendSrtlaReg2()
         }
     }
 
     func sendSrtlaReg1() {
-        guard type != nil else {
+        guard state == .socketConnected else {
             return
         }
         groupId = Data.random(length: 256)
@@ -182,6 +183,7 @@ class RemoteConnection {
         packet.setUInt16Be(value: SrtlaPacketType.reg1.rawValue | 0x8000)
         packet[2...] = groupId
         sendPacket(packet: packet)
+        state = .shouldSendRegisterRequest
     }
 
     func sendSrtlaReg2() {
@@ -189,7 +191,7 @@ class RemoteConnection {
         packet.setUInt16Be(value: SrtlaPacketType.reg2.rawValue | 0x8000)
         packet[2...] = groupId
         sendPacket(packet: packet)
-        state = .waitForReg3
+        state = .waitForRegisterResponse
     }
 
     func handleSrtAck() {}
@@ -214,6 +216,9 @@ class RemoteConnection {
     }
 
     func handleSrtlaReg3() {
+        guard state == .waitForRegisterResponse else {
+            return
+        }
         state = .registered
     }
 

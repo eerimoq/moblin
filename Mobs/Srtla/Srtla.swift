@@ -41,7 +41,7 @@ class Srtla {
             return
         }
         for connection in remoteConnections {
-            connection.onConnected = {
+            connection.onSocketConnected = {
                 self.handleRemoteConnected(connection: connection)
             }
             connection.packetHandler = handleRemotePacket(packet:)
