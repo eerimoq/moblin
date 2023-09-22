@@ -151,7 +151,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         sceneUpdated(imageEffectChanged: true, store: false)
         removeUnusedImages()
     }
-    
+
     func setupPeriodicTimer() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             DispatchQueue.main.async {

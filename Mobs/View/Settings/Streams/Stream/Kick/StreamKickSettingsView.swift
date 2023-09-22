@@ -23,7 +23,9 @@ struct StreamKickSettingsView: View {
                     TextItemView(name: "Chatroom id", value: stream.kickChatroomId!)
                 }
             } footer: {
-                Text("Find your chatroom id at https://kick.com/api/v1/channels/my_user. Replace my_user with you user.")
+                Text(
+                    "Find your chatroom id at https://kick.com/api/v1/channels/my_user. Replace my_user with you user."
+                )
             }
         }
         .navigationTitle("Kick")

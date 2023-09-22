@@ -23,7 +23,6 @@ func decodeEvent(message: String) throws -> (String, String) {
             }
         }
     }
-
     throw "Failed to get message event type"
 }
 
@@ -40,7 +39,11 @@ private var url =
     )!
 
 func removeEmote(message: String) -> String {
-    return message.replacingOccurrences(of: "\\[emote:\\d+:(.*?)]", with: "$1", options: .regularExpression)
+    return message.replacingOccurrences(
+        of: "\\[emote:\\d+:(.*?)]",
+        with: "$1",
+        options: .regularExpression
+    )
 }
 
 final class KickPusher: NSObject, URLSessionWebSocketDelegate {
