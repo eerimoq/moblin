@@ -56,6 +56,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     private var twitchChat: TwitchChatMobs!
     private var twitchPubSub: TwitchPubSub?
     private var kickPusher: KickPusher?
+    private var chatPostId = 0
     @Published var chatPosts: [Post] = []
     var numberOfChatPosts = 0
     @Published var chatPostsPerSecond = 0.0
@@ -150,7 +151,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         sceneUpdated(imageEffectChanged: true, store: false)
         removeUnusedImages()
     }
-
+    
     func setupPeriodicTimer() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             DispatchQueue.main.async {
@@ -411,6 +412,20 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
 
     func kickChannelIdUpdated() {
         reloadKickPusher()
+    }
+
+    func appendChatMessage(user: String, message: String) {
+        if chatPosts.count > 6 {
+            chatPosts.removeFirst()
+        }
+        let post = Post(
+            id: chatPostId,
+            user: user,
+            message: message
+        )
+        chatPosts.append(post)
+        numberOfChatPosts += 1
+        chatPostId += 1
     }
 
     func findWidget(id: UUID) -> SettingsWidget? {

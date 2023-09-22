@@ -43,11 +43,9 @@ final class KickPusher: NSObject, URLSessionWebSocketDelegate {
     private var model: Model
     private var webSocket: URLSessionWebSocketTask
     private var channelId: String
-    private var keepAliveTimer: Timer?
     private var reconnectTimer: Timer?
     private var reconnectTime = firstReconnectTime
     private var running = true
-    private var id = 0
 
     init(model: Model, channelId: String) {
         self.model = model
@@ -62,7 +60,6 @@ final class KickPusher: NSObject, URLSessionWebSocketDelegate {
 
     func stop() {
         webSocket.cancel()
-        keepAliveTimer?.invalidate()
         reconnectTimer?.invalidate()
         running = false
     }
@@ -72,7 +69,6 @@ final class KickPusher: NSObject, URLSessionWebSocketDelegate {
     }
 
     func setupWebsocket() {
-        keepAliveTimer?.invalidate()
         reconnectTimer?.invalidate()
         let session = URLSession(configuration: .default,
                                  delegate: self,
@@ -88,18 +84,7 @@ final class KickPusher: NSObject, URLSessionWebSocketDelegate {
 
     func handleChatMessageEvent(data: String) throws {
         let message = try decodeChatMessage(data: data)
-        // logger.info("kick: pusher: Got chat message \(message.content) from \(message.sender.username)")
-        if model.chatPosts.count > 6 {
-            model.chatPosts.removeFirst()
-        }
-        let post = Post(
-            id: id,
-            user: message.sender.username,
-            message: message.content
-        )
-        model.chatPosts.append(post)
-        model.numberOfChatPosts += 1
-        id += 1
+        model.appendChatMessage(user: message.sender.username, message: message.content)
     }
 
     func handleStringMessage(message: String) {

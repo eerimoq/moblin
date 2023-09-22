@@ -11,7 +11,6 @@ final class TwitchChatMobs {
     private var twitchChat: TwitchChat!
     private var model: Model
     private var task: Task<Void, Error>?
-    private var id = 0
     private var connected: Bool = false
 
     init(model: Model) {
@@ -37,17 +36,10 @@ final class TwitchChatMobs {
                     for try await message in self.twitchChat.messages {
                         reconnectTime = firstReconnectTime
                         await MainActor.run {
-                            if self.model.chatPosts.count > 6 {
-                                self.model.chatPosts.removeFirst()
-                            }
-                            let post = Post(
-                                id: self.id,
+                            self.model.appendChatMessage(
                                 user: message.sender,
                                 message: message.text
                             )
-                            self.model.chatPosts.append(post)
-                            self.model.numberOfChatPosts += 1
-                            self.id += 1
                         }
                     }
                 } catch {
