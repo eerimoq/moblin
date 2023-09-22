@@ -103,7 +103,9 @@ struct StreamUrlSettingsView: View {
                     }
                     Group {
                         Text("Kick").underline()
-                        Text("- rtmps://fa723fc1b171.global-contribute.live-video.net/my_stream_key")
+                        Text(
+                            "- rtmps://fa723fc1b171.global-contribute.live-video.net/my_stream_key"
+                        )
                     }
                     Group {
                         Text("OBS Media Source").underline()

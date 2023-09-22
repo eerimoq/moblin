@@ -37,16 +37,16 @@ final class TwitchChatMobs {
                     for try await message in self.twitchChat.messages {
                         reconnectTime = firstReconnectTime
                         await MainActor.run {
-                            if self.model.twitchChatPosts.count > 6 {
-                                self.model.twitchChatPosts.removeFirst()
+                            if self.model.chatPosts.count > 6 {
+                                self.model.chatPosts.removeFirst()
                             }
                             let post = Post(
                                 id: self.id,
                                 user: message.sender,
                                 message: message.text
                             )
-                            self.model.twitchChatPosts.append(post)
-                            self.model.numberOfTwitchChatPosts += 1
+                            self.model.chatPosts.append(post)
+                            self.model.numberOfChatPosts += 1
                             self.id += 1
                         }
                     }

@@ -40,6 +40,12 @@ struct StreamSettingsView: View {
             )) {
                 Text("Twitch")
             }
+            NavigationLink(destination: StreamKickSettingsView(
+                model: model,
+                stream: stream
+            )) {
+                Text("Kick")
+            }
         }
         .navigationTitle("Stream")
     }

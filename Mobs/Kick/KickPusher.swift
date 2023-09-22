@@ -1,59 +1,45 @@
 import Foundation
 
-struct MessageData: Decodable {
-    var message: String
+struct Sender: Decodable {
+    var username: String
 }
 
-struct Message: Decodable {
-    var data: MessageData
+struct ChatMessage: Decodable {
+    var content: String
+    var sender: Sender
 }
 
-struct Response: Decodable {}
-
-struct MessageViewCount: Decodable {
-    var viewers: Int
-}
-
-func getMessageType(message: String) throws -> String {
+func decodeEvent(message: String) throws -> (String, String) {
     if let jsonData = message.data(using: String.Encoding.utf8) {
         let data = try JSONSerialization.jsonObject(
             with: jsonData,
             options: JSONSerialization.ReadingOptions.mutableContainers
         )
         if let jsonResult: NSDictionary = data as? NSDictionary {
-            if let type: String = jsonResult["type"] as? String {
-                return type
+            if let type: String = jsonResult["event"] as? String {
+                if let data: String = jsonResult["data"] as? String {
+                    return (type, data)
+                }
             }
         }
     }
 
-    throw "Failed to get message type"
+    throw "Failed to get message event type"
 }
 
-func decodeResponse(message: String) throws -> Response {
+func decodeChatMessage(data: String) throws -> ChatMessage {
     return try JSONDecoder().decode(
-        Response.self,
-        from: message.data(using: String.Encoding.utf8)!
+        ChatMessage.self,
+        from: data.data(using: String.Encoding.utf8)!
     )
 }
 
-func decodeMessage(message: String) throws -> Message {
-    return try JSONDecoder().decode(
-        Message.self,
-        from: message.data(using: String.Encoding.utf8)!
-    )
-}
+private var url =
+    URL(
+        string: "wss://ws-us2.pusher.com/app/eb1d5f283081a78b932c?protocol=7&client=js&version=7.6.0&flash=false"
+    )!
 
-func decodeMessageViewCount(message: String) throws -> MessageViewCount {
-    return try JSONDecoder().decode(
-        MessageViewCount.self,
-        from: message.data(using: String.Encoding.utf8)!
-    )
-}
-
-private var url = URL(string: "wss://pubsub-edge.twitch.tv/v1")!
-
-final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
+final class KickPusher: NSObject, URLSessionWebSocketDelegate {
     private var model: Model
     private var webSocket: URLSessionWebSocketTask
     private var channelId: String
@@ -61,6 +47,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     private var reconnectTimer: Timer?
     private var reconnectTime = firstReconnectTime
     private var running = true
+    private var id = 0
 
     init(model: Model, channelId: String) {
         self.model = model
@@ -95,49 +82,38 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         readMessage()
     }
 
-    func handlePong() {
-        keepAliveTimer?.invalidate()
-        keepAliveTimer = Timer
-            .scheduledTimer(withTimeInterval: 4 * 60 + 30, repeats: false) { _ in
-                self.sendPing()
-            }
-    }
-
     func handleResponse(message: String) throws {
         _ = try decodeResponse(message: message)
     }
 
-    func handleMessage(message: String) throws {
-        let message = try decodeMessage(message: message)
-        let type = try getMessageType(message: message.data.message)
-        if type == "viewcount" {
-            let message = try decodeMessageViewCount(message: message.data.message)
-            model.numberOfViewers = String(message.viewers)
-            model.numberOfViewersUpdateDate = Date()
-        } else {
-            logger
-                .debug(
-                    "twitch: pubsub: \(channelId): Unsupported message type \(type) (message: \(message))"
-                )
+    func handleChatMessageEvent(data: String) throws {
+        let message = try decodeChatMessage(data: data)
+        // logger.info("kick: pusher: Got chat message \(message.content) from \(message.sender.username)")
+        if model.chatPosts.count > 6 {
+            model.chatPosts.removeFirst()
         }
+        let post = Post(
+            id: id,
+            user: message.sender.username,
+            message: message.content
+        )
+        model.chatPosts.append(post)
+        model.numberOfChatPosts += 1
+        id += 1
     }
 
     func handleStringMessage(message: String) {
         do {
-            let type = try getMessageType(message: message)
-            if type == "PONG" {
-                handlePong()
-            } else if type == "RESPONSE" {
-                try handleResponse(message: message)
-            } else if type == "MESSAGE" {
-                try handleMessage(message: message)
+            let (type, data) = try decodeEvent(message: message)
+            if type == "App\\Events\\ChatMessageEvent" {
+                try handleChatMessageEvent(data: data)
             } else {
-                logger.debug("twitch: pubsub: \(channelId): Unsupported type: \(type)")
+                logger.debug("kick: pusher: \(channelId): Unsupported type: \(type)")
             }
         } catch {
             logger
                 .error(
-                    "twitch: pubsub: \(channelId): Failed to process message \"\(message)\" with error \(error)"
+                    "kick: pusher: \(channelId): Failed to process message \"\(message)\" with error \(error)"
                 )
         }
     }
@@ -147,7 +123,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         reconnectTimer?.invalidate()
         reconnectTimer = Timer
             .scheduledTimer(withTimeInterval: reconnectTime, repeats: false) { _ in
-                logger.warning("twitch: pubsub: \(self.channelId): Reconnecting")
+                logger.warning("kick: pusher: \(self.channelId): Reconnecting")
                 self.setupWebsocket()
                 self.reconnectTime = nextReconnectTime(self.reconnectTime)
             }
@@ -162,20 +138,16 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
             case let .success(message):
                 switch message {
                 case let .string(text):
-                    logger
-                        .debug(
-                            "twitch: pubsub: \(self.channelId): Received string \(text)"
-                        )
                     self.handleStringMessage(message: text)
                 case let .data(data):
                     logger
                         .error(
-                            "twitch: pubsub: \(self.channelId): Received binary message: \(data)"
+                            "kick: pusher: \(self.channelId): Received binary message: \(data)"
                         )
                 @unknown default:
                     logger
                         .warning(
-                            "twitch: pubsub: \(self.channelId): Unknown message type"
+                            "kick: pusher: \(self.channelId): Unknown message type"
                         )
                 }
                 self.readMessage()
@@ -184,29 +156,16 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
     }
 
     func sendMessage(message: String) {
-        logger.debug("twitch: pubsub: \(channelId): Sending \(message)")
+        logger.debug("kick: pusher: \(channelId): Sending \(message)")
         let message = URLSessionWebSocketTask.Message.string(message)
         webSocket.send(message) { error in
             if let error {
                 logger
                     .error(
-                        "twitch: pubsub: \(self.channelId): Failed to send message to server with error \(error)"
+                        "kick: pusher: \(self.channelId): Failed to send message to server with error \(error)"
                     )
                 self.reconnect()
             }
-        }
-    }
-
-    func sendPing() {
-        sendMessage(message: "{\"type\":\"PING\"}")
-        keepAliveTimer?.invalidate()
-        keepAliveTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { _ in
-            logger
-                .warning(
-                    "twitch: pubsub: \(self.channelId): Timeout waiting for pong. Reconnecting"
-                )
-            self.webSocket.cancel()
-            self.setupWebsocket()
         }
     }
 
@@ -215,11 +174,13 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         webSocketTask _: URLSessionWebSocketTask,
         didOpenWithProtocol _: String?
     ) {
-        logger.info("twitch: pubsub: \(channelId): Connected to \(url)")
+        logger.info("kick: pusher: \(channelId): Connected to \(url)")
         reconnectTime = firstReconnectTime
-        sendPing()
         sendMessage(
-            message: "{\"type\":\"LISTEN\",\"data\":{\"topics\":[\"video-playback-by-id.\(channelId)\"]}}"
+            message: """
+            {\"event\":\"pusher:subscribe\",
+             \"data\":{\"auth\":\"\",\"channel\":\"chatrooms.\(channelId).v2\"}}
+            """
         )
     }
 
@@ -232,7 +193,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         logger
             .warning(
                 """
-                twitch: pubsub: \(channelId): Disconnected from server with close \
+                kick: pusher: \(channelId): Disconnected from server with close \
                 code \(closeCode) and reason \(String(describing: reason))
                 """
             )
@@ -245,10 +206,10 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         didCompleteWithError _: Error?
     ) {
         if running {
-            logger.info("twitch: pubsub: \(channelId): Completed")
+            logger.info("kick: pusher: \(channelId): Completed")
             reconnect()
         } else {
-            logger.info("twitch: pubsub: \(channelId): Completed by us")
+            logger.info("kick: pusher: \(channelId): Completed by us")
         }
     }
 }

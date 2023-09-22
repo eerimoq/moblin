@@ -27,15 +27,15 @@ struct LeftOverlayView: View {
     }
 
     func messageText() -> String {
-        if model.isTwitchChatConnected() {
-            return String(format: "%.2f m/s", model.twitchChatPostsPerSecond)
+        if model.isTwitchChatConnected() || model.isKickPusherConnected() {
+            return String(format: "%.2f m/s", model.chatPostsPerSecond)
         } else {
             return ""
         }
     }
 
     func messageColor() -> Color {
-        if model.isTwitchChatConnected() {
+        if model.isTwitchChatConnected() || model.isKickPusherConnected() {
             return .white
         } else {
             return .red
@@ -80,7 +80,7 @@ struct LeftOverlayView: View {
                     text: messageText(),
                     color: messageColor()
                 )
-                StreamOverlayChatView(posts: model.twitchChatPosts)
+                StreamOverlayChatView(posts: model.chatPosts)
             }
         }
     }

@@ -55,9 +55,10 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     var selectedSceneId = UUID()
     private var twitchChat: TwitchChatMobs!
     private var twitchPubSub: TwitchPubSub?
-    @Published var twitchChatPosts: [Post] = []
-    var numberOfTwitchChatPosts = 0
-    @Published var twitchChatPostsPerSecond = 0.0
+    private var kickPusher: KickPusher?
+    @Published var chatPosts: [Post] = []
+    var numberOfChatPosts = 0
+    @Published var chatPostsPerSecond = 0.0
     @Published var numberOfViewers = noValue
     var numberOfViewersUpdateDate = Date()
     @Published var batteryLevel = Double(UIDevice.current.batteryLevel)
@@ -157,7 +158,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
                 self.updateUptime(now: now)
                 self.updateDigitalClock(now: now)
                 self.updateBatteryLevel()
-                self.updateTwitchChatSpeed()
+                self.updateChatSpeed()
                 self.updateSrtSpeed()
                 self.updateSpeed()
                 self.updateTwitchPubSub(now: now)
@@ -281,6 +282,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         setStreamBitrate(stream: stream)
         reloadTwitchChat()
         reloadTwitchPubSub()
+        reloadKickPusher()
     }
 
     func reloadStreamIfEnabled(stream: SettingsStream) {
@@ -356,6 +358,10 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         return twitchPubSub?.isConnected() ?? false
     }
 
+    func isKickPusherConnected() -> Bool {
+        return kickPusher?.isConnected() ?? false
+    }
+
     func isStreamOk() -> Bool {
         return streamState != .disconnected
     }
@@ -370,17 +376,29 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
 
     func reloadTwitchChat() {
         twitchChat.stop()
-        twitchChat.start(channelName: stream.twitchChannelName)
-        twitchChatPostsPerSecond = 0
-        twitchChatPosts = []
-        numberOfTwitchChatPosts = 0
+        if stream.twitchChannelName != "" {
+            twitchChat.start(channelName: stream.twitchChannelName)
+        }
+        chatPostsPerSecond = 0
+        chatPosts = []
+        numberOfChatPosts = 0
     }
 
     func reloadTwitchPubSub() {
         twitchPubSub?.stop()
         numberOfViewers = noValue
-        twitchPubSub = TwitchPubSub(model: self, channelId: stream.twitchChannelId)
-        twitchPubSub!.start()
+        if stream.twitchChannelId != "" {
+            twitchPubSub = TwitchPubSub(model: self, channelId: stream.twitchChannelId)
+            twitchPubSub!.start()
+        }
+    }
+
+    func reloadKickPusher() {
+        kickPusher?.stop()
+        if stream.kickChannelId != "" {
+            kickPusher = KickPusher(model: self, channelId: stream.kickChannelId!)
+            kickPusher!.start()
+        }
     }
 
     func twitchChannelNameUpdated() {
@@ -389,6 +407,10 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
 
     func twitchChannelIdUpdated() {
         reloadTwitchPubSub()
+    }
+
+    func kickChannelIdUpdated() {
+        reloadKickPusher()
     }
 
     func findWidget(id: UUID) -> SettingsWidget? {
@@ -529,10 +551,10 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         batteryLevel = Double(UIDevice.current.batteryLevel)
     }
 
-    func updateTwitchChatSpeed() {
-        twitchChatPostsPerSecond = twitchChatPostsPerSecond * 0.8 +
-            Double(numberOfTwitchChatPosts) * 0.2
-        numberOfTwitchChatPosts = 0
+    func updateChatSpeed() {
+        chatPostsPerSecond = chatPostsPerSecond * 0.8 +
+            Double(numberOfChatPosts) * 0.2
+        numberOfChatPosts = 0
     }
 
     func updateSrtSpeed() {
