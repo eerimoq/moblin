@@ -17,6 +17,39 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
 This project is **not** part of `OBS`_. It's just the name that is
 inspired by it.
 
+Features
+========
+
+- Stream using RTMP (Twitch), RTMPS (Kick) or SRT (OBS).
+
+- Twitch.
+
+  - Number of viewers.
+
+  - Chat.
+
+- Kick.
+
+  - Chat.
+
+- Scenees.
+
+- Main or front camera.
+
+- Zoom.
+
+- Connection status.
+
+- Grayscale, movie and seipa video effects.
+
+- Mute audio.
+
+- Torch.
+
+- Configure resolution, FPS, codec and bitrate.
+
+- H.264/AVC video codec.
+
 Ongoing
 =======
 
@@ -29,10 +62,14 @@ ToDo
 
 - Fix crashes =)
 
+- Sometimes video hangs. Often when app is put into background.
+
 Ideas/plan
 ==========
 
 - Big F on screen when disconnected.
+
+- App running in background? What is possible?
 
 - Reconnect immediately when connected to a network.
 
