@@ -17,7 +17,8 @@ def main():
     driver.get(f"https://kick.com/api/v1/channels/{user}")
     page_source = driver.page_source
     driver.quit()
-    channel_id = json.loads(RE_BODY.match(page_source).group(1))['id']
+    info = json.loads(RE_BODY.match(page_source).group(1))
+    channel_id = info['chatroom']['id']
     print(channel_id)
 
 
