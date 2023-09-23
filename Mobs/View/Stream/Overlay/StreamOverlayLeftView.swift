@@ -27,7 +27,7 @@ struct LeftOverlayView: View {
     }
 
     func messageText() -> String {
-        if model.isTwitchChatConnected() || model.isKickPusherConnected() {
+        if model.isChatConnected() {
             return String(format: "%.2f m/s", model.chatPostsPerSecond)
         } else {
             return ""
@@ -35,7 +35,7 @@ struct LeftOverlayView: View {
     }
 
     func messageColor() -> Color {
-        if model.isTwitchChatConnected() || model.isKickPusherConnected() {
+        if model.isChatConnected() {
             return .white
         } else {
             return .red

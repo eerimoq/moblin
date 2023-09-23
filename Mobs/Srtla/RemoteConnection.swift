@@ -7,7 +7,7 @@ enum SrtPacketType: UInt16 {
 }
 
 enum SrtlaPacketType: UInt16 {
-    case keepAlive = 0x1000
+    case keepalive = 0x1000
     case ack = 0x1100
     case reg1 = 0x1200
     case reg2 = 0x1201
@@ -34,14 +34,12 @@ func getControlPacketType(packet: Data) -> UInt16 {
 private enum State {
     case idle
     case socketConnecting
-    case socketConnected
     case shouldSendRegisterRequest
     case waitForRegisterResponse
     case registered
 }
 
 class RemoteConnection {
-    private var queue: DispatchQueue
     private var type: NWInterface.InterfaceType?
     private var connection: NWConnection? {
         didSet {
@@ -51,6 +49,12 @@ class RemoteConnection {
         }
     }
 
+    private var reconnectTimer: Timer?
+    private var reconnectTime = firstReconnectTime
+    private var keepaliveTimer: Timer?
+    private var lastReceivedDate: Date!
+
+    private var hasGroupId: Bool = false
     private var groupId: Data!
     private var state = State.idle {
         didSet {
@@ -58,13 +62,15 @@ class RemoteConnection {
         }
     }
 
+    private var host: String!
+    private var port: UInt16!
     var typeString: String
-    var packetHandler: ((_ packet: Data) -> Void)?
-    var onReg2: ((_ groupId: Data) -> Void)?
     var onSocketConnected: (() -> Void)?
+    var onReg2: ((_ groupId: Data) -> Void)?
+    var onRegistered: (() -> Void)?
+    var packetHandler: ((_ packet: Data) -> Void)?
 
-    init(queue: DispatchQueue, type: NWInterface.InterfaceType?) {
-        self.queue = queue
+    init(type: NWInterface.InterfaceType?) {
         self.type = type
         switch type {
         case .wifi:
@@ -79,6 +85,16 @@ class RemoteConnection {
     }
 
     func start(host: String, port: UInt16) {
+        self.host = host
+        self.port = port
+        startInternal()
+    }
+
+    func startInternal() {
+        guard state == .idle else {
+            return
+        }
+        reconnectTime = firstReconnectTime
         let options = NWProtocolUDP.Options()
         let params = NWParameters(dtls: .none, udp: options)
         if let type {
@@ -91,7 +107,7 @@ class RemoteConnection {
             using: params
         )
         connection!.viabilityUpdateHandler = handleViabilityChange(to:)
-        connection!.start(queue: queue)
+        connection!.start(queue: DispatchQueue.main)
         receivePacket()
         state = .socketConnecting
     }
@@ -99,20 +115,24 @@ class RemoteConnection {
     func stop() {
         connection?.cancel()
         connection = nil
+        reconnectTimer?.invalidate()
+        reconnectTimer = nil
+        keepaliveTimer?.invalidate()
+        keepaliveTimer = nil
         state = .idle
     }
 
     func score() -> Int {
-        guard let connection, connection.state == .ready else {
+        guard state == .registered else {
             return -1
         }
         switch type {
         case .cellular:
-            return 1
+            return 2
         case .wifi:
             return 1
         case .wiredEthernet:
-            return 1
+            return 3
         case nil:
             return 1
         default:
@@ -122,14 +142,28 @@ class RemoteConnection {
 
     private func handleViabilityChange(to viability: Bool) {
         if viability {
-            if state == .shouldSendRegisterRequest {
+            if state == .shouldSendRegisterRequest || hasGroupId {
                 sendSrtlaReg2()
+            } else if type == nil {
+                state = .registered
             } else {
-                state = .socketConnected
+                state = .shouldSendRegisterRequest
             }
             onSocketConnected?()
             onSocketConnected = nil
+        } else {
+            stop()
+            reconnect()
         }
+    }
+
+    func reconnect() {
+        reconnectTimer = Timer
+            .scheduledTimer(withTimeInterval: reconnectTime, repeats: false) { _ in
+                logger.warning("srtla: \(self.typeString): Reconnecting")
+                self.startInternal()
+                self.reconnectTime = nextReconnectTime(self.reconnectTime)
+            }
     }
 
     private func receivePacket() {
@@ -169,15 +203,14 @@ class RemoteConnection {
 
     func register(groupId: Data) {
         self.groupId = groupId
+        hasGroupId = true
         if state == .shouldSendRegisterRequest {
             sendSrtlaReg2()
         }
     }
 
     func sendSrtlaReg1() {
-        guard state == .socketConnected else {
-            return
-        }
+        logger.info("srtla: \(typeString): Sending reg 1")
         groupId = Data.random(length: 256)
         var packet = Data(count: 2 + groupId.count)
         packet.setUInt16Be(value: SrtlaPacketType.reg1.rawValue | 0x8000)
@@ -187,6 +220,7 @@ class RemoteConnection {
     }
 
     func sendSrtlaReg2() {
+        logger.info("srtla: \(typeString): Sending reg 2")
         var packet = Data(count: 2 + groupId.count)
         packet.setUInt16Be(value: SrtlaPacketType.reg2.rawValue | 0x8000)
         packet[2...] = groupId
@@ -194,12 +228,18 @@ class RemoteConnection {
         state = .waitForRegisterResponse
     }
 
+    func sendSrtlaKeepalive() {
+        var packet = Data(count: 2)
+        packet.setUInt16Be(value: SrtlaPacketType.keepalive.rawValue | 0x8000)
+        sendPacket(packet: packet)
+    }
+
     func handleSrtAck() {}
 
     func handleSrtNak() {}
 
     func handleSrtlaKeepalive() {
-        logger.info("srtla: \(typeString): Keep alive")
+        lastReceivedDate = Date()
     }
 
     func handleSrtlaAck() {
@@ -207,6 +247,7 @@ class RemoteConnection {
     }
 
     func handleSrtlaReg2(packet: Data) {
+        logger.info("srtla: \(typeString): Got REG 2 \(groupId.count)")
         guard packet[2 ..< groupId.count / 2 + 2] == groupId[0 ..< groupId.count / 2]
         else {
             logger.warning("srtla: \(typeString): Wrong group id in reg 2")
@@ -216,10 +257,21 @@ class RemoteConnection {
     }
 
     func handleSrtlaReg3() {
+        logger.info("srtla: \(typeString): Got REG 3")
         guard state == .waitForRegisterResponse else {
             return
         }
         state = .registered
+        onRegistered?()
+        lastReceivedDate = Date()
+        keepaliveTimer = Timer
+            .scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
+                self.sendSrtlaKeepalive()
+                if self.lastReceivedDate + 5 < Date() {
+                    self.stop()
+                    self.reconnect()
+                }
+            }
     }
 
     func handleSrtlaRegErr() {
@@ -236,7 +288,7 @@ class RemoteConnection {
 
     func handleSrtlaControlPacket(type: SrtlaPacketType, packet: Data) {
         switch type {
-        case .keepAlive:
+        case .keepalive:
             handleSrtlaKeepalive()
         case .ack:
             handleSrtlaAck()

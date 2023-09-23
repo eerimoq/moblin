@@ -68,6 +68,7 @@ final class KickPusher: NSObject, URLSessionWebSocketDelegate {
     func stop() {
         webSocket.cancel()
         reconnectTimer?.invalidate()
+        reconnectTimer = nil
         running = false
     }
 
@@ -77,6 +78,7 @@ final class KickPusher: NSObject, URLSessionWebSocketDelegate {
 
     func setupWebsocket() {
         reconnectTimer?.invalidate()
+        reconnectTimer = nil
         let session = URLSession(configuration: .default,
                                  delegate: self,
                                  delegateQueue: OperationQueue.main)

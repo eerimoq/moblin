@@ -9,8 +9,16 @@ protocol SrtlaDelegate: AnyObject {
     func srtlaConnectionTypeChanged(type: String)
 }
 
+private enum State {
+    case idle
+    case waitForRemoteSocketConnected
+    case waitForGroupId
+    case waitForRegistered
+    case waitForLocalSocketListening
+    case running
+}
+
 class Srtla {
-    private var queue = DispatchQueue(label: "com.eerimoq.network", qos: .userInitiated)
     private var remoteConnections: [RemoteConnection] = []
     private var localListener: LocalListener?
     private weak var delegate: (any SrtlaDelegate)?
@@ -18,16 +26,22 @@ class Srtla {
     private var groupId: Data?
     private let passThrough: Bool
     private var connectTimer: Timer?
+    private var state = State.idle {
+        didSet {
+            logger.info("srtla: State \(oldValue) -> \(state)")
+        }
+    }
 
     init(delegate: SrtlaDelegate, passThrough: Bool) {
         self.delegate = delegate
         self.passThrough = passThrough
+        logger.info("srtla: SRT instead of SRTLA: \(passThrough)")
         if passThrough {
-            remoteConnections.append(RemoteConnection(queue: queue, type: nil))
+            remoteConnections.append(RemoteConnection(type: nil))
         } else {
-            remoteConnections.append(RemoteConnection(queue: queue, type: .cellular))
-            remoteConnections.append(RemoteConnection(queue: queue, type: .wifi))
-            remoteConnections.append(RemoteConnection(queue: queue, type: .wiredEthernet))
+            remoteConnections.append(RemoteConnection(type: .cellular))
+            remoteConnections.append(RemoteConnection(type: .wifi))
+            remoteConnections.append(RemoteConnection(type: .wiredEthernet))
         }
     }
 
@@ -41,39 +55,57 @@ class Srtla {
             return
         }
         for connection in remoteConnections {
-            connection.onSocketConnected = {
-                self.handleRemoteConnected(connection: connection)
-            }
-            connection.packetHandler = handleRemotePacket(packet:)
-            connection.onReg2 = handleGroupId(groupId:)
-            connection.start(host: host, port: UInt16(port))
+            startRemote(connection: connection, host: host, port: port)
         }
-        connectTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { _ in
+        connectTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { _ in
+            logger.info("srtla: Connect timer expired")
             self.stop()
             self.delegate?.srtlaError()
         }
+        state = .waitForRemoteSocketConnected
     }
 
     func stop() {
         for connection in remoteConnections {
-            connection.stop()
-            connection.packetHandler = nil
-            connection.onReg2 = nil
+            stopRemote(connection: connection)
         }
+        remoteConnections = []
         stopListener()
         connectTimer?.invalidate()
         connectTimer = nil
+        state = .idle
+    }
+
+    func startRemote(connection: RemoteConnection, host: String, port: Int) {
+        connection.onSocketConnected = {
+            self.handleRemoteConnected(connection: connection)
+        }
+        connection.onReg2 = handleGroupId(groupId:)
+        connection.onRegistered = {
+            self.handleRemoteRegistered(connection: connection)
+        }
+        connection.packetHandler = handleRemotePacket(packet:)
+        connection.start(host: host, port: UInt16(port))
+    }
+
+    func stopRemote(connection: RemoteConnection) {
+        connection.stop()
+        connection.onSocketConnected = nil
+        connection.onReg2 = nil
+        connection.onRegistered = nil
+        connection.packetHandler = nil
     }
 
     func startListener() {
         guard localListener == nil else {
             return
         }
-        localListener = LocalListener(queue: queue)
+        localListener = LocalListener()
         localListener!.packetHandler = handleLocalPacket(packet:)
         localListener!.onReady = handleLocalReady(port:)
         localListener!.onError = handleLocalError
         localListener!.start()
+        state = .waitForLocalSocketListening
     }
 
     func stopListener() {
@@ -85,8 +117,13 @@ class Srtla {
     }
 
     func handleLocalReady(port: UInt16) {
+        guard state == .waitForLocalSocketListening else {
+            return
+        }
+        state = .running
         delegate?.srtlaReady(port: port)
         connectTimer?.invalidate()
+        connectTimer = nil
     }
 
     func handleLocalError() {
@@ -103,11 +140,22 @@ class Srtla {
     }
 
     func handleRemoteConnected(connection: RemoteConnection) {
+        guard state == .waitForRemoteSocketConnected else {
+            return
+        }
         if passThrough {
             startListener()
         } else {
             connection.sendSrtlaReg1()
+            state = .waitForGroupId
         }
+    }
+
+    func handleRemoteRegistered(connection _: RemoteConnection) {
+        guard state == .waitForRegistered else {
+            return
+        }
+        startListener()
     }
 
     func handleRemotePacket(packet: Data) {
@@ -116,14 +164,14 @@ class Srtla {
     }
 
     func handleGroupId(groupId: Data) {
-        guard self.groupId == nil else {
+        guard state == .waitForGroupId else {
             return
         }
         self.groupId = groupId
         for connection in remoteConnections {
             connection.register(groupId: groupId)
         }
-        startListener()
+        state = .waitForRegistered
     }
 
     func typeString(connection: RemoteConnection?) -> String {

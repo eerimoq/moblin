@@ -2,16 +2,13 @@ import Foundation
 import Network
 
 class LocalListener {
-    private var queue: DispatchQueue
     private var listener: NWListener!
     private var connection: NWConnection?
     var packetHandler: ((_ packet: Data) -> Void)?
     var onReady: ((_ port: UInt16) -> Void)?
     var onError: (() -> Void)?
 
-    init(queue: DispatchQueue) {
-        self.queue = queue
-    }
+    init() {}
 
     func start() {
         do {
@@ -25,7 +22,7 @@ class LocalListener {
         }
         listener.stateUpdateHandler = handleListenerStateChange(to:)
         listener.newConnectionHandler = handleNewListenerConnection(connection:)
-        listener.start(queue: queue)
+        listener.start(queue: DispatchQueue.main)
     }
 
     func stop() {
@@ -60,7 +57,7 @@ class LocalListener {
                 break
             }
         }
-        connection.start(queue: queue)
+        connection.start(queue: DispatchQueue.main)
         receivePacket()
     }
 

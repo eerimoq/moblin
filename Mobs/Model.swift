@@ -363,6 +363,10 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         return kickPusher?.isConnected() ?? false
     }
 
+    func isChatConnected() -> Bool {
+        return isTwitchChatConnected() || isKickPusherConnected()
+    }
+
     func isStreamOk() -> Bool {
         return streamState != .disconnected
     }
@@ -379,6 +383,8 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         twitchChat.stop()
         if stream.twitchChannelName != "" {
             twitchChat.start(channelName: stream.twitchChannelName)
+        } else {
+            logger.info("model: Twitch channel name not configured. No Twitch chat.")
         }
         chatPostsPerSecond = 0
         chatPosts = []
@@ -391,14 +397,19 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         if stream.twitchChannelId != "" {
             twitchPubSub = TwitchPubSub(model: self, channelId: stream.twitchChannelId)
             twitchPubSub!.start()
+        } else {
+            logger.info("model: Twitch channel id not configured. No viewers.")
         }
     }
 
     func reloadKickPusher() {
         kickPusher?.stop()
+        kickPusher = nil
         if stream.kickChatroomId != "" {
             kickPusher = KickPusher(model: self, channelId: stream.kickChatroomId!)
             kickPusher!.start()
+        } else {
+            logger.info("model: Kick chatroom id not configured. No Kick chat.")
         }
     }
 
@@ -608,11 +619,11 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             .requestAuthorization(for: .readWrite) { authorizationStatus in
                 switch authorizationStatus {
                 case .limited:
-                    logger.warning("model: limited authorization granted")
+                    logger.warning("model: photo-auth: limited authorization granted")
                 case .authorized:
-                    logger.info("model: authorization granted")
+                    logger.info("model: photo-auth: authorization granted")
                 default:
-                    logger.error("model: Unimplemented")
+                    logger.error("model: photo-auth: Unimplemented")
                 }
             }
     }
