@@ -23,7 +23,7 @@ func isDataPacket(packet: Data) -> Bool {
     return (packet[0] & 0x80) == 0
 }
 
-func getDataPacketSn(packet: Data) -> UInt32 {
+func getDataPacketSequenceNumber(packet: Data) -> UInt32 {
     return packet.getUInt32Be()
 }
 
@@ -52,7 +52,16 @@ class RemoteConnection {
     private var reconnectTimer: Timer?
     private var reconnectTime = firstReconnectTime
     private var keepaliveTimer: Timer?
-    private var lastReceivedDate: Date!
+    private var latestReceivedDate = Date()
+    private var latestSentDate = Date()
+    private var packetsInFlight: Set<UInt32> = []
+    private var windowSize: Int = 0
+    private let windowDefault = 20
+    private let windowMinimum = 1
+    private let windowMaximum = 60
+    private let windowMultiply = 1000
+    private let windowDecrement = 100
+    private let windowIncrement = 30
 
     private var hasGroupId: Bool = false
     private var groupId: Data!
@@ -69,6 +78,9 @@ class RemoteConnection {
     var onReg2: ((_ groupId: Data) -> Void)?
     var onRegistered: (() -> Void)?
     var packetHandler: ((_ packet: Data) -> Void)?
+    var onSrtAck: ((_ sn: UInt32) -> Void)?
+    var onSrtNak: ((_ sn: UInt32) -> Void)?
+    var onSrtlaAck: ((_ sn: UInt32) -> Void)?
 
     init(type: NWInterface.InterfaceType?) {
         self.type = type
@@ -126,22 +138,20 @@ class RemoteConnection {
         guard state == .registered else {
             return -1
         }
-        switch type {
-        case .cellular:
-            return 2
-        case .wifi:
+
+        if type == nil {
             return 1
-        case .wiredEthernet:
-            return 3
-        case nil:
-            return 1
-        default:
-            return -1
+        } else {
+            return windowSize / (packetsInFlight.count + 1)
         }
     }
 
     private func handleViabilityChange(to viability: Bool) {
         if viability {
+            latestReceivedDate = Date()
+            latestSentDate = Date()
+            packetsInFlight.removeAll()
+            windowSize = windowDefault * windowMultiply
             if state == .shouldSendRegisterRequest || hasGroupId {
                 sendSrtlaReg2()
             } else if type == nil {
@@ -186,6 +196,7 @@ class RemoteConnection {
     }
 
     func sendPacket(packet: Data) {
+        latestSentDate = Date()
         guard let connection else {
             logger
                 .warning("srtla: \(typeString): Dropping packet. No connection.")
@@ -199,6 +210,13 @@ class RemoteConnection {
                     )
             }
         })
+    }
+
+    func sendSrtPacket(packet: Data) {
+        if isDataPacket(packet: packet) {
+            packetsInFlight.insert(getDataPacketSequenceNumber(packet: packet))
+        }
+        sendPacket(packet: packet)
     }
 
     func register(groupId: Data) {
@@ -234,16 +252,61 @@ class RemoteConnection {
         sendPacket(packet: packet)
     }
 
-    func handleSrtAck() {}
-
-    func handleSrtNak() {}
-
-    func handleSrtlaKeepalive() {
-        lastReceivedDate = Date()
+    func handleSrtAck(packet: Data) {
+        guard packet.count >= 20 else {
+            return
+        }
+        onSrtAck?(getDataPacketSequenceNumber(packet: packet[16 ..< 20]))
     }
 
-    func handleSrtlaAck() {
-        // logger.info("srtla: \(typeString): Ack")
+    func handleSrtAckSn(sn: UInt32) {
+        packetsInFlight = packetsInFlight.filter { iSn in iSn >= sn }
+    }
+
+    func handleSrtNak(packet: Data) {
+        var offset = 16
+        while offset <= packet.count - 4 {
+            let ackSn = packet.getUInt32Be(offset: offset)
+            offset += 4
+            if ackSn & 0x8000_0000 == 0 {
+                onSrtNak?(ackSn)
+            } else {
+                guard offset <= packet.count - 4 else {
+                    return
+                }
+                let upToAckSn = packet.getUInt32Be(offset: offset)
+                for sn in stride(from: ackSn, through: upToAckSn, by: 1) {
+                    onSrtNak?(sn)
+                }
+                offset += 4
+            }
+        }
+    }
+
+    func handleSrtNakSn(sn: UInt32) {
+        if packetsInFlight.remove(sn) == nil {
+            return
+        }
+        windowSize = max(windowSize - windowDecrement, windowMinimum * windowMultiply)
+    }
+
+    func handleSrtlaKeepalive() {}
+
+    func handleSrtlaAck(packet: Data) {
+        var offset = 4
+        while offset <= packet.count - 4 {
+            onSrtlaAck?(packet.getUInt32Be(offset: offset))
+            offset += 4
+        }
+    }
+
+    func handleSrtlaAckSn(sn: UInt32) {
+        if packetsInFlight.remove(sn) != nil {
+            if packetsInFlight.count * windowMultiply > windowSize {
+                windowSize += windowIncrement - 1
+            }
+        }
+        windowSize = min(windowSize + 1, windowMaximum * windowMultiply)
     }
 
     func handleSrtlaReg2(packet: Data) {
@@ -270,11 +333,10 @@ class RemoteConnection {
         }
         state = .registered
         onRegistered?()
-        lastReceivedDate = Date()
         keepaliveTimer = Timer
             .scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
                 self.sendSrtlaKeepalive()
-                if self.lastReceivedDate + 5 < Date() {
+                if self.latestReceivedDate + 5 < Date() {
                     self.stop()
                     self.reconnect()
                 }
@@ -298,7 +360,7 @@ class RemoteConnection {
         case .keepalive:
             handleSrtlaKeepalive()
         case .ack:
-            handleSrtlaAck()
+            handleSrtlaAck(packet: packet)
         case .reg1:
             logger.error("srtla: \(typeString): Received register 1 packet")
         case .reg2:
@@ -314,12 +376,15 @@ class RemoteConnection {
         }
     }
 
-    func handleSrtControlPacket(type: SrtPacketType, packet _: Data) {
+    func handleSrtControlPacket(type: SrtPacketType, packet: Data) {
+        guard packet.count >= 16 else {
+            return
+        }
         switch type {
         case .ack:
-            handleSrtAck()
+            handleSrtAck(packet: packet)
         case .nak:
-            handleSrtNak()
+            handleSrtNak(packet: packet)
         }
     }
 
@@ -344,10 +409,21 @@ class RemoteConnection {
             logger.error("srtla: \(typeString): Packet too short.")
             return
         }
+        latestReceivedDate = Date()
         if isDataPacket(packet: packet) {
             handleDataPacket(packet: packet)
         } else {
             handleControlPacket(packet: packet)
         }
+    }
+
+    func logStatistics() {
+        logger
+            .debug(
+                """
+                srtla: \(typeString): Score: \(score()), In flight: \
+                \(packetsInFlight.count), Window size: \(windowSize)
+                """
+            )
     }
 }

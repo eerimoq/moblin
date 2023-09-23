@@ -85,6 +85,9 @@ class Srtla {
             self.handleRemoteRegistered(connection: connection)
         }
         connection.packetHandler = handleRemotePacket(packet:)
+        connection.onSrtAck = handleSrtAck(sn:)
+        connection.onSrtNak = handleSrtNak(sn:)
+        connection.onSrtlaAck = handleSrtlaAck(sn:)
         connection.start(host: host, port: UInt16(port))
     }
 
@@ -94,6 +97,9 @@ class Srtla {
         connection.onReg2 = nil
         connection.onRegistered = nil
         connection.packetHandler = nil
+        connection.onSrtAck = nil
+        connection.onSrtNak = nil
+        connection.onSrtlaAck = nil
     }
 
     func startListener() {
@@ -135,7 +141,7 @@ class Srtla {
             logger.warning("srtla: local: No remote connection found. Dropping packet.")
             return
         }
-        connection.sendPacket(packet: packet)
+        connection.sendSrtPacket(packet: packet)
         delegate?.srtlaPacketSent(byteCount: packet.count)
     }
 
@@ -161,6 +167,24 @@ class Srtla {
     func handleRemotePacket(packet: Data) {
         localListener?.sendPacket(packet: packet)
         delegate?.srtlaPacketReceived(byteCount: packet.count)
+    }
+
+    func handleSrtAck(sn: UInt32) {
+        for connection in remoteConnections {
+            connection.handleSrtAckSn(sn: sn)
+        }
+    }
+
+    func handleSrtNak(sn: UInt32) {
+        for connection in remoteConnections {
+            connection.handleSrtNakSn(sn: sn)
+        }
+    }
+
+    func handleSrtlaAck(sn: UInt32) {
+        for connection in remoteConnections {
+            connection.handleSrtlaAckSn(sn: sn)
+        }
     }
 
     func handleGroupId(groupId: Data) {
@@ -199,5 +223,11 @@ class Srtla {
             delegate?.srtlaConnectionTypeChanged(type: bestType)
         }
         return bestConnection
+    }
+
+    func logStatistics() {
+        for connection in remoteConnections {
+            connection.logStatistics()
+        }
     }
 }

@@ -181,6 +181,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
                 self.updateSpeed()
                 self.updateTwitchPubSub(now: now)
                 self.updateAudioLevel()
+                self.srtla?.logStatistics()
             }
         })
     }

@@ -150,12 +150,16 @@ extension ProcessInfo.ThermalState {
 }
 
 extension Data {
-    func getUInt32Be(offset _: Int = 0) -> UInt32 {
-        return withUnsafeBytes { data in data.load(as: UInt32.self) }.bigEndian
+    func getUInt32Be(offset: Int = 0) -> UInt32 {
+        return withUnsafeBytes { data in
+            data.load(fromByteOffset: offset, as: UInt32.self)
+        }.bigEndian
     }
 
-    func getUInt16Be(offset _: Int = 0) -> UInt16 {
-        return withUnsafeBytes { data in data.load(as: UInt16.self) }.bigEndian
+    func getUInt16Be(offset: Int = 0) -> UInt16 {
+        return withUnsafeBytes { data in
+            data.load(fromByteOffset: offset, as: UInt16.self)
+        }.bigEndian
     }
 
     mutating func setUInt16Be(value: UInt16, offset _: Int = 0) {
