@@ -210,7 +210,7 @@ class RemoteConnection {
     }
 
     func sendSrtlaReg1() {
-        logger.info("srtla: \(typeString): Sending reg 1")
+        logger.info("srtla: \(typeString): Sending reg 1 (create group)")
         groupId = Data.random(length: 256)
         var packet = Data(count: 2 + groupId.count)
         packet.setUInt16Be(value: SrtlaPacketType.reg1.rawValue | 0x8000)
@@ -220,7 +220,7 @@ class RemoteConnection {
     }
 
     func sendSrtlaReg2() {
-        logger.info("srtla: \(typeString): Sending reg 2")
+        logger.info("srtla: \(typeString): Sending reg 2 (register connection)")
         var packet = Data(count: 2 + groupId.count)
         packet.setUInt16Be(value: SrtlaPacketType.reg2.rawValue | 0x8000)
         packet[2...] = groupId
@@ -247,7 +247,11 @@ class RemoteConnection {
     }
 
     func handleSrtlaReg2(packet: Data) {
-        logger.info("srtla: \(typeString): Got REG 2 \(groupId.count)")
+        logger.info("srtla: \(typeString): Got reg 2 (group created)")
+        guard packet.count == 258 else {
+            logger.warning("srtla: \(typeString): Wrong reg 2 packet length \(packet.count)")
+            return
+        }
         guard packet[2 ..< groupId.count / 2 + 2] == groupId[0 ..< groupId.count / 2]
         else {
             logger.warning("srtla: \(typeString): Wrong group id in reg 2")
@@ -257,7 +261,7 @@ class RemoteConnection {
     }
 
     func handleSrtlaReg3() {
-        logger.info("srtla: \(typeString): Got REG 3")
+        logger.info("srtla: \(typeString): Got reg 3 (connection registered)")
         guard state == .waitForRegisterResponse else {
             return
         }
