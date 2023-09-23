@@ -150,6 +150,21 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         updateButtonStates()
         sceneUpdated(imageEffectChanged: true, store: false)
         removeUnusedImages()
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(willEnterForeground),
+            name: UIScene.willEnterForegroundNotification,
+            object: nil
+        )
+    }
+
+    @objc func willEnterForeground(animated _: Bool) {
+        if streaming {
+            stopStream()
+            startStream()
+        } else {
+            stopStream()
+        }
     }
 
     func setupPeriodicTimer() {
