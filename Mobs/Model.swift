@@ -180,7 +180,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
                 }
             }
             if !used {
-                logger.info("model: Removing unused image \(id)")
+                logger.info("Removing unused image \(id)")
                 imageStorage.remove(id: id)
             }
         }
@@ -384,7 +384,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         if stream.twitchChannelName != "" {
             twitchChat.start(channelName: stream.twitchChannelName)
         } else {
-            logger.info("model: Twitch channel name not configured. No Twitch chat.")
+            logger.info("Twitch channel name not configured. No Twitch chat.")
         }
         chatPostsPerSecond = 0
         chatPosts = []
@@ -398,7 +398,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             twitchPubSub = TwitchPubSub(model: self, channelId: stream.twitchChannelId)
             twitchPubSub!.start()
         } else {
-            logger.info("model: Twitch channel id not configured. No viewers.")
+            logger.info("Twitch channel id not configured. No viewers.")
         }
     }
 
@@ -409,7 +409,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             kickPusher = KickPusher(model: self, channelId: stream.kickChatroomId!)
             kickPusher!.start()
         } else {
-            logger.info("model: Kick chatroom id not configured. No Kick chat.")
+            logger.info("Kick chatroom id not configured. No Kick chat.")
         }
     }
 
@@ -501,7 +501,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         }
         for sceneWidget in scene.widgets.filter({ widget in widget.enabled }) {
             guard let widget = findWidget(id: sceneWidget.widgetId) else {
-                logger.error("model: Widget not found.")
+                logger.error("Widget not found.")
                 continue
             }
             if let button = getEnabledButtonForWidgetControlledByScene(
@@ -619,11 +619,11 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             .requestAuthorization(for: .readWrite) { authorizationStatus in
                 switch authorizationStatus {
                 case .limited:
-                    logger.warning("model: photo-auth: limited authorization granted")
+                    logger.warning("photo-auth: limited authorization granted")
                 case .authorized:
-                    logger.info("model: photo-auth: authorization granted")
+                    logger.info("photo-auth: authorization granted")
                 default:
-                    logger.error("model: photo-auth: Unimplemented")
+                    logger.error("photo-auth: Unimplemented")
                 }
             }
     }
@@ -644,7 +644,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
 
     func updateThermalState() {
         thermalState = ProcessInfo.processInfo.thermalState
-        logger.info("model: Thermal state is \(thermalState.string())")
+        logger.info("Thermal state is \(thermalState.string())")
     }
 
     func attachCamera(position: AVCaptureDevice.Position) {
@@ -747,7 +747,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             device.ramp(toVideoZoomFactor: level, withRate: 5.0)
             device.unlockForConfiguration()
         } catch let error as NSError {
-            logger.warning("model: while locking device for ramp: \(error)")
+            logger.warning("While locking device for ramp: \(error)")
         }
     }
 
