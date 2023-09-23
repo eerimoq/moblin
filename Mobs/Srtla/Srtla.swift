@@ -22,7 +22,6 @@ class Srtla {
     private var remoteConnections: [RemoteConnection] = []
     private var localListener: LocalListener?
     private weak var delegate: (any SrtlaDelegate)?
-    private var currentConnection: RemoteConnection?
     private var groupId: Data?
     private let passThrough: Bool
     private var connectTimer: Timer?
@@ -198,10 +197,6 @@ class Srtla {
         state = .waitForRegistered
     }
 
-    func typeString(connection: RemoteConnection?) -> String {
-        return connection?.typeString ?? "None"
-    }
-
     func findBestRemoteConnection() -> RemoteConnection? {
         var bestConnection: RemoteConnection?
         var bestScore = -1
@@ -212,17 +207,17 @@ class Srtla {
                 bestScore = score
             }
         }
-        if bestConnection !== currentConnection {
-            let lastType = typeString(connection: currentConnection)
-            let bestType = typeString(connection: bestConnection)
-            logger
-                .info(
-                    "srtla: remote: Best connection changed from \(lastType) to \(bestType)"
-                )
-            currentConnection = bestConnection
-            delegate?.srtlaConnectionTypeChanged(type: bestType)
-        }
         return bestConnection
+    }
+
+    func findBestConnectionType() -> String? {
+        var bestTypeString: String?
+        var bestWindowSize = -1
+        for connection in remoteConnections where connection.windowSize > bestWindowSize {
+            bestTypeString = connection.typeString
+            bestWindowSize = connection.windowSize
+        }
+        return bestTypeString
     }
 
     func logStatistics() {

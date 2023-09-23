@@ -182,6 +182,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
                 self.updateTwitchPubSub(now: now)
                 self.updateAudioLevel()
                 self.srtla?.logStatistics()
+                self.updateBestSrtlaConnectionType()
             }
         })
     }
@@ -216,6 +217,14 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             audioLevel = String("Muted")
         } else {
             audioLevel = "\(Int(currentAudioLevel)) dB"
+        }
+    }
+
+    func updateBestSrtlaConnectionType() {
+        if isStreamConnceted(), let srtla, let type = srtla.findBestConnectionType() {
+            currentConnectionType = type
+        } else {
+            currentConnectionType = noValue
         }
     }
 
