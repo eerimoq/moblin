@@ -28,6 +28,12 @@ struct LocalOverlaysSettingsView: View {
                     show.chat = value
                     model.store()
                 }))
+                Toggle("Audio level", isOn: Binding(get: {
+                    show.audioLevel!
+                }, set: { value in
+                    show.audioLevel = value
+                    model.store()
+                }))
                 Toggle("Speed", isOn: Binding(get: {
                     show.speed
                 }, set: { value in
@@ -38,12 +44,6 @@ struct LocalOverlaysSettingsView: View {
                     show.uptime
                 }, set: { value in
                     show.uptime = value
-                    model.store()
-                }))
-                Toggle("Audio level", isOn: Binding(get: {
-                    show.audioLevel!
-                }, set: { value in
-                    show.audioLevel = value
                     model.store()
                 }))
             } footer: {

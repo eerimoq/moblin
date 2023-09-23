@@ -47,6 +47,14 @@ struct RightOverlayView: View {
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
+            if database.show.audioLevel! {
+                StreamOverlayIconAndTextView(
+                    icon: "waveform",
+                    text: model.audioLevel,
+                    textFirst: true,
+                    color: .white
+                )
+            }
             if database.show.speed {
                 StreamOverlayIconAndTextView(
                     icon: "speedometer",
@@ -61,14 +69,6 @@ struct RightOverlayView: View {
                     text: model.uptime,
                     textFirst: true,
                     color: netStreamColor()
-                )
-            }
-            if database.show.audioLevel! {
-                StreamOverlayIconAndTextView(
-                    icon: "waveform",
-                    text: model.audioLevel,
-                    textFirst: true,
-                    color: .white
                 )
             }
             if model.stream.isSrtla() {

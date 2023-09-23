@@ -62,13 +62,12 @@ struct StreamUrlSettingsView: View {
             Section {
                 ZStack {
                     if show {
-                        TextField("", text: $value)
+                        TextField("", text: $value, axis: .vertical)
                             .onSubmit {
                                 submitUrl(value: value.trim())
                             }
                     } else {
                         Text(replaceSensitive(value: value, sensitive: true))
-                            .lineLimit(1)
                     }
                 }
                 HStack {
