@@ -31,6 +31,14 @@ func getControlPacketType(packet: Data) -> UInt16 {
     return packet.getUInt16Be() & 0x7FFF
 }
 
+func isSnAcked(sn: UInt32, ackSn: UInt32) -> Bool {
+    if sn < ackSn {
+        return ackSn - sn < 100_000_000
+    } else {
+        return sn - ackSn > 100_000_000
+    }
+}
+
 private enum State {
     case idle
     case socketConnecting
@@ -259,8 +267,9 @@ class RemoteConnection {
         onSrtAck?(getDataPacketSequenceNumber(packet: packet[16 ..< 20]))
     }
 
-    func handleSrtAckSn(sn: UInt32) {
-        packetsInFlight = packetsInFlight.filter { iSn in iSn >= sn }
+    func handleSrtAckSn(sn ackSn: UInt32) {
+        packetsInFlight = packetsInFlight
+            .filter { sn in !isSnAcked(sn: sn, ackSn: ackSn) }
     }
 
     func handleSrtNak(packet: Data) {
