@@ -893,7 +893,8 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func srtlaError() {
-        logger.info("stream: srtla: listener error")
+        logger.info("stream: srtla: Error")
+        onDisconnected()
     }
 
     func srtlaPacketSent(byteCount: Int) {
