@@ -418,6 +418,9 @@ class RemoteConnection {
     }
 
     func logStatistics() {
+        guard state == .registered else {
+            return
+        }
         logger
             .debug(
                 """
