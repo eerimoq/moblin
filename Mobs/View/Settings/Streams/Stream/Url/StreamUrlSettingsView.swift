@@ -135,7 +135,7 @@ struct StreamUrlSettingsView: View {
                                 )!
                             )
                             .font(.footnote)
-                            Text("/app/")
+                            Text("/")
                             Link(
                                 "my_stream_key",
                                 destination: URL(
