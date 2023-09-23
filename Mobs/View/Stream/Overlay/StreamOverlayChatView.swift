@@ -7,7 +7,7 @@ struct LineView: View {
     var body: some View {
         HStack {
             Text(user)
-                .frame(width: 50, alignment: .leading)
+                .frame(width: 70, alignment: .leading)
                 .lineLimit(1)
                 .padding([.leading], 5)
             Text(message)
