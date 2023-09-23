@@ -249,7 +249,10 @@ class RemoteConnection {
     func handleSrtlaReg2(packet: Data) {
         logger.info("srtla: \(typeString): Got reg 2 (group created)")
         guard packet.count == 258 else {
-            logger.warning("srtla: \(typeString): Wrong reg 2 packet length \(packet.count)")
+            logger
+                .warning(
+                    "srtla: \(typeString): Wrong reg 2 packet length \(packet.count)"
+                )
             return
         }
         guard packet[2 ..< groupId.count / 2 + 2] == groupId[0 ..< groupId.count / 2]

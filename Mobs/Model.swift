@@ -824,19 +824,21 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         logger.debug("stream: Playback a video packet incoming.")
     }
 
-    #if os(iOS)
-        func stream(
-            _: NetStream,
-            sessionWasInterrupted _: AVCaptureSession,
-            reason _: AVCaptureSession.InterruptionReason?
-        ) {
-            logger.info("stream: Session was interrupted.")
+    func stream(
+        _: NetStream,
+        sessionWasInterrupted _: AVCaptureSession,
+        reason: AVCaptureSession.InterruptionReason?
+    ) {
+        if let reason {
+            logger.info("stream: Session was interrupted with reason: \(reason.toString())")
+        } else {
+            logger.info("stream: Session was interrupted without reason")
         }
+    }
 
-        func stream(_: NetStream, sessionInterruptionEnded _: AVCaptureSession) {
-            logger.info("stream: Session interrupted ended.")
-        }
-    #endif
+    func stream(_: NetStream, sessionInterruptionEnded _: AVCaptureSession) {
+        logger.info("stream: Session interrupted ended.")
+    }
 
     func stream(_: NetStream, videoCodecErrorOccurred error: VideoCodec.Error) {
         logger.error("stream: Video codec error: \(error)")

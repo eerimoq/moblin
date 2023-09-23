@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import AVKit
 
 let firstReconnectTime = 2.0
 
@@ -180,5 +181,25 @@ extension Data {
     func hex(options: HexEncodingOptions = []) -> String {
         let format = options.contains(.upperCase) ? "%02hhX" : "%02hhx"
         return map { String(format: format, $0) }.joined()
+    }
+}
+
+extension AVCaptureSession.InterruptionReason {
+
+    func toString() ->String {
+        switch self {
+        case .videoDeviceNotAvailableInBackground:
+            return "videoDeviceNotAvailableInBackground"
+        case .audioDeviceInUseByAnotherClient:
+            return "audioDeviceInUseByAnotherClient"
+        case .videoDeviceInUseByAnotherClient:
+            return "videoDeviceInUseByAnotherClient"
+        case .videoDeviceNotAvailableWithMultipleForegroundApps:
+            return "videoDeviceNotAvailableWithMultipleForegroundApps"
+        case .videoDeviceNotAvailableDueToSystemPressure:
+            return "videoDeviceNotAvailableDueToSystemPressure"
+        default:
+            return "unknown"
+        }
     }
 }
