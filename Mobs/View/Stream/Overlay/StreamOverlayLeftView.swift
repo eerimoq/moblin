@@ -3,7 +3,7 @@ import WebKit
 
 struct WebView: UIViewRepresentable {
     let url: URL
-    
+
     func makeUIView(context _: Context) -> WKWebView {
         let configuration = WKWebViewConfiguration()
         configuration.allowsInlineMediaPlayback = true

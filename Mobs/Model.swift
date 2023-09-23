@@ -830,7 +830,8 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         reason: AVCaptureSession.InterruptionReason?
     ) {
         if let reason {
-            logger.info("stream: Session was interrupted with reason: \(reason.toString())")
+            logger
+                .info("stream: Session was interrupted with reason: \(reason.toString())")
         } else {
             logger.info("stream: Session was interrupted without reason")
         }

@@ -1,6 +1,6 @@
+import AVKit
 import Foundation
 import UIKit
-import AVKit
 
 let firstReconnectTime = 2.0
 
@@ -185,8 +185,7 @@ extension Data {
 }
 
 extension AVCaptureSession.InterruptionReason {
-
-    func toString() ->String {
+    func toString() -> String {
         switch self {
         case .videoDeviceNotAvailableInBackground:
             return "videoDeviceNotAvailableInBackground"
