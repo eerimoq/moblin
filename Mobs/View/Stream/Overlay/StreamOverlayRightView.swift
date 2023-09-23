@@ -63,6 +63,14 @@ struct RightOverlayView: View {
                     color: netStreamColor()
                 )
             }
+            if database.show.audioLevel! {
+                StreamOverlayIconAndTextView(
+                    icon: "waveform",
+                    text: model.audioLevel,
+                    textFirst: true,
+                    color: .white
+                )
+            }
             if model.stream.isSrtla() {
                 StreamOverlayIconAndTextView(
                     icon: "phone.connection",

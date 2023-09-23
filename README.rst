@@ -32,7 +32,7 @@ Features
 
   - Chat.
 
-- Scenees.
+- Scenes.
 
 - Main or front camera.
 

@@ -50,6 +50,8 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     private var subscriptions = Set<AnyCancellable>()
     @Published var uptime = noValue
     @Published var currentConnectionType = noValue
+    @Published var audioLevel = noValue
+    var currentAudioLevel: Float = 100.0
     var settings = Settings()
     var digitalClock = noValue
     var selectedSceneId = UUID()
@@ -178,6 +180,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
                 self.updateSrtSpeed()
                 self.updateSpeed()
                 self.updateTwitchPubSub(now: now)
+                self.updateAudioLevel()
             }
         })
     }
@@ -204,6 +207,14 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     func updateTwitchPubSub(now: Date) {
         if numberOfViewersUpdateDate + 60 < now {
             numberOfViewers = noValue
+        }
+    }
+
+    func updateAudioLevel() {
+        if currentAudioLevel.isNaN {
+            audioLevel = String("Muted")
+        } else {
+            audioLevel = "\(Int(currentAudioLevel)) dB"
         }
     }
 
@@ -264,6 +275,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         }
         logger.info("stream: Stop")
         streaming = false
+        streamState = .disconnected
         UIApplication.shared.isIdleTimerDisabled = false
         stopNetStream()
     }
@@ -286,6 +298,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         streamStartDate = nil
         updateUptime(now: Date())
         updateSpeed()
+        updateAudioLevel()
         currentConnectionType = noValue
     }
 
@@ -717,6 +730,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
 
     func updateMute() {
         netStream.hasAudio = !isMuteOn
+        updateAudioLevel()
     }
 
     func grayScaleEffectOn() {
@@ -858,6 +872,12 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
 
     func streamDidOpen(_: NetStream) {
         // logger.info("stream: Stream opened.")
+    }
+
+    func stream(_: NetStream, audioLevel: Float) {
+        DispatchQueue.main.async {
+            self.currentAudioLevel = audioLevel
+        }
     }
 
     /// SRT

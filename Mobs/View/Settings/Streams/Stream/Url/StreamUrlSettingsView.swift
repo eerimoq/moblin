@@ -117,7 +117,9 @@ struct StreamUrlSettingsView: View {
                                     .font(.footnote)
                             }
                         } else {
-                            Text("Template: rtmp://nearby_ingest_endpoint/app/my_stream_key")
+                            Text(
+                                "Template: rtmp://nearby_ingest_endpoint/app/my_stream_key"
+                            )
                         }
                         Text(
                             "Example:  rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef"
@@ -145,7 +147,10 @@ struct StreamUrlSettingsView: View {
                             .font(.footnote)
                         }
                         Text(
-                            "Example:  rtmps://fa723fc1b171.global-contribute.live-video.net/sk_us-west-123hu43ui34hrkjh"
+                            """
+                            Example:  rtmps://fa723fc1b171.global-contribute.live-video.net/ \
+                            sk_us-west-123hu43ui34hrkjh
+                            """
                         )
                         Text("")
                     }
@@ -157,7 +162,9 @@ struct StreamUrlSettingsView: View {
                     }
                     Group {
                         Text("SRTLA server").underline()
-                        Text("Template: srtla://my_public_ip:my_public_port/my_stream_key")
+                        Text(
+                            "Template: srtla://my_public_ip:my_public_port/my_stream_key"
+                        )
                         Text("Example:  srtla://foobar.org:4432/5678")
                         Text("")
                     }

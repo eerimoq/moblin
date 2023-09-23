@@ -302,6 +302,7 @@ class SettingsShow: Codable {
     var uptime: Bool = true
     var stream: Bool = true
     var speed: Bool = true
+    var audioLevel: Bool? = true
 }
 
 class Database: Codable {
@@ -516,6 +517,9 @@ final class Settings {
                     stream.kickChatroomId = ""
                 }
                 store()
+            }
+            if database.show.audioLevel == nil {
+                database.show.audioLevel = true
             }
         } catch {
             logger.info("settings: Failed to load. Using default.")
