@@ -63,8 +63,10 @@ struct StreamUrlSettingsView: View {
                 ZStack {
                     if show {
                         TextField("", text: $value)
+                            .disableAutocorrection(true)
                             .onSubmit {
-                                submitUrl(value: value.trim())
+                                value = value.trim()
+                                submitUrl(value: value)
                             }
                     } else {
                         Text(replaceSensitive(value: value, sensitive: true))

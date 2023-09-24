@@ -25,12 +25,14 @@ struct ValueEditView: View {
             .frame(width: 70)
             TextField("", text: $value)
                 .onSubmit {
-                    onSubmit(value.trim())
+                    value = value.trim()
+                    onSubmit(value)
                 }
             Divider()
             Button(action: {
                 add(offset: -1)
-                onSubmit(value.trim())
+                value = value.trim()
+                onSubmit(value)
             }, label: {
                 Text("-")
                     .frame(width: 40)
@@ -39,7 +41,8 @@ struct ValueEditView: View {
             Divider()
             Button(action: {
                 add(offset: 1)
-                onSubmit(value.trim())
+                value = value.trim()
+                onSubmit(value)
             }, label: {
                 Text("+")
                     .frame(width: 40)

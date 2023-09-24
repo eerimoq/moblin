@@ -28,6 +28,10 @@ Features
 
   - Chat.
 
+- YouTube integration.
+
+  - None.
+
 - Kick integration.
 
   - Chat.

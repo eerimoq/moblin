@@ -9,7 +9,8 @@ struct TextEditView: View {
         Form {
             TextField("", text: $value)
                 .onSubmit {
-                    onSubmit(value.trim())
+                    value = value.trim()
+                    onSubmit(value)
                 }
         }
         .navigationTitle(title)
