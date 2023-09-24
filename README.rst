@@ -65,6 +65,8 @@ Features
 ToDo
 ====
 
+- Torch turned off when pressing widget button.
+
 - Fix crashes. =)
 
 - Sometimes video hangs. Often when app is put into background.
