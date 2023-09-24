@@ -915,7 +915,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         srtPreviousTotalByteCount = 0
         srtla?.stop()
         srtla = Srtla(delegate: self, passThrough: !stream.isSrtla())
-        srtla!.start(uri: stream.url!)
+        srtla!.start(uri: stream.url!, timeout: reconnectTime + 1)
     }
 
     func srtStopStream() {

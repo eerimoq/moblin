@@ -44,7 +44,7 @@ class Srtla {
         }
     }
 
-    func start(uri: String) {
+    func start(uri: String, timeout: Double) {
         guard
             let url = URL(string: uri),
             let host = url.host,
@@ -56,7 +56,7 @@ class Srtla {
         for connection in remoteConnections {
             startRemote(connection: connection, host: host, port: port)
         }
-        connectTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { _ in
+        connectTimer = Timer.scheduledTimer(withTimeInterval: timeout, repeats: false) { _ in
             logger.info("srtla: Connect timer expired")
             self.onDisconnected()
         }
