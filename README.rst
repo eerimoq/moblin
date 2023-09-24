@@ -69,6 +69,8 @@ ToDo
 
 - Blinking icons instead of color cyan when trying to connect.
 
+- Investigate audio/video synch issues.
+  
 Ideas/plan
 ==========
 
