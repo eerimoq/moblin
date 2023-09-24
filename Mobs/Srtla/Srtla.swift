@@ -220,9 +220,12 @@ class Srtla {
     func findBestConnectionType() -> String? {
         var bestTypeString: String?
         var bestWindowSize = -1
-        for connection in remoteConnections where connection.windowSize > bestWindowSize {
-            bestTypeString = connection.typeString
-            bestWindowSize = connection.windowSize
+        for connection in remoteConnections {
+            let windowSize = connection.getWindowSize()
+            if windowSize > bestWindowSize {
+                bestTypeString = connection.typeString
+                bestWindowSize = windowSize
+            }
         }
         return bestTypeString
     }

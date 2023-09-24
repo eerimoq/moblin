@@ -63,7 +63,7 @@ class RemoteConnection {
     private var latestReceivedDate = Date()
     private var latestSentDate = Date()
     private var packetsInFlight: Set<UInt32> = []
-    var windowSize: Int = 0
+    private var windowSize: Int = 0
     private let windowDefault = 20
     private let windowMinimum = 1
     private let windowMaximum = 60
@@ -423,6 +423,13 @@ class RemoteConnection {
         } else {
             handleControlPacket(packet: packet)
         }
+    }
+
+    func getWindowSize() -> Int {
+        guard type != nil, state == .registered else {
+            return -1
+        }
+        return windowSize
     }
 
     func logStatistics() {
