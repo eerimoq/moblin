@@ -286,8 +286,6 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
 
     func startStream() {
         logger.info("stream: Start")
-        logger.info("stream: \(netStream.videoSettings)")
-        logger.info("stream: \(netStream.audioSettings)")
         isLive = true
         streaming = true
         reconnectTime = firstReconnectTime
