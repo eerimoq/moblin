@@ -58,8 +58,7 @@ class Srtla {
         }
         connectTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { _ in
             logger.info("srtla: Connect timer expired")
-            self.stop()
-            self.delegate?.srtlaError()
+            self.onDisconnected()
         }
         state = .waitForRemoteSocketConnected
     }
@@ -132,12 +131,19 @@ class Srtla {
     }
 
     func handleLocalError() {
+        onDisconnected()
+    }
+
+    func onDisconnected() {
+        stop()
         delegate?.srtlaError()
+        state = .idle
     }
 
     func handleLocalPacket(packet: Data) {
         guard let connection = findBestRemoteConnection() else {
-            logger.warning("srtla: local: No remote connection found. Dropping packet.")
+            logger.warning("srtla: local: No remote connection found")
+            onDisconnected()
             return
         }
         connection.sendSrtPacket(packet: packet)

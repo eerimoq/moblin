@@ -42,7 +42,12 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     private var srtPreviousTotalByteCount: Int64 = 0
     private var srtSpeed: Int64 = 0
     var netStream: NetStream!
-    private var streamState: StreamState = .disconnected
+    var streamState = StreamState.disconnected {
+        didSet {
+            logger.info("stream: State \(oldValue) -> \(streamState)")
+        }
+    }
+
     private var streaming = false
     private var streamStartDate: Date?
     private var srtConnectedObservation: NSKeyValueObservation?
@@ -147,7 +152,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         twitchChat = TwitchChatMobs(model: self)
         reloadStream()
         resetSelectedScene()
-        setupPeriodicTimer()
+        setupPeriodicTimers()
         setupThermalState()
         updateButtonStates()
         sceneUpdated(imageEffectChanged: true, store: false)
@@ -169,21 +174,21 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         }
     }
 
-    func setupPeriodicTimer() {
+    func setupPeriodicTimers() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
-            DispatchQueue.main.async {
-                let now = Date()
-                self.updateUptime(now: now)
-                self.updateDigitalClock(now: now)
-                self.updateBatteryLevel()
-                self.updateChatSpeed()
-                self.updateSrtSpeed()
-                self.updateSpeed()
-                self.updateTwitchPubSub(now: now)
-                self.updateAudioLevel()
-                self.srtla?.logStatistics()
-                self.updateBestSrtlaConnectionType()
-            }
+            let now = Date()
+            self.updateUptime(now: now)
+            self.updateDigitalClock(now: now)
+            self.updateChatSpeed()
+            self.updateSrtSpeed()
+            self.updateSpeed()
+            self.updateTwitchPubSub(now: now)
+            self.updateAudioLevel()
+            self.updateBestSrtlaConnectionType()
+        })
+        Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
+            self.updateBatteryLevel()
+            self.srtla?.logStatistics()
         })
     }
 
@@ -403,10 +408,6 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
 
     func isChatConnected() -> Bool {
         return isTwitchChatConnected() || isKickPusherConnected()
-    }
-
-    func isStreamOk() -> Bool {
-        return streamState != .disconnected
     }
 
     func isStreamConnceted() -> Bool {

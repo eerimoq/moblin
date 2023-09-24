@@ -133,7 +133,6 @@ class RemoteConnection {
     }
 
     func stop() {
-        connection?.cancel()
         connection = nil
         reconnectTimer?.invalidate()
         reconnectTimer = nil
@@ -160,10 +159,10 @@ class RemoteConnection {
             latestSentDate = Date()
             packetsInFlight.removeAll()
             windowSize = windowDefault * windowMultiply
-            if state == .shouldSendRegisterRequest || hasGroupId {
-                sendSrtlaReg2()
-            } else if type == nil {
+            if type == nil {
                 state = .registered
+            } else if state == .shouldSendRegisterRequest || hasGroupId {
+                sendSrtlaReg2()
             } else {
                 state = .shouldSendRegisterRequest
             }

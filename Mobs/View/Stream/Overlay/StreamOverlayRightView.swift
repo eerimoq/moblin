@@ -38,8 +38,15 @@ struct RightOverlayView: View {
     }
 
     func netStreamColor() -> Color {
-        if model.isStreaming() && !model.isStreamOk() {
-            return .red
+        if model.isStreaming() {
+            switch model.streamState {
+            case .connecting:
+                return .cyan
+            case .connected:
+                return .white
+            case .disconnected:
+                return .red
+            }
         } else {
             return .white
         }
