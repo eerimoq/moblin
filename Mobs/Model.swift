@@ -32,6 +32,18 @@ struct ButtonPair: Identifiable {
     var second: ButtonState?
 }
 
+func isMuted(level: Float) -> Bool {
+    return level.isNaN
+}
+
+func becameMuted(old: Float, new: Float) -> Bool {
+    return !isMuted(level: old) && isMuted(level: new)
+}
+
+func becameUnmuted(old: Float, new: Float) -> Bool {
+    return isMuted(level: old) && !isMuted(level: new)
+}
+
 final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     private var rtmpConnection = RTMPConnection()
     private var srtConnection = SRTConnection()
@@ -741,7 +753,6 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
 
     func updateMute() {
         netStream.hasAudio = !isMuteOn
-        updateAudioLevel()
     }
 
     func grayScaleEffectOn() {
@@ -887,7 +898,15 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
 
     func stream(_: NetStream, audioLevel: Float) {
         DispatchQueue.main.async {
-            self.currentAudioLevel = audioLevel
+            if becameMuted(old: self.currentAudioLevel, new: audioLevel) || becameUnmuted(
+                old: self.currentAudioLevel,
+                new: audioLevel
+            ) {
+                self.currentAudioLevel = audioLevel
+                self.updateAudioLevel()
+            } else {
+                self.currentAudioLevel = audioLevel
+            }
         }
     }
 

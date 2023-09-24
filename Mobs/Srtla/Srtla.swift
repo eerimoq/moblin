@@ -56,10 +56,11 @@ class Srtla {
         for connection in remoteConnections {
             startRemote(connection: connection, host: host, port: port)
         }
-        connectTimer = Timer.scheduledTimer(withTimeInterval: timeout, repeats: false) { _ in
-            logger.info("srtla: Connect timer expired")
-            self.onDisconnected()
-        }
+        connectTimer = Timer
+            .scheduledTimer(withTimeInterval: timeout, repeats: false) { _ in
+                logger.info("srtla: Connect timer expired")
+                self.onDisconnected()
+            }
         state = .waitForRemoteSocketConnected
     }
 
