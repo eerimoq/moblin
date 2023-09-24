@@ -22,15 +22,17 @@ Features
 
 - Stream using RTMP, RTMPS, SRT or SRTLA.
 
-- Twitch.
+- Twitch integration.
 
   - Number of viewers.
 
   - Chat.
 
-- Kick.
+- Kick integration.
 
   - Chat.
+
+- Landscape stream only.
 
 - Basic scenes.
 
