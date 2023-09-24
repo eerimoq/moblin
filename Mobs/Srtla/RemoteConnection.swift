@@ -203,6 +203,18 @@ class RemoteConnection {
     }
 
     func sendPacket(packet: Data) {
+        if packet.count >= 2 {
+            if isDataPacket(packet: packet) {
+                let sn = getDataPacketSequenceNumber(packet: packet)
+                logger.debug("srtla: \(typeString): Sending data packet with SN \(sn)")
+            } else {
+                let type = String(format: "%04x", getControlPacketType(packet: packet))
+                logger
+                    .debug(
+                        "srtla: \(typeString): Sending control packet with type \(type)"
+                    )
+            }
+        }
         latestSentDate = Date()
         guard let connection else {
             logger
@@ -241,7 +253,6 @@ class RemoteConnection {
         packet.setUInt16Be(value: SrtlaPacketType.reg1.rawValue | 0x8000)
         packet[2...] = groupId
         sendPacket(packet: packet)
-        state = .shouldSendRegisterRequest
     }
 
     func sendSrtlaReg2() {
@@ -416,6 +427,16 @@ class RemoteConnection {
         guard packet.count >= 2 else {
             logger.error("srtla: \(typeString): Packet too short.")
             return
+        }
+        if isDataPacket(packet: packet) {
+            let sn = getDataPacketSequenceNumber(packet: packet)
+            logger.debug("srtla: \(typeString): Received data packet with SN \(sn)")
+        } else {
+            let type = String(format: "%04x", getControlPacketType(packet: packet))
+            logger
+                .debug(
+                    "srtla: \(typeString): Received control packet with type \(type)"
+                )
         }
         latestReceivedDate = Date()
         if isDataPacket(packet: packet) {

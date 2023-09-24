@@ -5,7 +5,7 @@ import os
 class EasyLogger {
     private var logger = Logger()
     private var handler: ((String) -> Void)?
-    private var lock = NSLock()
+    var debugEnabled: Bool = false
 
     init() {
         LBLogger.with("com.haishinkit.HaishinKit").level = .info
@@ -14,33 +14,28 @@ class EasyLogger {
 
     func debug(_ messsge: String) {
         logger.debug("\(messsge)")
+        if debugEnabled {
+            handler?(messsge)
+        }
     }
 
     func info(_ messsge: String) {
         logger.info("\(messsge)")
-        lock.withLock {
-            handler?(messsge)
-        }
+        handler?(messsge)
     }
 
     func warning(_ messsge: String) {
         logger.warning("\(messsge)")
-        lock.withLock {
-            handler?(messsge)
-        }
+        handler?(messsge)
     }
 
     func error(_ messsge: String) {
         logger.error("\(messsge)")
-        lock.withLock {
-            handler?(messsge)
-        }
+        handler?(messsge)
     }
 
     func setLogHandler(handler: @escaping (String) -> Void) {
-        lock.withLock {
-            self.handler = handler
-        }
+        self.handler = handler
     }
 }
 

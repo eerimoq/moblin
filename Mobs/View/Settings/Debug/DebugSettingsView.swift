@@ -9,6 +9,11 @@ struct DebugSettingsView: View {
                 NavigationLink(destination: DebugLogSettingsView(model: model)) {
                     Text("Log")
                 }
+                Toggle("Debug", isOn: Binding(get: {
+                    logger.debugEnabled
+                }, set: { value in
+                    logger.debugEnabled = value
+                }))
             }
         }
         .navigationTitle("Debug")

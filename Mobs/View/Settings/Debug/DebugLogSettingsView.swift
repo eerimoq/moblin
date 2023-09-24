@@ -8,11 +8,21 @@ struct DebugLogSettingsView: View {
             Text("The log is empty.")
                 .navigationTitle("Log")
         } else {
+            HStack {
+                Spacer()
+                Button(action: {
+                    model.clearLog()
+                }, label: {
+                    Text("Clear")
+                        .padding(5)
+                        .foregroundColor(.blue)
+                })
+            }
             ScrollView {
                 VStack(alignment: .leading) {
-                    ForEach(model.log, id: \.self) { message in
+                    ForEach(model.log) { message in
                         HStack {
-                            Text(message)
+                            Text(message.message)
                             Spacer()
                         }
                     }

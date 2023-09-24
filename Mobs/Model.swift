@@ -44,6 +44,11 @@ func becameUnmuted(old: Float, new: Float) -> Bool {
     return isMuted(level: old) && !isMuted(level: new)
 }
 
+struct LogEntry: Identifiable {
+    var id: Int
+    var message: String
+}
+
 final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     private var rtmpConnection = RTMPConnection()
     private var srtConnection = SRTConnection()
@@ -95,11 +100,12 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     @Published var sceneIndex = 0
     private var isTorchOn = false
     private var isMuteOn = false
-    var log: [String] = []
+    var log: [LogEntry] = []
     var imageStorage = ImageStorage()
     @Published var buttonPairs: [ButtonPair] = []
     private var reconnectTimer: Timer?
     private var reconnectTime = firstReconnectTime
+    private var logId = 1
 
     var database: Database {
         settings.database
@@ -149,13 +155,20 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func debugLog(message: String) {
-        if log.count > 100 {
-            log.removeFirst()
+        DispatchQueue.main.async {
+            if self.log.count > 100 {
+                self.log.removeFirst()
+            }
+            let timestamp = Date().formatted(date: .omitted, time: .standard)
+            self.log.append(LogEntry(id: self.logId, message: "\(timestamp) \(message)"))
+            self.logId += 1
         }
-        let timestamp = Date().formatted(date: .omitted, time: .standard)
-        log.append("\(timestamp) \(message)")
     }
 
+    func clearLog() {
+        log = []
+    }
+    
     func setup(settings: Settings) {
         mthkView.videoGravity = .resizeAspect
         logger.setLogHandler(handler: debugLog)
@@ -821,7 +834,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
                 self.onConnected()
             case RTMPConnection.Code.connectFailed.rawValue,
                  RTMPConnection.Code.connectClosed.rawValue:
-                self.onDisconnected()
+                self.onDisconnected(reason: "RTMP status changed to \(code)")
             default:
                 break
             }
@@ -835,10 +848,11 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         updateUptime(now: Date())
     }
 
-    func onDisconnected() {
+    func onDisconnected(reason: String) {
         guard streaming else {
             return
         }
+        logger.info("stream: Disconnected with reason \(reason)")
         streamState = .disconnected
         stopNetStream()
         reconnectTimer = Timer
@@ -925,7 +939,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
                 if connected.newValue! {
                     self.onConnected()
                 } else {
-                    self.onDisconnected()
+                    self.onDisconnected(reason: "SRT state changed to false")
                 }
             }
         }
@@ -955,7 +969,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
                     self.srtStream?.publish()
                 } catch {
                     DispatchQueue.main.async {
-                        self.onDisconnected()
+                        self.onDisconnected(reason: "SRT connect failed with \(error)")
                     }
                 }
             }
@@ -964,7 +978,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
 
     func srtlaError() {
         logger.info("stream: srtla: Error")
-        onDisconnected()
+        onDisconnected(reason: "General SRT error")
     }
 
     func srtlaPacketSent(byteCount: Int) {
