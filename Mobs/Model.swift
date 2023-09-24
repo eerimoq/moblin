@@ -61,6 +61,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     private var streaming = false
+    private var wasStreamingWhenDidEnterBackground = false
     private var streamStartDate: Date?
     private var srtConnectedObservation: NSKeyValueObservation?
     @Published var isLive = false
@@ -172,18 +173,29 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(willEnterForeground),
+            name: UIScene.didEnterBackgroundNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didEnterBackground),
             name: UIScene.willEnterForegroundNotification,
             object: nil
         )
     }
 
     @objc func willEnterForeground(animated _: Bool) {
-        if streaming {
+        if wasStreamingWhenDidEnterBackground {
             stopStream()
             startStream()
         } else {
             stopStream()
         }
+    }
+
+    @objc func didEnterBackground(animated _: Bool) {
+        wasStreamingWhenDidEnterBackground = streaming
+        stopStream()
     }
 
     func setupPeriodicTimers() {
@@ -601,12 +613,6 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             return
         }
         sceneUpdatedOn(scene: scene)
-    }
-
-    func updateUptimeFromNonMain() {
-        DispatchQueue.main.async {
-            self.updateUptime(now: Date())
-        }
     }
 
     func updateUptime(now: Date) {
