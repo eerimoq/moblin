@@ -426,7 +426,7 @@ class RemoteConnection {
     }
 
     func logStatistics() {
-        guard state == .registered else {
+        guard type != nil, state == .registered else {
             return
         }
         logger
