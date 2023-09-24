@@ -60,12 +60,10 @@ Features
 
 - Configure resolution, FPS, codec and bitrate.
 
-- H.264/AVC video codec.
+- H.264/AVC and H.265/HEVC video codecs.
 
 ToDo
 ====
-
-- Find out why H.265 does not work.
 
 - Fix crashes. =)
 
