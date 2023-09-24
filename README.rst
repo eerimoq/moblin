@@ -83,13 +83,12 @@ Ideas/plan
 
 - Big F on screen when disconnected.
 
-- App running in background? What is possible?
-
-- Reconnect immediately when connected to a network.
+- App running in background? What is possible? Video can not run in
+  background. Audio can most likely.
 
 - Audio only when bad connection.
 
-- Notifications. Both visually and with sound. Sound most improtant
+- Notifications. Both visually and with sound. Sound most important
   probably.
 
 - Emoji chat.
