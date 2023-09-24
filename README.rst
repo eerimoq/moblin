@@ -70,6 +70,8 @@ ToDo
 - Blinking icons instead of color cyan when trying to connect.
 
 - Investigate audio/video synch issues.
+
+- Investigate slow UI updates. For example when pressing mute.
   
 Ideas/plan
 ==========
