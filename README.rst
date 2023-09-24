@@ -20,7 +20,7 @@ inspired by it.
 Features
 ========
 
-- Stream using RTMP (Twitch), RTMPS (Kick) or SRT (OBS).
+- Stream using RTMP, RTMPS, SRT or SRTLA.
 
 - Twitch.
 
@@ -32,7 +32,7 @@ Features
 
   - Chat.
 
-- Scenes.
+- Basic scenes.
 
 - Main or front camera.
 
@@ -40,7 +40,13 @@ Features
 
 - Connection status.
 
-- Grayscale, movie and seipa video effects.
+- Video effects.
+
+  - Grayscale.
+
+  - Movie.
+
+  - Seipa.
 
 - Mute audio.
 
@@ -50,22 +56,24 @@ Features
 
 - H.264/AVC video codec.
 
-Ongoing
-=======
-
-- Implement `SRTLA`_.
-
 ToDo
 ====
 
 - Find out why H.265 does not work.
 
-- Fix crashes =)
+- Fix crashes. =)
 
 - Sometimes video hangs. Often when app is put into background.
 
+- Blinking icons instead of color cyan when trying to connect.
+
 Ideas/plan
 ==========
+
+- Adaptive bitrate, but based on what?
+
+- Lookup Twitch channel id from channel name. Possibly login to
+  Twitch.
 
 - Big F on screen when disconnected.
 
@@ -73,11 +81,7 @@ Ideas/plan
 
 - Reconnect immediately when connected to a network.
 
-- Audio level indicator.
-
 - Audio only when bad connection.
-
-- Adaptive bitrate, but based on what?
 
 - Notifications. Both visually and with sound. Sound most improtant
   probably.
@@ -91,7 +95,7 @@ Ideas/plan
 - Pause and scroll chat.
 
 - Buffering for short disconnections. Show as picture in picture or
-  other layout once reconnected. Possible a record button.
+  other layout once reconnected. Possibly a record button.
 
 - Play music and short sound samples.
 
@@ -102,12 +106,7 @@ Ideas/plan
 - Graphical scene setup? However, overlays will probably be added
   server side by most streamers, so not that important to change.
 
-- Lookup Twitch channel id from channel name. Possibly login to
-  Twitch.
-
 - LIDAR, altitude.
-
-- WebRTC.
 
 Testing with local RTMP streaming server
 ========================================
