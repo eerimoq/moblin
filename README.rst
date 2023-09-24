@@ -75,6 +75,8 @@ ToDo
 
 - Investigate audio/video synch issues?
 
+- Move close button to top in bitrate selector.
+
 Ideas/plan
 ==========
 
