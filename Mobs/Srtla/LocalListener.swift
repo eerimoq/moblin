@@ -45,18 +45,6 @@ class LocalListener {
 
     func handleNewListenerConnection(connection: NWConnection) {
         self.connection = connection
-        connection.stateUpdateHandler = { state in
-            switch state {
-            case .ready:
-                logger.info("srtla: local: Connection ready")
-            case let .failed(error):
-                logger.info("srtla: local: Connection failed with error \(error)")
-            case .cancelled:
-                logger.info("srtla: local: Connection cancelled")
-            default:
-                break
-            }
-        }
         connection.start(queue: DispatchQueue.main)
         receivePacket()
     }

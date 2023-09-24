@@ -302,9 +302,9 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         }
         logger.info("stream: Stop")
         streaming = false
-        streamState = .disconnected
         UIApplication.shared.isIdleTimerDisabled = false
         stopNetStream()
+        streamState = .disconnected
     }
 
     func startNetStream() {
@@ -825,7 +825,6 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func onConnected() {
-        logger.info("stream: Connected")
         reconnectTime = firstReconnectTime
         streamStartDate = Date()
         streamState = .connected
@@ -833,7 +832,6 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func onDisconnected() {
-        logger.info("stream: Disconnected")
         guard streaming else {
             return
         }
