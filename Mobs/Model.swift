@@ -168,7 +168,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     func clearLog() {
         log = []
     }
-    
+
     func setup(settings: Settings) {
         mthkView.videoGravity = .resizeAspect
         logger.setLogHandler(handler: debugLog)
@@ -960,12 +960,24 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         srtla = nil
     }
 
+    func makeLocalhostSrtUrl(port: UInt16) -> URL? {
+        guard let url = URL(string: stream.url!) else {
+            return nil
+        }
+        guard var localUrl = URL(string: "srt://localhost:\(port)") else {
+            return nil
+        }
+        var urlComponents = URLComponents(url: localUrl, resolvingAgainstBaseURL: false)!
+        urlComponents.query = url.query
+        return urlComponents.url
+    }
+
     func srtlaReady(port: UInt16) {
         DispatchQueue.main.async {
             self.setupSrtConnectionStateListener()
             DispatchQueue(label: "com.eerimoq.srt").async {
                 do {
-                    try self.srtConnection.open(URL(string: "srt://localhost:\(port)")!)
+                    try self.srtConnection.open(self.makeLocalhostSrtUrl(port: port))
                     self.srtStream?.publish()
                 } catch {
                     DispatchQueue.main.async {
