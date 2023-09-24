@@ -589,14 +589,14 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func sceneUpdated(imageEffectChanged: Bool = false, store: Bool = true) {
-        sceneUpdatedOff()
-        if imageEffectChanged {
-            reloadImageEffects()
-        }
         if store {
             self.store()
         }
         updateButtonStates()
+        sceneUpdatedOff()
+        if imageEffectChanged {
+            reloadImageEffects()
+        }
         guard let scene = findEnabledScene(id: selectedSceneId) else {
             return
         }
