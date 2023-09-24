@@ -5,6 +5,7 @@ struct StreamButtonText: View {
 
     var body: some View {
         Text(text)
+            .foregroundColor(.white)
             .frame(width: 60)
             .padding(5)
             .background(.red)
@@ -60,6 +61,7 @@ struct ControlBarView: View {
                     ThermalStateView(thermalState: model.thermalState)
                     Spacer()
                     Text(model.digitalClock)
+                        .foregroundColor(.white)
                         .font(.system(size: 13))
                 }
                 HStack {
@@ -78,6 +80,7 @@ struct ControlBarView: View {
                                     Circle()
                                         .stroke(.secondary)
                                 )
+                                .foregroundColor(.white)
                         }
                     })
                 }

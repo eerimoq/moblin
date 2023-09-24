@@ -46,11 +46,22 @@ struct StreamVideoBitrateSettingsButtonView: View {
     }
 
     var body: some View {
+        HStack {
+            Spacer()
+            Button(action: {
+                done()
+            }, label: {
+                Text("Close")
+                    .padding(5)
+                    .foregroundColor(.blue)
+            })
+        }
         Form {
             Section {
                 Picker("", selection: $selection) {
                     ForEach(bitrates, id: \.self) { bitrate in
-                        Text(formatBytesPerSecond(speed: Int64(bitrate))).tag(bitrate)
+                        Text(formatBytesPerSecond(speed: Int64(bitrate)))
+                            .tag(bitrate)
                     }
                 }
                 .onChange(of: selection) { bitrate in
@@ -63,17 +74,6 @@ struct StreamVideoBitrateSettingsButtonView: View {
                 }
                 .pickerStyle(.inline)
                 .labelsHidden()
-            }
-            Section {
-                HStack {
-                    Spacer()
-                    Button(action: {
-                        done()
-                    }, label: {
-                        Text("Close")
-                    })
-                    Spacer()
-                }
             }
         }
     }

@@ -28,7 +28,6 @@ struct MainView: View {
             .onDisappear {
                 AppDelegate.setAllowedOrientations(mask: .all)
             }
-            .foregroundColor(.white)
         }
     }
 }
