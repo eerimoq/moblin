@@ -172,16 +172,21 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         removeUnusedImages()
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(willEnterForeground),
+            selector: #selector(didEnterBackground),
             name: UIScene.didEnterBackgroundNotification,
             object: nil
         )
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(didEnterBackground),
+            selector: #selector(willEnterForeground),
             name: UIScene.willEnterForegroundNotification,
             object: nil
         )
+    }
+
+    @objc func didEnterBackground(animated _: Bool) {
+        wasStreamingWhenDidEnterBackground = streaming
+        stopStream()
     }
 
     @objc func willEnterForeground(animated _: Bool) {
@@ -191,11 +196,6 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         } else {
             stopStream()
         }
-    }
-
-    @objc func didEnterBackground(animated _: Bool) {
-        wasStreamingWhenDidEnterBackground = streaming
-        stopStream()
     }
 
     func setupPeriodicTimers() {
