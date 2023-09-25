@@ -4,31 +4,37 @@ struct DebugLogSettingsView: View {
     @ObservedObject var model: Model
 
     var body: some View {
-        if model.log.isEmpty {
-            Text("The log is empty.")
-                .navigationTitle("Log")
-        } else {
-            HStack {
-                Spacer()
-                Button(action: {
-                    model.clearLog()
-                }, label: {
-                    Text("Clear")
-                        .padding(5)
-                        .foregroundColor(.blue)
-                })
-            }
-            ScrollView {
-                VStack(alignment: .leading) {
-                    ForEach(model.log) { message in
+        HStack {
+            Spacer()
+            Button(action: {
+                model.copyLog()
+            }, label: {
+                Text("Copy")
+                    .padding(5)
+                    .foregroundColor(.blue)
+            })
+            Button(action: {
+                model.clearLog()
+            }, label: {
+                Text("Clear")
+                    .padding(5)
+                    .foregroundColor(.blue)
+            })
+        }
+        ScrollView {
+            if model.log.isEmpty {
+                Text("The log is empty.")
+            } else {
+                VStack {
+                    ForEach(model.log) { item in
                         HStack {
-                            Text(message.message)
+                            Text(item.message)
                             Spacer()
                         }
                     }
                 }
             }
-            .navigationTitle("Log")
         }
+        .navigationTitle("Log")
     }
 }

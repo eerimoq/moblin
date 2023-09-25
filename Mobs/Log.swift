@@ -8,8 +8,8 @@ class EasyLogger {
     var debugEnabled: Bool = false
 
     init() {
-        LBLogger.with("com.haishinkit.HaishinKit").level = .info
-        LBLogger.with("com.haishinkit.SRTHaishinKit").level = .trace
+        // LBLogger.with("com.haishinkit.HaishinKit").level = .info
+        // LBLogger.with("com.haishinkit.SRTHaishinKit").level = .trace
     }
 
     func debug(_ messsge: String) {

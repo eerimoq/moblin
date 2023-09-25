@@ -54,6 +54,7 @@
 		0379BBB82AAD9B7200B718B6 /* WidgetsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBB72AAD9B7200B718B6 /* WidgetsSettingsView.swift */; };
 		0379BBC02AADC4EC00B718B6 /* AboutLicensesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBBF2AADC4EC00B718B6 /* AboutLicensesSettingsView.swift */; };
 		0382933B2A9A73ED008963AA /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0382933A2A9A73ED008963AA /* Settings.swift */; };
+		03A974282AC137A000610E21 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 03A974272AC137A000610E21 /* Collections */; };
 		03A983422A9A03D3008FF0DB /* TwitchChat in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983412A9A03D3008FF0DB /* TwitchChat */; };
 		03A983452A9A03EA008FF0DB /* HaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983442A9A03EA008FF0DB /* HaishinKit */; };
 		03A983612A9A05D7008FF0DB /* StreamsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A983552A9A05D7008FF0DB /* StreamsSettingsView.swift */; };
@@ -165,6 +166,7 @@
 			files = (
 				03A983452A9A03EA008FF0DB /* HaishinKit in Frameworks */,
 				03A983422A9A03D3008FF0DB /* TwitchChat in Frameworks */,
+				03A974282AC137A000610E21 /* Collections in Frameworks */,
 				035D372C2AB103E600045B92 /* SRTHaishinKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -558,6 +560,7 @@
 				03A983412A9A03D3008FF0DB /* TwitchChat */,
 				03A983442A9A03EA008FF0DB /* HaishinKit */,
 				035D372B2AB103E600045B92 /* SRTHaishinKit */,
+				03A974272AC137A000610E21 /* Collections */,
 			);
 			productName = Mobs;
 			productReference = 035E9E332A9A02D6009D4F5A /* Mobs.app */;
@@ -590,6 +593,7 @@
 			packageReferences = (
 				03A983402A9A03D3008FF0DB /* XCRemoteSwiftPackageReference "twitch-chat" */,
 				03A983432A9A03EA008FF0DB /* XCRemoteSwiftPackageReference "HaishinKit" */,
+				03A974262AC137A000610E21 /* XCRemoteSwiftPackageReference "swift-collections" */,
 			);
 			productRefGroup = 035E9E342A9A02D6009D4F5A /* Products */;
 			projectDirPath = "";
@@ -924,6 +928,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		03A974262AC137A000610E21 /* XCRemoteSwiftPackageReference "swift-collections" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-collections.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		03A983402A9A03D3008FF0DB /* XCRemoteSwiftPackageReference "twitch-chat" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/eerimoq/twitch-chat";
@@ -947,6 +959,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 03A983432A9A03EA008FF0DB /* XCRemoteSwiftPackageReference "HaishinKit" */;
 			productName = SRTHaishinKit;
+		};
+		03A974272AC137A000610E21 /* Collections */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03A974262AC137A000610E21 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = Collections;
 		};
 		03A983412A9A03D3008FF0DB /* TwitchChat */ = {
 			isa = XCSwiftPackageProductDependency;

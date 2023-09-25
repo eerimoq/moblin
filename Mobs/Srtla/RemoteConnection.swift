@@ -202,19 +202,24 @@ class RemoteConnection {
         }
     }
 
-    func sendPacket(packet: Data) {
-        if packet.count >= 2 {
-            if isDataPacket(packet: packet) {
-                let sn = getDataPacketSequenceNumber(packet: packet)
-                logger.debug("srtla: \(typeString): Sending data packet with SN \(sn)")
-            } else {
-                let type = String(format: "%04x", getControlPacketType(packet: packet))
-                logger
-                    .debug(
-                        "srtla: \(typeString): Sending control packet with type \(type)"
-                    )
-            }
+    func logSentPacket(packet: Data) {
+        guard packet.count >= 2 else {
+            return
         }
+        if isDataPacket(packet: packet) {
+            let sn = getDataPacketSequenceNumber(packet: packet)
+            logger.debug("srtla: \(typeString): Sending data packet with SN \(sn)")
+        } else {
+            let type = String(format: "%04x", getControlPacketType(packet: packet))
+            logger
+                .debug(
+                    "srtla: \(typeString): Sending control packet with type \(type)"
+                )
+        }
+    }
+
+    func sendPacket(packet: Data) {
+        logSentPacket(packet: packet)
         latestSentDate = Date()
         guard let connection else {
             logger
@@ -265,6 +270,7 @@ class RemoteConnection {
     }
 
     func sendSrtlaKeepalive() {
+        logger.info("send keepalive")
         var packet = Data(count: 2)
         packet.setUInt16Be(value: SrtlaPacketType.keepalive.rawValue | 0x8000)
         sendPacket(packet: packet)
@@ -354,8 +360,11 @@ class RemoteConnection {
         onRegistered?()
         keepaliveTimer = Timer
             .scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
-                self.sendSrtlaKeepalive()
-                if self.latestReceivedDate + 5 < Date() {
+                let now = Date()
+                if self.latestSentDate < now - 0.5 {
+                    self.sendSrtlaKeepalive()
+                }
+                if self.latestReceivedDate < now - 5 {
                     self.stop()
                     self.reconnect()
                 }
@@ -423,14 +432,12 @@ class RemoteConnection {
         packetHandler?(packet)
     }
 
-    func handlePacket(packet: Data) {
-        guard packet.count >= 2 else {
-            logger.error("srtla: \(typeString): Packet too short.")
-            return
-        }
+    func logReceivedPacket(packet: Data) {
         if isDataPacket(packet: packet) {
-            let sn = getDataPacketSequenceNumber(packet: packet)
-            logger.debug("srtla: \(typeString): Received data packet with SN \(sn)")
+            if packet.count >= 4 {
+                let sn = getDataPacketSequenceNumber(packet: packet)
+                logger.debug("srtla: \(typeString): Received data packet with SN \(sn)")
+            }
         } else {
             let type = String(format: "%04x", getControlPacketType(packet: packet))
             logger
@@ -438,6 +445,14 @@ class RemoteConnection {
                     "srtla: \(typeString): Received control packet with type \(type)"
                 )
         }
+    }
+
+    func handlePacket(packet: Data) {
+        guard packet.count >= 2 else {
+            logger.error("srtla: \(typeString): Packet too short.")
+            return
+        }
+        logReceivedPacket(packet: packet)
         latestReceivedDate = Date()
         if isDataPacket(packet: packet) {
             handleDataPacket(packet: packet)

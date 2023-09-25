@@ -1,3 +1,4 @@
+import Collections
 import SwiftUI
 
 struct LineView: View {
@@ -23,7 +24,7 @@ struct LineView: View {
 }
 
 struct StreamOverlayChatView: View {
-    var posts: [Post]
+    var posts: Deque<Post>
 
     var body: some View {
         VStack(alignment: .leading, spacing: 1) {

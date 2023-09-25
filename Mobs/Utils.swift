@@ -194,3 +194,7 @@ extension AVCaptureSession.InterruptionReason {
         }
     }
 }
+
+func version() -> String {
+    return Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "-"
+}

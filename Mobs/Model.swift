@@ -1,3 +1,4 @@
+import Collections
 import Combine
 import Foundation
 import HaishinKit
@@ -82,7 +83,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     private var twitchPubSub: TwitchPubSub?
     private var kickPusher: KickPusher?
     private var chatPostId = 0
-    @Published var chatPosts: [Post] = []
+    @Published var chatPosts: Deque<Post> = []
     var numberOfChatPosts = 0
     @Published var chatPostsPerSecond = 0.0
     @Published var numberOfViewers = noValue
@@ -100,7 +101,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     @Published var sceneIndex = 0
     private var isTorchOn = false
     private var isMuteOn = false
-    var log: [LogEntry] = []
+    var log: Deque<LogEntry> = []
     var imageStorage = ImageStorage()
     @Published var buttonPairs: [ButtonPair] = []
     private var reconnectTimer: Timer?
@@ -156,10 +157,12 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
 
     func debugLog(message: String) {
         DispatchQueue.main.async {
-            if self.log.count > 100 {
+            if self.log.count > 500 {
                 self.log.removeFirst()
             }
-            let timestamp = Date().formatted(date: .omitted, time: .standard)
+            let timestamp = Date()
+                .formatted(.dateTime.hour().minute().second()
+                    .secondFraction(.fractional(3)))
             self.log.append(LogEntry(id: self.logId, message: "\(timestamp) \(message)"))
             self.logId += 1
         }
@@ -167,6 +170,14 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
 
     func clearLog() {
         log = []
+    }
+
+    func copyLog() {
+        var data = "Version: \(version())\n"
+        data += "Debug: \(logger.debugEnabled)\n\n"
+        data += log.map { e in e.message }.joined(separator: "\n")
+        UIPasteboard.general.setValue(data,
+                                      forPasteboardType: UTType.plainText.identifier)
     }
 
     func setup(settings: Settings) {
@@ -964,7 +975,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         guard let url = URL(string: stream.url!) else {
             return nil
         }
-        guard var localUrl = URL(string: "srt://localhost:\(port)") else {
+        guard let localUrl = URL(string: "srt://localhost:\(port)") else {
             return nil
         }
         var urlComponents = URLComponents(url: localUrl, resolvingAgainstBaseURL: false)!
