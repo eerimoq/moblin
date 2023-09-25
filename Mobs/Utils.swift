@@ -162,10 +162,19 @@ extension Data {
         }.bigEndian
     }
 
-    mutating func setUInt16Be(value: UInt16, offset _: Int = 0) {
+    mutating func setUInt16Be(value: UInt16, offset: Int = 0) {
         withUnsafeMutableBytes { data in data.storeBytes(
             of: value.bigEndian,
+            toByteOffset: offset,
             as: UInt16.self
+        ) }
+    }
+    
+    mutating func setUInt32Be(value: UInt32, offset: Int = 0) {
+        withUnsafeMutableBytes { data in data.storeBytes(
+            of: value.bigEndian,
+            toByteOffset: offset,
+            as: UInt32.self
         ) }
     }
 }

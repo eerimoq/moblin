@@ -78,7 +78,12 @@ class RemoteConnection {
             logger.info("srtla: \(typeString): State \(oldValue) -> \(state)")
         }
     }
-
+    private var nullPacket: Data = {
+        var packet = Data(count: 188)
+        packet.setUInt32Be(value: (UInt32(0x47) << 24) | (UInt32(0x1fff) << 8) | (UInt32(0x1) << 4))
+        return packet
+    }()
+    
     private var host: String!
     private var port: UInt16!
     var typeString: String
@@ -217,9 +222,27 @@ class RemoteConnection {
                 )
         }
     }
-
+    
     func sendPacket(packet: Data) {
-        logSentPacket(packet: packet)
+        if isDataPacket(packet: packet) {
+            var numberOfMpegTsPackets = (packet.count - 16) / 188
+            if numberOfMpegTsPackets < 6 {
+                var paddedPacket = packet
+                while numberOfMpegTsPackets < 6 {
+                    paddedPacket.append(nullPacket)
+                    numberOfMpegTsPackets += 1
+                }
+                sendPacketInternal(packet: paddedPacket)
+            } else {
+                sendPacketInternal(packet: packet)
+            }
+        } else {
+            sendPacketInternal(packet: packet)
+        }
+        
+    }
+
+    func sendPacketInternal(packet: Data) {
         latestSentDate = Date()
         guard let connection else {
             logger
@@ -235,7 +258,7 @@ class RemoteConnection {
             }
         })
     }
-
+    
     func sendSrtPacket(packet: Data) {
         if isDataPacket(packet: packet) {
             packetsInFlight.insert(getDataPacketSequenceNumber(packet: packet))
@@ -270,7 +293,6 @@ class RemoteConnection {
     }
 
     func sendSrtlaKeepalive() {
-        logger.info("send keepalive")
         var packet = Data(count: 2)
         packet.setUInt16Be(value: SrtlaPacketType.keepalive.rawValue | 0x8000)
         sendPacket(packet: packet)
@@ -300,7 +322,7 @@ class RemoteConnection {
                     return
                 }
                 let upToAckSn = packet.getUInt32Be(offset: offset)
-                for sn in stride(from: ackSn, through: upToAckSn, by: 1) {
+                for sn in stride(from: ackSn & 0x7fffffff, through: upToAckSn, by: 1) {
                     onSrtNak?(sn)
                 }
                 offset += 4
@@ -452,7 +474,6 @@ class RemoteConnection {
             logger.error("srtla: \(typeString): Packet too short.")
             return
         }
-        logReceivedPacket(packet: packet)
         latestReceivedDate = Date()
         if isDataPacket(packet: packet) {
             handleDataPacket(packet: packet)
