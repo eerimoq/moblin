@@ -120,29 +120,6 @@ Ideas/plan
 
 - LIDAR, altitude.
 
-Testing with local RTMP streaming server
-========================================
-
-#. Start streaming server. You must have `go`_ installed.
-
-   .. code-block::
-
-      $ (cd livego && go run . --level debug)
-
-#. Create the application instance in the server (hard coded to 1234):
-
-   .. code-block::
-
-      $ wget 'http://localhost:8090/control/get?room=movie'
-
-#. Start streaming with Dev stream.
-
-#. Watch stream in VLC:
-
-   .. code-block::
-
-      $ vlc rtmp://localhost:1935/live/movie
-
 Resources
 =========
 
