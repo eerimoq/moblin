@@ -2,7 +2,7 @@ MOBS
 ====
 
 A free iOS app for IRL streaming. Mainly targetting `Twitch`_, but can
-stream to any RTMP, RTMPS or SRT endpoint.
+stream to any RTMP, RTMPS, SRT or SRTLA endpoint.
 
 Not yet in App Store, but on `TestFlight`_!
 
@@ -22,6 +22,8 @@ Features
 
 - Stream using RTMP, RTMPS, SRT or SRTLA.
 
+- H.264/AVC and H.265/HEVC video codecs.
+
 - Twitch integration.
 
   - Number of viewers.
@@ -35,6 +37,8 @@ Features
 - Kick integration.
 
   - Chat.
+
+- Configure resolution, FPS, codec and bitrate.
 
 - Landscape stream only.
 
@@ -58,22 +62,19 @@ Features
 
 - Torch.
 
-- Configure resolution, FPS, codec and bitrate.
-
-- H.264/AVC and H.265/HEVC video codecs.
-
 ToDo
 ====
 
 - Torch turned off when pressing widget button.
+
+- Move SRT to non-main dispatch queue. Video interruptions now when
+  zooming slowly, and probably same for other UI actions as well.
 
 - Fix crashes. =)
 
 - Sometimes video hangs. Often when app is put into background.
 
 - Blinking icons instead of color cyan when trying to connect.
-
-- Investigate audio/video synch issues?
 
 Ideas/plan
 ==========
@@ -94,6 +95,8 @@ Ideas/plan
   probably.
 
 - Emoji chat.
+
+- Show two cameras at the same time.
 
 - Bigger chat text? Bigger text in general?
 
