@@ -70,6 +70,8 @@ class RemoteConnection {
     private let windowMultiply = 1000
     private let windowDecrement = 100
     private let windowIncrement = 30
+    private var numberOfNullPacketsSent: UInt64 = 0
+    private var numberOfNonNullPacketsSent: UInt64 = 0
 
     private var hasGroupId: Bool = false
     private var groupId: Data!
@@ -226,11 +228,13 @@ class RemoteConnection {
     func sendPacket(packet: Data) {
         if isDataPacket(packet: packet) {
             var numberOfMpegTsPackets = (packet.count - 16) / 188
+            numberOfNonNullPacketsSent += UInt64(numberOfMpegTsPackets)
             if numberOfMpegTsPackets < 6 {
                 var paddedPacket = packet
                 while numberOfMpegTsPackets < 6 {
                     paddedPacket.append(nullPacket)
                     numberOfMpegTsPackets += 1
+                    numberOfNullPacketsSent += 1
                 }
                 sendPacketInternal(packet: paddedPacket)
             } else {
@@ -497,7 +501,9 @@ class RemoteConnection {
             .debug(
                 """
                 srtla: \(typeString): Score: \(score()), In flight: \
-                \(packetsInFlight.count), Window size: \(windowSize)
+                \(packetsInFlight.count), Window size: \(windowSize), \
+                Packets: \(numberOfNonNullPacketsSent) \
+                Null packets: \(numberOfNullPacketsSent)
                 """
             )
     }
