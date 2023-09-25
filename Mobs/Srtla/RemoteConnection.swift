@@ -51,6 +51,13 @@ private enum State {
     case registered
 }
 
+private let windowDefault = 20
+private let windowMinimum = 1
+private let windowMaximum = 60
+private let windowMultiply = 1000
+private let windowDecrement = 100
+private let windowIncrement = 30
+
 class RemoteConnection {
     private var type: NWInterface.InterfaceType?
     private var connection: NWConnection? {
@@ -68,12 +75,6 @@ class RemoteConnection {
     private var latestSentDate = Date()
     private var packetsInFlight: Set<UInt32> = []
     private var windowSize: Int = 0
-    private let windowDefault = 20
-    private let windowMinimum = 1
-    private let windowMaximum = 60
-    private let windowMultiply = 1000
-    private let windowDecrement = 100
-    private let windowIncrement = 30
     private var numberOfNullPacketsSent: UInt64 = 0
     private var numberOfNonNullPacketsSent: UInt64 = 0
     private var hasGroupId: Bool = false
