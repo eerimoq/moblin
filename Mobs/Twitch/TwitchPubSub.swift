@@ -116,9 +116,10 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
             model.numberOfViewersUpdateDate = Date()
         } else {
             logger
-                .debug(
-                    "twitch: pubsub: \(channelId): Unsupported message type \(type) (message: \(message))"
-                )
+                .debug("""
+                twitch: pubsub: \(channelId): Unsupported message \
+                type \(type) (message: \(message))
+                """)
         }
     }
 
@@ -136,9 +137,10 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
             }
         } catch {
             logger
-                .error(
-                    "twitch: pubsub: \(channelId): Failed to process message \"\(message)\" with error \(error)"
-                )
+                .error("""
+                twitch: pubsub: \(channelId): Failed to process \
+                message \"\(message)\" with error \(error)
+                """)
         }
     }
 
@@ -189,9 +191,10 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         webSocket.send(message) { error in
             if let error {
                 logger
-                    .error(
-                        "twitch: pubsub: \(self.channelId): Failed to send message to server with error \(error)"
-                    )
+                    .error("""
+                    twitch: pubsub: \(self.channelId): Failed to send \
+                    message to server with error \(error)
+                    """)
                 self.reconnect()
             }
         }

@@ -107,9 +107,10 @@ final class KickPusher: NSObject, URLSessionWebSocketDelegate {
             }
         } catch {
             logger
-                .error(
-                    "kick: pusher: \(channelId): Failed to process message \"\(message)\" with error \(error)"
-                )
+                .error("""
+                kick: pusher: \(channelId): Failed to process \
+                message \"\(message)\" with error \(error)
+                """)
         }
     }
 
@@ -136,9 +137,10 @@ final class KickPusher: NSObject, URLSessionWebSocketDelegate {
                     self.handleStringMessage(message: text)
                 case let .data(data):
                     logger
-                        .error(
-                            "kick: pusher: \(self.channelId): Received binary message: \(data)"
-                        )
+                        .error("""
+                        kick: pusher: \(self.channelId): Received binary \
+                        message: \(data)
+                        """)
                 @unknown default:
                     logger
                         .warning(
@@ -156,9 +158,10 @@ final class KickPusher: NSObject, URLSessionWebSocketDelegate {
         webSocket.send(message) { error in
             if let error {
                 logger
-                    .error(
-                        "kick: pusher: \(self.channelId): Failed to send message to server with error \(error)"
-                    )
+                    .error("""
+                    kick: pusher: \(self.channelId): Failed to send \
+                    message to server with error \(error)
+                    """)
                 self.reconnect()
             }
         }

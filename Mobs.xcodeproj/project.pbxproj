@@ -38,7 +38,6 @@
 		0379BB8A2AA83A8B00B718B6 /* StreamVideoFpsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB892AA83A8B00B718B6 /* StreamVideoFpsSettingsView.swift */; };
 		0379BB8E2AA90D1900B718B6 /* DebugLogSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB8D2AA90D1900B718B6 /* DebugLogSettingsView.swift */; };
 		0379BB902AABA7DC00B718B6 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB8F2AABA7DC00B718B6 /* Log.swift */; };
-		0379BB922AABAA6600B718B6 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB912AABAA6600B718B6 /* Location.swift */; };
 		0379BB942AACF16600B718B6 /* SeipaEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB932AACF16600B718B6 /* SeipaEffect.swift */; };
 		0379BB962AACF2D700B718B6 /* BloomEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB952AACF2D700B718B6 /* BloomEffect.swift */; };
 		0379BB9C2AAD819800B718B6 /* StreamOverlayLeftView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB9B2AAD819800B718B6 /* StreamOverlayLeftView.swift */; };
@@ -116,7 +115,6 @@
 		0379BB892AA83A8B00B718B6 /* StreamVideoFpsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoFpsSettingsView.swift; sourceTree = "<group>"; };
 		0379BB8D2AA90D1900B718B6 /* DebugLogSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogSettingsView.swift; sourceTree = "<group>"; };
 		0379BB8F2AABA7DC00B718B6 /* Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
-		0379BB912AABAA6600B718B6 /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 		0379BB932AACF16600B718B6 /* SeipaEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeipaEffect.swift; sourceTree = "<group>"; };
 		0379BB952AACF2D700B718B6 /* BloomEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BloomEffect.swift; sourceTree = "<group>"; };
 		0379BB9B2AAD819800B718B6 /* StreamOverlayLeftView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOverlayLeftView.swift; sourceTree = "<group>"; };
@@ -304,7 +302,6 @@
 				0315A3392AA2FA0A00295443 /* Srtla */,
 				03A983542A9A0582008FF0DB /* View */,
 				035E9E3C2A9A02D7009D4F5A /* Preview Content */,
-				0379BB912AABAA6600B718B6 /* Location.swift */,
 				0379BB8F2AABA7DC00B718B6 /* Log.swift */,
 				036333272AAE2E5100FF1231 /* ImageStorage.swift */,
 				035E9E362A9A02D6009D4F5A /* MobsApp.swift */,
@@ -673,7 +670,6 @@
 				0315A33D2AA2FA7D00295443 /* RemoteConnection.swift in Sources */,
 				0379BB7E2AA7C55000B718B6 /* ButtonImagePickerSettingsView.swift in Sources */,
 				03B373FF2A9FCA790028DDD5 /* ThermalStateView.swift in Sources */,
-				0379BB922AABAA6600B718B6 /* Location.swift in Sources */,
 				03A983682A9A05D7008FF0DB /* SceneSettingsView.swift in Sources */,
 				0379BB942AACF16600B718B6 /* SeipaEffect.swift in Sources */,
 				03B374022AA0354C0028DDD5 /* GrayScaleEffect.swift in Sources */,
