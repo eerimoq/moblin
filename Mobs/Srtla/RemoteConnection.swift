@@ -39,6 +39,10 @@ func isSnAcked(sn: UInt32, ackSn: UInt32) -> Bool {
     }
 }
 
+func isSnRange(sn: UInt32) -> Bool {
+    return (sn & 0x8000_0000) == 0x8000_0000
+}
+
 private enum State {
     case idle
     case socketConnecting
@@ -72,7 +76,6 @@ class RemoteConnection {
     private let windowIncrement = 30
     private var numberOfNullPacketsSent: UInt64 = 0
     private var numberOfNonNullPacketsSent: UInt64 = 0
-
     private var hasGroupId: Bool = false
     private var groupId: Data!
     private var state = State.idle {
@@ -80,12 +83,15 @@ class RemoteConnection {
             logger.info("srtla: \(typeString): State \(oldValue) -> \(state)")
         }
     }
+
     private var nullPacket: Data = {
         var packet = Data(count: 188)
-        packet.setUInt32Be(value: (UInt32(0x47) << 24) | (UInt32(0x1fff) << 8) | (UInt32(0x1) << 4))
+        packet
+            .setUInt32Be(value: (UInt32(0x47) << 24) | (UInt32(0x1FFF) << 8) |
+                (UInt32(0x1) << 4))
         return packet
     }()
-    
+
     private var host: String!
     private var port: UInt16!
     var typeString: String
@@ -224,7 +230,7 @@ class RemoteConnection {
                 )
         }
     }
-    
+
     func sendPacket(packet: Data) {
         if isDataPacket(packet: packet) {
             var numberOfMpegTsPackets = (packet.count - 16) / 188
@@ -243,7 +249,6 @@ class RemoteConnection {
         } else {
             sendPacketInternal(packet: packet)
         }
-        
     }
 
     func sendPacketInternal(packet: Data) {
@@ -262,7 +267,7 @@ class RemoteConnection {
             }
         })
     }
-    
+
     func sendSrtPacket(packet: Data) {
         if isDataPacket(packet: packet) {
             packetsInFlight.insert(getDataPacketSequenceNumber(packet: packet))
@@ -319,17 +324,21 @@ class RemoteConnection {
         while offset <= packet.count - 4 {
             let ackSn = packet.getUInt32Be(offset: offset)
             offset += 4
-            if ackSn & 0x8000_0000 == 0 {
-                onSrtNak?(ackSn)
-            } else {
+            if isSnRange(sn: ackSn) {
                 guard offset <= packet.count - 4 else {
+                    logger
+                        .error(
+                            "srtla: \(typeString): Missing second sequence number in range nak"
+                        )
                     return
                 }
                 let upToAckSn = packet.getUInt32Be(offset: offset)
-                for sn in stride(from: ackSn & 0x7fffffff, through: upToAckSn, by: 1) {
+                for sn in stride(from: ackSn & 0x7FFF_FFFF, through: upToAckSn, by: 1) {
                     onSrtNak?(sn)
                 }
                 offset += 4
+            } else {
+                onSrtNak?(ackSn)
             }
         }
     }
@@ -344,10 +353,8 @@ class RemoteConnection {
     func handleSrtlaKeepalive() {}
 
     func handleSrtlaAck(packet: Data) {
-        var offset = 4
-        while offset <= packet.count - 4 {
+        for offset in stride(from: 4, to: packet.count, by: 4) {
             onSrtlaAck?(packet.getUInt32Be(offset: offset))
-            offset += 4
         }
     }
 
