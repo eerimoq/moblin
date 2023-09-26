@@ -43,7 +43,7 @@ class LocalListener {
         }
     }
 
-    func handleNewListenerConnection(connection: NWConnection) {
+    private func handleNewListenerConnection(connection: NWConnection) {
         self.connection = connection
         connection.start(queue: srtlaDispatchQueue)
         receivePacket()

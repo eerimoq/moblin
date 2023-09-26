@@ -124,7 +124,7 @@ class RemoteConnection {
         startInternal()
     }
 
-    func startInternal() {
+    private func startInternal() {
         guard state == .idle else {
             return
         }
@@ -188,7 +188,7 @@ class RemoteConnection {
         }
     }
 
-    func reconnect() {
+    private func reconnect() {
         reconnectTimer = Timer
             .scheduledTimer(withTimeInterval: reconnectTime, repeats: false) { _ in
                 logger.warning("srtla: \(self.typeString): Reconnecting")
@@ -216,23 +216,7 @@ class RemoteConnection {
         }
     }
 
-    func logSentPacket(packet: Data) {
-        guard packet.count >= 2 else {
-            return
-        }
-        if isDataPacket(packet: packet) {
-            let sn = getDataPacketSequenceNumber(packet: packet)
-            logger.debug("srtla: \(typeString): Sending data packet with SN \(sn)")
-        } else {
-            let type = String(format: "%04x", getControlPacketType(packet: packet))
-            logger
-                .debug(
-                    "srtla: \(typeString): Sending control packet with type \(type)"
-                )
-        }
-    }
-
-    func sendPacket(packet: Data) {
+    private func sendPacket(packet: Data) {
         if isDataPacket(packet: packet) {
             var numberOfMpegTsPackets = (packet.count - 16) / 188
             numberOfNonNullPacketsSent += UInt64(numberOfMpegTsPackets)
@@ -252,7 +236,7 @@ class RemoteConnection {
         }
     }
 
-    func sendPacketInternal(packet: Data) {
+    private func sendPacketInternal(packet: Data) {
         latestSentDate = Date()
         guard let connection else {
             logger
@@ -293,7 +277,7 @@ class RemoteConnection {
         sendPacket(packet: packet)
     }
 
-    func sendSrtlaReg2() {
+    private func sendSrtlaReg2() {
         logger.info("srtla: \(typeString): Sending reg 2 (register connection)")
         var packet = Data(count: 2 + groupId.count)
         packet.setUInt16Be(value: SrtlaPacketType.reg2.rawValue | 0x8000)
@@ -302,13 +286,13 @@ class RemoteConnection {
         state = .waitForRegisterResponse
     }
 
-    func sendSrtlaKeepalive() {
+    private func sendSrtlaKeepalive() {
         var packet = Data(count: 2)
         packet.setUInt16Be(value: SrtlaPacketType.keepalive.rawValue | 0x8000)
         sendPacket(packet: packet)
     }
 
-    func handleSrtAck(packet: Data) {
+    private func handleSrtAck(packet: Data) {
         guard packet.count >= 20 else {
             return
         }
@@ -320,7 +304,7 @@ class RemoteConnection {
             .filter { sn in !isSnAcked(sn: sn, ackSn: ackSn) }
     }
 
-    func handleSrtNak(packet: Data) {
+    private func handleSrtNak(packet: Data) {
         var offset = 16
         while offset <= packet.count - 4 {
             let ackSn = packet.getUInt32Be(offset: offset)
@@ -351,9 +335,9 @@ class RemoteConnection {
         windowSize = max(windowSize - windowDecrement, windowMinimum * windowMultiply)
     }
 
-    func handleSrtlaKeepalive() {}
+    private func handleSrtlaKeepalive() {}
 
-    func handleSrtlaAck(packet: Data) {
+    private func handleSrtlaAck(packet: Data) {
         for offset in stride(from: 4, to: packet.count, by: 4) {
             onSrtlaAck?(packet.getUInt32Be(offset: offset))
         }
@@ -368,7 +352,7 @@ class RemoteConnection {
         windowSize = min(windowSize + 1, windowMaximum * windowMultiply)
     }
 
-    func handleSrtlaReg2(packet: Data) {
+    private func handleSrtlaReg2(packet: Data) {
         logger.info("srtla: \(typeString): Got reg 2 (group created)")
         guard packet.count == 258 else {
             logger
@@ -385,7 +369,7 @@ class RemoteConnection {
         onReg2?(packet[2...])
     }
 
-    func handleSrtlaReg3() {
+    private func handleSrtlaReg3() {
         logger.info("srtla: \(typeString): Got reg 3 (connection registered)")
         guard state == .waitForRegisterResponse else {
             return
@@ -405,19 +389,19 @@ class RemoteConnection {
             }
     }
 
-    func handleSrtlaRegErr() {
+    private func handleSrtlaRegErr() {
         logger.info("srtla: \(typeString): Register error")
     }
 
-    func handleSrtlaRegNgp() {
+    private func handleSrtlaRegNgp() {
         logger.info("srtla: \(typeString): Register no group")
     }
 
-    func handleSrtlaRegNak() {
+    private func handleSrtlaRegNak() {
         logger.info("srtla: \(typeString): Register nak")
     }
 
-    func handleSrtlaControlPacket(type: SrtlaPacketType, packet: Data) {
+    private func handleSrtlaControlPacket(type: SrtlaPacketType, packet: Data) {
         switch type {
         case .keepalive:
             handleSrtlaKeepalive()
@@ -438,7 +422,7 @@ class RemoteConnection {
         }
     }
 
-    func handleSrtControlPacket(type: SrtPacketType, packet: Data) {
+    private func handleSrtControlPacket(type: SrtPacketType, packet: Data) {
         guard packet.count >= 16 else {
             return
         }
@@ -450,7 +434,7 @@ class RemoteConnection {
         }
     }
 
-    func handleControlPacket(packet: Data) {
+    private func handleControlPacket(packet: Data) {
         let type = getControlPacketType(packet: packet)
         if let type = SrtlaPacketType(rawValue: type) {
             handleSrtlaControlPacket(type: type, packet: packet)
@@ -462,11 +446,11 @@ class RemoteConnection {
         }
     }
 
-    func handleDataPacket(packet: Data) {
+    private func handleDataPacket(packet: Data) {
         packetHandler?(packet)
     }
 
-    func logReceivedPacket(packet: Data) {
+    private func logReceivedPacket(packet: Data) {
         if isDataPacket(packet: packet) {
             if packet.count >= 4 {
                 let sn = getDataPacketSequenceNumber(packet: packet)
@@ -481,7 +465,7 @@ class RemoteConnection {
         }
     }
 
-    func handlePacket(packet: Data) {
+    private func handlePacket(packet: Data) {
         guard packet.count >= 2 else {
             logger.error("srtla: \(typeString): Packet too short.")
             return

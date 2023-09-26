@@ -20,7 +20,7 @@ class ImageStorage {
         }
     }
 
-    func makePath(id: UUID) -> URL {
+    private func makePath(id: UUID) -> URL {
         return imagesUrl.appendingPathComponent(id.uuidString)
     }
 
