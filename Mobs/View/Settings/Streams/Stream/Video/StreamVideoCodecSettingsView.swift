@@ -25,8 +25,6 @@ struct StreamVideoCodecSettingsView: View {
                 }
                 .pickerStyle(.inline)
                 .labelsHidden()
-            } footer: {
-                Text("\(SettingsStreamCodec.h265hevc.rawValue) is not yet supported.")
             }
         }
         .navigationTitle("Codec")
