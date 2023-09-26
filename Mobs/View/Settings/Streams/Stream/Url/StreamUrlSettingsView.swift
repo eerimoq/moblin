@@ -82,6 +82,7 @@ struct StreamUrlSettingsView: View {
                     if show {
                         Button("Hide sensitive URL") {
                             show = false
+                            submitUrl()
                         }
                     } else {
                         Button("Show sensitive URL", role: .destructive) {
