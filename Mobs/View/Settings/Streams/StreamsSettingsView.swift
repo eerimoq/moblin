@@ -33,6 +33,10 @@ struct StreamsSettingsView: View {
                         }
                         .deleteDisabled(stream.enabled)
                     }
+                    .onMove(perform: { froms, to in
+                        database.streams.move(fromOffsets: froms, toOffset: to)
+                        model.store()
+                    })
                     .onDelete(perform: { offsets in
                         database.streams.remove(atOffsets: offsets)
                         model.store()
