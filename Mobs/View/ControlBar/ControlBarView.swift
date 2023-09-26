@@ -23,15 +23,16 @@ struct StreamButton: View {
             Button(action: {
                 isPresentingStopConfirm = true
             }, label: {
-                StreamButtonText(text: "Stop")
+                StreamButtonText(text: "End")
             })
             .overlay(
                 RoundedRectangle(cornerRadius: 10)
                     .stroke(.white)
             )
             .confirmationDialog("", isPresented: $isPresentingStopConfirm) {
-                Button("Stop") {
+                Button("End") {
                     model.stopStream()
+                    model.makeToast(message: "🤟 Stream ended 🤟")
                 }
             }
         } else {

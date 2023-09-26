@@ -1,3 +1,4 @@
+import AlertToast
 import Collections
 import Combine
 import Foundation
@@ -107,6 +108,12 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     private var reconnectTimer: Timer?
     private var reconnectTime = firstReconnectTime
     private var logId = 1
+    @Published var showToast = false
+    @Published var toast = AlertToast(type: .regular, title: "") {
+        didSet {
+            showToast.toggle()
+        }
+    }
 
     var database: Database {
         settings.database
@@ -125,6 +132,20 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
 
     func findButton(id: UUID) -> SettingsButton? {
         return database.buttons.first(where: { button in button.id == id })
+    }
+
+    func makeToast(message: String) {
+        toast = AlertToast(type: .regular, title: message)
+        showToast = true
+    }
+
+    func makeErrorToast(message: String, font: Font? = nil) {
+        toast = AlertToast(
+            type: .regular,
+            title: message,
+            style: .style(titleColor: .red, titleFont: font)
+        )
+        showToast = true
     }
 
     func updateButtonStates() {
@@ -184,6 +205,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         self.settings = settings
         mthkView.videoGravity = .resizeAspect
         logger.handler = debugLog(message:)
+        logger.info("Setup")
         updateDigitalClock(now: Date())
         checkDeviceAuthorization()
         twitchChat = TwitchChatMobs(model: self)
@@ -343,6 +365,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
 
     func startNetStream() {
         streamState = .connecting
+        makeToast(message: "😎 Going live at \(stream.name) 😎")
         switch stream.getProtocol() {
         case .rtmp:
             rtmpStartStream()
@@ -853,6 +876,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func onConnected() {
+        makeToast(message: "🎉 You are LIVE at \(stream.name) 🎉")
         reconnectTime = firstReconnectTime
         streamStartDate = Date()
         streamState = .connected
@@ -864,6 +888,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             return
         }
         logger.info("stream: Disconnected with reason \(reason)")
+        makeErrorToast(message: "😢 FFFFF 😢", font: .system(size: 64).bold())
         streamState = .disconnected
         stopNetStream()
         reconnectTimer = Timer

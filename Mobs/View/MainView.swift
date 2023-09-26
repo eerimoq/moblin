@@ -1,3 +1,4 @@
+import AlertToast
 import Foundation
 import HaishinKit
 import SwiftUI
@@ -28,6 +29,9 @@ struct MainView: View {
             .onDisappear {
                 AppDelegate.setAllowedOrientations(mask: .all)
             }
+        }
+        .toast(isPresenting: $model.showToast, duration: 5) {
+            model.toast
         }
     }
 }

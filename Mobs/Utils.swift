@@ -2,7 +2,7 @@ import AVKit
 import Foundation
 import UIKit
 
-let firstReconnectTime = 2.0
+let firstReconnectTime = 5.0
 
 func nextReconnectTime(_ reconnectTime: Double) -> Double {
     return min(reconnectTime + 2, 10)
@@ -65,10 +65,10 @@ func makeRtmpStreamName(url: String) -> String {
 
 func isValidRtmpUrl(url: String) -> String? {
     if makeRtmpUri(url: url) == "" {
-        return "Malformed RTMP URL."
+        return "Malformed RTMP URL"
     }
     if makeRtmpStreamName(url: url) == "" {
-        return "RTMP stream name missing."
+        return "RTMP stream name missing"
     }
     return nil
 }
