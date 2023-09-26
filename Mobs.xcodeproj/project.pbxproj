@@ -54,6 +54,7 @@
 		0379BBC02AADC4EC00B718B6 /* AboutLicensesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBBF2AADC4EC00B718B6 /* AboutLicensesSettingsView.swift */; };
 		0382933B2A9A73ED008963AA /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0382933A2A9A73ED008963AA /* Settings.swift */; };
 		03A08B7C2AC295620018BA95 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = 03A08B7B2AC295620018BA95 /* AlertToast */; };
+		03A08B7E2AC361900018BA95 /* Srt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A08B7D2AC361900018BA95 /* Srt.swift */; };
 		03A974282AC137A000610E21 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 03A974272AC137A000610E21 /* Collections */; };
 		03A983422A9A03D3008FF0DB /* TwitchChat in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983412A9A03D3008FF0DB /* TwitchChat */; };
 		03A983452A9A03EA008FF0DB /* HaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983442A9A03EA008FF0DB /* HaishinKit */; };
@@ -131,6 +132,7 @@
 		0379BBB72AAD9B7200B718B6 /* WidgetsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetsSettingsView.swift; sourceTree = "<group>"; };
 		0379BBBF2AADC4EC00B718B6 /* AboutLicensesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutLicensesSettingsView.swift; sourceTree = "<group>"; };
 		0382933A2A9A73ED008963AA /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		03A08B7D2AC361900018BA95 /* Srt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Srt.swift; sourceTree = "<group>"; };
 		03A983552A9A05D7008FF0DB /* StreamsSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamsSettingsView.swift; sourceTree = "<group>"; };
 		03A983562A9A05D7008FF0DB /* MainView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		03A983572A9A05D7008FF0DB /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -177,6 +179,7 @@
 		0315A3392AA2FA0A00295443 /* Srtla */ = {
 			isa = PBXGroup;
 			children = (
+				03A08B7D2AC361900018BA95 /* Srt.swift */,
 				03B374122AA277570028DDD5 /* Srtla.swift */,
 				0315A33A2AA2FA7100295443 /* LocalListener.swift */,
 				0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */,
@@ -645,6 +648,7 @@
 				03B373F92A9EFB340028DDD5 /* BatteryView.swift in Sources */,
 				0379BB8A2AA83A8B00B718B6 /* StreamVideoFpsSettingsView.swift in Sources */,
 				03B373FD2A9F35EF0028DDD5 /* Utils.swift in Sources */,
+				03A08B7E2AC361900018BA95 /* Srt.swift in Sources */,
 				035D371E2AB039C800045B92 /* StreamVideoCodecSettingsView.swift in Sources */,
 				0379BBA02AAD823900B718B6 /* StreamOverlayTextView.swift in Sources */,
 				03B374072AA0EA650028DDD5 /* MovieEffect.swift in Sources */,

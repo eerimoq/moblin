@@ -1011,7 +1011,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     func srtlaReady(port: UInt16) {
         DispatchQueue.main.async {
             self.setupSrtConnectionStateListener()
-            DispatchQueue(label: "com.eerimoq.srt").async {
+            srtDispatchQueue.async {
                 do {
                     try self.srtConnection.open(self.makeLocalhostSrtUrl(port: port))
                     self.srtStream?.publish()
