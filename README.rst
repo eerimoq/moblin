@@ -65,8 +65,6 @@ Features
 ToDo
 ====
 
-- Do not require Return to be pressed to save changes.
-
 - Move SRT to non-main dispatch queue. Video interruptions now when
   zooming slowly, and probably same for other UI actions as well.
 
