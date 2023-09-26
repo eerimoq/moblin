@@ -181,10 +181,10 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func setup(settings: Settings) {
-        mthkView.videoGravity = .resizeAspect
-        logger.setLogHandler(handler: debugLog)
-        updateDigitalClock(now: Date())
         self.settings = settings
+        mthkView.videoGravity = .resizeAspect
+        logger.handler = debugLog(message:)
+        updateDigitalClock(now: Date())
         checkDeviceAuthorization()
         twitchChat = TwitchChatMobs(model: self)
         reloadStream()
@@ -399,6 +399,9 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         updateTorch()
         updateMute()
         mthkView.attachStream(netStream)
+        netStream.attachAudio(AVCaptureDevice.default(for: .audio)) { error in
+            logger.error("stream: Attach audio error: \(error)")
+        }
     }
 
     func setStreamResolution() {
@@ -581,9 +584,6 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func sceneUpdatedOn(scene: SettingsScene) {
-        netStream.attachAudio(AVCaptureDevice.default(for: .audio)) { error in
-            logger.error("stream: Attach audio error: \(error)")
-        }
         for sceneWidget in scene.widgets.filter({ widget in widget.enabled }) {
             guard let widget = findWidget(id: sceneWidget.widgetId) else {
                 logger.error("Widget not found.")
