@@ -18,6 +18,8 @@ private enum State {
     case running
 }
 
+let srtlaDispatchQueue = DispatchQueue(label: "com.eerimoq.srtla")
+
 class Srtla {
     private var remoteConnections: [RemoteConnection] = []
     private var localListener: LocalListener?
@@ -45,34 +47,38 @@ class Srtla {
     }
 
     func start(uri: String, timeout: Double) {
-        guard
-            let url = URL(string: uri),
-            let host = url.host,
-            let port = url.port
-        else {
-            logger.error("srtla: Failed to start")
-            return
-        }
-        for connection in remoteConnections {
-            startRemote(connection: connection, host: host, port: port)
-        }
-        connectTimer = Timer
-            .scheduledTimer(withTimeInterval: timeout, repeats: false) { _ in
-                logger.info("srtla: Connect timer expired")
-                self.onDisconnected()
+        srtlaDispatchQueue.async {
+            guard
+                let url = URL(string: uri),
+                let host = url.host,
+                let port = url.port
+            else {
+                logger.error("srtla: Failed to start")
+                return
             }
-        state = .waitForRemoteSocketConnected
+            for connection in self.remoteConnections {
+                self.startRemote(connection: connection, host: host, port: port)
+            }
+            self.connectTimer = Timer
+                .scheduledTimer(withTimeInterval: timeout, repeats: false) { _ in
+                    logger.info("srtla: Connect timer expired")
+                    self.onDisconnected()
+                }
+            self.state = .waitForRemoteSocketConnected
+        }
     }
 
     func stop() {
-        for connection in remoteConnections {
-            stopRemote(connection: connection)
+        srtlaDispatchQueue.async {
+            for connection in self.remoteConnections {
+                self.stopRemote(connection: connection)
+            }
+            self.remoteConnections = []
+            self.stopListener()
+            self.connectTimer?.invalidate()
+            self.connectTimer = nil
+            self.state = .idle
         }
-        remoteConnections = []
-        stopListener()
-        connectTimer?.invalidate()
-        connectTimer = nil
-        state = .idle
     }
 
     func startRemote(connection: RemoteConnection, host: String, port: Int) {
@@ -220,19 +226,23 @@ class Srtla {
     func findBestConnectionType() -> String? {
         var bestTypeString: String?
         var bestWindowSize = -1
-        for connection in remoteConnections {
-            let windowSize = connection.getWindowSize()
-            if windowSize > bestWindowSize {
-                bestTypeString = connection.typeString
-                bestWindowSize = windowSize
+        srtlaDispatchQueue.sync {
+            for connection in remoteConnections {
+                let windowSize = connection.getWindowSize()
+                if windowSize > bestWindowSize {
+                    bestTypeString = connection.typeString
+                    bestWindowSize = windowSize
+                }
             }
         }
         return bestTypeString
     }
 
     func logStatistics() {
-        for connection in remoteConnections {
-            connection.logStatistics()
+        srtlaDispatchQueue.async {
+            for connection in self.remoteConnections {
+                connection.logStatistics()
+            }
         }
     }
 }

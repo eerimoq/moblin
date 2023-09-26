@@ -141,7 +141,7 @@ class RemoteConnection {
             using: params
         )
         connection!.viabilityUpdateHandler = handleViabilityChange(to:)
-        connection!.start(queue: DispatchQueue.main)
+        connection!.start(queue: srtlaDispatchQueue)
         receivePacket()
         state = .socketConnecting
     }

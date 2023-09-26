@@ -22,7 +22,7 @@ class LocalListener {
         }
         listener.stateUpdateHandler = handleListenerStateChange(to:)
         listener.newConnectionHandler = handleNewListenerConnection(connection:)
-        listener.start(queue: DispatchQueue.main)
+        listener.start(queue: srtlaDispatchQueue)
     }
 
     func stop() {
@@ -45,7 +45,7 @@ class LocalListener {
 
     func handleNewListenerConnection(connection: NWConnection) {
         self.connection = connection
-        connection.start(queue: DispatchQueue.main)
+        connection.start(queue: srtlaDispatchQueue)
         receivePacket()
     }
 

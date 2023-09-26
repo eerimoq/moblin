@@ -52,15 +52,45 @@ struct LogEntry: Identifiable {
 }
 
 final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
-    private var rtmpConnection = RTMPConnection()
-    private var srtConnection = SRTConnection()
-    private var rtmpStream: RTMPStream!
-    private var srtStream: SRTStream!
-    private var srtla: Srtla?
+    private let mediaStream = MediaStream()
+    private var rtmpConnection: RTMPConnection {
+        mediaStream.rtmpConnection
+    }
+
+    private var srtConnection: SRTConnection {
+        mediaStream.srtConnection
+    }
+
+    private var rtmpStream: RTMPStream! {
+        get {
+            mediaStream.rtmpStream
+        }
+        set {
+            mediaStream.rtmpStream = newValue
+        }
+    }
+
+    private var srtStream: SRTStream! {
+        get {
+            mediaStream.srtStream
+        }
+        set {
+            mediaStream.srtStream = newValue
+        }
+    }
+
+    private var netStream: NetStream! {
+        get {
+            mediaStream.netStream
+        }
+        set {
+            mediaStream.netStream = newValue
+        }
+    }
+
     private var srtTotalByteCount: Int64 = 0
     private var srtPreviousTotalByteCount: Int64 = 0
     private var srtSpeed: Int64 = 0
-    var netStream: NetStream!
     var streamState = StreamState.disconnected {
         didSet {
             logger.info("stream: State \(oldValue) -> \(streamState)")
@@ -258,7 +288,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
-            self.srtla?.logStatistics()
+            self.mediaStream.logStatistics()
         })
     }
 
@@ -296,7 +326,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func updateBestSrtlaConnectionType() {
-        if isStreamConnceted(), let srtla, let type = srtla.findBestConnectionType() {
+        if isStreamConnceted(), let type = mediaStream.getBestSrtlaConnectionType() {
             currentConnectionType = type
         } else {
             currentConnectionType = noValue
@@ -984,16 +1014,17 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     func srtStartStream() {
         srtTotalByteCount = 0
         srtPreviousTotalByteCount = 0
-        srtla?.stop()
-        srtla = Srtla(delegate: self, passThrough: !stream.isSrtla())
-        srtla!.start(uri: stream.url!, timeout: reconnectTime + 1)
+        mediaStream.srtStartStream(
+            isSrtla: stream.isSrtla(),
+            delegate: self,
+            url: stream.url,
+            reconnectTime: reconnectTime
+        )
     }
 
     func srtStopStream() {
         srtConnectedObservation = nil
-        srtConnection.close()
-        srtla?.stop()
-        srtla = nil
+        mediaStream.srtStopStream()
     }
 
     func makeLocalhostSrtUrl(port: UInt16) -> URL? {
@@ -1011,7 +1042,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     func srtlaReady(port: UInt16) {
         DispatchQueue.main.async {
             self.setupSrtConnectionStateListener()
-            srtDispatchQueue.async {
+            streamDispatchQueue.async {
                 do {
                     try self.srtConnection.open(self.makeLocalhostSrtUrl(port: port))
                     self.srtStream?.publish()
@@ -1025,8 +1056,10 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func srtlaError() {
-        logger.info("stream: srtla: Error")
-        onDisconnected(reason: "General SRT error")
+        DispatchQueue.main.async {
+            logger.info("stream: srtla: Error")
+            self.onDisconnected(reason: "General SRT error")
+        }
     }
 
     func srtlaPacketSent(byteCount: Int) {
