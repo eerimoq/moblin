@@ -11,7 +11,7 @@ struct RightOverlayView: View {
         if model.isStreaming() {
             switch model.streamState {
             case .connecting:
-                return .cyan
+                return .white
             case .connected:
                 return .white
             case .disconnected:

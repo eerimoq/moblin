@@ -72,8 +72,6 @@ ToDo
 
 - Sometimes video hangs. Often when app is put into background.
 
-- Blinking icons instead of color cyan when trying to connect.
-
 Ideas/plan
 ==========
 
