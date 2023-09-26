@@ -14,7 +14,8 @@ struct StreamUrlSettingsView: View {
         value = stream.url!
     }
 
-    func submitUrl(value: String) {
+    func submitUrl() {
+        value = value.trim()
         guard let url = URL(string: value) else {
             showError = true
             errorMessage = "Malformed URL."
@@ -62,12 +63,15 @@ struct StreamUrlSettingsView: View {
             Section {
                 ZStack {
                     if show {
-                        TextField("", text: $value)
-                            .disableAutocorrection(true)
-                            .onSubmit {
-                                value = value.trim()
-                                submitUrl(value: value)
+                        TextField("", text: $value, onEditingChanged: { isEditing in
+                            if !isEditing {
+                                submitUrl()
                             }
+                        })
+                        .disableAutocorrection(true)
+                        .onSubmit {
+                            submitUrl()
+                        }
                     } else {
                         Text(replaceSensitive(value: value, sensitive: true))
                             .lineLimit(1)

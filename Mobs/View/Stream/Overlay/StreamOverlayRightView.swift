@@ -1,35 +1,5 @@
 import SwiftUI
 
-struct Variable: View {
-    var name: String
-    @State var value: String
-
-    var body: some View {
-        VStack(spacing: 0) {
-            Text(name)
-                .foregroundColor(.white)
-                .font(.system(size: 12))
-                .padding([.top, .trailing, .leading], 5)
-            TextField(
-                "   ",
-                text: $value
-            )
-            .onSubmit {
-                logger.error(value)
-            }
-            .font(.system(size: 20))
-            .fixedSize()
-            .padding([.bottom, .trailing, .leading], 5)
-        }
-        .background(Color(white: 0, opacity: 0.6))
-        .cornerRadius(10)
-        .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(.secondary)
-        )
-    }
-}
-
 struct RightOverlayView: View {
     @ObservedObject var model: Model
 

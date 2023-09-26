@@ -23,11 +23,16 @@ struct ValueEditView: View {
                 Spacer()
             }
             .frame(width: 70)
-            TextField("", text: $value)
-                .onSubmit {
+            TextField("", text: $value, onEditingChanged: { isEditing in
+                if !isEditing {
                     value = value.trim()
                     onSubmit(value)
                 }
+            })
+            .onSubmit {
+                value = value.trim()
+                onSubmit(value)
+            }
             Divider()
             Button(action: {
                 add(offset: -1)

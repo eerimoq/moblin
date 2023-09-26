@@ -7,11 +7,16 @@ struct TextEditView: View {
 
     var body: some View {
         Form {
-            TextField("", text: $value)
-                .onSubmit {
+            TextField("", text: $value, onEditingChanged: { isEditing in
+                if !isEditing {
                     value = value.trim()
                     onSubmit(value)
                 }
+            })
+            .onSubmit {
+                value = value.trim()
+                onSubmit(value)
+            }
         }
         .navigationTitle(title)
     }
