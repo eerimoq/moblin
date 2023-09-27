@@ -208,6 +208,8 @@ final class Model: ObservableObject {
     func setup(settings: Settings) {
         mediaStream.onSrtConnected = handleSrtConnected
         mediaStream.onSrtDisconnected = handleSrtDisconnected
+        mediaStream.onRtmpConnected = handleRtmpConnected
+        mediaStream.onRtmpDisconnected = handleRtmpDisconnected
         self.settings = settings
         mthkView.videoGravity = .resizeAspect
         logger.handler = debugLog(message:)
@@ -755,25 +757,11 @@ final class Model: ObservableObject {
     }
 
     func rtmpStartStream() {
-        rtmpConnection.addEventListener(
-            .rtmpStatus,
-            selector: #selector(rtmpStatusHandler),
-            observer: self
-        )
-        rtmpConnection.connect(rtmpUri())
+        mediaStream.rtmpConnect(url: stream.url!)
     }
 
     func rtmpStopStream() {
-        rtmpConnection.removeEventListener(
-            .rtmpStatus,
-            selector: #selector(rtmpStatusHandler),
-            observer: self
-        )
-        rtmpConnection.close()
-    }
-
-    func rtmpUri() -> String {
-        return makeRtmpUri(url: stream.url!)
+        mediaStream.rtmpDisconnect()
     }
 
     func toggleTorch() {
@@ -840,29 +828,15 @@ final class Model: ObservableObject {
             logger.warning("While locking device for ramp: \(error)")
         }
     }
-
-    @objc
-    private func rtmpStatusHandler(_ notification: Notification) {
-        let e = Event.from(notification)
-        guard let data: ASObject = e.data as? ASObject,
-              let code: String = data["code"] as? String
-        else {
-            return
-        }
-        DispatchQueue.main.async {
-            switch code {
-            case RTMPConnection.Code.connectSuccess.rawValue:
-                self.mediaStream.rtmpPublish(url: self.stream.url!)
-                self.onConnected()
-            case RTMPConnection.Code.connectFailed.rawValue,
-                 RTMPConnection.Code.connectClosed.rawValue:
-                self.onDisconnected(reason: "RTMP status changed to \(code)")
-            default:
-                break
-            }
-        }
+    
+    func handleRtmpConnected() {
+        onConnected()
     }
-
+    
+    func handleRtmpDisconnected(message: String) {
+        onDisconnected(reason: "RTMP disconnected with message \(message)")
+    }
+    
     func onConnected() {
         makeToast(message: "🎉 You are LIVE at \(stream.name) 🎉")
         reconnectTime = firstReconnectTime

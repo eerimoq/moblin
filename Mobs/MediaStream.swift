@@ -10,7 +10,7 @@ import VideoToolbox
 
 let streamDispatchQueue = DispatchQueue(label: "com.eerimoq.stream")
 
-final class MediaStream {
+final class MediaStream: NSObject {
     var rtmpConnection = RTMPConnection()
     private var srtConnection = SRTConnection()
     private var rtmpStream: RTMPStream!
@@ -23,6 +23,9 @@ final class MediaStream {
     private var srtConnectedObservation: NSKeyValueObservation?
     var onSrtConnected: (() -> Void)!
     var onSrtDisconnected: (() -> Void)!
+    var onRtmpConnected: (() -> Void)!
+    var onRtmpDisconnected: ((_ message: String) -> Void)!
+    private var rtmpStreamName = ""
 
     func logStatistics() {
         srtla?.logStatistics()
@@ -43,10 +46,6 @@ final class MediaStream {
             srtStream = SRTStream(srtConnection)
             netStream = srtStream
         }
-    }
-
-    func rtmpPublish(url: String) {
-        rtmpStream.publish(makeRtmpStreamName(url: url))
     }
 
     func srtConnect(url: String, port: UInt16) throws {
@@ -128,5 +127,46 @@ final class MediaStream {
         var urlComponents = URLComponents(url: localUrl, resolvingAgainstBaseURL: false)!
         urlComponents.query = url.query
         return urlComponents.url
+    }
+    
+    func rtmpConnect(url: String) {
+        self.rtmpStreamName = makeRtmpStreamName(url: url)
+        rtmpConnection.addEventListener(
+            .rtmpStatus,
+            selector: #selector(rtmpStatusHandler),
+            observer: self
+        )
+        rtmpConnection.connect(makeRtmpUri(url: url))
+    }
+    
+    func rtmpDisconnect() {
+        rtmpConnection.removeEventListener(
+            .rtmpStatus,
+            selector: #selector(rtmpStatusHandler),
+            observer: self
+        )
+        rtmpConnection.close()
+    }
+    
+    @objc
+    private func rtmpStatusHandler(_ notification: Notification) {
+        let e = Event.from(notification)
+        guard let data: ASObject = e.data as? ASObject,
+              let code: String = data["code"] as? String
+        else {
+            return
+        }
+        DispatchQueue.main.async {
+            switch code {
+            case RTMPConnection.Code.connectSuccess.rawValue:
+                self.rtmpStream.publish(self.rtmpStreamName)
+                self.onRtmpConnected()
+            case RTMPConnection.Code.connectFailed.rawValue,
+                RTMPConnection.Code.connectClosed.rawValue:
+                self.onRtmpDisconnected("\(code)")
+            default:
+                break
+            }
+        }
     }
 }
