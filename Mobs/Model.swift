@@ -51,14 +51,10 @@ struct LogEntry: Identifiable {
     var message: String
 }
 
-final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
+final class Model: ObservableObject {
     private let mediaStream = MediaStream()
     private var rtmpConnection: RTMPConnection {
         mediaStream.rtmpConnection
-    }
-
-    private var srtConnection: SRTConnection {
-        mediaStream.srtConnection
     }
 
     private var netStream: NetStream! {
@@ -79,7 +75,6 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     private var streaming = false
     private var wasStreamingWhenDidEnterBackground = false
     private var streamStartDate: Date?
-    private var srtConnectedObservation: NSKeyValueObservation?
     @Published var isLive = false
     private var subscriptions = Set<AnyCancellable>()
     @Published var uptime = noValue
@@ -211,6 +206,8 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func setup(settings: Settings) {
+        mediaStream.onSrtConnected = handleSrtConnected
+        mediaStream.onSrtDisconnected = handleSrtDisconnected
         self.settings = settings
         mthkView.videoGravity = .resizeAspect
         logger.handler = debugLog(message:)
@@ -379,7 +376,12 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         case .rtmp:
             rtmpStartStream()
         case .srt:
-            srtStartStream()
+            mediaStream.srtStartStream(
+                isSrtla: stream.isSrtla(),
+                delegate: self,
+                url: stream.url,
+                reconnectTime: reconnectTime
+            )
         }
         updateSpeed()
     }
@@ -387,7 +389,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     func stopNetStream() {
         reconnectTimer?.invalidate()
         rtmpStopStream()
-        srtStopStream()
+        mediaStream.srtStopStream()
         streamStartDate = nil
         updateUptime(now: Date())
         updateSpeed()
@@ -874,7 +876,16 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             }
     }
 
-    // NetStreamDelegate
+    func handleSrtConnected() {
+        onConnected()
+    }
+
+    func handleSrtDisconnected() {
+        onDisconnected(reason: "SRT state changed to false")
+    }
+}
+
+extension Model: NetStreamDelegate {
     func stream(
         _: NetStream,
         didOutput _: AVAudioBuffer,
@@ -915,13 +926,10 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func streamWillDropFrame(_: NetStream) -> Bool {
-        // logger.warning("stream: Drop video frame.")
         return false
     }
 
-    func streamDidOpen(_: NetStream) {
-        // logger.info("stream: Stream opened.")
-    }
+    func streamDidOpen(_: NetStream) {}
 
     func stream(_: NetStream, audioLevel: Float) {
         DispatchQueue.main.async {
@@ -936,59 +944,15 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             }
         }
     }
+}
 
-    /// SRT
-    func setupSrtConnectionStateListener() {
-        srtConnectedObservation = srtConnection.observe(\.connected, options: [
-            .new,
-            .old,
-        ]) { [weak self] _, connected in
-            guard let self else {
-                return
-            }
-            DispatchQueue.main.async {
-                if connected.newValue! {
-                    self.onConnected()
-                } else {
-                    self.onDisconnected(reason: "SRT state changed to false")
-                }
-            }
-        }
-    }
-
-    func srtStartStream() {
-        mediaStream.srtStartStream(
-            isSrtla: stream.isSrtla(),
-            delegate: self,
-            url: stream.url,
-            reconnectTime: reconnectTime
-        )
-    }
-
-    func srtStopStream() {
-        srtConnectedObservation = nil
-        mediaStream.srtStopStream()
-    }
-
-    func makeLocalhostSrtUrl(port: UInt16) -> URL? {
-        guard let url = URL(string: stream.url!) else {
-            return nil
-        }
-        guard let localUrl = URL(string: "srt://localhost:\(port)") else {
-            return nil
-        }
-        var urlComponents = URLComponents(url: localUrl, resolvingAgainstBaseURL: false)!
-        urlComponents.query = url.query
-        return urlComponents.url
-    }
-
+extension Model: SrtlaDelegate {
     func srtlaReady(port: UInt16) {
         DispatchQueue.main.async {
-            self.setupSrtConnectionStateListener()
+            self.mediaStream.setupSrtConnectionStateListener()
             streamDispatchQueue.async {
                 do {
-                    let url = self.makeLocalhostSrtUrl(port: port)
-                    try self.mediaStream.srtConnect(url: url)
+                    try self.mediaStream.srtConnect(url: self.stream.url!, port: port)
                 } catch {
                     DispatchQueue.main.async {
                         self.onDisconnected(reason: "SRT connect failed with \(error)")

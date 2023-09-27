@@ -8,3 +8,6 @@ style:
 
 lint:
 	swiftlint lint --strict Mobs
+
+periphery:
+	periphery scan

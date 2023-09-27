@@ -12,7 +12,7 @@ let streamDispatchQueue = DispatchQueue(label: "com.eerimoq.stream")
 
 final class MediaStream {
     var rtmpConnection = RTMPConnection()
-    var srtConnection = SRTConnection()
+    private var srtConnection = SRTConnection()
     private var rtmpStream: RTMPStream!
     private var srtStream: SRTStream!
     private var srtla: Srtla?
@@ -20,6 +20,9 @@ final class MediaStream {
     private var srtTotalByteCount: Int64 = 0
     private var srtPreviousTotalByteCount: Int64 = 0
     private var srtSpeed: Int64 = 0
+    private var srtConnectedObservation: NSKeyValueObservation?
+    var onSrtConnected: (() -> Void)!
+    var onSrtDisconnected: (() -> Void)!
 
     func logStatistics() {
         srtla?.logStatistics()
@@ -46,8 +49,8 @@ final class MediaStream {
         rtmpStream.publish(makeRtmpStreamName(url: url))
     }
 
-    func srtConnect(url: URL?) throws {
-        try srtConnection.open(url)
+    func srtConnect(url: String, port: UInt16) throws {
+        try srtConnection.open(makeLocalhostSrtUrl(url: url, port: port))
         srtStream?.publish()
     }
 
@@ -68,6 +71,7 @@ final class MediaStream {
         srtConnection.close()
         srtla?.stop()
         srtla = nil
+        srtConnectedObservation = nil
     }
 
     func getSrtlaTotalByteCount() -> Int64 {
@@ -94,5 +98,35 @@ final class MediaStream {
         } else {
             return srtTotalByteCount
         }
+    }
+
+    func setupSrtConnectionStateListener() {
+        srtConnectedObservation = srtConnection.observe(\.connected, options: [
+            .new,
+            .old,
+        ]) { [weak self] _, connected in
+            guard let self else {
+                return
+            }
+            DispatchQueue.main.async {
+                if connected.newValue! {
+                    self.onSrtConnected()
+                } else {
+                    self.onSrtDisconnected()
+                }
+            }
+        }
+    }
+
+    func makeLocalhostSrtUrl(url: String, port: UInt16) -> URL? {
+        guard let url = URL(string: url) else {
+            return nil
+        }
+        guard let localUrl = URL(string: "srt://localhost:\(port)") else {
+            return nil
+        }
+        var urlComponents = URLComponents(url: localUrl, resolvingAgainstBaseURL: false)!
+        urlComponents.query = url.query
+        return urlComponents.url
     }
 }

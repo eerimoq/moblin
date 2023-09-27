@@ -238,8 +238,6 @@ class SettingsVariableTextWebsocket: Codable {
     var pattern: String = ""
 }
 
-let variableTypes = ["Text", "HTTP", "Twitch PubSub", "Websocket"]
-
 enum SettingsVariableType: String, Codable {
     case text = "Camera"
     case http = "HTTP"
