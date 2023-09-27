@@ -1,8 +1,6 @@
 import HaishinKit
 import SwiftUI
 
-var attachedNetStream: NetStream?
-
 struct StreamView: UIViewRepresentable {
     @ObservedObject var model: Model
 

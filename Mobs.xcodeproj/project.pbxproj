@@ -67,7 +67,6 @@
 		03A983672A9A05D7008FF0DB /* ScenesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9835B2A9A05D7008FF0DB /* ScenesSettingsView.swift */; };
 		03A983682A9A05D7008FF0DB /* SceneSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9835C2A9A05D7008FF0DB /* SceneSettingsView.swift */; };
 		03A983692A9A05D7008FF0DB /* CreateButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9835D2A9A05D7008FF0DB /* CreateButtonView.swift */; };
-		03A9836A2A9A05D7008FF0DB /* VariableSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9835E2A9A05D7008FF0DB /* VariableSettingsView.swift */; };
 		03A9836B2A9A05D7008FF0DB /* StreamOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9835F2A9A05D7008FF0DB /* StreamOverlayView.swift */; };
 		03A9836C2A9A05D7008FF0DB /* WidgetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A983602A9A05D7008FF0DB /* WidgetSettingsView.swift */; };
 		03A9836E2A9A05F9008FF0DB /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9836D2A9A05F9008FF0DB /* Model.swift */; };
@@ -142,7 +141,6 @@
 		03A9835B2A9A05D7008FF0DB /* ScenesSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScenesSettingsView.swift; sourceTree = "<group>"; };
 		03A9835C2A9A05D7008FF0DB /* SceneSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneSettingsView.swift; sourceTree = "<group>"; };
 		03A9835D2A9A05D7008FF0DB /* CreateButtonView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateButtonView.swift; sourceTree = "<group>"; };
-		03A9835E2A9A05D7008FF0DB /* VariableSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VariableSettingsView.swift; sourceTree = "<group>"; };
 		03A9835F2A9A05D7008FF0DB /* StreamOverlayView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamOverlayView.swift; sourceTree = "<group>"; };
 		03A983602A9A05D7008FF0DB /* WidgetSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WidgetSettingsView.swift; sourceTree = "<group>"; };
 		03A9836D2A9A05F9008FF0DB /* Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
@@ -226,14 +224,6 @@
 				035D37272AB0EBB500045B92 /* IconAndTextView.swift */,
 			);
 			path = Utils;
-			sourceTree = "<group>";
-		};
-		0315A3502AA3233000295443 /* Variable */ = {
-			isa = PBXGroup;
-			children = (
-				03A9835E2A9A05D7008FF0DB /* VariableSettingsView.swift */,
-			);
-			path = Variable;
 			sourceTree = "<group>";
 		};
 		0315A3512AA3233700295443 /* Widget */ = {
@@ -393,7 +383,6 @@
 			children = (
 				0379BBB42AAD9B4A00B718B6 /* Buttons */,
 				0379BBB32AAD9B4000B718B6 /* Widgets */,
-				0315A3502AA3233000295443 /* Variable */,
 				0315A34C2AA3217500295443 /* Scene */,
 				03A9835B2A9A05D7008FF0DB /* ScenesSettingsView.swift */,
 			);
@@ -673,7 +662,6 @@
 				036BE2CF2ABD4CA60048F9C5 /* KickPusher.swift in Sources */,
 				0315A37E2AA43DCC00295443 /* TextEditView.swift in Sources */,
 				035E9E372A9A02D6009D4F5A /* MobsApp.swift in Sources */,
-				03A9836A2A9A05D7008FF0DB /* VariableSettingsView.swift in Sources */,
 				0315A33D2AA2FA7D00295443 /* RemoteConnection.swift in Sources */,
 				0379BB7E2AA7C55000B718B6 /* ButtonImagePickerSettingsView.swift in Sources */,
 				03B373FF2A9FCA790028DDD5 /* ThermalStateView.swift in Sources */,

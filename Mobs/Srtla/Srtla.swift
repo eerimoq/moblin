@@ -4,7 +4,6 @@ import Network
 protocol SrtlaDelegate: AnyObject {
     func srtlaReady(port: UInt16)
     func srtlaError()
-    func srtlaConnectionTypeChanged(type: String)
 }
 
 private enum State {
@@ -22,7 +21,6 @@ class Srtla {
     private var remoteConnections: [RemoteConnection] = []
     private var localListener: LocalListener?
     private weak var delegate: (any SrtlaDelegate)?
-    private var groupId: Data?
     private let passThrough: Bool
     private var connectTimer: Timer?
     private var state = State.idle {
@@ -233,7 +231,6 @@ class Srtla {
         guard state == .waitForGroupId else {
             return
         }
-        self.groupId = groupId
         for connection in remoteConnections {
             connection.register(groupId: groupId)
         }

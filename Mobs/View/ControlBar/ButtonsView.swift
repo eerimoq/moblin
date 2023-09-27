@@ -53,8 +53,6 @@ struct ButtonsView: View {
         model.updateButtonStates()
     }
 
-    func bitrateAction(state _: ButtonState) {}
-
     func widgetAction(state: ButtonState) {
         state.button.isOn.toggle()
         model.updateButtonStates()

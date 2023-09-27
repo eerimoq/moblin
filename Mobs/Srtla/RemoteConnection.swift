@@ -17,8 +17,6 @@ enum SrtlaPacketType: UInt16 {
     case regNak = 0x1212
 }
 
-let connectionTimeout = 4.0
-
 func isDataPacket(packet: Data) -> Bool {
     return (packet[0] & 0x80) == 0
 }
@@ -448,21 +446,6 @@ class RemoteConnection {
 
     private func handleDataPacket(packet: Data) {
         packetHandler?(packet)
-    }
-
-    private func logReceivedPacket(packet: Data) {
-        if isDataPacket(packet: packet) {
-            if packet.count >= 4 {
-                let sn = getDataPacketSequenceNumber(packet: packet)
-                logger.debug("srtla: \(typeString): Received data packet with SN \(sn)")
-            }
-        } else {
-            let type = String(format: "%04x", getControlPacketType(packet: packet))
-            logger
-                .debug(
-                    "srtla: \(typeString): Received control packet with type \(type)"
-                )
-        }
     }
 
     private func handlePacket(packet: Data) {

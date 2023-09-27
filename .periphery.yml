@@ -1,0 +1,6 @@
+project: Mobs.xcodeproj
+retain_objc_accessible: true
+schemes:
+- Mobs
+targets:
+- Mobs

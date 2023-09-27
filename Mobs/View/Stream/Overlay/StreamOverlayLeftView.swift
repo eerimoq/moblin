@@ -1,24 +1,6 @@
 import SwiftUI
 import WebKit
 
-struct WebView: UIViewRepresentable {
-    let url: URL
-
-    func makeUIView(context _: Context) -> WKWebView {
-        let configuration = WKWebViewConfiguration()
-        configuration.allowsInlineMediaPlayback = true
-        configuration.allowsAirPlayForMediaPlayback = true
-        configuration.allowsPictureInPictureMediaPlayback = false
-        configuration.mediaTypesRequiringUserActionForPlayback = []
-        let wkwebView = WKWebView(frame: .zero, configuration: configuration)
-        let request = URLRequest(url: url)
-        wkwebView.load(request)
-        return wkwebView
-    }
-
-    func updateUIView(_: WKWebView, context _: Context) {}
-}
-
 struct LeftOverlayView: View {
     @ObservedObject var model: Model
 
@@ -92,7 +74,6 @@ struct LeftOverlayView: View {
                     color: viewersColor()
                 )
             }
-            // WebView(url: URL(string: "https://www.youtube.com/watch?v=XAaw_cxNY5w&t=4347s")!)
             Spacer()
             if database.show.chat {
                 StreamOverlayIconAndTextView(

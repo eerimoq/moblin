@@ -87,10 +87,6 @@ final class KickPusher: NSObject, URLSessionWebSocketDelegate {
         readMessage()
     }
 
-    func handleResponse(message: String) throws {
-        _ = try decodeResponse(message: message)
-    }
-
     func handleChatMessageEvent(data: String) throws {
         let message = try decodeChatMessage(data: data)
         let messageNoEmote = removeEmote(message: message.content)

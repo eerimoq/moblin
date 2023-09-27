@@ -1008,10 +1008,4 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             self.onDisconnected(reason: "General SRT error")
         }
     }
-
-    func srtlaConnectionTypeChanged(type: String) {
-        DispatchQueue.main.async {
-            self.currentConnectionType = type
-        }
-    }
 }

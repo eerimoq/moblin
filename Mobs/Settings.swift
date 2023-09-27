@@ -34,8 +34,6 @@ let bitrates: [UInt32] = [
     500_000,
 ]
 
-let protocols = ["RTMP", "SRT"]
-
 enum SettingsStreamProtocol: String, Codable {
     case rtmp = "RTMP"
     case srt = "SRT"
