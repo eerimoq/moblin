@@ -21,9 +21,3 @@ struct WidgetTextSettingsView: View {
         }
     }
 }
-
-struct WidgetTextSettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        WidgetTextSettingsView(model: Model(), widget: SettingsWidget(name: ""))
-    }
-}
