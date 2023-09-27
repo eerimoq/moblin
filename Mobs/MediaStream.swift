@@ -26,6 +26,24 @@ final class MediaStream {
         srtla?.findBestConnectionType() ?? nil
     }
 
+    func setNetStream(proto: SettingsStreamProtocol) {
+        switch proto {
+        case .rtmp:
+            srtStream = nil
+            rtmpStream = RTMPStream(connection: rtmpConnection)
+            netStream = rtmpStream
+        case .srt:
+            rtmpStream = nil
+            srtStream = SRTStream(srtConnection)
+            netStream = srtStream
+        }
+    }
+
+    func srtConnect(url: URL?) throws {
+        try srtConnection.open(url)
+        srtStream?.publish()
+    }
+
     func srtStartStream(
         isSrtla: Bool,
         delegate: SrtlaDelegate,

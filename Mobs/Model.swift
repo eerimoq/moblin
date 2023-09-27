@@ -70,15 +70,6 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         }
     }
 
-    private var srtStream: SRTStream! {
-        get {
-            mediaStream.srtStream
-        }
-        set {
-            mediaStream.srtStream = newValue
-        }
-    }
-
     private var netStream: NetStream! {
         get {
             mediaStream.netStream
@@ -437,16 +428,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func setNetStream() {
-        switch stream.getProtocol() {
-        case .rtmp:
-            srtStream = nil
-            rtmpStream = RTMPStream(connection: rtmpConnection)
-            netStream = rtmpStream
-        case .srt:
-            rtmpStream = nil
-            srtStream = SRTStream(srtConnection)
-            netStream = srtStream
-        }
+        mediaStream.setNetStream(proto: stream.getProtocol())
         netStream.delegate = self
         netStream.videoOrientation = .landscapeRight
         updateTorch()
@@ -1045,8 +1027,8 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             self.setupSrtConnectionStateListener()
             streamDispatchQueue.async {
                 do {
-                    try self.srtConnection.open(self.makeLocalhostSrtUrl(port: port))
-                    self.srtStream?.publish()
+                    let url = self.makeLocalhostSrtUrl(port: port)
+                    try self.mediaStream.srtConnect(url: url)
                 } catch {
                     DispatchQueue.main.async {
                         self.onDisconnected(reason: "SRT connect failed with \(error)")
