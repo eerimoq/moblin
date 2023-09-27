@@ -13,10 +13,13 @@ let streamDispatchQueue = DispatchQueue(label: "com.eerimoq.stream")
 final class MediaStream {
     var rtmpConnection = RTMPConnection()
     var srtConnection = SRTConnection()
-    var rtmpStream: RTMPStream!
-    var srtStream: SRTStream!
+    private var rtmpStream: RTMPStream!
+    private var srtStream: SRTStream!
     private var srtla: Srtla?
     var netStream: NetStream!
+    private var srtTotalByteCount: Int64 = 0
+    private var srtPreviousTotalByteCount: Int64 = 0
+    private var srtSpeed: Int64 = 0
 
     func logStatistics() {
         srtla?.logStatistics()
@@ -39,6 +42,10 @@ final class MediaStream {
         }
     }
 
+    func rtmpPublish(streamName: String) {
+        rtmpStream.publish(streamName)
+    }
+
     func srtConnect(url: URL?) throws {
         try srtConnection.open(url)
         srtStream?.publish()
@@ -50,6 +57,8 @@ final class MediaStream {
         url: String?,
         reconnectTime: Double
     ) {
+        srtTotalByteCount = 0
+        srtPreviousTotalByteCount = 0
         srtla?.stop()
         srtla = Srtla(delegate: delegate, passThrough: !isSrtla)
         srtla!.start(uri: url!, timeout: reconnectTime + 1)
@@ -63,5 +72,27 @@ final class MediaStream {
 
     func getSrtlaTotalByteCount() -> Int64 {
         return srtla?.getTotalByteCount() ?? 0
+    }
+
+    func updateSrtSpeed() {
+        srtTotalByteCount = getSrtlaTotalByteCount()
+        srtSpeed = max(srtTotalByteCount - srtPreviousTotalByteCount, 0)
+        srtPreviousTotalByteCount = srtTotalByteCount
+    }
+
+    func streamSpeed() -> Int64 {
+        if netStream === rtmpStream {
+            return Int64(8 * rtmpStream.info.currentBytesPerSecond)
+        } else {
+            return 8 * srtSpeed
+        }
+    }
+
+    func streamTotal() -> Int64 {
+        if netStream === rtmpStream {
+            return rtmpStream.info.byteCount.value
+        } else {
+            return srtTotalByteCount
+        }
     }
 }

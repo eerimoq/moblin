@@ -61,15 +61,6 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         mediaStream.srtConnection
     }
 
-    private var rtmpStream: RTMPStream! {
-        get {
-            mediaStream.rtmpStream
-        }
-        set {
-            mediaStream.rtmpStream = newValue
-        }
-    }
-
     private var netStream: NetStream! {
         get {
             mediaStream.netStream
@@ -79,9 +70,6 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         }
     }
 
-    private var srtTotalByteCount: Int64 = 0
-    private var srtPreviousTotalByteCount: Int64 = 0
-    private var srtSpeed: Int64 = 0
     var streamState = StreamState.disconnected {
         didSet {
             logger.info("stream: State \(oldValue) -> \(streamState)")
@@ -271,7 +259,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
             self.updateUptime(now: now)
             self.updateDigitalClock(now: now)
             self.updateChatSpeed()
-            self.updateSrtSpeed()
+            self.mediaStream.updateSrtSpeed()
             self.updateSpeed()
             self.updateTwitchPubSub(now: now)
             self.updateAudioLevel()
@@ -697,32 +685,10 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         numberOfChatPosts = 0
     }
 
-    func updateSrtSpeed() {
-        srtTotalByteCount = mediaStream.getSrtlaTotalByteCount()
-        srtSpeed = max(srtTotalByteCount - srtPreviousTotalByteCount, 0)
-        srtPreviousTotalByteCount = srtTotalByteCount
-    }
-
-    func streamSpeed() -> Int64 {
-        if netStream === rtmpStream {
-            return Int64(8 * rtmpStream.info.currentBytesPerSecond)
-        } else {
-            return 8 * srtSpeed
-        }
-    }
-
-    func streamTotal() -> Int64 {
-        if netStream === rtmpStream {
-            return rtmpStream.info.byteCount.value
-        } else {
-            return srtTotalByteCount
-        }
-    }
-
     func updateSpeed() {
         if isLive {
-            let speed = formatBytesPerSecond(speed: streamSpeed())
-            let total = sizeFormatter.string(fromByteCount: streamTotal())
+            let speed = formatBytesPerSecond(speed: mediaStream.streamSpeed())
+            let total = sizeFormatter.string(fromByteCount: mediaStream.streamTotal())
             speedAndTotal = "\(speed) (\(total))"
         } else {
             speedAndTotal = noValue
@@ -877,7 +843,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         DispatchQueue.main.async {
             switch code {
             case RTMPConnection.Code.connectSuccess.rawValue:
-                self.rtmpStream.publish(self.rtmpStreamName())
+                self.mediaStream.rtmpPublish(streamName: self.rtmpStreamName())
                 self.onConnected()
             case RTMPConnection.Code.connectFailed.rawValue,
                  RTMPConnection.Code.connectClosed.rawValue:
@@ -995,8 +961,6 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func srtStartStream() {
-        srtTotalByteCount = 0
-        srtPreviousTotalByteCount = 0
         mediaStream.srtStartStream(
             isSrtla: stream.isSrtla(),
             delegate: self,
