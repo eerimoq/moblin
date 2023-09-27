@@ -1,4 +1,5 @@
 import AlertToast
+import AVFoundation
 import Collections
 import Combine
 import Foundation
@@ -10,8 +11,20 @@ import VideoToolbox
 
 let streamDispatchQueue = DispatchQueue(label: "com.eerimoq.stream")
 
+func isMuted(level: Float) -> Bool {
+    return level.isNaN
+}
+
+func becameMuted(old: Float, new: Float) -> Bool {
+    return !isMuted(level: old) && isMuted(level: new)
+}
+
+func becameUnmuted(old: Float, new: Float) -> Bool {
+    return isMuted(level: old) && !isMuted(level: new)
+}
+
 final class MediaStream: NSObject {
-    var rtmpConnection = RTMPConnection()
+    private var rtmpConnection = RTMPConnection()
     private var srtConnection = SRTConnection()
     private var rtmpStream: RTMPStream!
     private var srtStream: SRTStream!
@@ -25,7 +38,9 @@ final class MediaStream: NSObject {
     var onSrtDisconnected: (() -> Void)!
     var onRtmpConnected: (() -> Void)!
     var onRtmpDisconnected: ((_ message: String) -> Void)!
+    var onAudioMuteChange: (() -> Void)!
     private var rtmpStreamName = ""
+    private var currentAudioLevel: Float = 100.0
 
     func logStatistics() {
         srtla?.logStatistics()
@@ -46,6 +61,11 @@ final class MediaStream: NSObject {
             srtStream = SRTStream(srtConnection)
             netStream = srtStream
         }
+        netStream.delegate = self
+    }
+
+    func getAudioLevel() -> Float {
+        return currentAudioLevel
     }
 
     func srtConnect(url: String, port: UInt16) throws {
@@ -128,9 +148,9 @@ final class MediaStream: NSObject {
         urlComponents.query = url.query
         return urlComponents.url
     }
-    
+
     func rtmpConnect(url: String) {
-        self.rtmpStreamName = makeRtmpStreamName(url: url)
+        rtmpStreamName = makeRtmpStreamName(url: url)
         rtmpConnection.addEventListener(
             .rtmpStatus,
             selector: #selector(rtmpStatusHandler),
@@ -138,7 +158,7 @@ final class MediaStream: NSObject {
         )
         rtmpConnection.connect(makeRtmpUri(url: url))
     }
-    
+
     func rtmpDisconnect() {
         rtmpConnection.removeEventListener(
             .rtmpStatus,
@@ -147,7 +167,7 @@ final class MediaStream: NSObject {
         )
         rtmpConnection.close()
     }
-    
+
     @objc
     private func rtmpStatusHandler(_ notification: Notification) {
         let e = Event.from(notification)
@@ -162,10 +182,71 @@ final class MediaStream: NSObject {
                 self.rtmpStream.publish(self.rtmpStreamName)
                 self.onRtmpConnected()
             case RTMPConnection.Code.connectFailed.rawValue,
-                RTMPConnection.Code.connectClosed.rawValue:
+                 RTMPConnection.Code.connectClosed.rawValue:
                 self.onRtmpDisconnected("\(code)")
             default:
                 break
+            }
+        }
+    }
+}
+
+extension MediaStream: NetStreamDelegate {
+    func stream(
+        _: NetStream,
+        didOutput _: AVAudioBuffer,
+        presentationTimeStamp _: CMTime
+    ) {
+        logger.debug("stream: Playback an audio packet incoming.")
+    }
+
+    func stream(_: NetStream, didOutput _: CMSampleBuffer) {
+        logger.debug("stream: Playback a video packet incoming.")
+    }
+
+    func stream(
+        _: NetStream,
+        sessionWasInterrupted _: AVCaptureSession,
+        reason: AVCaptureSession.InterruptionReason?
+    ) {
+        if let reason {
+            logger
+                .info("stream: Session was interrupted with reason: \(reason.toString())")
+        } else {
+            logger.info("stream: Session was interrupted without reason")
+        }
+    }
+
+    func stream(_: NetStream, sessionInterruptionEnded _: AVCaptureSession) {
+        logger.info("stream: Session interrupted ended.")
+    }
+
+    func stream(_: NetStream, videoCodecErrorOccurred error: VideoCodec.Error) {
+        logger.error("stream: Video codec error: \(error)")
+    }
+
+    func stream(_: NetStream,
+                audioCodecErrorOccurred error: HaishinKit.AudioCodec.Error)
+    {
+        logger.error("stream: Audio codec error: \(error)")
+    }
+
+    func streamWillDropFrame(_: NetStream) -> Bool {
+        return false
+    }
+
+    func streamDidOpen(_: NetStream) {}
+
+    func stream(_: NetStream, audioLevel: Float) {
+        DispatchQueue.main.async {
+            if becameMuted(old: self.currentAudioLevel, new: audioLevel) || becameUnmuted(
+                old: self.currentAudioLevel,
+                new: audioLevel
+            ) {
+                self.currentAudioLevel = audioLevel
+                self.onAudioMuteChange()
+            } else {
+                self.currentAudioLevel = audioLevel
             }
         }
     }

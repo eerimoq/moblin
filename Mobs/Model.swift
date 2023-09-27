@@ -34,18 +34,6 @@ struct ButtonPair: Identifiable {
     var second: ButtonState?
 }
 
-func isMuted(level: Float) -> Bool {
-    return level.isNaN
-}
-
-func becameMuted(old: Float, new: Float) -> Bool {
-    return !isMuted(level: old) && isMuted(level: new)
-}
-
-func becameUnmuted(old: Float, new: Float) -> Bool {
-    return isMuted(level: old) && !isMuted(level: new)
-}
-
 struct LogEntry: Identifiable {
     var id: Int
     var message: String
@@ -53,10 +41,6 @@ struct LogEntry: Identifiable {
 
 final class Model: ObservableObject {
     private let mediaStream = MediaStream()
-    private var rtmpConnection: RTMPConnection {
-        mediaStream.rtmpConnection
-    }
-
     private var netStream: NetStream! {
         get {
             mediaStream.netStream
@@ -80,7 +64,6 @@ final class Model: ObservableObject {
     @Published var uptime = noValue
     @Published var currentConnectionType = noValue
     @Published var audioLevel = noValue
-    var currentAudioLevel: Float = 100.0
     var settings = Settings()
     var digitalClock = noValue
     var selectedSceneId = UUID()
@@ -210,6 +193,7 @@ final class Model: ObservableObject {
         mediaStream.onSrtDisconnected = handleSrtDisconnected
         mediaStream.onRtmpConnected = handleRtmpConnected
         mediaStream.onRtmpDisconnected = handleRtmpDisconnected
+        mediaStream.onAudioMuteChange = updateAudioLevel
         self.settings = settings
         mthkView.videoGravity = .resizeAspect
         logger.handler = debugLog(message:)
@@ -299,10 +283,11 @@ final class Model: ObservableObject {
     }
 
     func updateAudioLevel() {
-        if currentAudioLevel.isNaN {
+        let newAudioLevel = mediaStream.getAudioLevel()
+        if newAudioLevel.isNaN {
             audioLevel = String("Muted")
         } else {
-            audioLevel = "\(Int(currentAudioLevel)) dB"
+            audioLevel = "\(Int(newAudioLevel)) dB"
         }
     }
 
@@ -424,7 +409,6 @@ final class Model: ObservableObject {
 
     func setNetStream() {
         mediaStream.setNetStream(proto: stream.getProtocol())
-        netStream.delegate = self
         netStream.videoOrientation = .landscapeRight
         updateTorch()
         updateMute()
@@ -828,15 +812,15 @@ final class Model: ObservableObject {
             logger.warning("While locking device for ramp: \(error)")
         }
     }
-    
+
     func handleRtmpConnected() {
         onConnected()
     }
-    
+
     func handleRtmpDisconnected(message: String) {
         onDisconnected(reason: "RTMP disconnected with message \(message)")
     }
-    
+
     func onConnected() {
         makeToast(message: "🎉 You are LIVE at \(stream.name) 🎉")
         reconnectTime = firstReconnectTime
@@ -867,67 +851,6 @@ final class Model: ObservableObject {
 
     func handleSrtDisconnected() {
         onDisconnected(reason: "SRT state changed to false")
-    }
-}
-
-extension Model: NetStreamDelegate {
-    func stream(
-        _: NetStream,
-        didOutput _: AVAudioBuffer,
-        presentationTimeStamp _: CMTime
-    ) {
-        logger.debug("stream: Playback an audio packet incoming.")
-    }
-
-    func stream(_: NetStream, didOutput _: CMSampleBuffer) {
-        logger.debug("stream: Playback a video packet incoming.")
-    }
-
-    func stream(
-        _: NetStream,
-        sessionWasInterrupted _: AVCaptureSession,
-        reason: AVCaptureSession.InterruptionReason?
-    ) {
-        if let reason {
-            logger
-                .info("stream: Session was interrupted with reason: \(reason.toString())")
-        } else {
-            logger.info("stream: Session was interrupted without reason")
-        }
-    }
-
-    func stream(_: NetStream, sessionInterruptionEnded _: AVCaptureSession) {
-        logger.info("stream: Session interrupted ended.")
-    }
-
-    func stream(_: NetStream, videoCodecErrorOccurred error: VideoCodec.Error) {
-        logger.error("stream: Video codec error: \(error)")
-    }
-
-    func stream(_: NetStream,
-                audioCodecErrorOccurred error: HaishinKit.AudioCodec.Error)
-    {
-        logger.error("stream: Audio codec error: \(error)")
-    }
-
-    func streamWillDropFrame(_: NetStream) -> Bool {
-        return false
-    }
-
-    func streamDidOpen(_: NetStream) {}
-
-    func stream(_: NetStream, audioLevel: Float) {
-        DispatchQueue.main.async {
-            if becameMuted(old: self.currentAudioLevel, new: audioLevel) || becameUnmuted(
-                old: self.currentAudioLevel,
-                new: audioLevel
-            ) {
-                self.currentAudioLevel = audioLevel
-                self.updateAudioLevel()
-            } else {
-                self.currentAudioLevel = audioLevel
-            }
-        }
     }
 }
 
