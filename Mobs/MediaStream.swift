@@ -15,7 +15,7 @@ final class MediaStream {
     var srtConnection = SRTConnection()
     var rtmpStream: RTMPStream!
     var srtStream: SRTStream!
-    var srtla: Srtla?
+    private var srtla: Srtla?
     var netStream: NetStream!
 
     func logStatistics() {
@@ -41,5 +41,9 @@ final class MediaStream {
         srtConnection.close()
         srtla?.stop()
         srtla = nil
+    }
+
+    func getSrtlaTotalByteCount() -> Int64 {
+        return srtla?.getTotalByteCount() ?? 0
     }
 }

@@ -716,7 +716,8 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
     }
 
     func updateSrtSpeed() {
-        srtSpeed = srtTotalByteCount - srtPreviousTotalByteCount
+        srtTotalByteCount = mediaStream.getSrtlaTotalByteCount()
+        srtSpeed = max(srtTotalByteCount - srtPreviousTotalByteCount, 0)
         srtPreviousTotalByteCount = srtTotalByteCount
     }
 
@@ -1059,18 +1060,6 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         DispatchQueue.main.async {
             logger.info("stream: srtla: Error")
             self.onDisconnected(reason: "General SRT error")
-        }
-    }
-
-    func srtlaPacketSent(byteCount: Int) {
-        DispatchQueue.main.async {
-            self.srtTotalByteCount += Int64(byteCount)
-        }
-    }
-
-    func srtlaPacketReceived(byteCount: Int) {
-        DispatchQueue.main.async {
-            self.srtTotalByteCount += Int64(byteCount)
         }
     }
 

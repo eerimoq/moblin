@@ -4,8 +4,6 @@ import Network
 protocol SrtlaDelegate: AnyObject {
     func srtlaReady(port: UInt16)
     func srtlaError()
-    func srtlaPacketSent(byteCount: Int)
-    func srtlaPacketReceived(byteCount: Int)
     func srtlaConnectionTypeChanged(type: String)
 }
 
@@ -33,6 +31,8 @@ class Srtla {
         }
     }
 
+    private var totalByteCount: Int64 = 0
+
     init(delegate: SrtlaDelegate, passThrough: Bool) {
         self.delegate = delegate
         self.passThrough = passThrough
@@ -48,6 +48,7 @@ class Srtla {
 
     func start(uri: String, timeout: Double) {
         srtlaDispatchQueue.async {
+            self.totalByteCount = 0
             guard
                 let url = URL(string: uri),
                 let host = url.host,
@@ -101,6 +102,12 @@ class Srtla {
             for connection in self.remoteConnections {
                 connection.logStatistics()
             }
+        }
+    }
+
+    func getTotalByteCount() -> Int64 {
+        srtlaDispatchQueue.sync {
+            totalByteCount
         }
     }
 
@@ -177,7 +184,7 @@ class Srtla {
             return
         }
         connection.sendSrtPacket(packet: packet)
-        delegate?.srtlaPacketSent(byteCount: packet.count)
+        totalByteCount += Int64(packet.count)
     }
 
     private func handleRemoteConnected(connection: RemoteConnection) {
@@ -201,7 +208,7 @@ class Srtla {
 
     private func handleRemotePacket(packet: Data) {
         localListener?.sendPacket(packet: packet)
-        delegate?.srtlaPacketReceived(byteCount: packet.count)
+        totalByteCount += Int64(packet.count)
     }
 
     private func handleSrtAck(sn: UInt32) {
