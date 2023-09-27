@@ -1,10 +1,10 @@
 import SwiftUI
 
-var codecs = ["H.264/AVC", "H.265/HEVC"]
+var codecs = ["H.265/HEVC", "H.264/AVC"]
 
 enum SettingsStreamCodec: String, Codable {
-    case h264avc = "H.264/AVC"
     case h265hevc = "H.265/HEVC"
+    case h264avc = "H.264/AVC"
 }
 
 var resolutions = ["1920x1080", "1280x720", "854x480", "640x360", "426x240"]
@@ -32,6 +32,8 @@ let bitrates: [UInt32] = [
     1_000_000,
     750_000,
     500_000,
+    350_000,
+    250_000,
 ]
 
 enum SettingsStreamProtocol: String, Codable {
@@ -51,7 +53,6 @@ class SettingsStream: Codable, Identifiable {
     var twitchChannelId: String = ""
     var kickChannelId: String? = ""
     var kickChatroomId: String? = ""
-    var proto: SettingsStreamProtocol = .rtmp
     var resolution: SettingsStreamResolution = .r1280x720
     var fps: Int = 30
     var bitrate: UInt32 = 3_000_000
@@ -481,38 +482,6 @@ final class Settings {
             }
             if database.streams.isEmpty {
                 addDefaultStreams(database: database)
-            }
-            for stream in database.streams {
-                if stream.url != nil {
-                    continue
-                }
-                switch stream.proto {
-                case .rtmp:
-                    stream.url = stream.rtmpUrl
-                case .srt:
-                    if stream.srtla {
-                        if let index = stream.srtUrl.firstIndex(of: ":") {
-                            stream.url = "srtla" + stream.srtUrl[index...]
-                        } else {
-                            stream.url = stream.srtUrl
-                        }
-                    } else {
-                        stream.url = stream.srtUrl
-                    }
-                }
-                store()
-            }
-            for stream in database.streams {
-                if stream.kickChatroomId != nil {
-                    continue
-                }
-                if let channelId = stream.kickChannelId {
-                    stream.kickChatroomId = channelId
-                    stream.kickChannelId = nil
-                } else {
-                    stream.kickChatroomId = ""
-                }
-                store()
             }
             if database.show.audioLevel == nil {
                 database.show.audioLevel = true
