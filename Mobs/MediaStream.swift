@@ -11,15 +11,15 @@ import VideoToolbox
 
 let streamDispatchQueue = DispatchQueue(label: "com.eerimoq.stream")
 
-func isMuted(level: Float) -> Bool {
+private func isMuted(level: Float) -> Bool {
     return level.isNaN
 }
 
-func becameMuted(old: Float, new: Float) -> Bool {
+private func becameMuted(old: Float, new: Float) -> Bool {
     return !isMuted(level: old) && isMuted(level: new)
 }
 
-func becameUnmuted(old: Float, new: Float) -> Bool {
+private func becameUnmuted(old: Float, new: Float) -> Bool {
     return isMuted(level: old) && !isMuted(level: new)
 }
 
@@ -91,14 +91,15 @@ final class MediaStream: NSObject {
         srtla?.stop()
         srtla = nil
         srtConnectedObservation = nil
-    }
-
-    func getSrtlaTotalByteCount() -> Int64 {
-        return srtla?.getTotalByteCount() ?? 0
+        onSrtConnected = nil
+        onSrtDisconnected = nil
+        onRtmpConnected = nil
+        onRtmpDisconnected = nil
+        onAudioMuteChange = nil
     }
 
     func updateSrtSpeed() {
-        srtTotalByteCount = getSrtlaTotalByteCount()
+        srtTotalByteCount = srtla?.getTotalByteCount() ?? 0
         srtSpeed = max(srtTotalByteCount - srtPreviousTotalByteCount, 0)
         srtPreviousTotalByteCount = srtTotalByteCount
     }
