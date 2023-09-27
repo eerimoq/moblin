@@ -22,7 +22,7 @@ class Srtla {
     private var localListener: LocalListener?
     private weak var delegate: (any SrtlaDelegate)?
     private let passThrough: Bool
-    private var connectTimer: Timer?
+    private var connectTimer: DispatchSourceTimer?
     private var state = State.idle {
         didSet {
             logger.info("srtla: State \(oldValue) -> \(state)")
@@ -58,11 +58,13 @@ class Srtla {
             for connection in self.remoteConnections {
                 self.startRemote(connection: connection, host: host, port: port)
             }
-            self.connectTimer = Timer
-                .scheduledTimer(withTimeInterval: timeout, repeats: false) { _ in
-                    logger.info("srtla: Connect timer expired")
-                    self.onDisconnected()
-                }
+            self.connectTimer = DispatchSource.makeTimerSource(queue: srtlaDispatchQueue)
+            self.connectTimer!.schedule(deadline: .now() + timeout)
+            self.connectTimer!.setEventHandler {
+                logger.info("srtla: Connect timer expired")
+                self.onDisconnected()
+            }
+            self.connectTimer!.activate()
             self.state = .waitForRemoteSocketConnected
         }
     }
@@ -74,8 +76,7 @@ class Srtla {
             }
             self.remoteConnections = []
             self.stopListener()
-            self.connectTimer?.invalidate()
-            self.connectTimer = nil
+            self.cancelConnectTimer()
             self.state = .idle
         }
     }
@@ -161,7 +162,11 @@ class Srtla {
         }
         state = .running
         delegate?.srtlaReady(port: port)
-        connectTimer?.invalidate()
+        cancelConnectTimer()
+    }
+
+    private func cancelConnectTimer() {
+        connectTimer?.cancel()
         connectTimer = nil
     }
 
