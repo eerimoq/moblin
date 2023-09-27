@@ -389,9 +389,9 @@ func addDefaultStreams(database: Database) {
     let stream = SettingsStream(name: "Twitch")
     stream.enabled = true
     stream.url = "rtmp://arn03.contribute.live-video.net/app/your_stream_key"
-    stream.twitchChannelName = "jinnytty"
-    stream.twitchChannelId = "159498717"
-    stream.kickChatroomId = "875062"
+    stream.twitchChannelName = ""
+    stream.twitchChannelId = ""
+    stream.kickChatroomId = ""
     database.streams.append(stream)
 }
 

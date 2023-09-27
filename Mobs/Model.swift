@@ -239,9 +239,12 @@ final class Model: ObservableObject {
     @objc func didEnterBackground(animated _: Bool) {
         wasStreamingWhenDidEnterBackground = streaming
         stopStream()
+        logger.debug("Did enter background")
     }
 
     @objc func willEnterForeground(animated _: Bool) {
+        logger.debug("Will enter foreground")
+        thermalState = ProcessInfo.processInfo.thermalState
         if wasStreamingWhenDidEnterBackground {
             stopStream()
             startStream()

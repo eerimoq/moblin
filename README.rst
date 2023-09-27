@@ -24,6 +24,8 @@ Features
 
 - H.264/AVC and H.265/HEVC video codecs.
 
+- Up to 1080p and 60 FPS.
+
 - Twitch integration.
 
   - Number of viewers.
@@ -37,10 +39,6 @@ Features
 - Kick integration.
 
   - Chat.
-
-- Configure resolution, FPS, codec and bitrate.
-
-- Landscape stream only.
 
 - Basic scenes.
 
@@ -62,15 +60,17 @@ Features
 
 - Torch.
 
+- Configure resolution, FPS, codec and bitrate.
+
+- Landscape stream only.
+
 ToDo
 ====
 
-- Move SRT to non-main dispatch queue. Video interruptions now when
-  zooming slowly, and probably same for other UI actions as well.
-
 - Fix crashes. =)
 
-- Sometimes video hangs. Often when app is put into background.
+- Sometimes video hangs. Often when app is put into background. Or
+  when changing settings.
 
 Ideas/plan
 ==========

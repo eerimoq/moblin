@@ -52,7 +52,7 @@ class Srtla {
                 let host = url.host,
                 let port = url.port
             else {
-                logger.error("srtla: Failed to start")
+                logger.error("srtla: Malformed URL")
                 return
             }
             for connection in self.remoteConnections {

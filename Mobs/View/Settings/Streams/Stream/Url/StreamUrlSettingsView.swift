@@ -18,6 +18,10 @@ struct StreamUrlSettingsView: View {
             model.makeErrorToast(message: "Malformed URL")
             return
         }
+        if url.host() == nil {
+            model.makeErrorToast(message: "Host missing")
+            return
+        }
         guard URLComponents(url: url, resolvingAgainstBaseURL: false) != nil else {
             model.makeErrorToast(message: "Malformed URL")
             return
@@ -34,9 +38,15 @@ struct StreamUrlSettingsView: View {
                 return
             }
         case "srt":
-            break
+            if let message = isValidSrtUrl(url: value) {
+                model.makeErrorToast(message: message)
+                return
+            }
         case "srtla":
-            break
+            if let message = isValidSrtUrl(url: value) {
+                model.makeErrorToast(message: message)
+                return
+            }
         case nil:
             model.makeErrorToast(message: "Scheme missing")
             return

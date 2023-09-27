@@ -73,6 +73,16 @@ func isValidRtmpUrl(url: String) -> String? {
     return nil
 }
 
+func isValidSrtUrl(url: String) -> String? {
+    guard let url = URL(string: url) else {
+        return "Malformed SRT(LA) URL"
+    }
+    if url.port == nil {
+        return "SRT(LA) port number missing"
+    }
+    return nil
+}
+
 func schemeAndAddress(url: String) -> String {
     guard var url = URL(string: url) else {
         return ""
