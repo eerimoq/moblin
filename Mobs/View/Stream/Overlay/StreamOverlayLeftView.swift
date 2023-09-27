@@ -28,7 +28,9 @@ struct LeftOverlayView: View {
     }
 
     func messageText() -> String {
-        if model.isChatConnected() {
+        if !model.isChatConfigured() {
+            return "Not configured"
+        } else if model.isChatConnected() {
             return String(format: "%.2f m/s", model.chatPostsPerSecond)
         } else {
             return ""
@@ -36,7 +38,9 @@ struct LeftOverlayView: View {
     }
 
     func messageColor() -> Color {
-        if model.isChatConnected() {
+        if !model.isChatConfigured() {
+            return .white
+        } else if model.isChatConnected() {
             return .white
         } else {
             return .red
@@ -44,7 +48,9 @@ struct LeftOverlayView: View {
     }
 
     func viewersText() -> String {
-        if model.isTwitchPubSubConnected() {
+        if !model.isViewersConfigured() {
+            return "Not configured"
+        } else if model.isTwitchPubSubConnected() {
             return model.numberOfViewers
         } else {
             return ""
@@ -52,7 +58,9 @@ struct LeftOverlayView: View {
     }
 
     func viewersColor() -> Color {
-        if model.isTwitchPubSubConnected() {
+        if model.stream.twitchChannelId == "" {
+            return .white
+        } else if model.isTwitchPubSubConnected() {
             return .white
         } else {
             return .red

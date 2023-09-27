@@ -244,7 +244,7 @@ final class Model: ObservableObject {
 
     @objc func willEnterForeground(animated _: Bool) {
         logger.debug("Will enter foreground")
-        thermalState = ProcessInfo.processInfo.thermalState
+        updateThermalState()
         if wasStreamingWhenDidEnterBackground {
             stopStream()
             startStream()
@@ -469,6 +469,14 @@ final class Model: ObservableObject {
             netStream.videoSettings
                 .profileLevel = kVTProfileLevel_HEVC_Main_AutoLevel as String
         }
+    }
+
+    func isChatConfigured() -> Bool {
+        return stream.twitchChannelName != "" || stream.kickChatroomId != ""
+    }
+
+    func isViewersConfigured() -> Bool {
+        return stream.twitchChannelId != ""
     }
 
     func isTwitchChatConnected() -> Bool {
