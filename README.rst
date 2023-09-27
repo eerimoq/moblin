@@ -80,8 +80,6 @@ Ideas/plan
 - Lookup Twitch channel id from channel name. Possibly login to
   Twitch.
 
-- Big F on screen when disconnected.
-
 - App running in background? What is possible? Video can not run in
   background. Audio can most likely.
 
@@ -113,45 +111,6 @@ Ideas/plan
   server side by most streamers, so not that important to change.
 
 - LIDAR, altitude.
-
-Resources
-=========
-
-- https://pad.riseup.net/p/IRLstreamingforFreeorCheap-keep
-
-  How to IRL stream for free or cheap.
-
-- https://twitchapps.com/tmi/
-
-  Create Twitch (chat) token.
-
-- https://irl.run
-
-  IRL Toolkit.
-
-- https://belabox.net/
-
-  BELABOX
-
-- https://haivision.github.io/srt-rfc/draft-sharabayko-srt.html
-
-  SRT spec
-
-Twitch user to id
-=================
-
-Run on own server. Or possibly make the user login to Twitch with own
-account.
-
-.. code-block::
-
-   SECRET=<my-app-secret>
-   TOKEN=$(curl -s -X POST 'https://id.twitch.tv/oauth2/token' \
-       -H 'Content-Type: application/x-www-form-urlencoded' \
-       -d "client_id=9y23ws4svxsu2tm17ksvtp6ze3zytl&client_secret=$SECRET&grant_type=client_credentials" | jq -r '.access_token')
-   curl -s -X GET 'https://api.twitch.tv/helix/users?login=eerimoq' \
-       -H "Authorization: Bearer $TOKEN" \
-       -H 'Client-Id: 9y23ws4svxsu2tm17ksvtp6ze3zytl' | jq -r '.data[0].id'
 
 Similar software
 ================
