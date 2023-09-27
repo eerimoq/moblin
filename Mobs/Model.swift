@@ -763,10 +763,6 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         return makeRtmpUri(url: stream.url!)
     }
 
-    func rtmpStreamName() -> String {
-        return makeRtmpStreamName(url: stream.url!)
-    }
-
     func toggleTorch() {
         isTorchOn.toggle()
         updateTorch()
@@ -843,7 +839,7 @@ final class Model: ObservableObject, NetStreamDelegate, SrtlaDelegate {
         DispatchQueue.main.async {
             switch code {
             case RTMPConnection.Code.connectSuccess.rawValue:
-                self.mediaStream.rtmpPublish(streamName: self.rtmpStreamName())
+                self.mediaStream.rtmpPublish(url: self.stream.url!)
                 self.onConnected()
             case RTMPConnection.Code.connectFailed.rawValue,
                  RTMPConnection.Code.connectClosed.rawValue:

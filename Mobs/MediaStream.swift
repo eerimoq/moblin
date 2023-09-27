@@ -42,8 +42,8 @@ final class MediaStream {
         }
     }
 
-    func rtmpPublish(streamName: String) {
-        rtmpStream.publish(streamName)
+    func rtmpPublish(url: String) {
+        rtmpStream.publish(makeRtmpStreamName(url: url))
     }
 
     func srtConnect(url: URL?) throws {
