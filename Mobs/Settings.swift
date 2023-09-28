@@ -536,7 +536,7 @@ final class Settings {
         do {
             realDatabase = try Database.fromString(settings: settings)
         } catch {
-            return "\(error)"
+            return "Malformed settings"
         }
         store()
         return nil
