@@ -38,16 +38,7 @@ struct LogEntry: Identifiable {
 }
 
 final class Model: ObservableObject {
-    private let mediaStream = MediaStream()
-    private var netStream: NetStream! {
-        get {
-            mediaStream.netStream
-        }
-        set {
-            mediaStream.netStream = newValue
-        }
-    }
-
+    private let media = Media()
     var streamState = StreamState.disconnected {
         didSet {
             logger.info("stream: State \(oldValue) -> \(streamState)")
@@ -124,10 +115,11 @@ final class Model: ObservableObject {
         showToast = true
     }
 
-    func makeErrorToast(message: String, font: Font? = nil) {
+    func makeErrorToast(title: String, font: Font? = nil, subMessage: String? = nil) {
         toast = AlertToast(
             type: .regular,
-            title: message,
+            title: title,
+            subTitle: subMessage,
             style: .style(titleColor: .red, titleFont: font)
         )
         showToast = true
@@ -187,17 +179,16 @@ final class Model: ObservableObject {
     }
 
     func setup(settings: Settings) {
-        mediaStream.onSrtConnected = handleSrtConnected
-        mediaStream.onSrtDisconnected = handleSrtDisconnected
-        mediaStream.onRtmpConnected = handleRtmpConnected
-        mediaStream.onRtmpDisconnected = handleRtmpDisconnected
-        mediaStream.onAudioMuteChange = updateAudioLevel
+        media.onSrtConnected = handleSrtConnected
+        media.onSrtDisconnected = handleSrtDisconnected
+        media.onRtmpConnected = handleRtmpConnected
+        media.onRtmpDisconnected = handleRtmpDisconnected
+        media.onAudioMuteChange = updateAudioLevel
         self.settings = settings
         mthkView.videoGravity = .resizeAspect
         logger.handler = debugLog(message:)
         logger.info("Setup")
         updateDigitalClock(now: Date())
-        checkDeviceAuthorization()
         twitchChat = TwitchChatMobs(model: self)
         reloadStream()
         resetSelectedScene()
@@ -243,7 +234,7 @@ final class Model: ObservableObject {
             self.updateUptime(now: now)
             self.updateDigitalClock(now: now)
             self.updateChatSpeed()
-            self.mediaStream.updateSrtSpeed()
+            self.media.updateSrtSpeed()
             self.updateSpeed()
             self.updateTwitchPubSub(now: now)
             self.updateAudioLevel()
@@ -251,7 +242,7 @@ final class Model: ObservableObject {
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
-            self.mediaStream.logStatistics()
+            self.media.logStatistics()
         })
     }
 
@@ -281,7 +272,7 @@ final class Model: ObservableObject {
     }
 
     func updateAudioLevel() {
-        let newAudioLevel = mediaStream.getAudioLevel()
+        let newAudioLevel = media.getAudioLevel()
         if newAudioLevel.isNaN {
             audioLevel = String("Muted")
         } else {
@@ -290,7 +281,7 @@ final class Model: ObservableObject {
     }
 
     func updateBestSrtlaConnectionType() {
-        if isStreamConnceted(), let type = mediaStream.getBestSrtlaConnectionType() {
+        if isStreamConnceted(), let type = media.getBestSrtlaConnectionType() {
             currentConnectionType = type
         } else {
             currentConnectionType = noValue
@@ -364,10 +355,9 @@ final class Model: ObservableObject {
         case .rtmp:
             rtmpStartStream()
         case .srt:
-            mediaStream.srtStartStream(
+            media.srtStartStream(
                 isSrtla: stream.isSrtla(),
-                delegate: self,
-                url: stream.url,
+                url: stream.url!,
                 reconnectTime: reconnectTime
             )
         }
@@ -377,12 +367,13 @@ final class Model: ObservableObject {
     func stopNetStream() {
         reconnectTimer?.invalidate()
         rtmpStopStream()
-        mediaStream.srtStopStream()
+        media.srtStopStream()
         streamStartDate = nil
         updateUptime(now: Date())
         updateSpeed()
         updateAudioLevel()
         currentConnectionType = noValue
+        makeToast(message: "🤟 Stream ended 🤟")
     }
 
     func reloadStream() {
@@ -406,52 +397,46 @@ final class Model: ObservableObject {
     }
 
     func setNetStream() {
-        mediaStream.setNetStream(proto: stream.getProtocol())
-        netStream.videoOrientation = .landscapeRight
+        media.setNetStream(proto: stream.getProtocol())
         updateTorch()
         updateMute()
-        mthkView.attachStream(netStream)
-        netStream.attachAudio(AVCaptureDevice.default(for: .audio)) { error in
-            logger.error("stream: Attach audio error: \(error)")
-        }
+        mthkView.attachStream(media.getNetStream())
     }
 
     func setStreamResolution() {
         switch stream.resolution {
         case .r1920x1080:
-            netStream.sessionPreset = .hd1920x1080
-            netStream.videoSettings.videoSize = .init(width: 1920, height: 1080)
+            media.setVideoSessionPreset(preset: .hd1920x1080)
+            media.setVideoSize(size: .init(width: 1920, height: 1080))
         case .r1280x720:
-            netStream.sessionPreset = .hd1280x720
-            netStream.videoSettings.videoSize = .init(width: 1280, height: 720)
+            media.setVideoSessionPreset(preset: .hd1280x720)
+            media.setVideoSize(size: .init(width: 1280, height: 720))
         case .r854x480:
-            netStream.sessionPreset = .hd1280x720
-            netStream.videoSettings.videoSize = .init(width: 854, height: 480)
+            media.setVideoSessionPreset(preset: .hd1280x720)
+            media.setVideoSize(size: .init(width: 854, height: 480))
         case .r640x360:
-            netStream.sessionPreset = .hd1280x720
-            netStream.videoSettings.videoSize = .init(width: 640, height: 360)
+            media.setVideoSessionPreset(preset: .hd1280x720)
+            media.setVideoSize(size: .init(width: 640, height: 360))
         case .r426x240:
-            netStream.sessionPreset = .hd1280x720
-            netStream.videoSettings.videoSize = .init(width: 426, height: 240)
+            media.setVideoSessionPreset(preset: .hd1280x720)
+            media.setVideoSize(size: .init(width: 426, height: 240))
         }
     }
 
     func setStreamFPS() {
-        netStream.frameRate = Double(stream.fps)
+        media.setStreamFPS(fps: stream.fps)
     }
 
     func setStreamBitrate(stream: SettingsStream) {
-        netStream.videoSettings.bitRate = stream.bitrate
+        media.setVideoStreamBitrate(bitrate: stream.bitrate)
     }
 
     func setStreamCodec() {
         switch stream.codec {
         case .h264avc:
-            netStream.videoSettings
-                .profileLevel = kVTProfileLevel_H264_High_AutoLevel as String
+            media.setVideoProfile(profile: kVTProfileLevel_H264_High_AutoLevel)
         case .h265hevc:
-            netStream.videoSettings
-                .profileLevel = kVTProfileLevel_HEVC_Main_AutoLevel as String
+            media.setVideoProfile(profile: kVTProfileLevel_HEVC_Main_AutoLevel)
         }
     }
 
@@ -599,7 +584,7 @@ final class Model: ObservableObject {
             }
         }
         for imageEffect in imageEffects.values {
-            _ = netStream.unregisterVideoEffect(imageEffect)
+            media.unregisterVideoEffect(imageEffect)
         }
     }
 
@@ -627,7 +612,7 @@ final class Model: ObservableObject {
                 }
             case .image:
                 if let imageEffect = imageEffects[sceneWidget.id] {
-                    _ = netStream.registerVideoEffect(imageEffect)
+                    media.registerVideoEffect(imageEffect)
                 }
             case .videoEffect:
                 switch widget.videoEffect.type {
@@ -684,8 +669,8 @@ final class Model: ObservableObject {
 
     func updateSpeed() {
         if isLive {
-            let speed = formatBytesPerSecond(speed: mediaStream.streamSpeed())
-            let total = sizeFormatter.string(fromByteCount: mediaStream.streamTotal())
+            let speed = formatBytesPerSecond(speed: media.streamSpeed())
+            let total = sizeFormatter.string(fromByteCount: media.streamTotal())
             speedAndTotal = "\(speed) (\(total))"
         } else {
             speedAndTotal = noValue
@@ -701,7 +686,7 @@ final class Model: ObservableObject {
                 case .authorized:
                     logger.info("photo-auth: authorization granted")
                 default:
-                    logger.error("photo-auth: Unimplemented")
+                    logger.error("photo-auth: Status \(authorizationStatus)")
                 }
             }
     }
@@ -731,19 +716,17 @@ final class Model: ObservableObject {
             for: .video,
             position: position
         )
-        netStream.attachCamera(device) { error in
-            logger.error("stream: Attach camera error: \(error)")
-        }
+        media.attachCamera(device: device)
         zoomLevel = Double(device?.videoZoomFactor ?? 1.0)
         setCameraZoomLevel(level: zoomLevel)
     }
 
     func rtmpStartStream() {
-        mediaStream.rtmpConnect(url: stream.url!)
+        media.rtmpStartStream(url: stream.url!)
     }
 
     func rtmpStopStream() {
-        mediaStream.rtmpDisconnect()
+        media.rtmpStopStream()
     }
 
     func toggleTorch() {
@@ -752,7 +735,7 @@ final class Model: ObservableObject {
     }
 
     func updateTorch() {
-        netStream.torch = isTorchOn
+        media.setTorch(on: isTorchOn)
     }
 
     func toggleMute() {
@@ -761,54 +744,43 @@ final class Model: ObservableObject {
     }
 
     func updateMute() {
-        netStream.hasAudio = !isMuteOn
+        media.setMute(on: isMuteOn)
     }
 
     func grayScaleEffectOn() {
-        _ = netStream.registerVideoEffect(grayScaleEffect)
+        media.registerVideoEffect(grayScaleEffect)
     }
 
     func grayScaleEffectOff() {
-        _ = netStream.unregisterVideoEffect(grayScaleEffect)
+        media.unregisterVideoEffect(grayScaleEffect)
     }
 
     func movieEffectOn() {
-        _ = netStream.registerVideoEffect(movieEffect)
+        media.registerVideoEffect(movieEffect)
     }
 
     func movieEffectOff() {
-        _ = netStream.unregisterVideoEffect(movieEffect)
+        media.unregisterVideoEffect(movieEffect)
     }
 
     func seipaEffectOn() {
-        _ = netStream.registerVideoEffect(seipaEffect)
+        media.registerVideoEffect(seipaEffect)
     }
 
     func seipaEffectOff() {
-        _ = netStream.unregisterVideoEffect(seipaEffect)
+        media.unregisterVideoEffect(seipaEffect)
     }
 
     func bloomEffectOn() {
-        _ = netStream.registerVideoEffect(bloomEffect)
+        media.registerVideoEffect(bloomEffect)
     }
 
     func bloomEffectOff() {
-        _ = netStream.unregisterVideoEffect(bloomEffect)
+        media.unregisterVideoEffect(bloomEffect)
     }
 
     func setCameraZoomLevel(level: Double) {
-        guard let device = netStream.videoCapture(for: 0)?.device,
-              level >= 1 && level < device.activeFormat.videoMaxZoomFactor
-        else {
-            return
-        }
-        do {
-            try device.lockForConfiguration()
-            device.ramp(toVideoZoomFactor: level, withRate: 5.0)
-            device.unlockForConfiguration()
-        } catch let error as NSError {
-            logger.warning("While locking device for ramp: \(error)")
-        }
+        media.setCameraZoomLevel(level: level)
     }
 
     func handleRtmpConnected() {
@@ -832,9 +804,13 @@ final class Model: ObservableObject {
             return
         }
         logger.info("stream: Disconnected with reason \(reason)")
-        makeErrorToast(message: "😢 FFFFF 😢", font: .system(size: 64).bold())
         streamState = .disconnected
         stopNetStream()
+        makeErrorToast(
+            title: "😢 FFFFF 😢",
+            font: .system(size: 64).bold(),
+            subMessage: reason
+        )
         reconnectTimer = Timer
             .scheduledTimer(withTimeInterval: reconnectTime, repeats: false) { _ in
                 logger.info("stream: Reconnecting")
@@ -847,31 +823,7 @@ final class Model: ObservableObject {
         onConnected()
     }
 
-    func handleSrtDisconnected() {
-        onDisconnected(reason: "SRT state changed to false")
-    }
-}
-
-extension Model: SrtlaDelegate {
-    func srtlaReady(port: UInt16) {
-        DispatchQueue.main.async {
-            self.mediaStream.setupSrtConnectionStateListener()
-            streamDispatchQueue.async {
-                do {
-                    try self.mediaStream.srtConnect(url: self.stream.url!, port: port)
-                } catch {
-                    DispatchQueue.main.async {
-                        self.onDisconnected(reason: "SRT connect failed with \(error)")
-                    }
-                }
-            }
-        }
-    }
-
-    func srtlaError() {
-        DispatchQueue.main.async {
-            logger.info("stream: srtla: Error")
-            self.onDisconnected(reason: "General SRT error")
-        }
+    func handleSrtDisconnected(reason: String) {
+        onDisconnected(reason: reason)
     }
 }

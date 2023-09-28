@@ -54,7 +54,7 @@
 		0379BBC02AADC4EC00B718B6 /* AboutLicensesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBBF2AADC4EC00B718B6 /* AboutLicensesSettingsView.swift */; };
 		0382933B2A9A73ED008963AA /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0382933A2A9A73ED008963AA /* Settings.swift */; };
 		03A08B7C2AC295620018BA95 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = 03A08B7B2AC295620018BA95 /* AlertToast */; };
-		03A08B802AC368860018BA95 /* MediaStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A08B7F2AC368860018BA95 /* MediaStream.swift */; };
+		03A08B802AC368860018BA95 /* Media.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A08B7F2AC368860018BA95 /* Media.swift */; };
 		03A974282AC137A000610E21 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 03A974272AC137A000610E21 /* Collections */; };
 		03A983422A9A03D3008FF0DB /* TwitchChat in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983412A9A03D3008FF0DB /* TwitchChat */; };
 		03A983452A9A03EA008FF0DB /* HaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983442A9A03EA008FF0DB /* HaishinKit */; };
@@ -143,7 +143,7 @@
 		0379BBB72AAD9B7200B718B6 /* WidgetsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetsSettingsView.swift; sourceTree = "<group>"; };
 		0379BBBF2AADC4EC00B718B6 /* AboutLicensesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutLicensesSettingsView.swift; sourceTree = "<group>"; };
 		0382933A2A9A73ED008963AA /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
-		03A08B7F2AC368860018BA95 /* MediaStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaStream.swift; sourceTree = "<group>"; };
+		03A08B7F2AC368860018BA95 /* Media.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Media.swift; sourceTree = "<group>"; };
 		03A983552A9A05D7008FF0DB /* StreamsSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamsSettingsView.swift; sourceTree = "<group>"; };
 		03A983562A9A05D7008FF0DB /* MainView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		03A983572A9A05D7008FF0DB /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -325,7 +325,7 @@
 				035E9E362A9A02D6009D4F5A /* MobsApp.swift */,
 				03A9836D2A9A05F9008FF0DB /* Model.swift */,
 				0382933A2A9A73ED008963AA /* Settings.swift */,
-				03A08B7F2AC368860018BA95 /* MediaStream.swift */,
+				03A08B7F2AC368860018BA95 /* Media.swift */,
 				03B373FC2A9F35EF0028DDD5 /* Utils.swift */,
 				035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */,
 			);
@@ -737,7 +737,7 @@
 				0379BB902AABA7DC00B718B6 /* Log.swift in Sources */,
 				03A983662A9A05D7008FF0DB /* AddButtonView.swift in Sources */,
 				03A983612A9A05D7008FF0DB /* StreamsSettingsView.swift in Sources */,
-				03A08B802AC368860018BA95 /* MediaStream.swift in Sources */,
+				03A08B802AC368860018BA95 /* Media.swift in Sources */,
 				036333282AAE2E5100FF1231 /* ImageStorage.swift in Sources */,
 				0315A3702AA3771F00295443 /* SceneWidgetSettingsView.swift in Sources */,
 				0379BB9E2AAD81AA00B718B6 /* StreamOverlayRightView.swift in Sources */,

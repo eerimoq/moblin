@@ -1,7 +1,7 @@
 MOBS
 ====
 
-A free iOS app for IRL streaming. Mainly targetting `Twitch`_, but can
+An iOS app for IRL streaming. Mainly targetting `Twitch`_, but can
 stream to any RTMP, RTMPS, SRT or SRTLA endpoint.
 
 Not yet in App Store, but on `TestFlight`_!

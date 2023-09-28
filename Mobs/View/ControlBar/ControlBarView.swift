@@ -32,7 +32,6 @@ struct StreamButton: View {
             .confirmationDialog("", isPresented: $isPresentingStopConfirm) {
                 Button("End") {
                     model.stopStream()
-                    model.makeToast(message: "🤟 Stream ended 🤟")
                 }
             }
         } else {

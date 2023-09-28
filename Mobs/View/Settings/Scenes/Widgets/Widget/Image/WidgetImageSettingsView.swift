@@ -10,6 +10,12 @@ struct WidgetImageSettingsView: View {
     var widget: SettingsWidget
     @State var selectedImageItem: PhotosPickerItem?
 
+    init(model: Model, widget: SettingsWidget) {
+        self.model = model
+        self.widget = widget
+        model.checkDeviceAuthorization()
+    }
+
     func loadImage() -> UIImage? {
         if let data = model.imageStorage.tryRead(id: widget.id) {
             return UIImage(data: data)!

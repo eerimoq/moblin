@@ -5,7 +5,7 @@ import UIKit
 let firstReconnectTime = 5.0
 
 func nextReconnectTime(_ reconnectTime: Double) -> Double {
-    return min(reconnectTime + 2, 10)
+    return min(reconnectTime * 1.3, 60)
 }
 
 extension String: Error {}

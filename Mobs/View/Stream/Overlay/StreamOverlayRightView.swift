@@ -68,10 +68,11 @@ struct RightOverlayView: View {
                 model.sceneUpdated()
             }
             .pickerStyle(.segmented)
+            .background(Color(uiColor: .systemBackground).opacity(0.8))
             .frame(width: CGFloat(70 * model.enabledScenes.count))
-            .cornerRadius(7)
+            .cornerRadius(5)
             .overlay(
-                RoundedRectangle(cornerRadius: 7)
+                RoundedRectangle(cornerRadius: 5)
                     .stroke(.secondary)
             )
         }

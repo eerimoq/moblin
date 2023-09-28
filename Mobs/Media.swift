@@ -9,7 +9,7 @@ import SRTHaishinKit
 import SwiftUI
 import VideoToolbox
 
-let streamDispatchQueue = DispatchQueue(label: "com.eerimoq.stream")
+let mediaDispatchQueue = DispatchQueue(label: "com.eerimoq.stream")
 
 private func isMuted(level: Float) -> Bool {
     return level.isNaN
@@ -23,24 +23,25 @@ private func becameUnmuted(old: Float, new: Float) -> Bool {
     return isMuted(level: old) && !isMuted(level: new)
 }
 
-final class MediaStream: NSObject {
+final class Media: NSObject {
     private var rtmpConnection = RTMPConnection()
     private var srtConnection = SRTConnection()
     private var rtmpStream: RTMPStream!
     private var srtStream: SRTStream!
     private var srtla: Srtla?
-    var netStream: NetStream!
+    private var netStream: NetStream!
     private var srtTotalByteCount: Int64 = 0
     private var srtPreviousTotalByteCount: Int64 = 0
     private var srtSpeed: Int64 = 0
     private var srtConnectedObservation: NSKeyValueObservation?
+    private var rtmpStreamName = ""
+    private var currentAudioLevel: Float = 100.0
+    private var srtUrl: String = ""
     var onSrtConnected: (() -> Void)!
-    var onSrtDisconnected: (() -> Void)!
+    var onSrtDisconnected: ((_ reason: String) -> Void)!
     var onRtmpConnected: (() -> Void)!
     var onRtmpDisconnected: ((_ message: String) -> Void)!
     var onAudioMuteChange: (() -> Void)!
-    private var rtmpStreamName = ""
-    private var currentAudioLevel: Float = 100.0
 
     func logStatistics() {
         srtla?.logStatistics()
@@ -62,28 +63,27 @@ final class MediaStream: NSObject {
             netStream = srtStream
         }
         netStream.delegate = self
+        netStream.videoOrientation = .landscapeRight
+        netStream.attachAudio(AVCaptureDevice.default(for: .audio)) { error in
+            logger.error("stream: Attach audio error: \(error)")
+        }
     }
 
     func getAudioLevel() -> Float {
         return currentAudioLevel
     }
 
-    func srtConnect(url: String, port: UInt16) throws {
-        try srtConnection.open(makeLocalhostSrtUrl(url: url, port: port))
-        srtStream?.publish()
-    }
-
     func srtStartStream(
         isSrtla: Bool,
-        delegate: SrtlaDelegate,
-        url: String?,
+        url: String,
         reconnectTime: Double
     ) {
+        srtUrl = url
         srtTotalByteCount = 0
         srtPreviousTotalByteCount = 0
         srtla?.stop()
-        srtla = Srtla(delegate: delegate, passThrough: !isSrtla)
-        srtla!.start(uri: url!, timeout: reconnectTime + 1)
+        srtla = Srtla(delegate: self, passThrough: !isSrtla)
+        srtla!.start(uri: url, timeout: reconnectTime + 1)
     }
 
     func srtStopStream() {
@@ -91,11 +91,6 @@ final class MediaStream: NSObject {
         srtla?.stop()
         srtla = nil
         srtConnectedObservation = nil
-        onSrtConnected = nil
-        onSrtDisconnected = nil
-        onRtmpConnected = nil
-        onRtmpDisconnected = nil
-        onAudioMuteChange = nil
     }
 
     func updateSrtSpeed() {
@@ -132,7 +127,7 @@ final class MediaStream: NSObject {
                 if connected.newValue! {
                     self.onSrtConnected()
                 } else {
-                    self.onSrtDisconnected()
+                    self.onSrtDisconnected("SRT disconnected")
                 }
             }
         }
@@ -150,7 +145,7 @@ final class MediaStream: NSObject {
         return urlComponents.url
     }
 
-    func rtmpConnect(url: String) {
+    func rtmpStartStream(url: String) {
         rtmpStreamName = makeRtmpStreamName(url: url)
         rtmpConnection.addEventListener(
             .rtmpStatus,
@@ -160,7 +155,7 @@ final class MediaStream: NSObject {
         rtmpConnection.connect(makeRtmpUri(url: url))
     }
 
-    func rtmpDisconnect() {
+    func rtmpStopStream() {
         rtmpConnection.removeEventListener(
             .rtmpStatus,
             selector: #selector(rtmpStatusHandler),
@@ -190,9 +185,72 @@ final class MediaStream: NSObject {
             }
         }
     }
+
+    func setTorch(on: Bool) {
+        netStream.torch = on
+    }
+
+    func setMute(on: Bool) {
+        netStream.hasAudio = !on
+    }
+
+    func registerVideoEffect(_ effect: VideoEffect) {
+        if !netStream.registerVideoEffect(effect) {
+            logger.info("Failed to register video effect")
+        }
+    }
+
+    func unregisterVideoEffect(_ effect: VideoEffect) {
+        _ = netStream.unregisterVideoEffect(effect)
+    }
+
+    func setVideoSessionPreset(preset: AVCaptureSession.Preset) {
+        netStream.sessionPreset = preset
+    }
+
+    func setVideoSize(size: VideoSize) {
+        netStream.videoSettings.videoSize = size
+    }
+
+    func setStreamFPS(fps: Int) {
+        netStream.frameRate = Double(fps)
+    }
+
+    func setVideoStreamBitrate(bitrate: UInt32) {
+        netStream.videoSettings.bitRate = bitrate
+    }
+
+    func setVideoProfile(profile: CFString) {
+        netStream.videoSettings.profileLevel = profile as String
+    }
+
+    func setCameraZoomLevel(level: Double) {
+        guard let device = netStream.videoCapture(for: 0)?.device,
+              level >= 1 && level < device.activeFormat.videoMaxZoomFactor
+        else {
+            return
+        }
+        do {
+            try device.lockForConfiguration()
+            device.ramp(toVideoZoomFactor: level, withRate: 5.0)
+            device.unlockForConfiguration()
+        } catch let error as NSError {
+            logger.warning("While locking device for ramp: \(error)")
+        }
+    }
+
+    func attachCamera(device: AVCaptureDevice?) {
+        netStream.attachCamera(device) { error in
+            logger.error("stream: Attach camera error: \(error)")
+        }
+    }
+
+    func getNetStream() -> NetStream {
+        return netStream
+    }
 }
 
-extension MediaStream: NetStreamDelegate {
+extension Media: NetStreamDelegate {
     func stream(
         _: NetStream,
         didOutput _: AVAudioBuffer,
@@ -249,6 +307,34 @@ extension MediaStream: NetStreamDelegate {
             } else {
                 self.currentAudioLevel = audioLevel
             }
+        }
+    }
+}
+
+extension Media: SrtlaDelegate {
+    func srtlaReady(port: UInt16) {
+        DispatchQueue.main.async {
+            self.setupSrtConnectionStateListener()
+            mediaDispatchQueue.async {
+                do {
+                    try self.srtConnection.open(self.makeLocalhostSrtUrl(
+                        url: self.srtUrl,
+                        port: port
+                    ))
+                    self.srtStream?.publish()
+                } catch {
+                    DispatchQueue.main.async {
+                        self.onSrtDisconnected("SRT connect failed with \(error)")
+                    }
+                }
+            }
+        }
+    }
+
+    func srtlaError() {
+        DispatchQueue.main.async {
+            logger.info("stream: srtla: Error")
+            self.onSrtDisconnected("General SRT error")
         }
     }
 }
