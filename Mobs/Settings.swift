@@ -1,3 +1,4 @@
+import CryptoSwift
 import SwiftUI
 
 var codecs = ["H.265/HEVC", "H.264/AVC"]
@@ -309,6 +310,27 @@ class Database: Codable {
     var variables: [SettingsVariable] = []
     var buttons: [SettingsButton] = []
     var show: SettingsShow = .init()
+    
+    static func fromString(settings: String) throws -> Database {
+        let database = try JSONDecoder().decode(
+            Database.self,
+            from: settings.data(using: .utf8)!
+        )
+        for button in database.buttons {
+            button.isOn = false
+        }
+        if database.streams.isEmpty {
+            addDefaultStreams(database: database)
+        }
+        if database.show.audioLevel == nil {
+            database.show.audioLevel = true
+        }
+        return database
+    }
+
+    func toString() throws -> String {
+        return try String(decoding: JSONEncoder().encode(self), as: UTF8.self)
+    }
 }
 
 func addDefaultWidgets(database: Database) {
@@ -468,40 +490,63 @@ func createDefault() -> Database {
 }
 
 final class Settings {
-    var database = Database()
+    private var realDatabase = Database()
+    var database: Database {
+        get {
+            realDatabase
+        }
+    }
     @AppStorage("settings") var storage = ""
 
     func load() {
         do {
-            database = try JSONDecoder().decode(
-                Database.self,
-                from: storage.data(using: .utf8)!
-            )
-            for button in database.buttons {
-                button.isOn = false
-            }
-            if database.streams.isEmpty {
-                addDefaultStreams(database: database)
-            }
-            if database.show.audioLevel == nil {
-                database.show.audioLevel = true
-            }
+            realDatabase = try Database.fromString(settings: storage)
         } catch {
             logger.info("settings: Failed to load. Using default.")
-            database = createDefault()
+            realDatabase = createDefault()
         }
     }
 
     func store() {
         do {
-            storage = try String(decoding: JSONEncoder().encode(database), as: UTF8.self)
+            storage = try realDatabase.toString()
         } catch {
             logger.error("settings: Failed to store.")
         }
     }
 
     func reset() {
-        database = createDefault()
+        realDatabase = createDefault()
         store()
+    }
+
+    func importFromClipboard() -> String? {
+        guard let settings = UIPasteboard.general.string else {
+            return "Empty clipboard"
+        }
+        guard let settings = settings.data(using: .utf8) else {
+            return "Non-string clipboard"
+        }
+        guard let settings = Data(base64Encoded: settings) else {
+            return "Not base64 encoded"
+        }
+        guard let settings = String(data: settings, encoding: .utf8) else {
+            return "Non-string in base64"
+        }
+        do {
+            realDatabase = try Database.fromString(settings: settings)
+        } catch {
+            return "\(error)"
+        }
+        store()
+        return nil
+    }
+
+    func exportToClipboard() -> String? {
+        guard let settings = storage.data(using: .utf8) else {
+            return "Failed to read settings"
+        }
+        UIPasteboard.general.string = settings.base64EncodedString()
+        return nil
     }
 }

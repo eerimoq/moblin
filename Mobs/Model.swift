@@ -110,16 +110,16 @@ final class Model: ObservableObject {
         return database.buttons.first(where: { button in button.id == id })
     }
 
-    func makeToast(message: String) {
-        toast = AlertToast(type: .regular, title: message)
+    func makeToast(title: String) {
+        toast = AlertToast(type: .regular, title: title)
         showToast = true
     }
 
-    func makeErrorToast(title: String, font: Font? = nil, subMessage: String? = nil) {
+    func makeErrorToast(title: String, font: Font? = nil, subTitle: String? = nil) {
         toast = AlertToast(
             type: .regular,
             title: title,
-            subTitle: subMessage,
+            subTitle: subTitle,
             style: .style(titleColor: .red, titleFont: font)
         )
         showToast = true
@@ -174,8 +174,7 @@ final class Model: ObservableObject {
         var data = "Version: \(version())\n"
         data += "Debug: \(logger.debugEnabled)\n\n"
         data += log.map { e in e.message }.joined(separator: "\n")
-        UIPasteboard.general.setValue(data,
-                                      forPasteboardType: UTType.plainText.identifier)
+        UIPasteboard.general.string = data
     }
 
     func setup(settings: Settings) {
@@ -350,7 +349,7 @@ final class Model: ObservableObject {
 
     func startNetStream() {
         streamState = .connecting
-        makeToast(message: "😎 Going live at \(stream.name) 😎")
+        makeToast(title: "😎 Going live at \(stream.name) 😎")
         switch stream.getProtocol() {
         case .rtmp:
             rtmpStartStream()
@@ -373,7 +372,7 @@ final class Model: ObservableObject {
         updateSpeed()
         updateAudioLevel()
         currentConnectionType = noValue
-        makeToast(message: "🤟 Stream ended 🤟")
+        makeToast(title: "🤟 Stream ended 🤟")
     }
 
     func reloadStream() {
@@ -792,7 +791,7 @@ final class Model: ObservableObject {
     }
 
     func onConnected() {
-        makeToast(message: "🎉 You are LIVE at \(stream.name) 🎉")
+        makeToast(title: "🎉 You are LIVE at \(stream.name) 🎉")
         reconnectTime = firstReconnectTime
         streamStartDate = Date()
         streamState = .connected
@@ -809,7 +808,7 @@ final class Model: ObservableObject {
         makeErrorToast(
             title: "😢 FFFFF 😢",
             font: .system(size: 64).bold(),
-            subMessage: reason
+            subTitle: reason
         )
         reconnectTimer = Timer
             .scheduledTimer(withTimeInterval: reconnectTime, repeats: false) { _ in

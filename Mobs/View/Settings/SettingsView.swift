@@ -28,6 +28,11 @@ struct SettingsView: View {
                 }
             }
             Section {
+                NavigationLink(destination: ImportExportSettingsView(model: model)) {
+                    Text("Import and export settings")
+                }
+            }
+            Section {
                 ResetSettingsView(model: model)
             }
         }
