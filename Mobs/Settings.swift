@@ -300,6 +300,7 @@ class SettingsShow: Codable {
     var stream: Bool = true
     var speed: Bool = true
     var audioLevel: Bool? = true
+    var zoom: Bool? = true
 }
 
 class Database: Codable {
@@ -323,6 +324,9 @@ class Database: Codable {
         }
         if database.show.audioLevel == nil {
             database.show.audioLevel = true
+        }
+        if database.show.zoom == nil {
+            database.show.zoom = true
         }
         return database
     }

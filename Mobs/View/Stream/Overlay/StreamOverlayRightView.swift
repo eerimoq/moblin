@@ -57,23 +57,25 @@ struct RightOverlayView: View {
                 )
             }
             Spacer()
-            Picker("", selection: $model.zoomIndex) {
-                ForEach(model.zoomLevels) { level in
-                    Text(level.name).tag(level.id)
+            if database.show.zoom! {
+                Picker("", selection: $model.zoomIndex) {
+                    ForEach(model.zoomLevels) { level in
+                        Text(level.name).tag(level.id)
+                    }
                 }
+                .onChange(of: model.zoomIndex) { index in
+                    model.setCameraZoomLevel(index: index)
+                }
+                .pickerStyle(.segmented)
+                .background(Color(uiColor: .systemBackground).opacity(0.8))
+                .frame(width: CGFloat(50 * model.zoomLevels.count))
+                .cornerRadius(7)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 7)
+                        .stroke(.secondary)
+                )
+                .padding([.bottom], 5)
             }
-            .onChange(of: model.zoomIndex) { index in
-                model.setCameraZoomLevel(index: index)
-            }
-            .pickerStyle(.segmented)
-            .background(Color(uiColor: .systemBackground).opacity(0.8))
-            .frame(width: CGFloat(50 * model.zoomLevels.count))
-            .cornerRadius(7)
-            .overlay(
-                RoundedRectangle(cornerRadius: 7)
-                    .stroke(.secondary)
-            )
-            .padding([.bottom], 5)
             Picker("", selection: $model.sceneIndex) {
                 ForEach(0 ..< model.enabledScenes.count, id: \.self) { id in
                     let scene = model.enabledScenes[id]

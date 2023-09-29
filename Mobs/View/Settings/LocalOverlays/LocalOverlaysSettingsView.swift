@@ -46,6 +46,12 @@ struct LocalOverlaysSettingsView: View {
                     show.uptime = value
                     model.store()
                 }))
+                Toggle("Zoom", isOn: Binding(get: {
+                    show.zoom!
+                }, set: { value in
+                    show.zoom = value
+                    model.store()
+                }))
             } footer: {
                 Text("Local overlays do not appear on stream.")
             }
