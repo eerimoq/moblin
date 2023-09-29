@@ -12,10 +12,9 @@ struct ImportExportSettingsView: View {
                 ExportSettingsView(model: model)
             } footer: {
                 Text("""
-                     Do not share your settings with anyone as they may contain \
-                     sensitive data (stream keys, etc.)!
-                     """
-                ).bold()
+                Do not share your settings with anyone as they may contain \
+                sensitive data (stream keys, etc.)!
+                """).bold()
             }
         }
         .navigationTitle("Import and export settings")

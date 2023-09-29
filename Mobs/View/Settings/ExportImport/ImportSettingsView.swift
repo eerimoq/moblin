@@ -8,7 +8,10 @@ struct ImportSettingsView: View {
             Spacer()
             Button("Import from clipboard") {
                 if let message = model.settings.importFromClipboard() {
-                    model.makeErrorToast(title: "Import settings failed", subTitle: message)
+                    model.makeErrorToast(
+                        title: "Import settings failed",
+                        subTitle: message
+                    )
                 } else {
                     model.makeToast(title: "Settings imported")
                 }

@@ -95,6 +95,7 @@ final class Model: ObservableObject {
             showToast.toggle()
         }
     }
+
     let zoomLevels = [
         ZoomLevel(id: 0, name: "1x", level: 1.0),
         ZoomLevel(id: 1, name: "2x", level: 2.0),
@@ -225,20 +226,20 @@ final class Model: ObservableObject {
     }
 
     @objc func didEnterBackground(animated _: Bool) {
-        //wasStreamingWhenDidEnterBackground = streaming
-        //stopStream()
+        // wasStreamingWhenDidEnterBackground = streaming
+        // stopStream()
         logger.debug("Did enter background")
     }
 
     @objc func willEnterForeground(animated _: Bool) {
         logger.debug("Will enter foreground")
-        //updateThermalState()
-        //if wasStreamingWhenDidEnterBackground {
+        // updateThermalState()
+        // if wasStreamingWhenDidEnterBackground {
         //    stopStream()
         //    startStream()
-        //} else {
+        // } else {
         //    stopStream()
-        //}
+        // }
     }
 
     func setupPeriodicTimers() {

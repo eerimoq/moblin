@@ -201,16 +201,16 @@ class RemoteConnection {
         }
         connection
             .receive(minimumIncompleteLength: 1, maximumLength: 4096)
-        { packet, _, _, error in
-            if let packet, !packet.isEmpty {
-                self.handlePacket(packet: packet)
+            { packet, _, _, error in
+                if let packet, !packet.isEmpty {
+                    self.handlePacket(packet: packet)
+                }
+                if let error {
+                    logger.warning("srtla: \(self.typeString): Receive \(error)")
+                    return
+                }
+                self.receivePacket()
             }
-            if let error {
-                logger.warning("srtla: \(self.typeString): Receive \(error)")
-                return
-            }
-            self.receivePacket()
-        }
     }
 
     private func sendPacket(packet: Data) {
@@ -471,17 +471,20 @@ class RemoteConnection {
         guard state == .registered else {
             return
         }
-        let overhead = Int(100 * (Double(numberOfNullPacketsSent) / Double(numberOfNullPacketsSent + numberOfNonNullPacketsSent)))
+        let overhead =
+            Int(100 *
+                (Double(numberOfNullPacketsSent) /
+                    Double(numberOfNullPacketsSent + numberOfNonNullPacketsSent)))
         if type == nil {
             logger.debug("srtla: \(typeString): Overhead: \(overhead) %")
         } else {
             logger
                 .debug(
-                """
-                srtla: \(typeString): Score: \(score()), In flight: \
-                \(packetsInFlight.count), Window size: \(windowSize), \
-                Overhead: \(overhead) %
-                """
+                    """
+                    srtla: \(typeString): Score: \(score()), In flight: \
+                    \(packetsInFlight.count), Window size: \(windowSize), \
+                    Overhead: \(overhead) %
+                    """
                 )
         }
     }

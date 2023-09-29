@@ -55,20 +55,20 @@ class LocalListener {
         }
         connection
             .receive(minimumIncompleteLength: 1, maximumLength: 4096)
-        { data, _, _, error in
-            if let data, !data.isEmpty {
-                if let packetHandler = self.packetHandler {
-                    packetHandler(data)
-                } else {
-                    logger.warning("srtla: local: Discarding local packet.")
+            { data, _, _, error in
+                if let data, !data.isEmpty {
+                    if let packetHandler = self.packetHandler {
+                        packetHandler(data)
+                    } else {
+                        logger.warning("srtla: local: Discarding local packet.")
+                    }
                 }
+                if let error {
+                    logger.info("srtla: local: Local error \(error)")
+                    return
+                }
+                self.receivePacket()
             }
-            if let error {
-                logger.info("srtla: local: Local error \(error)")
-                return
-            }
-            self.receivePacket()
-        }
     }
 
     func sendPacket(packet: Data) {

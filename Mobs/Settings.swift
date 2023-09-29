@@ -310,7 +310,7 @@ class Database: Codable {
     var variables: [SettingsVariable] = []
     var buttons: [SettingsButton] = []
     var show: SettingsShow = .init()
-    
+
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
             Database.self,
@@ -495,10 +495,9 @@ func createDefault() -> Database {
 final class Settings {
     private var realDatabase = Database()
     var database: Database {
-        get {
-            realDatabase
-        }
+        realDatabase
     }
+
     @AppStorage("settings") var storage = ""
 
     func load() {
