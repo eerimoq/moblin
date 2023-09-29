@@ -147,7 +147,7 @@ final class Model: ObservableObject {
         let states = scene
             .buttons
             .filter { button in button.enabled }
-            .prefix(8)
+            .prefix(10)
             .map { button in
                 let button = findButton(id: button.buttonId)!
                 return ButtonState(isOn: button.isOn, button: button)
