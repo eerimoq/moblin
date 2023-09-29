@@ -77,7 +77,6 @@
 		03A983722A9A0659008FF0DB /* TwitchChatMobs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A983702A9A0659008FF0DB /* TwitchChatMobs.swift */; };
 		03B373F62A9EF98E0028DDD5 /* ControlBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373F52A9EF98E0028DDD5 /* ControlBarView.swift */; };
 		03B373F92A9EFB340028DDD5 /* BatteryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373F82A9EFB340028DDD5 /* BatteryView.swift */; };
-		03B373FB2A9EFB910028DDD5 /* ZoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FA2A9EFB910028DDD5 /* ZoomView.swift */; };
 		03B373FD2A9F35EF0028DDD5 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FC2A9F35EF0028DDD5 /* Utils.swift */; };
 		03B373FF2A9FCA790028DDD5 /* ThermalStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FE2A9FCA790028DDD5 /* ThermalStateView.swift */; };
 		03B374022AA0354C0028DDD5 /* GrayScaleEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374012AA0354C0028DDD5 /* GrayScaleEffect.swift */; };
@@ -166,7 +165,6 @@
 		03A983702A9A0659008FF0DB /* TwitchChatMobs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitchChatMobs.swift; sourceTree = "<group>"; };
 		03B373F52A9EF98E0028DDD5 /* ControlBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlBarView.swift; sourceTree = "<group>"; };
 		03B373F82A9EFB340028DDD5 /* BatteryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryView.swift; sourceTree = "<group>"; };
-		03B373FA2A9EFB910028DDD5 /* ZoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomView.swift; sourceTree = "<group>"; };
 		03B373FC2A9F35EF0028DDD5 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		03B373FE2A9FCA790028DDD5 /* ThermalStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThermalStateView.swift; sourceTree = "<group>"; };
 		03B374012AA0354C0028DDD5 /* GrayScaleEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrayScaleEffect.swift; sourceTree = "<group>"; };
@@ -545,7 +543,6 @@
 				03B374032AA036D10028DDD5 /* ButtonsView.swift */,
 				03B373F52A9EF98E0028DDD5 /* ControlBarView.swift */,
 				03B373FE2A9FCA790028DDD5 /* ThermalStateView.swift */,
-				03B373FA2A9EFB910028DDD5 /* ZoomView.swift */,
 			);
 			path = ControlBar;
 			sourceTree = "<group>";
@@ -737,7 +734,6 @@
 				03A983722A9A0659008FF0DB /* TwitchChatMobs.swift in Sources */,
 				0379BBA52AAD945D00B718B6 /* LocalOverlaysSettingsView.swift in Sources */,
 				0379BB762AA6345400B718B6 /* ButtonSettingsView.swift in Sources */,
-				03B373FB2A9EFB910028DDD5 /* ZoomView.swift in Sources */,
 				03A983672A9A05D7008FF0DB /* ScenesSettingsView.swift in Sources */,
 				0379BBAD2AAD964000B718B6 /* AboutSettingsView.swift in Sources */,
 				036BE2CF2ABD4CA60048F9C5 /* KickPusher.swift in Sources */,

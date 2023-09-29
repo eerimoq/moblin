@@ -86,7 +86,6 @@ struct ControlBarView: View {
                 }
                 Spacer()
                 ButtonsView(model: model)
-                ZoomView(model: model)
                 StreamButton(model: model)
                     .padding([.top], 10)
             }

@@ -37,6 +37,12 @@ struct LogEntry: Identifiable {
     var message: String
 }
 
+struct ZoomLevel: Identifiable {
+    var id: Int
+    var name: String
+    var level: Double
+}
+
 final class Model: ObservableObject {
     private let media = Media()
     var streamState = StreamState.disconnected {
@@ -68,7 +74,6 @@ final class Model: ObservableObject {
     @Published var batteryLevel = Double(UIDevice.current.batteryLevel)
     @Published var speedAndTotal = noValue
     @Published var thermalState = ProcessInfo.processInfo.thermalState
-    @Published var zoomLevel = 1.0
     var mthkView = MTHKView(frame: .zero)
     private var grayScaleEffect = GrayScaleEffect()
     private var movieEffect = MovieEffect()
@@ -90,7 +95,16 @@ final class Model: ObservableObject {
             showToast.toggle()
         }
     }
-
+    let zoomLevels = [
+        ZoomLevel(id: 0, name: "1x", level: 1.0),
+        ZoomLevel(id: 1, name: "2x", level: 2.0),
+        ZoomLevel(id: 2, name: "4x", level: 4.0),
+        ZoomLevel(id: 3, name: "8x", level: 8.0),
+    ]
+    @Published var zoomIndex = 0
+    private var backZoomIndex = 0
+    private var frontZoomIndex = 0
+    private var cameraPosition: AVCaptureDevice.Position?
     var database: Database {
         settings.database
     }
@@ -716,8 +730,16 @@ final class Model: ObservableObject {
             position: position
         )
         media.attachCamera(device: device)
-        zoomLevel = Double(device?.videoZoomFactor ?? 1.0)
-        setCameraZoomLevel(level: zoomLevel)
+        cameraPosition = position
+        switch position {
+        case .back:
+            zoomIndex = backZoomIndex
+        case .front:
+            zoomIndex = frontZoomIndex
+        default:
+            break
+        }
+        setCameraZoomLevel(index: zoomIndex)
     }
 
     func rtmpStartStream() {
@@ -778,8 +800,16 @@ final class Model: ObservableObject {
         media.unregisterVideoEffect(bloomEffect)
     }
 
-    func setCameraZoomLevel(level: Double) {
-        media.setCameraZoomLevel(level: level)
+    func setCameraZoomLevel(index: Int) {
+        switch cameraPosition {
+        case .back:
+            backZoomIndex = index
+        case .front:
+            frontZoomIndex = index
+        default:
+            break
+        }
+        media.setCameraZoomLevel(level: zoomLevels[index].level)
     }
 
     func handleRtmpConnected() {
