@@ -211,20 +211,20 @@ final class Model: ObservableObject {
     }
 
     @objc func didEnterBackground(animated _: Bool) {
-        wasStreamingWhenDidEnterBackground = streaming
-        stopStream()
+        //wasStreamingWhenDidEnterBackground = streaming
+        //stopStream()
         logger.debug("Did enter background")
     }
 
     @objc func willEnterForeground(animated _: Bool) {
         logger.debug("Will enter foreground")
-        updateThermalState()
-        if wasStreamingWhenDidEnterBackground {
-            stopStream()
-            startStream()
-        } else {
-            stopStream()
-        }
+        //updateThermalState()
+        //if wasStreamingWhenDidEnterBackground {
+        //    stopStream()
+        //    startStream()
+        //} else {
+        //    stopStream()
+        //}
     }
 
     func setupPeriodicTimers() {

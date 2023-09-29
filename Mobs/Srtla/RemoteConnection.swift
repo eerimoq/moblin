@@ -200,8 +200,7 @@ class RemoteConnection {
             return
         }
         connection
-            .receive(minimumIncompleteLength: 1,
-                     maximumLength: 4096)
+            .receive(minimumIncompleteLength: 1, maximumLength: 4096)
         { packet, _, _, error in
             if let packet, !packet.isEmpty {
                 self.handlePacket(packet: packet)
@@ -469,17 +468,21 @@ class RemoteConnection {
     }
 
     func logStatistics() {
-        guard type != nil, state == .registered else {
+        guard state == .registered else {
             return
         }
-        logger
-            .debug(
+        let overhead = Int(100 * (Double(numberOfNullPacketsSent) / Double(numberOfNullPacketsSent + numberOfNonNullPacketsSent)))
+        if type == nil {
+            logger.debug("srtla: \(typeString): Overhead: \(overhead) %")
+        } else {
+            logger
+                .debug(
                 """
                 srtla: \(typeString): Score: \(score()), In flight: \
                 \(packetsInFlight.count), Window size: \(windowSize), \
-                Packets: \(numberOfNonNullPacketsSent) \
-                Null packets: \(numberOfNullPacketsSent)
+                Overhead: \(overhead) %
                 """
-            )
+                )
+        }
     }
 }

@@ -54,8 +54,7 @@ class LocalListener {
             return
         }
         connection
-            .receive(minimumIncompleteLength: 1,
-                     maximumLength: 32768)
+            .receive(minimumIncompleteLength: 1, maximumLength: 4096)
         { data, _, _, error in
             if let data, !data.isEmpty {
                 if let packetHandler = self.packetHandler {
