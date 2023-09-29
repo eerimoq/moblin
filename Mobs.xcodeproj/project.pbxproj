@@ -19,7 +19,6 @@
 		0315A37A2AA39DA800295443 /* TextItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3792AA39DA800295443 /* TextItemView.swift */; };
 		0315A37C2AA439B500295443 /* NameEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A37B2AA439B500295443 /* NameEditView.swift */; };
 		0315A37E2AA43DCC00295443 /* TextEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A37D2AA43DCC00295443 /* TextEditView.swift */; };
-		032A49B52AC5443700ED3916 /* CryptoSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 032A49B42AC5443700ED3916 /* CryptoSwift */; };
 		032A49B82AC54DD000ED3916 /* ExportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A49B72AC54DD000ED3916 /* ExportSettingsView.swift */; };
 		032A49BA2AC54E6500ED3916 /* ImportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A49B92AC54E6500ED3916 /* ImportSettingsView.swift */; };
 		032A49BC2AC5DF3F00ED3916 /* ImportExportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A49BB2AC5DF3F00ED3916 /* ImportExportSettingsView.swift */; };
@@ -190,7 +189,6 @@
 				03A974282AC137A000610E21 /* Collections in Frameworks */,
 				03A08B7C2AC295620018BA95 /* AlertToast in Frameworks */,
 				035D372C2AB103E600045B92 /* SRTHaishinKit in Frameworks */,
-				032A49B52AC5443700ED3916 /* CryptoSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -605,7 +603,6 @@
 				035D372B2AB103E600045B92 /* SRTHaishinKit */,
 				03A974272AC137A000610E21 /* Collections */,
 				03A08B7B2AC295620018BA95 /* AlertToast */,
-				032A49B42AC5443700ED3916 /* CryptoSwift */,
 			);
 			productName = Mobs;
 			productReference = 035E9E332A9A02D6009D4F5A /* Mobs.app */;
@@ -662,7 +659,6 @@
 				03A983432A9A03EA008FF0DB /* XCRemoteSwiftPackageReference "HaishinKit" */,
 				03A974262AC137A000610E21 /* XCRemoteSwiftPackageReference "swift-collections" */,
 				03A08B7A2AC295620018BA95 /* XCRemoteSwiftPackageReference "AlertToast" */,
-				032A49B32AC5443700ED3916 /* XCRemoteSwiftPackageReference "CryptoSwift" */,
 			);
 			productRefGroup = 035E9E342A9A02D6009D4F5A /* Products */;
 			projectDirPath = "";
@@ -1073,14 +1069,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		032A49B32AC5443700ED3916 /* XCRemoteSwiftPackageReference "CryptoSwift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/krzyzanowskim/CryptoSwift";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
-			};
-		};
 		03A08B7A2AC295620018BA95 /* XCRemoteSwiftPackageReference "AlertToast" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/elai950/AlertToast.git";
@@ -1116,11 +1104,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		032A49B42AC5443700ED3916 /* CryptoSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 032A49B32AC5443700ED3916 /* XCRemoteSwiftPackageReference "CryptoSwift" */;
-			productName = CryptoSwift;
-		};
 		035D372B2AB103E600045B92 /* SRTHaishinKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 03A983432A9A03EA008FF0DB /* XCRemoteSwiftPackageReference "HaishinKit" */;

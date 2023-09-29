@@ -1,4 +1,3 @@
-import CryptoSwift
 import SwiftUI
 
 var codecs = ["H.265/HEVC", "H.264/AVC"]
