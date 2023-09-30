@@ -52,21 +52,18 @@ final class Media: NSObject {
     }
 
     func setNetStream(proto: SettingsStreamProtocol) {
+        srtStopStream()
+        rtmpStopStream()
         switch proto {
         case .rtmp:
-            srtStream = nil
             rtmpStream = RTMPStream(connection: rtmpConnection)
             netStream = rtmpStream
         case .srt:
-            rtmpStream = nil
             srtStream = SRTStream(srtConnection)
             netStream = srtStream
         }
         netStream.delegate = self
         netStream.videoOrientation = .landscapeRight
-        netStream.attachAudio(AVCaptureDevice.default(for: .audio)) { error in
-            logger.error("stream: Attach audio error: \(error)")
-        }
     }
 
     func getAudioLevel() -> Float {
@@ -161,6 +158,7 @@ final class Media: NSObject {
             selector: #selector(rtmpStatusHandler),
             observer: self
         )
+        rtmpStream?.close()
         rtmpConnection.close()
     }
 
@@ -242,6 +240,12 @@ final class Media: NSObject {
     func attachCamera(device: AVCaptureDevice?) {
         netStream.attachCamera(device) { error in
             logger.error("stream: Attach camera error: \(error)")
+        }
+    }
+
+    func attachAudio(device: AVCaptureDevice?) {
+        netStream.attachAudio(device) { error in
+            logger.error("stream: Attach audio error: \(error)")
         }
     }
 

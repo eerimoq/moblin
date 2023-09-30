@@ -471,10 +471,11 @@ class RemoteConnection {
         guard state == .registered else {
             return
         }
-        let overhead =
-            Int(100 *
-                (Double(numberOfNullPacketsSent) /
-                    Double(numberOfNullPacketsSent + numberOfNonNullPacketsSent)))
+        var overhead = 0
+        let total = numberOfNullPacketsSent + numberOfNonNullPacketsSent
+        if total > 0 {
+            overhead = Int(100 * Double(numberOfNullPacketsSent) / Double(total))
+        }
         if type == nil {
             logger.debug("srtla: \(typeString): Overhead: \(overhead) %")
         } else {
