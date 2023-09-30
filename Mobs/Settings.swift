@@ -322,17 +322,21 @@ class Database: Codable {
         if database.streams.isEmpty {
             addDefaultStreams(database: database)
         }
+        migrateFromOlderVersions(database: database)
+        return database
+    }
+
+    func toString() throws -> String {
+        return try String(decoding: JSONEncoder().encode(self), as: UTF8.self)
+    }
+
+    private static func migrateFromOlderVersions(database: Database) {
         if database.show.audioLevel == nil {
             database.show.audioLevel = true
         }
         if database.show.zoom == nil {
             database.show.zoom = true
         }
-        return database
-    }
-
-    func toString() throws -> String {
-        return try String(decoding: JSONEncoder().encode(self), as: UTF8.self)
     }
 }
 
