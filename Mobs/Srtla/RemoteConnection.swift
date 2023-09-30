@@ -476,6 +476,8 @@ class RemoteConnection {
         if total > 0 {
             overhead = Int(100 * Double(numberOfNullPacketsSent) / Double(total))
         }
+        numberOfNullPacketsSent = 0
+        numberOfNonNullPacketsSent = 0
         if type == nil {
             logger.debug("srtla: \(typeString): Overhead: \(overhead) %")
         } else {
