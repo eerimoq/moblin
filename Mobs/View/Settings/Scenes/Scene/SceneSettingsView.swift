@@ -6,8 +6,6 @@ struct SceneSettingsView: View {
     @ObservedObject var model: Model
     @State private var showingAddWidget = false
     @State private var showingAddButton = false
-    @State private var selectedWidget = 0
-    @State private var selectedButton = 0
     @State private var expandedWidget: SettingsSceneWidget?
     private var scene: SettingsScene
 
@@ -55,10 +53,6 @@ struct SceneSettingsView: View {
                 lineWidth: stroke
             )
         }
-    }
-
-    func buttonIndex(button: SettingsButton) -> Int {
-        return buttons.firstIndex(of: button)!
     }
 
     func isImage(id: UUID) -> Bool {
@@ -143,43 +137,33 @@ struct SceneSettingsView: View {
                 })
                 .popover(isPresented: $showingAddWidget) {
                     VStack {
-                        Form {
-                            Section("Widget name") {
-                                Picker("", selection: $selectedWidget) {
-                                    ForEach(widgets) { widget in
-                                        IconAndTextView(
-                                            image: widgetImage(widget: widget),
-                                            text: widget.name
-                                        )
-                                        .tag(widgets.firstIndex(of: widget)!)
-                                    }
-                                }
-                                .pickerStyle(.inline)
-                                .labelsHidden()
-                            }
-                        }
                         HStack {
                             Spacer()
                             Button(action: {
                                 showingAddWidget = false
                             }, label: {
-                                Text("Cancel")
+                                Text("Close")
+                                    .padding(5)
+                                    .foregroundColor(.blue)
                             })
-                            Spacer()
-                            Button(action: {
-                                scene.widgets
-                                    .append(
-                                        SettingsSceneWidget(widgetId: widgets[
-                                            selectedWidget
-                                        ]
-                                        .id)
-                                    )
-                                model.sceneUpdated(imageEffectChanged: true)
-                                showingAddWidget = false
-                            }, label: {
-                                Text("Done")
-                            })
-                            Spacer()
+                        }
+                        Form {
+                            Section("Widget name") {
+                                ForEach(widgets) { widget in
+                                    Button(action: {
+                                        scene.widgets
+                                            .append(SettingsSceneWidget(widgetId: widget
+                                                    .id))
+                                        model.sceneUpdated(imageEffectChanged: true)
+                                        showingAddWidget = false
+                                    }, label: {
+                                        IconAndTextView(
+                                            image: widgetImage(widget: widget),
+                                            text: widget.name
+                                        )
+                                    })
+                                }
+                            }
                         }
                     }
                 }
@@ -224,37 +208,31 @@ struct SceneSettingsView: View {
                 })
                 .popover(isPresented: $showingAddButton) {
                     VStack {
-                        Form {
-                            Section("Button name") {
-                                Picker("", selection: $selectedButton) {
-                                    ForEach(buttons) { button in
-                                        IconAndTextView(
-                                            image: button.systemImageNameOff,
-                                            text: button.name
-                                        )
-                                        .tag(buttonIndex(button: button))
-                                    }
-                                }
-                                .pickerStyle(.inline)
-                                .labelsHidden()
-                            }
-                        }
                         HStack {
                             Spacer()
                             Button(action: {
                                 showingAddButton = false
                             }, label: {
-                                Text("Cancel")
+                                Text("Close")
+                                    .padding(5)
+                                    .foregroundColor(.blue)
                             })
-                            Spacer()
-                            Button(action: {
-                                scene.addButton(id: buttons[selectedButton].id)
-                                model.sceneUpdated()
-                                showingAddButton = false
-                            }, label: {
-                                Text("Done")
-                            })
-                            Spacer()
+                        }
+                        Form {
+                            Section("Button name") {
+                                ForEach(buttons) { button in
+                                    Button(action: {
+                                        scene.addButton(id: button.id)
+                                        model.sceneUpdated()
+                                        showingAddButton = false
+                                    }, label: {
+                                        IconAndTextView(
+                                            image: button.systemImageNameOff,
+                                            text: button.name
+                                        )
+                                    })
+                                }
+                            }
                         }
                     }
                 }
