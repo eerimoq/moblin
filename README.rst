@@ -2,7 +2,7 @@ MOBS
 ====
 
 An iOS app for IRL streaming. Mainly targetting `Twitch`_, but can
-stream to any RTMP, RTMPS, SRT or SRTLA endpoint.
+stream to `YouTube`_, `Kick`_, and `OBS`_ as well (and probably more).
 
 Not yet in App Store, but on `TestFlight`_!
 
@@ -20,7 +20,8 @@ inspired by it.
 Features
 ========
 
-- Stream using RTMP, RTMPS, SRT or SRTLA.
+- Stream using RTMP, RTMPS, SRT or SRTLA to any platform that
+  supportes them.
 
 - H.264/AVC and H.265/HEVC video codecs.
 
@@ -128,5 +129,9 @@ Similar software
 .. _SRTLA: https://github.com/BELABOX/srtla
 
 .. _Twitch: https://twitch.tv
+
+.. _YouTube: https://youtube.com
+
+.. _Kick: https://kick.com
 
 .. _TestFlight: https://testflight.apple.com/join/PDpxEaGh
