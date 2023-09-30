@@ -52,7 +52,7 @@ final class Model: ObservableObject {
     }
 
     private var streaming = false
-    //private var wasStreamingWhenDidEnterBackground = false
+    // private var wasStreamingWhenDidEnterBackground = false
     private var streamStartDate: Date?
     @Published var isLive = false
     private var subscriptions = Set<AnyCancellable>()
