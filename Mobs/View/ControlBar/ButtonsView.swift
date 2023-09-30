@@ -8,7 +8,7 @@ struct ButtonImage: View {
         let image = Image(systemName: image)
             .frame(width: 40, height: 40)
             .foregroundColor(.white)
-            .background(.blue)
+            .background(.gray.opacity(0.4))
             .clipShape(Circle())
         if on {
             image.overlay(

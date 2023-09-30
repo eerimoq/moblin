@@ -162,6 +162,20 @@ struct StreamUrlSettingsView: View {
                         Text("")
                     }
                     Group {
+                        Text("BELABOX cloud SRTLA").underline()
+                        Text(
+                            "Example:  srtla://uk.srt.belabox.net:5000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
+                        )
+                        Text("")
+                    }
+                    Group {
+                        Text("BELABOX cloud SRT").underline()
+                        Text(
+                            "Example:  srt://uk.srt.belabox.net:4000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
+                        )
+                        Text("")
+                    }
+                    Group {
                         Text("SRTLA server").underline()
                         Text(
                             "Template: srtla://my_public_ip:my_public_port/my_stream_key"
