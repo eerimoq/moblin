@@ -149,7 +149,7 @@ struct StreamUrlSettingsView: View {
                         }
                         Text(
                             """
-                            Example:  rtmps://fa723fc1b171.global-contribute.live-video.net/ \
+                            Example:  rtmps://fa723fc1b171.global-contribute.live-video.net/\
                             sk_us-west-123hu43ui34hrkjh
                             """
                         )
