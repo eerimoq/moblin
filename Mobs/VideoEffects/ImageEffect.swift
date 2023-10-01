@@ -27,7 +27,7 @@ final class ImageEffect: VideoEffect {
         }
     }
 
-    private var overlay: CIImage?
+    private var overlay: CIImage!
     private let originalImage: UIImage
     private let x: Double
     private let y: Double
@@ -47,7 +47,7 @@ final class ImageEffect: VideoEffect {
             return image
         }
         extent = image.extent
-        filter.setValue(overlay!, forKey: "inputImage")
+        filter.setValue(overlay, forKey: "inputImage")
         filter.setValue(image, forKey: "inputBackgroundImage")
         return filter.outputImage!
     }

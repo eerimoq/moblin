@@ -179,13 +179,16 @@ class SettingsWidgetWebview: Codable {
     var url: String = "https://"
 }
 
-var videoEffects = ["Movie", "Gray scale", "Seipa", "Bloom"]
+var videoEffects = ["Movie", "Gray scale", "Sepia", "Bloom", "Random"]
 
 enum SettingsWidgetVideoEffectType: String, Codable {
     case movie = "Movie"
     case grayScale = "Gray scale"
-    case seipa = "Seipa"
+    case sepia = "Sepia"
     case bloom = "Bloom"
+    case random = "Random"
+    // Deprecated
+    case seipa = "Seipa"
 }
 
 class SettingsWidgetVideoEffect: Codable {
@@ -322,21 +325,11 @@ class Database: Codable {
         if database.streams.isEmpty {
             addDefaultStreams(database: database)
         }
-        migrateFromOlderVersions(database: database)
         return database
     }
 
     func toString() throws -> String {
         return try String(decoding: JSONEncoder().encode(self), as: UTF8.self)
-    }
-
-    private static func migrateFromOlderVersions(database: Database) {
-        if database.show.audioLevel == nil {
-            database.show.audioLevel = true
-        }
-        if database.show.zoom == nil {
-            database.show.zoom = true
-        }
     }
 }
 
@@ -361,14 +354,19 @@ func addDefaultWidgets(database: Database) {
     widget.videoEffect.type = .grayScale
     database.widgets.append(widget)
 
-    widget = SettingsWidget(name: "Seipa")
+    widget = SettingsWidget(name: "Sepia")
     widget.type = .videoEffect
-    widget.videoEffect.type = .seipa
+    widget.videoEffect.type = .sepia
     database.widgets.append(widget)
 
     widget = SettingsWidget(name: "Bloom")
     widget.type = .videoEffect
     widget.videoEffect.type = .bloom
+    database.widgets.append(widget)
+
+    widget = SettingsWidget(name: "Random")
+    widget.type = .videoEffect
+    widget.videoEffect.type = .random
     database.widgets.append(widget)
 }
 
@@ -388,8 +386,12 @@ func createSceneWidgetVideoEffectGrayScale(database: Database) -> SettingsSceneW
     return SettingsSceneWidget(widgetId: database.widgets[3].id)
 }
 
-func createSceneWidgetVideoEffectSeipa(database: Database) -> SettingsSceneWidget {
+func createSceneWidgetVideoEffectSepia(database: Database) -> SettingsSceneWidget {
     return SettingsSceneWidget(widgetId: database.widgets[4].id)
+}
+
+func createSceneWidgetVideoEffectRandom(database: Database) -> SettingsSceneWidget {
+    return SettingsSceneWidget(widgetId: database.widgets[6].id)
 }
 
 func addDefaultScenes(database: Database) {
@@ -397,13 +399,15 @@ func addDefaultScenes(database: Database) {
     scene.widgets.append(createSceneWidgetMainCamera(database: database))
     scene.widgets.append(createSceneWidgetVideoEffectMovie(database: database))
     scene.widgets.append(createSceneWidgetVideoEffectGrayScale(database: database))
-    scene.widgets.append(createSceneWidgetVideoEffectSeipa(database: database))
+    scene.widgets.append(createSceneWidgetVideoEffectSepia(database: database))
+    scene.widgets.append(createSceneWidgetVideoEffectRandom(database: database))
     scene.addButton(id: database.buttons[0].id)
     scene.addButton(id: database.buttons[1].id)
     scene.addButton(id: database.buttons[2].id)
     scene.addButton(id: database.buttons[3].id)
     scene.addButton(id: database.buttons[4].id)
     scene.addButton(id: database.buttons[5].id)
+    scene.addButton(id: database.buttons[7].id)
     database.scenes.append(scene)
 
     scene = SettingsScene(name: "Front")
@@ -468,7 +472,7 @@ func addDefaultButtons(database: Database) {
     button.widget.widgetId = database.widgets[3].id
     database.buttons.append(button)
 
-    button = SettingsButton(name: "Seipa")
+    button = SettingsButton(name: "Sepia")
     button.id = UUID()
     button.type = .widget
     button.imageType = "System name"
@@ -484,6 +488,15 @@ func addDefaultButtons(database: Database) {
     button.systemImageNameOn = "drop.fill"
     button.systemImageNameOff = "drop"
     button.widget.widgetId = database.widgets[5].id
+    database.buttons.append(button)
+
+    button = SettingsButton(name: "Random")
+    button.id = UUID()
+    button.type = .widget
+    button.imageType = "System name"
+    button.systemImageNameOn = "dice.fill"
+    button.systemImageNameOff = "dice"
+    button.widget.widgetId = database.widgets[6].id
     database.buttons.append(button)
 }
 
@@ -506,11 +519,16 @@ final class Settings {
 
     func load() {
         do {
-            realDatabase = try Database.fromString(settings: storage)
+            try loadNoDefault(settings: storage)
         } catch {
             logger.info("settings: Failed to load. Using default.")
             realDatabase = createDefault()
         }
+    }
+
+    private func loadNoDefault(settings: String) throws {
+        realDatabase = try Database.fromString(settings: settings)
+        migrateFromOlderVersions()
     }
 
     func store() {
@@ -540,7 +558,7 @@ final class Settings {
             return "Non-string in base64"
         }
         do {
-            realDatabase = try Database.fromString(settings: settings)
+            try loadNoDefault(settings: settings)
         } catch {
             return "Malformed settings"
         }
@@ -554,5 +572,26 @@ final class Settings {
         }
         UIPasteboard.general.string = settings.base64EncodedString()
         return nil
+    }
+
+    private func migrateFromOlderVersions() {
+        if realDatabase.show.audioLevel == nil {
+            realDatabase.show.audioLevel = true
+            store()
+        }
+        if realDatabase.show.zoom == nil {
+            realDatabase.show.zoom = true
+            store()
+        }
+        for widget in realDatabase.widgets {
+            if widget.type != .videoEffect {
+                continue
+            }
+            if widget.videoEffect.type != .seipa {
+                continue
+            }
+            widget.videoEffect.type = .sepia
+            store()
+        }
     }
 }

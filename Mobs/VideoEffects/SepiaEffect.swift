@@ -2,7 +2,7 @@ import AVFoundation
 import HaishinKit
 import UIKit
 
-final class SeipaEffect: VideoEffect {
+final class SepiaEffect: VideoEffect {
     private let filter = CIFilter(name: "CISepiaTone")
 
     override func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {

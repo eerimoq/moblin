@@ -19,6 +19,7 @@
 		0315A37C2AA439B500295443 /* NameEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A37B2AA439B500295443 /* NameEditView.swift */; };
 		0315A37E2AA43DCC00295443 /* TextEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A37D2AA43DCC00295443 /* TextEditView.swift */; };
 		032815D52AC855A5001F8A85 /* LicenseList in Frameworks */ = {isa = PBXBuildFile; productRef = 032815D42AC855A5001F8A85 /* LicenseList */; };
+		032815DC2AC915AE001F8A85 /* RandomEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032815DB2AC915AE001F8A85 /* RandomEffect.swift */; };
 		032A49B82AC54DD000ED3916 /* ExportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A49B72AC54DD000ED3916 /* ExportSettingsView.swift */; };
 		032A49BA2AC54E6500ED3916 /* ImportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A49B92AC54E6500ED3916 /* ImportSettingsView.swift */; };
 		032A49BC2AC5DF3F00ED3916 /* ImportExportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A49BB2AC5DF3F00ED3916 /* ImportExportSettingsView.swift */; };
@@ -41,7 +42,7 @@
 		0379BB8A2AA83A8B00B718B6 /* StreamVideoFpsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB892AA83A8B00B718B6 /* StreamVideoFpsSettingsView.swift */; };
 		0379BB8E2AA90D1900B718B6 /* DebugLogSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB8D2AA90D1900B718B6 /* DebugLogSettingsView.swift */; };
 		0379BB902AABA7DC00B718B6 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB8F2AABA7DC00B718B6 /* Log.swift */; };
-		0379BB942AACF16600B718B6 /* SeipaEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB932AACF16600B718B6 /* SeipaEffect.swift */; };
+		0379BB942AACF16600B718B6 /* SepiaEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB932AACF16600B718B6 /* SepiaEffect.swift */; };
 		0379BB962AACF2D700B718B6 /* BloomEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB952AACF2D700B718B6 /* BloomEffect.swift */; };
 		0379BB9C2AAD819800B718B6 /* StreamOverlayLeftView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB9B2AAD819800B718B6 /* StreamOverlayLeftView.swift */; };
 		0379BB9E2AAD81AA00B718B6 /* StreamOverlayRightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB9D2AAD81AA00B718B6 /* StreamOverlayRightView.swift */; };
@@ -110,6 +111,7 @@
 		0315A3792AA39DA800295443 /* TextItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextItemView.swift; sourceTree = "<group>"; };
 		0315A37B2AA439B500295443 /* NameEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameEditView.swift; sourceTree = "<group>"; };
 		0315A37D2AA43DCC00295443 /* TextEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditView.swift; sourceTree = "<group>"; };
+		032815DB2AC915AE001F8A85 /* RandomEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomEffect.swift; sourceTree = "<group>"; };
 		032A49B72AC54DD000ED3916 /* ExportSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportSettingsView.swift; sourceTree = "<group>"; };
 		032A49B92AC54E6500ED3916 /* ImportSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportSettingsView.swift; sourceTree = "<group>"; };
 		032A49BB2AC5DF3F00ED3916 /* ImportExportSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportExportSettingsView.swift; sourceTree = "<group>"; };
@@ -132,7 +134,7 @@
 		0379BB892AA83A8B00B718B6 /* StreamVideoFpsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoFpsSettingsView.swift; sourceTree = "<group>"; };
 		0379BB8D2AA90D1900B718B6 /* DebugLogSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogSettingsView.swift; sourceTree = "<group>"; };
 		0379BB8F2AABA7DC00B718B6 /* Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
-		0379BB932AACF16600B718B6 /* SeipaEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeipaEffect.swift; sourceTree = "<group>"; };
+		0379BB932AACF16600B718B6 /* SepiaEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SepiaEffect.swift; sourceTree = "<group>"; };
 		0379BB952AACF2D700B718B6 /* BloomEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BloomEffect.swift; sourceTree = "<group>"; };
 		0379BB9B2AAD819800B718B6 /* StreamOverlayLeftView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOverlayLeftView.swift; sourceTree = "<group>"; };
 		0379BB9D2AAD81AA00B718B6 /* StreamOverlayRightView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOverlayRightView.swift; sourceTree = "<group>"; };
@@ -554,8 +556,9 @@
 				03B374012AA0354C0028DDD5 /* GrayScaleEffect.swift */,
 				03B374062AA0EA650028DDD5 /* MovieEffect.swift */,
 				03B374082AA0EA700028DDD5 /* ImageEffect.swift */,
-				0379BB932AACF16600B718B6 /* SeipaEffect.swift */,
+				0379BB932AACF16600B718B6 /* SepiaEffect.swift */,
 				0379BB952AACF2D700B718B6 /* BloomEffect.swift */,
+				032815DB2AC915AE001F8A85 /* RandomEffect.swift */,
 			);
 			path = VideoEffects;
 			sourceTree = "<group>";
@@ -702,6 +705,7 @@
 				03A983622A9A05D7008FF0DB /* MainView.swift in Sources */,
 				03B374042AA036D10028DDD5 /* ButtonsView.swift in Sources */,
 				0379BBB62AAD9B5B00B718B6 /* ButtonsSettingsView.swift in Sources */,
+				032815DC2AC915AE001F8A85 /* RandomEffect.swift in Sources */,
 				0315A3462AA31E9000295443 /* StreamTwitchSettingsView.swift in Sources */,
 				0379BBAF2AAD96B200B718B6 /* DebugSettingsView.swift in Sources */,
 				03B373F92A9EFB340028DDD5 /* BatteryView.swift in Sources */,
@@ -738,7 +742,7 @@
 				032A49B82AC54DD000ED3916 /* ExportSettingsView.swift in Sources */,
 				032A49BA2AC54E6500ED3916 /* ImportSettingsView.swift in Sources */,
 				03A983682A9A05D7008FF0DB /* SceneSettingsView.swift in Sources */,
-				0379BB942AACF16600B718B6 /* SeipaEffect.swift in Sources */,
+				0379BB942AACF16600B718B6 /* SepiaEffect.swift in Sources */,
 				03B374022AA0354C0028DDD5 /* GrayScaleEffect.swift in Sources */,
 				03A983632A9A05D7008FF0DB /* SettingsView.swift in Sources */,
 				036BE2D22ABD518E0048F9C5 /* StreamKickSettingsView.swift in Sources */,

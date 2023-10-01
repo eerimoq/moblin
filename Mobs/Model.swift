@@ -77,8 +77,9 @@ final class Model: ObservableObject {
     var mthkView = MTHKView(frame: .zero)
     private var grayScaleEffect = GrayScaleEffect()
     private var movieEffect = MovieEffect()
-    private var seipaEffect = SeipaEffect()
+    private var sepiaEffect = SepiaEffect()
     private var bloomEffect = BloomEffect()
+    private var randomEffect = RandomEffect()
     private var imageEffects: [UUID: ImageEffect] = [:]
     @Published var sceneIndex = 0
     private var isTorchOn = false
@@ -257,6 +258,7 @@ final class Model: ObservableObject {
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
             self.media.logStatistics()
+
         })
     }
 
@@ -591,9 +593,13 @@ final class Model: ObservableObject {
                 case .grayScale:
                     grayScaleEffectOff()
                 case .seipa:
-                    seipaEffectOff()
+                    sepiaEffectOff()
+                case .sepia:
+                    sepiaEffectOff()
                 case .bloom:
                     bloomEffectOff()
+                case .random:
+                    randomEffectOff()
                 }
             }
         }
@@ -634,10 +640,14 @@ final class Model: ObservableObject {
                     movieEffectOn()
                 case .grayScale:
                     grayScaleEffectOn()
-                case .seipa:
-                    seipaEffectOn()
+                case .sepia:
+                    sepiaEffectOn()
                 case .bloom:
                     bloomEffectOn()
+                case .seipa:
+                    sepiaEffectOn()
+                case .random:
+                    randomEffectOn()
                 }
             }
         }
@@ -792,12 +802,12 @@ final class Model: ObservableObject {
         media.unregisterVideoEffect(movieEffect)
     }
 
-    func seipaEffectOn() {
-        media.registerVideoEffect(seipaEffect)
+    func sepiaEffectOn() {
+        media.registerVideoEffect(sepiaEffect)
     }
 
-    func seipaEffectOff() {
-        media.unregisterVideoEffect(seipaEffect)
+    func sepiaEffectOff() {
+        media.unregisterVideoEffect(sepiaEffect)
     }
 
     func bloomEffectOn() {
@@ -806,6 +816,16 @@ final class Model: ObservableObject {
 
     func bloomEffectOff() {
         media.unregisterVideoEffect(bloomEffect)
+    }
+
+    func randomEffectOn() {
+        // Should only set a new random effect when button is pressed, not on every 'on'
+        randomEffect = RandomEffect()
+        media.registerVideoEffect(randomEffect)
+    }
+
+    func randomEffectOff() {
+        media.unregisterVideoEffect(randomEffect)
     }
 
     func setCameraZoomLevel(index: Int) {

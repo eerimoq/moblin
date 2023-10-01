@@ -50,6 +50,14 @@ var imageSystemNames = [
     "drop",
     "drop.fill",
     "speedometer",
+    "dice",
+    "dice.fill",
+    "plus.magnifyingglass",
+    "minus.magnifyingglass",
+    "photo.artframe",
+    "megaphone",
+    "megaphone.fill",
+    "music.mic",
 ]
 
 struct ButtonImagePickerSettingsView: View {
