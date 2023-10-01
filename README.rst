@@ -73,16 +73,12 @@ ToDo
 - Sometimes video hangs. Often when app is put into background. Or
   when changing settings.
 
-- Align picker styles with the rest.
-
 Ideas/plan
 ==========
 
 - Adaptive bitrate, but based on what?
 
 - Video effects:
-
-  - Repeat part of video multiple times.
 
   - Sparks.
 
