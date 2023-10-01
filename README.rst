@@ -70,8 +70,8 @@ ToDo
 
 - Fix crashes. =)
 
-- Sometimes video hangs. Often when app is put into background. Or
-  when changing settings.
+- Sometimes video hangs when changing settings or when enter/exit
+  background mode.
 
 Ideas/plan
 ==========
