@@ -61,7 +61,7 @@ var imageSystemNames = [
     "person.3",
     "person.3.fill",
     "person.3.sequence",
-    "person.3.sequence.fill"
+    "person.3.sequence.fill",
 ]
 
 struct ButtonImagePickerSettingsView: View {
