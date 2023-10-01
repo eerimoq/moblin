@@ -179,7 +179,7 @@ class SettingsWidgetWebview: Codable {
     var url: String = "https://"
 }
 
-var videoEffects = ["Movie", "Gray scale", "Sepia", "Bloom", "Random"]
+var videoEffects = ["Movie", "Gray scale", "Sepia", "Bloom", "Random", "Triple"]
 
 enum SettingsWidgetVideoEffectType: String, Codable {
     case movie = "Movie"
@@ -187,6 +187,7 @@ enum SettingsWidgetVideoEffectType: String, Codable {
     case sepia = "Sepia"
     case bloom = "Bloom"
     case random = "Random"
+    case triple = "Triple"
     // Deprecated
     case seipa = "Seipa"
 }

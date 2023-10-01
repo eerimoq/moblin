@@ -80,6 +80,7 @@ final class Model: ObservableObject {
     private var sepiaEffect = SepiaEffect()
     private var bloomEffect = BloomEffect()
     private var randomEffect = RandomEffect()
+    private var tripleEffect = TripleEffect()
     private var imageEffects: [UUID: ImageEffect] = [:]
     @Published var sceneIndex = 0
     private var isTorchOn = false
@@ -600,6 +601,8 @@ final class Model: ObservableObject {
                     bloomEffectOff()
                 case .random:
                     randomEffectOff()
+                case .triple:
+                    tripleEffectOff()
                 }
             }
         }
@@ -648,6 +651,8 @@ final class Model: ObservableObject {
                     sepiaEffectOn()
                 case .random:
                     randomEffectOn()
+                case .triple:
+                    tripleEffectOn()
                 }
             }
         }
@@ -826,6 +831,14 @@ final class Model: ObservableObject {
 
     func randomEffectOff() {
         media.unregisterVideoEffect(randomEffect)
+    }
+
+    func tripleEffectOn() {
+        media.registerVideoEffect(tripleEffect)
+    }
+
+    func tripleEffectOff() {
+        media.unregisterVideoEffect(tripleEffect)
     }
 
     func setCameraZoomLevel(index: Int) {
