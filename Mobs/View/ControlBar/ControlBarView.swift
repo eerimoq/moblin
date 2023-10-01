@@ -87,9 +87,10 @@ struct ControlBarView: View {
                 Spacer()
                 ButtonsView(model: model)
                 StreamButton(model: model)
-                    .padding([.top], 10)
+                    .padding([.top], 8)
             }
-            .padding([.leading, .trailing, .top], 10)
+            .padding([.leading, .trailing], 10)
+            .padding([.top, .bottom], 0)
         }
         .frame(width: 100)
         .background(.black)
