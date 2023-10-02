@@ -73,6 +73,8 @@ ToDo
 - Sometimes video hangs when changing settings or when enter/exit
   background mode.
 
+- Changing stream from SRT to SRT always hangs video.
+  
 Ideas/plan
 ==========
 

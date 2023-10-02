@@ -211,7 +211,6 @@ final class Model: ObservableObject {
         setupPeriodicTimers()
         setupThermalState()
         updateButtonStates()
-        sceneUpdated(imageEffectChanged: true, store: false)
         removeUnusedImages()
         NotificationCenter.default.addObserver(
             self,
