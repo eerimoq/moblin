@@ -179,7 +179,15 @@ class SettingsWidgetWebview: Codable {
     var url: String = "https://"
 }
 
-var videoEffects = ["Movie", "Gray scale", "Sepia", "Bloom", "Random", "Triple"]
+var videoEffects = [
+    "Movie",
+    "Gray scale",
+    "Sepia",
+    "Bloom",
+    "Random",
+    "Triple",
+    "Noise reduction",
+]
 
 enum SettingsWidgetVideoEffectType: String, Codable {
     case movie = "Movie"
@@ -188,12 +196,15 @@ enum SettingsWidgetVideoEffectType: String, Codable {
     case bloom = "Bloom"
     case random = "Random"
     case triple = "Triple"
+    case noiseReduction = "Noise reduction"
     // Deprecated
     case seipa = "Seipa"
 }
 
 class SettingsWidgetVideoEffect: Codable {
     var type: SettingsWidgetVideoEffectType = .movie
+    var noiseReductionNoiseLevel: Float? = 0.01
+    var noiseReductionSharpness: Float? = 1.5
 }
 
 let widgetTypes = ["Camera", "Image", "Video effect"]
@@ -593,6 +604,16 @@ final class Settings {
             }
             widget.videoEffect.type = .sepia
             store()
+        }
+        for widget in realDatabase.widgets {
+            if widget.videoEffect.noiseReductionNoiseLevel == nil {
+                widget.videoEffect.noiseReductionNoiseLevel = 0.01
+                store()
+            }
+            if widget.videoEffect.noiseReductionSharpness == nil {
+                widget.videoEffect.noiseReductionSharpness = 1.5
+                store()
+            }
         }
     }
 }

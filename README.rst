@@ -74,7 +74,7 @@ ToDo
   background mode.
 
 - Changing stream from SRT to SRT always hangs video.
-  
+
 Ideas/plan
 ==========
 

@@ -81,6 +81,7 @@ final class Model: ObservableObject {
     private var bloomEffect = BloomEffect()
     private var randomEffect = RandomEffect()
     private var tripleEffect = TripleEffect()
+    private var noiseReductionEffect = NoiseReductionEffect()
     private var imageEffects: [UUID: ImageEffect] = [:]
     @Published var sceneIndex = 0
     private var isTorchOn = false
@@ -203,7 +204,6 @@ final class Model: ObservableObject {
         self.settings = settings
         mthkView.videoGravity = .resizeAspect
         logger.handler = debugLog(message:)
-        logger.info("Setup")
         updateDigitalClock(now: Date())
         twitchChat = TwitchChatMobs(model: self)
         reloadStream()
@@ -602,6 +602,8 @@ final class Model: ObservableObject {
                     randomEffectOff()
                 case .triple:
                     tripleEffectOff()
+                case .noiseReduction:
+                    noiseReductionEffectOff()
                 }
             }
         }
@@ -652,6 +654,10 @@ final class Model: ObservableObject {
                     randomEffectOn()
                 case .triple:
                     tripleEffectOn()
+                case .noiseReduction:
+                    noiseReductionEffect.noiseLevel = widget.videoEffect.noiseReductionNoiseLevel!
+                    noiseReductionEffect.sharpness = widget.videoEffect.noiseReductionSharpness!
+                    noiseReductionEffectOn()
                 }
             }
         }
@@ -838,6 +844,14 @@ final class Model: ObservableObject {
 
     func tripleEffectOff() {
         media.unregisterVideoEffect(tripleEffect)
+    }
+
+    func noiseReductionEffectOn() {
+        media.registerVideoEffect(noiseReductionEffect)
+    }
+
+    func noiseReductionEffectOff() {
+        media.unregisterVideoEffect(noiseReductionEffect)
     }
 
     func setCameraZoomLevel(index: Int) {
