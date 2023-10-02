@@ -40,6 +40,7 @@ struct WidgetVideoEffectSettingsView: View {
                         }
                         widget.videoEffect.noiseReductionNoiseLevel = noiseLevel / 10
                         model.store()
+                        model.sceneUpdated()
                     })
                 }
                 HStack {
@@ -51,6 +52,7 @@ struct WidgetVideoEffectSettingsView: View {
                         }
                         widget.videoEffect.noiseReductionSharpness = sharpness * 10
                         model.store()
+                        model.sceneUpdated()
                     })
                 }
             }
