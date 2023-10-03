@@ -4,10 +4,19 @@ struct StreamOverlayView: View {
     @ObservedObject var model: Model
 
     var body: some View {
-        HStack {
-            LeftOverlayView(model: model)
-            Spacer()
-            RightOverlayView(model: model)
+        ZStack {
+            HStack {
+                Spacer()
+                RightOverlayView(model: model)
+            }
+            GeometryReader { metrics in
+                HStack {
+                    LeftOverlayView(model: model)
+                        .allowsHitTesting(false)
+                    Spacer()
+                }
+                .frame(width: metrics.size.width * 0.7)
+            }
         }
         .padding([.trailing, .top])
     }
