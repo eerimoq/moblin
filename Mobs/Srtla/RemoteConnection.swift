@@ -83,6 +83,8 @@ class RemoteConnection {
         }
     }
 
+    private var totalDataSentByteCount: UInt64 = 0
+
     private var nullPacket: Data = {
         var packet = Data(count: 188)
         packet
@@ -170,6 +172,7 @@ class RemoteConnection {
             latestReceivedDate = Date()
             latestSentDate = Date()
             packetsInFlight.removeAll()
+            totalDataSentByteCount = 0
             windowSize = windowDefault * windowMultiply
             if type == nil {
                 state = .registered
@@ -225,8 +228,10 @@ class RemoteConnection {
                     numberOfNullPacketsSent += 1
                 }
                 sendPacketInternal(packet: paddedPacket)
+                totalDataSentByteCount += UInt64(paddedPacket.count)
             } else {
                 sendPacketInternal(packet: packet)
+                totalDataSentByteCount += UInt64(packet.count)
             }
         } else {
             sendPacketInternal(packet: packet)
@@ -490,5 +495,15 @@ class RemoteConnection {
                     """
                 )
         }
+    }
+
+    func getDataSentDelta() -> UInt64? {
+        defer {
+            totalDataSentByteCount = 0
+        }
+        guard state == .registered else {
+            return nil
+        }
+        return totalDataSentByteCount
     }
 }

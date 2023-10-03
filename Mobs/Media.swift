@@ -48,7 +48,7 @@ final class Media: NSObject {
     }
 
     func getBestSrtlaConnectionType() -> String? {
-        srtla?.findBestConnectionType() ?? nil
+        return srtla?.connectionStatistics() ?? nil
     }
 
     func setNetStream(proto: SettingsStreamProtocol) {

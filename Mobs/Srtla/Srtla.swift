@@ -81,19 +81,41 @@ class Srtla {
         }
     }
 
-    func findBestConnectionType() -> String? {
-        var bestTypeString: String?
-        var bestWindowSize = -1
+    func connectionStatistics() -> String? {
+        struct ByteCount {
+            var name: String
+            var value: UInt64
+        }
+        var byteCounts: [ByteCount] = []
+        var totalByteCount: UInt64 = 0
         srtlaDispatchQueue.sync {
             for connection in remoteConnections {
-                let windowSize = connection.getWindowSize()
-                if windowSize > bestWindowSize {
-                    bestTypeString = connection.typeString
-                    bestWindowSize = windowSize
+                guard let byteCount = connection.getDataSentDelta() else {
+                    continue
                 }
+                byteCounts.append(ByteCount(
+                    name: connection.typeString,
+                    value: byteCount
+                ))
+                totalByteCount += byteCount
             }
         }
-        return bestTypeString
+        if byteCounts.isEmpty {
+            return nil
+        }
+        if totalByteCount == 0 {
+            totalByteCount = 1
+        }
+        var percentges = byteCounts.map { byteCount in
+            ByteCount(name: byteCount.name, value: 100 * byteCount.value / totalByteCount)
+        }
+        percentges[percentges.count - 1].value = 100 - percentges.prefix(upTo: percentges.count - 1)
+            .reduce(0) { total, percentage in
+                total + percentage.value
+            }
+        return percentges.map { percentage in
+            "\(percentage.value)% \(percentage.name)"
+        }.joined(separator: ", ")
     }
 
     func logStatistics() {
