@@ -318,6 +318,23 @@ class SettingsShow: Codable {
     var zoom: Bool? = true
 }
 
+class SettingsZoomLevel: Codable, Identifiable {
+    var id: UUID
+    var name: String = ""
+    var level: Float = 1.0
+
+    init(id: UUID, name: String, level: Float) {
+        self.id = id
+        self.name = name
+        self.level = level
+    }
+}
+
+class SettingsZoom: Codable {
+    var back: [SettingsZoomLevel]? = []
+    var front: [SettingsZoomLevel]? = []
+}
+
 class Database: Codable {
     var streams: [SettingsStream] = []
     var scenes: [SettingsScene] = []
@@ -325,6 +342,7 @@ class Database: Codable {
     var variables: [SettingsVariable] = []
     var buttons: [SettingsButton] = []
     var show: SettingsShow = .init()
+    var zoom: SettingsZoom? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -336,6 +354,15 @@ class Database: Codable {
         }
         if database.streams.isEmpty {
             addDefaultStreams(database: database)
+        }
+        if database.zoom == nil {
+            database.zoom = SettingsZoom()
+        }
+        if database.zoom!.back?.isEmpty ?? true {
+            addDefaultBackZoom(database: database)
+        }
+        if database.zoom!.front?.isEmpty ?? true {
+            addDefaultFrontZoom(database: database)
         }
         return database
     }
@@ -439,6 +466,25 @@ func addDefaultStreams(database: Database) {
     stream.twitchChannelId = ""
     stream.kickChatroomId = ""
     database.streams.append(stream)
+}
+
+func addDefaultBackZoom(database: Database) {
+    database.zoom!.back = [
+        SettingsZoomLevel(id: UUID(), name: "0.5x", level: 1.0),
+        SettingsZoomLevel(id: UUID(), name: "1x", level: 2.0),
+        SettingsZoomLevel(id: UUID(), name: "2x", level: 4.0),
+        SettingsZoomLevel(id: UUID(), name: "4x", level: 8.0),
+        SettingsZoomLevel(id: UUID(), name: "8x", level: 16.0),
+    ]
+}
+
+func addDefaultFrontZoom(database: Database) {
+    database.zoom!.front = [
+        SettingsZoomLevel(id: UUID(), name: "1x", level: 1.0),
+        SettingsZoomLevel(id: UUID(), name: "2x", level: 2.0),
+        SettingsZoomLevel(id: UUID(), name: "4x", level: 4.0),
+        SettingsZoomLevel(id: UUID(), name: "8x", level: 8.0),
+    ]
 }
 
 func addDefaultButtons(database: Database) {

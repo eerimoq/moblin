@@ -58,13 +58,13 @@ struct RightOverlayView: View {
             }
             Spacer()
             if database.show.zoom! {
-                Picker("", selection: $model.zoomIndex) {
+                Picker("", selection: $model.zoomId) {
                     ForEach(model.zoomLevels) { level in
                         Text(level.name).tag(level.id)
                     }
                 }
-                .onChange(of: model.zoomIndex) { index in
-                    model.setCameraZoomLevel(index: index)
+                .onChange(of: model.zoomId) { id in
+                    model.setCameraZoomLevel(id: id)
                 }
                 .pickerStyle(.segmented)
                 .background(Color(uiColor: .systemBackground).opacity(0.8))

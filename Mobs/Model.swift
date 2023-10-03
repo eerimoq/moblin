@@ -7,8 +7,27 @@ import PhotosUI
 import SwiftUI
 import TwitchChat
 import VideoToolbox
+import WebKit
 
 let noValue = ""
+
+struct WebView: UIViewRepresentable {
+    let url: URL
+
+    func makeUIView(context _: Context) -> WKWebView {
+        let configuration = WKWebViewConfiguration()
+        configuration.allowsInlineMediaPlayback = true
+        configuration.allowsAirPlayForMediaPlayback = true
+        configuration.allowsPictureInPictureMediaPlayback = false
+        configuration.mediaTypesRequiringUserActionForPlayback = []
+        let wkwebView = WKWebView(frame: .zero, configuration: configuration)
+        let request = URLRequest(url: url)
+        wkwebView.load(request)
+        return wkwebView
+    }
+
+    func updateUIView(_: WKWebView, context _: Context) {}
+}
 
 class ButtonState {
     var isOn: Bool
@@ -82,7 +101,9 @@ final class Model: ObservableObject {
     private var randomEffect = RandomEffect()
     private var tripleEffect = TripleEffect()
     private var noiseReductionEffect = NoiseReductionEffect()
+    // private var webViewEffect = WebViewEffect()
     private var imageEffects: [UUID: ImageEffect] = [:]
+    // let webView = WebView(url: URL(string: "https://mys-lang.org")!)
     @Published var sceneIndex = 0
     private var isTorchOn = false
     private var isMuteOn = false
@@ -99,23 +120,10 @@ final class Model: ObservableObject {
         }
     }
 
-    var zoomLevels: [ZoomLevel] = []
-    let backZoomLevels = [
-        ZoomLevel(id: 0, name: "0.5x", level: 1.0),
-        ZoomLevel(id: 1, name: "1x", level: 2.0),
-        ZoomLevel(id: 2, name: "2x", level: 4.0),
-        ZoomLevel(id: 3, name: "4x", level: 8.0),
-        ZoomLevel(id: 4, name: "8x", level: 16.0),
-    ]
-    let frontZoomLevels = [
-        ZoomLevel(id: 0, name: "1x", level: 1.0),
-        ZoomLevel(id: 1, name: "2x", level: 2.0),
-        ZoomLevel(id: 2, name: "4x", level: 4.0),
-        ZoomLevel(id: 3, name: "8x", level: 8.0),
-    ]
-    @Published var zoomIndex = 0
-    private var backZoomIndex = 0
-    private var frontZoomIndex = 0
+    var zoomLevels: [SettingsZoomLevel] = []
+    @Published var zoomId = UUID()
+    private var backZoomId = UUID()
+    private var frontZoomId = UUID()
     private var cameraPosition: AVCaptureDevice.Position?
     var database: Database {
         settings.database
@@ -210,6 +218,10 @@ final class Model: ObservableObject {
         media.onRtmpDisconnected = handleRtmpDisconnected
         media.onAudioMuteChange = updateAudioLevel
         self.settings = settings
+        zoomLevels = database.zoom!.back!
+        backZoomId = zoomLevels[0].id
+        zoomId = backZoomId
+        frontZoomId = database.zoom!.front![0].id
         mthkView.videoGravity = .resizeAspect
         logger.handler = debugLog(message:)
         updateDigitalClock(now: Date())
@@ -267,7 +279,11 @@ final class Model: ObservableObject {
             self.updateBatteryLevel()
             self.media.logStatistics()
 
-        })
+            /* UIGraphicsBeginImageContext(self.webView.frame.size)
+                  self.webView!.layer.render(in: UIGraphicsGetCurrentContext()!)
+                  self.webViewEffect.overlay = CIImage(image: UIGraphicsGetImageFromCurrentImageContext()!)
+                  UIGraphicsEndImageContext()
+             */ })
     }
 
     func removeUnusedImages() {
@@ -803,15 +819,15 @@ final class Model: ObservableObject {
         cameraPosition = position
         switch position {
         case .back:
-            zoomIndex = backZoomIndex
-            zoomLevels = backZoomLevels
+            zoomId = backZoomId
+            zoomLevels = database.zoom!.back!
         case .front:
-            zoomIndex = frontZoomIndex
-            zoomLevels = frontZoomLevels
+            zoomId = frontZoomId
+            zoomLevels = database.zoom!.front!
         default:
             break
         }
-        setCameraZoomLevel(index: zoomIndex)
+        setCameraZoomLevel(id: zoomId)
     }
 
     func attachAudio() {
@@ -902,16 +918,36 @@ final class Model: ObservableObject {
         media.unregisterVideoEffect(noiseReductionEffect)
     }
 
-    func setCameraZoomLevel(index: Int) {
+    /*
+     func webViewEffectOn() {
+         media.registerVideoEffect(webViewEffect)
+     }
+
+     func webViewEffectOff() {
+         media.unregisterVideoEffect(webViewEffect)
+     }
+     */
+    func setCameraZoomLevel(id: UUID) {
         switch cameraPosition {
         case .back:
-            backZoomIndex = index
+            backZoomId = id
         case .front:
-            frontZoomIndex = index
+            frontZoomId = id
         default:
             break
         }
-        media.setCameraZoomLevel(level: zoomLevels[index].level)
+        if let level = findZoomLevel(id: id) {
+            media.setCameraZoomLevel(level: Double(level.level))
+        } else {
+            logger.warning("Zoom level missing for id")
+        }
+    }
+
+    func findZoomLevel(id: UUID) -> SettingsZoomLevel? {
+        for level in zoomLevels where level.id == id {
+            return level
+        }
+        return nil
     }
 
     func handleRtmpConnected() {

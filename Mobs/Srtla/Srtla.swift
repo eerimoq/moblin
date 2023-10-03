@@ -109,7 +109,8 @@ class Srtla {
         var percentges = byteCounts.map { byteCount in
             ByteCount(name: byteCount.name, value: 100 * byteCount.value / totalByteCount)
         }
-        percentges[percentges.count - 1].value = 100 - percentges.prefix(upTo: percentges.count - 1)
+        percentges[percentges.count - 1].value = 100 - percentges
+            .prefix(upTo: percentges.count - 1)
             .reduce(0) { total, percentage in
                 total + percentage.value
             }
