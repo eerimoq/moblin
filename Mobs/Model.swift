@@ -99,7 +99,15 @@ final class Model: ObservableObject {
         }
     }
 
-    let zoomLevels = [
+    var zoomLevels: [ZoomLevel] = []
+    let backZoomLevels = [
+        ZoomLevel(id: 0, name: "0.5x", level: 1.0),
+        ZoomLevel(id: 1, name: "1x", level: 2.0),
+        ZoomLevel(id: 2, name: "2x", level: 4.0),
+        ZoomLevel(id: 3, name: "4x", level: 8.0),
+        ZoomLevel(id: 4, name: "8x", level: 16.0),
+    ]
+    let frontZoomLevels = [
         ZoomLevel(id: 0, name: "1x", level: 1.0),
         ZoomLevel(id: 1, name: "2x", level: 2.0),
         ZoomLevel(id: 2, name: "4x", level: 4.0),
@@ -655,8 +663,10 @@ final class Model: ObservableObject {
                 case .triple:
                     tripleEffectOn()
                 case .noiseReduction:
-                    noiseReductionEffect.noiseLevel = widget.videoEffect.noiseReductionNoiseLevel!
-                    noiseReductionEffect.sharpness = widget.videoEffect.noiseReductionSharpness!
+                    noiseReductionEffect.noiseLevel = widget.videoEffect
+                        .noiseReductionNoiseLevel!
+                    noiseReductionEffect.sharpness = widget.videoEffect
+                        .noiseReductionSharpness!
                     noiseReductionEffectOn()
                 }
             }
@@ -747,19 +757,57 @@ final class Model: ObservableObject {
         logger.info("Thermal state is \(thermalState.string())")
     }
 
+    private func preferredCamera(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
+        if let device = AVCaptureDevice.default(.builtInTripleCamera,
+                                                for: .video,
+                                                position: position)
+        {
+            logger.info("Triple camera")
+            return device
+        }
+        if let device = AVCaptureDevice.default(.builtInDualCamera,
+                                                for: .video,
+                                                position: position)
+        {
+            logger.info("Dual camera")
+            return device
+        }
+        if let device = AVCaptureDevice.default(.builtInWideAngleCamera,
+                                                for: .video,
+                                                position: position)
+        {
+            logger.info("Wide angle camera")
+            return device
+        }
+        logger.info("No camera")
+        return nil
+    }
+
     func attachCamera(position: AVCaptureDevice.Position) {
-        let device = AVCaptureDevice.default(
-            .builtInWideAngleCamera,
-            for: .video,
-            position: position
-        )
+        let device = preferredCamera(position: position)
+        if let device {
+            logger
+                .info(
+                    "Zoom: \(device.minAvailableVideoZoomFactor) - \(device.maxAvailableVideoZoomFactor)"
+                )
+            logger
+                .info(
+                    "Cameras: \(device.constituentDevices.map { device in device.localizedName })"
+                )
+            logger
+                .info(
+                    "Switch over factors: \(device.virtualDeviceSwitchOverVideoZoomFactors)"
+                )
+        }
         media.attachCamera(device: device)
         cameraPosition = position
         switch position {
         case .back:
             zoomIndex = backZoomIndex
+            zoomLevels = backZoomLevels
         case .front:
             zoomIndex = frontZoomIndex
+            zoomLevels = frontZoomLevels
         default:
             break
         }

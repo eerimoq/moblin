@@ -224,8 +224,9 @@ final class Media: NSObject {
 
     func setCameraZoomLevel(level: Double) {
         guard let device = netStream.videoCapture(for: 0)?.device,
-              level >= 1 && level < device.activeFormat.videoMaxZoomFactor
+              level >= 1 && level <= device.activeFormat.videoMaxZoomFactor
         else {
+            logger.warning("Zoom factor \(level) out of range")
             return
         }
         do {
