@@ -53,9 +53,16 @@ Features
 
   - Grayscale.
 
-  - Movie.
+  - Movie. Paint top and bottom of 16:9 video black to look like
+  2.35:1.
 
   - Seipa.
+
+  - Noise reduction.
+
+  - Random. A single effect that applies a random effect.
+
+  - Triple. Show center of image three times.
 
 - Mute audio.
 
@@ -64,6 +71,8 @@ Features
 - Configure resolution, FPS, codec and bitrate.
 
 - Landscape stream only.
+
+- SRTLA connection type statistics.
 
 ToDo
 ====
@@ -77,6 +86,8 @@ ToDo
 
 Ideas/plan
 ==========
+
+- Show web page on stream and/or locally. Audio kinda important.
 
 - Adaptive bitrate, but based on what?
 
