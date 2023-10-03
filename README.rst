@@ -91,6 +91,9 @@ Ideas/plan
 
 - Adaptive bitrate, but based on what?
 
+- Mirrored front camera. Probably only for streamer. Not mirrored on
+  stream.
+  
 - Video effects:
 
   - Sparks.
