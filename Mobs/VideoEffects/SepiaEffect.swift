@@ -3,14 +3,11 @@ import HaishinKit
 import UIKit
 
 final class SepiaEffect: VideoEffect {
-    private let filter = CIFilter(name: "CISepiaTone")
+    private let filter = CIFilter.sepiaTone()
 
     override func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {
-        guard let filter else {
-            return image
-        }
-        filter.setValue(image, forKey: kCIInputImageKey)
-        filter.setValue(0.9, forKey: kCIInputIntensityKey)
-        return filter.outputImage!
+        filter.inputImage = image
+        filter.intensity = 0.9
+        return filter.outputImage ?? image
     }
 }

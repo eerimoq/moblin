@@ -12,6 +12,6 @@ final class NoiseReductionEffect: VideoEffect {
         filter.inputImage = image
         filter.noiseLevel = noiseLevel
         filter.sharpness = sharpness
-        return filter.outputImage!
+        return filter.outputImage ?? image
     }
 }

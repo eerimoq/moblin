@@ -3,15 +3,12 @@ import HaishinKit
 import UIKit
 
 final class BloomEffect: VideoEffect {
-    private let filter = CIFilter(name: "CIBloom")
+    private let filter = CIFilter.bloom()
 
     override func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {
-        guard let filter else {
-            return image
-        }
-        filter.setValue(image, forKey: kCIInputImageKey)
-        filter.setValue(1, forKey: kCIInputIntensityKey)
-        filter.setValue(10, forKey: kCIInputRadiusKey)
-        return filter.outputImage!
+        filter.inputImage = image
+        filter.intensity = 1
+        filter.radius = 10
+        return filter.outputImage ?? image
     }
 }

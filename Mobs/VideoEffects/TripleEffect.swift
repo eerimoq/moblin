@@ -23,6 +23,6 @@ final class TripleEffect: VideoEffect {
             options: nil
         )
         UIGraphicsEndImageContext()
-        return outputImage!
+        return outputImage ?? image
     }
 }
