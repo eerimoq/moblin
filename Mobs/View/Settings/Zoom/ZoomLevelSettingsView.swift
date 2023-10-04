@@ -4,14 +4,12 @@ import SwiftUI
 struct ZoomLevelSettingsView: View {
     @ObservedObject var model: Model
     private var level: SettingsZoomLevel
-    @State var value: String
     private var position: AVCaptureDevice.Position
 
     init(model: Model, level: SettingsZoomLevel, position: AVCaptureDevice.Position) {
         self.model = model
         self.level = level
         self.position = position
-        value = String(level.level)
     }
 
     func submitName(name: String) {

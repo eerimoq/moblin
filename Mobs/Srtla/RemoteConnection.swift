@@ -129,8 +129,7 @@ class RemoteConnection {
             return
         }
         reconnectTime = firstReconnectTime
-        let options = NWProtocolUDP.Options()
-        let params = NWParameters(dtls: .none, udp: options)
+        let params = NWParameters(dtls: .none)
         if let type {
             params.requiredInterfaceType = type
         }
@@ -140,6 +139,7 @@ class RemoteConnection {
             port: NWEndpoint.Port(integerLiteral: port),
             using: params
         )
+        connection!.stateUpdateHandler = handleStateUpdate(to:)
         connection!.viabilityUpdateHandler = handleViabilityChange(to:)
         connection!.start(queue: srtlaDispatchQueue)
         receivePacket()
@@ -168,6 +168,7 @@ class RemoteConnection {
     }
 
     private func handleViabilityChange(to viability: Bool) {
+        logger.info("srtla: \(typeString): Viability change to \(viability)")
         if viability {
             latestReceivedDate = Date()
             latestSentDate = Date()
@@ -187,6 +188,10 @@ class RemoteConnection {
             stop()
             reconnect()
         }
+    }
+
+    private func handleStateUpdate(to state: NWConnection.State) {
+        logger.info("srtla: \(typeString): State change to \(state)")
     }
 
     private func reconnect() {
@@ -463,13 +468,6 @@ class RemoteConnection {
         } else {
             handleControlPacket(packet: packet)
         }
-    }
-
-    func getWindowSize() -> Int {
-        guard type != nil, state == .registered else {
-            return -1
-        }
-        return windowSize
     }
 
     func logStatistics() {

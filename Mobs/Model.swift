@@ -56,12 +56,6 @@ struct LogEntry: Identifiable {
     var message: String
 }
 
-struct ZoomLevel: Identifiable {
-    var id: Int
-    var name: String
-    var level: Double
-}
-
 final class Model: ObservableObject {
     private let media = Media()
     var streamState = StreamState.disconnected {
