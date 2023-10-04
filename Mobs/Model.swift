@@ -384,7 +384,7 @@ final class Model: ObservableObject {
 
     func startNetStream() {
         streamState = .connecting
-        makeToast(title: "😎 Going live at \(stream.name) 😎")
+        makeGoingLiveToast()
         switch stream.getProtocol() {
         case .rtmp:
             rtmpStartStream()
@@ -407,7 +407,7 @@ final class Model: ObservableObject {
         updateSpeed()
         updateAudioLevel()
         srtlaConnectionStatistics = noValue
-        makeToast(title: "🤟 Stream ended 🤟")
+        makeStreamEndedToast()
     }
 
     func reloadStream() {
@@ -929,7 +929,7 @@ final class Model: ObservableObject {
     }
 
     func onConnected() {
-        makeToast(title: "🎉 You are LIVE at \(stream.name) 🎉")
+        makeYouAreLiveToast()
         reconnectTime = firstReconnectTime
         streamStartDate = Date()
         streamState = .connected
@@ -943,11 +943,7 @@ final class Model: ObservableObject {
         logger.info("stream: Disconnected with reason \(reason)")
         streamState = .disconnected
         stopNetStream()
-        makeErrorToast(
-            title: "😢 FFFFF 😢",
-            font: .system(size: 64).bold(),
-            subTitle: reason
-        )
+        makeFffffToast(reason: reason)
         reconnectTimer = Timer
             .scheduledTimer(withTimeInterval: reconnectTime, repeats: false) { _ in
                 logger.info("stream: Reconnecting")
@@ -980,5 +976,25 @@ final class Model: ObservableObject {
             frontZoomId = database.zoom!.front[0].id
         }
         sceneUpdated(store: true)
+    }
+
+    func makeGoingLiveToast() {
+        makeToast(title: "😎 Going live at \(stream.name) 😎")
+    }
+
+    func makeYouAreLiveToast() {
+        makeToast(title: "🎉 You are LIVE at \(stream.name) 🎉")
+    }
+
+    func makeStreamEndedToast() {
+        makeToast(title: "🤟 Stream ended 🤟")
+    }
+
+    func makeFffffToast(reason: String) {
+        makeErrorToast(
+            title: "😢 FFFFF 😢",
+            font: .system(size: 64).bold(),
+            subTitle: reason
+        )
     }
 }
