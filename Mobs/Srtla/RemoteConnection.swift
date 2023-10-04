@@ -208,15 +208,16 @@ class RemoteConnection {
             return
         }
         connection
-            .receive(minimumIncompleteLength: 1, maximumLength: 4096)
-            { packet, _, _, error in
+            .receive(minimumIncompleteLength: 1, maximumLength: 4096) { packet, _, _, _ in
                 if let packet, !packet.isEmpty {
                     self.handlePacket(packet: packet)
                 }
-                if let error {
-                    logger.warning("srtla: \(self.typeString): Receive \(error)")
-                    return
-                }
+                // if let error {
+                // I get message too long error for some reason when using hotspot,
+                // but stream works anyway.
+                // logger.warning("srtla: \(self.typeString): Receive \(error), done: \(done)")
+                // return
+                // }
                 self.receivePacket()
             }
     }
@@ -256,6 +257,8 @@ class RemoteConnection {
                     .error(
                         "srtla: \(self.typeString): Remote send error: \(error)"
                     )
+                self.stop()
+                self.reconnect()
             }
         })
     }

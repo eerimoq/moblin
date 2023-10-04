@@ -186,10 +186,7 @@ final class Model: ObservableObject {
             if self.log.count > 500 {
                 self.log.removeFirst()
             }
-            let timestamp = Date()
-                .formatted(.dateTime.hour().minute().second()
-                    .secondFraction(.fractional(3)))
-            self.log.append(LogEntry(id: self.logId, message: "\(timestamp) \(message)"))
+            self.log.append(LogEntry(id: self.logId, message: message))
             self.logId += 1
         }
     }
@@ -274,9 +271,9 @@ final class Model: ObservableObject {
             self.media.logStatistics()
 
             /* UIGraphicsBeginImageContext(self.webView.frame.size)
-                  self.webView!.layer.render(in: UIGraphicsGetCurrentContext()!)
-                  self.webViewEffect.overlay = CIImage(image: UIGraphicsGetImageFromCurrentImageContext()!)
-                  UIGraphicsEndImageContext()
+             self.webView!.layer.render(in: UIGraphicsGetCurrentContext()!)
+             self.webViewEffect.overlay = CIImage(image: UIGraphicsGetImageFromCurrentImageContext()!)
+             UIGraphicsEndImageContext()
              */ })
     }
 
@@ -890,11 +887,11 @@ final class Model: ObservableObject {
 
     /*
      func webViewEffectOn() {
-         media.registerVideoEffect(webViewEffect)
+     media.registerVideoEffect(webViewEffect)
      }
 
      func webViewEffectOff() {
-         media.unregisterVideoEffect(webViewEffect)
+     media.unregisterVideoEffect(webViewEffect)
      }
      */
     func setCameraZoomLevel(id: UUID) {

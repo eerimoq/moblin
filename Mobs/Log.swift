@@ -7,26 +7,36 @@ class EasyLogger {
     var handler: ((String) -> Void)?
     var debugEnabled: Bool = false
 
+    private func makeTimestamp() -> String {
+        return Date()
+            .formatted(.dateTime.hour().minute().second()
+                .secondFraction(.fractional(3)))
+    }
+
     func debug(_ messsge: String) {
-        logger.debug("\(messsge)")
         if debugEnabled {
-            handler?(messsge)
+            let formattedMessage = "\(makeTimestamp()) \(messsge)"
+            print(formattedMessage)
+            handler?(formattedMessage)
         }
     }
 
     func info(_ messsge: String) {
-        logger.info("\(messsge)")
-        handler?(messsge)
+        let formattedMessage = "\(makeTimestamp()) \(messsge)"
+        print(formattedMessage)
+        handler?(formattedMessage)
     }
 
     func warning(_ messsge: String) {
-        logger.warning("\(messsge)")
-        handler?(messsge)
+        let formattedMessage = "\(makeTimestamp()) \(messsge)"
+        print(formattedMessage)
+        handler?(formattedMessage)
     }
 
     func error(_ messsge: String) {
-        logger.error("\(messsge)")
-        handler?(messsge)
+        let formattedMessage = "\(makeTimestamp()) \(messsge)"
+        print(formattedMessage)
+        handler?(formattedMessage)
     }
 }
 
