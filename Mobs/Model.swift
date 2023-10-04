@@ -773,32 +773,6 @@ final class Model: ObservableObject {
         logger.info("Thermal state is \(thermalState.string())")
     }
 
-    private func preferredCamera(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
-        if let device = AVCaptureDevice.default(.builtInTripleCamera,
-                                                for: .video,
-                                                position: position)
-        {
-            logger.info("Triple camera")
-            return device
-        }
-        if let device = AVCaptureDevice.default(.builtInDualCamera,
-                                                for: .video,
-                                                position: position)
-        {
-            logger.info("Dual camera")
-            return device
-        }
-        if let device = AVCaptureDevice.default(.builtInWideAngleCamera,
-                                                for: .video,
-                                                position: position)
-        {
-            logger.info("Wide angle camera")
-            return device
-        }
-        logger.info("No camera")
-        return nil
-    }
-
     func attachCamera(position: AVCaptureDevice.Position) {
         let device = preferredCamera(position: position)
         if let device {
@@ -992,5 +966,23 @@ final class Model: ObservableObject {
 
     func handleSrtDisconnected(reason: String) {
         onDisconnected(reason: reason)
+    }
+
+    func backZoomUpdated() {
+        if !database.zoom!.back!.contains(where: { level in
+            level.id == backZoomId
+        }) {
+            backZoomId = database.zoom!.back![0].id
+        }
+        sceneUpdated(store: true)
+    }
+
+    func frontZoomUpdated() {
+        if !database.zoom!.front!.contains(where: { level in
+            level.id == frontZoomId
+        }) {
+            frontZoomId = database.zoom!.front![0].id
+        }
+        sceneUpdated(store: true)
     }
 }

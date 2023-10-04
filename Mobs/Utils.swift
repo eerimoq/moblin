@@ -217,3 +217,29 @@ extension AVCaptureSession.InterruptionReason {
 func version() -> String {
     return Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "-"
 }
+
+func preferredCamera(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
+    if let device = AVCaptureDevice.default(.builtInTripleCamera,
+                                            for: .video,
+                                            position: position)
+    {
+        logger.info("Triple camera")
+        return device
+    }
+    if let device = AVCaptureDevice.default(.builtInDualCamera,
+                                            for: .video,
+                                            position: position)
+    {
+        logger.info("Dual camera")
+        return device
+    }
+    if let device = AVCaptureDevice.default(.builtInWideAngleCamera,
+                                            for: .video,
+                                            position: position)
+    {
+        logger.info("Wide angle camera")
+        return device
+    }
+    logger.info("No camera")
+    return nil
+}

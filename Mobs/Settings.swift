@@ -464,6 +464,12 @@ func addDefaultStreams(database: Database) {
     database.streams.append(stream)
 }
 
+func addDefaultZoom(database: Database) {
+    database.zoom = .init()
+    addDefaultBackZoom(database: database)
+    addDefaultFrontZoom(database: database)
+}
+
 func addDefaultBackZoom(database: Database) {
     database.zoom!.back = [
         SettingsZoomLevel(id: UUID(), name: "0.5x", level: 1.0),
@@ -560,6 +566,7 @@ func createDefault() -> Database {
     addDefaultButtons(database: database)
     addDefaultScenes(database: database)
     addDefaultStreams(database: database)
+    addDefaultZoom(database: database)
     return database
 }
 
