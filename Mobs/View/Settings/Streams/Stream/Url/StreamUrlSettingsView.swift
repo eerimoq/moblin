@@ -9,7 +9,7 @@ struct StreamUrlSettingsView: View {
     init(model: Model, stream: SettingsStream) {
         self.model = model
         self.stream = stream
-        value = stream.url!
+        value = stream.url
     }
 
     func submitUrl() {

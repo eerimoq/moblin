@@ -45,14 +45,10 @@ class SettingsStream: Codable, Identifiable {
     var name: String
     var id: UUID = .init()
     var enabled: Bool = false
-    var url: String? = "rtmp://arn03.contribute.live-video.net/app/your_stream_key"
-    var rtmpUrl: String = "rtmp://arn03.contribute.live-video.net/app/your_stream_key"
-    var srtUrl: String = "srt://platform.com:5000"
-    var srtla: Bool = false
+    var url: String = "rtmp://arn03.contribute.live-video.net/app/your_stream_key"
     var twitchChannelName: String = ""
     var twitchChannelId: String = ""
-    var kickChannelId: String? = ""
-    var kickChatroomId: String? = ""
+    var kickChatroomId: String = ""
     var resolution: SettingsStreamResolution = .r1280x720
     var fps: Int = 30
     var bitrate: UInt32 = 3_000_000
@@ -63,7 +59,7 @@ class SettingsStream: Codable, Identifiable {
     }
 
     func getProtocol() -> SettingsStreamProtocol {
-        switch URL(string: url!)!.scheme {
+        switch URL(string: url)!.scheme {
         case "rtmp":
             return .rtmp
         case "rtmps":
@@ -78,7 +74,7 @@ class SettingsStream: Codable, Identifiable {
     }
 
     func isRtmps() -> Bool {
-        switch URL(string: url!)!.scheme {
+        switch URL(string: url)!.scheme {
         case "rtmps":
             return true
         default:
@@ -87,7 +83,7 @@ class SettingsStream: Codable, Identifiable {
     }
 
     func isSrtla() -> Bool {
-        switch URL(string: url!)!.scheme {
+        switch URL(string: url)!.scheme {
         case "srtla":
             return true
         default:

@@ -397,7 +397,7 @@ final class Model: ObservableObject {
         case .srt:
             media.srtStartStream(
                 isSrtla: stream.isSrtla(),
-                url: stream.url!,
+                url: stream.url,
                 reconnectTime: reconnectTime
             )
         }
@@ -539,7 +539,7 @@ final class Model: ObservableObject {
         kickPusher?.stop()
         kickPusher = nil
         if stream.kickChatroomId != "" {
-            kickPusher = KickPusher(model: self, channelId: stream.kickChatroomId!)
+            kickPusher = KickPusher(model: self, channelId: stream.kickChatroomId)
             kickPusher!.start()
         } else {
             logger.info("Kick chatroom id not configured. No Kick chat.")
@@ -835,7 +835,7 @@ final class Model: ObservableObject {
     }
 
     func rtmpStartStream() {
-        media.rtmpStartStream(url: stream.url!)
+        media.rtmpStartStream(url: stream.url)
     }
 
     func rtmpStopStream() {

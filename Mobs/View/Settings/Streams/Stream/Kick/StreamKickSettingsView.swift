@@ -17,10 +17,10 @@ struct StreamKickSettingsView: View {
             Section {
                 NavigationLink(destination: TextEditView(
                     title: "Chatroom id",
-                    value: stream.kickChatroomId!,
+                    value: stream.kickChatroomId,
                     onSubmit: submitChannelId
                 )) {
-                    TextItemView(name: "Chatroom id", value: stream.kickChatroomId!)
+                    TextItemView(name: "Chatroom id", value: stream.kickChatroomId)
                 }
             } footer: {
                 Text(
