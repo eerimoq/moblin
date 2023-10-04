@@ -212,10 +212,10 @@ final class Model: ObservableObject {
         media.onRtmpDisconnected = handleRtmpDisconnected
         media.onAudioMuteChange = updateAudioLevel
         self.settings = settings
-        zoomLevels = database.zoom!.back!
+        zoomLevels = database.zoom!.back
         backZoomId = zoomLevels[0].id
         zoomId = backZoomId
-        frontZoomId = database.zoom!.front![0].id
+        frontZoomId = database.zoom!.front[0].id
         mthkView.videoGravity = .resizeAspect
         logger.handler = debugLog(message:)
         updateDigitalClock(now: Date())
@@ -790,10 +790,10 @@ final class Model: ObservableObject {
         switch position {
         case .back:
             zoomId = backZoomId
-            zoomLevels = database.zoom!.back!
+            zoomLevels = database.zoom!.back
         case .front:
             zoomId = frontZoomId
-            zoomLevels = database.zoom!.front!
+            zoomLevels = database.zoom!.front
         default:
             break
         }
@@ -965,19 +965,19 @@ final class Model: ObservableObject {
     }
 
     func backZoomUpdated() {
-        if !database.zoom!.back!.contains(where: { level in
+        if !database.zoom!.back.contains(where: { level in
             level.id == backZoomId
         }) {
-            backZoomId = database.zoom!.back![0].id
+            backZoomId = database.zoom!.back[0].id
         }
         sceneUpdated(store: true)
     }
 
     func frontZoomUpdated() {
-        if !database.zoom!.front!.contains(where: { level in
+        if !database.zoom!.front.contains(where: { level in
             level.id == frontZoomId
         }) {
-            frontZoomId = database.zoom!.front![0].id
+            frontZoomId = database.zoom!.front[0].id
         }
         sceneUpdated(store: true)
     }

@@ -7,7 +7,7 @@ struct ZoomSettingsView: View {
         Form {
             Section("Back") {
                 List {
-                    ForEach(model.database.zoom!.back!) { level in
+                    ForEach(model.database.zoom!.back) { level in
                         NavigationLink(destination: ZoomLevelSettingsView(
                             model: model,
                             level: level,
@@ -15,19 +15,19 @@ struct ZoomSettingsView: View {
                         )) {
                             TextItemView(name: level.name, value: String(level.level))
                         }
-                        .deleteDisabled(model.database.zoom!.back!.count == 1)
+                        .deleteDisabled(model.database.zoom!.back.count == 1)
                     }
                     .onMove(perform: { froms, to in
-                        model.database.zoom!.back!.move(fromOffsets: froms, toOffset: to)
+                        model.database.zoom!.back.move(fromOffsets: froms, toOffset: to)
                         model.backZoomUpdated()
                     })
                     .onDelete(perform: { offsets in
-                        model.database.zoom!.back!.remove(atOffsets: offsets)
+                        model.database.zoom!.back.remove(atOffsets: offsets)
                         model.backZoomUpdated()
                     })
                 }
                 CreateButtonView(action: {
-                    model.database.zoom!.back!.append(SettingsZoomLevel(
+                    model.database.zoom!.back.append(SettingsZoomLevel(
                         id: UUID(),
                         name: "1x",
                         level: 1.0
@@ -37,7 +37,7 @@ struct ZoomSettingsView: View {
             }
             Section("Front") {
                 List {
-                    ForEach(model.database.zoom!.front!) { level in
+                    ForEach(model.database.zoom!.front) { level in
                         NavigationLink(destination: ZoomLevelSettingsView(
                             model: model,
                             level: level,
@@ -45,19 +45,19 @@ struct ZoomSettingsView: View {
                         )) {
                             TextItemView(name: level.name, value: String(level.level))
                         }
-                        .deleteDisabled(model.database.zoom!.front!.count == 1)
+                        .deleteDisabled(model.database.zoom!.front.count == 1)
                     }
                     .onMove(perform: { froms, to in
-                        model.database.zoom!.front!.move(fromOffsets: froms, toOffset: to)
+                        model.database.zoom!.front.move(fromOffsets: froms, toOffset: to)
                         model.frontZoomUpdated()
                     })
                     .onDelete(perform: { offsets in
-                        model.database.zoom!.front!.remove(atOffsets: offsets)
+                        model.database.zoom!.front.remove(atOffsets: offsets)
                         model.frontZoomUpdated()
                     })
                 }
                 CreateButtonView(action: {
-                    model.database.zoom!.front!.append(SettingsZoomLevel(
+                    model.database.zoom!.front.append(SettingsZoomLevel(
                         id: UUID(),
                         name: "1x",
                         level: 1.0

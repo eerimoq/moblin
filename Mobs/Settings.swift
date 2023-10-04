@@ -318,8 +318,8 @@ class SettingsZoomLevel: Codable, Identifiable {
 }
 
 class SettingsZoom: Codable {
-    var back: [SettingsZoomLevel]? = []
-    var front: [SettingsZoomLevel]? = []
+    var back: [SettingsZoomLevel] = []
+    var front: [SettingsZoomLevel] = []
 }
 
 class Database: Codable {
@@ -345,10 +345,10 @@ class Database: Codable {
         if database.zoom == nil {
             database.zoom = SettingsZoom()
         }
-        if database.zoom!.back?.isEmpty ?? true {
+        if database.zoom!.back.isEmpty {
             addDefaultBackZoom(database: database)
         }
-        if database.zoom!.front?.isEmpty ?? true {
+        if database.zoom!.front.isEmpty {
             addDefaultFrontZoom(database: database)
         }
         return database
