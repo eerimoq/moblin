@@ -204,7 +204,7 @@ class Srtla {
     }
 
     private func handleLocalPacket(packet: Data) {
-        guard let connection = findBestRemoteConnection() else {
+        guard let connection = selectRemoteConnection() else {
             logger.warning("srtla: local: No remote connection found")
             onDisconnected()
             return
@@ -265,16 +265,16 @@ class Srtla {
         state = .waitForRegistered
     }
 
-    private func findBestRemoteConnection() -> RemoteConnection? {
-        var bestConnection: RemoteConnection?
-        var bestScore = -1
+    private func selectRemoteConnection() -> RemoteConnection? {
+        var selectedConnection: RemoteConnection?
+        var selectedScore = -1
         for connection in remoteConnections {
             let score = connection.score()
-            if score > bestScore {
-                bestConnection = connection
-                bestScore = score
+            if score > selectedScore {
+                selectedConnection = connection
+                selectedScore = score
             }
         }
-        return bestConnection
+        return selectedConnection
     }
 }

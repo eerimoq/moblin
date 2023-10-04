@@ -47,7 +47,7 @@ final class Media: NSObject {
         srtla?.logStatistics()
     }
 
-    func getBestSrtlaConnectionType() -> String? {
+    func srtlaConnectionStatistics() -> String? {
         return srtla?.connectionStatistics() ?? nil
     }
 

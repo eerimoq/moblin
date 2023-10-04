@@ -156,9 +156,9 @@ enum SettingsWidgetCameraType: String, Codable, CaseIterable {
     case front = "Front"
 }
 
-var cameraTypes = SettingsWidgetCameraType.allCases.filter({ type in
+var cameraTypes = SettingsWidgetCameraType.allCases.filter { type in
     type != .main
-}).map({$0.rawValue})
+}.map { $0.rawValue }
 
 class SettingsWidgetCamera: Codable {
     var type: SettingsWidgetCameraType = .main

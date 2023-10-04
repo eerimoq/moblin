@@ -70,7 +70,7 @@ final class Model: ObservableObject {
     @Published var isLive = false
     private var subscriptions = Set<AnyCancellable>()
     @Published var uptime = noValue
-    @Published var currentConnectionType = noValue
+    @Published var srtlaConnectionStatistics = noValue
     @Published var audioLevel = noValue
     var settings = Settings()
     var digitalClock = noValue
@@ -267,7 +267,7 @@ final class Model: ObservableObject {
             self.updateSpeed()
             self.updateTwitchPubSub(now: now)
             self.updateAudioLevel()
-            self.updateBestSrtlaConnectionType()
+            self.updateSrtlaConnectionStatistics()
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
@@ -314,11 +314,11 @@ final class Model: ObservableObject {
         }
     }
 
-    func updateBestSrtlaConnectionType() {
-        if isStreamConnceted(), let type = media.getBestSrtlaConnectionType() {
-            currentConnectionType = type
+    func updateSrtlaConnectionStatistics() {
+        if isStreamConnceted(), let statistics = media.srtlaConnectionStatistics() {
+            srtlaConnectionStatistics = statistics
         } else {
-            currentConnectionType = noValue
+            srtlaConnectionStatistics = noValue
         }
     }
 
@@ -406,7 +406,7 @@ final class Model: ObservableObject {
         updateUptime(now: Date())
         updateSpeed()
         updateAudioLevel()
-        currentConnectionType = noValue
+        srtlaConnectionStatistics = noValue
         makeToast(title: "🤟 Stream ended 🤟")
     }
 
