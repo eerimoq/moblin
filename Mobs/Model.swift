@@ -649,6 +649,8 @@ final class Model: ObservableObject {
                 switch widget.camera.type {
                 case .main:
                     attachCamera(position: .back)
+                case .back:
+                    attachCamera(position: .back)
                 case .front:
                     attachCamera(position: .front)
                 }

@@ -151,11 +151,14 @@ class SettingsWidgetVideo: Codable {
 }
 
 enum SettingsWidgetCameraType: String, Codable, CaseIterable {
-    case main = "Back"
+    case main = "Main"
+    case back = "Back"
     case front = "Front"
 }
 
-var cameraTypes = SettingsWidgetCameraType.allCases.map({$0.rawValue})
+var cameraTypes = SettingsWidgetCameraType.allCases.filter({ type in
+    type != .main
+}).map({$0.rawValue})
 
 class SettingsWidgetCamera: Codable {
     var type: SettingsWidgetCameraType = .main
@@ -359,7 +362,7 @@ class Database: Codable {
 func addDefaultWidgets(database: Database) {
     var widget = SettingsWidget(name: "Back camera")
     widget.type = .camera
-    widget.camera.type = .main
+    widget.camera.type = .back
     database.widgets.append(widget)
 
     widget = SettingsWidget(name: "Front camera")
@@ -570,7 +573,7 @@ final class Settings {
         do {
             try loadNoDefault(settings: storage)
         } catch {
-            logger.info("settings: Failed to load. Using default.")
+            logger.info("settings: Failed to load with error \(error). Using default.")
             realDatabase = createDefault()
         }
     }
@@ -649,6 +652,15 @@ final class Settings {
             }
             if widget.videoEffect.noiseReductionSharpness == nil {
                 widget.videoEffect.noiseReductionSharpness = 1.5
+                store()
+            }
+        }
+        for widget in realDatabase.widgets {
+            if widget.type != .camera {
+                continue
+            }
+            if widget.camera.type == .main {
+                widget.camera.type = .back
                 store()
             }
         }
