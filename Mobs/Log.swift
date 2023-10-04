@@ -1,9 +1,7 @@
 import Foundation
 import Logboard
-import os
 
 class EasyLogger {
-    private var logger = Logger()
     var handler: ((String) -> Void)?
     var debugEnabled: Bool = false
 

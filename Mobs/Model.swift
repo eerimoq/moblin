@@ -88,15 +88,9 @@ final class Model: ObservableObject {
     @Published var speedAndTotal = noValue
     @Published var thermalState = ProcessInfo.processInfo.thermalState
     var mthkView = MTHKView(frame: .zero)
-    private var grayScaleEffect = GrayScaleEffect()
-    private var movieEffect = MovieEffect()
-    private var sepiaEffect = SepiaEffect()
-    private var bloomEffect = BloomEffect()
-    private var randomEffect = RandomEffect()
-    private var tripleEffect = TripleEffect()
-    private var noiseReductionEffect = NoiseReductionEffect()
     // private var webViewEffect = WebViewEffect()
     private var imageEffects: [UUID: ImageEffect] = [:]
+    private var videoEffects: [UUID: VideoEffect] = [:]
     // let webView = WebView(url: URL(string: "https://mys-lang.org")!)
     @Published var sceneIndex = 0
     private var isTorchOn = false
@@ -346,10 +340,41 @@ final class Model: ObservableObject {
         }
     }
 
+    func addVideoEffect(widget: SettingsWidget) {
+        switch widget.videoEffect.type {
+        case .movie:
+            videoEffects[widget.id] = MovieEffect()
+        case .grayScale:
+            videoEffects[widget.id] = GrayScaleEffect()
+        case .sepia:
+            videoEffects[widget.id] = SepiaEffect()
+        case .bloom:
+            videoEffects[widget.id] = BloomEffect()
+        case .random:
+            videoEffects[widget.id] = RandomEffect()
+        case .triple:
+            videoEffects[widget.id] = TripleEffect()
+        case .noiseReduction:
+            videoEffects[widget.id] = NoiseReductionEffect()
+        case .seipa:
+            videoEffects[widget.id] = SepiaEffect()
+        }
+    }
+
     func resetSelectedScene() {
         if !enabledScenes.isEmpty {
             selectedSceneId = enabledScenes[0].id
             sceneIndex = 0
+        }
+        for videoEffect in videoEffects.values {
+            media.unregisterVideoEffect(videoEffect)
+        }
+        videoEffects.removeAll()
+        for widget in database.widgets {
+            if widget.type != .videoEffect {
+                continue
+            }
+            addVideoEffect(widget: widget)
         }
         sceneUpdated(imageEffectChanged: true, store: false)
     }
@@ -602,23 +627,8 @@ final class Model: ObservableObject {
             case .image:
                 break
             case .videoEffect:
-                switch widget.videoEffect.type {
-                case .movie:
-                    movieEffectOff()
-                case .grayScale:
-                    grayScaleEffectOff()
-                case .seipa:
-                    sepiaEffectOff()
-                case .sepia:
-                    sepiaEffectOff()
-                case .bloom:
-                    bloomEffectOff()
-                case .random:
-                    randomEffectOff()
-                case .triple:
-                    tripleEffectOff()
-                case .noiseReduction:
-                    noiseReductionEffectOff()
+                if let videoEffect = videoEffects[widget.id] {
+                    media.unregisterVideoEffect(videoEffect)
                 }
             }
         }
@@ -656,27 +666,17 @@ final class Model: ObservableObject {
                     media.registerVideoEffect(imageEffect)
                 }
             case .videoEffect:
-                switch widget.videoEffect.type {
-                case .movie:
-                    movieEffectOn()
-                case .grayScale:
-                    grayScaleEffectOn()
-                case .sepia:
-                    sepiaEffectOn()
-                case .bloom:
-                    bloomEffectOn()
-                case .seipa:
-                    sepiaEffectOn()
-                case .random:
-                    randomEffectOn()
-                case .triple:
-                    tripleEffectOn()
-                case .noiseReduction:
-                    noiseReductionEffect.noiseLevel = widget.videoEffect
-                        .noiseReductionNoiseLevel!
-                    noiseReductionEffect.sharpness = widget.videoEffect
-                        .noiseReductionSharpness!
-                    noiseReductionEffectOn()
+                if var videoEffect = videoEffects[widget.id] {
+                    if let noiseReductionEffect = videoEffect as? NoiseReductionEffect {
+                        noiseReductionEffect.noiseLevel = widget.videoEffect
+                            .noiseReductionNoiseLevel!
+                        noiseReductionEffect.sharpness = widget.videoEffect
+                            .noiseReductionSharpness!
+                    } else if videoEffect is RandomEffect {
+                        videoEffect = RandomEffect()
+                        videoEffects[widget.id] = videoEffect
+                    }
+                    media.registerVideoEffect(videoEffect)
                 }
             }
         }
@@ -825,64 +825,6 @@ final class Model: ObservableObject {
 
     func updateMute() {
         media.setMute(on: isMuteOn)
-    }
-
-    func grayScaleEffectOn() {
-        media.registerVideoEffect(grayScaleEffect)
-    }
-
-    func grayScaleEffectOff() {
-        media.unregisterVideoEffect(grayScaleEffect)
-    }
-
-    func movieEffectOn() {
-        media.registerVideoEffect(movieEffect)
-    }
-
-    func movieEffectOff() {
-        media.unregisterVideoEffect(movieEffect)
-    }
-
-    func sepiaEffectOn() {
-        media.registerVideoEffect(sepiaEffect)
-    }
-
-    func sepiaEffectOff() {
-        media.unregisterVideoEffect(sepiaEffect)
-    }
-
-    func bloomEffectOn() {
-        media.registerVideoEffect(bloomEffect)
-    }
-
-    func bloomEffectOff() {
-        media.unregisterVideoEffect(bloomEffect)
-    }
-
-    func randomEffectOn() {
-        // Should only set a new random effect when button is pressed, not on every 'on'
-        randomEffect = RandomEffect()
-        media.registerVideoEffect(randomEffect)
-    }
-
-    func randomEffectOff() {
-        media.unregisterVideoEffect(randomEffect)
-    }
-
-    func tripleEffectOn() {
-        media.registerVideoEffect(tripleEffect)
-    }
-
-    func tripleEffectOff() {
-        media.unregisterVideoEffect(tripleEffect)
-    }
-
-    func noiseReductionEffectOn() {
-        media.registerVideoEffect(noiseReductionEffect)
-    }
-
-    func noiseReductionEffectOff() {
-        media.unregisterVideoEffect(noiseReductionEffect)
     }
 
     /*

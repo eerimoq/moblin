@@ -24,6 +24,7 @@ struct WidgetVideoEffectSettingsView: View {
             }
             .onChange(of: selection) { type in
                 widget.videoEffect.type = SettingsWidgetVideoEffectType(rawValue: type)!
+                model.resetSelectedScene()
                 model.sceneUpdated()
             }
             .pickerStyle(.inline)

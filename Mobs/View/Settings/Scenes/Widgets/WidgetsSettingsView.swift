@@ -39,11 +39,13 @@ struct WidgetsSettingsView: View {
                 .onDelete(perform: { offsets in
                     database.widgets.remove(atOffsets: offsets)
                     model.store()
+                    model.resetSelectedScene()
                     model.objectWillChange.send()
                 })
                 CreateButtonView(action: {
                     database.widgets.append(SettingsWidget(name: "My widget"))
                     model.store()
+                    model.resetSelectedScene()
                     model.objectWillChange.send()
                 })
             } footer: {
