@@ -43,7 +43,7 @@ Features
 
 - Basic scenes.
 
-- Main or front camera.
+- Back or front camera.
 
 - Zoom.
 
@@ -84,6 +84,11 @@ ToDo
 
 - Changing stream from SRT to SRT always hangs video.
 
+- Only allow one video effect of each kind in a scene (or create one
+  instance per effect).
+
+- Require one camera widget in a scene.
+
 Ideas/plan
 ==========
 
@@ -93,7 +98,7 @@ Ideas/plan
 
 - Mirrored front camera. Probably only for streamer. Not mirrored on
   stream.
-  
+
 - Video effects:
 
   - Sparks.
@@ -118,9 +123,6 @@ Ideas/plan
 - Preview buttons.
 
 - Pause and scroll chat.
-
-- Buffering for short disconnections. Show as picture in picture or
-  other layout once reconnected. Possibly a record button.
 
 - Play music and short sound samples.
 

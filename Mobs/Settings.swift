@@ -1,15 +1,13 @@
 import SwiftUI
 
-var codecs = ["H.265/HEVC", "H.264/AVC"]
-
-enum SettingsStreamCodec: String, Codable {
+enum SettingsStreamCodec: String, Codable, CaseIterable {
     case h265hevc = "H.265/HEVC"
     case h264avc = "H.264/AVC"
 }
 
-var resolutions = ["1920x1080", "1280x720", "854x480", "640x360", "426x240"]
+let codecs = SettingsStreamCodec.allCases.map { $0.rawValue }
 
-enum SettingsStreamResolution: String, Codable {
+enum SettingsStreamResolution: String, Codable, CaseIterable {
     case r1920x1080 = "1920x1080"
     case r1280x720 = "1280x720"
     case r854x480 = "854x480"
@@ -17,7 +15,9 @@ enum SettingsStreamResolution: String, Codable {
     case r426x240 = "426x240"
 }
 
-var fpss = [60, 30, 15, 5]
+let resolutions = SettingsStreamResolution.allCases.map { $0.rawValue }
+
+let fpss = [60, 30, 15, 5]
 
 let bitrates: [UInt32] = [
     40_000_000,
@@ -58,8 +58,12 @@ class SettingsStream: Codable, Identifiable {
         self.name = name
     }
 
+    private func getScheme() -> String? {
+        return URL(string: url)!.scheme
+    }
+
     func getProtocol() -> SettingsStreamProtocol {
-        switch URL(string: url)!.scheme {
+        switch getScheme() {
         case "rtmp":
             return .rtmp
         case "rtmps":
@@ -74,21 +78,11 @@ class SettingsStream: Codable, Identifiable {
     }
 
     func isRtmps() -> Bool {
-        switch URL(string: url)!.scheme {
-        case "rtmps":
-            return true
-        default:
-            return false
-        }
+        return getScheme() == "rtmps"
     }
 
     func isSrtla() -> Bool {
-        switch URL(string: url)!.scheme {
-        case "srtla":
-            return true
-        default:
-            return false
-        }
+        return getScheme() == "srtla"
     }
 }
 
@@ -156,12 +150,12 @@ class SettingsWidgetVideo: Codable {
     var url: String = "https://"
 }
 
-var cameraTypes = ["Main", "Front"]
-
-enum SettingsWidgetCameraType: String, Codable {
-    case main = "Main"
+enum SettingsWidgetCameraType: String, Codable, CaseIterable {
+    case main = "Back"
     case front = "Front"
 }
+
+var cameraTypes = SettingsWidgetCameraType.allCases.map({$0.rawValue})
 
 class SettingsWidgetCamera: Codable {
     var type: SettingsWidgetCameraType = .main
@@ -175,17 +169,7 @@ class SettingsWidgetWebview: Codable {
     var url: String = "https://"
 }
 
-var videoEffects = [
-    "Movie",
-    "Gray scale",
-    "Sepia",
-    "Bloom",
-    "Random",
-    "Triple",
-    "Noise reduction",
-]
-
-enum SettingsWidgetVideoEffectType: String, Codable {
+enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
     case movie = "Movie"
     case grayScale = "Gray scale"
     case sepia = "Sepia"
@@ -197,19 +181,23 @@ enum SettingsWidgetVideoEffectType: String, Codable {
     case seipa = "Seipa"
 }
 
+let videoEffects = SettingsWidgetVideoEffectType.allCases.filter { effect in
+    effect != .seipa
+}.map { $0.rawValue }
+
 class SettingsWidgetVideoEffect: Codable {
     var type: SettingsWidgetVideoEffectType = .movie
     var noiseReductionNoiseLevel: Float? = 0.01
     var noiseReductionSharpness: Float? = 1.5
 }
 
-let widgetTypes = ["Camera", "Image", "Video effect"]
-
-enum SettingsWidgetType: String, Codable {
+enum SettingsWidgetType: String, Codable, CaseIterable {
     case camera = "Camera"
     case image = "Image"
     case videoEffect = "Video effect"
 }
+
+let widgetTypes = SettingsWidgetType.allCases.map { $0.rawValue }
 
 class SettingsWidget: Codable, Identifiable, Equatable {
     var name: String
@@ -267,14 +255,14 @@ class SettingsVariable: Codable, Identifiable {
     var websocket: SettingsVariableTextWebsocket = .init()
 }
 
-var buttonTypes = ["Torch", "Mute", "Bitrate", "Widget"]
-
-enum SettingsButtonType: String, Codable {
+enum SettingsButtonType: String, Codable, CaseIterable {
     case torch = "Torch"
     case mute = "Mute"
     case bitrate = "Bitrate"
     case widget = "Widget"
 }
+
+let buttonTypes = SettingsButtonType.allCases.map { $0.rawValue }
 
 class SettingsButtonWidget: Codable, Identifiable {
     var widgetId: UUID
@@ -369,7 +357,7 @@ class Database: Codable {
 }
 
 func addDefaultWidgets(database: Database) {
-    var widget = SettingsWidget(name: "Main camera")
+    var widget = SettingsWidget(name: "Back camera")
     widget.type = .camera
     widget.camera.type = .main
     database.widgets.append(widget)
@@ -405,7 +393,7 @@ func addDefaultWidgets(database: Database) {
     database.widgets.append(widget)
 }
 
-func createSceneWidgetMainCamera(database: Database) -> SettingsSceneWidget {
+func createSceneWidgetBackCamera(database: Database) -> SettingsSceneWidget {
     return SettingsSceneWidget(widgetId: database.widgets[0].id)
 }
 
@@ -430,8 +418,8 @@ func createSceneWidgetVideoEffectRandom(database: Database) -> SettingsSceneWidg
 }
 
 func addDefaultScenes(database: Database) {
-    var scene = SettingsScene(name: "Main")
-    scene.widgets.append(createSceneWidgetMainCamera(database: database))
+    var scene = SettingsScene(name: "Back")
+    scene.widgets.append(createSceneWidgetBackCamera(database: database))
     scene.widgets.append(createSceneWidgetVideoEffectMovie(database: database))
     scene.widgets.append(createSceneWidgetVideoEffectGrayScale(database: database))
     scene.widgets.append(createSceneWidgetVideoEffectSepia(database: database))
