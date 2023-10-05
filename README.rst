@@ -94,6 +94,8 @@ ToDo
 Ideas/plan
 ==========
 
+- Investigate video stabilization API.
+
 - Show web page on stream and/or locally. Audio kinda important.
 
 - Adaptive bitrate, but based on what?
