@@ -656,10 +656,13 @@ final class Model: ObservableObject {
                 switch widget.camera.type {
                 case .main:
                     attachCamera(position: .back)
+                    mthkView.isMirrored = false
                 case .back:
                     attachCamera(position: .back)
+                    mthkView.isMirrored = false
                 case .front:
                     attachCamera(position: .front)
+                    mthkView.isMirrored = true
                 }
             case .image:
                 if let imageEffect = imageEffects[sceneWidget.id] {
