@@ -48,8 +48,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         do {
             try session.setCategory(
                 .playAndRecord,
-                mode: .voiceChat,
-                options: [.defaultToSpeaker, .allowBluetooth]
+                options: [.mixWithOthers]
             )
             try session.setActive(true)
         } catch {
