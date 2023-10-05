@@ -89,8 +89,6 @@ ToDo
 
 - Changing stream from SRT to SRT always hangs video.
 
-- Require one camera widget in a scene.
-
 Ideas/plan
 ==========
 

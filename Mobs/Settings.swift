@@ -650,22 +650,19 @@ final class Settings {
                 store()
             }
         }
-        for scene in realDatabase.scenes {
-            if scene.cameraType != nil {
-                continue
-            }
+        for scene in realDatabase.scenes where scene.cameraType == nil {
             for widget in scene.widgets {
-                for realWidget in database.widgets {
-                    if widget.widgetId == realWidget.id {
-                        if realWidget.type == .camera {
-                            switch realWidget.camera.type {
-                            case .back:
-                                scene.cameraType = .back
-                            case .main:
-                                scene.cameraType = .back
-                            case .front:
-                                scene.cameraType = .front
-                            }
+                for realWidget in database.widgets
+                    where widget.widgetId == realWidget.id
+                {
+                    if realWidget.type == .camera {
+                        switch realWidget.camera.type {
+                        case .back:
+                            scene.cameraType = .back
+                        case .main:
+                            scene.cameraType = .back
+                        case .front:
+                            scene.cameraType = .front
                         }
                     }
                 }

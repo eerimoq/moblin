@@ -13,7 +13,7 @@ struct SceneSettingsView: View {
     init(scene: SettingsScene, model: Model) {
         self.scene = scene
         self.model = model
-        self.cameraSelection = scene.cameraType?.rawValue ?? "Back"
+        cameraSelection = scene.cameraType?.rawValue ?? "Back"
     }
 
     var widgets: [SettingsWidget] {
@@ -187,12 +187,7 @@ struct SceneSettingsView: View {
             } header: {
                 Text("Widgets")
             } footer: {
-                Text(
-                    """
-                    Widgets are stacked from back to front. There must be exactly \
-                    one camera widget. The camera widget must be in the back.
-                    """
-                )
+                Text("Widgets are stacked from back to front.")
             }
             Section {
                 List {
