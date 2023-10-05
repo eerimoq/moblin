@@ -680,9 +680,6 @@ final class Model: ObservableObject {
                 }
             }
         }
-        // Sometimes the audio level was 100 dB (no samples) if audio was attached before
-        // video.
-        attachAudio()
     }
 
     func sceneUpdated(imageEffectChanged: Bool = false, store: Bool = true) {
@@ -795,10 +792,6 @@ final class Model: ObservableObject {
             break
         }
         setCameraZoomLevel(id: zoomId)
-    }
-
-    func attachAudio() {
-        media.attachAudio(device: AVCaptureDevice.default(for: .audio))
     }
 
     func rtmpStartStream() {

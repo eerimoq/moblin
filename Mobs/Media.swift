@@ -64,6 +64,7 @@ final class Media: NSObject {
         }
         netStream.delegate = self
         netStream.videoOrientation = .landscapeRight
+        attachAudio(device: AVCaptureDevice.default(for: .audio))
     }
 
     func getAudioLevel() -> Float {
