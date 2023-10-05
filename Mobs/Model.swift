@@ -638,9 +638,19 @@ final class Model: ObservableObject {
     }
 
     func sceneUpdatedOn(scene: SettingsScene) {
+        switch scene.cameraType {
+        case .back:
+            attachCamera(position: .back)
+            mthkView.isMirrored = false
+        case .front:
+            attachCamera(position: .front)
+            mthkView.isMirrored = true
+        default:
+            logger.error("Camera type is nil?")
+        }
         for sceneWidget in scene.widgets.filter({ widget in widget.enabled }) {
             guard let widget = findWidget(id: sceneWidget.widgetId) else {
-                logger.error("Widget not found.")
+                logger.error("Widget not found")
                 continue
             }
             if let button = getEnabledButtonForWidgetControlledByScene(
@@ -653,17 +663,7 @@ final class Model: ObservableObject {
             }
             switch widget.type {
             case .camera:
-                switch widget.camera.type {
-                case .main:
-                    attachCamera(position: .back)
-                    mthkView.isMirrored = false
-                case .back:
-                    attachCamera(position: .back)
-                    mthkView.isMirrored = false
-                case .front:
-                    attachCamera(position: .front)
-                    mthkView.isMirrored = true
-                }
+                logger.error("Found camera widget")
             case .image:
                 if let imageEffect = imageEffects[sceneWidget.id] {
                     media.registerVideoEffect(imageEffect)

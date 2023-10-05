@@ -8,10 +8,12 @@ struct SceneSettingsView: View {
     @State private var showingAddButton = false
     @State private var expandedWidget: SettingsSceneWidget?
     private var scene: SettingsScene
+    @State private var cameraSelection: String
 
     init(scene: SettingsScene, model: Model) {
         self.scene = scene
         self.model = model
+        self.cameraSelection = scene.cameraType?.rawValue ?? "Back"
     }
 
     var widgets: [SettingsWidget] {
@@ -84,6 +86,21 @@ struct SceneSettingsView: View {
                 }
             } header: {
                 Text("Preview")
+            }
+            Section {
+                Picker("", selection: $cameraSelection) {
+                    ForEach(cameraTypes, id: \.self) { cameraType in
+                        Text(cameraType)
+                    }
+                }
+                .onChange(of: cameraSelection) { cameraType in
+                    scene.cameraType = SettingsSceneCameraType(rawValue: cameraType)!
+                    model.sceneUpdated(store: true)
+                }
+                .pickerStyle(.inline)
+                .labelsHidden()
+            } header: {
+                Text("Camera")
             }
             Section {
                 List {

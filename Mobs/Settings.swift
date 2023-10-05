@@ -118,10 +118,18 @@ class SettingsSceneButton: Codable, Identifiable, Equatable {
     }
 }
 
+enum SettingsSceneCameraType: String, Codable, CaseIterable {
+    case back = "Back"
+    case front = "Front"
+}
+
+var cameraTypes = SettingsSceneCameraType.allCases.map { $0.rawValue }
+
 class SettingsScene: Codable, Identifiable, Equatable {
     var name: String
     var id: UUID = .init()
     var enabled: Bool = true
+    var cameraType: SettingsSceneCameraType? = .back
     var widgets: [SettingsSceneWidget] = []
     var buttons: [SettingsSceneButton] = []
 
@@ -155,10 +163,6 @@ enum SettingsWidgetCameraType: String, Codable, CaseIterable {
     case back = "Back"
     case front = "Front"
 }
-
-var cameraTypes = SettingsWidgetCameraType.allCases.filter { type in
-    type != .main
-}.map { $0.rawValue }
 
 class SettingsWidgetCamera: Codable {
     var type: SettingsWidgetCameraType = .main
@@ -360,17 +364,7 @@ class Database: Codable {
 }
 
 func addDefaultWidgets(database: Database) {
-    var widget = SettingsWidget(name: "Back camera")
-    widget.type = .camera
-    widget.camera.type = .back
-    database.widgets.append(widget)
-
-    widget = SettingsWidget(name: "Front camera")
-    widget.type = .camera
-    widget.camera.type = .front
-    database.widgets.append(widget)
-
-    widget = SettingsWidget(name: "Movie")
+    var widget = SettingsWidget(name: "Movie")
     widget.type = .videoEffect
     widget.videoEffect.type = .movie
     database.widgets.append(widget)
@@ -396,33 +390,25 @@ func addDefaultWidgets(database: Database) {
     database.widgets.append(widget)
 }
 
-func createSceneWidgetBackCamera(database: Database) -> SettingsSceneWidget {
+func createSceneWidgetVideoEffectMovie(database: Database) -> SettingsSceneWidget {
     return SettingsSceneWidget(widgetId: database.widgets[0].id)
 }
 
-func createSceneWidgetFrontCameraFull(database: Database) -> SettingsSceneWidget {
+func createSceneWidgetVideoEffectGrayScale(database: Database) -> SettingsSceneWidget {
     return SettingsSceneWidget(widgetId: database.widgets[1].id)
 }
 
-func createSceneWidgetVideoEffectMovie(database: Database) -> SettingsSceneWidget {
+func createSceneWidgetVideoEffectSepia(database: Database) -> SettingsSceneWidget {
     return SettingsSceneWidget(widgetId: database.widgets[2].id)
 }
 
-func createSceneWidgetVideoEffectGrayScale(database: Database) -> SettingsSceneWidget {
-    return SettingsSceneWidget(widgetId: database.widgets[3].id)
-}
-
-func createSceneWidgetVideoEffectSepia(database: Database) -> SettingsSceneWidget {
-    return SettingsSceneWidget(widgetId: database.widgets[4].id)
-}
-
 func createSceneWidgetVideoEffectRandom(database: Database) -> SettingsSceneWidget {
-    return SettingsSceneWidget(widgetId: database.widgets[6].id)
+    return SettingsSceneWidget(widgetId: database.widgets[4].id)
 }
 
 func addDefaultScenes(database: Database) {
     var scene = SettingsScene(name: "Back")
-    scene.widgets.append(createSceneWidgetBackCamera(database: database))
+    scene.cameraType = .back
     scene.widgets.append(createSceneWidgetVideoEffectMovie(database: database))
     scene.widgets.append(createSceneWidgetVideoEffectGrayScale(database: database))
     scene.widgets.append(createSceneWidgetVideoEffectSepia(database: database))
@@ -437,7 +423,7 @@ func addDefaultScenes(database: Database) {
     database.scenes.append(scene)
 
     scene = SettingsScene(name: "Front")
-    scene.widgets.append(createSceneWidgetFrontCameraFull(database: database))
+    scene.cameraType = .front
     scene.widgets.append(createSceneWidgetVideoEffectMovie(database: database))
     scene.addButton(id: database.buttons[1].id)
     scene.addButton(id: database.buttons[2].id)
@@ -511,7 +497,7 @@ func addDefaultButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "film.fill"
     button.systemImageNameOff = "film"
-    button.widget.widgetId = database.widgets[2].id
+    button.widget.widgetId = database.widgets[0].id
     database.buttons.append(button)
 
     button = SettingsButton(name: "Gray scale")
@@ -520,7 +506,7 @@ func addDefaultButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "moon.fill"
     button.systemImageNameOff = "moon"
-    button.widget.widgetId = database.widgets[3].id
+    button.widget.widgetId = database.widgets[1].id
     database.buttons.append(button)
 
     button = SettingsButton(name: "Sepia")
@@ -529,7 +515,7 @@ func addDefaultButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "moonphase.waxing.crescent"
     button.systemImageNameOff = "moonphase.waning.crescent"
-    button.widget.widgetId = database.widgets[4].id
+    button.widget.widgetId = database.widgets[2].id
     database.buttons.append(button)
 
     button = SettingsButton(name: "Bloom")
@@ -538,7 +524,7 @@ func addDefaultButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "drop.fill"
     button.systemImageNameOff = "drop"
-    button.widget.widgetId = database.widgets[5].id
+    button.widget.widgetId = database.widgets[3].id
     database.buttons.append(button)
 
     button = SettingsButton(name: "Random")
@@ -547,7 +533,7 @@ func addDefaultButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "dice.fill"
     button.systemImageNameOff = "dice"
-    button.widget.widgetId = database.widgets[6].id
+    button.widget.widgetId = database.widgets[4].id
     database.buttons.append(button)
 }
 
@@ -663,6 +649,31 @@ final class Settings {
                 widget.camera.type = .back
                 store()
             }
+        }
+        for scene in realDatabase.scenes {
+            if scene.cameraType != nil {
+                continue
+            }
+            for widget in scene.widgets {
+                for realWidget in database.widgets {
+                    if widget.widgetId == realWidget.id {
+                        if realWidget.type == .camera {
+                            switch realWidget.camera.type {
+                            case .back:
+                                scene.cameraType = .back
+                            case .main:
+                                scene.cameraType = .back
+                            case .front:
+                                scene.cameraType = .front
+                            }
+                        }
+                    }
+                }
+            }
+            if scene.cameraType == nil {
+                scene.cameraType = .back
+            }
+            store()
         }
     }
 }
