@@ -204,12 +204,14 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case videoEffect = "Video effect"
 }
 
-let widgetTypes = SettingsWidgetType.allCases.map { $0.rawValue }
+let widgetTypes = SettingsWidgetType.allCases.filter { widgetType in
+    widgetType != .camera
+}.map { $0.rawValue }
 
 class SettingsWidget: Codable, Identifiable, Equatable {
     var name: String
     var id: UUID = .init()
-    var type: SettingsWidgetType = .camera
+    var type: SettingsWidgetType = .image
     var text: SettingsWidgetText = .init()
     var image: SettingsWidgetImage = .init()
     var video: SettingsWidgetVideo = .init()
@@ -651,7 +653,8 @@ final class Settings {
             }
         }
         for scene in realDatabase.scenes where scene.cameraType == nil {
-            for widget in scene.widgets {
+            var sceneWidgetIndexesToRemove: IndexSet = .init()
+            for (index, widget) in scene.widgets.enumerated() {
                 for realWidget in database.widgets
                     where widget.widgetId == realWidget.id
                 {
@@ -664,12 +667,21 @@ final class Settings {
                         case .front:
                             scene.cameraType = .front
                         }
+                        sceneWidgetIndexesToRemove.insert(index)
                     }
                 }
             }
             if scene.cameraType == nil {
                 scene.cameraType = .back
             }
+            scene.widgets.remove(atOffsets: sceneWidgetIndexesToRemove)
+            store()
+        }
+        let widgets = database.widgets.filter { widget in
+            widget.type != .camera
+        }
+        if database.widgets.count != widgets.count {
+            database.widgets = widgets
             store()
         }
     }

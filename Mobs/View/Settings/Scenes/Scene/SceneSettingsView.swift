@@ -13,7 +13,7 @@ struct SceneSettingsView: View {
     init(scene: SettingsScene, model: Model) {
         self.scene = scene
         self.model = model
-        cameraSelection = scene.cameraType?.rawValue ?? "Back"
+        cameraSelection = scene.cameraType!.rawValue
     }
 
     var widgets: [SettingsWidget] {
