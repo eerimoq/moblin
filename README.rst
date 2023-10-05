@@ -54,7 +54,7 @@ Features
   - Grayscale.
 
   - Movie. Paint top and bottom of 16:9 video black to look like
-  2.35:1.
+    2.35:1.
 
   - Seipa.
 
