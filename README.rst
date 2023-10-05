@@ -72,7 +72,12 @@ Features
 
 - Landscape stream only.
 
-- SRTLA connection type statistics.
+- SRTLA.
+
+  - Can use one cellular, one WiFi and one Ethernet connection
+    simultaneously.
+
+  - Upload statistics per active connection.
 
 ToDo
 ====
@@ -92,6 +97,8 @@ Ideas/plan
 - Show web page on stream and/or locally. Audio kinda important.
 
 - Adaptive bitrate, but based on what?
+
+- Multiple Ethernet connections simultaneously?
 
 - Video effects:
 
