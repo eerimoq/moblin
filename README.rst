@@ -84,9 +84,6 @@ ToDo
 
 - Changing stream from SRT to SRT always hangs video.
 
-- Only allow one video effect of each kind in a scene (or create one
-  instance per effect).
-
 - Require one camera widget in a scene.
 
 Ideas/plan
