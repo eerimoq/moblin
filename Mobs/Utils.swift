@@ -113,6 +113,8 @@ func widgetImage(widget: SettingsWidget) -> String {
         return "camera.filters"
     case .camera:
         return "camera"
+    case .webPage:
+        return "photo.stack"
     }
 }
 
@@ -239,4 +241,8 @@ func preferredCamera(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
     }
     logger.error("No camera")
     return nil
+}
+
+func formatAsInt(_ value: CGFloat) -> String {
+    return String(format: "%d", Int(value))
 }

@@ -12,24 +12,6 @@ import WebKit
 
 let noValue = ""
 
-struct WebView: UIViewRepresentable {
-    let url: URL
-
-    func makeUIView(context _: Context) -> WKWebView {
-        let configuration = WKWebViewConfiguration()
-        configuration.allowsInlineMediaPlayback = true
-        configuration.allowsAirPlayForMediaPlayback = true
-        configuration.allowsPictureInPictureMediaPlayback = false
-        configuration.mediaTypesRequiringUserActionForPlayback = []
-        let wkwebView = WKWebView(frame: .zero, configuration: configuration)
-        let request = URLRequest(url: url)
-        wkwebView.load(request)
-        return wkwebView
-    }
-
-    func updateUIView(_: WKWebView, context _: Context) {}
-}
-
 class ButtonState {
     var isOn: Bool
     var button: SettingsButton
@@ -91,7 +73,7 @@ final class Model: ObservableObject {
     var mthkView = MTHKView(frame: .zero)
     private var imageEffects: [UUID: ImageEffect] = [:]
     private var videoEffects: [UUID: VideoEffect] = [:]
-    // let webView = WebView(url: URL(string: "https://mys-lang.org")!)
+    private var webPageEffects: [UUID: WebPageEffect] = [:]
     @Published var sceneIndex = 0
     private var isTorchOn = false
     private var isMuteOn = false
@@ -269,15 +251,26 @@ final class Model: ObservableObject {
             self.updateAudioLevel()
             self.updateSrtlaConnectionStatistics()
         })
+        // Update web pages with 5 Hz for now.
+        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
+            for webPageEffect in self.webPageEffects.values {
+                webPageEffect.webPage.wkwebView.takeSnapshot(with: nil) { image, error in
+                    if let image {
+                        webPageEffect.setImage(image: image)
+                    } else {
+                        if let error {
+                            logger.error("Web page snapshot error: \(error)")
+                        } else {
+                            logger.error("No web page image")
+                        }
+                    }
+                }
+            }
+        })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
             self.media.logStatistics()
-
-            /* UIGraphicsBeginImageContext(self.webView.frame.size)
-             self.webView!.layer.render(in: UIGraphicsGetCurrentContext()!)
-             self.webViewEffect.overlay = CIImage(image: UIGraphicsGetImageFromCurrentImageContext()!)
-             UIGraphicsEndImageContext()
-             */ })
+        })
     }
 
     private func removeUnusedImages() {
@@ -376,7 +369,7 @@ final class Model: ObservableObject {
             sceneIndex = 0
         }
         for videoEffect in videoEffects.values {
-            media.unregisterVideoEffect(videoEffect)
+            media.unregisterEffect(videoEffect)
         }
         videoEffects.removeAll()
         for widget in database.widgets {
@@ -384,6 +377,24 @@ final class Model: ObservableObject {
                 continue
             }
             addVideoEffect(widget: widget)
+        }
+        for webPageEffect in webPageEffects.values {
+            media.unregisterEffect(webPageEffect)
+        }
+        webPageEffects.removeAll()
+        for widget in database.widgets {
+            if widget.type != .webPage {
+                continue
+            }
+            for scene in enabledScenes {
+                for sceneWidget in scene.widgets where sceneWidget.widgetId == widget.id {
+                    webPageEffects[sceneWidget.id] = WebPageEffect(
+                        url: URL(string: widget.webPage!.url)!,
+                        x: sceneWidget.x, y: sceneWidget.y, width: sceneWidget.width,
+                        height: sceneWidget.height
+                    )
+                }
+            }
         }
         sceneUpdated(imageEffectChanged: true, store: false)
     }
@@ -629,20 +640,14 @@ final class Model: ObservableObject {
     }
 
     private func sceneUpdatedOff() {
-        for widget in database.widgets {
-            switch widget.type {
-            case .camera:
-                break
-            case .image:
-                break
-            case .videoEffect:
-                if let videoEffect = videoEffects[widget.id] {
-                    media.unregisterVideoEffect(videoEffect)
-                }
-            }
+        for videoEffect in videoEffects.values {
+            media.unregisterEffect(videoEffect)
         }
         for imageEffect in imageEffects.values {
-            media.unregisterVideoEffect(imageEffect)
+            media.unregisterEffect(imageEffect)
+        }
+        for webPageEffect in webPageEffects.values {
+            media.unregisterEffect(webPageEffect)
         }
     }
 
@@ -675,7 +680,7 @@ final class Model: ObservableObject {
                 logger.error("Found camera widget")
             case .image:
                 if let imageEffect = imageEffects[sceneWidget.id] {
-                    media.registerVideoEffect(imageEffect)
+                    media.registerEffect(imageEffect)
                 }
             case .videoEffect:
                 if var videoEffect = videoEffects[widget.id] {
@@ -688,7 +693,11 @@ final class Model: ObservableObject {
                         videoEffect = RandomEffect()
                         videoEffects[widget.id] = videoEffect
                     }
-                    media.registerVideoEffect(videoEffect)
+                    media.registerEffect(videoEffect)
+                }
+            case .webPage:
+                if var webPageEffect = webPageEffects[sceneWidget.id] {
+                    media.registerEffect(webPageEffect)
                 }
             }
         }

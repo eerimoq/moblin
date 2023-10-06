@@ -193,13 +193,13 @@ final class Media: NSObject {
         netStream.hasAudio = !on
     }
 
-    func registerVideoEffect(_ effect: VideoEffect) {
+    func registerEffect(_ effect: VideoEffect) {
         if !netStream.registerVideoEffect(effect) {
             logger.info("Failed to register video effect")
         }
     }
 
-    func unregisterVideoEffect(_ effect: VideoEffect) {
+    func unregisterEffect(_ effect: VideoEffect) {
         _ = netStream.unregisterVideoEffect(effect)
     }
 

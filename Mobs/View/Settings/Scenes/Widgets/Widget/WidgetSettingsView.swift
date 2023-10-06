@@ -40,6 +40,8 @@ struct WidgetSettingsView: View {
                 WidgetVideoEffectSettingsView(model: model, widget: widget)
             case .camera:
                 EmptyView()
+            case .webPage:
+                WidgetWebPageSettingsView(model: model, widget: widget)
             }
         }
         .navigationTitle("Widget")

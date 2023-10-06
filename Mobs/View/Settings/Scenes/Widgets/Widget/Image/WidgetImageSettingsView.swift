@@ -1,10 +1,6 @@
 import PhotosUI
 import SwiftUI
 
-func formatInt(_ value: CGFloat) -> String {
-    return String(format: "%d", Int(value))
-}
-
 struct WidgetImageSettingsView: View {
     @ObservedObject var model: Model
     var widget: SettingsWidget
@@ -64,7 +60,7 @@ struct WidgetImageSettingsView: View {
                 HStack {
                     TextItemView(
                         name: "Dimensions",
-                        value: "\(formatInt(image.size.width))x\(formatInt(image.size.height))"
+                        value: "\(formatAsInt(image.size.width))x\(formatAsInt(image.size.height))"
                     )
                 }
             }

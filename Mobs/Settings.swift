@@ -172,8 +172,8 @@ class SettingsWidgetChat: Codable {}
 
 class SettingsWidgetRecording: Codable {}
 
-class SettingsWidgetWebview: Codable {
-    var url: String = "https://"
+class SettingsWidgetWebPage: Codable {
+    var url: String = "https://google.com"
 }
 
 enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
@@ -202,6 +202,7 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case camera = "Camera"
     case image = "Image"
     case videoEffect = "Video effect"
+    case webPage = "Web page"
 }
 
 let widgetTypes = SettingsWidgetType.allCases.filter { widgetType in
@@ -218,7 +219,7 @@ class SettingsWidget: Codable, Identifiable, Equatable {
     var camera: SettingsWidgetCamera = .init()
     var chat: SettingsWidgetChat = .init()
     var recording: SettingsWidgetRecording = .init()
-    var webview: SettingsWidgetWebview = .init()
+    var webPage: SettingsWidgetWebPage? = .init()
     var videoEffect: SettingsWidgetVideoEffect = .init()
 
     init(name: String) {
@@ -683,6 +684,12 @@ final class Settings {
         if database.widgets.count != widgets.count {
             database.widgets = widgets
             store()
+        }
+        for widget in realDatabase.widgets {
+            if widget.webPage != nil {
+                continue
+            }
+            widget.webPage = .init()
         }
     }
 }

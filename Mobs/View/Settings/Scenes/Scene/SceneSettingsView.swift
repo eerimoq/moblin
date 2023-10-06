@@ -57,9 +57,9 @@ struct SceneSettingsView: View {
         }
     }
 
-    func isImage(id: UUID) -> Bool {
+    func widgetHasSize(id: UUID) -> Bool {
         if let widget = model.findWidget(id: id) {
-            return widget.type == .image
+            return widget.type == .image || widget.type == .webPage
         } else {
             logger.error("Unable to find widget type")
             return false
@@ -75,19 +75,6 @@ struct SceneSettingsView: View {
                 TextItemView(name: "Name", value: scene.name)
             }
             Section {
-                HStack {
-                    Spacer()
-                    Canvas { context, _ in
-                        drawWidgets(context: context)
-                    }
-                    .frame(width: 1920 / 6, height: 1080 / 6)
-                    .border(.secondary)
-                    Spacer()
-                }
-            } header: {
-                Text("Preview")
-            }
-            Section {
                 Picker("", selection: $cameraSelection) {
                     ForEach(cameraTypes, id: \.self) { cameraType in
                         Text(cameraType)
@@ -101,6 +88,19 @@ struct SceneSettingsView: View {
                 .labelsHidden()
             } header: {
                 Text("Camera")
+            }
+            Section {
+                HStack {
+                    Spacer()
+                    Canvas { context, _ in
+                        drawWidgets(context: context)
+                    }
+                    .frame(width: 1920 / 6, height: 1080 / 6)
+                    .border(.secondary)
+                    Spacer()
+                }
+            } header: {
+                Text("Preview")
             }
             Section {
                 List {
@@ -135,7 +135,9 @@ struct SceneSettingsView: View {
                                 }
                             })
                             .foregroundColor(.primary)
-                            if expandedWidget === widget && isImage(id: realWidget.id) {
+                            if expandedWidget === widget &&
+                                widgetHasSize(id: realWidget.id)
+                            {
                                 SceneWidgetSettingsView(model: model, widget: widget)
                             }
                         }
