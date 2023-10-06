@@ -3,6 +3,7 @@ import Collections
 import Combine
 import Foundation
 import HaishinKit
+import Network
 import PhotosUI
 import SwiftUI
 import TwitchChat
@@ -124,6 +125,8 @@ final class Model: ObservableObject {
         fatalError("stream: There is no stream!")
     }
 
+    private let networkPathMonitor = NWPathMonitor()
+
     var enabledScenes: [SettingsScene] {
         database.scenes.filter { scene in scene.enabled }
     }
@@ -229,15 +232,22 @@ final class Model: ObservableObject {
             name: UIScene.willEnterForegroundNotification,
             object: nil
         )
+        networkPathMonitor.pathUpdateHandler = handleNetworkPathUpdate(path:)
+        networkPathMonitor.start(queue: DispatchQueue.main)
     }
 
-    @objc func didEnterBackground(animated _: Bool) {
+    private func handleNetworkPathUpdate(path: NWPath) {
+        logger
+            .debug("Network: \(path.debugDescription), All: \(path.availableInterfaces)")
+    }
+
+    @objc private func didEnterBackground(animated _: Bool) {
         // wasStreamingWhenDidEnterBackground = streaming
         // stopStream()
         logger.debug("Did enter background")
     }
 
-    @objc func willEnterForeground(animated _: Bool) {
+    @objc private func willEnterForeground(animated _: Bool) {
         logger.debug("Will enter foreground")
         // updateThermalState()
         // if wasStreamingWhenDidEnterBackground {
