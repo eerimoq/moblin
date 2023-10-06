@@ -17,7 +17,6 @@ struct StreamOverlayView: View {
                 }
                 .frame(width: metrics.size.width * 0.7)
             }
-            // model.webView
         }
         .padding([.trailing, .top])
     }
