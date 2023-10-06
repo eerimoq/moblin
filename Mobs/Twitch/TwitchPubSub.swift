@@ -166,7 +166,7 @@ final class TwitchPubSub: NSObject {
                 case let .string(text):
                     logger
                         .debug(
-                            "twitch: pubsub: \(self.channelId): Received string \(text)"
+                            "twitch: pubsub: \(self.channelId): Received string \(text.trim())"
                         )
                     self.handleStringMessage(message: text)
                 case let .data(data):
