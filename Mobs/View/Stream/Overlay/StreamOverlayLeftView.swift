@@ -82,7 +82,6 @@ struct LeftOverlayView: View {
                     color: viewersColor()
                 )
             }
-            // model.webView
             Spacer()
             if database.show.chat {
                 StreamOverlayIconAndTextView(

@@ -89,7 +89,6 @@ final class Model: ObservableObject {
     @Published var speedAndTotal = noValue
     @Published var thermalState = ProcessInfo.processInfo.thermalState
     var mthkView = MTHKView(frame: .zero)
-    // private var webViewEffect = WebViewEffect()
     private var imageEffects: [UUID: ImageEffect] = [:]
     private var videoEffects: [UUID: VideoEffect] = [:]
     // let webView = WebView(url: URL(string: "https://mys-lang.org")!)
@@ -819,15 +818,6 @@ final class Model: ObservableObject {
         media.setMute(on: isMuteOn)
     }
 
-    /*
-     func webViewEffectOn() {
-     media.registerVideoEffect(webViewEffect)
-     }
-
-     func webViewEffectOff() {
-     media.unregisterVideoEffect(webViewEffect)
-     }
-     */
     func setCameraZoomLevel(id: UUID) {
         switch cameraPosition {
         case .back:
