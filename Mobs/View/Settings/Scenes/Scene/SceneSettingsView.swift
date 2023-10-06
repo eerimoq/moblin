@@ -159,7 +159,7 @@ struct SceneSettingsView: View {
                             Button(action: {
                                 showingAddWidget = false
                             }, label: {
-                                Text("Close")
+                                Text("Cancel")
                                     .padding(5)
                                     .foregroundColor(.blue)
                             })
@@ -225,7 +225,7 @@ struct SceneSettingsView: View {
                             Button(action: {
                                 showingAddButton = false
                             }, label: {
-                                Text("Close")
+                                Text("Cancel")
                                     .padding(5)
                                     .foregroundColor(.blue)
                             })
