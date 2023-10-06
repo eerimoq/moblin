@@ -46,7 +46,7 @@ func removeEmote(message: String) -> String {
     )
 }
 
-final class KickPusher: NSObject, URLSessionWebSocketDelegate {
+final class KickPusher: NSObject {
     private var model: Model
     private var webSocket: URLSessionWebSocketTask
     private var channelId: String
@@ -76,7 +76,7 @@ final class KickPusher: NSObject, URLSessionWebSocketDelegate {
         return webSocket.state == .running
     }
 
-    func setupWebsocket() {
+    private func setupWebsocket() {
         reconnectTimer?.invalidate()
         reconnectTimer = nil
         let session = URLSession(configuration: .default,
@@ -87,13 +87,13 @@ final class KickPusher: NSObject, URLSessionWebSocketDelegate {
         readMessage()
     }
 
-    func handleChatMessageEvent(data: String) throws {
+    private func handleChatMessageEvent(data: String) throws {
         let message = try decodeChatMessage(data: data)
         let messageNoEmote = removeEmote(message: message.content)
         model.appendChatMessage(user: message.sender.username, message: messageNoEmote)
     }
 
-    func handleStringMessage(message: String) {
+    private func handleStringMessage(message: String) {
         do {
             let (type, data) = try decodeEvent(message: message)
             if type == "App\\Events\\ChatMessageEvent" {
@@ -110,7 +110,7 @@ final class KickPusher: NSObject, URLSessionWebSocketDelegate {
         }
     }
 
-    func reconnect() {
+    private func reconnect() {
         webSocket.cancel()
         reconnectTimer?.invalidate()
         reconnectTimer = Timer
@@ -121,7 +121,7 @@ final class KickPusher: NSObject, URLSessionWebSocketDelegate {
             }
     }
 
-    func readMessage() {
+    private func readMessage() {
         webSocket.receive { result in
             switch result {
             case .failure:
@@ -148,7 +148,7 @@ final class KickPusher: NSObject, URLSessionWebSocketDelegate {
         }
     }
 
-    func sendMessage(message: String) {
+    private func sendMessage(message: String) {
         logger.debug("kick: pusher: \(channelId): Sending \(message)")
         let message = URLSessionWebSocketTask.Message.string(message)
         webSocket.send(message) { error in
@@ -162,7 +162,9 @@ final class KickPusher: NSObject, URLSessionWebSocketDelegate {
             }
         }
     }
+}
 
+extension KickPusher: URLSessionWebSocketDelegate {
     func urlSession(
         _: URLSession,
         webSocketTask _: URLSessionWebSocketTask,

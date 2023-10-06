@@ -248,7 +248,7 @@ final class Model: ObservableObject {
         // }
     }
 
-    func setupPeriodicTimers() {
+    private func setupPeriodicTimers() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             let now = Date()
             self.updateUptime(now: now)
@@ -271,7 +271,7 @@ final class Model: ObservableObject {
              */ })
     }
 
-    func removeUnusedImages() {
+    private func removeUnusedImages() {
         for id in imageStorage.ids() {
             var used = false
             for widget in database.widgets {
@@ -290,13 +290,13 @@ final class Model: ObservableObject {
         }
     }
 
-    func updateTwitchPubSub(now: Date) {
+    private func updateTwitchPubSub(now: Date) {
         if numberOfViewersUpdateDate + 60 < now {
             numberOfViewers = noValue
         }
     }
 
-    func updateAudioLevel() {
+    private func updateAudioLevel() {
         let newAudioLevel = media.getAudioLevel()
         if newAudioLevel.isNaN {
             audioLevel = String("Muted")
@@ -305,7 +305,7 @@ final class Model: ObservableObject {
         }
     }
 
-    func updateSrtlaConnectionStatistics() {
+    private func updateSrtlaConnectionStatistics() {
         if isStreamConnceted(), let statistics = media.srtlaConnectionStatistics() {
             srtlaConnectionStatistics = statistics
         } else {
@@ -313,7 +313,7 @@ final class Model: ObservableObject {
         }
     }
 
-    func reloadImageEffects() {
+    private func reloadImageEffects() {
         imageEffects.removeAll()
         for scene in database.scenes {
             for widget in scene.widgets {
@@ -340,7 +340,7 @@ final class Model: ObservableObject {
         }
     }
 
-    func addVideoEffect(widget: SettingsWidget) {
+    private func addVideoEffect(widget: SettingsWidget) {
         switch widget.videoEffect.type {
         case .movie:
             videoEffects[widget.id] = MovieEffect()
@@ -404,7 +404,7 @@ final class Model: ObservableObject {
         streamState = .disconnected
     }
 
-    func startNetStream() {
+    private func startNetStream() {
         streamState = .connecting
         makeGoingLiveToast()
         switch stream.getProtocol() {
@@ -420,7 +420,7 @@ final class Model: ObservableObject {
         updateSpeed()
     }
 
-    func stopNetStream() {
+    private func stopNetStream() {
         reconnectTimer?.invalidate()
         rtmpStopStream()
         media.srtStopStream()
@@ -452,14 +452,14 @@ final class Model: ObservableObject {
         }
     }
 
-    func setNetStream() {
+    private func setNetStream() {
         media.setNetStream(proto: stream.getProtocol())
         updateTorch()
         updateMute()
         mthkView.attachStream(media.getNetStream())
     }
 
-    func setStreamResolution() {
+    private func setStreamResolution() {
         switch stream.resolution {
         case .r1920x1080:
             media.setVideoSessionPreset(preset: .hd1920x1080)
@@ -540,7 +540,7 @@ final class Model: ObservableObject {
         numberOfChatPosts = 0
     }
 
-    func reloadTwitchPubSub() {
+    private func reloadTwitchPubSub() {
         twitchPubSub?.stop()
         numberOfViewers = noValue
         if stream.twitchChannelId != "" {
@@ -551,7 +551,7 @@ final class Model: ObservableObject {
         }
     }
 
-    func reloadKickPusher() {
+    private func reloadKickPusher() {
         kickPusher?.stop()
         kickPusher = nil
         if stream.kickChatroomId != "" {
@@ -595,14 +595,14 @@ final class Model: ObservableObject {
         return nil
     }
 
-    func findEnabledScene(id: UUID) -> SettingsScene? {
+    private func findEnabledScene(id: UUID) -> SettingsScene? {
         for scene in enabledScenes where id == scene.id {
             return scene
         }
         return nil
     }
 
-    func getEnabledButtonForWidgetControlledByScene(
+    private func getEnabledButtonForWidgetControlledByScene(
         widget: SettingsWidget,
         scene: SettingsScene
     ) -> SettingsButton? {
@@ -619,7 +619,7 @@ final class Model: ObservableObject {
         return nil
     }
 
-    func sceneUpdatedOff() {
+    private func sceneUpdatedOff() {
         for widget in database.widgets {
             switch widget.type {
             case .camera:
@@ -637,7 +637,7 @@ final class Model: ObservableObject {
         }
     }
 
-    func sceneUpdatedOn(scene: SettingsScene) {
+    private func sceneUpdatedOn(scene: SettingsScene) {
         switch scene.cameraType {
         case .back:
             attachCamera(position: .back)
@@ -700,7 +700,7 @@ final class Model: ObservableObject {
         sceneUpdatedOn(scene: scene)
     }
 
-    func updateUptime(now: Date) {
+    private func updateUptime(now: Date) {
         if streamStartDate != nil && isStreamConnceted() {
             let elapsed = now.timeIntervalSince(streamStartDate!)
             uptime = uptimeFormatter.string(from: elapsed)!
@@ -709,21 +709,21 @@ final class Model: ObservableObject {
         }
     }
 
-    func updateDigitalClock(now: Date) {
+    private func updateDigitalClock(now: Date) {
         digitalClock = digitalClockFormatter.string(from: now)
     }
 
-    func updateBatteryLevel() {
+    private func updateBatteryLevel() {
         batteryLevel = Double(UIDevice.current.batteryLevel)
     }
 
-    func updateChatSpeed() {
+    private func updateChatSpeed() {
         chatPostsPerSecond = chatPostsPerSecond * 0.8 +
             Double(numberOfChatPosts) * 0.2
         numberOfChatPosts = 0
     }
 
-    func updateSpeed() {
+    private func updateSpeed() {
         if isLive {
             let speed = formatBytesPerSecond(speed: media.streamSpeed())
             let total = sizeFormatter.string(fromByteCount: media.streamTotal())
@@ -747,7 +747,7 @@ final class Model: ObservableObject {
             }
     }
 
-    func setupThermalState() {
+    private func setupThermalState() {
         updateThermalState()
         NotificationCenter.default.publisher(
             for: ProcessInfo.thermalStateDidChangeNotification,
@@ -761,27 +761,13 @@ final class Model: ObservableObject {
         .store(in: &subscriptions)
     }
 
-    func updateThermalState() {
+    private func updateThermalState() {
         thermalState = ProcessInfo.processInfo.thermalState
         logger.info("Thermal state is \(thermalState.string())")
     }
 
-    func attachCamera(position: AVCaptureDevice.Position) {
+    private func attachCamera(position: AVCaptureDevice.Position) {
         let device = preferredCamera(position: position)
-        if let device {
-            logger
-                .info(
-                    "Zoom: \(device.minAvailableVideoZoomFactor) - \(device.maxAvailableVideoZoomFactor)"
-                )
-            logger
-                .info(
-                    "Cameras: \(device.constituentDevices.map { device in device.localizedName })"
-                )
-            logger
-                .info(
-                    "Switch over factors: \(device.virtualDeviceSwitchOverVideoZoomFactors)"
-                )
-        }
         media.attachCamera(device: device)
         cameraPosition = position
         switch position {
@@ -797,11 +783,11 @@ final class Model: ObservableObject {
         setCameraZoomLevel(id: zoomId)
     }
 
-    func rtmpStartStream() {
+    private func rtmpStartStream() {
         media.rtmpStartStream(url: stream.url)
     }
 
-    func rtmpStopStream() {
+    private func rtmpStopStream() {
         media.rtmpStopStream()
     }
 
@@ -810,7 +796,7 @@ final class Model: ObservableObject {
         updateTorch()
     }
 
-    func updateTorch() {
+    private func updateTorch() {
         media.setTorch(on: isTorchOn)
     }
 
@@ -819,7 +805,7 @@ final class Model: ObservableObject {
         updateMute()
     }
 
-    func updateMute() {
+    private func updateMute() {
         media.setMute(on: isMuteOn)
     }
 
@@ -848,22 +834,22 @@ final class Model: ObservableObject {
         }
     }
 
-    func findZoomLevel(id: UUID) -> SettingsZoomLevel? {
+    private func findZoomLevel(id: UUID) -> SettingsZoomLevel? {
         for level in zoomLevels where level.id == id {
             return level
         }
         return nil
     }
 
-    func handleRtmpConnected() {
+    private func handleRtmpConnected() {
         onConnected()
     }
 
-    func handleRtmpDisconnected(message: String) {
+    private func handleRtmpDisconnected(message: String) {
         onDisconnected(reason: "RTMP disconnected with message \(message)")
     }
 
-    func onConnected() {
+    private func onConnected() {
         makeYouAreLiveToast()
         reconnectTime = firstReconnectTime
         streamStartDate = Date()
@@ -871,7 +857,7 @@ final class Model: ObservableObject {
         updateUptime(now: Date())
     }
 
-    func onDisconnected(reason: String) {
+    private func onDisconnected(reason: String) {
         guard streaming else {
             return
         }
@@ -887,11 +873,11 @@ final class Model: ObservableObject {
             }
     }
 
-    func handleSrtConnected() {
+    private func handleSrtConnected() {
         onConnected()
     }
 
-    func handleSrtDisconnected(reason: String) {
+    private func handleSrtDisconnected(reason: String) {
         onDisconnected(reason: reason)
     }
 
@@ -913,19 +899,19 @@ final class Model: ObservableObject {
         sceneUpdated(store: true)
     }
 
-    func makeGoingLiveToast() {
+    private func makeGoingLiveToast() {
         makeToast(title: "😎 Going live at \(stream.name) 😎")
     }
 
-    func makeYouAreLiveToast() {
+    private func makeYouAreLiveToast() {
         makeToast(title: "🎉 You are LIVE at \(stream.name) 🎉")
     }
 
-    func makeStreamEndedToast() {
+    private func makeStreamEndedToast() {
         makeToast(title: "🤟 Stream ended 🤟")
     }
 
-    func makeFffffToast(reason: String) {
+    private func makeFffffToast(reason: String) {
         makeErrorToast(
             title: "😢 FFFFF 😢",
             font: .system(size: 64).bold(),

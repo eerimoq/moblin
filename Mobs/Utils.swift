@@ -223,23 +223,20 @@ func preferredCamera(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
                                             for: .video,
                                             position: position)
     {
-        logger.info("Triple camera")
         return device
     }
     if let device = AVCaptureDevice.default(.builtInDualCamera,
                                             for: .video,
                                             position: position)
     {
-        logger.info("Dual camera")
         return device
     }
     if let device = AVCaptureDevice.default(.builtInWideAngleCamera,
                                             for: .video,
                                             position: position)
     {
-        logger.info("Wide angle camera")
         return device
     }
-    logger.info("No camera")
+    logger.error("No camera")
     return nil
 }

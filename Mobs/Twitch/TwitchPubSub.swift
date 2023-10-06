@@ -53,7 +53,7 @@ func decodeMessageViewCount(message: String) throws -> MessageViewCount {
 
 private var url = URL(string: "wss://pubsub-edge.twitch.tv/v1")!
 
-final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
+final class TwitchPubSub: NSObject {
     private var model: Model
     private var webSocket: URLSessionWebSocketTask
     private var channelId: String
@@ -84,7 +84,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         return webSocket.state == .running
     }
 
-    func setupWebsocket() {
+    private func setupWebsocket() {
         keepAliveTimer?.invalidate()
         reconnectTimer?.invalidate()
         let session = URLSession(configuration: .default,
@@ -95,7 +95,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         readMessage()
     }
 
-    func handlePong() {
+    private func handlePong() {
         keepAliveTimer?.invalidate()
         keepAliveTimer = Timer
             .scheduledTimer(withTimeInterval: 4 * 60 + 30, repeats: false) { _ in
@@ -103,11 +103,11 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
             }
     }
 
-    func handleResponse(message: String) throws {
+    private func handleResponse(message: String) throws {
         _ = try decodeResponse(message: message)
     }
 
-    func handleMessage(message: String) throws {
+    private func handleMessage(message: String) throws {
         let message = try decodeMessage(message: message)
         let type = try getMessageType(message: message.data.message)
         if type == "viewcount" {
@@ -123,7 +123,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         }
     }
 
-    func handleStringMessage(message: String) {
+    private func handleStringMessage(message: String) {
         do {
             let type = try getMessageType(message: message)
             if type == "PONG" {
@@ -144,7 +144,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         }
     }
 
-    func reconnect() {
+    private func reconnect() {
         webSocket.cancel()
         reconnectTimer?.invalidate()
         reconnectTimer = Timer
@@ -155,7 +155,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
             }
     }
 
-    func readMessage() {
+    private func readMessage() {
         webSocket.receive { result in
             switch result {
             case .failure:
@@ -185,7 +185,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         }
     }
 
-    func sendMessage(message: String) {
+    private func sendMessage(message: String) {
         logger.debug("twitch: pubsub: \(channelId): Sending \(message)")
         let message = URLSessionWebSocketTask.Message.string(message)
         webSocket.send(message) { error in
@@ -200,7 +200,7 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
         }
     }
 
-    func sendPing() {
+    private func sendPing() {
         sendMessage(message: "{\"type\":\"PING\"}")
         keepAliveTimer?.invalidate()
         keepAliveTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { _ in
@@ -212,7 +212,9 @@ final class TwitchPubSub: NSObject, URLSessionWebSocketDelegate {
             self.setupWebsocket()
         }
     }
+}
 
+extension TwitchPubSub: URLSessionWebSocketDelegate {
     func urlSession(
         _: URLSession,
         webSocketTask _: URLSessionWebSocketTask,
