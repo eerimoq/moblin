@@ -98,7 +98,7 @@ ToDo
 
 - Improve the browser widget.
 
-- Add some buttons by default when creating a new scene.
+- Changing microphone after app in background does not work.
 
 Ideas/plan
 ==========
