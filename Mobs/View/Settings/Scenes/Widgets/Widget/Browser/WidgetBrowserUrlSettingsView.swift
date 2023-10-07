@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct WidgetWebPageUrlSettingsView: View {
+struct WidgetBrowserUrlSettingsView: View {
     @ObservedObject var model: Model
     var widget: SettingsWidget
     @State var value: String
@@ -8,14 +8,14 @@ struct WidgetWebPageUrlSettingsView: View {
     init(model: Model, widget: SettingsWidget) {
         self.model = model
         self.widget = widget
-        value = widget.webPage!.url
+        value = widget.browser!.url
     }
 
     func submitUrl() {
         value = value.trim()
-        widget.webPage!.url = value
+        widget.browser!.url = value
         model.store()
-        print("Storef!!!!!! \(widget.webPage!.url)")
+        model.resetSelectedScene()
     }
 
     var body: some View {

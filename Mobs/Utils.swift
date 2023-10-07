@@ -115,6 +115,8 @@ func widgetImage(widget: SettingsWidget) -> String {
         return "camera"
     case .webPage:
         return "photo.stack"
+    case .browser:
+        return "photo.stack"
     }
 }
 

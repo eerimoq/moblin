@@ -13,6 +13,7 @@ struct TextEditView: View {
                     onSubmit(value)
                 }
             })
+            .disableAutocorrection(true)
             .onSubmit {
                 value = value.trim()
                 onSubmit(value)

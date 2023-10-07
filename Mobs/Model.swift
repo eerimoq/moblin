@@ -48,6 +48,7 @@ final class Model: ObservableObject {
     }
 
     private var streaming = false
+    @Published var microphone = "Front"
     // private var wasStreamingWhenDidEnterBackground = false
     private var streamStartDate: Date?
     @Published var isLive = false
@@ -73,7 +74,7 @@ final class Model: ObservableObject {
     var mthkView = MTHKView(frame: .zero)
     private var imageEffects: [UUID: ImageEffect] = [:]
     private var videoEffects: [UUID: VideoEffect] = [:]
-    private var webPageEffects: [UUID: WebPageEffect] = [:]
+    private var browserEffects: [UUID: BrowserEffect] = [:]
     @Published var sceneIndex = 0
     private var isTorchOn = false
     private var isMuteOn = false
@@ -180,6 +181,38 @@ final class Model: ObservableObject {
         UIPasteboard.general.string = data
     }
 
+    func setupAudioSession() {
+        let session = AVAudioSession.sharedInstance()
+        do {
+            try session.setCategory(
+                .playAndRecord,
+                options: [.mixWithOthers]
+            )
+            try session.setActive(true)
+        } catch {
+            logger.error("app: Session error \(error)")
+        }
+    }
+    
+    func selectMicrophone(orientation: String) {
+        let orientation = AVAudioSession.Orientation(rawValue: orientation)
+        let session = AVAudioSession.sharedInstance()
+        do {
+            if let inputSources = session.inputDataSources {
+                for inputSource in inputSources {
+                    if let inputSourceOrientation = inputSource.orientation {
+                        if inputSourceOrientation == orientation {
+                            try session.setInputDataSource(inputSource)
+                            logger.info("\(orientation.rawValue) microphone selected")
+                        }
+                    }
+                }
+            }
+        } catch {
+            logger.error("Failed to select microphone: \(error)")
+        }
+    }
+    
     func setup(settings: Settings) {
         media.onSrtConnected = handleSrtConnected
         media.onSrtDisconnected = handleSrtDisconnected
@@ -187,6 +220,8 @@ final class Model: ObservableObject {
         media.onRtmpDisconnected = handleRtmpDisconnected
         media.onAudioMuteChange = updateAudioLevel
         self.settings = settings
+        setupAudioSession()
+        selectMicrophone(orientation: "Front")
         zoomLevels = database.zoom!.back
         backZoomId = zoomLevels[0].id
         zoomId = backZoomId
@@ -251,17 +286,17 @@ final class Model: ObservableObject {
             self.updateAudioLevel()
             self.updateSrtlaConnectionStatistics()
         })
-        // Update web pages with 5 Hz for now.
+        // Update browsers with 5 Hz for now.
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
-            for webPageEffect in self.webPageEffects.values {
-                webPageEffect.webPage.wkwebView.takeSnapshot(with: nil) { image, error in
+            for browserEffect in self.browserEffects.values {
+                browserEffect.browser.wkwebView.takeSnapshot(with: nil) { image, error in
                     if let image {
-                        webPageEffect.setImage(image: image)
+                        browserEffect.setImage(image: image)
                     } else {
                         if let error {
-                            logger.error("Web page snapshot error: \(error)")
+                            logger.error("Browser snapshot error: \(error)")
                         } else {
-                            logger.error("No web page image")
+                            logger.error("No browser image")
                         }
                     }
                 }
@@ -378,20 +413,24 @@ final class Model: ObservableObject {
             }
             addVideoEffect(widget: widget)
         }
-        for webPageEffect in webPageEffects.values {
-            media.unregisterEffect(webPageEffect)
+        for browserEffect in browserEffects.values {
+            media.unregisterEffect(browserEffect)
         }
-        webPageEffects.removeAll()
+        browserEffects.removeAll()
         for widget in database.widgets {
-            if widget.type != .webPage {
+            if widget.type != .browser {
                 continue
             }
             for scene in enabledScenes {
                 for sceneWidget in scene.widgets where sceneWidget.widgetId == widget.id {
-                    webPageEffects[sceneWidget.id] = WebPageEffect(
-                        url: URL(string: widget.webPage!.url)!,
-                        x: sceneWidget.x, y: sceneWidget.y, width: sceneWidget.width,
-                        height: sceneWidget.height
+                    let videoSize = media.getVideoSize()
+                    browserEffects[sceneWidget.id] = BrowserEffect(
+                        url: URL(string: widget.browser!.url)!,
+                        widget: sceneWidget,
+                        videoSize: CGSize(
+                            width: Double(videoSize.width),
+                            height: Double(videoSize.height)
+                        )
                     )
                 }
             }
@@ -646,8 +685,8 @@ final class Model: ObservableObject {
         for imageEffect in imageEffects.values {
             media.unregisterEffect(imageEffect)
         }
-        for webPageEffect in webPageEffects.values {
-            media.unregisterEffect(webPageEffect)
+        for browserEffect in browserEffects.values {
+            media.unregisterEffect(browserEffect)
         }
     }
 
@@ -696,8 +735,10 @@ final class Model: ObservableObject {
                     media.registerEffect(videoEffect)
                 }
             case .webPage:
-                if var webPageEffect = webPageEffects[sceneWidget.id] {
-                    media.registerEffect(webPageEffect)
+                logger.error("Found web page widget")
+            case .browser:
+                if var browserEffect = browserEffects[sceneWidget.id] {
+                    media.registerEffect(browserEffect)
                 }
             }
         }

@@ -211,6 +211,10 @@ final class Media: NSObject {
         netStream.videoSettings.videoSize = size
     }
 
+    func getVideoSize() -> VideoSize {
+        return netStream.videoSettings.videoSize
+    }
+
     func setStreamFPS(fps: Int) {
         netStream.frameRate = Double(fps)
     }

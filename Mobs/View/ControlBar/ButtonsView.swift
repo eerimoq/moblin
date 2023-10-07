@@ -29,9 +29,53 @@ struct ButtonPlaceholderImage: View {
     }
 }
 
+let microphones = ["Front", "Back", "Bottom"]
+
+struct MicrophoneButtonView: View {
+    @ObservedObject var model: Model
+    @State private var selection: String
+    private var done: () -> Void
+
+    init(model: Model, done: @escaping () -> Void) {
+        self.model = model
+        self.done = done
+        selection = model.microphone
+    }
+
+    var body: some View {
+        HStack {
+            Spacer()
+            Button(action: {
+                done()
+            }, label: {
+                Text("Close")
+                    .padding(5)
+                    .foregroundColor(.blue)
+            })
+        }
+        Form {
+            Section {
+                Picker("", selection: $selection) {
+                    ForEach(microphones, id: \.self) { microphone in
+                        Text(microphone)
+                    }
+                }
+                .onChange(of: selection) { microphone in
+                    model.microphone = microphone
+                    model.selectMicrophone(orientation: microphone)
+                    done()
+                }
+                .pickerStyle(.inline)
+                .labelsHidden()
+            }
+        }
+    }
+}
+
 struct ButtonsView: View {
     @ObservedObject var model: Model
     @State var showingBitrate = false
+    @State var showingMicrophone = false
 
     func getImage(state: ButtonState) -> String {
         if state.isOn {
@@ -106,6 +150,20 @@ struct ButtonsView: View {
                                     on: second.isOn
                                 )
                             })
+                        case .microphone:
+                            Button(action: {
+                                showingMicrophone = true
+                            }, label: {
+                                ButtonImage(
+                                    image: getImage(state: second),
+                                    on: second.isOn
+                                )
+                            })
+                            .popover(isPresented: $showingMicrophone) {
+                                MicrophoneButtonView(model: model, done: {
+                                    showingMicrophone = false
+                                })
+                            }
                         }
                     } else {
                         ButtonPlaceholderImage()
@@ -152,6 +210,20 @@ struct ButtonsView: View {
                                 on: pair.first.isOn
                             )
                         })
+                    case .microphone:
+                        Button(action: {
+                            showingMicrophone = true
+                        }, label: {
+                            ButtonImage(
+                                image: getImage(state: pair.first),
+                                on: pair.first.isOn
+                            )
+                        })
+                        .popover(isPresented: $showingMicrophone) {
+                            MicrophoneButtonView(model: model, done: {
+                                showingMicrophone = false
+                            })
+                        }
                     }
                 }
             }

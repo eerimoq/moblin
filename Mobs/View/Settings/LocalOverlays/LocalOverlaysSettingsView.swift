@@ -16,6 +16,12 @@ struct LocalOverlaysSettingsView: View {
                     show.stream = value
                     model.store()
                 }))
+                Toggle("Microphone", isOn: Binding(get: {
+                    show.microphone!
+                }, set: { value in
+                    show.microphone = value
+                    model.store()
+                }))
                 Toggle("Viewers", isOn: Binding(get: {
                     show.viewers
                 }, set: { value in

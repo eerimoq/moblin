@@ -41,7 +41,9 @@ struct WidgetSettingsView: View {
             case .camera:
                 EmptyView()
             case .webPage:
-                WidgetWebPageSettingsView(model: model, widget: widget)
+                EmptyView()
+            case .browser:
+                WidgetBrowserSettingsView(model: model, widget: widget)
             }
         }
         .navigationTitle("Widget")

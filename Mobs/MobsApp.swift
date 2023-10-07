@@ -44,16 +44,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
-        let session = AVAudioSession.sharedInstance()
-        do {
-            try session.setCategory(
-                .playAndRecord,
-                options: [.mixWithOthers]
-            )
-            try session.setActive(true)
-        } catch {
-            logger.error("app: Session error \(error)")
-        }
         return true
     }
 }

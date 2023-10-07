@@ -176,6 +176,13 @@ class SettingsWidgetWebPage: Codable {
     var url: String = "https://google.com"
 }
 
+class SettingsWidgetBrowser: Codable {
+    var url: String = "https://google.com"
+    var width: Int = 500
+    var height: Int = 500
+    var customCss: String = "body { background-color: rgba(0, 0, 0, 0); margin: 0px auto; overflow: hidden; }"
+}
+
 enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
     case movie = "Movie"
     case grayScale = "Gray scale"
@@ -203,10 +210,11 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case image = "Image"
     case videoEffect = "Video effect"
     case webPage = "Web page"
+    case browser = "Browser"
 }
 
 let widgetTypes = SettingsWidgetType.allCases.filter { widgetType in
-    widgetType != .camera
+    widgetType != .camera && widgetType != .webPage
 }.map { $0.rawValue }
 
 class SettingsWidget: Codable, Identifiable, Equatable {
@@ -220,6 +228,7 @@ class SettingsWidget: Codable, Identifiable, Equatable {
     var chat: SettingsWidgetChat = .init()
     var recording: SettingsWidgetRecording = .init()
     var webPage: SettingsWidgetWebPage? = .init()
+    var browser: SettingsWidgetBrowser? = .init()
     var videoEffect: SettingsWidgetVideoEffect = .init()
 
     init(name: String) {
@@ -270,6 +279,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case mute = "Mute"
     case bitrate = "Bitrate"
     case widget = "Widget"
+    case microphone = "Microphone"
 }
 
 let buttonTypes = SettingsButtonType.allCases.map { $0.rawValue }
@@ -310,6 +320,7 @@ class SettingsShow: Codable {
     var speed: Bool = true
     var audioLevel: Bool? = true
     var zoom: Bool? = true
+    var microphone: Bool? = true
 }
 
 class SettingsZoomLevel: Codable, Identifiable {
@@ -419,6 +430,7 @@ func addDefaultScenes(database: Database) {
     scene.addButton(id: database.buttons[0].id)
     scene.addButton(id: database.buttons[1].id)
     scene.addButton(id: database.buttons[2].id)
+    scene.addButton(id: database.buttons[8].id)
     scene.addButton(id: database.buttons[3].id)
     scene.addButton(id: database.buttons[4].id)
     scene.addButton(id: database.buttons[5].id)
@@ -430,6 +442,7 @@ func addDefaultScenes(database: Database) {
     scene.widgets.append(createSceneWidgetVideoEffectMovie(database: database))
     scene.addButton(id: database.buttons[1].id)
     scene.addButton(id: database.buttons[2].id)
+    scene.addButton(id: database.buttons[8].id)
     scene.addButton(id: database.buttons[3].id)
     database.scenes.append(scene)
 }
@@ -538,6 +551,15 @@ func addDefaultButtons(database: Database) {
     button.systemImageNameOff = "dice"
     button.widget.widgetId = database.widgets[4].id
     database.buttons.append(button)
+    
+    button = SettingsButton(name: "Microphone")
+    button.id = UUID()
+    button.type = .microphone
+    button.imageType = "System name"
+    button.systemImageNameOn = "music.mic"
+    button.systemImageNameOff = "music.mic"
+    database.buttons.append(button)
+
 }
 
 func createDefault() -> Database {
@@ -620,6 +642,10 @@ final class Settings {
             realDatabase.show.audioLevel = true
             store()
         }
+        if realDatabase.show.microphone == nil {
+            realDatabase.show.microphone = true
+            store()
+        }
         if realDatabase.show.zoom == nil {
             realDatabase.show.zoom = true
             store()
@@ -690,6 +716,22 @@ final class Settings {
                 continue
             }
             widget.webPage = .init()
+            store()
+        }
+        for widget in realDatabase.widgets {
+            if widget.browser != nil {
+                continue
+            }
+            widget.browser = .init()
+            store()
+        }
+        for widget in realDatabase.widgets {
+            if widget.type != .webPage {
+                continue
+            }
+            widget.type = .browser
+            widget.browser!.url = widget.webPage!.url
+            store()
         }
     }
 }

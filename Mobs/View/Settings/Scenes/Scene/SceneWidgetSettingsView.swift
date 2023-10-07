@@ -78,28 +78,32 @@ struct SceneWidgetSettingsView: View {
     func submitX(value: String) {
         if let value = Double(value) {
             widget.x = min(max(value, 0), 99)
-            model.sceneUpdated(imageEffectChanged: isImage)
+            model.store()
+            model.resetSelectedScene()
         }
     }
 
     func submitY(value: String) {
         if let value = Double(value) {
             widget.y = min(max(value, 0), 99)
-            model.sceneUpdated(imageEffectChanged: isImage)
+            model.store()
+            model.resetSelectedScene()
         }
     }
 
     func submitW(value: String) {
         if let value = Double(value) {
             widget.width = min(max(value, 1), 100)
-            model.sceneUpdated(imageEffectChanged: isImage)
+            model.store()
+            model.resetSelectedScene()
         }
     }
 
     func submitH(value: String) {
         if let value = Double(value) {
             widget.height = min(max(value, 1), 100)
-            model.sceneUpdated(imageEffectChanged: isImage)
+            model.store()
+            model.resetSelectedScene()
         }
     }
 

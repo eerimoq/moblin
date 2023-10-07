@@ -4,18 +4,7 @@ import SwiftUI
 import UIKit
 import WebKit
 
-private func makeFrame(width: Double, viewWidth: Double,
-                       height: Double, viewHeight: Double) -> CGRect
-{
-    return CGRect(
-        x: 0,
-        y: 0,
-        width: (viewWidth * width) / 100,
-        height: (viewHeight * height) / 100
-    )
-}
-
-struct WebPage: UIViewRepresentable {
+struct Browser: UIViewRepresentable {
     let wkwebView: WKWebView
 
     init(url: URL, frame: CGRect) {
@@ -39,47 +28,43 @@ struct WebPage: UIViewRepresentable {
     func updateUIView(_: WKWebView, context _: Context) {}
 }
 
-final class WebPageEffect: VideoEffect {
+final class BrowserEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
     var overlay: CIImage?
-    let webPage: WebPage
+    let browser: Browser
     var image: UIImage?
     private var extent = CGRect.zero {
         didSet {
             if extent == oldValue {
                 return
             }
-            createOverlay()
+            updateOverlay()
         }
     }
 
     let x: Double
     let y: Double
 
-    init(url: URL, x: Double, y: Double, width: Double, height: Double) {
-        // Should be based on real size.
-        let viewWidth = 1920.0
-        let viewHeight = 1080.0
-        self.x = (viewWidth * x) / 100
-        self.y = (viewHeight * y) / 100
-        let frame = makeFrame(
-            width: width,
-            viewWidth: viewWidth,
-            height: height,
-            viewHeight: viewHeight
-        )
-        webPage = WebPage(
+    init(url: URL, widget: SettingsSceneWidget, videoSize: CGSize) {
+        x = (videoSize.width * widget.x) / 100
+        y = (videoSize.height * widget.y) / 100
+        browser = Browser(
             url: url,
-            frame: frame
+            frame: CGRect(
+                x: 0,
+                y: 0,
+                width: (videoSize.width * widget.width) / 100,
+                height: (videoSize.height * widget.height) / 100
+            )
         )
     }
 
     func setImage(image: UIImage) {
         self.image = image
-        createOverlay()
+        updateOverlay()
     }
 
-    func createOverlay() {
+    private func updateOverlay() {
         guard let image else {
             return
         }
@@ -87,7 +72,7 @@ final class WebPageEffect: VideoEffect {
             return
         }
         UIGraphicsBeginImageContext(extent.size)
-        image.draw(at: CGPoint(x: self.x, y: self.y))
+        image.draw(at: CGPoint(x: x, y: y))
         overlay = CIImage(
             image: UIGraphicsGetImageFromCurrentImageContext()!,
             options: nil
