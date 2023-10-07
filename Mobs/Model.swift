@@ -289,8 +289,7 @@ final class Model: ObservableObject {
             self.updateAudioLevel()
             self.updateSrtlaConnectionStatistics()
         })
-        // Take browser snapshots with 5 Hz for now.
-        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
+        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false, block: { _ in
             for browserEffect in self.browserEffectsInCurrentScene() {
                 browserEffect.browser.wkwebView.takeSnapshot(with: nil) { image, error in
                     if let image {
@@ -308,6 +307,34 @@ final class Model: ObservableObject {
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
             self.media.logStatistics()
+        })
+        takeBrowserSnapshots()
+    }
+
+    private func takeBrowserSnapshots() {
+        // Take browser snapshots with about 5 Hz for now.
+        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false, block: { _ in
+            var finisedBrowserEffects = 0
+            let browserEffects = self.browserEffectsInCurrentScene()
+            if browserEffects.isEmpty {
+                self.takeBrowserSnapshots()
+                return
+            }
+            for browserEffect in browserEffects {
+                browserEffect.browser.wkwebView.takeSnapshot(with: nil) { image, error in
+                    if let error {
+                        logger.error("Browser snapshot error: \(error)")
+                    } else if let image {
+                        browserEffect.setImage(image: image)
+                    } else {
+                        logger.error("No browser image")
+                    }
+                    finisedBrowserEffects += 1
+                    if finisedBrowserEffects == browserEffects.count {
+                        self.takeBrowserSnapshots()
+                    }
+                }
+            }
         })
     }
 
