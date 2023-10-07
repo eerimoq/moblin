@@ -48,7 +48,7 @@ final class Model: ObservableObject {
     }
 
     private var streaming = false
-    @Published var microphone = "Front"
+    @Published var microphone = microphones[0]
     // private var wasStreamingWhenDidEnterBackground = false
     private var streamStartDate: Date?
     @Published var isLive = false
@@ -323,11 +323,11 @@ final class Model: ObservableObject {
             for browserEffect in browserEffects {
                 browserEffect.browser.wkwebView.takeSnapshot(with: nil) { image, error in
                     if let error {
-                        logger.error("Browser snapshot error: \(error)")
+                        logger.warning("Browser snapshot error: \(error)")
                     } else if let image {
                         browserEffect.setImage(image: image)
                     } else {
-                        logger.error("No browser image")
+                        logger.warning("No browser image")
                     }
                     finisedBrowserEffects += 1
                     if finisedBrowserEffects == browserEffects.count {

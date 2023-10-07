@@ -29,8 +29,6 @@ struct ButtonPlaceholderImage: View {
     }
 }
 
-let microphones = ["Front", "Back", "Bottom"]
-
 struct MicrophoneButtonView: View {
     @ObservedObject var model: Model
     @State private var selection: String

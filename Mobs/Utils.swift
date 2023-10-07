@@ -248,3 +248,5 @@ func preferredCamera(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
 func formatAsInt(_ value: CGFloat) -> String {
     return String(format: "%d", Int(value))
 }
+
+let microphones = ["Front", "Back", "Bottom"]
