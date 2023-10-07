@@ -312,7 +312,7 @@ final class Model: ObservableObject {
     }
 
     private func takeBrowserSnapshots() {
-        // Take browser snapshots with about 5 Hz for now.
+        // Take browser snapshots at about 5 Hz for now.
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false, block: { _ in
             var finisedBrowserEffects = 0
             let browserEffects = self.browserEffectsInCurrentScene()
