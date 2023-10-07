@@ -316,7 +316,7 @@ final class Model: ObservableObject {
             return []
         }
         var sceneBrowserEffects: [BrowserEffect] = []
-        for widget in scene.widgets {
+        for widget in scene.widgets where widget.enabled {
             guard let realWidget = findWidget(id: widget.widgetId) else {
                 continue
             }

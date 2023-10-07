@@ -60,7 +60,7 @@ struct WidgetBrowserSettingsView: View {
         } header: {
             Text("Browser")
         } footer: {
-            Text("The browser widget does not work very well yet.")
+            Text("The browser widget is experimental does not work very well yet.")
         }
     }
 }
