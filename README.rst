@@ -43,7 +43,14 @@ Features
 
 - Basic scenes.
 
+  - Image widget. Show an image on stream.
+
+  - Browser widget (not yet fully functional). Show a web page on
+    stream.
+
 - Back or front camera.
+
+- Back, front or bottom microphone.
 
 - Zoom.
 
@@ -89,20 +96,20 @@ ToDo
 
 - Changing stream from SRT to SRT always hangs video.
 
+- Improve the browser widget.
+
+- Add some buttons by default when creating a new scene.
+
 Ideas/plan
 ==========
+
+- Adaptive bitrate, but based on what?
 
 - Investigate video stabilization API.
 
 - Show web page on stream and/or locally. Audio kinda important.
 
-- Adaptive bitrate, but based on what?
-
 - Multiple Ethernet connections simultaneously?
-
-- Video effects:
-
-  - Sparks.
 
 - Lookup Twitch channel id from channel name. Possibly login to
   Twitch.
