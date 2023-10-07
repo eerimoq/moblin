@@ -17,8 +17,12 @@ struct Browser: UIViewRepresentable {
             frame: frame,
             configuration: configuration
         )
+        wkwebView.isOpaque = false
+        wkwebView.backgroundColor = .clear
+        wkwebView.scrollView.backgroundColor = .clear
         let request = URLRequest(url: url)
         wkwebView.load(request)
+        // wkwebView.loadHTMLString("So long and thanks for all the fish!", baseURL: nil)
     }
 
     func makeUIView(context _: Context) -> WKWebView {
