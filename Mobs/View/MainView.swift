@@ -8,8 +8,8 @@ struct MainView: View {
     @ObservedObject var model = Model()
     private var streamView: StreamView!
 
-    init(settings: Settings) {
-        model.setup(settings: settings)
+    init() {
+        model.setup()
         streamView = StreamView(model: model)
     }
 

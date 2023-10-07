@@ -4,16 +4,10 @@ import SwiftUI
 @main
 struct MobsApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    private var settings: Settings = {
-        UIDevice.current.isBatteryMonitoringEnabled = true
-        let settings = Settings()
-        settings.load()
-        return settings
-    }()
 
     var body: some Scene {
         WindowGroup {
-            MainView(settings: settings)
+            MainView()
         }
     }
 }
@@ -38,12 +32,5 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         -> UIInterfaceOrientationMask
     {
         return AppDelegate.orientationLock
-    }
-
-    func application(
-        _: UIApplication,
-        didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]? = nil
-    ) -> Bool {
-        return true
     }
 }

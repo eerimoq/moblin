@@ -216,13 +216,14 @@ final class Model: ObservableObject {
         }
     }
 
-    func setup(settings: Settings) {
+    func setup() {
+        UIDevice.current.isBatteryMonitoringEnabled = true
+        settings.load()
         media.onSrtConnected = handleSrtConnected
         media.onSrtDisconnected = handleSrtDisconnected
         media.onRtmpConnected = handleRtmpConnected
         media.onRtmpDisconnected = handleRtmpDisconnected
         media.onAudioMuteChange = updateAudioLevel
-        self.settings = settings
         setupAudioSession()
         selectMicrophone(orientation: "Front")
         zoomLevels = database.zoom!.back
