@@ -193,7 +193,7 @@ final class Model: ObservableObject {
             logger.error("app: Session error \(error)")
         }
     }
-    
+
     func selectMicrophone(orientation: String) {
         let orientation = AVAudioSession.Orientation(rawValue: orientation)
         let session = AVAudioSession.sharedInstance()
@@ -204,7 +204,8 @@ final class Model: ObservableObject {
                         if inputSourceOrientation == orientation {
                             media.attachAudio(device: nil)
                             try session.setInputDataSource(inputSource)
-                            media.attachAudio(device: AVCaptureDevice.default(for: .audio))
+                            media
+                                .attachAudio(device: AVCaptureDevice.default(for: .audio))
                             logger.info("\(orientation.rawValue) microphone selected")
                         }
                     }
@@ -214,7 +215,7 @@ final class Model: ObservableObject {
             logger.error("Failed to select microphone: \(error)")
         }
     }
-    
+
     func setup(settings: Settings) {
         media.onSrtConnected = handleSrtConnected
         media.onSrtDisconnected = handleSrtDisconnected
@@ -288,9 +289,9 @@ final class Model: ObservableObject {
             self.updateAudioLevel()
             self.updateSrtlaConnectionStatistics()
         })
-        // Update browsers with 5 Hz for now.
+        // Take browser snapshots with 5 Hz for now.
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
-            for browserEffect in self.browserEffects.values {
+            for browserEffect in self.browserEffectsInCurrentScene() {
                 browserEffect.browser.wkwebView.takeSnapshot(with: nil) { image, error in
                     if let image {
                         browserEffect.setImage(image: image)
@@ -308,6 +309,27 @@ final class Model: ObservableObject {
             self.updateBatteryLevel()
             self.media.logStatistics()
         })
+    }
+
+    private func browserEffectsInCurrentScene() -> [BrowserEffect] {
+        guard let scene = findEnabledScene(id: selectedSceneId) else {
+            return []
+        }
+        var sceneBrowserEffects: [BrowserEffect] = []
+        for widget in scene.widgets {
+            guard let realWidget = findWidget(id: widget.widgetId) else {
+                continue
+            }
+            if realWidget.type != .browser {
+                continue
+            }
+            if let browserEffect = browserEffects[widget.id] {
+                sceneBrowserEffects.append(browserEffect)
+            } else {
+                logger.warning("Browser effect not found")
+            }
+        }
+        return sceneBrowserEffects
     }
 
     private func removeUnusedImages() {

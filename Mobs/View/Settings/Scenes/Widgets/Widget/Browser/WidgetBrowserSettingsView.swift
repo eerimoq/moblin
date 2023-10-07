@@ -15,19 +15,19 @@ struct WidgetBrowserSettingsView: View {
             model.store()
         }
     }
-    
+
     func submitHeight(value: String) {
         if let height = Int(value.trim()) {
             widget.browser!.height = height
             model.store()
         }
     }
-    
+
     func submitCustomCSS(value: String) {
         widget.browser!.customCss = value
         model.store()
     }
-    
+
     var body: some View {
         Section("Browser") {
             NavigationLink(destination: WidgetBrowserUrlSettingsView(

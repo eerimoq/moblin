@@ -180,7 +180,8 @@ class SettingsWidgetBrowser: Codable {
     var url: String = "https://google.com"
     var width: Int = 500
     var height: Int = 500
-    var customCss: String = "body { background-color: rgba(0, 0, 0, 0); margin: 0px auto; overflow: hidden; }"
+    var customCss: String =
+        "body { background-color: rgba(0, 0, 0, 0); margin: 0px auto; overflow: hidden; }"
 }
 
 enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
@@ -551,7 +552,7 @@ func addDefaultButtons(database: Database) {
     button.systemImageNameOff = "dice"
     button.widget.widgetId = database.widgets[4].id
     database.buttons.append(button)
-    
+
     button = SettingsButton(name: "Microphone")
     button.id = UUID()
     button.type = .microphone
@@ -559,7 +560,6 @@ func addDefaultButtons(database: Database) {
     button.systemImageNameOn = "music.mic"
     button.systemImageNameOff = "music.mic"
     database.buttons.append(button)
-
 }
 
 func createDefault() -> Database {

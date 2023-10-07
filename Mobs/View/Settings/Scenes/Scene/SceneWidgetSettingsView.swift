@@ -62,17 +62,10 @@ struct ValueEditView: View {
 struct SceneWidgetSettingsView: View {
     @ObservedObject private var model: Model
     private var widget: SettingsSceneWidget
-    private var isImage: Bool
 
     init(model: Model, widget: SettingsSceneWidget) {
         self.model = model
         self.widget = widget
-        if let widget = model.findWidget(id: widget.widgetId) {
-            isImage = widget.type == .image
-        } else {
-            logger.error("Unable to find widget type")
-            isImage = false
-        }
     }
 
     func submitX(value: String) {

@@ -30,18 +30,9 @@ struct Browser: UIViewRepresentable {
 
 final class BrowserEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
-    var overlay: CIImage?
     let browser: Browser
+    var overlay: CIImage?
     var image: UIImage?
-    private var extent = CGRect.zero {
-        didSet {
-            if extent == oldValue {
-                return
-            }
-            updateOverlay()
-        }
-    }
-
     let x: Double
     let y: Double
 
@@ -61,17 +52,14 @@ final class BrowserEffect: VideoEffect {
 
     func setImage(image: UIImage) {
         self.image = image
-        updateOverlay()
     }
 
-    private func updateOverlay() {
+    private func updateOverlay(size: CGSize) {
         guard let image else {
             return
         }
-        guard !extent.isEmpty else {
-            return
-        }
-        UIGraphicsBeginImageContext(extent.size)
+        self.image = nil
+        UIGraphicsBeginImageContext(size)
         image.draw(at: CGPoint(x: x, y: y))
         overlay = CIImage(
             image: UIGraphicsGetImageFromCurrentImageContext()!,
@@ -81,7 +69,7 @@ final class BrowserEffect: VideoEffect {
     }
 
     override func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {
-        extent = image.extent
+        updateOverlay(size: image.extent.size)
         filter.inputImage = overlay
         filter.backgroundImage = image
         return filter.outputImage ?? image
