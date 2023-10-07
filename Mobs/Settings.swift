@@ -208,8 +208,8 @@ class SettingsWidgetVideoEffect: Codable {
 
 enum SettingsWidgetType: String, Codable, CaseIterable {
     case camera = "Camera"
-    case image = "Image"
     case videoEffect = "Video effect"
+    case image = "Image"
     case webPage = "Web page"
     case browser = "Browser"
 }
@@ -221,7 +221,7 @@ let widgetTypes = SettingsWidgetType.allCases.filter { widgetType in
 class SettingsWidget: Codable, Identifiable, Equatable {
     var name: String
     var id: UUID = .init()
-    var type: SettingsWidgetType = .image
+    var type: SettingsWidgetType = .videoEffect
     var text: SettingsWidgetText = .init()
     var image: SettingsWidgetImage = .init()
     var video: SettingsWidgetVideo = .init()
