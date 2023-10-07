@@ -202,7 +202,9 @@ final class Model: ObservableObject {
                 for inputSource in inputSources {
                     if let inputSourceOrientation = inputSource.orientation {
                         if inputSourceOrientation == orientation {
+                            media.attachAudio(device: nil)
                             try session.setInputDataSource(inputSource)
+                            media.attachAudio(device: AVCaptureDevice.default(for: .audio))
                             logger.info("\(orientation.rawValue) microphone selected")
                         }
                     }

@@ -252,7 +252,7 @@ final class Media: NSObject {
     }
 
     func attachAudio(device: AVCaptureDevice?) {
-        netStream.attachAudio(device) { error in
+        netStream?.attachAudio(device) { error in
             logger.error("stream: Attach audio error: \(error)")
         }
     }
