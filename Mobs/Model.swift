@@ -84,12 +84,14 @@ final class Model: ObservableObject {
     private var reconnectTimer: Timer?
     private var reconnectTime = firstReconnectTime
     private var logId = 1
-    @Published var showToast = false
+    @Published var showingToast = false
     @Published var toast = AlertToast(type: .regular, title: "") {
         didSet {
-            showToast.toggle()
+            showingToast.toggle()
         }
     }
+    @Published var showingBitrate = false
+    @Published var showingMic = false
 
     var zoomLevels: [SettingsZoomLevel] = []
     @Published var zoomId = UUID()
@@ -119,7 +121,7 @@ final class Model: ObservableObject {
 
     func makeToast(title: String) {
         toast = AlertToast(type: .regular, title: title)
-        showToast = true
+        showingToast = true
     }
 
     func makeErrorToast(title: String, font: Font? = nil, subTitle: String? = nil) {
@@ -129,7 +131,7 @@ final class Model: ObservableObject {
             subTitle: subTitle,
             style: .style(titleColor: .red, titleFont: font)
         )
-        showToast = true
+        showingToast = true
     }
 
     func updateButtonStates() {

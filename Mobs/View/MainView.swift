@@ -15,13 +15,37 @@ struct MainView: View {
 
     var body: some View {
         NavigationStack {
-            HStack(spacing: 0) {
-                ZStack {
-                    streamView
-                        .ignoresSafeArea()
-                    StreamOverlayView(model: model)
+            ZStack {
+                HStack(spacing: 0) {
+                    ZStack {
+                        streamView
+                            .ignoresSafeArea()
+                        StreamOverlayView(model: model)
+                    }
+                    ControlBarView(model: model)
                 }
-                ControlBarView(model: model)
+                if model.showingBitrate {
+                    GeometryReader { metrics in
+                        HStack {
+                            Spacer()
+                            StreamVideoBitrateSettingsButtonView(model: model, done: {
+                                model.showingBitrate = false
+                            })
+                            .frame(width: metrics.size.width * 0.5)
+                        }
+                    }
+                }
+                if model.showingMic {
+                    GeometryReader { metrics in
+                        HStack {
+                            Spacer()
+                            MicButtonView(model: model, done: {
+                                model.showingMic = false
+                            })
+                            .frame(width: metrics.size.width * 0.5)
+                        }
+                    }
+                }
             }
             .onAppear {
                 AppDelegate.setAllowedOrientations(mask: .landscapeRight)
@@ -30,7 +54,7 @@ struct MainView: View {
                 AppDelegate.setAllowedOrientations(mask: .all)
             }
         }
-        .toast(isPresenting: $model.showToast, duration: 5) {
+        .toast(isPresenting: $model.showingToast, duration: 5) {
             model.toast
         }
     }

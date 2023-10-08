@@ -41,29 +41,32 @@ struct MicButtonView: View {
     }
 
     var body: some View {
-        HStack {
-            Spacer()
-            Button(action: {
-                done()
-            }, label: {
-                Text("Close")
-                    .padding(5)
-                    .foregroundColor(.blue)
-            })
-        }
-        Form {
-            Section {
-                Picker("", selection: $selection) {
-                    ForEach(mics, id: \.self) { mic in
-                        Text(mic)
-                    }
-                }
-                .onChange(of: selection) { mic in
-                    model.selectMic(orientation: mic, showToast: true)
+        VStack(spacing: 0) {
+            HStack {
+                Spacer()
+                Button(action: {
                     done()
+                }, label: {
+                    Text("Close")
+                        .padding(5)
+                        .foregroundColor(.blue)
+                })
+            }
+            .background(Color(uiColor: .systemGroupedBackground))
+            Form {
+                Section("Mic") {
+                    Picker("", selection: $selection) {
+                        ForEach(mics, id: \.self) { mic in
+                            Text(mic)
+                        }
+                    }
+                    .onChange(of: selection) { mic in
+                        model.selectMic(orientation: mic, showToast: true)
+                        done()
+                    }
+                    .pickerStyle(.inline)
+                    .labelsHidden()
                 }
-                .pickerStyle(.inline)
-                .labelsHidden()
             }
         }
     }
@@ -71,8 +74,6 @@ struct MicButtonView: View {
 
 struct ButtonsView: View {
     @ObservedObject var model: Model
-    @State var showingBitrate = false
-    @State var showingMic = false
 
     func getImage(state: ButtonState) -> String {
         if state.isOn {
@@ -126,18 +127,13 @@ struct ButtonsView: View {
                             })
                         case .bitrate:
                             Button(action: {
-                                showingBitrate = true
+                                model.showingBitrate = true
                             }, label: {
                                 ButtonImage(
                                     image: getImage(state: second),
                                     on: second.isOn
                                 )
                             })
-                            .popover(isPresented: $showingBitrate) {
-                                StreamVideoBitrateSettingsButtonView(model: model, done: {
-                                    showingBitrate = false
-                                })
-                            }
                         case .widget:
                             Button(action: {
                                 widgetAction(state: second)
@@ -149,32 +145,22 @@ struct ButtonsView: View {
                             })
                         case .microphone:
                             Button(action: {
-                                showingMic = true
+                                model.showingMic = true
                             }, label: {
                                 ButtonImage(
                                     image: getImage(state: second),
                                     on: second.isOn
                                 )
                             })
-                            .popover(isPresented: $showingMic) {
-                                MicButtonView(model: model, done: {
-                                    showingMic = false
-                                })
-                            }
                         case .mic:
                             Button(action: {
-                                showingMic = true
+                                model.showingMic = true
                             }, label: {
                                 ButtonImage(
                                     image: getImage(state: second),
                                     on: second.isOn
                                 )
                             })
-                            .popover(isPresented: $showingMic) {
-                                MicButtonView(model: model, done: {
-                                    showingMic = false
-                                })
-                            }
                         }
                     } else {
                         ButtonPlaceholderImage()
@@ -200,18 +186,13 @@ struct ButtonsView: View {
                         })
                     case .bitrate:
                         Button(action: {
-                            showingBitrate = true
+                            model.showingBitrate = true
                         }, label: {
                             ButtonImage(
                                 image: getImage(state: pair.first),
                                 on: pair.first.isOn
                             )
                         })
-                        .popover(isPresented: $showingBitrate) {
-                            StreamVideoBitrateSettingsButtonView(model: model, done: {
-                                showingBitrate = false
-                            })
-                        }
                     case .widget:
                         Button(action: {
                             widgetAction(state: pair.first)
@@ -223,32 +204,22 @@ struct ButtonsView: View {
                         })
                     case .microphone:
                         Button(action: {
-                            showingMic = true
+                            model.showingMic = true
                         }, label: {
                             ButtonImage(
                                 image: getImage(state: pair.first),
                                 on: pair.first.isOn
                             )
                         })
-                        .popover(isPresented: $showingMic) {
-                            MicButtonView(model: model, done: {
-                                showingMic = false
-                            })
-                        }
                     case .mic:
                         Button(action: {
-                            showingMic = true
+                            model.showingMic = true
                         }, label: {
                             ButtonImage(
                                 image: getImage(state: pair.first),
                                 on: pair.first.isOn
                             )
                         })
-                        .popover(isPresented: $showingMic) {
-                            MicButtonView(model: model, done: {
-                                showingMic = false
-                            })
-                        }
                     }
                 }
             }
