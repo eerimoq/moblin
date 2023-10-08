@@ -78,7 +78,7 @@ struct LeftOverlayView: View {
             if database.show.microphone! {
                 StreamOverlayIconAndTextView(
                     icon: "music.mic",
-                    text: model.microphone
+                    text: model.mic
                 )
             }
             if database.show.viewers {

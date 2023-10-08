@@ -52,7 +52,7 @@ Features
 
   - Front camera mirrored on screen for natural experience.
 
-- Back, front or bottom microphone.
+- Back, front or bottom mic.
 
 - Mute audio.
 

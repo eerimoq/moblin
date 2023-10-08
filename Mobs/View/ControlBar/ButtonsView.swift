@@ -29,7 +29,7 @@ struct ButtonPlaceholderImage: View {
     }
 }
 
-struct MicrophoneButtonView: View {
+struct MicButtonView: View {
     @ObservedObject var model: Model
     @State private var selection: String
     private var done: () -> Void
@@ -37,7 +37,7 @@ struct MicrophoneButtonView: View {
     init(model: Model, done: @escaping () -> Void) {
         self.model = model
         self.done = done
-        selection = model.microphone
+        selection = model.mic
     }
 
     var body: some View {
@@ -54,12 +54,12 @@ struct MicrophoneButtonView: View {
         Form {
             Section {
                 Picker("", selection: $selection) {
-                    ForEach(microphones, id: \.self) { microphone in
-                        Text(microphone)
+                    ForEach(mics, id: \.self) { mic in
+                        Text(mic)
                     }
                 }
-                .onChange(of: selection) { microphone in
-                    model.selectMicrophone(orientation: microphone)
+                .onChange(of: selection) { mic in
+                    model.selectMic(orientation: mic, showToast: true)
                     done()
                 }
                 .pickerStyle(.inline)
@@ -72,7 +72,7 @@ struct MicrophoneButtonView: View {
 struct ButtonsView: View {
     @ObservedObject var model: Model
     @State var showingBitrate = false
-    @State var showingMicrophone = false
+    @State var showingMic = false
 
     func getImage(state: ButtonState) -> String {
         if state.isOn {
@@ -149,16 +149,16 @@ struct ButtonsView: View {
                             })
                         case .microphone:
                             Button(action: {
-                                showingMicrophone = true
+                                showingMic = true
                             }, label: {
                                 ButtonImage(
                                     image: getImage(state: second),
                                     on: second.isOn
                                 )
                             })
-                            .popover(isPresented: $showingMicrophone) {
-                                MicrophoneButtonView(model: model, done: {
-                                    showingMicrophone = false
+                            .popover(isPresented: $showingMic) {
+                                MicButtonView(model: model, done: {
+                                    showingMic = false
                                 })
                             }
                         }
@@ -209,16 +209,16 @@ struct ButtonsView: View {
                         })
                     case .microphone:
                         Button(action: {
-                            showingMicrophone = true
+                            showingMic = true
                         }, label: {
                             ButtonImage(
                                 image: getImage(state: pair.first),
                                 on: pair.first.isOn
                             )
                         })
-                        .popover(isPresented: $showingMicrophone) {
-                            MicrophoneButtonView(model: model, done: {
-                                showingMicrophone = false
+                        .popover(isPresented: $showingMic) {
+                            MicButtonView(model: model, done: {
+                                showingMic = false
                             })
                         }
                     }

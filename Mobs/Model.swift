@@ -48,7 +48,7 @@ final class Model: ObservableObject {
     }
 
     private var streaming = false
-    @Published var microphone = microphones[0]
+    @Published var mic = mics[0]
     // private var wasStreamingWhenDidEnterBackground = false
     private var streamStartDate: Date?
     @Published var isLive = false
@@ -194,7 +194,7 @@ final class Model: ObservableObject {
         }
     }
 
-    func selectMicrophone(orientation: String) {
+    func selectMic(orientation: String, showToast: Bool = false) {
         let avOrientation = AVAudioSession.Orientation(rawValue: orientation)
         let session = AVAudioSession.sharedInstance()
         do {
@@ -207,15 +207,18 @@ final class Model: ObservableObject {
                             try session.setInputDataSource(inputSource)
                             media
                                 .attachAudio(device: AVCaptureDevice.default(for: .audio))
-                            logger.info("\(orientation) microphone selected")
+                            logger.info("\(orientation) mic")
+                            if showToast {
+                                makeToast(title: orientation)
+                            }
                         }
                     }
                 }
             }
-            microphone = orientation
+            mic = orientation
         } catch {
-            logger.error("Failed to select microphone: \(error)")
-            makeErrorToast(title: "Failed to select microphone", subTitle: "\(error)")
+            logger.error("Failed to select mic: \(error)")
+            makeErrorToast(title: "Failed to select mic", subTitle: "\(error)")
         }
     }
 
@@ -229,7 +232,7 @@ final class Model: ObservableObject {
         media.onRtmpDisconnected = handleRtmpDisconnected
         media.onAudioMuteChange = updateAudioLevel
         setupAudioSession()
-        selectMicrophone(orientation: microphones[0])
+        selectMic(orientation: mics[0])
         zoomLevels = database.zoom!.back
         backZoomId = zoomLevels[0].id
         zoomId = backZoomId

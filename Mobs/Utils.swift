@@ -249,4 +249,4 @@ func formatAsInt(_ value: CGFloat) -> String {
     return String(format: "%d", Int(value))
 }
 
-let microphones = ["Front", "Back", "Bottom"]
+let mics = ["Front", "Back", "Bottom"]
