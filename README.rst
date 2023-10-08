@@ -50,11 +50,15 @@ Features
 
 - Back or front camera.
 
+  - Front camera mirrored on screen for natural experience.
+
 - Back, front or bottom microphone.
 
 - Zoom.
 
-- Connection status.
+  - Configurable presets.
+
+- Stream connection status and uptime.
 
 - Video effects.
 
