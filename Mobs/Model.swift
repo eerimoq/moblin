@@ -203,7 +203,7 @@ final class Model: ObservableObject {
                     if let inputSourceOrientation = inputSource.orientation {
                         if inputSourceOrientation == avOrientation {
                             media.attachAudio(device: nil)
-                            try session.setActive(true)
+                            setupAudioSession()
                             try session.setInputDataSource(inputSource)
                             media
                                 .attachAudio(device: AVCaptureDevice.default(for: .audio))
@@ -293,21 +293,6 @@ final class Model: ObservableObject {
             self.updateTwitchPubSub(now: now)
             self.updateAudioLevel()
             self.updateSrtlaConnectionStatistics()
-        })
-        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false, block: { _ in
-            for browserEffect in self.browserEffectsInCurrentScene() {
-                browserEffect.browser.wkwebView.takeSnapshot(with: nil) { image, error in
-                    if let image {
-                        browserEffect.setImage(image: image)
-                    } else {
-                        if let error {
-                            logger.error("Browser snapshot error: \(error)")
-                        } else {
-                            logger.error("No browser image")
-                        }
-                    }
-                }
-            }
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
