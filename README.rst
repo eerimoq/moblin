@@ -54,6 +54,8 @@ Features
 
 - Back, front or bottom microphone.
 
+- Mute audio.
+
 - Zoom.
 
   - Configurable presets.
@@ -74,8 +76,6 @@ Features
   - Random. A single effect that applies a random effect.
 
   - Triple. Show center of image three times.
-
-- Mute audio.
 
 - Torch.
 
