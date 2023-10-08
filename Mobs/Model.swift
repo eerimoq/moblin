@@ -218,6 +218,7 @@ final class Model: ObservableObject {
 
     func setup() {
         UIDevice.current.isBatteryMonitoringEnabled = true
+        updateBatteryLevel()
         settings.load()
         media.onSrtConnected = handleSrtConnected
         media.onSrtDisconnected = handleSrtDisconnected
