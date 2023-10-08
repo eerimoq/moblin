@@ -161,6 +161,20 @@ struct ButtonsView: View {
                                     showingMic = false
                                 })
                             }
+                        case .mic:
+                            Button(action: {
+                                showingMic = true
+                            }, label: {
+                                ButtonImage(
+                                    image: getImage(state: second),
+                                    on: second.isOn
+                                )
+                            })
+                            .popover(isPresented: $showingMic) {
+                                MicButtonView(model: model, done: {
+                                    showingMic = false
+                                })
+                            }
                         }
                     } else {
                         ButtonPlaceholderImage()
@@ -208,6 +222,20 @@ struct ButtonsView: View {
                             )
                         })
                     case .microphone:
+                        Button(action: {
+                            showingMic = true
+                        }, label: {
+                            ButtonImage(
+                                image: getImage(state: pair.first),
+                                on: pair.first.isOn
+                            )
+                        })
+                        .popover(isPresented: $showingMic) {
+                            MicButtonView(model: model, done: {
+                                showingMic = false
+                            })
+                        }
+                    case .mic:
                         Button(action: {
                             showingMic = true
                         }, label: {

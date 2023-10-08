@@ -281,9 +281,12 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case bitrate = "Bitrate"
     case widget = "Widget"
     case microphone = "Microphone"
+    case mic = "Mic"
 }
 
-let buttonTypes = SettingsButtonType.allCases.map { $0.rawValue }
+let buttonTypes = SettingsButtonType.allCases.filter({ button in
+    button != .microphone
+}).map { $0.rawValue }
 
 class SettingsButtonWidget: Codable, Identifiable {
     var widgetId: UUID
@@ -553,7 +556,7 @@ func addDefaultButtons(database: Database) {
     button.widget.widgetId = database.widgets[4].id
     database.buttons.append(button)
 
-    button = SettingsButton(name: "Microphone")
+    button = SettingsButton(name: "Mic")
     button.id = UUID()
     button.type = .microphone
     button.imageType = "System name"
@@ -731,6 +734,13 @@ final class Settings {
             }
             widget.type = .browser
             widget.browser!.url = widget.webPage!.url
+            store()
+        }
+        for button in realDatabase.buttons {
+            if button.type != .microphone {
+                continue
+            }
+            button.type = .mic
             store()
         }
     }
