@@ -108,6 +108,11 @@ Ideas/plan
 
 - Adaptive bitrate, but based on what?
 
+- Interactive web views/browsers to show any content.
+
+- Settings on half landscape screen so video can be seen when changing
+  settings.
+
 - Investigate video stabilization API.
 
 - Show web page on stream and/or locally. Audio kinda important.
