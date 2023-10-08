@@ -72,7 +72,8 @@ struct StreamVideoBitrateSettingsButtonView: View {
                         if model.stream.enabled {
                             model.setStreamBitrate(stream: model.stream)
                         }
-                        model.makeToast(title: formatBytesPerSecond(speed: Int64(bitrate)))
+                        model
+                            .makeToast(title: formatBytesPerSecond(speed: Int64(bitrate)))
                         done()
                     }
                     .pickerStyle(.inline)

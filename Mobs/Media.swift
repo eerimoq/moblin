@@ -247,14 +247,6 @@ final class Media: NSObject {
         return level
     }
 
-    func getCameraZoomLevel() -> Double? {
-        guard let device = netStream.videoCapture(for: 0)?.device else {
-            logger.warning("Device not ready to zoom")
-            return nil
-        }
-        return device.videoZoomFactor
-    }
-    
     func attachCamera(device: AVCaptureDevice?, onSuccess: (() -> Void)? = nil) {
         netStream.attachCamera(device, onError: { error in
             logger.error("stream: Attach camera error: \(error)")
@@ -263,6 +255,12 @@ final class Media: NSObject {
                 onSuccess?()
             }
         })
+        /* let front = AVCaptureDevice.default(.builtInWideAngleCamera,
+                                             for: .video,
+                                             position: .front)
+         netStream.attachMultiCamera(front) { error in
+             print("error: \(error)")
+         } */
     }
 
     func attachAudio(device: AVCaptureDevice?) {

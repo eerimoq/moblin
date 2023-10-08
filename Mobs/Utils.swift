@@ -250,3 +250,19 @@ func formatAsInt(_ value: CGFloat) -> String {
 }
 
 let mics = ["Front", "Back", "Bottom"]
+
+func levelToX(position: AVCaptureDevice.Position, level: Float) -> Float {
+    if position == .back {
+        return level / 2
+    } else {
+        return level
+    }
+}
+
+func xToLevel(position: AVCaptureDevice.Position, x: Float) -> Float {
+    if position == .back {
+        return x * 2
+    } else {
+        return x
+    }
+}

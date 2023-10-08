@@ -90,6 +90,7 @@ final class Model: ObservableObject {
             showingToast.toggle()
         }
     }
+
     @Published var showingBitrate = false
     @Published var showingMic = false
 
@@ -889,7 +890,7 @@ final class Model: ObservableObject {
         media.attachCamera(device: device, onSuccess: {
             self.mthkView.isMirrored = isMirrored
         })
-        let _ = media.setCameraZoomLevel(level: zoomLevel, ramp: true)
+        _ = media.setCameraZoomLevel(level: zoomLevel, ramp: true)
     }
 
     private func rtmpStartStream() {
@@ -945,19 +946,19 @@ final class Model: ObservableObject {
         }
         zoomLevel = level
     }
-    
+
     func changeZoomLevel(amount: Double) {
         clearZoomId()
-        let _ = media.setCameraZoomLevel(level: zoomLevel * amount, ramp: false)
+        _ = media.setCameraZoomLevel(level: zoomLevel * amount, ramp: false)
     }
-    
+
     func commitZoomLevel(amount: Double) {
         clearZoomId()
         if let level = media.setCameraZoomLevel(level: zoomLevel * amount, ramp: false) {
             setZoomLevel(level: level)
         }
     }
-    
+
     private func clearZoomId() {
         switch cameraPosition {
         case .back:
@@ -968,7 +969,7 @@ final class Model: ObservableObject {
             break
         }
     }
-    
+
     private func findZoomLevel(id: UUID) -> SettingsZoomLevel? {
         for level in zoomLevels where level.id == id {
             return level

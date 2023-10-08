@@ -284,9 +284,9 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case mic = "Mic"
 }
 
-let buttonTypes = SettingsButtonType.allCases.filter({ button in
+let buttonTypes = SettingsButtonType.allCases.filter { button in
     button != .microphone
-}).map { $0.rawValue }
+}.map { $0.rawValue }
 
 class SettingsButtonWidget: Codable, Identifiable {
     var widgetId: UUID

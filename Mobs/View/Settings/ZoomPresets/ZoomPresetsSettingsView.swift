@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ZoomSettingsView: View {
+struct ZoomPresetsSettingsView: View {
     @ObservedObject var model: Model
 
     var body: some View {
@@ -8,12 +8,18 @@ struct ZoomSettingsView: View {
             Section("Back") {
                 List {
                     ForEach(model.database.zoom!.back) { level in
-                        NavigationLink(destination: ZoomLevelSettingsView(
+                        NavigationLink(destination: ZoomPresetsLevelSettingsView(
                             model: model,
                             level: level,
                             position: .back
                         )) {
-                            TextItemView(name: level.name, value: String(level.level))
+                            TextItemView(
+                                name: level.name,
+                                value: String(levelToX(
+                                    position: .back,
+                                    level: level.level
+                                ))
+                            )
                         }
                         .deleteDisabled(model.database.zoom!.back.count == 1)
                     }
@@ -30,7 +36,7 @@ struct ZoomSettingsView: View {
                     model.database.zoom!.back.append(SettingsZoomLevel(
                         id: UUID(),
                         name: "1x",
-                        level: 1.0
+                        level: xToLevel(position: .back, x: 1.0)
                     ))
                     model.backZoomUpdated()
                 })
@@ -38,7 +44,7 @@ struct ZoomSettingsView: View {
             Section("Front") {
                 List {
                     ForEach(model.database.zoom!.front) { level in
-                        NavigationLink(destination: ZoomLevelSettingsView(
+                        NavigationLink(destination: ZoomPresetsLevelSettingsView(
                             model: model,
                             level: level,
                             position: .front

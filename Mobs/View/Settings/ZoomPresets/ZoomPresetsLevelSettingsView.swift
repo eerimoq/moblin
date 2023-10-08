@@ -1,7 +1,7 @@
 import AVFoundation
 import SwiftUI
 
-struct ZoomLevelSettingsView: View {
+struct ZoomPresetsLevelSettingsView: View {
     @ObservedObject var model: Model
     private var level: SettingsZoomLevel
     private var position: AVCaptureDevice.Position
@@ -17,21 +17,32 @@ struct ZoomLevelSettingsView: View {
         model.store()
     }
 
-    func submitLevel(level: String) {
-        guard let level = Float(level) else {
+    func submitLevel(x: String) {
+        guard let x = Float(x) else {
             return
         }
         guard let device = preferredCamera(position: position) else {
             return
         }
-        let minLevel = Float(device.minAvailableVideoZoomFactor)
-        let maxLevel = Float(device.maxAvailableVideoZoomFactor)
-        guard level >= minLevel && level <= maxLevel else {
-            model.makeErrorToast(title: "Zoom level must be \(minLevel) - \(maxLevel)")
+        let minX = levelToX(
+            position: position,
+            level: Float(device.minAvailableVideoZoomFactor)
+        )
+        let maxX = levelToX(
+            position: position,
+            level: Float(device.maxAvailableVideoZoomFactor)
+        )
+        guard x >= minX && x <= maxX else {
+            model.makeErrorToast(title: "Zoom level must be \(minX) - \(maxX)")
             return
         }
+        let level = xToLevel(position: position, x: x)
         self.level.level = level
         model.store()
+    }
+
+    private func x() -> Float {
+        return levelToX(position: position, level: level.level)
     }
 
     var body: some View {
@@ -44,10 +55,10 @@ struct ZoomLevelSettingsView: View {
             }
             NavigationLink(destination: TextEditView(
                 title: "Level",
-                value: String(level.level),
+                value: String(x()),
                 onSubmit: submitLevel
             )) {
-                TextItemView(name: "Level", value: String(level.level))
+                TextItemView(name: "Level", value: String(x()))
             }
         }.navigationTitle("Zoom level")
     }
