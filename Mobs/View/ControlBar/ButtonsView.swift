@@ -59,7 +59,6 @@ struct MicrophoneButtonView: View {
                     }
                 }
                 .onChange(of: selection) { microphone in
-                    model.microphone = microphone
                     model.selectMicrophone(orientation: microphone)
                     done()
                 }

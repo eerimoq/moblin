@@ -195,24 +195,26 @@ final class Model: ObservableObject {
     }
 
     func selectMicrophone(orientation: String) {
-        let orientation = AVAudioSession.Orientation(rawValue: orientation)
+        let avOrientation = AVAudioSession.Orientation(rawValue: orientation)
         let session = AVAudioSession.sharedInstance()
         do {
             if let inputSources = session.inputDataSources {
                 for inputSource in inputSources {
                     if let inputSourceOrientation = inputSource.orientation {
-                        if inputSourceOrientation == orientation {
+                        if inputSourceOrientation == avOrientation {
                             media.attachAudio(device: nil)
                             try session.setInputDataSource(inputSource)
                             media
                                 .attachAudio(device: AVCaptureDevice.default(for: .audio))
-                            logger.info("\(orientation.rawValue) microphone selected")
+                            logger.info("\(orientation) microphone selected")
                         }
                     }
                 }
             }
+            self.microphone = orientation
         } catch {
             logger.error("Failed to select microphone: \(error)")
+            makeErrorToast(title: "Failed to select microphone", subTitle: "\(error)")
         }
     }
 
@@ -790,7 +792,7 @@ final class Model: ObservableObject {
             case .webPage:
                 logger.error("Found web page widget")
             case .browser:
-                if var browserEffect = browserEffects[sceneWidget.id] {
+                if let browserEffect = browserEffects[sceneWidget.id] {
                     media.registerEffect(browserEffect)
                 }
             }
