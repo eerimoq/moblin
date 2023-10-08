@@ -23,6 +23,13 @@ Features
 - Stream using RTMP, RTMPS, SRT or SRTLA to any platform that
   supportes them.
 
+  - SRTLA.
+
+    - Can use one cellular, one WiFi and one Ethernet connection
+      simultaneously.
+
+    - Upload statistics per active connection.
+
 - H.264/AVC and H.265/HEVC video codecs.
 
 - Up to 1080p and 60 FPS.
@@ -83,13 +90,6 @@ Features
 
 - Landscape stream only.
 
-- SRTLA.
-
-  - Can use one cellular, one WiFi and one Ethernet connection
-    simultaneously.
-
-  - Upload statistics per active connection.
-
 ToDo
 ====
 
@@ -119,6 +119,8 @@ Ideas/plan
 
 - Multiple Ethernet connections simultaneously?
 
+- Snapshot button.
+
 - Lookup Twitch channel id from channel name. Possibly login to
   Twitch.
 
@@ -141,6 +143,8 @@ Ideas/plan
 - Pause and scroll chat.
 
 - Play music and short sound samples.
+
+- Stream mobile games.
 
 - Geolocation (with map?).
 
