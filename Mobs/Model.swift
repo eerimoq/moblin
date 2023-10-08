@@ -203,6 +203,7 @@ final class Model: ObservableObject {
                     if let inputSourceOrientation = inputSource.orientation {
                         if inputSourceOrientation == avOrientation {
                             media.attachAudio(device: nil)
+                            try session.setActive(true)
                             try session.setInputDataSource(inputSource)
                             media
                                 .attachAudio(device: AVCaptureDevice.default(for: .audio))
@@ -211,7 +212,7 @@ final class Model: ObservableObject {
                     }
                 }
             }
-            self.microphone = orientation
+            microphone = orientation
         } catch {
             logger.error("Failed to select microphone: \(error)")
             makeErrorToast(title: "Failed to select microphone", subTitle: "\(error)")
@@ -228,7 +229,7 @@ final class Model: ObservableObject {
         media.onRtmpDisconnected = handleRtmpDisconnected
         media.onAudioMuteChange = updateAudioLevel
         setupAudioSession()
-        selectMicrophone(orientation: "Front")
+        selectMicrophone(orientation: microphones[0])
         zoomLevels = database.zoom!.back
         backZoomId = zoomLevels[0].id
         zoomId = backZoomId
@@ -749,10 +750,8 @@ final class Model: ObservableObject {
         switch scene.cameraType {
         case .back:
             attachCamera(position: .back)
-            mthkView.isMirrored = false
         case .front:
             attachCamera(position: .front)
-            mthkView.isMirrored = true
         default:
             logger.error("Camera type is nil?")
         }
@@ -882,18 +881,23 @@ final class Model: ObservableObject {
 
     private func attachCamera(position: AVCaptureDevice.Position) {
         let device = preferredCamera(position: position)
-        media.attachCamera(device: device)
+        var isMirrored = false
         cameraPosition = position
         switch position {
         case .back:
             zoomId = backZoomId
             zoomLevels = database.zoom!.back
+            isMirrored = false
         case .front:
             zoomId = frontZoomId
             zoomLevels = database.zoom!.front
+            isMirrored = true
         default:
             break
         }
+        media.attachCamera(device: device, onSuccess: {
+            self.mthkView.isMirrored = isMirrored
+        })
         setCameraZoomLevel(id: zoomId)
     }
 

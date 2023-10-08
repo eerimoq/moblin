@@ -92,13 +92,12 @@ ToDo
 - Fix crashes. =)
 
 - Sometimes video hangs when changing settings or when enter/exit
-  background mode.
+  background mode. Looks like there is two sessions if changing stream
+  from RTMP to SRT. Should only be one.
 
 - Changing stream from SRT to SRT always hangs video.
 
 - Improve the browser widget.
-
-- Changing microphone after app in background does not work.
 
 Ideas/plan
 ==========

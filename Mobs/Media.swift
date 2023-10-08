@@ -245,10 +245,14 @@ final class Media: NSObject {
         }
     }
 
-    func attachCamera(device: AVCaptureDevice?) {
-        netStream.attachCamera(device) { error in
+    func attachCamera(device: AVCaptureDevice?, onSuccess: (() -> Void)? = nil) {
+        netStream.attachCamera(device, onError: { error in
             logger.error("stream: Attach camera error: \(error)")
-        }
+        }, onSuccess: {
+            DispatchQueue.main.async {
+                onSuccess?()
+            }
+        })
     }
 
     func attachAudio(device: AVCaptureDevice?) {
