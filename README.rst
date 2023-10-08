@@ -2,7 +2,8 @@ MOBS
 ====
 
 An iOS app for IRL streaming. Mainly targetting `Twitch`_, but can
-stream to `YouTube`_, `Kick`_, and `OBS Studio`_ as well (and probably more).
+stream to `YouTube`_, `Kick`_, `Facebook`_ and `OBS Studio`_ as well
+(and probably more).
 
 Not yet in App Store, but on `TestFlight`_!
 
@@ -177,5 +178,7 @@ Similar software
 .. _YouTube: https://youtube.com
 
 .. _Kick: https://kick.com
+
+.. _Facebook: https://facebook.com
 
 .. _TestFlight: https://testflight.apple.com/join/PDpxEaGh
