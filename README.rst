@@ -23,16 +23,16 @@ Features
 - Stream using RTMP, RTMPS, SRT or SRTLA to any platform that
   supportes them.
 
-  - SRTLA.
-
-    - Can use one cellular, one WiFi and one Ethernet connection
-      simultaneously.
-
-    - Upload statistics per active connection.
-
 - H.264/AVC and H.265/HEVC video codecs.
 
 - Up to 1080p and 60 FPS.
+
+- SRTLA.
+
+  - Can use one cellular, one WiFi and one Ethernet connection
+    simultaneously.
+
+  - Upload statistics per active connection.
 
 - Twitch integration.
 
