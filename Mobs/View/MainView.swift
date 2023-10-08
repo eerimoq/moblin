@@ -7,6 +7,8 @@ import VideoToolbox
 struct MainView: View {
     @ObservedObject var model = Model()
     private var streamView: StreamView!
+    @State private var currentAmount = 0.0
+    @State private var finalAmount = 1.0
 
     init() {
         model.setup()
@@ -22,6 +24,14 @@ struct MainView: View {
                             .ignoresSafeArea()
                         StreamOverlayView(model: model)
                     }
+                    .gesture(
+                        MagnificationGesture(minimumScaleDelta: 0.0)
+                            .onChanged { amount in
+                                model.changeZoomLevel(amount: amount)
+                            }
+                            .onEnded({ amount in
+                                model.commitZoomLevel(amount: amount)
+                            }))
                     ControlBarView(model: model)
                 }
                 if model.showingBitrate {

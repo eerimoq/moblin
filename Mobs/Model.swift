@@ -94,10 +94,12 @@ final class Model: ObservableObject {
     @Published var showingMic = false
 
     var zoomLevels: [SettingsZoomLevel] = []
-    @Published var zoomId = UUID()
-    private var backZoomId = UUID()
-    private var frontZoomId = UUID()
-    private var cameraPosition: AVCaptureDevice.Position?
+    @Published var backZoomId = UUID()
+    @Published var frontZoomId = UUID()
+    @Published var zoomLevel = 1.0
+    private var backZoomLevel = 1.0
+    private var frontZoomLevel = 1.0
+    var cameraPosition: AVCaptureDevice.Position?
     var database: Database {
         settings.database
     }
@@ -237,7 +239,6 @@ final class Model: ObservableObject {
         selectMic(orientation: mics[0])
         zoomLevels = database.zoom!.back
         backZoomId = zoomLevels[0].id
-        zoomId = backZoomId
         frontZoomId = database.zoom!.front[0].id
         mthkView.videoGravity = .resizeAspect
         logger.handler = debugLog(message:)
@@ -875,12 +876,12 @@ final class Model: ObservableObject {
         cameraPosition = position
         switch position {
         case .back:
-            zoomId = backZoomId
             zoomLevels = database.zoom!.back
+            zoomLevel = backZoomLevel
             isMirrored = false
         case .front:
-            zoomId = frontZoomId
             zoomLevels = database.zoom!.front
+            zoomLevel = frontZoomLevel
             isMirrored = true
         default:
             break
@@ -888,7 +889,7 @@ final class Model: ObservableObject {
         media.attachCamera(device: device, onSuccess: {
             self.mthkView.isMirrored = isMirrored
         })
-        setCameraZoomLevel(id: zoomId)
+        let _ = media.setCameraZoomLevel(level: zoomLevel, ramp: true)
     }
 
     private func rtmpStartStream() {
@@ -927,12 +928,47 @@ final class Model: ObservableObject {
             break
         }
         if let level = findZoomLevel(id: id) {
-            media.setCameraZoomLevel(level: Double(level.level))
-        } else {
-            logger.warning("Zoom level missing for id")
+            if media.setCameraZoomLevel(level: Double(level.level), ramp: true) != nil {
+                setZoomLevel(level: Double(level.level))
+            }
         }
     }
 
+    private func setZoomLevel(level: Double) {
+        switch cameraPosition {
+        case .back:
+            backZoomLevel = level
+        case .front:
+            frontZoomLevel = level
+        default:
+            break
+        }
+        zoomLevel = level
+    }
+    
+    func changeZoomLevel(amount: Double) {
+        clearZoomId()
+        let _ = media.setCameraZoomLevel(level: zoomLevel * amount, ramp: false)
+    }
+    
+    func commitZoomLevel(amount: Double) {
+        clearZoomId()
+        if let level = media.setCameraZoomLevel(level: zoomLevel * amount, ramp: false) {
+            setZoomLevel(level: level)
+        }
+    }
+    
+    private func clearZoomId() {
+        switch cameraPosition {
+        case .back:
+            backZoomId = UUID()
+        case .front:
+            frontZoomId = UUID()
+        default:
+            break
+        }
+    }
+    
     private func findZoomLevel(id: UUID) -> SettingsZoomLevel? {
         for level in zoomLevels where level.id == id {
             return level

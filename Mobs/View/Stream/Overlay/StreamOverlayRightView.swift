@@ -58,23 +58,43 @@ struct RightOverlayView: View {
             }
             Spacer()
             if database.show.zoom! {
-                Picker("", selection: $model.zoomId) {
-                    ForEach(model.zoomLevels) { level in
-                        Text(level.name).tag(level.id)
+                if model.cameraPosition == .front {
+                    Picker("", selection: $model.frontZoomId) {
+                        ForEach(model.zoomLevels) { level in
+                            Text(level.name).tag(level.id)
+                        }
                     }
+                    .onChange(of: model.frontZoomId) { id in
+                        model.setCameraZoomLevel(id: id)
+                    }
+                    .pickerStyle(.segmented)
+                    .background(Color(uiColor: .systemBackground).opacity(0.8))
+                    .frame(width: CGFloat(50 * model.zoomLevels.count))
+                    .cornerRadius(7)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 7)
+                            .stroke(.secondary)
+                    )
+                    .padding([.bottom], 5)
+                } else {
+                    Picker("", selection: $model.backZoomId) {
+                        ForEach(model.zoomLevels) { level in
+                            Text(level.name).tag(level.id)
+                        }
+                    }
+                    .onChange(of: model.backZoomId) { id in
+                        model.setCameraZoomLevel(id: id)
+                    }
+                    .pickerStyle(.segmented)
+                    .background(Color(uiColor: .systemBackground).opacity(0.8))
+                    .frame(width: CGFloat(50 * model.zoomLevels.count))
+                    .cornerRadius(7)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 7)
+                            .stroke(.secondary)
+                    )
+                    .padding([.bottom], 5)
                 }
-                .onChange(of: model.zoomId) { id in
-                    model.setCameraZoomLevel(id: id)
-                }
-                .pickerStyle(.segmented)
-                .background(Color(uiColor: .systemBackground).opacity(0.8))
-                .frame(width: CGFloat(50 * model.zoomLevels.count))
-                .cornerRadius(7)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 7)
-                        .stroke(.secondary)
-                )
-                .padding([.bottom], 5)
             }
             Picker("", selection: $model.sceneIndex) {
                 ForEach(0 ..< model.enabledScenes.count, id: \.self) { id in

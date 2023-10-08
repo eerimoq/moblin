@@ -16,7 +16,7 @@ struct SettingsView: View {
                     Text("Local overlays")
                 }
                 NavigationLink(destination: ZoomSettingsView(model: model)) {
-                    Text("Zoom")
+                    Text("Zoom presets")
                 }
             }
             Section {

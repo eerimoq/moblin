@@ -66,6 +66,6 @@ struct ZoomSettingsView: View {
                 })
             }
         }
-        .navigationTitle("Zoom")
+        .navigationTitle("Zoom presets")
     }
 }

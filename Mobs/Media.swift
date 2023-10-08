@@ -227,24 +227,34 @@ final class Media: NSObject {
         netStream.videoSettings.profileLevel = profile as String
     }
 
-    func setCameraZoomLevel(level: Double) {
+    func setCameraZoomLevel(level: Double, ramp: Bool) -> Double? {
         guard let device = netStream.videoCapture(for: 0)?.device else {
             logger.warning("Device not ready to zoom")
-            return
+            return nil
         }
-        guard level >= 1.0 && level <= device.activeFormat.videoMaxZoomFactor else {
-            logger.warning("Zoom factor \(level) out of range")
-            return
-        }
+        let level = min(max(level, 1.0), device.activeFormat.videoMaxZoomFactor)
         do {
             try device.lockForConfiguration()
-            device.ramp(toVideoZoomFactor: level, withRate: 5.0)
+            if ramp {
+                device.ramp(toVideoZoomFactor: level, withRate: 5.0)
+            } else {
+                device.videoZoomFactor = level
+            }
             device.unlockForConfiguration()
         } catch let error as NSError {
             logger.warning("While locking device for ramp: \(error)")
         }
+        return level
     }
 
+    func getCameraZoomLevel() -> Double? {
+        guard let device = netStream.videoCapture(for: 0)?.device else {
+            logger.warning("Device not ready to zoom")
+            return nil
+        }
+        return device.videoZoomFactor
+    }
+    
     func attachCamera(device: AVCaptureDevice?, onSuccess: (() -> Void)? = nil) {
         netStream.attachCamera(device, onError: { error in
             logger.error("stream: Attach camera error: \(error)")
