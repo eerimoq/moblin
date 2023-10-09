@@ -28,7 +28,7 @@
 		035D37282AB0EBB500045B92 /* IconAndTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37272AB0EBB500045B92 /* IconAndTextView.swift */; };
 		035D372C2AB103E600045B92 /* SRTHaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 035D372B2AB103E600045B92 /* SRTHaishinKit */; };
 		035D37372AB230E700045B92 /* StreamVideoBitrateSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37362AB230E700045B92 /* StreamVideoBitrateSettingsView.swift */; };
-		035E775C2ACC969D00738DCE /* ZoomPresetsLevelSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035E775B2ACC969D00738DCE /* ZoomPresetsLevelSettingsView.swift */; };
+		035E775C2ACC969D00738DCE /* ZoomPresetsPresetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035E775B2ACC969D00738DCE /* ZoomPresetsPresetSettingsView.swift */; };
 		035E9E372A9A02D6009D4F5A /* MobsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035E9E362A9A02D6009D4F5A /* MobsApp.swift */; };
 		035E9E3B2A9A02D7009D4F5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */; };
 		035E9E3E2A9A02D7009D4F5A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3D2A9A02D7009D4F5A /* Preview Assets.xcassets */; };
@@ -124,7 +124,7 @@
 		035D371D2AB039C800045B92 /* StreamVideoCodecSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoCodecSettingsView.swift; sourceTree = "<group>"; };
 		035D37272AB0EBB500045B92 /* IconAndTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconAndTextView.swift; sourceTree = "<group>"; };
 		035D37362AB230E700045B92 /* StreamVideoBitrateSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoBitrateSettingsView.swift; sourceTree = "<group>"; };
-		035E775B2ACC969D00738DCE /* ZoomPresetsLevelSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomPresetsLevelSettingsView.swift; sourceTree = "<group>"; };
+		035E775B2ACC969D00738DCE /* ZoomPresetsPresetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomPresetsPresetSettingsView.swift; sourceTree = "<group>"; };
 		035E9E332A9A02D6009D4F5A /* Mobs.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mobs.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		035E9E362A9A02D6009D4F5A /* MobsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobsApp.swift; sourceTree = "<group>"; };
 		035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -515,7 +515,7 @@
 			isa = PBXGroup;
 			children = (
 				03A14BE22ACC903E00D180FF /* ZoomPresetsSettingsView.swift */,
-				035E775B2ACC969D00738DCE /* ZoomPresetsLevelSettingsView.swift */,
+				035E775B2ACC969D00738DCE /* ZoomPresetsPresetSettingsView.swift */,
 			);
 			path = ZoomPresets;
 			sourceTree = "<group>";
@@ -755,7 +755,7 @@
 				03A983722A9A0659008FF0DB /* TwitchChatMobs.swift in Sources */,
 				0379BBA52AAD945D00B718B6 /* LocalOverlaysSettingsView.swift in Sources */,
 				0379BB762AA6345400B718B6 /* ButtonSettingsView.swift in Sources */,
-				035E775C2ACC969D00738DCE /* ZoomPresetsLevelSettingsView.swift in Sources */,
+				035E775C2ACC969D00738DCE /* ZoomPresetsPresetSettingsView.swift in Sources */,
 				03A983672A9A05D7008FF0DB /* ScenesSettingsView.swift in Sources */,
 				0379BBAD2AAD964000B718B6 /* AboutSettingsView.swift in Sources */,
 				036BE2CF2ABD4CA60048F9C5 /* KickPusher.swift in Sources */,

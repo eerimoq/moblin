@@ -94,9 +94,9 @@ final class Model: ObservableObject {
     @Published var showingBitrate = false
     @Published var showingMic = false
 
-    var zoomLevels: [SettingsZoomLevel] = []
-    @Published var backZoomId = UUID()
-    @Published var frontZoomId = UUID()
+    private var zoomPresets: [SettingsZoomPreset] = []
+    @Published var backZoomPresetId = UUID()
+    @Published var frontZoomPresetId = UUID()
     @Published var zoomLevel = 1.0
     private var backZoomLevel = 1.0
     private var frontZoomLevel = 1.0
@@ -238,9 +238,9 @@ final class Model: ObservableObject {
         media.onAudioMuteChange = updateAudioLevel
         setupAudioSession()
         selectMic(orientation: mics[0])
-        zoomLevels = database.zoom!.back
-        backZoomId = zoomLevels[0].id
-        frontZoomId = database.zoom!.front[0].id
+        zoomPresets = database.zoom!.back
+        backZoomPresetId = zoomPresets[0].id
+        frontZoomPresetId = database.zoom!.front[0].id
         mthkView.videoGravity = .resizeAspect
         logger.handler = debugLog(message:)
         updateDigitalClock(now: Date())
@@ -877,11 +877,11 @@ final class Model: ObservableObject {
         cameraPosition = position
         switch position {
         case .back:
-            zoomLevels = database.zoom!.back
+            zoomPresets = database.zoom!.back
             zoomLevel = backZoomLevel
             isMirrored = false
         case .front:
-            zoomLevels = database.zoom!.front
+            zoomPresets = database.zoom!.front
             zoomLevel = frontZoomLevel
             isMirrored = true
         default:
@@ -919,18 +919,18 @@ final class Model: ObservableObject {
         media.setMute(on: isMuteOn)
     }
 
-    func setCameraZoomLevel(id: UUID) {
+    func setCameraZoomPreset(id: UUID) {
         switch cameraPosition {
         case .back:
-            backZoomId = id
+            backZoomPresetId = id
         case .front:
-            frontZoomId = id
+            frontZoomPresetId = id
         default:
             break
         }
-        if let level = findZoomLevel(id: id) {
-            if media.setCameraZoomLevel(level: Double(level.level), ramp: true) != nil {
-                setZoomLevel(level: Double(level.level))
+        if let preset = findZoomPreset(id: id) {
+            if media.setCameraZoomLevel(level: Double(preset.level), ramp: true) != nil {
+                setZoomLevel(level: Double(preset.level))
             }
         }
     }
@@ -962,19 +962,18 @@ final class Model: ObservableObject {
     private func clearZoomId() {
         switch cameraPosition {
         case .back:
-            backZoomId = UUID()
+            backZoomPresetId = UUID()
         case .front:
-            frontZoomId = UUID()
+            frontZoomPresetId = UUID()
         default:
             break
         }
     }
 
-    private func findZoomLevel(id: UUID) -> SettingsZoomLevel? {
-        for level in zoomLevels where level.id == id {
-            return level
+    private func findZoomPreset(id: UUID) -> SettingsZoomPreset? {
+        return zoomPresets.first { preset in
+            preset.id == id
         }
-        return nil
     }
 
     private func handleRtmpConnected() {
@@ -1019,18 +1018,18 @@ final class Model: ObservableObject {
 
     func backZoomUpdated() {
         if !database.zoom!.back.contains(where: { level in
-            level.id == backZoomId
+            level.id == backZoomPresetId
         }) {
-            backZoomId = database.zoom!.back[0].id
+            backZoomPresetId = database.zoom!.back[0].id
         }
         sceneUpdated(store: true)
     }
 
     func frontZoomUpdated() {
         if !database.zoom!.front.contains(where: { level in
-            level.id == frontZoomId
+            level.id == frontZoomPresetId
         }) {
-            frontZoomId = database.zoom!.front[0].id
+            frontZoomPresetId = database.zoom!.front[0].id
         }
         sceneUpdated(store: true)
     }

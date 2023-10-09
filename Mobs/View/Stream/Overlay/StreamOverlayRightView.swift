@@ -59,17 +59,17 @@ struct RightOverlayView: View {
             Spacer()
             if database.show.zoom! {
                 if model.cameraPosition == .front {
-                    Picker("", selection: $model.frontZoomId) {
-                        ForEach(model.zoomLevels) { level in
-                            Text(level.name).tag(level.id)
+                    Picker("", selection: $model.frontZoomPresetId) {
+                        ForEach(database.zoom!.front) { preset in
+                            Text(preset.name).tag(preset.id)
                         }
                     }
-                    .onChange(of: model.frontZoomId) { id in
-                        model.setCameraZoomLevel(id: id)
+                    .onChange(of: model.frontZoomPresetId) { id in
+                        model.setCameraZoomPreset(id: id)
                     }
                     .pickerStyle(.segmented)
                     .background(Color(uiColor: .systemBackground).opacity(0.8))
-                    .frame(width: CGFloat(50 * model.zoomLevels.count))
+                    .frame(width: CGFloat(50 * database.zoom!.front.count))
                     .cornerRadius(7)
                     .overlay(
                         RoundedRectangle(cornerRadius: 7)
@@ -77,17 +77,17 @@ struct RightOverlayView: View {
                     )
                     .padding([.bottom], 5)
                 } else {
-                    Picker("", selection: $model.backZoomId) {
-                        ForEach(model.zoomLevels) { level in
-                            Text(level.name).tag(level.id)
+                    Picker("", selection: $model.backZoomPresetId) {
+                        ForEach(database.zoom!.back) { preset in
+                            Text(preset.name).tag(preset.id)
                         }
                     }
-                    .onChange(of: model.backZoomId) { id in
-                        model.setCameraZoomLevel(id: id)
+                    .onChange(of: model.backZoomPresetId) { id in
+                        model.setCameraZoomPreset(id: id)
                     }
                     .pickerStyle(.segmented)
                     .background(Color(uiColor: .systemBackground).opacity(0.8))
-                    .frame(width: CGFloat(50 * model.zoomLevels.count))
+                    .frame(width: CGFloat(50 * database.zoom!.back.count))
                     .cornerRadius(7)
                     .overlay(
                         RoundedRectangle(cornerRadius: 7)

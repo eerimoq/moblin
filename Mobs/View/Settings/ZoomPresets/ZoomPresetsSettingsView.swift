@@ -5,19 +5,19 @@ struct ZoomPresetsSettingsView: View {
 
     var body: some View {
         Form {
-            Section("Back") {
+            Section("Back camera") {
                 List {
-                    ForEach(model.database.zoom!.back) { level in
-                        NavigationLink(destination: ZoomPresetsLevelSettingsView(
+                    ForEach(model.database.zoom!.back) { preset in
+                        NavigationLink(destination: ZoomPresetsPresetSettingsView(
                             model: model,
-                            level: level,
+                            preset: preset,
                             position: .back
                         )) {
                             TextItemView(
-                                name: level.name,
-                                value: String(levelToX(
+                                name: preset.name,
+                                value: String(factorToX(
                                     position: .back,
-                                    level: level.level
+                                    factor: preset.level
                                 ))
                             )
                         }
@@ -33,23 +33,23 @@ struct ZoomPresetsSettingsView: View {
                     })
                 }
                 CreateButtonView(action: {
-                    model.database.zoom!.back.append(SettingsZoomLevel(
+                    model.database.zoom!.back.append(SettingsZoomPreset(
                         id: UUID(),
                         name: "1x",
-                        level: xToLevel(position: .back, x: 1.0)
+                        level: xToFactor(position: .back, x: 1.0)
                     ))
                     model.backZoomUpdated()
                 })
             }
-            Section("Front") {
+            Section("Front camera") {
                 List {
-                    ForEach(model.database.zoom!.front) { level in
-                        NavigationLink(destination: ZoomPresetsLevelSettingsView(
+                    ForEach(model.database.zoom!.front) { preset in
+                        NavigationLink(destination: ZoomPresetsPresetSettingsView(
                             model: model,
-                            level: level,
+                            preset: preset,
                             position: .front
                         )) {
-                            TextItemView(name: level.name, value: String(level.level))
+                            TextItemView(name: preset.name, value: String(preset.level))
                         }
                         .deleteDisabled(model.database.zoom!.front.count == 1)
                     }
@@ -63,7 +63,7 @@ struct ZoomPresetsSettingsView: View {
                     })
                 }
                 CreateButtonView(action: {
-                    model.database.zoom!.front.append(SettingsZoomLevel(
+                    model.database.zoom!.front.append(SettingsZoomPreset(
                         id: UUID(),
                         name: "1x",
                         level: 1.0

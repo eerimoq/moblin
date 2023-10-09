@@ -327,7 +327,7 @@ class SettingsShow: Codable {
     var microphone: Bool? = true
 }
 
-class SettingsZoomLevel: Codable, Identifiable {
+class SettingsZoomPreset: Codable, Identifiable {
     var id: UUID
     var name: String = ""
     var level: Float = 1.0
@@ -340,8 +340,8 @@ class SettingsZoomLevel: Codable, Identifiable {
 }
 
 class SettingsZoom: Codable {
-    var back: [SettingsZoomLevel] = []
-    var front: [SettingsZoomLevel] = []
+    var back: [SettingsZoomPreset] = []
+    var front: [SettingsZoomPreset] = []
 }
 
 class Database: Codable {
@@ -469,20 +469,20 @@ func addDefaultZoom(database: Database) {
 
 func addDefaultBackZoom(database: Database) {
     database.zoom!.back = [
-        SettingsZoomLevel(id: UUID(), name: "0.5x", level: 1.0),
-        SettingsZoomLevel(id: UUID(), name: "1x", level: 2.0),
-        SettingsZoomLevel(id: UUID(), name: "2x", level: 4.0),
-        SettingsZoomLevel(id: UUID(), name: "4x", level: 8.0),
-        SettingsZoomLevel(id: UUID(), name: "8x", level: 16.0),
+        SettingsZoomPreset(id: UUID(), name: "0.5x", level: 1.0),
+        SettingsZoomPreset(id: UUID(), name: "1x", level: 2.0),
+        SettingsZoomPreset(id: UUID(), name: "2x", level: 4.0),
+        SettingsZoomPreset(id: UUID(), name: "4x", level: 8.0),
+        SettingsZoomPreset(id: UUID(), name: "8x", level: 16.0),
     ]
 }
 
 func addDefaultFrontZoom(database: Database) {
     database.zoom!.front = [
-        SettingsZoomLevel(id: UUID(), name: "1x", level: 1.0),
-        SettingsZoomLevel(id: UUID(), name: "2x", level: 2.0),
-        SettingsZoomLevel(id: UUID(), name: "4x", level: 4.0),
-        SettingsZoomLevel(id: UUID(), name: "8x", level: 8.0),
+        SettingsZoomPreset(id: UUID(), name: "1x", level: 1.0),
+        SettingsZoomPreset(id: UUID(), name: "2x", level: 2.0),
+        SettingsZoomPreset(id: UUID(), name: "4x", level: 4.0),
+        SettingsZoomPreset(id: UUID(), name: "8x", level: 8.0),
     ]
 }
 
