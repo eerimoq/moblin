@@ -85,7 +85,7 @@ Features
 
   - Random. A single effect that applies a random effect.
 
-  - Triple. Show center of image three times.
+  - Triple. Show center of image three times. Experimental.
 
 - Torch.
 
@@ -96,25 +96,25 @@ Features
 ToDo
 ====
 
+- Changing stream from SRT to SRT always hangs video.
+
+- Improve the browser widget.
+
 - Fix crashes. =)
 
 - Sometimes video hangs when changing settings or when enter/exit
   background mode. Looks like there is two sessions if changing stream
   from RTMP to SRT. Should only be one.
 
-- Changing stream from SRT to SRT always hangs video.
-
-- Improve the browser widget.
-
 Ideas/plan
 ==========
 
 - Adaptive bitrate, but based on what?
 
-- Interactive web views/browsers to show any content.
+- Interactive local browser(s).
 
 - Settings on half landscape screen so video can be seen when changing
-  settings.
+  settings. Minimize button? Transparent?
 
 - Investigate video stabilization API.
 
