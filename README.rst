@@ -106,6 +106,8 @@ ToDo
   background mode. Looks like there is two sessions if changing stream
   from RTMP to SRT. Should only be one.
 
+- High CPU load when streaming with browser widget active.
+  
 Ideas/plan
 ==========
 
