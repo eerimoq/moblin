@@ -57,7 +57,7 @@ struct RightOverlayView: View {
                 )
             }
             Spacer()
-            if database.show.zoom! {
+            if database.show.zoomPresets! {
                 if model.cameraPosition == .front {
                     Picker("", selection: $model.frontZoomPresetId) {
                         ForEach(database.zoom!.front) { preset in

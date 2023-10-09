@@ -96,6 +96,7 @@ final class Model: ObservableObject {
     @Published var backZoomPresetId = UUID()
     @Published var frontZoomPresetId = UUID()
     @Published var zoomLevel = 1.0
+    var zoomLevelPinch = 1.0
     private var backZoomLevel = 1.0
     private var frontZoomLevel = 1.0
     var cameraPosition: AVCaptureDevice.Position?
@@ -889,6 +890,7 @@ final class Model: ObservableObject {
             self.mthkView.isMirrored = isMirrored
         })
         _ = media.setCameraZoomLevel(level: zoomLevel, ramp: true)
+        zoomLevelPinch = zoomLevel
     }
 
     private func rtmpStartStream() {
@@ -933,7 +935,7 @@ final class Model: ObservableObject {
         }
     }
 
-    private func setZoomLevel(level: Double) {
+    private func setZoomLevel(level: Double, setPinch: Bool = true) {
         switch cameraPosition {
         case .back:
             backZoomLevel = level
@@ -943,18 +945,33 @@ final class Model: ObservableObject {
             break
         }
         zoomLevel = level
+        if setPinch {
+            zoomLevelPinch = zoomLevel
+        }
     }
 
     func changeZoomLevel(amount: Double) {
         clearZoomId()
-        _ = media.setCameraZoomLevel(level: zoomLevel * amount, ramp: false)
+        if let level = media.setCameraZoomLevel(
+            level: zoomLevelPinch * amount,
+            ramp: false
+        ) {
+            setZoomLevel(level: level, setPinch: false)
+        }
     }
 
     func commitZoomLevel(amount: Double) {
         clearZoomId()
-        if let level = media.setCameraZoomLevel(level: zoomLevel * amount, ramp: false) {
+        if let level = media.setCameraZoomLevel(
+            level: zoomLevelPinch * amount,
+            ramp: false
+        ) {
             setZoomLevel(level: level)
         }
+    }
+
+    func zoomX() -> Float {
+        return factorToX(position: cameraPosition ?? .back, factor: Float(zoomLevel))
     }
 
     private func clearZoomId() {

@@ -324,6 +324,7 @@ class SettingsShow: Codable {
     var speed: Bool = true
     var audioLevel: Bool? = true
     var zoom: Bool? = true
+    var zoomPresets: Bool? = true
     var microphone: Bool? = true
 }
 
@@ -651,6 +652,10 @@ final class Settings {
         }
         if realDatabase.show.zoom == nil {
             realDatabase.show.zoom = true
+            store()
+        }
+        if realDatabase.show.zoomPresets == nil {
+            realDatabase.show.zoomPresets = realDatabase.show.zoom
             store()
         }
         for widget in realDatabase.widgets {

@@ -52,10 +52,16 @@ struct LocalOverlaysSettingsView: View {
                     show.uptime = value
                     model.store()
                 }))
-                Toggle("Zoom presets", isOn: Binding(get: {
+                Toggle("Zoom", isOn: Binding(get: {
                     show.zoom!
                 }, set: { value in
                     show.zoom = value
+                    model.store()
+                }))
+                Toggle("Zoom presets", isOn: Binding(get: {
+                    show.zoomPresets!
+                }, set: { value in
+                    show.zoomPresets = value
                     model.store()
                 }))
             } footer: {

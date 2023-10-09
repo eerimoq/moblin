@@ -202,7 +202,9 @@ struct StreamUrlSettingsView: View {
                         }
                         Group {
                             Text("RTMP server").underline()
-                            Text("Template: rtmp://my_public_ip:my_public_port/my_stream_key")
+                            Text(
+                                "Template: rtmp://my_public_ip:my_public_port/my_stream_key"
+                            )
                             Text("Example:  rtmp://foobar.org:3321/5678")
                         }
                     }
