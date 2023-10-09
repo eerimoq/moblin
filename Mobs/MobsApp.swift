@@ -17,13 +17,10 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
     static func setAllowedOrientations(mask: UIInterfaceOrientationMask) {
         AppDelegate.orientationLock = mask
-        let windows = UIApplication.shared.windows
-        guard windows.count > 0 else {
+        if UIApplication.shared.windows.first?.rootViewController?
+            .setNeedsUpdateOfSupportedInterfaceOrientations() == nil
+        {
             logger.error("app: Failed to set allowed orientations. No window.")
-            return
-        }
-        if let controller = windows[0].rootViewController {
-            controller.setNeedsUpdateOfSupportedInterfaceOrientations()
         }
     }
 
