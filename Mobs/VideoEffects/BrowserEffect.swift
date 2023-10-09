@@ -4,6 +4,8 @@ import SwiftUI
 import UIKit
 import WebKit
 
+private let browserQueue = DispatchQueue(label: "com.eerimoq.widget.browser")
+
 struct Browser: UIViewRepresentable {
     let wkwebView: WKWebView
 
@@ -22,7 +24,6 @@ struct Browser: UIViewRepresentable {
         wkwebView.scrollView.backgroundColor = .clear
         let request = URLRequest(url: url)
         wkwebView.load(request)
-        // wkwebView.loadHTMLString("So long and thanks for all the fish!", baseURL: nil)
     }
 
     func makeUIView(context _: Context) -> WKWebView {
@@ -55,16 +56,24 @@ final class BrowserEffect: VideoEffect {
     }
 
     func setImage(image: UIImage) {
-        self.image = image
+        browserQueue.sync {
+            self.image = image
+        }
     }
 
     private func updateOverlay(size: CGSize) {
-        guard let image else {
+        var newImage: UIImage?
+        browserQueue.sync {
+            if self.image != nil {
+                newImage = self.image
+                self.image = nil
+            }
+        }
+        guard let newImage else {
             return
         }
-        self.image = nil
         UIGraphicsBeginImageContext(size)
-        image.draw(at: CGPoint(x: x, y: y))
+        newImage.draw(at: CGPoint(x: x, y: y))
         overlay = CIImage(
             image: UIGraphicsGetImageFromCurrentImageContext()!,
             options: nil
