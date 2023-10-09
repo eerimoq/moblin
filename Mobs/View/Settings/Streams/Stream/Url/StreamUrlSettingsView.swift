@@ -99,31 +99,47 @@ struct StreamUrlSettingsView: View {
                     Text("")
                     Group {
                         Text("Twitch").underline()
-                        if let url =
-                            URL(
-                                string: "https://dashboard.twitch.tv/u/\(stream.twitchChannelName)/settings/stream"
+                        HStack(spacing: 0) {
+                            Text("Template: rtmp://")
+                            Link(
+                                "nearby_ingest_endpoint",
+                                destination: URL(
+                                    string: "https://help.twitch.tv/s/twitch-ingest-recommendation"
+                                )!
                             )
-                        {
-                            HStack(spacing: 0) {
-                                Text("Template: rtmp://")
-                                Link(
-                                    "nearby_ingest_endpoint",
-                                    destination: URL(
-                                        string: "https://help.twitch.tv/s/twitch-ingest-recommendation"
-                                    )!
+                            .font(.footnote)
+                            Text("/app/")
+                            if !stream.twitchChannelName.isEmpty, let url =
+                                URL(
+                                    string: "https://dashboard.twitch.tv/u/\(stream.twitchChannelName)/settings/stream"
                                 )
-                                .font(.footnote)
-                                Text("/app/")
+                            {
                                 Link("my_stream_key", destination: url)
                                     .font(.footnote)
+                            } else {
+                                Text("my_stream_key")
                             }
-                        } else {
-                            Text(
-                                "Template: rtmp://nearby_ingest_endpoint/app/my_stream_key"
-                            )
                         }
                         Text(
                             "Example:  rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef"
+                        )
+                        Text("")
+                    }
+                    Group {
+                        Text("YouTube").underline()
+                        Text(
+                            """
+                            Example:  rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3
+                            """
+                        )
+                        Text("")
+                    }
+                    Group {
+                        Text("Facebook").underline()
+                        Text(
+                            """
+                            Example:  rtmps://live-api-s.facebook.com:443/rtmp/FB-11152522122511115-0-BctNCp9jzzz-AAA
+                            """
                         )
                         Text("")
                     }
@@ -162,31 +178,33 @@ struct StreamUrlSettingsView: View {
                         Text("")
                     }
                     Group {
-                        Text("BELABOX cloud SRTLA").underline()
-                        Text(
-                            "Example:  srtla://uk.srt.belabox.net:5000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
-                        )
-                        Text("")
-                    }
-                    Group {
-                        Text("BELABOX cloud SRT").underline()
-                        Text(
-                            "Example:  srt://uk.srt.belabox.net:4000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
-                        )
-                        Text("")
-                    }
-                    Group {
-                        Text("SRTLA server").underline()
-                        Text(
-                            "Template: srtla://my_public_ip:my_public_port/my_stream_key"
-                        )
-                        Text("Example:  srtla://foobar.org:4432/5678")
-                        Text("")
-                    }
-                    Group {
-                        Text("RTMP server").underline()
-                        Text("Template: rtmp://my_public_ip:my_public_port/my_stream_key")
-                        Text("Example:  rtmp://foobar.org:3321/5678")
+                        Group {
+                            Text("BELABOX cloud SRTLA").underline()
+                            Text(
+                                "Example:  srtla://uk.srt.belabox.net:5000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
+                            )
+                            Text("")
+                        }
+                        Group {
+                            Text("BELABOX cloud SRT").underline()
+                            Text(
+                                "Example:  srt://uk.srt.belabox.net:4000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
+                            )
+                            Text("")
+                        }
+                        Group {
+                            Text("SRTLA server").underline()
+                            Text(
+                                "Template: srtla://my_public_ip:my_public_port/my_stream_key"
+                            )
+                            Text("Example:  srtla://foobar.org:4432/5678")
+                            Text("")
+                        }
+                        Group {
+                            Text("RTMP server").underline()
+                            Text("Template: rtmp://my_public_ip:my_public_port/my_stream_key")
+                            Text("Example:  rtmp://foobar.org:3321/5678")
+                        }
                     }
                 }
             }
