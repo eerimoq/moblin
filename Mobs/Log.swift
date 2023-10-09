@@ -1,5 +1,4 @@
 import Foundation
-import Logboard
 
 class EasyLogger {
     var handler: ((String) -> Void)?

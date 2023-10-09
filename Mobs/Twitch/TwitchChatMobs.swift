@@ -1,4 +1,3 @@
-import Foundation
 import TwitchChat
 
 struct Post: Hashable {

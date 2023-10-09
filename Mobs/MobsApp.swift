@@ -1,4 +1,3 @@
-import AVFoundation
 import SwiftUI
 
 @main

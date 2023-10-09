@@ -1,6 +1,4 @@
 import AVKit
-import Foundation
-import UIKit
 
 let firstReconnectTime = 5.0
 

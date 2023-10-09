@@ -1,7 +1,6 @@
 import AVFoundation
 import CoreImage.CIFilterBuiltins
 import HaishinKit
-import UIKit
 
 final class NoiseReductionEffect: VideoEffect {
     private let filter = CIFilter.noiseReduction()
