@@ -66,6 +66,8 @@ Features
 
 - Zoom.
 
+  - Pinch-to-zoom.
+
   - Configurable presets.
 
 - Stream connection status and uptime.
