@@ -106,14 +106,26 @@ ToDo
   background mode. Looks like there is two sessions if changing stream
   from RTMP to SRT. Should only be one.
 
-- High CPU load when streaming with browser widget active.
-  
+- Overlays are mirrored locally when using front camera. Ok, or needs
+  change?
+
 Ideas/plan
 ==========
 
 - Adaptive bitrate, but based on what?
 
 - Interactive local browser(s).
+
+- Tap to focus.
+
+- Timestamp overlay. Possibly with a format string, and background and
+  foreground colors.
+
+- Local horizon overlay.
+
+- Local grid overlay? What is this used for?
+
+- Safe margins local overlay? What is this used for?
 
 - Settings on half landscape screen so video can be seen when changing
   settings. Minimize button? Transparent?
