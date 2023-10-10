@@ -522,7 +522,8 @@ final class Model: ObservableObject {
             media.srtStartStream(
                 isSrtla: stream.isSrtla(),
                 url: stream.url,
-                reconnectTime: reconnectTime
+                reconnectTime: reconnectTime,
+                targetBitrate: stream.bitrate
             )
         }
         updateSpeed()

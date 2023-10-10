@@ -67,13 +67,14 @@ final class Media: NSObject {
     func srtStartStream(
         isSrtla: Bool,
         url: String,
-        reconnectTime: Double
+        reconnectTime: Double,
+        targetBitrate: UInt32
     ) {
         srtUrl = url
         srtTotalByteCount = 0
         srtPreviousTotalByteCount = 0
         srtla?.stop()
-        srtla = Srtla(delegate: self, passThrough: !isSrtla)
+        srtla = Srtla(delegate: self, passThrough: !isSrtla, targetBitrate: targetBitrate)
         srtla!.start(uri: url, timeout: reconnectTime + 1)
     }
 
@@ -213,7 +214,11 @@ final class Media: NSObject {
     }
 
     func setVideoStreamBitrate(bitrate: UInt32) {
-        netStream.videoSettings.bitRate = bitrate
+        if let srtla {
+            srtla.setTargetBitrate(value: bitrate)
+        } else {
+            netStream.videoSettings.bitRate = bitrate
+        }
     }
 
     func setVideoProfile(profile: CFString) {

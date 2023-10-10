@@ -30,11 +30,12 @@ class Srtla {
     }
 
     private var totalByteCount: Int64 = 0
-    private let adaptiveBitrate = AdaptiveBitrate()
+    private let adaptiveBitrate: AdaptiveBitrate
 
-    init(delegate: SrtlaDelegate, passThrough: Bool) {
+    init(delegate: SrtlaDelegate, passThrough: Bool, targetBitrate: UInt32) {
         self.delegate = delegate
         self.passThrough = passThrough
+        adaptiveBitrate = AdaptiveBitrate(targetBitrate: targetBitrate)
         logger.info("srtla: SRT instead of SRTLA: \(passThrough)")
         if passThrough {
             remoteConnections.append(RemoteConnection(type: nil))
@@ -79,6 +80,12 @@ class Srtla {
             self.stopListener()
             self.cancelConnectTimer()
             self.state = .idle
+        }
+    }
+
+    func setTargetBitrate(value: UInt32) {
+        srtlaDispatchQueue.async {
+            self.adaptiveBitrate.setTargetBitrate(value: value)
         }
     }
 
