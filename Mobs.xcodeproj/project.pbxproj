@@ -91,6 +91,7 @@
 		03CC5F892AD060DB0019CBA5 /* WidgetBrowserUrlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CC5F882AD060DB0019CBA5 /* WidgetBrowserUrlSettingsView.swift */; };
 		03EBEA632ACB4A17000DF427 /* BrowserEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */; };
 		03F5A8DC2AD5C05800F354D2 /* AdaptiveBitrate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F5A8DB2AD5C05800F354D2 /* AdaptiveBitrate.swift */; };
+		03F5A8DF2AD5DACB00F354D2 /* Srt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F5A8DE2AD5DACB00F354D2 /* Srt.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -173,6 +174,7 @@
 		03CC5F882AD060DB0019CBA5 /* WidgetBrowserUrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBrowserUrlSettingsView.swift; sourceTree = "<group>"; };
 		03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserEffect.swift; sourceTree = "<group>"; };
 		03F5A8DB2AD5C05800F354D2 /* AdaptiveBitrate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveBitrate.swift; sourceTree = "<group>"; };
+		03F5A8DE2AD5DACB00F354D2 /* Srt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Srt.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -195,6 +197,7 @@
 		0315A3392AA2FA0A00295443 /* Srtla */ = {
 			isa = PBXGroup;
 			children = (
+				03F5A8DE2AD5DACB00F354D2 /* Srt.swift */,
 				03B374122AA277570028DDD5 /* Srtla.swift */,
 				0315A33A2AA2FA7100295443 /* LocalListener.swift */,
 				0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */,
@@ -699,6 +702,7 @@
 				035E775C2ACC969D00738DCE /* ZoomPresetsPresetSettingsView.swift in Sources */,
 				03A983672A9A05D7008FF0DB /* ScenesSettingsView.swift in Sources */,
 				0379BBAD2AAD964000B718B6 /* AboutSettingsView.swift in Sources */,
+				03F5A8DF2AD5DACB00F354D2 /* Srt.swift in Sources */,
 				036BE2CF2ABD4CA60048F9C5 /* KickPusher.swift in Sources */,
 				0315A37E2AA43DCC00295443 /* TextEditView.swift in Sources */,
 				035E9E372A9A02D6009D4F5A /* MobsApp.swift in Sources */,
