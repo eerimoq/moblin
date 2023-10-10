@@ -7,6 +7,7 @@ class AdaptiveBitrate {
         self.targetBitrate = targetBitrate
     }
 
+    // Returns wanted bitrate, or nil if no change is needed.
     func outgoingPacket(packet _: Data, numberOfPacketsInFlight: Int) -> UInt32? {
         logger
             .debug(
@@ -15,6 +16,7 @@ class AdaptiveBitrate {
         return nil
     }
 
+    // Returns wanted bitrate, or nil if no change is needed.
     func incomingPacket(packet _: Data, numberOfPacketsInFlight _: Int) -> UInt32? {
         return nil
     }
