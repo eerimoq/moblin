@@ -104,6 +104,8 @@ final class Model: ObservableObject {
         settings.database
     }
 
+    var cameraDevice: AVCaptureDevice?
+
     var stream: SettingsStream {
         for stream in database.streams where stream.enabled {
             return stream
@@ -871,7 +873,7 @@ final class Model: ObservableObject {
     }
 
     private func attachCamera(position: AVCaptureDevice.Position) {
-        let device = preferredCamera(position: position)
+        cameraDevice = preferredCamera(position: position)
         var isMirrored = false
         cameraPosition = position
         switch position {
@@ -886,7 +888,7 @@ final class Model: ObservableObject {
         default:
             break
         }
-        media.attachCamera(device: device, onSuccess: {
+        media.attachCamera(device: cameraDevice, onSuccess: {
             self.mthkView.isMirrored = isMirrored
         })
         _ = media.setCameraZoomLevel(level: zoomLevel, ramp: true)
@@ -1067,5 +1069,23 @@ final class Model: ObservableObject {
             font: .system(size: 64).bold(),
             subTitle: reason
         )
+    }
+
+    func setFocusPointOfInterest(location: CGPoint) {
+        guard
+            let device = cameraDevice, device.isFocusPointOfInterestSupported
+        else {
+            logger.warning("Tap to focus not supported for this camera")
+            makeErrorToast(title: "Tap to focus not supported for this camera")
+            return
+        }
+        do {
+            try device.lockForConfiguration()
+            device.focusPointOfInterest = location
+            device.focusMode = .continuousAutoFocus
+            device.unlockForConfiguration()
+        } catch let error as NSError {
+            logger.error("while locking device for focusPointOfInterest: \(error)")
+        }
     }
 }

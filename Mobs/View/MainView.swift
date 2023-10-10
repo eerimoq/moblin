@@ -33,8 +33,20 @@ struct MainView: View {
             ZStack {
                 HStack(spacing: 0) {
                     ZStack {
-                        streamView
-                            .ignoresSafeArea()
+                        GeometryReader { metrics in
+                            streamView
+                                .ignoresSafeArea()
+                                .onTapGesture { location in
+                                    let x = (location.x / metrics.size.width)
+                                        .clamped(to: 0 ... 1)
+                                    let y = (location.y / metrics.size.height)
+                                        .clamped(to: 0 ... 1)
+                                    model.setFocusPointOfInterest(location: CGPoint(
+                                        x: x,
+                                        y: y
+                                    ))
+                                }
+                        }
                         StreamOverlayView(model: model)
                     }
                     .gesture(
