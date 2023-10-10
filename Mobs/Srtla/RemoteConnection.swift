@@ -412,6 +412,8 @@ class RemoteConnection {
             handleSrtAck(packet: packet)
         case .nak:
             handleSrtNak(packet: packet)
+        default:
+            break
         }
     }
 

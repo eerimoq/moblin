@@ -362,7 +362,7 @@ extension Media: SrtlaDelegate {
 
     func srtlaSetVideoStreamBitrate(bitrate: UInt32) {
         DispatchQueue.main.async {
-            self.setVideoStreamBitrate(bitrate: bitrate)
+            self.netStream.videoSettings.bitRate = bitrate
         }
     }
 }
