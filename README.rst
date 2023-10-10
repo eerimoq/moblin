@@ -70,6 +70,8 @@ Features
 
   - Configurable presets.
 
+- Tap screen to focus.
+
 - Stream connection status and uptime.
 
 - Video effects.
