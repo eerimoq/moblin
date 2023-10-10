@@ -225,7 +225,7 @@ final class Media: NSObject {
             logger.warning("Device not ready to zoom")
             return nil
         }
-        let level = level.clamped(to: 1.0...device.activeFormat.videoMaxZoomFactor)
+        let level = level.clamped(to: 1.0 ... device.activeFormat.videoMaxZoomFactor)
         do {
             try device.lockForConfiguration()
             if ramp {

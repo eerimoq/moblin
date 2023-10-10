@@ -21,7 +21,7 @@ func isDataPacket(packet: Data) -> Bool {
     return (packet[0] & 0x80) == 0
 }
 
-func getDataPacketSequenceNumber(packet: Data) -> UInt32 {
+func getSequenceNumber(packet: Data) -> UInt32 {
     return packet.getUInt32Be()
 }
 
@@ -265,7 +265,7 @@ class RemoteConnection {
 
     func sendSrtPacket(packet: Data) {
         if isDataPacket(packet: packet) {
-            packetsInFlight.insert(getDataPacketSequenceNumber(packet: packet))
+            packetsInFlight.insert(getSequenceNumber(packet: packet))
         }
         sendPacket(packet: packet)
     }
@@ -306,7 +306,7 @@ class RemoteConnection {
         guard packet.count >= 20 else {
             return
         }
-        onSrtAck?(getDataPacketSequenceNumber(packet: packet[16 ..< 20]))
+        onSrtAck?(getSequenceNumber(packet: packet[16 ..< 20]))
     }
 
     func handleSrtAckSn(sn ackSn: UInt32) {
@@ -506,5 +506,9 @@ class RemoteConnection {
             return nil
         }
         return totalDataSentByteCount
+    }
+
+    func getNumberOfPacketsInFlight() -> Int {
+        return packetsInFlight.count
     }
 }

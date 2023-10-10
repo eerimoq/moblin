@@ -210,6 +210,14 @@ class Srtla {
         }
         connection.sendSrtPacket(packet: packet)
         totalByteCount += Int64(packet.count)
+        logger
+            .debug("srtla: local: \(getNumberOfPacketsInFlight()) data packets in flight")
+    }
+
+    private func getNumberOfPacketsInFlight() -> Int {
+        return remoteConnections.reduce(0) { partialResult, connection in
+            partialResult + connection.getNumberOfPacketsInFlight()
+        }
     }
 
     private func handleRemoteConnected(connection: RemoteConnection) {
