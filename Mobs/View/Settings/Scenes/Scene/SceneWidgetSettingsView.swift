@@ -70,7 +70,7 @@ struct SceneWidgetSettingsView: View {
 
     func submitX(value: String) {
         if let value = Double(value) {
-            widget.x = min(max(value, 0), 99)
+            widget.x = value.clamped(to: 0...99)
             model.store()
             model.resetSelectedScene()
         }
@@ -78,7 +78,7 @@ struct SceneWidgetSettingsView: View {
 
     func submitY(value: String) {
         if let value = Double(value) {
-            widget.y = min(max(value, 0), 99)
+            widget.y = value.clamped(to: 0...99)
             model.store()
             model.resetSelectedScene()
         }
@@ -86,7 +86,7 @@ struct SceneWidgetSettingsView: View {
 
     func submitW(value: String) {
         if let value = Double(value) {
-            widget.width = min(max(value, 1), 100)
+            widget.width = value.clamped(to: 1...100)
             model.store()
             model.resetSelectedScene()
         }
@@ -94,7 +94,7 @@ struct SceneWidgetSettingsView: View {
 
     func submitH(value: String) {
         if let value = Double(value) {
-            widget.height = min(max(value, 1), 100)
+            widget.height = value.clamped(to: 1...100)
             model.store()
             model.resetSelectedScene()
         }
