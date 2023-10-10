@@ -112,7 +112,19 @@ ToDo
 Ideas/plan
 ==========
 
-- Adaptive bitrate, but based on what?
+- Adaptive bitrate for SRT(LA).
+
+  - Increase bitrate when RTT settles down?
+
+  - Decrease bitrate when RTT increases?
+
+  - Drop bitrate heavily when number of packets in flight is above a
+    threshold?
+
+  - Decrease bitrate when SRT NAKs are received?
+
+  - Decrease bitrate if number of packets in flight exceeds number of
+    packets needed for current bitrate?
 
 - Interactive local browser(s).
 

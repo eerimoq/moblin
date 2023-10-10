@@ -354,4 +354,10 @@ extension Media: SrtlaDelegate {
             self.onSrtDisconnected("General SRT error")
         }
     }
+
+    func srtlaSetVideoStreamBitrate(bitrate: UInt32) {
+        DispatchQueue.main.async {
+            self.setVideoStreamBitrate(bitrate: bitrate)
+        }
+    }
 }

@@ -3,6 +3,7 @@ import Foundation
 protocol SrtlaDelegate: AnyObject {
     func srtlaReady(port: UInt16)
     func srtlaError()
+    func srtlaSetVideoStreamBitrate(bitrate: UInt32)
 }
 
 private enum State {
@@ -29,6 +30,7 @@ class Srtla {
     }
 
     private var totalByteCount: Int64 = 0
+    private let adaptiveBitrate = AdaptiveBitrate()
 
     init(delegate: SrtlaDelegate, passThrough: Bool) {
         self.delegate = delegate
@@ -210,8 +212,12 @@ class Srtla {
         }
         connection.sendSrtPacket(packet: packet)
         totalByteCount += Int64(packet.count)
-        logger
-            .debug("srtla: local: \(getNumberOfPacketsInFlight()) data packets in flight")
+        if let bitrate = adaptiveBitrate.outgoingPacket(
+            packet: packet,
+            numberOfPacketsInFlight: getNumberOfPacketsInFlight()
+        ) {
+            delegate?.srtlaSetVideoStreamBitrate(bitrate: bitrate)
+        }
     }
 
     private func getNumberOfPacketsInFlight() -> Int {
@@ -242,6 +248,12 @@ class Srtla {
     private func handleRemotePacket(packet: Data) {
         localListener?.sendPacket(packet: packet)
         totalByteCount += Int64(packet.count)
+        if let bitrate = adaptiveBitrate.incomingPacket(
+            packet: packet,
+            numberOfPacketsInFlight: getNumberOfPacketsInFlight()
+        ) {
+            delegate?.srtlaSetVideoStreamBitrate(bitrate: bitrate)
+        }
     }
 
     private func handleSrtAck(sn: UInt32) {
