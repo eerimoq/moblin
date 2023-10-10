@@ -353,6 +353,7 @@ class Database: Codable {
     var buttons: [SettingsButton] = []
     var show: SettingsShow = .init()
     var zoom: SettingsZoom? = .init()
+    var tapToFocus: Bool? = true
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -746,6 +747,10 @@ final class Settings {
                 continue
             }
             button.type = .mic
+            store()
+        }
+        if database.tapToFocus == nil {
+            database.tapToFocus = true
             store()
         }
     }

@@ -37,6 +37,9 @@ struct MainView: View {
                             streamView
                                 .ignoresSafeArea()
                                 .onTapGesture { location in
+                                    guard model.database.tapToFocus! else {
+                                        return
+                                    }
                                     let x = (location.x / metrics.size.width)
                                         .clamped(to: 0 ... 1)
                                     let y = (location.y / metrics.size.height)
