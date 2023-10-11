@@ -53,6 +53,7 @@ class SettingsStream: Codable, Identifiable {
     var fps: Int = 30
     var bitrate: UInt32 = 3_000_000
     var codec: SettingsStreamCodec = .h264avc
+    var adaptiveBitrate: Bool? = false
 
     init(name: String) {
         self.name = name
@@ -751,6 +752,10 @@ final class Settings {
         }
         if database.tapToFocus == nil {
             database.tapToFocus = true
+            store()
+        }
+        for stream in database.streams where stream.adaptiveBitrate == nil {
+            stream.adaptiveBitrate = false
             store()
         }
     }

@@ -523,7 +523,8 @@ final class Model: ObservableObject {
                 isSrtla: stream.isSrtla(),
                 url: stream.url,
                 reconnectTime: reconnectTime,
-                targetBitrate: stream.bitrate
+                targetBitrate: stream.bitrate,
+                adaptiveBitrate: stream.adaptiveBitrate!
             )
         }
         updateSpeed()
@@ -594,6 +595,10 @@ final class Model: ObservableObject {
 
     func setStreamBitrate(stream: SettingsStream) {
         media.setVideoStreamBitrate(bitrate: stream.bitrate)
+    }
+
+    func setAdaptiveBitrate(stream: SettingsStream) {
+        media.setAdaptiveBitrate(enabled: stream.adaptiveBitrate!)
     }
 
     func setStreamCodec() {

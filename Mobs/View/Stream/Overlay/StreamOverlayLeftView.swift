@@ -21,9 +21,12 @@ struct LeftOverlayView: View {
         } else {
             proto = stream.getProtocol().rawValue
         }
-        let bitrate = formatBytesPerSecond(speed: Int64(stream.bitrate))
         let resolution = stream.resolution.rawValue
         let codec = stream.codec.rawValue
+        var bitrate = formatBytesPerSecond(speed: Int64(stream.bitrate))
+        if stream.getProtocol() == .srt && stream.adaptiveBitrate! {
+            bitrate    = "<\(bitrate)"
+        }
         return "\(stream.name) (\(resolution), \(stream.fps), \(codec), \(proto), \(bitrate))"
     }
 

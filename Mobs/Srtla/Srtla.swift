@@ -32,10 +32,19 @@ class Srtla {
     private var totalByteCount: Int64 = 0
     private let adaptiveBitrate: AdaptiveBitrate
 
-    init(delegate: SrtlaDelegate, passThrough: Bool, targetBitrate: UInt32) {
+    init(
+        delegate: SrtlaDelegate,
+        passThrough: Bool,
+        targetBitrate: UInt32,
+        adaptiveBitrate adaptiveBitrateEnabled: Bool
+    ) {
         self.delegate = delegate
         self.passThrough = passThrough
-        adaptiveBitrate = AdaptiveBitrate(targetBitrate: targetBitrate)
+        adaptiveBitrate = AdaptiveBitrate(
+            targetBitrate: targetBitrate,
+            enabled: adaptiveBitrateEnabled
+        )
+        delegate.srtlaSetVideoStreamBitrate(bitrate: adaptiveBitrate.getCurrentBitrate())
         logger.info("srtla: SRT instead of SRTLA: \(passThrough)")
         if passThrough {
             remoteConnections.append(RemoteConnection(type: nil))
@@ -85,7 +94,16 @@ class Srtla {
 
     func setTargetBitrate(value: UInt32) {
         srtlaDispatchQueue.async {
-            self.adaptiveBitrate.setTargetBitrate(value: value)
+            if let bitrate = self.adaptiveBitrate.setTargetBitrate(value: value) {
+                self.delegate?.srtlaSetVideoStreamBitrate(bitrate: bitrate)
+            }
+        }
+    }
+
+    func setAdaptiveBitrate(enabled: Bool) {
+        srtlaDispatchQueue.async {
+            let bitrate = self.adaptiveBitrate.setAdaptiveBitrate(enabled: enabled)
+            self.delegate?.srtlaSetVideoStreamBitrate(bitrate: bitrate)
         }
     }
 
