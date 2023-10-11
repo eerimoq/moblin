@@ -1118,6 +1118,7 @@ final class Model: ObservableObject {
         }
         do {
             try device.lockForConfiguration()
+            device.focusPointOfInterest = CGPoint(x: 0.5, y: 0.5)
             device.focusMode = .continuousAutoFocus
             // device.exposureMode = .continuousAutoExposure
             device.unlockForConfiguration()
