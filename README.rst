@@ -128,6 +128,8 @@ Ideas/plan
   - Decrease bitrate if number of packets in flight exceeds number of
     packets needed for current bitrate?
 
+- Zoom meter with lines indicating likely lens switches.
+
 - Interactive local browser(s).
 
 - Tap to focus.
