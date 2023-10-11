@@ -94,14 +94,12 @@ final class Media: NSObject {
     func getSrtStats() -> [String] {
         let stats = srtConnection.performanceData
         return [
-            "pktSentTotal: \(stats.pktSentTotal)",
-            "pktSndLossTotal: \(stats.pktSndLossTotal)",
             "pktRetransTotal: \(stats.pktRetransTotal)",
-            "pktRecvACKTotal: \(stats.pktRecvACKTotal)",
             "pktRecvNAKTotal: \(stats.pktRecvNAKTotal)",
-            "byteSentTotal: \(stats.byteSentTotal)",
-            "pktSent: \(stats.pktSent)",
+            "pktSndDropTotal: \(stats.pktSndDropTotal)",
             "msRTT: \(stats.msRTT)",
+            "pktFlightSize: \(stats.pktFlightSize)",
+            "pktSndBuf: \(stats.pktSndBuf)",
         ]
     }
 
