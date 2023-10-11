@@ -1087,7 +1087,28 @@ final class Model: ObservableObject {
         )
     }
 
-    func setFocusPointOfInterest(location: CGPoint) {
+    func setFocusPointOfInterest(focusPoint: CGPoint) {
+        guard
+            let device = cameraDevice, device.isFocusPointOfInterestSupported,
+            device.isExposurePointOfInterestSupported
+        else {
+            logger.warning("Tap to focus not supported for this camera")
+            makeErrorToast(title: "Tap to focus not supported for this camera")
+            return
+        }
+        do {
+            try device.lockForConfiguration()
+            device.focusPointOfInterest = focusPoint
+            device.focusMode = .autoFocus
+            // device.exposurePointOfInterest = focusPoint
+            // device.exposureMode = .autoExpose
+            device.unlockForConfiguration()
+        } catch let error as NSError {
+            logger.error("while locking device for focusPointOfInterest: \(error)")
+        }
+    }
+
+    func setAutoFocus() {
         guard
             let device = cameraDevice, device.isFocusPointOfInterestSupported
         else {
@@ -1097,40 +1118,10 @@ final class Model: ObservableObject {
         }
         do {
             try device.lockForConfiguration()
-            logger.info("autoFocus supported: \(device.isFocusModeSupported(.autoFocus))")
-            logger
-                .info(
-                    "continuousAutoFocus supported: \(device.isFocusModeSupported(.continuousAutoFocus))"
-                )
-            logger.info("focusMode: \(device.focusMode)")
-            logger
-                .info("isSmoothAutoFocusSupported: \(device.isSmoothAutoFocusSupported)")
-            logger.info("isSmoothAutoFocusEnabled: \(device.isSmoothAutoFocusEnabled)")
-            logger
-                .info(
-                    "isFaceDrivenAutoFocusEnabled: \(device.isFaceDrivenAutoFocusEnabled)"
-                )
-            logger
-                .info(
-                    """
-                    automaticallyAdjustsFaceDrivenAutoFocusEnabled: \
-                    \(device.automaticallyAdjustsFaceDrivenAutoFocusEnabled)
-                    """
-                )
-            logger
-                .info(
-                    "isAutoFocusRangeRestrictionSupported: \(device.isAutoFocusRangeRestrictionSupported)"
-                )
-            logger.info("autoFocusRangeRestriction: \(device.autoFocusRangeRestriction)")
-            logger
-                .info(
-                    "isFocusPointOfInterestSupported: \(device.isFocusPointOfInterestSupported)"
-                )
-            logger.info("focusPointOfInterest: \(device.focusPointOfInterest)")
-            logger.info("lensPosition: \(device.lensPosition)")
-            device.focusPointOfInterest = location
             device.focusMode = .continuousAutoFocus
+            // device.exposureMode = .continuousAutoExposure
             device.unlockForConfiguration()
+            makeToast(title: "Auto focus")
         } catch let error as NSError {
             logger.error("while locking device for focusPointOfInterest: \(error)")
         }

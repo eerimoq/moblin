@@ -36,7 +36,13 @@ struct MainView: View {
                         GeometryReader { metrics in
                             streamView
                                 .ignoresSafeArea()
-                                .onTapGesture { location in
+                                .onTapGesture(count: 2) { _ in
+                                    guard model.database.tapToFocus! else {
+                                        return
+                                    }
+                                    model.setAutoFocus()
+                                }
+                                .onTapGesture(count: 1) { location in
                                     guard model.database.tapToFocus! else {
                                         return
                                     }
@@ -44,7 +50,7 @@ struct MainView: View {
                                         .clamped(to: 0 ... 1)
                                     let y = (location.y / metrics.size.height)
                                         .clamped(to: 0 ... 1)
-                                    model.setFocusPointOfInterest(location: CGPoint(
+                                    model.setFocusPointOfInterest(focusPoint: CGPoint(
                                         x: x,
                                         y: y
                                     ))
