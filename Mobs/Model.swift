@@ -1097,6 +1097,37 @@ final class Model: ObservableObject {
         }
         do {
             try device.lockForConfiguration()
+            logger.info("autoFocus supported: \(device.isFocusModeSupported(.autoFocus))")
+            logger
+                .info(
+                    "continuousAutoFocus supported: \(device.isFocusModeSupported(.continuousAutoFocus))"
+                )
+            logger.info("focusMode: \(device.focusMode)")
+            logger
+                .info("isSmoothAutoFocusSupported: \(device.isSmoothAutoFocusSupported)")
+            logger.info("isSmoothAutoFocusEnabled: \(device.isSmoothAutoFocusEnabled)")
+            logger
+                .info(
+                    "isFaceDrivenAutoFocusEnabled: \(device.isFaceDrivenAutoFocusEnabled)"
+                )
+            logger
+                .info(
+                    """
+                    automaticallyAdjustsFaceDrivenAutoFocusEnabled: \
+                    \(device.automaticallyAdjustsFaceDrivenAutoFocusEnabled)
+                    """
+                )
+            logger
+                .info(
+                    "isAutoFocusRangeRestrictionSupported: \(device.isAutoFocusRangeRestrictionSupported)"
+                )
+            logger.info("autoFocusRangeRestriction: \(device.autoFocusRangeRestriction)")
+            logger
+                .info(
+                    "isFocusPointOfInterestSupported: \(device.isFocusPointOfInterestSupported)"
+                )
+            logger.info("focusPointOfInterest: \(device.focusPointOfInterest)")
+            logger.info("lensPosition: \(device.lensPosition)")
             device.focusPointOfInterest = location
             device.focusMode = .continuousAutoFocus
             device.unlockForConfiguration()
