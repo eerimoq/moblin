@@ -288,9 +288,9 @@ class RemoteConnection {
     private func handleSrtNak(packet: Data) {
         var offset = 16
         while offset <= packet.count - 4 {
-            let ackSn = packet.getUInt32Be(offset: offset)
+            let nakSn = packet.getUInt32Be(offset: offset)
             offset += 4
-            if isSnRange(sn: ackSn) {
+            if isSnRange(sn: nakSn) {
                 guard offset <= packet.count - 4 else {
                     logger
                         .error(
@@ -298,13 +298,13 @@ class RemoteConnection {
                         )
                     return
                 }
-                let upToAckSn = packet.getUInt32Be(offset: offset)
-                for sn in stride(from: ackSn & 0x7FFF_FFFF, through: upToAckSn, by: 1) {
+                let upToNakSn = packet.getUInt32Be(offset: offset)
+                for sn in stride(from: nakSn & 0x7FFF_FFFF, through: upToNakSn, by: 1) {
                     onSrtNak?(sn)
                 }
                 offset += 4
             } else {
-                onSrtNak?(ackSn)
+                onSrtNak?(nakSn)
             }
         }
     }
