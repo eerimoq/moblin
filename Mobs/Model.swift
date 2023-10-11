@@ -105,6 +105,7 @@ final class Model: ObservableObject {
     }
 
     var cameraDevice: AVCaptureDevice?
+    @Published var srtDebugLines: [String] = []
 
     var stream: SettingsStream {
         for stream in database.streams where stream.enabled {
@@ -306,7 +307,16 @@ final class Model: ObservableObject {
             self.updateBatteryLevel()
             self.media.logStatistics()
         })
+        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
+            self.updateSrtDebugLines()
+        })
         takeBrowserSnapshots()
+    }
+
+    private func updateSrtDebugLines() {
+        if logger.debugEnabled {
+            srtDebugLines = media.getSrtStats()
+        }
     }
 
     private func takeBrowserSnapshots() {

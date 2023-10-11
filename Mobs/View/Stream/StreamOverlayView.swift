@@ -17,6 +17,10 @@ struct StreamOverlayView: View {
                 }
                 .frame(width: metrics.size.width * 0.7)
             }
+            HStack {
+                StreamOverlayDebugView(model: model)
+                Spacer()
+            }
         }
         .padding([.trailing, .top])
     }

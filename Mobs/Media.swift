@@ -91,6 +91,20 @@ final class Media: NSObject {
         srtConnectedObservation = nil
     }
 
+    func getSrtStats() -> [String] {
+        let stats = srtConnection.performanceData
+        return [
+            "pktSentTotal: \(stats.pktSentTotal)",
+            "pktSndLossTotal: \(stats.pktSndLossTotal)",
+            "pktRetransTotal: \(stats.pktRetransTotal)",
+            "pktRecvACKTotal: \(stats.pktRecvACKTotal)",
+            "pktRecvNAKTotal: \(stats.pktRecvNAKTotal)",
+            "byteSentTotal: \(stats.byteSentTotal)",
+            "pktSent: \(stats.pktSent)",
+            "msRTT: \(stats.msRTT)",
+        ]
+    }
+
     func updateSrtSpeed() {
         srtTotalByteCount = srtla?.getTotalByteCount() ?? 0
         srtSpeed = max(srtTotalByteCount - srtPreviousTotalByteCount, 0)

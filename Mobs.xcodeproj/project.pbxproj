@@ -92,6 +92,7 @@
 		03EBEA632ACB4A17000DF427 /* BrowserEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */; };
 		03F5A8DC2AD5C05800F354D2 /* AdaptiveBitrate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F5A8DB2AD5C05800F354D2 /* AdaptiveBitrate.swift */; };
 		03F5A8DF2AD5DACB00F354D2 /* Srt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F5A8DE2AD5DACB00F354D2 /* Srt.swift */; };
+		03F5A8E52AD6FF8E00F354D2 /* StreamOverlayDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F5A8E42AD6FF8E00F354D2 /* StreamOverlayDebugView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -175,6 +176,7 @@
 		03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserEffect.swift; sourceTree = "<group>"; };
 		03F5A8DB2AD5C05800F354D2 /* AdaptiveBitrate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveBitrate.swift; sourceTree = "<group>"; };
 		03F5A8DE2AD5DACB00F354D2 /* Srt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Srt.swift; sourceTree = "<group>"; };
+		03F5A8E42AD6FF8E00F354D2 /* StreamOverlayDebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOverlayDebugView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -438,6 +440,7 @@
 				0379BB9B2AAD819800B718B6 /* StreamOverlayLeftView.swift */,
 				0379BB9D2AAD81AA00B718B6 /* StreamOverlayRightView.swift */,
 				0379BB9F2AAD823900B718B6 /* StreamOverlayTextView.swift */,
+				03F5A8E42AD6FF8E00F354D2 /* StreamOverlayDebugView.swift */,
 			);
 			path = Overlay;
 			sourceTree = "<group>";
@@ -731,6 +734,7 @@
 				0379BB792AA64C9500B718B6 /* WidgetVideoEffectSettingsView.swift in Sources */,
 				0315A33B2AA2FA7100295443 /* LocalListener.swift in Sources */,
 				035D37372AB230E700045B92 /* StreamVideoBitrateSettingsView.swift in Sources */,
+				03F5A8E52AD6FF8E00F354D2 /* StreamOverlayDebugView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
