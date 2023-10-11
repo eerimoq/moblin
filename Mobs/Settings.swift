@@ -354,7 +354,7 @@ class Database: Codable {
     var buttons: [SettingsButton] = []
     var show: SettingsShow = .init()
     var zoom: SettingsZoom? = .init()
-    var tapToFocus: Bool? = true
+    var tapToFocus: Bool? = false
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -751,7 +751,7 @@ final class Settings {
             store()
         }
         if database.tapToFocus == nil {
-            database.tapToFocus = true
+            database.tapToFocus = false
             store()
         }
         for stream in database.streams where stream.adaptiveBitrate == nil {
