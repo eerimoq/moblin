@@ -114,6 +114,8 @@ ToDo
 Ideas/plan
 ==========
 
+- Use external mic.
+
 - Adaptive bitrate for SRT(LA).
 
   - Increase bitrate when RTT settles down?
