@@ -199,25 +199,29 @@ final class Model: ObservableObject {
         } catch {
             logger.error("app: Session error \(error)")
         }
+        for input in session.availableInputs ?? [] {
+            logger.info("Input: \(input)")
+        }
+        for input in session.inputDataSources ?? [] {
+            logger.info("Source: \(input)")
+        }
     }
 
     func selectMic(orientation: String, showToast: Bool = false) {
         let avOrientation = AVAudioSession.Orientation(rawValue: orientation)
         let session = AVAudioSession.sharedInstance()
         do {
-            if let inputSources = session.inputDataSources {
-                for inputSource in inputSources {
-                    if let inputSourceOrientation = inputSource.orientation {
-                        if inputSourceOrientation == avOrientation {
-                            media.attachAudio(device: nil)
-                            setupAudioSession()
-                            try session.setInputDataSource(inputSource)
-                            media
-                                .attachAudio(device: AVCaptureDevice.default(for: .audio))
-                            logger.info("\(orientation) mic")
-                            if showToast {
-                                makeToast(title: orientation)
-                            }
+            for inputSource in session.inputDataSources ?? [] {
+                if let inputSourceOrientation = inputSource.orientation {
+                    if inputSourceOrientation == avOrientation {
+                        media.attachAudio(device: nil)
+                        setupAudioSession()
+                        try session.setInputDataSource(inputSource)
+                        media
+                            .attachAudio(device: AVCaptureDevice.default(for: .audio))
+                        logger.info("\(orientation) mic")
+                        if showToast {
+                            makeToast(title: orientation)
                         }
                     }
                 }
