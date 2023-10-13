@@ -192,8 +192,8 @@ Ideas/plan
 
 - LIDAR, altitude.
 
-Custom URL format
-=================
+Import settings using mobs:// (custom URL)
+==========================================
 
 An example creating a new stream:
 
