@@ -349,6 +349,7 @@ class Database: Codable {
     var zoom: SettingsZoomPresets? = .init()
     var tapToFocus: Bool? = false
     var bitratePresets: [SettingsBitratePreset]? = []
+    var iconImage: String? = "AppIconNoBackground"
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -598,14 +599,14 @@ final class Settings {
 
     func load() {
         do {
-            try loadNoDefault(settings: storage)
+            try tryLoadAndMigrate(settings: storage)
         } catch {
             logger.info("settings: Failed to load with error \(error). Using default.")
             realDatabase = createDefault()
         }
     }
 
-    private func loadNoDefault(settings: String) throws {
+    private func tryLoadAndMigrate(settings: String) throws {
         realDatabase = try Database.fromString(settings: settings)
         migrateFromOlderVersions()
     }
@@ -637,7 +638,7 @@ final class Settings {
             return "Non-string in base64"
         }
         do {
-            try loadNoDefault(settings: settings)
+            try tryLoadAndMigrate(settings: settings)
         } catch {
             return "Malformed settings"
         }
@@ -766,6 +767,10 @@ final class Settings {
         }
         for stream in database.streams where stream.adaptiveBitrate == nil {
             stream.adaptiveBitrate = false
+            store()
+        }
+        if database.iconImage == nil {
+            database.iconImage = "AppIconNoBackground"
             store()
         }
     }

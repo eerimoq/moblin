@@ -48,6 +48,10 @@ struct CosmeticsSettingsView: View {
                         .tag(icon.image)
                     }
                 }
+                .onChange(of: model.iconImage) { iconImage in
+                    model.database.iconImage = iconImage
+                    model.store()
+                }
                 .pickerStyle(.inline)
                 .labelsHidden()
             } header: {

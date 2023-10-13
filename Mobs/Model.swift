@@ -243,6 +243,7 @@ final class Model: ObservableObject {
         media.onRtmpConnected = handleRtmpConnected
         media.onRtmpDisconnected = handleRtmpDisconnected
         media.onAudioMuteChange = updateAudioLevel
+        iconImage = database.iconImage!
         setupAudioSession()
         selectMic(orientation: mics[0])
         zoomPresets = database.zoom!.back
