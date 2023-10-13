@@ -93,6 +93,8 @@
 		03F5A8DC2AD5C05800F354D2 /* AdaptiveBitrate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F5A8DB2AD5C05800F354D2 /* AdaptiveBitrate.swift */; };
 		03F5A8DF2AD5DACB00F354D2 /* Srt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F5A8DE2AD5DACB00F354D2 /* Srt.swift */; };
 		03F5A8E52AD6FF8E00F354D2 /* StreamOverlayDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F5A8E42AD6FF8E00F354D2 /* StreamOverlayDebugView.swift */; };
+		03FB4B2F2AD8CF83005AA183 /* BitratePresetsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FB4B2E2AD8CF83005AA183 /* BitratePresetsSettingsView.swift */; };
+		03FB4B312AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FB4B302AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -177,6 +179,8 @@
 		03F5A8DB2AD5C05800F354D2 /* AdaptiveBitrate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveBitrate.swift; sourceTree = "<group>"; };
 		03F5A8DE2AD5DACB00F354D2 /* Srt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Srt.swift; sourceTree = "<group>"; };
 		03F5A8E42AD6FF8E00F354D2 /* StreamOverlayDebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOverlayDebugView.swift; sourceTree = "<group>"; };
+		03FB4B2E2AD8CF83005AA183 /* BitratePresetsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitratePresetsSettingsView.swift; sourceTree = "<group>"; };
+		03FB4B302AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitratePresetsPresetSettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -520,6 +524,7 @@
 		03B373F42A9EF8BD0028DDD5 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				03FB4B2C2AD8CF6B005AA183 /* BitratePresets */,
 				03A14BE02ACC902B00D180FF /* ZoomPresets */,
 				032A49B62AC54DAD00ED3916 /* ExportImport */,
 				0379BBB02AAD97EA00B718B6 /* Reset */,
@@ -569,6 +574,15 @@
 				03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */,
 			);
 			path = VideoEffects;
+			sourceTree = "<group>";
+		};
+		03FB4B2C2AD8CF6B005AA183 /* BitratePresets */ = {
+			isa = PBXGroup;
+			children = (
+				03FB4B2E2AD8CF83005AA183 /* BitratePresetsSettingsView.swift */,
+				03FB4B302AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift */,
+			);
+			path = BitratePresets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -679,6 +693,7 @@
 				032815DC2AC915AE001F8A85 /* RandomEffect.swift in Sources */,
 				0315A3462AA31E9000295443 /* StreamTwitchSettingsView.swift in Sources */,
 				0379BBAF2AAD96B200B718B6 /* DebugSettingsView.swift in Sources */,
+				03FB4B2F2AD8CF83005AA183 /* BitratePresetsSettingsView.swift in Sources */,
 				03B373F92A9EFB340028DDD5 /* BatteryView.swift in Sources */,
 				0379BB8A2AA83A8B00B718B6 /* StreamVideoFpsSettingsView.swift in Sources */,
 				03B373FD2A9F35EF0028DDD5 /* Utils.swift in Sources */,
@@ -721,6 +736,7 @@
 				03B374022AA0354C0028DDD5 /* GrayScaleEffect.swift in Sources */,
 				03A983632A9A05D7008FF0DB /* SettingsView.swift in Sources */,
 				036BE2D22ABD518E0048F9C5 /* StreamKickSettingsView.swift in Sources */,
+				03FB4B312AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift in Sources */,
 				03B374132AA277570028DDD5 /* Srtla.swift in Sources */,
 				0379BB902AABA7DC00B718B6 /* Log.swift in Sources */,
 				031CCE2D2ACA76CF00CB5D46 /* NoiseReductionEffect.swift in Sources */,

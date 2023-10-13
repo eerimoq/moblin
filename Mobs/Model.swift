@@ -316,6 +316,8 @@ final class Model: ObservableObject {
     private func updateSrtDebugLines() {
         if logger.debugEnabled {
             srtDebugLines = media.getSrtStats()
+        } else {
+            srtDebugLines = []
         }
     }
 

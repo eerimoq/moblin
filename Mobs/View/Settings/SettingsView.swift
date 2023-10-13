@@ -18,6 +18,9 @@ struct SettingsView: View {
                 NavigationLink(destination: ZoomPresetsSettingsView(model: model)) {
                     Text("Zoom presets")
                 }
+                NavigationLink(destination: BitratePresetsSettingsView(model: model)) {
+                    Text("Bitrate presets")
+                }
                 Toggle("Tap screen to focus", isOn: Binding(get: {
                     model.database.tapToFocus!
                 }, set: { value in

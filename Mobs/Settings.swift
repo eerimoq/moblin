@@ -19,24 +19,6 @@ let resolutions = SettingsStreamResolution.allCases.map { $0.rawValue }
 
 let fpss = [60, 30, 15, 5]
 
-let bitrates: [UInt32] = [
-    40_000_000,
-    25_000_000,
-    20_000_000,
-    15_000_000,
-    10_000_000,
-    7_500_000,
-    5_000_000,
-    3_000_000,
-    2_000_000,
-    1_500_000,
-    1_000_000,
-    750_000,
-    500_000,
-    350_000,
-    250_000,
-]
-
 enum SettingsStreamProtocol: String, Codable {
     case rtmp = "RTMP"
     case srt = "SRT"
@@ -342,9 +324,19 @@ class SettingsZoomPreset: Codable, Identifiable {
     }
 }
 
-class SettingsZoom: Codable {
+class SettingsZoomPresets: Codable {
     var back: [SettingsZoomPreset] = []
     var front: [SettingsZoomPreset] = []
+}
+
+class SettingsBitratePreset: Codable, Identifiable {
+    var id: UUID
+    var bitrate: UInt32 = 3_000_000
+
+    init(id: UUID, bitrate: UInt32) {
+        self.id = id
+        self.bitrate = bitrate
+    }
 }
 
 class Database: Codable {
@@ -354,8 +346,9 @@ class Database: Codable {
     var variables: [SettingsVariable] = []
     var buttons: [SettingsButton] = []
     var show: SettingsShow = .init()
-    var zoom: SettingsZoom? = .init()
+    var zoom: SettingsZoomPresets? = .init()
     var tapToFocus: Bool? = false
+    var bitratePresets: [SettingsBitratePreset]? = []
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -369,13 +362,16 @@ class Database: Codable {
             addDefaultStreams(database: database)
         }
         if database.zoom == nil {
-            database.zoom = SettingsZoom()
+            database.zoom = SettingsZoomPresets()
         }
         if database.zoom!.back.isEmpty {
-            addDefaultBackZoom(database: database)
+            addDefaultBackZoomPresets(database: database)
         }
         if database.zoom!.front.isEmpty {
-            addDefaultFrontZoom(database: database)
+            addDefaultFrontZoomPresets(database: database)
+        }
+        if database.bitratePresets == nil {
+            addDefaultBitratePresets(database: database)
         }
         return database
     }
@@ -465,13 +461,13 @@ func addDefaultStreams(database: Database) {
     database.streams.append(stream)
 }
 
-func addDefaultZoom(database: Database) {
+func addDefaultZoomPresets(database: Database) {
     database.zoom = .init()
-    addDefaultBackZoom(database: database)
-    addDefaultFrontZoom(database: database)
+    addDefaultBackZoomPresets(database: database)
+    addDefaultFrontZoomPresets(database: database)
 }
 
-func addDefaultBackZoom(database: Database) {
+func addDefaultBackZoomPresets(database: Database) {
     database.zoom!.back = [
         SettingsZoomPreset(id: UUID(), name: "0.5x", level: 1.0),
         SettingsZoomPreset(id: UUID(), name: "1x", level: 2.0),
@@ -481,12 +477,24 @@ func addDefaultBackZoom(database: Database) {
     ]
 }
 
-func addDefaultFrontZoom(database: Database) {
+func addDefaultFrontZoomPresets(database: Database) {
     database.zoom!.front = [
         SettingsZoomPreset(id: UUID(), name: "1x", level: 1.0),
         SettingsZoomPreset(id: UUID(), name: "2x", level: 2.0),
         SettingsZoomPreset(id: UUID(), name: "4x", level: 4.0),
         SettingsZoomPreset(id: UUID(), name: "8x", level: 8.0),
+    ]
+}
+
+func addDefaultBitratePresets(database: Database) {
+    database.bitratePresets = [
+        SettingsBitratePreset(id: UUID(), bitrate: 15_000_000),
+        SettingsBitratePreset(id: UUID(), bitrate: 10_000_000),
+        SettingsBitratePreset(id: UUID(), bitrate: 5_000_000),
+        SettingsBitratePreset(id: UUID(), bitrate: 3_000_000),
+        SettingsBitratePreset(id: UUID(), bitrate: 1_000_000),
+        SettingsBitratePreset(id: UUID(), bitrate: 500_000),
+        SettingsBitratePreset(id: UUID(), bitrate: 250_000),
     ]
 }
 
@@ -575,7 +583,8 @@ func createDefault() -> Database {
     addDefaultButtons(database: database)
     addDefaultScenes(database: database)
     addDefaultStreams(database: database)
-    addDefaultZoom(database: database)
+    addDefaultZoomPresets(database: database)
+    addDefaultBitratePresets(database: database)
     return database
 }
 
