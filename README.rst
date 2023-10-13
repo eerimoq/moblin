@@ -221,7 +221,7 @@ Fromat: ``mobs://?<JSON blob>``
 
 The ``MobsSettingsUrl`` class in `MobsSettingsUrl.swift`_ defines the
 JSON blob format. Class members are JSON object keys. Members with
-``?`` after the type are optional. Some classes are defined in
+``?`` after the type are optional. Some types are defined in
 `Settings.swift`_.
 
 Similar software
