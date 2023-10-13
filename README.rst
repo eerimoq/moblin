@@ -91,7 +91,9 @@ Features
 
 - Torch.
 
-- Configure resolution, FPS, codec and bitrate.
+- Configure resolution, FPS, codec, bitrate and more.
+
+- Deep link settings (mobs://).
 
 - Landscape stream only.
 
@@ -129,8 +131,6 @@ Ideas/plan
 
   - Decrease bitrate if number of packets in flight exceeds number of
     packets needed for current bitrate?
-
-- Deep link settings. For example mobs://settings/v1?abc123
 
 - Zoom meter with lines indicating likely lens switches.
 
