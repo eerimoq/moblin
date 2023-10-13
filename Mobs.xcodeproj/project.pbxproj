@@ -113,6 +113,7 @@
 		032A49B72AC54DD000ED3916 /* ExportSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportSettingsView.swift; sourceTree = "<group>"; };
 		032A49B92AC54E6500ED3916 /* ImportSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportSettingsView.swift; sourceTree = "<group>"; };
 		032A49BB2AC5DF3F00ED3916 /* ImportExportSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportExportSettingsView.swift; sourceTree = "<group>"; };
+		032BC5B22AD8E18000DEC883 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBrowserSettingsView.swift; sourceTree = "<group>"; };
 		035D371D2AB039C800045B92 /* StreamVideoCodecSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoCodecSettingsView.swift; sourceTree = "<group>"; };
 		035D37272AB0EBB500045B92 /* IconAndTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconAndTextView.swift; sourceTree = "<group>"; };
@@ -319,6 +320,7 @@
 		035E9E352A9A02D6009D4F5A /* Mobs */ = {
 			isa = PBXGroup;
 			children = (
+				032BC5B22AD8E18000DEC883 /* Info.plist */,
 				036BE2CD2ABD4C960048F9C5 /* Kick */,
 				0379BB712AA4BFA500B718B6 /* Twitch */,
 				03B374052AA0EA370028DDD5 /* VideoEffects */,
@@ -899,6 +901,7 @@
 				DEVELOPMENT_TEAM = L82N7LD4N5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Mobs/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MOBS;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
 				INFOPLIST_KEY_NSCameraUsageDescription = Yes;
@@ -941,6 +944,7 @@
 				DEVELOPMENT_TEAM = L82N7LD4N5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Mobs/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MOBS;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
 				INFOPLIST_KEY_NSCameraUsageDescription = Yes;

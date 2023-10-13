@@ -20,11 +20,11 @@ import WebKit
  }*/
 
 struct MainView: View {
-    @ObservedObject var model = Model()
+    @ObservedObject var model: Model
     private var streamView: StreamView!
 
-    init() {
-        model.setup()
+    init(model: Model) {
+        self.model = model
         streamView = StreamView(model: model)
     }
 

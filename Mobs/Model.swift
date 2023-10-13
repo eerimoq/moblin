@@ -279,20 +279,17 @@ final class Model: ObservableObject {
     }
 
     @objc private func didEnterBackground(animated _: Bool) {
-        // wasStreamingWhenDidEnterBackground = streaming
-        // stopStream()
         logger.debug("Did enter background")
     }
 
     @objc private func willEnterForeground(animated _: Bool) {
         logger.debug("Will enter foreground")
-        // updateThermalState()
-        // if wasStreamingWhenDidEnterBackground {
-        //    stopStream()
-        //    startStream()
-        // } else {
-        //    stopStream()
-        // }
+    }
+
+    func handleSettingsUrls(urls: Set<UIOpenURLContext>) {
+        for url in urls {
+            logger.info("Ignoring URL: \(url.url)")
+        }
     }
 
     private func setupPeriodicTimers() {
