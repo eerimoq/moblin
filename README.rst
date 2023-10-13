@@ -201,7 +201,7 @@ An example creating a new stream is
 
    mobs://?{"streams":[{"name":"BELABOX%20UK","url":"srtla://uk.srt.belabox.net:5000?streamid=9812098rh9hf8942hid","video":{"codec":"H.265/HEVC"}}]}
 
-where the URL decided pretty printed JSON blob is
+where the URL decoded pretty printed JSON blob is
 
 .. code-block:: json
 
