@@ -81,6 +81,41 @@ func isValidSrtUrl(url: String) -> String? {
     return nil
 }
 
+func isValidUrl(url value: String) -> String? {
+    guard let url = URL(string: value) else {
+        return "Malformed URL"
+    }
+    if url.host() == nil {
+        return "Host missing"
+    }
+    guard URLComponents(url: url, resolvingAgainstBaseURL: false) != nil else {
+        return "Malformed URL"
+    }
+    switch url.scheme {
+    case "rtmp":
+        if let message = isValidRtmpUrl(url: value) {
+            return message
+        }
+    case "rtmps":
+        if let message = isValidRtmpUrl(url: value) {
+            return message
+        }
+    case "srt":
+        if let message = isValidSrtUrl(url: value) {
+            return message
+        }
+    case "srtla":
+        if let message = isValidSrtUrl(url: value) {
+            return message
+        }
+    case nil:
+        return "Scheme missing"
+    default:
+        return "Unsupported scheme \(url.scheme!)"
+    }
+    return nil
+}
+
 func schemeAndAddress(url: String) -> String {
     guard var url = URL(string: url) else {
         return ""

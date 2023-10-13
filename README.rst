@@ -192,6 +192,21 @@ Ideas/plan
 
 - LIDAR, altitude.
 
+Custom URL format
+=================
+
+An example creating a new stream:
+
+```
+mobs://?{"streams":[{"name":"Actix","url":"srt://mys-lang.org:5000","video":{"codec":"H.265/HEVC"}}]}
+```
+
+Fromat: `mobs://?<JSON blob>`
+
+See
+https://github.com/eerimoq/mobs/blob/main/Mobs/MobsSettingsUrl.swift
+for JSON blob format.
+
 Similar software
 ================
 

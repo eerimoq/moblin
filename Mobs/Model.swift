@@ -124,8 +124,8 @@ final class Model: ObservableObject {
         return database.buttons.first(where: { button in button.id == id })
     }
 
-    func makeToast(title: String) {
-        toast = AlertToast(type: .regular, title: title)
+    func makeToast(title: String, subTitle: String? = nil) {
+        toast = AlertToast(type: .regular, title: title, subTitle: subTitle)
         showingToast = true
     }
 
@@ -288,7 +288,38 @@ final class Model: ObservableObject {
 
     func handleSettingsUrls(urls: Set<UIOpenURLContext>) {
         for url in urls {
-            logger.info("Ignoring URL: \(url.url)")
+            guard url.url.path.isEmpty else {
+                logger.warning("Custom URL path is not empty")
+                continue
+            }
+            guard let query = url.url.query(percentEncoded: false) else {
+                logger.warning("Custom URL query is missing")
+                continue
+            }
+            do {
+                let query = try MobsSettingsUrl.fromString(query: query)
+                var streamCount = 0
+                for stream in query.streams ?? [] {
+                    let newStream = SettingsStream(name: stream.name)
+                    newStream.url = stream.url
+                    if let video = stream.video {
+                        if let codec = video.codec {
+                            newStream.codec = codec
+                        }
+                    }
+                    database.streams.append(newStream)
+                    logger.info("Created stream \(newStream.name)")
+                    streamCount += 1
+                }
+                store()
+                makeToast(
+                    title: "URL import successful",
+                    subTitle: "Created \(streamCount) stream(s)"
+                )
+            } catch {
+                logger.error("Failed to import URL with error: \(error)")
+                makeErrorToast(title: "URL import failed", subTitle: "\(error)")
+            }
         }
     }
 

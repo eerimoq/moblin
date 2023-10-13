@@ -14,44 +14,8 @@ struct StreamUrlSettingsView: View {
 
     func submitUrl() {
         value = value.trim()
-        guard let url = URL(string: value) else {
-            model.makeErrorToast(title: "Malformed URL")
-            return
-        }
-        if url.host() == nil {
-            model.makeErrorToast(title: "Host missing")
-            return
-        }
-        guard URLComponents(url: url, resolvingAgainstBaseURL: false) != nil else {
-            model.makeErrorToast(title: "Malformed URL")
-            return
-        }
-        switch url.scheme {
-        case "rtmp":
-            if let message = isValidRtmpUrl(url: value) {
-                model.makeErrorToast(title: message)
-                return
-            }
-        case "rtmps":
-            if let message = isValidRtmpUrl(url: value) {
-                model.makeErrorToast(title: message)
-                return
-            }
-        case "srt":
-            if let message = isValidSrtUrl(url: value) {
-                model.makeErrorToast(title: message)
-                return
-            }
-        case "srtla":
-            if let message = isValidSrtUrl(url: value) {
-                model.makeErrorToast(title: message)
-                return
-            }
-        case nil:
-            model.makeErrorToast(title: "Scheme missing")
-            return
-        default:
-            model.makeErrorToast(title: "Unsupported scheme \(url.scheme!)")
+        if let message = isValidUrl(url: value) {
+            model.makeErrorToast(title: message)
             return
         }
         stream.url = value
