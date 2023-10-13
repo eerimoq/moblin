@@ -195,12 +195,28 @@ Ideas/plan
 Import settings using mobs:// (custom URL)
 ==========================================
 
-An example creating a new stream:
+An example creating a new stream is
 
 .. code-block::
 
    mobs://?{"streams":[{"name":"BELABOX%20UK","url":"srtla://uk.srt.belabox.net:5000?streamid=9812098rh9hf8942hid","video":{"codec":"H.265/HEVC"}}]}
 
+where the URL decided pretty printed JSON blob is
+
+.. code-block:: json
+
+   {
+     "streams": [
+       {
+         "name": "BELABOX UK",
+         "url": "srtla://uk.srt.belabox.net:5000?streamid=9812098rh9hf8942hid",
+         "video": {
+           "codec": "H.265/HEVC"
+         }
+       }
+     ]
+   }
+   
 Fromat: ``mobs://?<JSON blob>``
 
 The ``MobsSettingsUrl`` class in `MobsSettingsUrl.swift`_ defines the
