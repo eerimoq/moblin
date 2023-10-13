@@ -203,9 +203,10 @@ An example creating a new stream:
 
 Fromat: ``mobs://?<JSON blob>``
 
-See
-https://github.com/eerimoq/mobs/blob/main/Mobs/MobsSettingsUrl.swift
-for JSON blob format.
+The ``MobsSettingsUrl`` class in `MobsSettingsUrl.swift`_ defines the
+JSON blob format. Class members are JSON object keys. Members with
+``?`` after the type are optional. Some classes are defined in
+`Settings.swift`_.
 
 Similar software
 ================
@@ -233,3 +234,7 @@ Similar software
 .. _Facebook: https://facebook.com
 
 .. _TestFlight: https://testflight.apple.com/join/PDpxEaGh
+
+.. _MobsSettingsUrl.swift: https://github.com/eerimoq/mobs/blob/main/Mobs/MobsSettingsUrl.swift
+
+.. _Settings.swift: https://github.com/eerimoq/mobs/blob/main/Mobs/Settings.swift
