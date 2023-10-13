@@ -29,6 +29,11 @@ struct SettingsView: View {
                 }))
             }
             Section {
+                NavigationLink(destination: CosmeticsSettingsView(model: model)) {
+                    Text("Cosmetics")
+                }
+            }
+            Section {
                 NavigationLink(destination: HelpAndSupportSettingsView()) {
                     Text("Help & support")
                 }

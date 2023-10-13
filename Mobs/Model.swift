@@ -91,6 +91,7 @@ final class Model: ObservableObject {
 
     @Published var showingBitrate = false
     @Published var showingMic = false
+    @Published var iconImage: String = "AppIconNoBackground"
 
     private var zoomPresets: [SettingsZoomPreset] = []
     @Published var backZoomPresetId = UUID()

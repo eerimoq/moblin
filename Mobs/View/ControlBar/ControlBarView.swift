@@ -65,7 +65,7 @@ struct ControlBarView: View {
                         .font(.system(size: 13))
                 }
                 HStack {
-                    Image("AppIconNoBackground")
+                    Image(model.iconImage)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .padding([.bottom], 5)

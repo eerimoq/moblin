@@ -122,6 +122,7 @@ struct SceneSettingsView: View {
                                     model.sceneUpdated()
                                 })) {
                                     HStack {
+                                        Text("")
                                         Circle()
                                             .frame(width: 15, height: 15)
                                             .foregroundColor(colorOf(widget: widget))

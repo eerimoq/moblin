@@ -6,6 +6,7 @@ struct IconAndTextView: View {
 
     var body: some View {
         HStack {
+            Text("")
             Image(systemName: image)
             Text(text)
         }
