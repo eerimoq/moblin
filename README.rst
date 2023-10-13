@@ -199,7 +199,7 @@ An example creating a new stream:
 
 .. code-block::
 
-   mobs://?{"streams":[{"name":"Actix","url":"srt://mys-lang.org:5000","video":{"codec":"H.265/HEVC"}}]}
+   mobs://?{"streams":[{"name":"BELABOX","url":"srtla://uk.srt.belabox.net:5000?streamid=9812098rh9hf8942hid","video":{"codec":"H.265/HEVC"}}]}
 
 Fromat: ``mobs://?<JSON blob>``
 
