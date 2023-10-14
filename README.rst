@@ -70,7 +70,9 @@ Features
 
   - Configurable presets.
 
-- Tap screen to focus.
+- Tap screen for manual focus.
+
+  - Return to auto focus with double tap.
 
 - Stream connection status and uptime.
 
