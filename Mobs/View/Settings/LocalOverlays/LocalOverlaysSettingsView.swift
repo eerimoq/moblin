@@ -9,7 +9,7 @@ struct LocalOverlaysSettingsView: View {
 
     var body: some View {
         Form {
-            Section {
+            Section("Left") {
                 Toggle("Stream", isOn: Binding(get: {
                     show.stream
                 }, set: { value in
@@ -34,6 +34,8 @@ struct LocalOverlaysSettingsView: View {
                     show.chat = value
                     model.store()
                 }))
+            }
+            Section("Right") {
                 Toggle("Audio level", isOn: Binding(get: {
                     show.audioLevel!
                 }, set: { value in
@@ -52,6 +54,8 @@ struct LocalOverlaysSettingsView: View {
                     show.uptime = value
                     model.store()
                 }))
+            }
+            Section {
                 Toggle("Zoom", isOn: Binding(get: {
                     show.zoom!
                 }, set: { value in
@@ -64,7 +68,10 @@ struct LocalOverlaysSettingsView: View {
                     show.zoomPresets = value
                     model.store()
                 }))
+            } header: {
+                Text("Bottom")
             } footer: {
+                Text("")
                 Text("Local overlays do not appear on stream.")
             }
         }

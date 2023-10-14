@@ -131,7 +131,7 @@ class SettingsScene: Codable, Identifiable, Equatable {
 }
 
 class SettingsWidgetText: Codable {
-    var formatString: String = "Sub goal: {subs} / 10"
+    var formatString: String = "{time}"
 }
 
 class SettingsWidgetImage: Codable {
@@ -196,6 +196,7 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case image = "Image"
     case webPage = "Web page"
     case browser = "Browser"
+    case time = "Time"
 }
 
 let widgetTypes = SettingsWidgetType.allCases.filter { widgetType in

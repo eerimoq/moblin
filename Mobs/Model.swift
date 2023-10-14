@@ -70,6 +70,7 @@ final class Model: ObservableObject {
     @Published var speedAndTotal = noValue
     @Published var thermalState = ProcessInfo.processInfo.thermalState
     var mthkView = MTHKView(frame: .zero)
+    private var textEffects: [UUID: TextEffect] = [:]
     private var imageEffects: [UUID: ImageEffect] = [:]
     private var videoEffects: [UUID: VideoEffect] = [:]
     private var browserEffects: [UUID: BrowserEffect] = [:]
@@ -517,6 +518,18 @@ final class Model: ObservableObject {
             }
             addVideoEffect(widget: widget)
         }
+        for textEffect in textEffects.values {
+            media.unregisterEffect(textEffect)
+        }
+        textEffects.removeAll()
+        for widget in database.widgets {
+            if widget.type != .time {
+                continue
+            }
+            textEffects[widget.id] = TextEffect(
+                format: widget.text.formatString,
+                fontSize: 40)
+        }
         for browserEffect in browserEffects.values {
             media.unregisterEffect(browserEffect)
         }
@@ -795,6 +808,9 @@ final class Model: ObservableObject {
         for imageEffect in imageEffects.values {
             media.unregisterEffect(imageEffect)
         }
+        for textEffect in textEffects.values {
+            media.unregisterEffect(textEffect)
+        }
         for browserEffect in browserEffects.values {
             media.unregisterEffect(browserEffect)
         }
@@ -828,6 +844,12 @@ final class Model: ObservableObject {
             case .image:
                 if let imageEffect = imageEffects[sceneWidget.id] {
                     media.registerEffect(imageEffect)
+                }
+            case .time:
+                if let textEffect = textEffects[widget.id] {
+                    textEffect.x = sceneWidget.x
+                    textEffect.y = sceneWidget.y
+                    media.registerEffect(textEffect)
                 }
             case .videoEffect:
                 if var videoEffect = videoEffects[widget.id] {

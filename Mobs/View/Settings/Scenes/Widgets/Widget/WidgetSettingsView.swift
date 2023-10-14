@@ -44,6 +44,8 @@ struct WidgetSettingsView: View {
                 EmptyView()
             case .browser:
                 WidgetBrowserSettingsView(model: model, widget: widget)
+            case .time:
+                EmptyView()
             }
         }
         .navigationTitle("Widget")

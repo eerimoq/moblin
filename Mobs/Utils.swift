@@ -150,6 +150,8 @@ func widgetImage(widget: SettingsWidget) -> String {
         return "photo.stack"
     case .browser:
         return "photo.stack"
+    case .time:
+        return "calendar.badge.clock"
     }
 }
 
