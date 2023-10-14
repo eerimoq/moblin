@@ -92,7 +92,7 @@ final class Model: ObservableObject {
     @Published var showingBitrate = false
     @Published var showingMic = false
     @Published var iconImage: String = "AppIconNoBackground"
-
+    @Published var manualFocusPoint: CGPoint?
     private var zoomPresets: [SettingsZoomPreset] = []
     @Published var backZoomPresetId = UUID()
     @Published var frontZoomPresetId = UUID()
@@ -1139,12 +1139,16 @@ final class Model: ObservableObject {
             // device.exposurePointOfInterest = focusPoint
             // device.exposureMode = .autoExpose
             device.unlockForConfiguration()
+            self.manualFocusPoint = focusPoint
         } catch let error as NSError {
             logger.error("while locking device for focusPointOfInterest: \(error)")
         }
     }
 
     func setAutoFocus() {
+        if manualFocusPoint == nil {
+            return
+        }
         guard
             let device = cameraDevice, device.isFocusPointOfInterestSupported
         else {
@@ -1156,9 +1160,11 @@ final class Model: ObservableObject {
             try device.lockForConfiguration()
             device.focusPointOfInterest = CGPoint(x: 0.5, y: 0.5)
             device.focusMode = .continuousAutoFocus
+            // device.exposurePointOfInterest = CGPoint(x: 0.5, y: 0.5)
             // device.exposureMode = .continuousAutoExposure
             device.unlockForConfiguration()
             makeToast(title: "Auto focus")
+            self.manualFocusPoint = nil
         } catch let error as NSError {
             logger.error("while locking device for focusPointOfInterest: \(error)")
         }

@@ -26,6 +26,9 @@ struct SettingsView: View {
                 }, set: { value in
                     model.database.tapToFocus = value
                     model.store()
+                    if !value {
+                        model.setAutoFocus()
+                    }
                 }))
             }
             Section {
