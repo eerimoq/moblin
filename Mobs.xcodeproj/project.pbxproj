@@ -278,14 +278,14 @@
 			path = Image;
 			sourceTree = "<group>";
 		};
-		032A49B62AC54DAD00ED3916 /* ExportImport */ = {
+		032A49B62AC54DAD00ED3916 /* ImportExport */ = {
 			isa = PBXGroup;
 			children = (
 				032A49B72AC54DD000ED3916 /* ExportSettingsView.swift */,
 				032A49B92AC54E6500ED3916 /* ImportSettingsView.swift */,
 				032A49BB2AC5DF3F00ED3916 /* ImportExportSettingsView.swift */,
 			);
-			path = ExportImport;
+			path = ImportExport;
 			sourceTree = "<group>";
 		};
 		03403DF32AD05C700079D8E4 /* Browser */ = {
@@ -542,7 +542,7 @@
 				03831D562AD9A188008D26CC /* Cosmetics */,
 				03FB4B2C2AD8CF6B005AA183 /* BitratePresets */,
 				03A14BE02ACC902B00D180FF /* ZoomPresets */,
-				032A49B62AC54DAD00ED3916 /* ExportImport */,
+				032A49B62AC54DAD00ED3916 /* ImportExport */,
 				0379BBB02AAD97EA00B718B6 /* Reset */,
 				0379BBAB2AAD962700B718B6 /* About */,
 				0379BBA82AAD951400B718B6 /* HelpAndSupport */,
