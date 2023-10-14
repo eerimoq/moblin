@@ -94,13 +94,13 @@ struct ButtonImagePickerSettingsView: View {
     var body: some View {
         Form {
             Picker("", selection: $value) {
-                    ForEach(imageSystemNames, id: \.self) { imageSystemName in
-                        HStack {
-                            Text("")
-                            Image(systemName: imageSystemName)
-                            Text(imageSystemName)
-                                .foregroundColor(.gray)
-                        }
+                ForEach(imageSystemNames, id: \.self) { imageSystemName in
+                    HStack {
+                        Text("")
+                        Image(systemName: imageSystemName)
+                        Text(imageSystemName)
+                            .foregroundColor(.gray)
+                    }
                 }
             }
             .onChange(of: value) { image in

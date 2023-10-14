@@ -1,14 +1,14 @@
 import SwiftUI
 
 struct Icon: Identifiable {
-    var id: UUID = UUID()
+    var id: UUID = .init()
     var name: String
     var image: String
 }
 
 private let myIcons = [
     Icon(name: "Plain", image: "AppIconNoBackground"),
-    Icon(name: "Halloween", image: "AppIconNoBackgroundHalloween")
+    Icon(name: "Halloween", image: "AppIconNoBackgroundHalloween"),
 ]
 
 private let allIcons = [
@@ -17,12 +17,13 @@ private let allIcons = [
     Icon(name: "Heart", image: "AppIconNoBackgroundHeart"),
     Icon(name: "Basque", image: "AppIconNoBackgroundBasque"),
     Icon(name: "Eyebrows", image: "AppIconNoBackgroundEyes"),
-    Icon(name: "Halloween", image: "AppIconNoBackgroundHalloween")
+    Icon(name: "Halloween", image: "AppIconNoBackgroundHalloween"),
 ]
 
 struct CosmeticsSettingsView: View {
     @ObservedObject var model: Model
-    
+    @State var isPresentingBuyPopup = false
+
     private func getIconsInStock() -> [Icon] {
         return allIcons.filter { icon in
             !myIcons.contains(where: { myIcon in
@@ -30,7 +31,7 @@ struct CosmeticsSettingsView: View {
             })
         }
     }
-    
+
     var body: some View {
         Form {
             Section {
@@ -71,10 +72,15 @@ struct CosmeticsSettingsView: View {
                             Spacer()
                             Text(icon.name)
                             Button(action: {
+                                isPresentingBuyPopup = true
                             }, label: {
                                 Text("$2.00")
                             })
                             .padding([.leading], 10)
+                            .alert(
+                                "Store will open if/when MOBS is in AppStore",
+                                isPresented: $isPresentingBuyPopup
+                            ) {}
                         }
                         .tag(icon.image)
                     }

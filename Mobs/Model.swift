@@ -1139,7 +1139,7 @@ final class Model: ObservableObject {
             // device.exposurePointOfInterest = focusPoint
             // device.exposureMode = .autoExpose
             device.unlockForConfiguration()
-            self.manualFocusPoint = focusPoint
+            manualFocusPoint = focusPoint
         } catch let error as NSError {
             logger.error("while locking device for focusPointOfInterest: \(error)")
         }
@@ -1164,7 +1164,7 @@ final class Model: ObservableObject {
             // device.exposureMode = .continuousAutoExposure
             device.unlockForConfiguration()
             makeToast(title: "Auto focus")
-            self.manualFocusPoint = nil
+            manualFocusPoint = nil
         } catch let error as NSError {
             logger.error("while locking device for focusPointOfInterest: \(error)")
         }
