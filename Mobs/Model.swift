@@ -251,6 +251,7 @@ final class Model: ObservableObject {
         backZoomPresetId = zoomPresets[0].id
         frontZoomPresetId = database.zoom!.front[0].id
         mthkView.videoGravity = .resizeAspect
+        mthkView.fps = Double(database.screenVideoFps!)
         logger.handler = debugLog(message:)
         updateDigitalClock(now: Date())
         twitchChat = TwitchChatMobs(model: self)
@@ -558,6 +559,12 @@ final class Model: ObservableObject {
 
     func store() {
         settings.store()
+    }
+
+    func setScreenFps(fps: Int) {
+        database.screenVideoFps = fps
+        store()
+        mthkView.fps = Double(fps)
     }
 
     func startStream() {

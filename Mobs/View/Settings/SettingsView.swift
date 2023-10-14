@@ -21,6 +21,21 @@ struct SettingsView: View {
                 NavigationLink(destination: BitratePresetsSettingsView(model: model)) {
                     Text("Bitrate presets")
                 }
+                NavigationLink(destination: TextEditView(
+                    title: "Screen FPS",
+                    value: String(model.database.screenVideoFps!),
+                    onSubmit: { value in
+                        guard let fps = Int(value) else {
+                            return
+                        }
+                        model.setScreenFps(fps: fps)
+                    }
+                )) {
+                    TextItemView(
+                        name: "Screen FPS",
+                        value: String(model.database.screenVideoFps!)
+                    )
+                }
                 Toggle("Tap screen to focus", isOn: Binding(get: {
                     model.database.tapToFocus!
                 }, set: { value in
