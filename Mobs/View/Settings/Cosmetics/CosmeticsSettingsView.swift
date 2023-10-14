@@ -24,8 +24,12 @@ private let allIcons = [
     Icon(name: "King", image: "AppIconNoBackgroundCrown"),
     Icon(name: "Heart", image: "AppIconNoBackgroundHeart"),
     Icon(name: "Basque", image: "AppIconNoBackgroundBasque"),
-    Icon(name: "Eyebrows", image: "AppIconNoBackgroundEyes"),
+    Icon(name: "Looking", image: "AppIconNoBackgroundLooking"),
     Icon(name: "Halloween", image: "AppIconNoBackgroundHalloween"),
+    Icon(name: "Eyebrows", image: "AppIconNoBackgroundEyes"),
+    Icon(name: "South Korea", image: "AppIconNoBackgroundSouthKorea"),
+    Icon(name: "Sweden", image: "AppIconNoBackgroundSweden"),
+    Icon(name: "United States", image: "AppIconNoBackgroundUnitedStates"),
 ]
 
 struct CosmeticsSettingsView: View {
