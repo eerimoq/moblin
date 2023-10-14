@@ -9,7 +9,7 @@ struct ZoomDefaultSettingsView: View {
 
     var body: some View {
         NavigationLink(destination: TextEditView(
-            title: "\(name) camera default zoom",
+            title: "\(name) X zoom",
             value: String(factorToX(position: position, factor: defaultZoom.level)),
             onSubmit: { x in
                 guard let x = Float(x) else {
@@ -31,7 +31,7 @@ struct ZoomDefaultSettingsView: View {
                 model.store()
             })) {
                 TextItemView(
-                    name: "\(name) camera",
+                    name: "\(name) X zoom",
                     value: String(factorToX(
                         position: position,
                         factor: defaultZoom.level

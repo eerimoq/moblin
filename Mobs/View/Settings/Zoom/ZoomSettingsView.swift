@@ -74,22 +74,22 @@ struct ZoomSettingsView: View {
             Section {
                 ZoomDefaultSettingsView(
                     model: model,
-                    name: "Back",
+                    name: "To back",
                     position: .back,
                     defaultZoom: model.database.zoom!.defaultBack!
                 )
                 ZoomDefaultSettingsView(
                     model: model,
-                    name: "Front",
+                    name: "To front",
                     position: .front,
                     defaultZoom: model.database.zoom!.defaultFront!
                 )
             } header: {
-                Text("Default zoom")
+                Text("Camera switching")
             } footer: {
-                Text("The zoom to apply when swapping to given camera, if enabled.")
+                Text("The X zoom to set when switching to given camera, if enabled.")
             }
         }
-        .navigationTitle("Zoom presets")
+        .navigationTitle("Zoom")
     }
 }
