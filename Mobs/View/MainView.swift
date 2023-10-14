@@ -36,12 +36,6 @@ struct MainView: View {
                         GeometryReader { metrics in
                             streamView
                                 .ignoresSafeArea()
-                                .onTapGesture(count: 2) { _ in
-                                    guard model.database.tapToFocus! else {
-                                        return
-                                    }
-                                    model.setAutoFocus()
-                                }
                                 .onTapGesture(count: 1) { location in
                                     guard model.database.tapToFocus! else {
                                         return
@@ -55,6 +49,12 @@ struct MainView: View {
                                         y: y
                                     ))
                                 }
+                                .onLongPressGesture(perform: {
+                                    guard model.database.tapToFocus! else {
+                                        return
+                                    }
+                                    model.setAutoFocus()
+                                })
                         }
                         StreamOverlayView(model: model)
                     }
