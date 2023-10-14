@@ -9,7 +9,7 @@ struct LocalOverlaysSettingsView: View {
 
     var body: some View {
         Form {
-            Section("Left") {
+            Section("Top left") {
                 Toggle("Stream", isOn: Binding(get: {
                     show.stream
                 }, set: { value in
@@ -28,14 +28,8 @@ struct LocalOverlaysSettingsView: View {
                     show.viewers = value
                     model.store()
                 }))
-                Toggle("Chat", isOn: Binding(get: {
-                    show.chat
-                }, set: { value in
-                    show.chat = value
-                    model.store()
-                }))
             }
-            Section("Right") {
+            Section("Top right") {
                 Toggle("Audio level", isOn: Binding(get: {
                     show.audioLevel!
                 }, set: { value in
@@ -54,14 +48,22 @@ struct LocalOverlaysSettingsView: View {
                     show.uptime = value
                     model.store()
                 }))
-            }
-            Section {
                 Toggle("Zoom", isOn: Binding(get: {
                     show.zoom!
                 }, set: { value in
                     show.zoom = value
                     model.store()
                 }))
+            }
+            Section("Bottom left") {
+                Toggle("Chat", isOn: Binding(get: {
+                    show.chat
+                }, set: { value in
+                    show.chat = value
+                    model.store()
+                }))
+            }
+            Section {
                 Toggle("Zoom presets", isOn: Binding(get: {
                     show.zoomPresets!
                 }, set: { value in
@@ -69,7 +71,7 @@ struct LocalOverlaysSettingsView: View {
                     model.store()
                 }))
             } header: {
-                Text("Bottom")
+                Text("Bottom right")
             } footer: {
                 Text("")
                 Text("Local overlays do not appear on stream.")
