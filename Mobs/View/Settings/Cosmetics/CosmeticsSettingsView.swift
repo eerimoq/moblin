@@ -6,10 +6,16 @@ struct Icon: Identifiable {
     var image: String
 }
 
-private let myIcons = [
+let myIcons = [
     Icon(name: "Plain", image: "AppIconNoBackground"),
     Icon(name: "Halloween", image: "AppIconNoBackgroundHalloween"),
 ]
+
+func isInMyIcons(image: String) -> Bool {
+    return myIcons.contains(where: { icon in
+        icon.image == image
+    })
+}
 
 private let allIcons = [
     Icon(name: "Plain", image: "AppIconNoBackground"),
@@ -26,9 +32,7 @@ struct CosmeticsSettingsView: View {
 
     private func getIconsInStock() -> [Icon] {
         return allIcons.filter { icon in
-            !myIcons.contains(where: { myIcon in
-                myIcon.image == icon.image
-            })
+            !isInMyIcons(image: icon.image)
         }
     }
 

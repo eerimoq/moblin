@@ -243,7 +243,7 @@ final class Model: ObservableObject {
         media.onRtmpConnected = handleRtmpConnected
         media.onRtmpDisconnected = handleRtmpDisconnected
         media.onAudioMuteChange = updateAudioLevel
-        iconImage = database.iconImage!
+        updateIconImageFromDatabase()
         setupAudioSession()
         selectMic(orientation: mics[0])
         zoomPresets = database.zoom!.back
@@ -286,6 +286,15 @@ final class Model: ObservableObject {
 
     @objc private func willEnterForeground(animated _: Bool) {
         logger.debug("Will enter foreground")
+    }
+
+    func updateIconImageFromDatabase() {
+        if !isInMyIcons(image: database.iconImage!) {
+            logger.warning("Database icon image \(database.iconImage!) is not mine")
+            database.iconImage = "AppIconNoBackground"
+            store()
+        }
+        iconImage = database.iconImage!
     }
 
     func handleSettingsUrls(urls: Set<UIOpenURLContext>) {

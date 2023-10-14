@@ -14,6 +14,7 @@ struct ImportSettingsView: View {
                     )
                 } else {
                     model.makeToast(title: "Settings imported")
+                    model.updateIconImageFromDatabase()
                 }
             }
             Spacer()
