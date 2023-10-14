@@ -93,6 +93,8 @@ struct CosmeticsSettingsView: View {
                 }
             } header: {
                 Text("Icons in store")
+            } footer: {
+                Text("Support MOBS developers by buying icons.")
             }
         }
         .navigationTitle("Cosmetics")
