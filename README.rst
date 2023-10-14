@@ -138,8 +138,6 @@ Ideas/plan
 
 - Interactive local browser(s).
 
-- Tap to focus.
-
 - Timestamp overlay. Possibly with a format string, and background and
   foreground colors.
 
