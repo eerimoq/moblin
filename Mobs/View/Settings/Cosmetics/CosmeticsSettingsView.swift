@@ -28,6 +28,7 @@ private let allIcons = [
     Icon(name: "Halloween", image: "AppIconNoBackgroundHalloween"),
     Icon(name: "Eyebrows", image: "AppIconNoBackgroundEyes"),
     Icon(name: "South Korea", image: "AppIconNoBackgroundSouthKorea"),
+    Icon(name: "China", image: "AppIconNoBackgroundChina"),
     Icon(name: "Sweden", image: "AppIconNoBackgroundSweden"),
     Icon(name: "United States", image: "AppIconNoBackgroundUnitedStates"),
 ]
