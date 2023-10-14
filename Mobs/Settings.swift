@@ -325,9 +325,16 @@ class SettingsZoomPreset: Codable, Identifiable {
     }
 }
 
-class SettingsZoomPresets: Codable {
+class SettingsZoomDefault: Codable {
+    var level: Float = 1.0
+    var enabled: Bool = false
+}
+
+class SettingsZoom: Codable {
     var back: [SettingsZoomPreset] = []
     var front: [SettingsZoomPreset] = []
+    var defaultBack: SettingsZoomDefault? = .init()
+    var defaultFront: SettingsZoomDefault? = .init()
 }
 
 class SettingsBitratePreset: Codable, Identifiable {
@@ -347,7 +354,7 @@ class Database: Codable {
     var variables: [SettingsVariable] = []
     var buttons: [SettingsButton] = []
     var show: SettingsShow = .init()
-    var zoom: SettingsZoomPresets? = .init()
+    var zoom: SettingsZoom? = .init()
     var tapToFocus: Bool? = false
     var bitratePresets: [SettingsBitratePreset]? = []
     var iconImage: String? = plainIcon.image
@@ -364,7 +371,7 @@ class Database: Codable {
             addDefaultStreams(database: database)
         }
         if database.zoom == nil {
-            database.zoom = SettingsZoomPresets()
+            database.zoom = SettingsZoom()
         }
         if database.zoom!.back.isEmpty {
             addDefaultBackZoomPresets(database: database)
@@ -772,6 +779,14 @@ final class Settings {
         }
         if database.iconImage == nil {
             database.iconImage = plainIcon.image
+            store()
+        }
+        if database.zoom!.defaultBack == nil {
+            database.zoom!.defaultBack = .init()
+            store()
+        }
+        if database.zoom!.defaultFront == nil {
+            database.zoom!.defaultFront = .init()
             store()
         }
     }

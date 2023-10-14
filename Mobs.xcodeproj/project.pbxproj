@@ -28,7 +28,7 @@
 		035D37282AB0EBB500045B92 /* IconAndTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37272AB0EBB500045B92 /* IconAndTextView.swift */; };
 		035D372C2AB103E600045B92 /* SRTHaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 035D372B2AB103E600045B92 /* SRTHaishinKit */; };
 		035D37372AB230E700045B92 /* StreamVideoBitrateSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37362AB230E700045B92 /* StreamVideoBitrateSettingsView.swift */; };
-		035E775C2ACC969D00738DCE /* ZoomPresetsPresetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035E775B2ACC969D00738DCE /* ZoomPresetsPresetSettingsView.swift */; };
+		035E775C2ACC969D00738DCE /* ZoomPresetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035E775B2ACC969D00738DCE /* ZoomPresetSettingsView.swift */; };
 		035E9E372A9A02D6009D4F5A /* MobsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035E9E362A9A02D6009D4F5A /* MobsApp.swift */; };
 		035E9E3B2A9A02D7009D4F5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */; };
 		035E9E3E2A9A02D7009D4F5A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3D2A9A02D7009D4F5A /* Preview Assets.xcassets */; };
@@ -63,7 +63,7 @@
 		03831D592AD9A198008D26CC /* CosmeticsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03831D582AD9A198008D26CC /* CosmeticsSettingsView.swift */; };
 		03A08B7C2AC295620018BA95 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = 03A08B7B2AC295620018BA95 /* AlertToast */; };
 		03A08B802AC368860018BA95 /* Media.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A08B7F2AC368860018BA95 /* Media.swift */; };
-		03A14BE32ACC903E00D180FF /* ZoomPresetsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A14BE22ACC903E00D180FF /* ZoomPresetsSettingsView.swift */; };
+		03A14BE32ACC903E00D180FF /* ZoomSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A14BE22ACC903E00D180FF /* ZoomSettingsView.swift */; };
 		03A974282AC137A000610E21 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 03A974272AC137A000610E21 /* Collections */; };
 		03A983422A9A03D3008FF0DB /* TwitchChat in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983412A9A03D3008FF0DB /* TwitchChat */; };
 		03A983452A9A03EA008FF0DB /* HaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983442A9A03EA008FF0DB /* HaishinKit */; };
@@ -91,6 +91,7 @@
 		03B374092AA0EA700028DDD5 /* ImageEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374082AA0EA700028DDD5 /* ImageEffect.swift */; };
 		03B374132AA277570028DDD5 /* Srtla.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374122AA277570028DDD5 /* Srtla.swift */; };
 		03CC5F892AD060DB0019CBA5 /* WidgetBrowserUrlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CC5F882AD060DB0019CBA5 /* WidgetBrowserUrlSettingsView.swift */; };
+		03E95AC62ADAF58900DAE2DF /* ZoomDefaultSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95AC52ADAF58900DAE2DF /* ZoomDefaultSettingsView.swift */; };
 		03EBEA632ACB4A17000DF427 /* BrowserEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */; };
 		03F3BF192ADAAA94009A8D3E /* TextEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F3BF182ADAAA94009A8D3E /* TextEffect.swift */; };
 		03F5A8DC2AD5C05800F354D2 /* AdaptiveBitrate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F5A8DB2AD5C05800F354D2 /* AdaptiveBitrate.swift */; };
@@ -121,7 +122,7 @@
 		035D371D2AB039C800045B92 /* StreamVideoCodecSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoCodecSettingsView.swift; sourceTree = "<group>"; };
 		035D37272AB0EBB500045B92 /* IconAndTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconAndTextView.swift; sourceTree = "<group>"; };
 		035D37362AB230E700045B92 /* StreamVideoBitrateSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoBitrateSettingsView.swift; sourceTree = "<group>"; };
-		035E775B2ACC969D00738DCE /* ZoomPresetsPresetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomPresetsPresetSettingsView.swift; sourceTree = "<group>"; };
+		035E775B2ACC969D00738DCE /* ZoomPresetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomPresetSettingsView.swift; sourceTree = "<group>"; };
 		035E9E332A9A02D6009D4F5A /* Mobs.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mobs.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		035E9E362A9A02D6009D4F5A /* MobsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobsApp.swift; sourceTree = "<group>"; };
 		035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -156,7 +157,7 @@
 		03831D512AD90AB5008D26CC /* MobsSettingsUrl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobsSettingsUrl.swift; sourceTree = "<group>"; };
 		03831D582AD9A198008D26CC /* CosmeticsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmeticsSettingsView.swift; sourceTree = "<group>"; };
 		03A08B7F2AC368860018BA95 /* Media.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Media.swift; sourceTree = "<group>"; };
-		03A14BE22ACC903E00D180FF /* ZoomPresetsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomPresetsSettingsView.swift; sourceTree = "<group>"; };
+		03A14BE22ACC903E00D180FF /* ZoomSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomSettingsView.swift; sourceTree = "<group>"; };
 		03A983552A9A05D7008FF0DB /* StreamsSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamsSettingsView.swift; sourceTree = "<group>"; };
 		03A983562A9A05D7008FF0DB /* MainView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		03A983572A9A05D7008FF0DB /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -181,6 +182,7 @@
 		03B374082AA0EA700028DDD5 /* ImageEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEffect.swift; sourceTree = "<group>"; };
 		03B374122AA277570028DDD5 /* Srtla.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Srtla.swift; sourceTree = "<group>"; };
 		03CC5F882AD060DB0019CBA5 /* WidgetBrowserUrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBrowserUrlSettingsView.swift; sourceTree = "<group>"; };
+		03E95AC52ADAF58900DAE2DF /* ZoomDefaultSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomDefaultSettingsView.swift; sourceTree = "<group>"; };
 		03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserEffect.swift; sourceTree = "<group>"; };
 		03F3BF182ADAAA94009A8D3E /* TextEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEffect.swift; sourceTree = "<group>"; };
 		03F5A8DB2AD5C05800F354D2 /* AdaptiveBitrate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveBitrate.swift; sourceTree = "<group>"; };
@@ -517,13 +519,14 @@
 			path = Cosmetics;
 			sourceTree = "<group>";
 		};
-		03A14BE02ACC902B00D180FF /* ZoomPresets */ = {
+		03A14BE02ACC902B00D180FF /* Zoom */ = {
 			isa = PBXGroup;
 			children = (
-				03A14BE22ACC903E00D180FF /* ZoomPresetsSettingsView.swift */,
-				035E775B2ACC969D00738DCE /* ZoomPresetsPresetSettingsView.swift */,
+				03A14BE22ACC903E00D180FF /* ZoomSettingsView.swift */,
+				035E775B2ACC969D00738DCE /* ZoomPresetSettingsView.swift */,
+				03E95AC52ADAF58900DAE2DF /* ZoomDefaultSettingsView.swift */,
 			);
-			path = ZoomPresets;
+			path = Zoom;
 			sourceTree = "<group>";
 		};
 		03A983542A9A0582008FF0DB /* View */ = {
@@ -543,7 +546,7 @@
 			children = (
 				03831D562AD9A188008D26CC /* Cosmetics */,
 				03FB4B2C2AD8CF6B005AA183 /* BitratePresets */,
-				03A14BE02ACC902B00D180FF /* ZoomPresets */,
+				03A14BE02ACC902B00D180FF /* Zoom */,
 				032A49B62AC54DAD00ED3916 /* ImportExport */,
 				0379BBB02AAD97EA00B718B6 /* Reset */,
 				0379BBAB2AAD962700B718B6 /* About */,
@@ -738,7 +741,7 @@
 				03A983722A9A0659008FF0DB /* TwitchChatMobs.swift in Sources */,
 				0379BBA52AAD945D00B718B6 /* LocalOverlaysSettingsView.swift in Sources */,
 				0379BB762AA6345400B718B6 /* ButtonSettingsView.swift in Sources */,
-				035E775C2ACC969D00738DCE /* ZoomPresetsPresetSettingsView.swift in Sources */,
+				035E775C2ACC969D00738DCE /* ZoomPresetSettingsView.swift in Sources */,
 				03A983672A9A05D7008FF0DB /* ScenesSettingsView.swift in Sources */,
 				0379BBAD2AAD964000B718B6 /* AboutSettingsView.swift in Sources */,
 				03F5A8DF2AD5DACB00F354D2 /* Srt.swift in Sources */,
@@ -751,11 +754,12 @@
 				032A49B82AC54DD000ED3916 /* ExportSettingsView.swift in Sources */,
 				03831D522AD90AB5008D26CC /* MobsSettingsUrl.swift in Sources */,
 				032A49BA2AC54E6500ED3916 /* ImportSettingsView.swift in Sources */,
-				03A14BE32ACC903E00D180FF /* ZoomPresetsSettingsView.swift in Sources */,
+				03A14BE32ACC903E00D180FF /* ZoomSettingsView.swift in Sources */,
 				03A983682A9A05D7008FF0DB /* SceneSettingsView.swift in Sources */,
 				0379BB942AACF16600B718B6 /* SepiaEffect.swift in Sources */,
 				032815DF2AC9885C001F8A85 /* TripleEffect.swift in Sources */,
 				03B374022AA0354C0028DDD5 /* GrayScaleEffect.swift in Sources */,
+				03E95AC62ADAF58900DAE2DF /* ZoomDefaultSettingsView.swift in Sources */,
 				03A983632A9A05D7008FF0DB /* SettingsView.swift in Sources */,
 				036BE2D22ABD518E0048F9C5 /* StreamKickSettingsView.swift in Sources */,
 				03FB4B312AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift in Sources */,

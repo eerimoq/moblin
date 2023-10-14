@@ -15,8 +15,8 @@ struct SettingsView: View {
                 NavigationLink(destination: LocalOverlaysSettingsView(model: model)) {
                     Text("Local overlays")
                 }
-                NavigationLink(destination: ZoomPresetsSettingsView(model: model)) {
-                    Text("Zoom presets")
+                NavigationLink(destination: ZoomSettingsView(model: model)) {
+                    Text("Zoom")
                 }
                 NavigationLink(destination: BitratePresetsSettingsView(model: model)) {
                     Text("Bitrate presets")

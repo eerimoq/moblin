@@ -1,7 +1,7 @@
 import AVFoundation
 import SwiftUI
 
-struct ZoomPresetsPresetSettingsView: View {
+struct ZoomPresetSettingsView: View {
     @ObservedObject var model: Model
     private var preset: SettingsZoomPreset
     private var position: AVCaptureDevice.Position
@@ -12,19 +12,7 @@ struct ZoomPresetsPresetSettingsView: View {
         self.model = model
         self.preset = preset
         self.position = position
-        if let device = preferredCamera(position: position) {
-            minX = factorToX(
-                position: position,
-                factor: Float(device.minAvailableVideoZoomFactor)
-            )
-            maxX = factorToX(
-                position: position,
-                factor: Float(device.maxAvailableVideoZoomFactor)
-            )
-        } else {
-            minX = 1.0
-            maxX = 1.0
-        }
+        (minX, maxX) = getMinMaxZoomX(position: position)
     }
 
     func submitName(name: String) {

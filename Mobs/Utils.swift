@@ -307,3 +307,22 @@ extension Comparable {
         return min(max(self, limits.lowerBound), limits.upperBound)
     }
 }
+
+func getMinMaxZoomX(position: AVCaptureDevice.Position) -> (Float, Float) {
+    var minX: Float
+    var maxX: Float
+    if let device = preferredCamera(position: position) {
+        minX = factorToX(
+            position: position,
+            factor: Float(device.minAvailableVideoZoomFactor)
+        )
+        maxX = factorToX(
+            position: position,
+            factor: Float(device.maxAvailableVideoZoomFactor)
+        )
+    } else {
+        minX = 1.0
+        maxX = 1.0
+    }
+    return (minX, maxX)
+}

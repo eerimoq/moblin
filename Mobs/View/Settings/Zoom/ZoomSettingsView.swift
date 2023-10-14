@@ -1,14 +1,14 @@
 import SwiftUI
 
-struct ZoomPresetsSettingsView: View {
+struct ZoomSettingsView: View {
     @ObservedObject var model: Model
 
     var body: some View {
         Form {
-            Section("Back camera") {
+            Section("Back camera presets") {
                 List {
                     ForEach(model.database.zoom!.back) { preset in
-                        NavigationLink(destination: ZoomPresetsPresetSettingsView(
+                        NavigationLink(destination: ZoomPresetSettingsView(
                             model: model,
                             preset: preset,
                             position: .back
@@ -41,10 +41,10 @@ struct ZoomPresetsSettingsView: View {
                     model.backZoomUpdated()
                 })
             }
-            Section("Front camera") {
+            Section("Front camera presets") {
                 List {
                     ForEach(model.database.zoom!.front) { preset in
-                        NavigationLink(destination: ZoomPresetsPresetSettingsView(
+                        NavigationLink(destination: ZoomPresetSettingsView(
                             model: model,
                             preset: preset,
                             position: .front
@@ -70,6 +70,24 @@ struct ZoomPresetsSettingsView: View {
                     ))
                     model.frontZoomUpdated()
                 })
+            }
+            Section {
+                ZoomDefaultSettingsView(
+                    model: model,
+                    name: "Back",
+                    position: .back,
+                    defaultZoom: model.database.zoom!.defaultBack!
+                )
+                ZoomDefaultSettingsView(
+                    model: model,
+                    name: "Front",
+                    position: .front,
+                    defaultZoom: model.database.zoom!.defaultFront!
+                )
+            } header: {
+                Text("Default zoom")
+            } footer: {
+                Text("The zoom to apply when swapping to given camera, if enabled.")
             }
         }
         .navigationTitle("Zoom presets")

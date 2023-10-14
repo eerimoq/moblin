@@ -967,10 +967,18 @@ final class Model: ObservableObject {
         switch position {
         case .back:
             zoomPresets = database.zoom!.back
+            if database.zoom!.defaultBack!.enabled {
+                clearZoomId()
+                backZoomLevel = Double(database.zoom!.defaultBack!.level)
+            }
             zoomLevel = backZoomLevel
             isMirrored = false
         case .front:
             zoomPresets = database.zoom!.front
+            if database.zoom!.defaultFront!.enabled {
+                clearZoomId()
+                frontZoomLevel = Double(database.zoom!.defaultFront!.level)
+            }
             zoomLevel = frontZoomLevel
             isMirrored = true
         default:
@@ -978,8 +986,8 @@ final class Model: ObservableObject {
         }
         media.attachCamera(device: cameraDevice, onSuccess: {
             self.mthkView.isMirrored = isMirrored
+            _ = self.media.setCameraZoomLevel(level: self.zoomLevel, ramp: false)
         })
-        _ = media.setCameraZoomLevel(level: zoomLevel, ramp: true)
         zoomLevelPinch = zoomLevel
     }
 
