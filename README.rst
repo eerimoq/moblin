@@ -72,7 +72,7 @@ Features
 
 - Tap screen for manual focus.
 
-  - Return to auto focus with double tap.
+  - Return to auto focus with long press.
 
 - Stream connection status and uptime.
 
