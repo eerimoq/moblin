@@ -797,7 +797,7 @@ final class Model: ObservableObject {
             attachCamera(position: .back)
         case .front:
             attachCamera(position: .front)
-        default:
+        case nil:
             logger.error("Camera type is nil?")
         }
         for sceneWidget in scene.widgets.filter({ widget in widget.enabled }) {
@@ -925,6 +925,10 @@ final class Model: ObservableObject {
     }
 
     private func attachCamera(position: AVCaptureDevice.Position) {
+        guard position != cameraPosition else {
+            return
+        }
+        setAutoFocus()
         cameraDevice = preferredCamera(position: position)
         var isMirrored = false
         cameraPosition = position
