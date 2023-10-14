@@ -87,8 +87,6 @@ struct CosmeticsSettingsView: View {
                 }
             } header: {
                 Text("Icons in store")
-            } footer: {
-                Text("It is not yet possible to buy and icons.")
             }
         }
         .navigationTitle("Cosmetics")
