@@ -20,6 +20,18 @@ struct StreamOverlayView: View {
 
     var body: some View {
         ZStack {
+            if model.database.tapToFocus!, let focusPoint = model.manualFocusPoint {
+                GeometryReader { metrics in
+                    Canvas { context, _ in
+                        drawFocus(
+                            context: context,
+                            metrics: metrics,
+                            focusPoint: focusPoint
+                        )
+                    }
+                    .allowsHitTesting(false)
+                }
+            }
             HStack {
                 Spacer()
                 RightOverlayView(model: model)
@@ -31,16 +43,6 @@ struct StreamOverlayView: View {
                     Spacer()
                 }
                 .frame(width: metrics.size.width * 0.7)
-                if model.database.tapToFocus!, let focusPoint = model.manualFocusPoint {
-                    Canvas { context, _ in
-                        drawFocus(
-                            context: context,
-                            metrics: metrics,
-                            focusPoint: focusPoint
-                        )
-                    }
-                    .allowsHitTesting(false)
-                }
             }
             HStack {
                 StreamOverlayDebugView(model: model)
