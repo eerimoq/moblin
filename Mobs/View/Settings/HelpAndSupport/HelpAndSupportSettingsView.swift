@@ -18,6 +18,11 @@ struct HelpAndSupportSettingsView: View {
                 }, label: {
                     Text("Github")
                 })
+            } footer: {
+                Text("""
+                Feel free to join MOBS Discord server or write an issue on \
+                Github if you need help or want to give feedback.
+                """)
             }
         }
         .navigationTitle("Help & support")
