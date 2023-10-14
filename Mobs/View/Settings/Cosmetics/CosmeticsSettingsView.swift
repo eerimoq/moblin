@@ -8,7 +8,7 @@ struct Icon: Identifiable {
 
 let plainIcon = Icon(name: "Plain", image: "AppIconNoBackground")
 
-let myIcons = [
+private let myIcons = [
     plainIcon,
     Icon(name: "Halloween", image: "AppIconNoBackgroundHalloween"),
 ]
