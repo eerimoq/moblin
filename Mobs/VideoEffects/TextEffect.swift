@@ -19,8 +19,8 @@ final class TextEffect: VideoEffect {
     init(format: String, fontSize: CGFloat) {
         self.format = format
         self.fontSize = fontSize
-        self.x = 0
-        self.y = 0
+        x = 0
+        y = 0
     }
 
     private func formatted() -> String {

@@ -528,7 +528,8 @@ final class Model: ObservableObject {
             }
             textEffects[widget.id] = TextEffect(
                 format: widget.text.formatString,
-                fontSize: 40)
+                fontSize: 40
+            )
         }
         for browserEffect in browserEffects.values {
             media.unregisterEffect(browserEffect)
