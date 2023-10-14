@@ -59,7 +59,7 @@ struct MainView: View {
                         StreamOverlayView(model: model)
                     }
                     .gesture(
-                        MagnificationGesture(minimumScaleDelta: 0.0)
+                        MagnificationGesture()
                             .onChanged { amount in
                                 model.changeZoomLevel(amount: amount)
                             }
