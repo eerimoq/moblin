@@ -84,7 +84,7 @@ struct CosmeticsSettingsView: View {
                             })
                             .padding([.leading], 10)
                             .alert(
-                                "Store will open if/when MOBS is in AppStore",
+                                "The store is closed",
                                 isPresented: $isPresentingBuyPopup
                             ) {}
                         }

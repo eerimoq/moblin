@@ -19,8 +19,9 @@ struct ImportExportSettingsView: View {
                     """).bold()
                     Text("")
                     Text("""
-                    mobs:// can be used to import some settings, often using QR \
-                    codes or browser. See https://github.com/eerimoq/mobs for details.
+                    mobs:// deep links can be used to import some settings, often \
+                    using QR codes or a browser. See https://github.com/eerimoq/mobs \
+                    for details.
                     """)
                 }
             }
