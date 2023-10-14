@@ -6,8 +6,10 @@ struct Icon: Identifiable {
     var image: String
 }
 
+let plainIcon = Icon(name: "Plain", image: "AppIconNoBackground")
+
 let myIcons = [
-    Icon(name: "Plain", image: "AppIconNoBackground"),
+    plainIcon,
     Icon(name: "Halloween", image: "AppIconNoBackgroundHalloween"),
 ]
 
@@ -18,7 +20,7 @@ func isInMyIcons(image: String) -> Bool {
 }
 
 private let allIcons = [
-    Icon(name: "Plain", image: "AppIconNoBackground"),
+    plainIcon,
     Icon(name: "King", image: "AppIconNoBackgroundCrown"),
     Icon(name: "Heart", image: "AppIconNoBackgroundHeart"),
     Icon(name: "Basque", image: "AppIconNoBackgroundBasque"),

@@ -349,7 +349,7 @@ class Database: Codable {
     var zoom: SettingsZoomPresets? = .init()
     var tapToFocus: Bool? = false
     var bitratePresets: [SettingsBitratePreset]? = []
-    var iconImage: String? = "AppIconNoBackground"
+    var iconImage: String? = plainIcon.image
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -770,7 +770,7 @@ final class Settings {
             store()
         }
         if database.iconImage == nil {
-            database.iconImage = "AppIconNoBackground"
+            database.iconImage = plainIcon.image
             store()
         }
     }

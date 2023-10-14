@@ -91,7 +91,7 @@ final class Model: ObservableObject {
 
     @Published var showingBitrate = false
     @Published var showingMic = false
-    @Published var iconImage: String = "AppIconNoBackground"
+    @Published var iconImage: String = plainIcon.image
     @Published var manualFocusPoint: CGPoint?
     private var zoomPresets: [SettingsZoomPreset] = []
     @Published var backZoomPresetId = UUID()
@@ -291,7 +291,7 @@ final class Model: ObservableObject {
     func updateIconImageFromDatabase() {
         if !isInMyIcons(image: database.iconImage!) {
             logger.warning("Database icon image \(database.iconImage!) is not mine")
-            database.iconImage = "AppIconNoBackground"
+            database.iconImage = plainIcon.image
             store()
         }
         iconImage = database.iconImage!
