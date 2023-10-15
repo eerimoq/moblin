@@ -91,6 +91,10 @@ Features
 
   - Triple. Show center of image three times. Experimental.
 
+- Cosmetics.
+
+  - Selected MOBS icon shown in app and on home screen.
+
 - Torch.
 
 - Configure resolution, FPS, codec, bitrate and more.
@@ -121,8 +125,6 @@ Ideas/plan
 - Filter for button icons.
 
 - A handle to show that items in some lists are draggable.
-
-- Change app icon on home screen when changing in app.
 
 - Remove zeros from bitrate preset config.
 
