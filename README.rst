@@ -132,8 +132,6 @@ Ideas/plan
 
 - Filter for button icons.
 
-- A handle to show that items in some lists are draggable.
-
 - Remove zeros from bitrate preset config.
 
 - Toggles to enable/disable "Go live" and "Stop" confirmations. Per
