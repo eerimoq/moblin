@@ -1,23 +1,5 @@
 import SwiftUI
 import WebKit
-/*
- struct WebView2: UIViewRepresentable {
-     let url: URL
-
-     func makeUIView(context _: Context) -> WKWebView {
-         let configuration = WKWebViewConfiguration()
-         configuration.allowsInlineMediaPlayback = true
-         //configuration.allowsAirPlayForMediaPlayback = true
-         //configuration.allowsPictureInPictureMediaPlayback = false
-         configuration.mediaTypesRequiringUserActionForPlayback = []
-         let wkwebView = WKWebView(frame: CGRect(x: 0, y: 0, width: 200, height: 200),
-        configuration: configuration)
-         wkwebView.load(URLRequest(url: url))
-         return wkwebView
-     }
-
-     func updateUIView(_: WKWebView, context _: Context) {}
- }*/
 
 struct MainView: View {
     @ObservedObject var model: Model
@@ -69,13 +51,6 @@ struct MainView: View {
                     )
                     ControlBarView(model: model)
                 }
-                // WebView2(url: URL(string: "https://sr.se")!)
-                // WebView2(url: URL(string:
-                // "https://videojs.github.io/autoplay-tests/plain/attr/autoplay-muted.html")!)
-                // WebView2(url: URL(string: "https://videojs.github.io/autoplay-tests/plain/play/autoplay.html")!)
-                // WebView2(url: URL(string:
-                // "https://file-examples.com/storage/feaade38c1651bd01984236/2017/11/file_example_MP3_700KB.mp3")!)
-                // .frame(width: 200, height: 200)
                 if model.showingBitrate {
                     GeometryReader { metrics in
                         HStack {
