@@ -23,9 +23,11 @@ struct BitratePresetsSettingsView: View {
                 }
                 .onMove(perform: { froms, to in
                     model.database.bitratePresets!.move(fromOffsets: froms, toOffset: to)
+                    model.store()
                 })
                 .onDelete(perform: { offsets in
                     model.database.bitratePresets!.remove(atOffsets: offsets)
+                    model.store()
                 })
             }
             CreateButtonView(action: {
@@ -33,6 +35,7 @@ struct BitratePresetsSettingsView: View {
                     id: UUID(),
                     bitrate: 1_000_000
                 ))
+                model.store()
             })
         }
         .navigationTitle("Bitrate presets")
