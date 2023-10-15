@@ -112,16 +112,6 @@ Features
 ToDo
 ====
 
-- Sometimes settings doesn't rotate to protrait orientation.
-
-  1. Open settings in portrait.
-
-  2. Reorder bitrate presets.
-
-  3. Leave settings and open settings again.
-
-  4. Settings are stuck in landscape.
-
 - Sometimes a stroboscope effect happens on screen.
 
 - Changing stream from SRT to SRT always hangs video.
