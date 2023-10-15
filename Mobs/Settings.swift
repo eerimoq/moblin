@@ -641,9 +641,6 @@ final class Settings {
         guard let settings = settings.data(using: .utf8) else {
             return "Non-string clipboard"
         }
-        guard let settings = Data(base64Encoded: settings) else {
-            return "Not base64 encoded"
-        }
         guard let settings = String(data: settings, encoding: .utf8) else {
             return "Non-string in base64"
         }
@@ -656,12 +653,8 @@ final class Settings {
         return nil
     }
 
-    func exportToClipboard() -> String? {
-        guard let settings = storage.data(using: .utf8) else {
-            return "Failed to read settings"
-        }
-        UIPasteboard.general.string = settings.base64EncodedString()
-        return nil
+    func exportToClipboard() {
+        UIPasteboard.general.string = storage
     }
 
     private func migrateFromOlderVersions() {

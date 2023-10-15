@@ -7,14 +7,8 @@ struct ExportSettingsView: View {
         HStack {
             Spacer()
             Button("Export to clipboard") {
-                if let message = model.settings.exportToClipboard() {
-                    model.makeErrorToast(
-                        title: "Export settings failed",
-                        subTitle: message
-                    )
-                } else {
-                    model.makeToast(title: "Settings exported")
-                }
+                model.settings.exportToClipboard()
+                model.makeToast(title: "Settings exported")
             }
             Spacer()
         }
