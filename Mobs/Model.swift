@@ -251,7 +251,7 @@ final class Model: ObservableObject {
         backZoomPresetId = zoomPresets[0].id
         frontZoomPresetId = database.zoom!.front[0].id
         mthkView.videoGravity = .resizeAspect
-        mthkView.fps = Double(database.screenVideoFps!)
+        mthkView.fps = Double(database.maxScreenVideoFps!)
         logger.handler = debugLog(message:)
         updateDigitalClock(now: Date())
         twitchChat = TwitchChatMobs(model: self)
@@ -561,8 +561,8 @@ final class Model: ObservableObject {
         settings.store()
     }
 
-    func setScreenFps(fps: Int) {
-        database.screenVideoFps = fps
+    func setMaxScreenVideoFps(fps: Int) {
+        database.maxScreenVideoFps = fps
         store()
         mthkView.fps = Double(fps)
     }
@@ -974,17 +974,17 @@ final class Model: ObservableObject {
         switch position {
         case .back:
             zoomPresets = database.zoom!.back
-            if database.zoom!.defaultBack!.enabled {
+            if database.zoom!.switchToBack!.enabled {
                 clearZoomId()
-                backZoomLevel = Double(database.zoom!.defaultBack!.level)
+                backZoomLevel = Double(database.zoom!.switchToBack!.level)
             }
             zoomLevel = backZoomLevel
             isMirrored = false
         case .front:
             zoomPresets = database.zoom!.front
-            if database.zoom!.defaultFront!.enabled {
+            if database.zoom!.switchToFront!.enabled {
                 clearZoomId()
-                frontZoomLevel = Double(database.zoom!.defaultFront!.level)
+                frontZoomLevel = Double(database.zoom!.switchToFront!.level)
             }
             zoomLevel = frontZoomLevel
             isMirrored = true

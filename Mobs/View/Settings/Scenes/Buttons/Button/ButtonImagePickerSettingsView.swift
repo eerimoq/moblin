@@ -84,6 +84,8 @@ var imageSystemNames = [
     "pianokeys",
     "theatermasks",
     "theatermasks.fill",
+    "deskclock",
+    "calendar.badge.clock"
 ]
 
 struct ButtonImagePickerSettingsView: View {

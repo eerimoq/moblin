@@ -1,16 +1,24 @@
 import AVFoundation
 import SwiftUI
 
-struct ZoomDefaultSettingsView: View {
+struct ZoomSwitchToSettingsView: View {
     @ObservedObject var model: Model
     let name: String
     let position: AVCaptureDevice.Position
-    let defaultZoom: SettingsZoomDefault
+    let defaultZoom: SettingsZoomSwitchTo
+
+    private func x() -> Float {
+        return factorToX(position: position, factor: defaultZoom.level)
+    }
+
+    private func formatX(x: Float) -> String {
+        return String(format: "%.01f", x)
+    }
 
     var body: some View {
         NavigationLink(destination: TextEditView(
-            title: "\(name) X zoom",
-            value: String(factorToX(position: position, factor: defaultZoom.level)),
+            title: "To \(name) X zoom",
+            value: formatX(x: x()),
             onSubmit: { x in
                 guard let x = Float(x) else {
                     return
@@ -31,11 +39,8 @@ struct ZoomDefaultSettingsView: View {
                 model.store()
             })) {
                 TextItemView(
-                    name: "\(name) X zoom",
-                    value: String(factorToX(
-                        position: position,
-                        factor: defaultZoom.level
-                    ))
+                    name: "To \(name) X zoom",
+                    value: formatX(x: x())
                 )
             }
         }

@@ -325,7 +325,7 @@ class SettingsZoomPreset: Codable, Identifiable {
     }
 }
 
-class SettingsZoomDefault: Codable {
+class SettingsZoomSwitchTo: Codable {
     var level: Float = 1.0
     var enabled: Bool = false
 }
@@ -333,8 +333,8 @@ class SettingsZoomDefault: Codable {
 class SettingsZoom: Codable {
     var back: [SettingsZoomPreset] = []
     var front: [SettingsZoomPreset] = []
-    var defaultBack: SettingsZoomDefault? = .init()
-    var defaultFront: SettingsZoomDefault? = .init()
+    var switchToBack: SettingsZoomSwitchTo? = .init()
+    var switchToFront: SettingsZoomSwitchTo? = .init()
 }
 
 class SettingsBitratePreset: Codable, Identifiable {
@@ -358,7 +358,7 @@ class Database: Codable {
     var tapToFocus: Bool? = false
     var bitratePresets: [SettingsBitratePreset]? = []
     var iconImage: String? = plainIcon.image
-    var screenVideoFps: Int? = 30
+    var maxScreenVideoFps: Int? = 30
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -782,16 +782,16 @@ final class Settings {
             database.iconImage = plainIcon.image
             store()
         }
-        if database.zoom!.defaultBack == nil {
-            database.zoom!.defaultBack = .init()
+        if database.zoom!.switchToBack == nil {
+            database.zoom!.switchToBack = .init()
             store()
         }
-        if database.zoom!.defaultFront == nil {
-            database.zoom!.defaultFront = .init()
+        if database.zoom!.switchToFront == nil {
+            database.zoom!.switchToFront = .init()
             store()
         }
-        if database.screenVideoFps == nil {
-            database.screenVideoFps = 30
+        if database.maxScreenVideoFps == nil {
+            database.maxScreenVideoFps = 30
             store()
         }
     }

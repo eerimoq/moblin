@@ -57,7 +57,7 @@ struct SceneSettingsView: View {
         }
     }
 
-    func widgetHasSize(id: UUID) -> Bool {
+    private func widgetHasPosition(id: UUID) -> Bool {
         if let widget = model.findWidget(id: id) {
             return widget.type == .image || widget.type == .browser || widget
                 .type == .time
@@ -65,6 +65,35 @@ struct SceneSettingsView: View {
             logger.error("Unable to find widget type")
             return false
         }
+    }
+
+    private func widgetHasSize(id: UUID) -> Bool {
+        if let widget = model.findWidget(id: id) {
+            return widget.type == .image || widget.type == .browser
+        } else {
+            logger.error("Unable to find widget type")
+            return false
+        }
+    }
+
+    private func createSceneWidget(widget: SettingsWidget) -> SettingsSceneWidget {
+        let sceneWidget = SettingsSceneWidget(widgetId: widget.id)
+        switch widget.type {
+        case .time:
+            sceneWidget.x = 91
+            sceneWidget.y = 1
+            sceneWidget.width = 8
+            sceneWidget.height = 5
+        case .image:
+            sceneWidget.width = 30
+            sceneWidget.height = 40
+        case .browser:
+            sceneWidget.width = 30
+            sceneWidget.height = 40
+        default:
+            break
+        }
+        return sceneWidget
     }
 
     var body: some View {
@@ -138,9 +167,15 @@ struct SceneSettingsView: View {
                             })
                             .foregroundColor(.primary)
                             if expandedWidget === widget &&
-                                widgetHasSize(id: realWidget.id)
+                                (widgetHasPosition(id: realWidget.id) ||
+                                    widgetHasSize(id: realWidget.id))
                             {
-                                SceneWidgetSettingsView(model: model, widget: widget)
+                                SceneWidgetSettingsView(
+                                    model: model,
+                                    widget: widget,
+                                    hasPosition: widgetHasPosition(id: realWidget.id),
+                                    hasSize: widgetHasSize(id: realWidget.id)
+                                )
                             }
                         }
                     }
@@ -173,8 +208,7 @@ struct SceneSettingsView: View {
                                 ForEach(widgets) { widget in
                                     Button(action: {
                                         scene.widgets
-                                            .append(SettingsSceneWidget(widgetId: widget
-                                                    .id))
+                                            .append(createSceneWidget(widget: widget))
                                         model.sceneUpdated(imageEffectChanged: true)
                                         showingAddWidget = false
                                     }, label: {

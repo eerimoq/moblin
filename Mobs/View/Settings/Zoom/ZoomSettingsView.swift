@@ -72,17 +72,17 @@ struct ZoomSettingsView: View {
                 })
             }
             Section {
-                ZoomDefaultSettingsView(
+                ZoomSwitchToSettingsView(
                     model: model,
-                    name: "To back",
+                    name: "back",
                     position: .back,
-                    defaultZoom: model.database.zoom!.defaultBack!
+                    defaultZoom: model.database.zoom!.switchToBack!
                 )
-                ZoomDefaultSettingsView(
+                ZoomSwitchToSettingsView(
                     model: model,
-                    name: "To front",
+                    name: "front",
                     position: .front,
-                    defaultZoom: model.database.zoom!.defaultFront!
+                    defaultZoom: model.database.zoom!.switchToFront!
                 )
             } header: {
                 Text("Camera switching")

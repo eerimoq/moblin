@@ -61,11 +61,15 @@ struct ValueEditView: View {
 
 struct SceneWidgetSettingsView: View {
     @ObservedObject private var model: Model
+    private let hasPosition: Bool
+    private let hasSize: Bool
     private var widget: SettingsSceneWidget
 
-    init(model: Model, widget: SettingsSceneWidget) {
+    init(model: Model, widget: SettingsSceneWidget, hasPosition: Bool, hasSize: Bool) {
         self.model = model
         self.widget = widget
+        self.hasPosition = hasPosition
+        self.hasSize = hasSize
     }
 
     func submitX(value: String) {
@@ -102,34 +106,38 @@ struct SceneWidgetSettingsView: View {
 
     var body: some View {
         Section {
-            ValueEditView(
-                title: "X",
-                value: String(widget.x),
-                minimum: 0,
-                maximum: 99,
-                onSubmit: submitX
-            )
-            ValueEditView(
-                title: "Y",
-                value: String(widget.y),
-                minimum: 0,
-                maximum: 99,
-                onSubmit: submitY
-            )
-            ValueEditView(
-                title: "Width",
-                value: String(widget.width),
-                minimum: 1,
-                maximum: 100,
-                onSubmit: submitW
-            )
-            ValueEditView(
-                title: "Height",
-                value: String(widget.height),
-                minimum: 1,
-                maximum: 100,
-                onSubmit: submitH
-            )
+            if hasPosition {
+                ValueEditView(
+                    title: "X",
+                    value: String(widget.x),
+                    minimum: 0,
+                    maximum: 99,
+                    onSubmit: submitX
+                )
+                ValueEditView(
+                    title: "Y",
+                    value: String(widget.y),
+                    minimum: 0,
+                    maximum: 99,
+                    onSubmit: submitY
+                )
+            }
+            if hasSize {
+                ValueEditView(
+                    title: "Width",
+                    value: String(widget.width),
+                    minimum: 1,
+                    maximum: 100,
+                    onSubmit: submitW
+                )
+                ValueEditView(
+                    title: "Height",
+                    value: String(widget.height),
+                    minimum: 1,
+                    maximum: 100,
+                    onSubmit: submitH
+                )
+            }
         }
     }
 }
