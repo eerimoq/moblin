@@ -6,9 +6,9 @@ struct ThermalStateView: View {
     func color(thermalState: ProcessInfo.ThermalState) -> Color {
         switch thermalState {
         case .nominal:
-            return .blue
+            return .white
         case .fair:
-            return .green
+            return .white
         case .serious:
             return .yellow
         case .critical:

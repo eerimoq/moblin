@@ -9,7 +9,7 @@ struct BatteryView: View {
         } else if level < 0.4 {
             return .yellow
         } else {
-            return .green
+            return .white
         }
     }
 
