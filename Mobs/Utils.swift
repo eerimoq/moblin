@@ -284,6 +284,10 @@ func formatAsInt(_ value: CGFloat) -> String {
     return String(format: "%d", Int(value))
 }
 
+func formatOneDecimal(value: Float) -> String {
+    return String(format: "%.01f", value)
+}
+
 let mics = ["Front", "Back", "Bottom"]
 
 func factorToX(position: AVCaptureDevice.Position, factor: Float) -> Float {
@@ -325,4 +329,12 @@ func getMinMaxZoomX(position: AVCaptureDevice.Position) -> (Float, Float) {
         maxX = 1.0
     }
     return (minX, maxX)
+}
+
+ func bitrateToMbps(bitrate: UInt32) -> Float {
+    return Float(bitrate) / 1_000_000
+}
+
+ func bitrateFromMbps(bitrate: Float) -> UInt32 {
+    return UInt32(bitrate * 1_000_000)
 }

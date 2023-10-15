@@ -132,16 +132,11 @@ Ideas/plan
 
 - Filter for button icons.
 
-- Remove zeros from bitrate preset config.
-
 - Toggles to enable/disable "Go live" and "Stop" confirmations. Per
   stream?
 
 - Automatically go live when starting app, if configured for selected
   stream setting.
-
-- MOBS icon in dynamic island has a square around it. Should be
-  transparent.
 
 - Use external mic.
 

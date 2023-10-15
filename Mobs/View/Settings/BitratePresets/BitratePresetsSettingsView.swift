@@ -15,7 +15,7 @@ struct BitratePresetsSettingsView: View {
                             DraggableItemPrefixView()
                             TextItemView(
                                 name: formatBytesPerSecond(speed: Int64(preset.bitrate)),
-                                value: String(preset.bitrate)
+                                value: String(bitrateToMbps(bitrate: preset.bitrate))
                             )
                         }
                     }
