@@ -145,23 +145,26 @@ struct SceneSettingsView: View {
                                     expandedWidget = nil
                                 }
                             }, label: {
-                                Toggle(isOn: Binding(get: {
-                                    widget.enabled
-                                }, set: { value in
-                                    widget.enabled = value
-                                    model.sceneUpdated()
-                                })) {
-                                    HStack {
-                                        Text("")
-                                        Circle()
-                                            .frame(width: 15, height: 15)
-                                            .foregroundColor(colorOf(widget: widget))
-                                        Image(
-                                            systemName: widgetImage(
-                                                widget: realWidget
+                                HStack {
+                                    DraggableItemPrefixView()
+                                    Toggle(isOn: Binding(get: {
+                                        widget.enabled
+                                    }, set: { value in
+                                        widget.enabled = value
+                                        model.sceneUpdated()
+                                    })) {
+                                        HStack {
+                                            Text("")
+                                            Circle()
+                                                .frame(width: 15, height: 15)
+                                                .foregroundColor(colorOf(widget: widget))
+                                            Image(
+                                                systemName: widgetImage(
+                                                    widget: realWidget
+                                                )
                                             )
-                                        )
-                                        Text(realWidget.name)
+                                            Text(realWidget.name)
+                                        }
                                     }
                                 }
                             })
@@ -231,16 +234,19 @@ struct SceneSettingsView: View {
                 List {
                     ForEach(scene.buttons) { button in
                         if let realButton = model.findButton(id: button.buttonId) {
-                            Toggle(isOn: Binding(get: {
-                                button.enabled
-                            }, set: { value in
-                                button.enabled = value
-                                model.sceneUpdated()
-                            })) {
-                                IconAndTextView(
-                                    image: realButton.systemImageNameOff,
-                                    text: realButton.name
-                                )
+                            HStack {
+                                DraggableItemPrefixView()
+                                Toggle(isOn: Binding(get: {
+                                    button.enabled
+                                }, set: { value in
+                                    button.enabled = value
+                                    model.sceneUpdated()
+                                })) {
+                                    IconAndTextView(
+                                        image: realButton.systemImageNameOff,
+                                        text: realButton.name
+                                    )
+                                }
                             }
                         }
                     }

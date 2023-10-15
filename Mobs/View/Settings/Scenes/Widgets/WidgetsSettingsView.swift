@@ -29,13 +29,21 @@ struct WidgetsSettingsView: View {
                         widget: widget,
                         model: model
                     )) {
-                        IconAndTextView(
-                            image: widgetImage(widget: widget),
-                            text: widget.name
-                        )
+                        HStack {
+                            DraggableItemPrefixView()
+                            IconAndTextView(
+                                image: widgetImage(widget: widget),
+                                text: widget.name
+                            )
+                        }
                     }
                     .deleteDisabled(isWidgetUsed(widget: widget))
                 }
+                .onMove(perform: { froms, to in
+                    database.widgets.move(fromOffsets: froms, toOffset: to)
+                    model.store()
+                    model.objectWillChange.send()
+                })
                 .onDelete(perform: { offsets in
                     database.widgets.remove(atOffsets: offsets)
                     model.store()

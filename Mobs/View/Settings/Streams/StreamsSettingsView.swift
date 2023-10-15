@@ -16,20 +16,23 @@ struct StreamsSettingsView: View {
                             stream: stream,
                             model: model
                         )) {
-                            Toggle(stream.name, isOn: Binding(get: {
-                                stream.enabled
-                            }, set: { value in
-                                stream.enabled = value
-                                for ostream in database.streams
-                                    where ostream.id != stream.id
-                                {
-                                    ostream.enabled = false
-                                }
-                                model.reloadStream()
-                                model.sceneUpdated()
-                                model.objectWillChange.send()
-                            }))
-                            .disabled(stream.enabled)
+                            HStack {
+                                DraggableItemPrefixView()
+                                Toggle(stream.name, isOn: Binding(get: {
+                                    stream.enabled
+                                }, set: { value in
+                                    stream.enabled = value
+                                    for ostream in database.streams
+                                        where ostream.id != stream.id
+                                    {
+                                        ostream.enabled = false
+                                    }
+                                    model.reloadStream()
+                                    model.sceneUpdated()
+                                    model.objectWillChange.send()
+                                }))
+                                .disabled(stream.enabled)
+                            }
                         }
                         .deleteDisabled(stream.enabled)
                     }

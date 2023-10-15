@@ -11,10 +11,13 @@ struct BitratePresetsSettingsView: View {
                         model: model,
                         preset: preset
                     )) {
-                        TextItemView(
-                            name: formatBytesPerSecond(speed: Int64(preset.bitrate)),
-                            value: String(preset.bitrate)
-                        )
+                        HStack {
+                            DraggableItemPrefixView()
+                            TextItemView(
+                                name: formatBytesPerSecond(speed: Int64(preset.bitrate)),
+                                value: String(preset.bitrate)
+                            )
+                        }
                     }
                     .deleteDisabled(model.database.bitratePresets!.count == 1)
                 }

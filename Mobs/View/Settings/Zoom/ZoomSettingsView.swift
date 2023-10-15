@@ -13,13 +13,16 @@ struct ZoomSettingsView: View {
                             preset: preset,
                             position: .back
                         )) {
-                            TextItemView(
-                                name: preset.name,
-                                value: String(factorToX(
-                                    position: .back,
-                                    factor: preset.level
-                                ))
-                            )
+                            HStack {
+                                DraggableItemPrefixView()
+                                TextItemView(
+                                    name: preset.name,
+                                    value: String(factorToX(
+                                        position: .back,
+                                        factor: preset.level
+                                    ))
+                                )
+                            }
                         }
                         .deleteDisabled(model.database.zoom!.back.count == 1)
                     }
@@ -49,7 +52,13 @@ struct ZoomSettingsView: View {
                             preset: preset,
                             position: .front
                         )) {
-                            TextItemView(name: preset.name, value: String(preset.level))
+                            HStack {
+                                DraggableItemPrefixView()
+                                TextItemView(
+                                    name: preset.name,
+                                    value: String(preset.level)
+                                )
+                            }
                         }
                         .deleteDisabled(model.database.zoom!.front.count == 1)
                     }

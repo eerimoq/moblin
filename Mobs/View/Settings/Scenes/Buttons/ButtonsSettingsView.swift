@@ -25,10 +25,13 @@ struct ButtonsSettingsView: View {
                             button: button,
                             model: model
                         )) {
-                            IconAndTextView(
-                                image: button.systemImageNameOff,
-                                text: button.name
-                            )
+                            HStack {
+                                DraggableItemPrefixView()
+                                IconAndTextView(
+                                    image: button.systemImageNameOff,
+                                    text: button.name
+                                )
+                            }
                         }
                         .deleteDisabled(isButtonUsed(button: button))
                     }
