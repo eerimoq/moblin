@@ -138,6 +138,8 @@ Ideas/plan
 
 - Use external mic.
 
+- Battery level as percentage.
+
 - Adaptive bitrate for SRT(LA).
 
   - Increase bitrate when RTT settles down?
