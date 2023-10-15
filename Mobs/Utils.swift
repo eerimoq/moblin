@@ -331,10 +331,10 @@ func getMinMaxZoomX(position: AVCaptureDevice.Position) -> (Float, Float) {
     return (minX, maxX)
 }
 
- func bitrateToMbps(bitrate: UInt32) -> Float {
+func bitrateToMbps(bitrate: UInt32) -> Float {
     return Float(bitrate) / 1_000_000
 }
 
- func bitrateFromMbps(bitrate: Float) -> UInt32 {
+func bitrateFromMbps(bitrate: Float) -> UInt32 {
     return UInt32(bitrate * 1_000_000)
 }

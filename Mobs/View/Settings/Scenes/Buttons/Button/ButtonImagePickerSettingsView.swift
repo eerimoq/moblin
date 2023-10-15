@@ -86,30 +86,73 @@ var imageSystemNames = [
     "theatermasks.fill",
     "deskclock",
     "calendar.badge.clock",
+    "book",
+    "book.fill",
+    "cricket.ball",
+    "cricket.ball.fill",
+    "medal",
+    "medal.fill",
+    "snowflake",
+    "flame",
+    "flame.fill",
+    "rectangle.portrait",
+    "rectangle.portrait.fill",
+    "heart",
+    "heart.fill",
+    "bolt.heart",
+    "bolt.heart.fill",
+    "teddybear",
+    "teddybear.fill",
+    "pawprint",
+    "pawprint.fill",
+]
+
+private let columns = [
+    GridItem(.adaptive(minimum: 40), alignment: .center),
 ]
 
 struct ButtonImagePickerSettingsView: View {
     var title: String
-    @State var value: String
+    @State var selectedImageSystemName: String
+    @State var filter: String = ""
     var onChange: (String) -> Void
 
     var body: some View {
-        Form {
-            Picker("", selection: $value) {
-                ForEach(imageSystemNames, id: \.self) { imageSystemName in
-                    HStack {
-                        Text("")
-                        Image(systemName: imageSystemName)
-                        Text(imageSystemName)
-                            .foregroundColor(.gray)
-                    }
+        VStack {
+            Form {
+                Section {
+                    TextField("Filter", text: $filter)
+                }
+                Section {
+                    ScrollView {
+                        LazyVGrid(columns: columns, spacing: 10) {
+                            ForEach(imageSystemNames.filter { name in
+                                filter.isEmpty || name.contains(filter.lowercased())
+                            }, id: \.self) { imageSystemName in
+                                Button {
+                                    onChange(imageSystemName)
+                                    selectedImageSystemName = imageSystemName
+                                } label: {
+                                    if selectedImageSystemName == imageSystemName {
+                                        Image(systemName: imageSystemName)
+                                            .foregroundColor(.white)
+                                            .frame(width: 40, height: 40)
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 5)
+                                                    .stroke(.primary)
+                                                    .foregroundColor(.white)
+                                            )
+                                    } else {
+                                        Image(systemName: imageSystemName)
+                                            .foregroundColor(.white)
+                                            .frame(width: 40, height: 40)
+                                    }
+                                }
+                            }
+                        }
+                    }.padding([.top], 10)
                 }
             }
-            .onChange(of: value) { image in
-                onChange(image)
-            }
-            .pickerStyle(.inline)
-            .labelsHidden()
         }
         .navigationTitle(title)
     }

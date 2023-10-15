@@ -130,8 +130,6 @@ ToDo
 Ideas/plan
 ==========
 
-- Filter for button icons.
-
 - Toggles to enable/disable "Go live" and "Stop" confirmations. Per
   stream?
 

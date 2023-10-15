@@ -89,14 +89,14 @@ struct ButtonSettingsView: View {
             Section("Images") {
                 NavigationLink(destination: ButtonImagePickerSettingsView(
                     title: "On",
-                    value: button.systemImageNameOn,
+                    selectedImageSystemName: button.systemImageNameOn,
                     onChange: onSystemImageNameOn
                 )) {
                     ImageItemView(name: "On", image: button.systemImageNameOn)
                 }
                 NavigationLink(destination: ButtonImagePickerSettingsView(
                     title: "Off",
-                    value: button.systemImageNameOff,
+                    selectedImageSystemName: button.systemImageNameOff,
                     onChange: onSystemImageNameOff
                 )) {
                     ImageItemView(name: "Off", image: button.systemImageNameOff)
