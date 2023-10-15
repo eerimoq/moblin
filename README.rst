@@ -112,6 +112,8 @@ Features
 ToDo
 ====
 
+- Sometimes settings doesn't rotate to protrait orientation.
+
 - Changing stream from SRT to SRT always hangs video.
 
 - Improve the browser widget.
