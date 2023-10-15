@@ -68,6 +68,7 @@ struct RightOverlayView: View {
                         model.setCameraZoomPreset(id: id)
                     }
                     .pickerStyle(.segmented)
+                    .padding([.bottom], 1)
                     .background(Color(uiColor: .systemBackground).opacity(0.8))
                     .frame(width: CGFloat(50 * database.zoom!.front.count))
                     .cornerRadius(7)
@@ -86,6 +87,7 @@ struct RightOverlayView: View {
                         model.setCameraZoomPreset(id: id)
                     }
                     .pickerStyle(.segmented)
+                    .padding([.bottom], 1)
                     .background(Color(uiColor: .systemBackground).opacity(0.8))
                     .frame(width: CGFloat(50 * database.zoom!.back.count))
                     .cornerRadius(7)
@@ -107,6 +109,7 @@ struct RightOverlayView: View {
                 model.sceneUpdated()
             }
             .pickerStyle(.segmented)
+            .padding([.bottom], 1)
             .background(Color(uiColor: .systemBackground).opacity(0.8))
             .frame(width: CGFloat(70 * model.enabledScenes.count))
             .cornerRadius(7)
