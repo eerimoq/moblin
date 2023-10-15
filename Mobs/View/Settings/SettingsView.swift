@@ -21,13 +21,24 @@ struct SettingsView: View {
                 NavigationLink(destination: BitratePresetsSettingsView(model: model)) {
                     Text("Bitrate presets")
                 }
-                NavigationLink(destination: MaxScreenVideoFpsSettingsView(model: model)) {
-                    TextItemView(
-                        name: "Max screen video FPS",
-                        value: String(model.database.maxScreenVideoFps!)
-                    )
+                NavigationLink(destination: MaximumScreenFpsSettingsView(model: model)) {
+                    Toggle(isOn: Binding(get: {
+                        model.database.maximumScreenFpsEnabled!
+                    }, set: { value in
+                        model.setMaximumScreenFpsEnabled(value: value)
+                    })) {
+                        TextItemView(
+                            name: "Maximum screen FPS",
+                            value: String(model.database.maximumScreenFps!)
+                        )
+                    }
                 }
                 TapScreenToFocusSettingsView(model: model)
+            } footer: {
+                Text("""
+                The maximum screen FPS currently gives a lower FPS than \
+                configured and maximum stream FPS. Therefore 60 by default.
+                """)
             }
             Section {
                 NavigationLink(destination: CosmeticsSettingsView(model: model)) {

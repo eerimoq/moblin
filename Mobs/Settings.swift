@@ -358,7 +358,8 @@ class Database: Codable {
     var tapToFocus: Bool? = false
     var bitratePresets: [SettingsBitratePreset]? = []
     var iconImage: String? = plainIcon.image
-    var maxScreenVideoFps: Int? = 30
+    var maximumScreenFpsEnabled: Bool? = false
+    var maximumScreenFps: Int? = 60
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -790,8 +791,12 @@ final class Settings {
             database.zoom!.switchToFront = .init()
             store()
         }
-        if database.maxScreenVideoFps == nil {
-            database.maxScreenVideoFps = 30
+        if database.maximumScreenFpsEnabled == nil {
+            database.maximumScreenFpsEnabled = false
+            store()
+        }
+        if database.maximumScreenFps == nil {
+            database.maximumScreenFps = 60
             store()
         }
     }

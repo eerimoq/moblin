@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct MaxScreenVideoFpsSettingsView: View {
+struct MaximumScreenFpsSettingsView: View {
     @ObservedObject var model: Model
 
     private func submit(value: String) {
@@ -8,13 +8,13 @@ struct MaxScreenVideoFpsSettingsView: View {
             model.makeErrorToast(title: "FPS must be a positive number")
             return
         }
-        model.setMaxScreenVideoFps(fps: fps)
+        model.setMaximumScreenFps(fps: fps)
     }
 
     var body: some View {
         TextEditView(
-            title: "Max screen video FPS",
-            value: String(model.database.maxScreenVideoFps!),
+            title: "Maximum screen FPS",
+            value: String(model.database.maximumScreenFps!),
             onSubmit: submit
         )
     }
