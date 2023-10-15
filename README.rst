@@ -114,6 +114,8 @@ ToDo
 
 - Sometimes settings doesn't rotate to protrait orientation.
 
+- Sometimes a stroboscope effect happens on screen.
+
 - Changing stream from SRT to SRT always hangs video.
 
 - Improve the browser widget.
