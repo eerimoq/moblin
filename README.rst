@@ -124,6 +124,8 @@ Ideas/plan
 
 - Change app icon on home screen when changing in app.
 
+  https://medium.com/swlh/change-programmatically-your-app-icon-ios-swift-guide-3a8ee4f01649
+
 - Remove zeros from bitrate preset config.
 
 - Toggles to enable/disable "Go live" and "Stop" confirmations. Per
