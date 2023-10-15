@@ -70,19 +70,15 @@ struct ControlBarView: View {
                         .aspectRatio(contentMode: .fit)
                         .padding([.bottom], 5)
                         .frame(width: 40, height: 40)
-                    Button(action: {
-                        logger.error("Settings")
-                    }, label: {
-                        NavigationLink(destination: SettingsView(model: model)) {
-                            Image(systemName: "gearshape")
-                                .frame(width: 40, height: 40)
-                                .overlay(
-                                    Circle()
-                                        .stroke(.secondary)
-                                )
-                                .foregroundColor(.white)
-                        }
-                    })
+                    NavigationLink(destination: SettingsView(model: model)) {
+                        Image(systemName: "gearshape")
+                            .frame(width: 40, height: 40)
+                            .overlay(
+                                Circle()
+                                    .stroke(.secondary)
+                            )
+                            .foregroundColor(.white)
+                    }
                 }
                 Spacer()
                 ButtonsView(model: model)

@@ -75,10 +75,10 @@ struct MainView: View {
                 }
             }
             .onAppear {
-                AppDelegate.setAllowedOrientations(mask: .landscapeRight)
+                AppDelegate.orientationLock = .landscapeRight
             }
             .onDisappear {
-                AppDelegate.setAllowedOrientations(mask: .all)
+                AppDelegate.orientationLock = .all
             }
         }
         .toast(isPresenting: $model.showingToast, duration: 5) {
