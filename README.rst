@@ -114,7 +114,7 @@ ToDo
 
 - Sometimes settings doesn't rotate to protrait orientation.
 
-  1. Open settinsg in portrait.
+  1. Open settings in portrait.
 
   2. Reorder bitrate presets.
 
