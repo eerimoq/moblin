@@ -53,6 +53,8 @@ Features
 
   - Image widget. Show an image on stream.
 
+  - Time widget. Show local (phone) time on stream.
+
   - Browser widget (not yet fully functional). Show a web page on
     stream.
 
@@ -93,13 +95,17 @@ Features
 
 - Cosmetics.
 
-  - Selected MOBS icon shown in app and on home screen.
+  - Select MOBS icon to show in app and on home screen.
 
 - Torch.
 
 - Configure resolution, FPS, codec, bitrate and more.
 
+  - Configurable bitrate presets.
+
 - Deep link settings (mobs://).
+
+- Configure maximum screen FPS.
 
 - Landscape stream only.
 
