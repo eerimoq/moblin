@@ -41,6 +41,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
                         )
                 }
             }
+            // For some reason new way of doing this does not work in all
+            // cases. See repo log.
             UIViewController.attemptRotationToDeviceOrientation()
         }
     }
