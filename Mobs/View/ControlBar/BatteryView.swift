@@ -17,7 +17,7 @@ struct BatteryView: View {
         HStack(spacing: 0) {
             ZStack(alignment: .leading) {
                 RoundedRectangle(cornerRadius: 2)
-                    .stroke(.white)
+                    .stroke(.gray)
                 RoundedRectangle(cornerRadius: 1)
                     .foregroundColor(color())
                     .padding([.leading], 1)
@@ -26,7 +26,7 @@ struct BatteryView: View {
             Circle()
                 .trim(from: 0.0, to: 0.5)
                 .rotationEffect(.degrees(-90))
-                .foregroundColor(.white)
+                .foregroundColor(.gray)
                 .frame(width: 4)
         }
         .padding([.top], 1)
