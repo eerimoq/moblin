@@ -44,6 +44,21 @@ struct CosmeticsSettingsView: View {
         }
     }
 
+    private func setAppIcon(iconImage: String) {
+        var iconImage: String? = iconImage.replacingOccurrences(
+            of: "NoBackground",
+            with: ""
+        )
+        if iconImage == "AppIcon" {
+            iconImage = nil
+        }
+        UIApplication.shared.setAlternateIconName(iconImage) { error in
+            if let error {
+                logger.error("Failed to change app icon with error \(error)")
+            }
+        }
+    }
+
     var body: some View {
         Form {
             Section {
@@ -64,6 +79,7 @@ struct CosmeticsSettingsView: View {
                 .onChange(of: model.iconImage) { iconImage in
                     model.database.iconImage = iconImage
                     model.store()
+                    setAppIcon(iconImage: iconImage)
                 }
                 .pickerStyle(.inline)
                 .labelsHidden()
