@@ -18,6 +18,7 @@ struct SettingsView: View {
                 NavigationLink(destination: ZoomSettingsView(model: model)) {
                     Text("Zoom")
                 }
+                TapScreenToFocusSettingsView(model: model)
                 NavigationLink(destination: BitratePresetsSettingsView(model: model)) {
                     Text("Bitrate presets")
                 }
@@ -33,11 +34,10 @@ struct SettingsView: View {
                         )
                     }
                 }
-                TapScreenToFocusSettingsView(model: model)
             } footer: {
                 Text("""
                 The maximum screen FPS currently gives a lower FPS than \
-                configured and maximum stream FPS. Therefore 60 by default.
+                configured. The maximum screen FPS cannot exceed the stream FPS.
                 """)
             }
             Section {
