@@ -638,12 +638,6 @@ final class Settings {
         guard let settings = UIPasteboard.general.string else {
             return "Empty clipboard"
         }
-        guard let settings = settings.data(using: .utf8) else {
-            return "Non-string clipboard"
-        }
-        guard let settings = String(data: settings, encoding: .utf8) else {
-            return "Non-string in base64"
-        }
         do {
             try tryLoadAndMigrate(settings: settings)
         } catch {
