@@ -11,6 +11,7 @@ let plainIcon = Icon(name: "Plain", image: "AppIconNoBackground")
 private let myIcons = [
     plainIcon,
     Icon(name: "Halloween", image: "AppIconNoBackgroundHalloween"),
+    Icon(name: "Halloween pumpkin", image: "AppIconNoBackgroundHalloweenPumpkin"),
 ]
 
 func isInMyIcons(image: String) -> Bool {
@@ -27,6 +28,7 @@ private let allIcons = [
     Icon(name: "Looking", image: "AppIconNoBackgroundLooking"),
     Icon(name: "Tetris", image: "AppIconNoBackgroundTetris"),
     Icon(name: "Halloween", image: "AppIconNoBackgroundHalloween"),
+    Icon(name: "Halloween pumpkin", image: "AppIconNoBackgroundHalloweenPumpkin"),
     Icon(name: "Eyebrows", image: "AppIconNoBackgroundEyes"),
     Icon(name: "South Korea", image: "AppIconNoBackgroundSouthKorea"),
     Icon(name: "China", image: "AppIconNoBackgroundChina"),

@@ -135,16 +135,16 @@ struct ButtonImagePickerSettingsView: View {
                                 } label: {
                                     if selectedImageSystemName == imageSystemName {
                                         Image(systemName: imageSystemName)
-                                            .foregroundColor(.white)
+                                            .foregroundColor(.primary)
                                             .frame(width: 40, height: 40)
                                             .overlay(
                                                 RoundedRectangle(cornerRadius: 5)
                                                     .stroke(.primary)
-                                                    .foregroundColor(.white)
+                                                    .foregroundColor(.primary)
                                             )
                                     } else {
                                         Image(systemName: imageSystemName)
-                                            .foregroundColor(.white)
+                                            .foregroundColor(.primary)
                                             .frame(width: 40, height: 40)
                                     }
                                 }
