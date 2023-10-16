@@ -127,6 +127,12 @@ ToDo
 - Overlays are mirrored locally when using front camera. Ok, or needs
   change?
 
+- Standard video stabilization.
+
+  ``srtStream.videoCapture(for: 0)?.preferredVideoStabilizationMode = AVCaptureVideoStabilizationMode.standard``
+
+  In SetNetStream enables auto stabilization for all cameras.
+
 Ideas/plan
 ==========
 
