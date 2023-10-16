@@ -22,6 +22,7 @@ struct SettingsView: View {
                 NavigationLink(destination: BitratePresetsSettingsView(model: model)) {
                     Text("Bitrate presets")
                 }
+                VideoStabilizationSettingsView(model: model)
                 NavigationLink(destination: MaximumScreenFpsSettingsView(model: model)) {
                     Toggle(isOn: Binding(get: {
                         model.database.maximumScreenFpsEnabled!

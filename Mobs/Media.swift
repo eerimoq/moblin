@@ -269,7 +269,13 @@ final class Media: NSObject {
         return level
     }
 
-    func attachCamera(device: AVCaptureDevice?, onSuccess: (() -> Void)? = nil) {
+    func attachCamera(
+        device: AVCaptureDevice?,
+        videoStabilizationMode: AVCaptureVideoStabilizationMode,
+        onSuccess: (() -> Void)? = nil
+    ) {
+        netStream.videoCapture(for: 0)?
+            .preferredVideoStabilizationMode = videoStabilizationMode
         netStream.attachCamera(device, onError: { error in
             logger.error("stream: Attach camera error: \(error)")
         }, onSuccess: {

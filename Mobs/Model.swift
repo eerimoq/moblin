@@ -1004,11 +1004,24 @@ final class Model: ObservableObject {
         default:
             break
         }
-        media.attachCamera(device: cameraDevice, onSuccess: {
-            self.mthkView.isMirrored = isMirrored
-            _ = self.media.setCameraZoomLevel(level: self.zoomLevel, ramp: false)
-        })
+        media.attachCamera(
+            device: cameraDevice,
+            videoStabilizationMode: getVideoStabilizationMode(),
+            onSuccess: {
+                self.mthkView.isMirrored = isMirrored
+                _ = self.media.setCameraZoomLevel(level: self.zoomLevel, ramp: false)
+            }
+        )
         zoomLevelPinch = zoomLevel
+    }
+
+    private func getVideoStabilizationMode() -> AVCaptureVideoStabilizationMode {
+        switch database.videoStabilizationMode! {
+        case .off:
+            return .off
+        case .standard:
+            return .standard
+        }
     }
 
     private func rtmpStartStream() {

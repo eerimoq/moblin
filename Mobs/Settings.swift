@@ -347,6 +347,13 @@ class SettingsBitratePreset: Codable, Identifiable {
     }
 }
 
+enum VideoStabilizationMode: String, Codable, CaseIterable {
+    case off = "Off"
+    case standard = "Standard"
+}
+
+var videoStabilizationModes = VideoStabilizationMode.allCases.map { $0.rawValue }
+
 class Database: Codable {
     var streams: [SettingsStream] = []
     var scenes: [SettingsScene] = []
@@ -360,6 +367,7 @@ class Database: Codable {
     var iconImage: String? = plainIcon.image
     var maximumScreenFpsEnabled: Bool? = false
     var maximumScreenFps: Int? = 60
+    var videoStabilizationMode: VideoStabilizationMode? = .off
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -784,6 +792,10 @@ final class Settings {
         }
         if database.maximumScreenFps == nil {
             database.maximumScreenFps = 60
+            store()
+        }
+        if database.videoStabilizationMode == nil {
+            database.videoStabilizationMode = .off
             store()
         }
     }
