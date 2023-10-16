@@ -631,6 +631,7 @@ final class Model: ObservableObject {
     }
 
     func reloadStream() {
+        cameraPosition = nil
         stopStream()
         setNetStream()
         setStreamResolution()

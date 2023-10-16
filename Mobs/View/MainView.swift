@@ -3,12 +3,6 @@ import WebKit
 
 struct MainView: View {
     @ObservedObject var model: Model
-    private var streamView: StreamView!
-
-    init(model: Model) {
-        self.model = model
-        streamView = StreamView(model: model)
-    }
 
     var body: some View {
         NavigationStack {
@@ -16,7 +10,7 @@ struct MainView: View {
                 HStack(spacing: 0) {
                     ZStack {
                         GeometryReader { metrics in
-                            streamView
+                            StreamView(model: model)
                                 .ignoresSafeArea()
                                 .onTapGesture(count: 1) { location in
                                     guard model.database.tapToFocus! else {
