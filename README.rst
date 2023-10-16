@@ -134,7 +134,8 @@ Ideas/plan
   stream?
 
 - Automatically go live when starting app, if configured for selected
-  stream setting.
+  stream setting. Probably a good idea to go live again when entering
+  foregound if was live when entering background
 
 - Use external mic.
 
