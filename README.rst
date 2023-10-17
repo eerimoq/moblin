@@ -99,7 +99,7 @@ Features
 
 - Torch.
 
-- Configure resolution, FPS, codec, bitrate and more.
+- Configure stream resolution, FPS, codec, bitrate and more.
 
   - Configurable bitrate presets.
 
