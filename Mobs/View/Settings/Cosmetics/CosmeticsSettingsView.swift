@@ -4,14 +4,15 @@ struct Icon: Identifiable {
     var id: UUID = .init()
     var name: String
     var image: String
+    var price: Float
 }
 
-let plainIcon = Icon(name: "Plain", image: "AppIconNoBackground")
+let plainIcon = Icon(name: "Plain", image: "AppIconNoBackground", price: 2.0)
 
 private let myIcons = [
     plainIcon,
-    Icon(name: "Halloween", image: "AppIconNoBackgroundHalloween"),
-    Icon(name: "Halloween pumpkin", image: "AppIconNoBackgroundHalloweenPumpkin"),
+    Icon(name: "Halloween", image: "AppIconNoBackgroundHalloween", price: 2.0),
+    Icon(name: "Halloween pumpkin", image: "AppIconNoBackgroundHalloweenPumpkin", price: 2.0),
 ]
 
 func isInMyIcons(image: String) -> Bool {
@@ -22,19 +23,22 @@ func isInMyIcons(image: String) -> Bool {
 
 private let allIcons = [
     plainIcon,
-    Icon(name: "King", image: "AppIconNoBackgroundCrown"),
-    Icon(name: "Heart", image: "AppIconNoBackgroundHeart"),
-    Icon(name: "Basque", image: "AppIconNoBackgroundBasque"),
-    Icon(name: "Looking", image: "AppIconNoBackgroundLooking"),
-    Icon(name: "Tetris", image: "AppIconNoBackgroundTetris"),
-    Icon(name: "Halloween", image: "AppIconNoBackgroundHalloween"),
-    Icon(name: "Halloween pumpkin", image: "AppIconNoBackgroundHalloweenPumpkin"),
-    Icon(name: "Eyebrows", image: "AppIconNoBackgroundEyes"),
-    Icon(name: "South Korea", image: "AppIconNoBackgroundSouthKorea"),
-    Icon(name: "China", image: "AppIconNoBackgroundChina"),
-    Icon(name: "United Kingdom", image: "AppIconNoBackgroundUnitedKingdom"),
-    Icon(name: "Sweden", image: "AppIconNoBackgroundSweden"),
-    Icon(name: "United States", image: "AppIconNoBackgroundUnitedStates"),
+    Icon(name: "King", image: "AppIconNoBackgroundCrown", price: 2.0),
+    Icon(name: "Heart", image: "AppIconNoBackgroundHeart", price: 2.0),
+    Icon(name: "Basque", image: "AppIconNoBackgroundBasque", price: 2.0),
+    Icon(name: "Looking", image: "AppIconNoBackgroundLooking", price: 2.0),
+    Icon(name: "Tetris", image: "AppIconNoBackgroundTetris", price: 2.0),
+    Icon(name: "Halloween", image: "AppIconNoBackgroundHalloween", price: 2.0),
+    Icon(name: "Halloween pumpkin", image: "AppIconNoBackgroundHalloweenPumpkin", price: 2.0),
+    Icon(name: "Eyebrows", image: "AppIconNoBackgroundEyes", price: 2.0),
+    Icon(name: "South Korea", image: "AppIconNoBackgroundSouthKorea", price: 2.0),
+    Icon(name: "China", image: "AppIconNoBackgroundChina", price: 2.0),
+    Icon(name: "United Kingdom", image: "AppIconNoBackgroundUnitedKingdom", price: 2.0),
+    Icon(name: "Sweden", image: "AppIconNoBackgroundSweden", price: 2.0),
+    Icon(name: "United States", image: "AppIconNoBackgroundUnitedStates", price: 2.0),
+    Icon(name: "Millionaire", image: "AppIconNoBackgroundMillionaire", price: 10.0),
+    Icon(name: "Billionaire", image: "AppIconNoBackgroundBillionaire", price: 25.0),
+    Icon(name: "Trillionaire", image: "AppIconNoBackgroundTrillionaire", price: 100.0),
 ]
 
 struct CosmeticsSettingsView: View {
@@ -105,7 +109,7 @@ struct CosmeticsSettingsView: View {
                             Button(action: {
                                 isPresentingBuyPopup = true
                             }, label: {
-                                Text("$2.00")
+                                Text("$\(String(format: "%.02f", icon.price))")
                             })
                             .padding([.leading], 10)
                             .alert(

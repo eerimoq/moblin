@@ -123,7 +123,7 @@ struct ButtonImagePickerSettingsView: View {
                 Section {
                     HStack {
                         Image(systemName: "line.3.horizontal.decrease.circle")
-                        TextField("Iconsf", text: $filter)
+                        TextField("Icons", text: $filter)
                     }
                 }
                 Section {
