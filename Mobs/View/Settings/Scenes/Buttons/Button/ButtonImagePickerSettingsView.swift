@@ -121,7 +121,10 @@ struct ButtonImagePickerSettingsView: View {
         VStack {
             Form {
                 Section {
-                    TextField("Filter", text: $filter)
+                    HStack {
+                        Image(systemName: "line.3.horizontal.decrease.circle")
+                        TextField("Iconsf", text: $filter)
+                    }
                 }
                 Section {
                     ScrollView {
