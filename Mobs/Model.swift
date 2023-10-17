@@ -94,7 +94,6 @@ final class Model: ObservableObject {
     @Published var showingMic = false
     @Published var iconImage: String = plainIcon.image
     @Published var manualFocusPoint: CGPoint?
-    private var zoomPresets: [SettingsZoomPreset] = []
     @Published var backZoomPresetId = UUID()
     @Published var frontZoomPresetId = UUID()
     @Published var zoomLevel = 1.0
@@ -247,8 +246,7 @@ final class Model: ObservableObject {
         updateIconImageFromDatabase()
         setupAudioSession()
         selectMic(orientation: mics[0])
-        zoomPresets = database.zoom!.back
-        backZoomPresetId = zoomPresets[0].id
+        backZoomPresetId = database.zoom!.back[0].id
         frontZoomPresetId = database.zoom!.front[0].id
         mthkView.videoGravity = .resizeAspect
         if database.maximumScreenFpsEnabled! {
@@ -986,7 +984,6 @@ final class Model: ObservableObject {
         cameraPosition = position
         switch position {
         case .back:
-            zoomPresets = database.zoom!.back
             if database.zoom!.switchToBack!.enabled {
                 clearZoomId()
                 backZoomLevel = Double(database.zoom!.switchToBack!.level)
@@ -994,7 +991,6 @@ final class Model: ObservableObject {
             zoomLevel = backZoomLevel
             isMirrored = false
         case .front:
-            zoomPresets = database.zoom!.front
             if database.zoom!.switchToFront!.enabled {
                 clearZoomId()
                 frontZoomLevel = Double(database.zoom!.switchToFront!.level)
@@ -1117,8 +1113,17 @@ final class Model: ObservableObject {
     }
 
     private func findZoomPreset(id: UUID) -> SettingsZoomPreset? {
-        return zoomPresets.first { preset in
-            preset.id == id
+        switch cameraPosition {
+        case .back:
+            return database.zoom!.back.first { preset in
+                preset.id == id
+            }
+        case .front:
+            return database.zoom!.front.first { preset in
+                preset.id == id
+            }
+        default:
+            return nil
         }
     }
 
