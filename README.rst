@@ -142,7 +142,7 @@ Ideas/plan
 
   - https://developer.apple.com/documentation/uikit/uiscreen
 
-    - brightness and wantsSoftwareDimming
+    - ``brightness`` and ``wantsSoftwareDimming``.
 
 - Adaptive bitrate for SRT(LA).
 
