@@ -114,13 +114,9 @@ ToDo
 
 - Sometimes a stroboscope effect happens on screen.
 
-- Changing stream from SRT to SRT always hangs video.
-
 - Improve the browser widget.
 
-- Fix crashes. =)
-
-- Sometimes video hangs when changing settings or when enter/exit
+- Sometimes video freezes when changing settings or when enter/exit
   background mode. Looks like there is two sessions if changing stream
   from RTMP to SRT. Should only be one.
 

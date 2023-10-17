@@ -182,11 +182,15 @@ final class Model: ObservableObject {
         log = []
     }
 
-    func copyLog() {
+    func formatLog() -> String {
         var data = "Version: \(version())\n"
         data += "Debug: \(logger.debugEnabled)\n\n"
         data += log.map { e in e.message }.joined(separator: "\n")
-        UIPasteboard.general.string = data
+        return data
+    }
+
+    func copyLog() {
+        UIPasteboard.general.string = formatLog()
     }
 
     func setupAudioSession() {

@@ -4,23 +4,6 @@ struct DebugLogSettingsView: View {
     @ObservedObject var model: Model
 
     var body: some View {
-        HStack {
-            Spacer()
-            Button(action: {
-                model.copyLog()
-            }, label: {
-                Text("Copy")
-                    .padding(5)
-                    .foregroundColor(.blue)
-            })
-            Button(action: {
-                model.clearLog()
-            }, label: {
-                Text("Clear")
-                    .padding(5)
-                    .foregroundColor(.blue)
-            })
-        }
         ScrollView {
             if model.log.isEmpty {
                 Text("The log is empty.")
@@ -36,5 +19,17 @@ struct DebugLogSettingsView: View {
             }
         }
         .navigationTitle("Log")
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                HStack {
+                    ShareLink(item: model.formatLog())
+                    Button(action: {
+                        model.clearLog()
+                    }, label: {
+                        Image(systemName: "trash")
+                    })
+                }
+            }
+        }
     }
 }
