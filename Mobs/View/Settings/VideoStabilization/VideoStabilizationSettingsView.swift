@@ -19,8 +19,8 @@ struct VideoStabilizationPickerView: View {
             .onChange(of: videoStabilizationMode) { mode in
                 model.database
                     .videoStabilizationMode = VideoStabilizationMode(rawValue: mode)!
-                model.makeToast(title: "Change camera for new video stabilization setting")
                 model.store()
+                model.reattachCamera()
             }
             .pickerStyle(.inline)
             .labelsHidden()

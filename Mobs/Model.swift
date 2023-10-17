@@ -974,6 +974,14 @@ final class Model: ObservableObject {
         logger.info("Thermal state is \(thermalState.string())")
     }
 
+    func reattachCamera() {
+        media.attachCamera(device: nil, videoStabilizationMode: .off)
+        media.attachCamera(
+            device: cameraDevice,
+            videoStabilizationMode: getVideoStabilizationMode()
+        )
+    }
+
     private func attachCamera(position: AVCaptureDevice.Position) {
         guard position != cameraPosition else {
             return
