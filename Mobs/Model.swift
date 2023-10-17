@@ -1215,8 +1215,7 @@ final class Model: ObservableObject {
 
     func setFocusPointOfInterest(focusPoint: CGPoint) {
         guard
-            let device = cameraDevice, device.isFocusPointOfInterestSupported,
-            device.isExposurePointOfInterestSupported
+            let device = cameraDevice, device.isFocusPointOfInterestSupported
         else {
             logger.warning("Tap to focus not supported for this camera")
             makeErrorToast(title: "Tap to focus not supported for this camera")
