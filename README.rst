@@ -105,7 +105,7 @@ Features
 
 - Deep link settings (mobs://).
 
-- Configure maximum screen FPS.
+- Configure maximum screen FPS (to save energy).
 
 - Landscape stream only.
 
