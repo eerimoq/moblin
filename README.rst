@@ -137,8 +137,13 @@ Ideas/plan
 
 - Battery level as percentage.
 
-- Optionally show black screen to save energy.
-  
+- Optionally show black screen to save enxergy. Possible to turn off
+  completely?
+
+  - https://developer.apple.com/documentation/uikit/uiscreen
+
+    - brightness and wantsSoftwareDimming
+
 - Adaptive bitrate for SRT(LA).
 
   - Increase bitrate when RTT settles down?
