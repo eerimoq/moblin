@@ -137,6 +137,8 @@ Ideas/plan
 
 - Battery level as percentage.
 
+- Optionally show black screen to save energy.
+  
 - Adaptive bitrate for SRT(LA).
 
   - Increase bitrate when RTT settles down?
