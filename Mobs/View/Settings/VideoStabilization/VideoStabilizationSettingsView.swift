@@ -11,19 +11,23 @@ struct VideoStabilizationPickerView: View {
 
     var body: some View {
         Form {
-            Picker("", selection: $videoStabilizationMode) {
-                ForEach(videoStabilizationModes, id: \.self) { mode in
-                    Text(mode)
+            Section {
+                Picker("", selection: $videoStabilizationMode) {
+                    ForEach(videoStabilizationModes, id: \.self) { mode in
+                        Text(mode)
+                    }
                 }
+                .onChange(of: videoStabilizationMode) { mode in
+                    model.database
+                        .videoStabilizationMode = VideoStabilizationMode(rawValue: mode)!
+                    model.store()
+                    model.reattachCamera()
+                }
+                .pickerStyle(.inline)
+                .labelsHidden()
+            } footer: {
+                Text("Video stabilization sometimes gives audio-video sync issues.")
             }
-            .onChange(of: videoStabilizationMode) { mode in
-                model.database
-                    .videoStabilizationMode = VideoStabilizationMode(rawValue: mode)!
-                model.store()
-                model.reattachCamera()
-            }
-            .pickerStyle(.inline)
-            .labelsHidden()
         }
         .navigationTitle("Video stabilization")
     }

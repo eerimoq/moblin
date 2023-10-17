@@ -89,7 +89,7 @@ struct CosmeticsSettingsView: View {
             } header: {
                 Text("My icons")
             } footer: {
-                Text("Icon to show in main view.")
+                Text("Displayed in main view and as app icon.")
             }
             Section {
                 List {
