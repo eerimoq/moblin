@@ -545,7 +545,9 @@ final class Model: ObservableObject {
                 continue
             }
             for scene in enabledScenes {
-                for sceneWidget in scene.widgets where sceneWidget.widgetId == widget.id {
+                for sceneWidget in scene.widgets
+                    where sceneWidget.widgetId == widget.id
+                {
                     let videoSize = media.getVideoSize()
                     browserEffects[sceneWidget.id] = BrowserEffect(
                         url: URL(string: widget.browser!.url)!,

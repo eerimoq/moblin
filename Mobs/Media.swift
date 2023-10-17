@@ -303,43 +303,58 @@ final class Media: NSObject {
 }
 
 extension Media: NetStreamDelegate {
+    private func kind(_ netStream: NetStream) -> String {
+        if (netStream as? RTMPStream) != nil {
+            return "RTMP"
+        } else if (netStream as? SRTStream) != nil {
+            return "SRT"
+        } else {
+            return "Unknown"
+        }
+    }
+
     func stream(
         _: NetStream,
         didOutput _: AVAudioBuffer,
         presentationTimeStamp _: CMTime
     ) {
-        logger.debug("stream: Playback an audio packet incoming.")
+        // logger.debug("stream: Playback an audio packet incoming.")
     }
 
     func stream(_: NetStream, didOutput _: CMSampleBuffer) {
-        logger.debug("stream: Playback a video packet incoming.")
+        // logger.debug("stream: Playback a video packet incoming.")
     }
 
     func stream(
-        _: NetStream,
+        _ netStream: NetStream,
         sessionWasInterrupted _: AVCaptureSession,
         reason: AVCaptureSession.InterruptionReason?
     ) {
         if let reason {
             logger
-                .info("stream: Session was interrupted with reason: \(reason.toString())")
+                .info(
+                    "stream: \(kind(netStream)): Session was interrupted with reason: \(reason.toString())"
+                )
         } else {
-            logger.info("stream: Session was interrupted without reason")
+            logger
+                .info(
+                    "stream: \(kind(netStream)): Session was interrupted without reason"
+                )
         }
     }
 
-    func stream(_: NetStream, sessionInterruptionEnded _: AVCaptureSession) {
-        logger.info("stream: Session interrupted ended.")
+    func stream(_ netStream: NetStream, sessionInterruptionEnded _: AVCaptureSession) {
+        logger.info("stream: \(kind(netStream)): Session interrupted ended.")
     }
 
-    func stream(_: NetStream, videoCodecErrorOccurred error: VideoCodec.Error) {
-        logger.error("stream: Video codec error: \(error)")
+    func stream(_ netStream: NetStream, videoCodecErrorOccurred error: VideoCodec.Error) {
+        logger.error("stream: \(kind(netStream)): Video codec error: \(error)")
     }
 
-    func stream(_: NetStream,
+    func stream(_ netStream: NetStream,
                 audioCodecErrorOccurred error: HaishinKit.AudioCodec.Error)
     {
-        logger.error("stream: Audio codec error: \(error)")
+        logger.error("stream: \(kind(netStream)): Audio codec error: \(error)")
     }
 
     func streamWillDropFrame(_: NetStream) -> Bool {
