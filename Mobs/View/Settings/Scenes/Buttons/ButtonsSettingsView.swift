@@ -31,6 +31,11 @@ struct ButtonsSettingsView: View {
                                     image: button.systemImageNameOff,
                                     text: button.name
                                 )
+                                Spacer()
+                                if !isButtonUsed(button: button) {
+                                    Text("Unused")
+                                        .foregroundColor(.gray)
+                                }
                             }
                         }
                         .deleteDisabled(isButtonUsed(button: button))

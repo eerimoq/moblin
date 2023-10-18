@@ -35,6 +35,11 @@ struct WidgetsSettingsView: View {
                                 image: widgetImage(widget: widget),
                                 text: widget.name
                             )
+                            Spacer()
+                            if !isWidgetUsed(widget: widget) {
+                                Text("Unused")
+                                    .foregroundColor(.gray)
+                            }
                         }
                     }
                     .deleteDisabled(isWidgetUsed(widget: widget))
