@@ -8,7 +8,6 @@ private let textQueue = DispatchQueue(label: "com.eerimoq.widget.text")
 
 final class TextEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
-    private var format: String
     private var fontSize: CGFloat
     var x: Double
     var y: Double
@@ -16,8 +15,7 @@ final class TextEffect: VideoEffect {
     private var image: UIImage?
     private var nextUpdateTime = -1.0
 
-    init(format: String, fontSize: CGFloat) {
-        self.format = format
+    init(format _: String, fontSize: CGFloat) {
         self.fontSize = fontSize
         x = 0
         y = 0

@@ -51,6 +51,7 @@ struct StreamButton: View {
 
 struct ControlBarView: View {
     @ObservedObject var model: Model
+    var showSettings: () -> Void
 
     var body: some View {
         VStack {
@@ -70,7 +71,9 @@ struct ControlBarView: View {
                         .aspectRatio(contentMode: .fit)
                         .padding([.bottom], 5)
                         .frame(width: 40, height: 40)
-                    NavigationLink(destination: SettingsView(model: model)) {
+                    Button {
+                        showSettings()
+                    } label: {
                         Image(systemName: "gearshape")
                             .frame(width: 40, height: 40)
                             .overlay(

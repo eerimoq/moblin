@@ -1,7 +1,5 @@
 import SwiftUI
 
-var widgetColors: [Color] = [.red, .blue, .green, .brown, .mint, .pink]
-
 struct SceneSettingsView: View {
     @ObservedObject var model: Model
     @State private var showingAddWidget = false
@@ -27,34 +25,6 @@ struct SceneSettingsView: View {
     func submitName(name: String) {
         scene.name = name
         model.store()
-    }
-
-    func colorOf(widget: SettingsSceneWidget) -> Color {
-        guard let index = model.database.widgets
-            .firstIndex(where: { item in item.id == widget.widgetId })
-        else {
-            return .blue
-        }
-        return widgetColors[index % widgetColors.count]
-    }
-
-    func drawWidgets(context: GraphicsContext) {
-        for widget in scene.widgets.filter({ widget in widget.enabled }) {
-            let stroke = 4.0
-            let xScale = (1920.0 / 6 - stroke) / 100
-            let yScale = (1080.0 / 6 - stroke) / 100
-            let x = CGFloat(widget.x) * xScale + stroke / 2
-            let y = CGFloat(widget.y) * yScale + stroke / 2
-            let width = CGFloat(widget.width) * xScale
-            let height = CGFloat(widget.height) * yScale
-            let origin = CGPoint(x: x, y: y)
-            let size = CGSize(width: width, height: height)
-            context.stroke(
-                Path(roundedRect: CGRect(origin: origin, size: size), cornerRadius: 2.0),
-                with: .color(colorOf(widget: widget)),
-                lineWidth: stroke
-            )
-        }
     }
 
     private func widgetHasPosition(id: UUID) -> Bool {
@@ -120,19 +90,6 @@ struct SceneSettingsView: View {
                 Text("Camera")
             }
             Section {
-                HStack {
-                    Spacer()
-                    Canvas { context, _ in
-                        drawWidgets(context: context)
-                    }
-                    .frame(width: 1920 / 6, height: 1080 / 6)
-                    .border(.secondary)
-                    Spacer()
-                }
-            } header: {
-                Text("Preview")
-            }
-            Section {
                 List {
                     ForEach(scene.widgets) { widget in
                         if let realWidget = widgets
@@ -155,9 +112,6 @@ struct SceneSettingsView: View {
                                     })) {
                                         HStack {
                                             Text("")
-                                            Circle()
-                                                .frame(width: 15, height: 15)
-                                                .foregroundColor(colorOf(widget: widget))
                                             Image(
                                                 systemName: widgetImage(
                                                     widget: realWidget

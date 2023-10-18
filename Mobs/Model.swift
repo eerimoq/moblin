@@ -189,10 +189,6 @@ final class Model: ObservableObject {
         return data
     }
 
-    func copyLog() {
-        UIPasteboard.general.string = formatLog()
-    }
-
     func setupAudioSession() {
         let session = AVAudioSession.sharedInstance()
         do {
