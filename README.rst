@@ -64,7 +64,7 @@ Features
 
 - Back, front or bottom mic.
 
-- Mute audio.
+- Video stabilization.
 
 - Zoom.
 
@@ -97,11 +97,13 @@ Features
 
   - Select MOBS icon to show in app and on home screen.
 
+- Configure stream resolution, FPS, video codec, bitrate and more.
+
+- Configurable bitrate presets.
+
 - Torch.
 
-- Configure stream resolution, FPS, codec, bitrate and more.
-
-  - Configurable bitrate presets.
+- Mute audio.
 
 - Deep link settings (mobs://).
 
@@ -172,8 +174,6 @@ Ideas/plan
 - Local grid overlay? What is this used for?
 
 - Safe margins local overlay? What is this used for?
-
-- Investigate video stabilization API.
 
 - Show web page on stream and/or locally. Audio kinda important.
 
