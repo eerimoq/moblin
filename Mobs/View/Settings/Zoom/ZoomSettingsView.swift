@@ -96,7 +96,7 @@ struct ZoomSettingsView: View {
             } header: {
                 Text("Camera switching")
             } footer: {
-                Text("The X zoom to set when switching to given camera, if enabled.")
+                Text("The zoom (in X) to set when switching to given camera, if enabled.")
             }
         }
         .navigationTitle("Zoom")

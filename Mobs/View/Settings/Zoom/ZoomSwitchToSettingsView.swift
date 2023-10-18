@@ -17,7 +17,7 @@ struct ZoomSwitchToSettingsView: View {
 
     var body: some View {
         NavigationLink(destination: TextEditView(
-            title: "To \(name) X zoom",
+            title: "To \(name) camera",
             value: formatX(x: x()),
             onSubmit: { x in
                 guard let x = Float(x) else {
@@ -39,7 +39,7 @@ struct ZoomSwitchToSettingsView: View {
                 model.store()
             })) {
                 TextItemView(
-                    name: "To \(name) X zoom",
+                    name: "To \(name) camera",
                     value: formatX(x: x())
                 )
             }
