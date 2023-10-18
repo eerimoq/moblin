@@ -38,7 +38,8 @@ struct SettingsView: View {
             } footer: {
                 Text("""
                 The maximum screen FPS currently gives a lower FPS than \
-                configured. The maximum screen FPS cannot exceed the stream FPS.
+                configured. The maximum screen FPS cannot exceed the stream FPS \
+                (\(model.stream.fps) for current stream).
                 """)
             }
             Section {

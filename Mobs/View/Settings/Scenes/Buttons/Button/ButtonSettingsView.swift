@@ -86,7 +86,7 @@ struct ButtonSettingsView: View {
             default:
                 EmptyView()
             }
-            Section("Images") {
+            Section("Icons") {
                 NavigationLink(destination: ButtonImagePickerSettingsView(
                     title: "On",
                     selectedImageSystemName: button.systemImageNameOn,
