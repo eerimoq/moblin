@@ -123,15 +123,10 @@ ToDo
 - Overlays are mirrored locally when using front camera. Ok, or needs
   change?
 
+- Crash when calculating audio level.
+
 Ideas/plan
 ==========
-
-- Toggles to enable/disable "Go live" and "Stop" confirmations. Per
-  stream?
-
-- Automatically go live when starting app, if configured for selected
-  stream setting. Probably a good idea to go live again when entering
-  foregound if was live when entering background
 
 - Use external mic.
 
@@ -143,6 +138,16 @@ Ideas/plan
   - https://developer.apple.com/documentation/uikit/uiscreen
 
     - ``brightness`` and ``wantsSoftwareDimming``.
+
+- Settings on half landscape screen so video can be seen when changing
+  settings. Minimize button? Transparent?
+
+- Toggles to enable/disable "Go live" and "Stop" confirmations. Per
+  stream?
+
+- Automatically go live when starting app, if configured for selected
+  stream setting. Probably a good idea to go live again when entering
+  foregound if was live when entering background
 
 - Adaptive bitrate for SRT(LA).
 
@@ -162,17 +167,11 @@ Ideas/plan
 
 - Interactive local browser(s).
 
-- Timestamp overlay. Possibly with a format string, and background and
-  foreground colors.
-
 - Local horizon overlay.
 
 - Local grid overlay? What is this used for?
 
 - Safe margins local overlay? What is this used for?
-
-- Settings on half landscape screen so video can be seen when changing
-  settings. Minimize button? Transparent?
 
 - Investigate video stabilization API.
 
@@ -185,13 +184,7 @@ Ideas/plan
 - Lookup Twitch channel id from channel name. Possibly login to
   Twitch.
 
-- App running in background? What is possible? Video can not run in
-  background. Audio can most likely.
-
 - Audio only when bad connection.
-
-- Notifications. Both visually and with sound. Sound most important
-  probably.
 
 - Emoji chat.
 
@@ -201,8 +194,6 @@ Ideas/plan
 
 - Preview buttons.
 
-- Pause and scroll chat.
-
 - Play music and short sound samples.
 
 - Stream mobile games.
@@ -210,9 +201,6 @@ Ideas/plan
 - Geolocation (with map?).
 
 - Record to disk.
-
-- Graphical scene setup? However, overlays will probably be added
-  server side by most streamers, so not that important to change.
 
 - LIDAR, altitude.
 
