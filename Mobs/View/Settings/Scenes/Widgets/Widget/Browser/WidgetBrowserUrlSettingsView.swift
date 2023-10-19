@@ -2,12 +2,14 @@ import SwiftUI
 
 struct WidgetBrowserUrlSettingsView: View {
     @ObservedObject var model: Model
+    var toolbar: Toolbar
     var widget: SettingsWidget
     @State var value: String
 
-    init(model: Model, widget: SettingsWidget) {
+    init(model: Model, widget: SettingsWidget, toolbar: Toolbar) {
         self.model = model
         self.widget = widget
+        self.toolbar = toolbar
         value = widget.browser!.url
     }
 
@@ -33,5 +35,8 @@ struct WidgetBrowserUrlSettingsView: View {
             }
         }
         .navigationTitle("URL")
+        .toolbar {
+            toolbar
+        }
     }
 }

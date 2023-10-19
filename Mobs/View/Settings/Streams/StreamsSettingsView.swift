@@ -2,6 +2,7 @@ import SwiftUI
 
 struct StreamsSettingsView: View {
     @ObservedObject var model: Model
+    var toolbar: Toolbar
 
     var database: Database {
         model.database
@@ -14,7 +15,8 @@ struct StreamsSettingsView: View {
                     ForEach(database.streams) { stream in
                         NavigationLink(destination: StreamSettingsView(
                             stream: stream,
-                            model: model
+                            model: model,
+                            toolbar: toolbar
                         )) {
                             HStack {
                                 DraggableItemPrefixView()
@@ -57,5 +59,8 @@ struct StreamsSettingsView: View {
             }
         }
         .navigationTitle("Streams")
+        .toolbar {
+            toolbar
+        }
     }
 }

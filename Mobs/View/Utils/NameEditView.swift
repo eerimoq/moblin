@@ -1,10 +1,11 @@
 import SwiftUI
 
 struct NameEditView: View {
+    var toolbar: Toolbar
     @State var name: String
     var onSubmit: (String) -> Void
 
     var body: some View {
-        TextEditView(title: "Name", value: name, onSubmit: onSubmit)
+        TextEditView(toolbar: toolbar, title: "Name", value: name, onSubmit: onSubmit)
     }
 }

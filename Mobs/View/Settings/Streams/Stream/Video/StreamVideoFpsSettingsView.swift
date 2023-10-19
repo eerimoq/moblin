@@ -2,12 +2,14 @@ import SwiftUI
 
 struct StreamVideoFpsSettingsView: View {
     @ObservedObject var model: Model
+    var toolbar: Toolbar
     private var stream: SettingsStream
     @State private var selection: Int
 
-    init(model: Model, stream: SettingsStream) {
+    init(model: Model, stream: SettingsStream, toolbar: Toolbar) {
         self.model = model
         self.stream = stream
+        self.toolbar = toolbar
         selection = stream.fps
     }
 
@@ -28,5 +30,8 @@ struct StreamVideoFpsSettingsView: View {
             }
         }
         .navigationTitle("FPS")
+        .toolbar {
+            toolbar
+        }
     }
 }

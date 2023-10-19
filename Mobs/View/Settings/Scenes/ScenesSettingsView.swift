@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ScenesSettingsView: View {
     @ObservedObject var model: Model
+    var toolbar: Toolbar
 
     var database: Database {
         model.database
@@ -13,7 +14,8 @@ struct ScenesSettingsView: View {
                 ForEach(database.scenes) { scene in
                     NavigationLink(destination: SceneSettingsView(
                         scene: scene,
-                        model: model
+                        model: model,
+                        toolbar: toolbar
                     )) {
                         Toggle(scene.name, isOn: Binding(get: {
                             scene.enabled
@@ -36,14 +38,23 @@ struct ScenesSettingsView: View {
                 })
             }
             Section {
-                NavigationLink(destination: WidgetsSettingsView(model: model)) {
+                NavigationLink(destination: WidgetsSettingsView(
+                    model: model,
+                    toolbar: toolbar
+                )) {
                     Text("Widgets")
                 }
-                NavigationLink(destination: ButtonsSettingsView(model: model)) {
+                NavigationLink(destination: ButtonsSettingsView(
+                    model: model,
+                    toolbar: toolbar
+                )) {
                     Text("Buttons")
                 }
             }
         }
         .navigationTitle("Scenes")
+        .toolbar {
+            toolbar
+        }
     }
 }

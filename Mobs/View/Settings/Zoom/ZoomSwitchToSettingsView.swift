@@ -3,6 +3,7 @@ import SwiftUI
 
 struct ZoomSwitchToSettingsView: View {
     @ObservedObject var model: Model
+    var toolbar: Toolbar
     let name: String
     let position: AVCaptureDevice.Position
     let defaultZoom: SettingsZoomSwitchTo
@@ -17,6 +18,7 @@ struct ZoomSwitchToSettingsView: View {
 
     var body: some View {
         NavigationLink(destination: TextEditView(
+            toolbar: toolbar,
             title: "To \(name) camera",
             value: formatX(x: x()),
             onSubmit: { x in

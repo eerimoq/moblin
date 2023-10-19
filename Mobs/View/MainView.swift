@@ -1,6 +1,29 @@
 import SwiftUI
 import WebKit
 
+struct Toolbar: ToolbarContent {
+    let toggleWideSettings: () -> Void
+    let hideSettings: () -> Void
+    let splitImage: () -> Image
+
+    var body: some ToolbarContent {
+        ToolbarItem(placement: .navigationBarTrailing) {
+            HStack {
+                Button(action: {
+                    toggleWideSettings()
+                }, label: {
+                    splitImage()
+                })
+                Button(action: {
+                    hideSettings()
+                }, label: {
+                    Text("Close")
+                })
+            }
+        }
+    }
+}
+
 struct MainView: View {
     @ObservedObject var model: Model
     @State private var showingSettings = false
@@ -38,6 +61,10 @@ struct MainView: View {
         }
     }
 
+    private func toggleWideSettings() {
+        wideSettings.toggle()
+    }
+
     var body: some View {
         ZStack {
             if showingSettings {
@@ -58,27 +85,15 @@ struct MainView: View {
                                 }
                             }
                         }
-                        ZStack {
-                            NavigationStack {
-                                SettingsView(model: model, hideSettings: hideSettings)
-                            }
-                            VStack {
-                                HStack {
-                                    Spacer()
-                                    Button(action: {
-                                        wideSettings.toggle()
-                                    }, label: {
-                                        splitImage()
-                                    })
-                                    Button(action: {
-                                        hideSettings()
-                                    }, label: {
-                                        Text("Close")
-                                    })
-                                }
-                                Spacer()
-                            }
-                            .padding([.top], 5)
+                        NavigationStack {
+                            SettingsView(
+                                model: model,
+                                toolbar: Toolbar(
+                                    toggleWideSettings: toggleWideSettings,
+                                    hideSettings: hideSettings,
+                                    splitImage: splitImage
+                                )
+                            )
                         }
                         .frame(width: metrics.size.width * settingsWidth())
                     }

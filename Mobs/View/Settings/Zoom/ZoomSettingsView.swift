@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ZoomSettingsView: View {
     @ObservedObject var model: Model
+    var toolbar: Toolbar
 
     var body: some View {
         Form {
@@ -11,7 +12,8 @@ struct ZoomSettingsView: View {
                         NavigationLink(destination: ZoomPresetSettingsView(
                             model: model,
                             preset: preset,
-                            position: .back
+                            position: .back,
+                            toolbar: toolbar
                         )) {
                             HStack {
                                 DraggableItemPrefixView()
@@ -50,7 +52,8 @@ struct ZoomSettingsView: View {
                         NavigationLink(destination: ZoomPresetSettingsView(
                             model: model,
                             preset: preset,
-                            position: .front
+                            position: .front,
+                            toolbar: toolbar
                         )) {
                             HStack {
                                 DraggableItemPrefixView()
@@ -83,12 +86,14 @@ struct ZoomSettingsView: View {
             Section {
                 ZoomSwitchToSettingsView(
                     model: model,
+                    toolbar: toolbar,
                     name: "back",
                     position: .back,
                     defaultZoom: model.database.zoom!.switchToBack!
                 )
                 ZoomSwitchToSettingsView(
                     model: model,
+                    toolbar: toolbar,
                     name: "front",
                     position: .front,
                     defaultZoom: model.database.zoom!.switchToFront!
@@ -100,5 +105,8 @@ struct ZoomSettingsView: View {
             }
         }
         .navigationTitle("Zoom")
+        .toolbar {
+            toolbar
+        }
     }
 }

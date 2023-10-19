@@ -2,6 +2,7 @@ import SwiftUI
 
 struct LocalOverlaysSettingsView: View {
     @ObservedObject var model: Model
+    var toolbar: Toolbar
 
     var show: SettingsShow {
         model.database.show
@@ -78,5 +79,8 @@ struct LocalOverlaysSettingsView: View {
             }
         }
         .navigationTitle("Local overlays")
+        .toolbar {
+            toolbar
+        }
     }
 }

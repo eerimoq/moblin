@@ -2,10 +2,12 @@ import SwiftUI
 
 struct VideoStabilizationPickerView: View {
     @ObservedObject var model: Model
+    var toolbar: Toolbar
     @State var videoStabilizationMode: String
 
-    init(model: Model) {
+    init(model: Model, toolbar: Toolbar) {
         self.model = model
+        self.toolbar = toolbar
         videoStabilizationMode = model.database.videoStabilizationMode!.rawValue
     }
 
@@ -30,14 +32,21 @@ struct VideoStabilizationPickerView: View {
             }
         }
         .navigationTitle("Video stabilization")
+        .toolbar {
+            toolbar
+        }
     }
 }
 
 struct VideoStabilizationSettingsView: View {
     @ObservedObject var model: Model
+    var toolbar: Toolbar
 
     var body: some View {
-        NavigationLink(destination: VideoStabilizationPickerView(model: model)) {
+        NavigationLink(destination: VideoStabilizationPickerView(
+            model: model,
+            toolbar: toolbar
+        )) {
             TextItemView(
                 name: "Video stabilization",
                 value: model.database.videoStabilizationMode!.rawValue

@@ -112,6 +112,7 @@ private let columns = [
 ]
 
 struct ButtonImagePickerSettingsView: View {
+    var toolbar: Toolbar
     var title: String
     @State var selectedImageSystemName: String
     @State var filter: String = ""
@@ -159,5 +160,8 @@ struct ButtonImagePickerSettingsView: View {
             }
         }
         .navigationTitle(title)
+        .toolbar {
+            toolbar
+        }
     }
 }

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct WidgetsSettingsView: View {
     @ObservedObject var model: Model
+    var toolbar: Toolbar
 
     var database: Database {
         model.database
@@ -27,7 +28,8 @@ struct WidgetsSettingsView: View {
                 ForEach(database.widgets) { widget in
                     NavigationLink(destination: WidgetSettingsView(
                         widget: widget,
-                        model: model
+                        model: model,
+                        toolbar: toolbar
                     )) {
                         HStack {
                             DraggableItemPrefixView()
@@ -66,5 +68,8 @@ struct WidgetsSettingsView: View {
             }
         }
         .navigationTitle("Widgets")
+        .toolbar {
+            toolbar
+        }
     }
 }

@@ -2,12 +2,14 @@ import SwiftUI
 
 struct StreamUrlSettingsView: View {
     @ObservedObject var model: Model
+    var toolbar: Toolbar
     var stream: SettingsStream
     @State var value: String
     @State var show: Bool = false
 
-    init(model: Model, stream: SettingsStream) {
+    init(model: Model, stream: SettingsStream, toolbar: Toolbar) {
         self.model = model
+        self.toolbar = toolbar
         self.stream = stream
         value = stream.url
     }
@@ -176,5 +178,8 @@ struct StreamUrlSettingsView: View {
             }
         }
         .navigationTitle("URL")
+        .toolbar {
+            toolbar
+        }
     }
 }

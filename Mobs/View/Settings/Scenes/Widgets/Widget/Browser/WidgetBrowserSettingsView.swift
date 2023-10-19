@@ -2,11 +2,13 @@ import SwiftUI
 
 struct WidgetBrowserSettingsView: View {
     @ObservedObject var model: Model
+    var toolbar: Toolbar
     var widget: SettingsWidget
 
-    init(model: Model, widget: SettingsWidget) {
+    init(model: Model, widget: SettingsWidget, toolbar: Toolbar) {
         self.model = model
         self.widget = widget
+        self.toolbar = toolbar
     }
 
     /* func submitWidth(value: String) {
@@ -32,7 +34,8 @@ struct WidgetBrowserSettingsView: View {
         Section {
             NavigationLink(destination: WidgetBrowserUrlSettingsView(
                 model: model,
-                widget: widget
+                widget: widget,
+                toolbar: toolbar
             )) {
                 TextItemView(name: "URL", value: widget.browser!.url)
             }

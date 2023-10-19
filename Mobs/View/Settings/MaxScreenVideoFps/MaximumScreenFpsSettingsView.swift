@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MaximumScreenFpsSettingsView: View {
     @ObservedObject var model: Model
+    var toolbar: Toolbar
 
     private func submit(value: String) {
         guard let fps = Int(value), fps > 0 else {
@@ -13,6 +14,7 @@ struct MaximumScreenFpsSettingsView: View {
 
     var body: some View {
         TextEditView(
+            toolbar: toolbar,
             title: "Maximum screen FPS",
             value: String(model.database.maximumScreenFps!),
             onSubmit: submit

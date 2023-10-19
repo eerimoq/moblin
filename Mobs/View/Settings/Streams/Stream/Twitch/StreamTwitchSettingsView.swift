@@ -2,6 +2,7 @@ import SwiftUI
 
 struct StreamTwitchSettingsView: View {
     @ObservedObject var model: Model
+    var toolbar: Toolbar
     var stream: SettingsStream
 
     func submitChannelName(value: String) {
@@ -24,6 +25,7 @@ struct StreamTwitchSettingsView: View {
         Form {
             Section {
                 NavigationLink(destination: TextEditView(
+                    toolbar: toolbar,
                     title: "Channel name",
                     value: stream.twitchChannelName,
                     onSubmit: submitChannelName
@@ -35,6 +37,7 @@ struct StreamTwitchSettingsView: View {
             }
             Section {
                 NavigationLink(destination: TextEditView(
+                    toolbar: toolbar,
                     title: "Channel id",
                     value: stream.twitchChannelId,
                     onSubmit: submitChannelId
@@ -48,5 +51,8 @@ struct StreamTwitchSettingsView: View {
             }
         }
         .navigationTitle("Twitch")
+        .toolbar {
+            toolbar
+        }
     }
 }

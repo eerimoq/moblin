@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ImportExportSettingsView: View {
     @ObservedObject var model: Model
+    var toolbar: Toolbar
 
     var body: some View {
         Form {
@@ -27,5 +28,8 @@ struct ImportExportSettingsView: View {
             }
         }
         .navigationTitle("Import and export settings")
+        .toolbar {
+            toolbar
+        }
     }
 }

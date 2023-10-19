@@ -2,15 +2,17 @@ import SwiftUI
 
 struct SceneSettingsView: View {
     @ObservedObject var model: Model
+    var toolbar: Toolbar
     @State private var showingAddWidget = false
     @State private var showingAddButton = false
     @State private var expandedWidget: SettingsSceneWidget?
     private var scene: SettingsScene
     @State private var cameraSelection: String
 
-    init(scene: SettingsScene, model: Model) {
+    init(scene: SettingsScene, model: Model, toolbar: Toolbar) {
         self.scene = scene
         self.model = model
+        self.toolbar = toolbar
         cameraSelection = scene.cameraType!.rawValue
     }
 
@@ -69,6 +71,7 @@ struct SceneSettingsView: View {
     var body: some View {
         Form {
             NavigationLink(destination: NameEditView(
+                toolbar: toolbar,
                 name: scene.name,
                 onSubmit: submitName
             )) {
@@ -253,5 +256,12 @@ struct SceneSettingsView: View {
             }
         }
         .navigationTitle("Scene")
+        .toolbar {
+            toolbar
+        }
+        .onAppear {
+            model.selectedSceneId = scene.id
+            model.sceneUpdated()
+        }
     }
 }

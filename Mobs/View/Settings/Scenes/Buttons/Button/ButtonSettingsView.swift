@@ -15,13 +15,15 @@ struct ImageItemView: View {
 
 struct ButtonSettingsView: View {
     @ObservedObject var model: Model
+    var toolbar: Toolbar
     private var button: SettingsButton
     @State private var selection: String
     @State private var selectedWidget: Int
 
-    init(button: SettingsButton, model: Model) {
+    init(button: SettingsButton, model: Model, toolbar: Toolbar) {
         self.button = button
         self.model = model
+        self.toolbar = toolbar
         selection = button.type.rawValue
         selectedWidget = model.database.widgets.firstIndex(where: { widget in
             widget.id == button.widget.widgetId
@@ -46,6 +48,7 @@ struct ButtonSettingsView: View {
     var body: some View {
         Form {
             NavigationLink(destination: NameEditView(
+                toolbar: toolbar,
                 name: button.name,
                 onSubmit: submitName
             )) {
@@ -88,6 +91,7 @@ struct ButtonSettingsView: View {
             }
             Section("Icons") {
                 NavigationLink(destination: ButtonImagePickerSettingsView(
+                    toolbar: toolbar,
                     title: "On",
                     selectedImageSystemName: button.systemImageNameOn,
                     onChange: onSystemImageNameOn
@@ -95,6 +99,7 @@ struct ButtonSettingsView: View {
                     ImageItemView(name: "On", image: button.systemImageNameOn)
                 }
                 NavigationLink(destination: ButtonImagePickerSettingsView(
+                    toolbar: toolbar,
                     title: "Off",
                     selectedImageSystemName: button.systemImageNameOff,
                     onChange: onSystemImageNameOff
@@ -104,5 +109,8 @@ struct ButtonSettingsView: View {
             }
         }
         .navigationTitle("Button")
+        .toolbar {
+            toolbar
+        }
     }
 }

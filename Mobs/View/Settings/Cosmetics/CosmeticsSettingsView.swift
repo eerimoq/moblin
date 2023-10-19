@@ -51,6 +51,7 @@ private let allIcons = [
 
 struct CosmeticsSettingsView: View {
     @ObservedObject var model: Model
+    var toolbar: Toolbar
     @State var isPresentingBuyPopup = false
 
     private func getIconsInStock() -> [Icon] {
@@ -135,5 +136,8 @@ struct CosmeticsSettingsView: View {
             }
         }
         .navigationTitle("Cosmetics")
+        .toolbar {
+            toolbar
+        }
     }
 }

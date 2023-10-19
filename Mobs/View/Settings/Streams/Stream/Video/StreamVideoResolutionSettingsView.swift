@@ -2,12 +2,14 @@ import SwiftUI
 
 struct StreamVideoResolutionSettingsView: View {
     @ObservedObject var model: Model
+    var toolbar: Toolbar
     var stream: SettingsStream
     @State private var selection: String
 
-    init(model: Model, stream: SettingsStream) {
+    init(model: Model, stream: SettingsStream, toolbar: Toolbar) {
         self.model = model
         self.stream = stream
+        self.toolbar = toolbar
         selection = stream.resolution.rawValue
     }
 
@@ -28,5 +30,8 @@ struct StreamVideoResolutionSettingsView: View {
             }
         }
         .navigationTitle("Resolution")
+        .toolbar {
+            toolbar
+        }
     }
 }

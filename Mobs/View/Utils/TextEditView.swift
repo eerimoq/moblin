@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct TextEditView: View {
+    var toolbar: Toolbar
     var title: String
     @State var value: String
     var onSubmit: (String) -> Void
@@ -25,5 +26,8 @@ struct TextEditView: View {
             }
         }
         .navigationTitle(title)
+        .toolbar {
+            toolbar
+        }
     }
 }

@@ -3,6 +3,7 @@ import SwiftUI
 struct WidgetSettingsView: View {
     var widget: SettingsWidget
     @ObservedObject var model: Model
+    var toolbar: Toolbar
 
     func submitName(name: String) {
         widget.name = name
@@ -12,6 +13,7 @@ struct WidgetSettingsView: View {
     var body: some View {
         Form {
             NavigationLink(destination: NameEditView(
+                toolbar: toolbar,
                 name: widget.name,
                 onSubmit: submitName
             )) {
@@ -43,11 +45,14 @@ struct WidgetSettingsView: View {
             case .webPage:
                 EmptyView()
             case .browser:
-                WidgetBrowserSettingsView(model: model, widget: widget)
+                WidgetBrowserSettingsView(model: model, widget: widget, toolbar: toolbar)
             case .time:
                 EmptyView()
             }
         }
         .navigationTitle("Widget")
+        .toolbar {
+            toolbar
+        }
     }
 }
