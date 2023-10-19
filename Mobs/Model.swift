@@ -263,14 +263,8 @@ final class Model: ObservableObject {
         removeUnusedImages()
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(didEnterBackground),
-            name: UIScene.didEnterBackgroundNotification,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(willEnterForeground),
-            name: UIScene.willEnterForegroundNotification,
+            selector: #selector(orientationDidChange),
+            name: UIDevice.orientationDidChangeNotification,
             object: nil
         )
         networkPathMonitor.pathUpdateHandler = handleNetworkPathUpdate(path:)
@@ -282,12 +276,15 @@ final class Model: ObservableObject {
             .debug("Network: \(path.debugDescription), All: \(path.availableInterfaces)")
     }
 
-    @objc private func didEnterBackground(animated _: Bool) {
-        logger.debug("Did enter background")
-    }
-
-    @objc private func willEnterForeground(animated _: Bool) {
-        logger.debug("Will enter foreground")
+    @objc private func orientationDidChange(animated _: Bool) {
+        switch UIDevice.current.orientation {
+        case .landscapeLeft:
+            mthkView.videoOrientation = .landscapeRight
+        case .landscapeRight:
+            mthkView.videoOrientation = .landscapeLeft
+        default:
+            break
+        }
     }
 
     func updateIconImageFromDatabase() {
