@@ -53,6 +53,13 @@ struct StreamSettingsView: View {
             )) {
                 Text("Kick")
             }
+            NavigationLink(destination: StreamSrtSettingsView(
+                model: model,
+                toolbar: toolbar,
+                stream: stream
+            )) {
+                Text("SRT & SRTLA")
+            }
         }
         .navigationTitle("Stream")
         .toolbar {

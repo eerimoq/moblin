@@ -24,6 +24,10 @@ enum SettingsStreamProtocol: String, Codable {
     case srt = "SRT"
 }
 
+class SettingsStreamSrt: Codable {
+    var latency: Int32 = 2000
+}
+
 class SettingsStream: Codable, Identifiable {
     var name: String
     var id: UUID = .init()
@@ -37,6 +41,7 @@ class SettingsStream: Codable, Identifiable {
     var bitrate: UInt32 = 3_000_000
     var codec: SettingsStreamCodec = .h264avc
     var adaptiveBitrate: Bool? = false
+    var srt: SettingsStreamSrt? = .init()
 
     init(name: String) {
         self.name = name
@@ -796,6 +801,10 @@ final class Settings {
         }
         if database.videoStabilizationMode == nil {
             database.videoStabilizationMode = .off
+            store()
+        }
+        for stream in database.streams where stream.srt == nil {
+            stream.srt = .init()
             store()
         }
     }

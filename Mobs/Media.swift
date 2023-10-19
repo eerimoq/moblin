@@ -30,6 +30,7 @@ final class Media: NSObject {
     private var rtmpStreamName = ""
     private var currentAudioLevel: Float = 100.0
     private var srtUrl: String = ""
+    private var latency: Int32 = 2000
     var onSrtConnected: (() -> Void)!
     var onSrtDisconnected: ((_ reason: String) -> Void)!
     var onRtmpConnected: (() -> Void)!
@@ -69,9 +70,11 @@ final class Media: NSObject {
         url: String,
         reconnectTime: Double,
         targetBitrate: UInt32,
-        adaptiveBitrate: Bool
+        adaptiveBitrate: Bool,
+        latency: Int32
     ) {
         srtUrl = url
+        self.latency = latency
         srtTotalByteCount = 0
         srtPreviousTotalByteCount = 0
         srtla?.stop()
@@ -143,7 +146,7 @@ final class Media: NSObject {
         }
     }
 
-    func makeLocalhostSrtUrl(url: String, port: UInt16) -> URL? {
+    func makeLocalhostSrtUrl(url: String, port: UInt16, latency: Int32) -> URL? {
         guard let url = URL(string: url) else {
             return nil
         }
@@ -152,6 +155,13 @@ final class Media: NSObject {
         }
         var urlComponents = URLComponents(url: localUrl, resolvingAgainstBaseURL: false)!
         urlComponents.query = url.query
+        var queryItems: [URLQueryItem] = urlComponents.queryItems ?? []
+        if !queryItems.contains(where: { parameter in
+            parameter.name == "latency"
+        }) {
+            queryItems.append(URLQueryItem(name: "latency", value: String(latency)))
+        }
+        urlComponents.queryItems = queryItems
         return urlComponents.url
     }
 
@@ -386,7 +396,8 @@ extension Media: SrtlaDelegate {
                 do {
                     try self.srtConnection.open(self.makeLocalhostSrtUrl(
                         url: self.srtUrl,
-                        port: port
+                        port: port,
+                        latency: self.latency
                     ))
                     self.srtStream?.publish()
                 } catch {

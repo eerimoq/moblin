@@ -612,7 +612,8 @@ final class Model: ObservableObject {
                 url: stream.url,
                 reconnectTime: reconnectTime,
                 targetBitrate: stream.bitrate,
-                adaptiveBitrate: stream.adaptiveBitrate!
+                adaptiveBitrate: stream.adaptiveBitrate!,
+                latency: stream.srt!.latency
             )
         }
         updateSpeed()
