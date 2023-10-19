@@ -114,18 +114,11 @@ Features
 ToDo
 ====
 
-- Sometimes a stroboscope effect happens on screen.
-
 - Improve the browser widget.
 
 - Sometimes video freezes when changing settings or when enter/exit
   background mode. Looks like there is two sessions if changing stream
   from RTMP to SRT. Should only be one.
-
-- Overlays are mirrored locally when using front camera. Ok, or needs
-  change?
-
-- Crash when calculating audio level.
 
 Ideas/plan
 ==========
@@ -133,6 +126,8 @@ Ideas/plan
 - Use external mic.
 
 - Battery level as percentage.
+
+- Non-mirrored widgets locally when using front camera.
 
 - Optionally show black screen to save energy. Possible to turn off
   completely?
