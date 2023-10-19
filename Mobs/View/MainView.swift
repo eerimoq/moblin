@@ -71,8 +71,7 @@ struct MainView: View {
                 GeometryReader { metrics in
                     HStack {
                         if !wideSettings {
-                            ZStack {
-                                streamView
+                            GeometryReader { metricsLeft in
                                 VStack {
                                     HStack {
                                         Spacer()
@@ -81,6 +80,9 @@ struct MainView: View {
                                             .padding([.top], 5)
                                         Spacer()
                                     }
+                                    Spacer()
+                                    streamView
+                                        .frame(height: 9/16 * metricsLeft.size.width)
                                     Spacer()
                                 }
                             }
