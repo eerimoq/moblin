@@ -37,12 +37,10 @@ struct MainView: View {
 
     private func hideSettings() {
         showingSettings = false
-        // AppDelegate.orientationLock = .landscapeRight
     }
 
     private func showSettings() {
         showingSettings = true
-        // AppDelegate.orientationLock = .all
     }
 
     private func splitImage() -> Image {

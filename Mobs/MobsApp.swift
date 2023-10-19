@@ -31,22 +31,6 @@ class SceneDelegate: NSObject, UIWindowSceneDelegate {
 }
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-    static var orientationLock = UIInterfaceOrientationMask.landscapeRight {
-        didSet {
-            UIApplication.shared.connectedScenes.forEach { scene in
-                if let windowScene = scene as? UIWindowScene {
-                    windowScene
-                        .requestGeometryUpdate(
-                            .iOS(interfaceOrientations: orientationLock)
-                        )
-                }
-            }
-            // For some reason new way of doing this does not work in all
-            // cases. See repo log.
-            UIViewController.attemptRotationToDeviceOrientation()
-        }
-    }
-
     func application(
         _: UIApplication,
         configurationForConnecting connectingSceneSession: UISceneSession,
@@ -58,13 +42,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         )
         sceneConfig.delegateClass = SceneDelegate.self
         return sceneConfig
-    }
-
-    func application(_: UIApplication,
-                     supportedInterfaceOrientationsFor _: UIWindow?)
-        -> UIInterfaceOrientationMask
-    {
-        return AppDelegate.orientationLock
     }
 
     func application(
