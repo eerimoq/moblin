@@ -134,15 +134,12 @@ Ideas/plan
 
 - Battery level as percentage.
 
-- Optionally show black screen to save enxergy. Possible to turn off
+- Optionally show black screen to save energy. Possible to turn off
   completely?
 
   - https://developer.apple.com/documentation/uikit/uiscreen
 
     - ``brightness`` and ``wantsSoftwareDimming``.
-
-- Settings on half landscape screen so video can be seen when changing
-  settings. Minimize button? Transparent?
 
 - Toggles to enable/disable "Go live" and "Stop" confirmations. Per
   stream?
@@ -195,8 +192,6 @@ Ideas/plan
 - Preview buttons.
 
 - Play music and short sound samples.
-
-- Stream mobile games.
 
 - Geolocation (with map?).
 
