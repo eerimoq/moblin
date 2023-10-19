@@ -80,7 +80,8 @@ struct MainView: View {
                                     }
                                     Spacer()
                                     streamView
-                                        .frame(height: 9 / 16 * metricsLeft.size.width)
+                                        .frame(height: 9.0 / 16.0 * metricsLeft.size
+                                            .width)
                                     Spacer()
                                 }
                             }
