@@ -240,6 +240,8 @@ Similar software
 
 - https://github.com/pedroSG94/RootEncoder-iOS
 
+- https://softvelum.com/larix/ios/
+
 .. _OBS: https://obsproject.com
 
 .. _OBS Studio: https://obsproject.com

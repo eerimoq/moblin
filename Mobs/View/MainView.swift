@@ -99,6 +99,7 @@ struct MainView: View {
                         }
                         .frame(width: metrics.size.width * settingsWidth())
                     }
+                    .background(Color(uiColor: .systemGroupedBackground))
                 }
             } else {
                 HStack(spacing: 0) {
