@@ -238,8 +238,6 @@ Similar software
 
 - Twitch app.
 
-- https://github.com/pedroSG94/RootEncoder-iOS
-
 - https://softvelum.com/larix/ios/
 
 .. _OBS: https://obsproject.com
