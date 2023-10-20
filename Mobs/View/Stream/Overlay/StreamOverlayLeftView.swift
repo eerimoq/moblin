@@ -104,7 +104,7 @@ struct LeftOverlayView: View {
                     text: messageText(),
                     color: messageColor()
                 )
-                StreamOverlayChatView(posts: model.chatPosts)
+                StreamOverlayChatView(posts: model.chatPosts, fontSize: database.chat!.fontSize)
             }
         }
     }

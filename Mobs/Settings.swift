@@ -353,12 +353,16 @@ class SettingsBitratePreset: Codable, Identifiable {
     }
 }
 
-enum VideoStabilizationMode: String, Codable, CaseIterable {
+enum SettingsVideoStabilizationMode: String, Codable, CaseIterable {
     case off = "Off"
     case standard = "Standard"
 }
 
-var videoStabilizationModes = VideoStabilizationMode.allCases.map { $0.rawValue }
+var videoStabilizationModes = SettingsVideoStabilizationMode.allCases.map { $0.rawValue }
+
+class SettingsChat: Codable {
+    var fontSize: Float = 17.0
+}
 
 class Database: Codable {
     var streams: [SettingsStream] = []
@@ -373,7 +377,8 @@ class Database: Codable {
     var iconImage: String? = plainIcon.image
     var maximumScreenFpsEnabled: Bool? = false
     var maximumScreenFps: Int? = 60
-    var videoStabilizationMode: VideoStabilizationMode? = .off
+    var videoStabilizationMode: SettingsVideoStabilizationMode? = .off
+    var chat: SettingsChat? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -810,6 +815,10 @@ final class Settings {
         }
         if realDatabase.show.audioBar == nil {
             realDatabase.show.audioBar = true
+            store()
+        }
+        if realDatabase.chat == nil {
+            realDatabase.chat = .init()
             store()
         }
     }

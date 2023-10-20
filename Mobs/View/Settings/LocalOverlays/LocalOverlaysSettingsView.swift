@@ -62,12 +62,17 @@ struct LocalOverlaysSettingsView: View {
                 }))
             }
             Section("Bottom left") {
-                Toggle("Chat", isOn: Binding(get: {
-                    show.chat
-                }, set: { value in
-                    show.chat = value
-                    model.store()
-                }))
+                NavigationLink(destination: LocalOverlaysChatSettingsView(
+                    model: model,
+                    toolbar: toolbar
+                )) {
+                    Toggle("Chat", isOn: Binding(get: {
+                        show.chat
+                    }, set: { value in
+                        show.chat = value
+                        model.store()
+                    }))
+                }
             }
             Section {
                 Toggle("Zoom presets", isOn: Binding(get: {

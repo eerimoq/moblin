@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0303990F2AE2477700D27530 /* LocalOverlaysAudioLevelSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0303990E2AE2477700D27530 /* LocalOverlaysAudioLevelSettingsView.swift */; };
+		030399132AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030399122AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift */; };
 		030947C32A9C0496003FC387 /* StreamOverlayChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030947C22A9C0496003FC387 /* StreamOverlayChatView.swift */; };
 		0315A33B2AA2FA7100295443 /* LocalListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33A2AA2FA7100295443 /* LocalListener.swift */; };
 		0315A33D2AA2FA7D00295443 /* RemoteConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */; };
@@ -109,6 +110,7 @@
 
 /* Begin PBXFileReference section */
 		0303990E2AE2477700D27530 /* LocalOverlaysAudioLevelSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalOverlaysAudioLevelSettingsView.swift; sourceTree = "<group>"; };
+		030399122AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalOverlaysChatSettingsView.swift; sourceTree = "<group>"; };
 		030947C22A9C0496003FC387 /* StreamOverlayChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOverlayChatView.swift; sourceTree = "<group>"; };
 		0315A33A2AA2FA7100295443 /* LocalListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalListener.swift; sourceTree = "<group>"; };
 		0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteConnection.swift; sourceTree = "<group>"; };
@@ -227,6 +229,14 @@
 				0303990E2AE2477700D27530 /* LocalOverlaysAudioLevelSettingsView.swift */,
 			);
 			path = AudioLevel;
+			sourceTree = "<group>";
+		};
+		030399112AE2D0E900D27530 /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				030399122AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift */,
+			);
+			path = Chat;
 			sourceTree = "<group>";
 		};
 		0315A3392AA2FA0A00295443 /* Srtla */ = {
@@ -501,6 +511,7 @@
 		0379BBA32AAD944000B718B6 /* LocalOverlays */ = {
 			isa = PBXGroup;
 			children = (
+				030399112AE2D0E900D27530 /* Chat */,
 				0303990C2AE2476300D27530 /* AudioLevel */,
 				0379BBA42AAD945D00B718B6 /* LocalOverlaysSettingsView.swift */,
 			);
@@ -841,6 +852,7 @@
 				035D37372AB230E700045B92 /* StreamVideoBitrateSettingsView.swift in Sources */,
 				0303990F2AE2477700D27530 /* LocalOverlaysAudioLevelSettingsView.swift in Sources */,
 				03F5A8E52AD6FF8E00F354D2 /* StreamOverlayDebugView.swift in Sources */,
+				030399132AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
