@@ -43,9 +43,11 @@ struct StreamOverlayView: View {
             }
             if model.database.show.chat {
                 StreamOverlayChatView(model: model)
+                    .allowsHitTesting(false)
             }
             HStack {
                 StreamOverlayDebugView(model: model)
+                    .allowsHitTesting(false)
                 Spacer()
             }
         }
