@@ -30,26 +30,6 @@ struct LeftOverlayView: View {
         return "\(stream.name) (\(resolution), \(stream.fps), \(codec), \(proto), \(bitrate))"
     }
 
-    func messageText() -> String {
-        if !model.isChatConfigured() {
-            return "Not configured"
-        } else if model.isChatConnected() {
-            return String(format: "%.2f m/s", model.chatPostsPerSecond)
-        } else {
-            return ""
-        }
-    }
-
-    func messageColor() -> Color {
-        if !model.isChatConfigured() {
-            return .white
-        } else if model.isChatConnected() {
-            return .white
-        } else {
-            return .red
-        }
-    }
-
     func viewersText() -> String {
         if !model.isViewersConfigured() {
             return "Not configured"
@@ -98,14 +78,6 @@ struct LeftOverlayView: View {
                 )
             }
             Spacer()
-            if database.show.chat {
-                StreamOverlayIconAndTextView(
-                    icon: "message",
-                    text: messageText(),
-                    color: messageColor()
-                )
-                StreamOverlayChatView(posts: model.chatPosts, fontSize: database.chat!.fontSize)
-            }
         }
     }
 }

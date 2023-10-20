@@ -18,6 +18,26 @@ struct StreamOverlayView: View {
         )
     }
 
+    func messageText() -> String {
+        if !model.isChatConfigured() {
+            return "Not configured"
+        } else if model.isChatConnected() {
+            return String(format: "%.2f m/s", model.chatPostsPerSecond)
+        } else {
+            return ""
+        }
+    }
+
+    func messageColor() -> Color {
+        if !model.isChatConfigured() {
+            return .white
+        } else if model.isChatConnected() {
+            return .white
+        } else {
+            return .red
+        }
+    }
+
     var body: some View {
         ZStack {
             if model.database.tapToFocus!, let focusPoint = model.manualFocusPoint {
@@ -36,13 +56,27 @@ struct StreamOverlayView: View {
                 Spacer()
                 RightOverlayView(model: model)
             }
-            GeometryReader { metrics in
+            HStack {
+                LeftOverlayView(model: model)
+                    .allowsHitTesting(false)
+                Spacer()
+            }
+            if model.database.show.chat {
                 HStack {
-                    LeftOverlayView(model: model)
-                        .allowsHitTesting(false)
+                    VStack(alignment: .leading, spacing: 1) {
+                        Spacer()
+                        StreamOverlayIconAndTextView(
+                            icon: "message",
+                            text: messageText(),
+                            color: messageColor()
+                        )
+                        StreamOverlayChatView(
+                            posts: model.chatPosts,
+                            fontSize: model.database.chat!.fontSize
+                        )
+                    }
                     Spacer()
                 }
-                .frame(width: metrics.size.width * 0.7)
             }
             HStack {
                 StreamOverlayDebugView(model: model)

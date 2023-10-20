@@ -21,7 +21,8 @@ struct VideoStabilizationPickerView: View {
                 }
                 .onChange(of: videoStabilizationMode) { mode in
                     model.database
-                        .videoStabilizationMode = SettingsVideoStabilizationMode(rawValue: mode)!
+                        .videoStabilizationMode =
+                        SettingsVideoStabilizationMode(rawValue: mode)!
                     model.store()
                     model.reattachCamera()
                 }

@@ -27,9 +27,12 @@ struct LocalOverlaysChatSettingsView: View {
                     toolbar: toolbar,
                     title: "Font size",
                     value: String(model.database.chat!.fontSize),
-                    onSubmit: submitFontSize)
-                ) {
-                    TextItemView(name: "Font size", value: String(model.database.chat!.fontSize))
+                    onSubmit: submitFontSize
+                )) {
+                    TextItemView(
+                        name: "Font size",
+                        value: String(model.database.chat!.fontSize)
+                    )
                 }
             }
         }
