@@ -53,7 +53,7 @@ final class Model: ObservableObject {
     private var subscriptions = Set<AnyCancellable>()
     @Published var uptime = noValue
     @Published var srtlaConnectionStatistics = noValue
-    @Published var audioLevel = noValue
+    @Published var audioLevel: Float = -160.0
     var settings = Settings()
     var digitalClock = noValue
     var selectedSceneId = UUID()
@@ -437,12 +437,7 @@ final class Model: ObservableObject {
     }
 
     private func updateAudioLevel() {
-        let newAudioLevel = media.getAudioLevel()
-        if newAudioLevel.isNaN {
-            audioLevel = String("Muted")
-        } else {
-            audioLevel = "\(Int(newAudioLevel)) dB"
-        }
+        audioLevel = media.getAudioLevel()
     }
 
     private func updateSrtlaConnectionStatistics() {

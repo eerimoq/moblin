@@ -316,6 +316,7 @@ class SettingsShow: Codable {
     var zoom: Bool? = true
     var zoomPresets: Bool? = true
     var microphone: Bool? = true
+    var audioBar: Bool? = true
 }
 
 class SettingsZoomPreset: Codable, Identifiable {
@@ -735,11 +736,11 @@ final class Settings {
             scene.widgets.remove(atOffsets: sceneWidgetIndexesToRemove)
             store()
         }
-        let widgets = database.widgets.filter { widget in
+        let widgets = realDatabase.widgets.filter { widget in
             widget.type != .camera
         }
-        if database.widgets.count != widgets.count {
-            database.widgets = widgets
+        if realDatabase.widgets.count != widgets.count {
+            realDatabase.widgets = widgets
             store()
         }
         for widget in realDatabase.widgets {
@@ -771,40 +772,44 @@ final class Settings {
             button.type = .mic
             store()
         }
-        if database.tapToFocus == nil {
-            database.tapToFocus = false
+        if realDatabase.tapToFocus == nil {
+            realDatabase.tapToFocus = false
             store()
         }
-        for stream in database.streams where stream.adaptiveBitrate == nil {
+        for stream in realDatabase.streams where stream.adaptiveBitrate == nil {
             stream.adaptiveBitrate = false
             store()
         }
-        if database.iconImage == nil {
-            database.iconImage = plainIcon.image
+        if realDatabase.iconImage == nil {
+            realDatabase.iconImage = plainIcon.image
             store()
         }
-        if database.zoom!.switchToBack == nil {
-            database.zoom!.switchToBack = .init()
+        if realDatabase.zoom!.switchToBack == nil {
+            realDatabase.zoom!.switchToBack = .init()
             store()
         }
-        if database.zoom!.switchToFront == nil {
-            database.zoom!.switchToFront = .init()
+        if realDatabase.zoom!.switchToFront == nil {
+            realDatabase.zoom!.switchToFront = .init()
             store()
         }
-        if database.maximumScreenFpsEnabled == nil {
-            database.maximumScreenFpsEnabled = false
+        if realDatabase.maximumScreenFpsEnabled == nil {
+            realDatabase.maximumScreenFpsEnabled = false
             store()
         }
-        if database.maximumScreenFps == nil {
-            database.maximumScreenFps = 60
+        if realDatabase.maximumScreenFps == nil {
+            realDatabase.maximumScreenFps = 60
             store()
         }
-        if database.videoStabilizationMode == nil {
-            database.videoStabilizationMode = .off
+        if realDatabase.videoStabilizationMode == nil {
+            realDatabase.videoStabilizationMode = .off
             store()
         }
-        for stream in database.streams where stream.srt == nil {
+        for stream in realDatabase.streams where stream.srt == nil {
             stream.srt = .init()
+            store()
+        }
+        if realDatabase.show.audioBar == nil {
+            realDatabase.show.audioBar = true
             store()
         }
     }

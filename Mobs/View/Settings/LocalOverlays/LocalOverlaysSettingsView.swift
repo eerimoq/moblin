@@ -37,12 +37,14 @@ struct LocalOverlaysSettingsView: View {
                 }))
             }
             Section("Top right") {
-                Toggle("Audio level", isOn: Binding(get: {
-                    show.audioLevel!
-                }, set: { value in
-                    show.audioLevel = value
-                    model.store()
-                }))
+                NavigationLink(destination: LocalOverlaysAudioLevelSettingsView(model: model, toolbar: toolbar)) {
+                    Toggle("Audio level", isOn: Binding(get: {
+                        show.audioLevel!
+                    }, set: { value in
+                        show.audioLevel = value
+                        model.store()
+                    }))
+                }
                 Toggle("Bitrate", isOn: Binding(get: {
                     show.speed
                 }, set: { value in

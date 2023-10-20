@@ -1,13 +1,63 @@
 import SwiftUI
 
+struct AudioLevelView: View {
+    var showBar: Bool
+    var level: Float
+
+    private func text() -> String {
+        if level.isNaN {
+            return "Muted"
+        } else if !showBar {
+            return "\(Int(level)) dB"
+        } else {
+            let level = (max(level, -60) + 60) / 60
+            let numberOfBars = min(Int(level * 19) + 1, 19)
+            var bar = ""
+            for _ in stride(from: 0, to: numberOfBars, by: 1) {
+                bar.append("|")
+            }
+            return bar
+        }
+    }
+    
+    private func color() -> Color {
+         if level > -8 {
+            return .red
+        } else if level > -18 {
+            return .yellow
+        } else {
+            return .white
+        }
+    }
+    
+    var body: some View {
+        HStack(spacing: 1) {
+            Text(text())
+                .foregroundColor(.white)
+                .padding([.leading, .trailing], 2)
+                .background(Color(white: 0, opacity: 0.6))
+                .cornerRadius(5)
+                .font(.system(size: 13))
+            Image(systemName: "waveform")
+                .frame(width: 17, height: 17)
+                .font(.system(size: 13))
+                .padding([.leading, .trailing], 2)
+                .foregroundColor(color())
+                .background(Color(white: 0, opacity: 0.6))
+                .cornerRadius(5)
+        }
+        .padding(0)
+    }
+}
+
 struct RightOverlayView: View {
     @ObservedObject var model: Model
 
-    var database: Database {
+    private var database: Database {
         model.settings.database
     }
 
-    func netStreamColor() -> Color {
+    private func netStreamColor() -> Color {
         if model.isStreaming() {
             switch model.streamState {
             case .connecting:
@@ -25,12 +75,7 @@ struct RightOverlayView: View {
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
             if database.show.audioLevel! {
-                StreamOverlayIconAndTextView(
-                    icon: "waveform",
-                    text: model.audioLevel,
-                    textFirst: true,
-                    color: .white
-                )
+                AudioLevelView(showBar: database.show.audioBar!, level: model.audioLevel)
             }
             if database.show.speed {
                 StreamOverlayIconAndTextView(
