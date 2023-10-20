@@ -25,14 +25,48 @@ struct LineView: View {
 }
 
 struct StreamOverlayChatView: View {
-    var posts: Deque<Post>
-    var fontSize: Float
+    @ObservedObject var model: Model
+
+    func messageText() -> String {
+        if !model.isChatConfigured() {
+            return "Not configured"
+        } else if model.isChatConnected() {
+            return String(format: "%.2f m/s", model.chatPostsPerSecond)
+        } else {
+            return ""
+        }
+    }
+
+    func messageColor() -> Color {
+        if !model.isChatConfigured() {
+            return .white
+        } else if model.isChatConnected() {
+            return .white
+        } else {
+            return .red
+        }
+    }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 1) {
-            ForEach(posts, id: \.self) { post in
-                LineView(user: post.user, message: post.message, fontSize: fontSize)
+        HStack {
+            VStack(alignment: .leading, spacing: 1) {
+                Spacer()
+                StreamOverlayIconAndTextView(
+                    icon: "message",
+                    text: messageText(),
+                    color: messageColor()
+                )
+                VStack(alignment: .leading, spacing: 1) {
+                    ForEach(model.chatPosts, id: \.self) { post in
+                        LineView(
+                            user: post.user,
+                            message: post.message,
+                            fontSize: model.database.chat!.fontSize
+                        )
+                    }
+                }
             }
+            Spacer()
         }
     }
 }
