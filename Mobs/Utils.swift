@@ -1,4 +1,5 @@
 import AVKit
+import SwiftUI
 
 let firstReconnectTime = 5.0
 
@@ -337,4 +338,18 @@ func bitrateToMbps(bitrate: UInt32) -> Float {
 
 func bitrateFromMbps(bitrate: Float) -> UInt32 {
     return UInt32(bitrate * 1_000_000)
+}
+
+extension RgbColor {
+    private func colorScale(_ color: Int) -> Double {
+        return Double(color) / 255
+    }
+
+    func color() -> Color {
+        return Color(
+            red: colorScale(red),
+            green: colorScale(green),
+            blue: colorScale(blue)
+        )
+    }
 }

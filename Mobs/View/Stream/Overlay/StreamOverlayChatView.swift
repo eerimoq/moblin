@@ -4,21 +4,45 @@ import SwiftUI
 struct LineView: View {
     var user: String
     var message: String
-    var fontSize: Float
+    var chat: SettingsChat
+
+    private func backgroundColor() -> Color {
+        if chat.backgroundColorEnabled {
+            return chat.backgroundColor.color().opacity(0.6)
+        } else {
+            return .clear
+        }
+    }
+
+    private func shadowColor() -> Color {
+        if chat.shadowColorEnabled {
+            return chat.shadowColor.color()
+        } else {
+            return .clear
+        }
+    }
 
     var body: some View {
-        HStack {
+        HStack(alignment: .top, spacing: 0) {
             Text(user)
-                .frame(width: min(70 * CGFloat(fontSize) / 13, 100), alignment: .leading)
+                .foregroundColor(chat.usernameColor.color())
                 .lineLimit(1)
                 .padding([.leading], 5)
+                .padding([.trailing], 0)
+                .bold(chat.bold)
+                .shadow(color: shadowColor(), radius: 0, x: 1.5, y: 1.5)
+            Text(": ")
+                .bold(chat.bold)
+                .shadow(color: shadowColor(), radius: 0, x: 1.5, y: 1.5)
             Text(message)
+                .foregroundColor(chat.messageColor.color())
+                .bold(chat.bold)
                 .lineLimit(2)
                 .padding([.trailing], 5)
+                .shadow(color: shadowColor(), radius: 0, x: 1.5, y: 1.5)
         }
-        .padding(0)
-        .font(.system(size: CGFloat(fontSize)))
-        .background(Color(white: 0, opacity: 0.6))
+        .font(.system(size: CGFloat(chat.fontSize)))
+        .background(backgroundColor())
         .foregroundColor(.white)
         .cornerRadius(5)
     }
@@ -61,7 +85,7 @@ struct StreamOverlayChatView: View {
                         LineView(
                             user: post.user,
                             message: post.message,
-                            fontSize: model.database.chat!.fontSize
+                            chat: model.database.chat!
                         )
                     }
                 }

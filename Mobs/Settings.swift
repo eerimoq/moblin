@@ -360,8 +360,28 @@ enum SettingsVideoStabilizationMode: String, Codable, CaseIterable {
 
 var videoStabilizationModes = SettingsVideoStabilizationMode.allCases.map { $0.rawValue }
 
+class RgbColor: Codable {
+    var red: Int = 0
+    var green: Int = 0
+    var blue: Int = 0
+
+    init(red: Int, green: Int, blue: Int) {
+        self.red = red
+        self.green = green
+        self.blue = blue
+    }
+}
+
 class SettingsChat: Codable {
     var fontSize: Float = 17.0
+    var usernameColor: RgbColor = .init(red: 255, green: 163, blue: 0)
+    var messageColor: RgbColor = .init(red: 255, green: 255, blue: 255)
+    var backgroundColor: RgbColor = .init(red: 0, green: 0, blue: 0)
+    var backgroundColorEnabled: Bool = true
+    var shadowColor: RgbColor = .init(red: 0, green: 0, blue: 0)
+    var shadowColorEnabled: Bool = false
+    var alignedMessages: Bool = false
+    var bold: Bool = true
 }
 
 class Database: Codable {
