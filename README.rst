@@ -123,6 +123,8 @@ ToDo
 Ideas/plan
 ==========
 
+- Audio filters. For example volume limiter.
+
 - Use external mic.
 
 - Battery level as percentage.

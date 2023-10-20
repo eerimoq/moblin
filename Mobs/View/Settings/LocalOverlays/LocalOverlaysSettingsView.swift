@@ -37,7 +37,10 @@ struct LocalOverlaysSettingsView: View {
                 }))
             }
             Section("Top right") {
-                NavigationLink(destination: LocalOverlaysAudioLevelSettingsView(model: model, toolbar: toolbar)) {
+                NavigationLink(destination: LocalOverlaysAudioLevelSettingsView(
+                    model: model,
+                    toolbar: toolbar
+                )) {
                     Toggle("Audio level", isOn: Binding(get: {
                         show.audioLevel!
                     }, set: { value in

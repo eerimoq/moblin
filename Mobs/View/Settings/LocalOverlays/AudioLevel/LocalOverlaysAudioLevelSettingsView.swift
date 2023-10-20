@@ -11,12 +11,12 @@ struct LocalOverlaysAudioLevelSettingsView: View {
         self.model = model
         self.toolbar = toolbar
         if model.database.show.audioBar! {
-            self.meterType = "Bar"
+            meterType = "Bar"
         } else {
-            self.meterType = "Decibel"
+            meterType = "Decibel"
         }
     }
-    
+
     var body: some View {
         Form {
             Section("Type") {

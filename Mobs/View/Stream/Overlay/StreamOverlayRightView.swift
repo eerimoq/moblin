@@ -19,9 +19,9 @@ struct AudioLevelView: View {
             return bar
         }
     }
-    
+
     private func color() -> Color {
-         if level > -8 {
+        if level > -8 {
             return .red
         } else if level > -18 {
             return .yellow
@@ -29,7 +29,7 @@ struct AudioLevelView: View {
             return .white
         }
     }
-    
+
     var body: some View {
         HStack(spacing: 1) {
             Text(text())
