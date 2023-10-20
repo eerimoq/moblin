@@ -381,7 +381,7 @@ class SettingsChat: Codable {
     var shadowColor: RgbColor = .init(red: 0, green: 0, blue: 0)
     var shadowColorEnabled: Bool = false
     var alignedMessages: Bool = false
-    var bold: Bool = true
+    var bold: Bool = false
 }
 
 class Database: Codable {
