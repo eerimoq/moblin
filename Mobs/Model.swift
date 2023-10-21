@@ -1217,9 +1217,14 @@ final class Model: ObservableObject {
             makeErrorToast(title: "Tap to focus not supported for this camera")
             return
         }
+        var focusPointOfInterest = focusPoint
+        if getOrientation() == .landscapeRight {
+            focusPointOfInterest.x = 1 - focusPoint.x
+            focusPointOfInterest.y = 1 - focusPoint.y
+        }
         do {
             try device.lockForConfiguration()
-            device.focusPointOfInterest = focusPoint
+            device.focusPointOfInterest = focusPointOfInterest
             device.focusMode = .autoFocus
             // device.exposurePointOfInterest = focusPoint
             // device.exposureMode = .autoExpose
