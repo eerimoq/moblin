@@ -1,6 +1,7 @@
 import AlertToast
 import Collections
 import Combine
+import CoreMotion
 import HaishinKit
 import Network
 import PhotosUI
@@ -101,6 +102,8 @@ final class Model: ObservableObject {
     private var backZoomLevel = 1.0
     private var frontZoomLevel = 1.0
     var cameraPosition: AVCaptureDevice.Position?
+    private let motionManager = CMMotionManager()
+    private var manualFocusAttitude: CMAttitude?
     var database: Database {
         settings.database
     }
@@ -1230,6 +1233,7 @@ final class Model: ObservableObject {
             // device.exposureMode = .autoExpose
             device.unlockForConfiguration()
             manualFocusPoint = focusPoint
+            startMotionDetection()
         } catch let error as NSError {
             logger.error("while locking device for focusPointOfInterest: \(error)")
         }
@@ -1239,6 +1243,7 @@ final class Model: ObservableObject {
         if manualFocusPoint == nil {
             return
         }
+        stopMotionDetection()
         guard
             let device = cameraDevice, device.isFocusPointOfInterestSupported
         else {
@@ -1253,10 +1258,35 @@ final class Model: ObservableObject {
             // device.exposurePointOfInterest = CGPoint(x: 0.5, y: 0.5)
             // device.exposureMode = .continuousAutoExposure
             device.unlockForConfiguration()
-            makeToast(title: "Auto focus")
             manualFocusPoint = nil
         } catch let error as NSError {
             logger.error("while locking device for focusPointOfInterest: \(error)")
         }
+    }
+
+    private func startMotionDetection() {
+        motionManager.stopDeviceMotionUpdates()
+        manualFocusAttitude = nil
+        motionManager.deviceMotionUpdateInterval = 0.2
+        motionManager.startDeviceMotionUpdates(to: OperationQueue.main) { data, _ in
+            guard let data else {
+                return
+            }
+            let attitude = data.attitude
+            if self.manualFocusAttitude == nil {
+                self.manualFocusAttitude = attitude
+            }
+            if diffAngles(attitude.pitch, self.manualFocusAttitude!.pitch) > 10 {
+                self.setAutoFocus()
+            } else if diffAngles(attitude.roll, self.manualFocusAttitude!.roll) > 10 {
+                self.setAutoFocus()
+            } else if diffAngles(attitude.yaw, self.manualFocusAttitude!.yaw) > 10 {
+                self.setAutoFocus()
+            }
+        }
+    }
+
+    private func stopMotionDetection() {
+        motionManager.stopDeviceMotionUpdates()
     }
 }

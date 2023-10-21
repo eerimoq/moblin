@@ -371,3 +371,12 @@ func getOrientation() -> UIDeviceOrientation {
         return .unknown
     }
 }
+
+func radiansToDegrees(_ number: Double) -> Int {
+    return Int(number * 180 / .pi)
+}
+
+func diffAngles(_ one: Double, _ two: Double) -> Int {
+    let diff = abs(radiansToDegrees(one - two))
+    return min(diff, 360 - diff)
+}
