@@ -58,7 +58,7 @@ struct StreamSettingsView: View {
                 toolbar: toolbar,
                 stream: stream
             )) {
-                Text("SRT & SRTLA")
+                Text("SRT(LA)")
             }
         }
         .navigationTitle("Stream")

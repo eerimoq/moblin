@@ -33,9 +33,22 @@ struct StreamSrtSettingsView: View {
                 )) {
                     TextItemView(name: "Latency", value: String(stream.srt!.latency))
                 }
-            }
+                Toggle("Adaptive bitrate*", isOn: Binding(get: {
+                    stream.adaptiveBitrate!
+                }, set: { value in
+                    stream.adaptiveBitrate = value
+                    model.store()
+                    if stream.enabled {
+                        model.setAdaptiveBitrate(stream: stream)
+                    }
+                }))
+            } footer: {
+                Text(
+                    "* Adaptive bitrate is experimental and does not work very well."
+                )
+             }
         }
-        .navigationTitle("SRT & SRTLA")
+        .navigationTitle("SRT(LA)")
         .toolbar {
             toolbar
         }
