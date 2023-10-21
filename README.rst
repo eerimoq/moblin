@@ -125,6 +125,10 @@ ToDo
   background mode. Looks like there is two sessions if changing stream
   from RTMP to SRT. Should only be one.
 
+- Improve adaptive bitrate algorithm.
+
+- Rework audio level colors.
+
 Ideas/plan
 ==========
 
