@@ -31,7 +31,7 @@ Features
 - SRTLA.
 
   - Can use one cellular, one WiFi and one Ethernet connection
-    simultaneously.
+    simultaneously. Often called bonding.
 
   - Upload statistics per active connection.
 
