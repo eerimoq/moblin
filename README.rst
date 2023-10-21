@@ -134,6 +134,8 @@ ToDo
 Ideas/plan
 ==========
 
+- Better TV emotes in chat.
+
 - Audio filters. For example volume limiter.
 
 - Use external mic.
