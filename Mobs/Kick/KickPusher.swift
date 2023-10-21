@@ -90,7 +90,11 @@ final class KickPusher: NSObject {
     private func handleChatMessageEvent(data: String) throws {
         let message = try decodeChatMessage(data: data)
         let messageNoEmote = removeEmote(message: message.content)
-        model.appendChatMessage(user: message.sender.username, message: messageNoEmote)
+        model.appendChatMessage(
+            user: message.sender.username,
+            userColor: nil,
+            message: messageNoEmote
+        )
     }
 
     private func handleStringMessage(message: String) {

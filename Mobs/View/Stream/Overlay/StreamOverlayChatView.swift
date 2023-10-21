@@ -3,8 +3,22 @@ import SwiftUI
 
 struct LineView: View {
     var user: String
+    var userColor: String?
     var message: String
     var chat: SettingsChat
+
+    private func usernameColor() -> Color {
+        if let userColor, let colorNumber = Int(userColor.suffix(6), radix: 16) {
+            let color = RgbColor(
+                red: (colorNumber >> 16) & 0xFF,
+                green: (colorNumber >> 8) & 0xFF,
+                blue: colorNumber & 0xFF
+            )
+            return color.color()
+        } else {
+            return chat.usernameColor.color()
+        }
+    }
 
     private func backgroundColor() -> Color {
         if chat.backgroundColorEnabled {
@@ -25,7 +39,7 @@ struct LineView: View {
     var body: some View {
         HStack(alignment: .top, spacing: 0) {
             Text(user)
-                .foregroundColor(chat.usernameColor.color())
+                .foregroundColor(usernameColor())
                 .lineLimit(1)
                 .padding([.leading], 5)
                 .padding([.trailing], 0)
@@ -84,6 +98,7 @@ struct StreamOverlayChatView: View {
                     ForEach(model.chatPosts, id: \.self) { post in
                         LineView(
                             user: post.user,
+                            userColor: post.userColor,
                             message: post.message,
                             chat: model.database.chat!
                         )

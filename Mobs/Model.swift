@@ -770,13 +770,14 @@ final class Model: ObservableObject {
         reloadKickPusher()
     }
 
-    func appendChatMessage(user: String, message: String) {
+    func appendChatMessage(user: String, userColor: String?, message: String) {
         if chatPosts.count > 6 {
             chatPosts.removeFirst()
         }
         let post = Post(
             id: chatPostId,
             user: user,
+            userColor: userColor,
             message: message
         )
         chatPosts.append(post)

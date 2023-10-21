@@ -3,6 +3,7 @@ import TwitchChat
 struct Post: Hashable {
     var id: Int
     var user: String
+    var userColor: String?
     var message: String
 }
 
@@ -37,6 +38,7 @@ final class TwitchChatMobs {
                         await MainActor.run {
                             self.model.appendChatMessage(
                                 user: message.sender,
+                                userColor: message.senderColor,
                                 message: message.text
                             )
                         }
