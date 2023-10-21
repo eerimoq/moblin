@@ -4,7 +4,7 @@ struct Sender: Decodable {
     var username: String
 }
 
-struct ChatMessage: Decodable {
+private struct ChatMessage: Decodable {
     var content: String
     var sender: Sender
 }
@@ -26,7 +26,7 @@ func decodeEvent(message: String) throws -> (String, String) {
     throw "Failed to get message event type"
 }
 
-func decodeChatMessage(data: String) throws -> ChatMessage {
+private func decodeChatMessage(data: String) throws -> ChatMessage {
     return try JSONDecoder().decode(
         ChatMessage.self,
         from: data.data(using: String.Encoding.utf8)!
@@ -93,7 +93,7 @@ final class KickPusher: NSObject {
         model.appendChatMessage(
             user: message.sender.username,
             userColor: nil,
-            message: messageNoEmote
+            segments: [ChatPostSegment(text: messageNoEmote, image: nil)]
         )
     }
 

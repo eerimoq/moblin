@@ -11,6 +11,25 @@ import VideoToolbox
 
 let noValue = ""
 
+struct ChatMessageEmote: Identifiable {
+    var id = UUID()
+    var image: UIImage
+    var range: ClosedRange<Int>
+}
+
+struct ChatPostSegment: Identifiable {
+    var id = UUID()
+    var text: String?
+    var image: UIImage?
+}
+
+struct ChatPost: Identifiable {
+    var id: Int
+    var user: String
+    var userColor: String?
+    var segments: [ChatPostSegment]
+}
+
 class ButtonState {
     var isOn: Bool
     var button: SettingsButton
@@ -62,7 +81,7 @@ final class Model: ObservableObject {
     private var twitchPubSub: TwitchPubSub?
     private var kickPusher: KickPusher?
     private var chatPostId = 0
-    @Published var chatPosts: Deque<Post> = []
+    @Published var chatPosts: Deque<ChatPost> = []
     var numberOfChatPosts = 0
     @Published var chatPostsPerSecond = 0.0
     @Published var numberOfViewers = noValue
@@ -778,15 +797,19 @@ final class Model: ObservableObject {
         reloadKickPusher()
     }
 
-    func appendChatMessage(user: String, userColor: String?, message: String) {
+    func appendChatMessage(
+        user: String,
+        userColor: String?,
+        segments: [ChatPostSegment]
+    ) {
         if chatPosts.count > 6 {
             chatPosts.removeFirst()
         }
-        let post = Post(
+        let post = ChatPost(
             id: chatPostId,
             user: user,
             userColor: userColor,
-            message: message
+            segments: segments
         )
         chatPosts.append(post)
         numberOfChatPosts += 1

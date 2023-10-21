@@ -2,13 +2,14 @@ import Collections
 import SwiftUI
 
 struct LineView: View {
-    var user: String
-    var userColor: String?
-    var message: String
+    var post: ChatPost
     var chat: SettingsChat
 
     private func usernameColor() -> Color {
-        if let userColor, let colorNumber = Int(userColor.suffix(6), radix: 16) {
+        if let userColor = post.userColor, let colorNumber = Int(
+            userColor.suffix(6),
+            radix: 16
+        ) {
             let color = RgbColor(
                 red: (colorNumber >> 16) & 0xFF,
                 green: (colorNumber >> 8) & 0xFF,
@@ -37,23 +38,32 @@ struct LineView: View {
     }
 
     var body: some View {
-        HStack(alignment: .top, spacing: 0) {
-            Text(user)
+        HStack(alignment: .center, spacing: 0) {
+            Text(post.user)
                 .foregroundColor(usernameColor())
                 .lineLimit(1)
                 .padding([.leading], 5)
                 .padding([.trailing], 0)
                 .bold(chat.bold)
                 .shadow(color: shadowColor(), radius: 0, x: 1.5, y: 1.5)
-            Text(": ")
+            Text(":")
                 .bold(chat.bold)
                 .shadow(color: shadowColor(), radius: 0, x: 1.5, y: 1.5)
-            Text(message)
-                .foregroundColor(chat.messageColor.color())
-                .bold(chat.bold)
-                .lineLimit(2)
-                .padding([.trailing], 5)
-                .shadow(color: shadowColor(), radius: 0, x: 1.5, y: 1.5)
+            ForEach(post.segments, id: \.id) { segment in
+                Text(" ")
+                if let text = segment.text {
+                    Text(text)
+                        .foregroundColor(chat.messageColor.color())
+                        .bold(chat.bold)
+                        .shadow(color: shadowColor(), radius: 0, x: 1.5, y: 1.5)
+                }
+                if let image = segment.image {
+                    Image(uiImage: image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: CGFloat(chat.fontSize * 1.7))
+                }
+            }
         }
         .font(.system(size: CGFloat(chat.fontSize)))
         .background(backgroundColor())
@@ -95,13 +105,8 @@ struct StreamOverlayChatView: View {
                     color: messageColor()
                 )
                 VStack(alignment: .leading, spacing: 1) {
-                    ForEach(model.chatPosts, id: \.self) { post in
-                        LineView(
-                            user: post.user,
-                            userColor: post.userColor,
-                            message: post.message,
-                            chat: model.database.chat!
-                        )
+                    ForEach(model.chatPosts) { post in
+                        LineView(post: post, chat: model.database.chat!)
                     }
                 }
             }

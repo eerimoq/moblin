@@ -355,7 +355,7 @@ extension RgbColor {
 }
 
 func getOrientation() -> UIDeviceOrientation {
-    var orientation = UIDevice.current.orientation
+    let orientation = UIDevice.current.orientation
     if orientation != .unknown {
         return orientation
     }
