@@ -127,8 +127,6 @@ ToDo
 
 - Improve adaptive bitrate algorithm.
 
-- Rework audio level colors.
-
 Ideas/plan
 ==========
 

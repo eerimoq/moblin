@@ -46,7 +46,7 @@ struct StreamSrtSettingsView: View {
                 Text(
                     "* Adaptive bitrate is experimental and does not work very well."
                 )
-             }
+            }
         }
         .navigationTitle("SRT(LA)")
         .toolbar {

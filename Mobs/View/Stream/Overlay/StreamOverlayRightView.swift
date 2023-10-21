@@ -1,48 +1,78 @@
 import SwiftUI
 
+private let barsPerDb: Float = 0.3
+
 struct AudioLevelView: View {
     var showBar: Bool
     var level: Float
 
-    private func text() -> String {
-        if level.isNaN {
-            return "Muted"
-        } else if !showBar {
-            return "\(Int(level)) dB"
-        } else {
-            let level = (max(level, -60) + 60) / 60
-            let numberOfBars = min(Int(level * 19) + 1, 19)
-            var bar = ""
-            for _ in stride(from: 0, to: numberOfBars, by: 1) {
-                bar.append("|")
-            }
-            return bar
+    private func bars(count: Float) -> String {
+        var bar = ""
+        for _ in stride(from: 0, to: count.rounded(.toNearestOrAwayFromZero), by: 1) {
+            bar.append("|")
         }
+        return bar
     }
 
-    private func color() -> Color {
-        if level > -8 {
-            return .red
-        } else if level > -18 {
-            return .yellow
-        } else {
-            return .white
+    private func redText() -> String {
+        guard level > -8 else {
+            return ""
         }
+        let db = level + 8
+        return bars(count: db * barsPerDb)
+    }
+
+    private func yellowText() -> String {
+        guard level > -18 else {
+            return ""
+        }
+        let db = min(level + 18, 10)
+        return bars(count: db * barsPerDb)
+    }
+
+    private func greenText() -> String {
+        let db = min(level + 60, 42)
+        return bars(count: db * barsPerDb)
     }
 
     var body: some View {
         HStack(spacing: 1) {
-            Text(text())
-                .foregroundColor(.white)
-                .padding([.leading, .trailing], 2)
-                .background(Color(white: 0, opacity: 0.6))
-                .cornerRadius(5)
-                .font(.system(size: 13))
+            if !level.isNaN {
+                if showBar {
+                    HStack(spacing: 0) {
+                        Text(redText())
+                            .foregroundColor(.red)
+                        Text(yellowText())
+                            .foregroundColor(.yellow)
+                        Text(greenText())
+                            .foregroundColor(.green)
+                    }
+                    .padding([.leading, .trailing], 2)
+                    .padding([.bottom], 2)
+                    .background(Color(white: 0, opacity: 0.6))
+                    .cornerRadius(5)
+                    .font(.system(size: 13))
+                    .bold()
+                } else {
+                    Text("\(Int(level)) dB")
+                        .padding([.leading, .trailing], 2)
+                        .background(Color(white: 0, opacity: 0.6))
+                        .cornerRadius(5)
+                        .font(.system(size: 13))
+                }
+            } else {
+                Text("Muted")
+                    .padding([.leading, .trailing], 2)
+                    .background(Color(white: 0, opacity: 0.6))
+                    .cornerRadius(5)
+                    .font(.system(size: 13))
+            }
             Image(systemName: "waveform")
                 .frame(width: 17, height: 17)
                 .font(.system(size: 13))
                 .padding([.leading, .trailing], 2)
-                .foregroundColor(color())
+                .padding([.bottom], showBar ? 2 : 0)
+                .foregroundColor(.white)
                 .background(Color(white: 0, opacity: 0.6))
                 .cornerRadius(5)
         }
