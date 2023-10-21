@@ -345,7 +345,9 @@ final class Model: ObservableObject {
             self.media.updateSrtSpeed()
             self.updateSpeed()
             self.updateTwitchPubSub(now: now)
-            self.updateAudioLevel()
+            if !self.database.show.audioBar! {
+                self.updateAudioLevel()
+            }
             self.updateSrtlaConnectionStatistics()
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
@@ -354,6 +356,9 @@ final class Model: ObservableObject {
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
             self.updateSrtDebugLines()
+            if self.database.show.audioBar! {
+                self.updateAudioLevel()
+            }
         })
         takeBrowserSnapshots()
     }
