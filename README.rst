@@ -95,6 +95,8 @@ Features
 
 - Chat styling (colors, background, shadow, bold).
 
+  - Twitch emotes. Only images. Not GIF or other animation.
+
 - Cosmetics.
 
   - Select MOBS icon to show in app and on home screen.
@@ -126,6 +128,8 @@ ToDo
 - Sometimes video freezes when changing settings or when enter/exit
   background mode. Looks like there is two sessions if changing stream
   from RTMP to SRT. Should only be one.
+
+- Better zoom preset defaults. They should depend on phone model.
 
 Ideas/plan
 ==========
@@ -186,8 +190,6 @@ Ideas/plan
   Twitch.
 
 - Audio only when bad connection.
-
-- Emoji chat.
 
 - Show two cameras at the same time.
 
