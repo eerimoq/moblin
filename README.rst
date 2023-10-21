@@ -111,7 +111,10 @@ Features
 
 - Configure maximum screen FPS (to save energy).
 
-- Landscape stream only.
+- Landscape only.
+
+  - Both 0 and 180 degrees orientation. Video always with gravity down
+    (never upside down).
 
 ToDo
 ====
