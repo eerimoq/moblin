@@ -121,11 +121,11 @@ ToDo
 
 - Improve the browser widget.
 
+- Improve adaptive bitrate algorithm.
+
 - Sometimes video freezes when changing settings or when enter/exit
   background mode. Looks like there is two sessions if changing stream
   from RTMP to SRT. Should only be one.
-
-- Improve adaptive bitrate algorithm.
 
 Ideas/plan
 ==========
