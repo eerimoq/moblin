@@ -93,6 +93,8 @@ Features
 
   - Triple. Show center of image three times. Experimental.
 
+- Chat styling (colors, background, shadow, bold).
+
 - Cosmetics.
 
   - Select MOBS icon to show in app and on home screen.
