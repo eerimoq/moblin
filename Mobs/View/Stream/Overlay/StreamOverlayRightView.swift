@@ -1,6 +1,9 @@
 import SwiftUI
 
 private let barsPerDb: Float = 0.3
+private let redThresholdDb: Float = -8.5
+private let yellowThresholdDb: Float = -20
+private let zeroThresholdDb: Float = -60
 
 struct AudioLevelView: View {
     var showBar: Bool
@@ -15,23 +18,23 @@ struct AudioLevelView: View {
     }
 
     private func redText() -> String {
-        guard level > -8 else {
+        guard level > redThresholdDb else {
             return ""
         }
-        let db = level + 8
+        let db = level - redThresholdDb
         return bars(count: db * barsPerDb)
     }
 
     private func yellowText() -> String {
-        guard level > -18 else {
+        guard level > yellowThresholdDb else {
             return ""
         }
-        let db = min(level + 18, 10)
+        let db = min(level - yellowThresholdDb, redThresholdDb - yellowThresholdDb)
         return bars(count: db * barsPerDb)
     }
 
     private func greenText() -> String {
-        let db = min(level + 60, 42)
+        let db = min(level - zeroThresholdDb, yellowThresholdDb - zeroThresholdDb)
         return bars(count: db * barsPerDb)
     }
 
