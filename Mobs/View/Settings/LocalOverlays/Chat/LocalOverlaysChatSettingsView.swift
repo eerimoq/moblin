@@ -136,7 +136,7 @@ struct LocalOverlaysChatSettingsView: View {
 
     var body: some View {
         Form {
-            Section("General") {
+            Section {
                 NavigationLink(destination: TextEditView(
                     toolbar: toolbar,
                     title: "Font size",
@@ -172,6 +172,10 @@ struct LocalOverlaysChatSettingsView: View {
                 })) {
                     Text("Animated emotes")
                 }
+            } header: {
+                Text("General")
+            } footer: {
+                Text("Animated emotes are fairly CPU intensive.")
             }
             Section("Colors") {
                 NavigationLink(destination: ColorEditView(
