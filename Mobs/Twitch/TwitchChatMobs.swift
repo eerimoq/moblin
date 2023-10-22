@@ -88,11 +88,11 @@ final class TwitchChatMobs {
         return segments
     }
 
-    func start(channelName: String) {
+    func start(channelName: String, channelId: String) {
         task = Task.init {
             var reconnectTime = firstReconnectTime
             logger.info("twitch: chat: \(channelName): Connecting")
-            let emotesManager = await Emotes()
+            let emotesManager = await Emotes(channelId: channelId)
             while true {
                 twitchChat = TwitchChat(
                     token: "SCHMOOPIIE",

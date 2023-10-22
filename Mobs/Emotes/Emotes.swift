@@ -16,8 +16,7 @@ class Emote {
 class Emotes {
     private let emotes: [String: Emote]
 
-    init() async {
-        let channelId = "159498717"
+    init(channelId: String) async {
         emotes = await fetchBttvEmotes(channelId: channelId)
             .merging(await fetchFfzEmotes(channelId: channelId)) { $1 }
             .merging(await fetchSeventvEmotes(channelId: channelId)) { $1 }

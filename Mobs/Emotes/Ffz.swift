@@ -38,6 +38,9 @@ private func fetchGlobalEmotes() async -> [String: Emote] {
 }
 
 private func fetchChannelEmotes(channelId: String) async -> [String: Emote] {
+    if channelId.isEmpty {
+        return [:]
+    }
     return await fetchEmotes(
         url: "https://api.betterttv.net/3/cached/frankerfacez/users/twitch/\(channelId)",
         message: "channel"

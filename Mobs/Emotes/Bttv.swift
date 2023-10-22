@@ -43,6 +43,9 @@ private func fetchGlobalEmotes() async -> [String: Emote] {
 }
 
 private func fetchChannelEmotes(channelId: String) async -> [String: Emote] {
+    if channelId.isEmpty {
+        return [:]
+    }
     var emotes: [String: Emote] = [:]
     do {
         let url =
