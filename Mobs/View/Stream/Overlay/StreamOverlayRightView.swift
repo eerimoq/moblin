@@ -63,6 +63,7 @@ struct AudioLevelView: View {
             } else {
                 Text("Muted")
                     .padding([.leading, .trailing], 2)
+                    .foregroundColor(.white)
                     .background(Color(white: 0, opacity: 0.6))
                     .cornerRadius(5)
                     .font(.system(size: 13))
