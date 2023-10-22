@@ -10,7 +10,7 @@ private func getEmotes(from message: ChatMessage) async -> [ChatMessageEmote] {
             if let emoteImage = try emotesCache[emote.imageURL.path] {
                 emotes.append(ChatMessageEmote(image: emoteImage, range: emote.range))
             } else {
-                let (data, _) = try await URLSession.shared.data(from: emote.imageURL)
+                let data = try await httpGet(from: emote.imageURL)
                 guard let emoteImage = UIImage(data: data) else {
                     throw "Not an image"
                 }
@@ -38,8 +38,8 @@ final class TwitchChatMobs {
         return connected
     }
 
-    private func createSegments(message: ChatMessage,
-                                emotes: [ChatMessageEmote]) -> [ChatPostSegment]
+    private func createTwitchSegments(message: ChatMessage,
+                                      emotes: [ChatMessageEmote]) -> [ChatPostSegment]
     {
         var segments: [ChatPostSegment] = []
         var startIndex = message.text.startIndex
@@ -72,10 +72,27 @@ final class TwitchChatMobs {
         return segments
     }
 
+    private func createSegments(message: ChatMessage,
+                                emotes: [ChatMessageEmote],
+                                emotesManager: Emotes) async -> [ChatPostSegment]
+    {
+        var segments: [ChatPostSegment] = []
+        let twitchSegments = createTwitchSegments(message: message, emotes: emotes)
+        for var segment in twitchSegments {
+            if let text = segment.text {
+                segments += await emotesManager.createSegments(text: text)
+                segment.text = nil
+            }
+            segments.append(segment)
+        }
+        return segments
+    }
+
     func start(channelName: String) {
         task = Task.init {
             var reconnectTime = firstReconnectTime
             logger.info("twitch: chat: \(channelName): Connecting")
+            let emotesManager = await Emotes()
             while true {
                 twitchChat = TwitchChat(
                     token: "SCHMOOPIIE",
@@ -87,11 +104,16 @@ final class TwitchChatMobs {
                     for try await message in self.twitchChat.messages {
                         let emotes = await getEmotes(from: message)
                         reconnectTime = firstReconnectTime
+                        let segments = await createSegments(
+                            message: message,
+                            emotes: emotes,
+                            emotesManager: emotesManager
+                        )
                         await MainActor.run {
                             self.model.appendChatMessage(
                                 user: message.sender,
                                 userColor: message.senderColor,
-                                segments: createSegments(message: message, emotes: emotes)
+                                segments: segments
                             )
                         }
                     }

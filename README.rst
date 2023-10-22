@@ -95,7 +95,9 @@ Features
 
 - Chat styling (colors, background, shadow, bold).
 
-  - Twitch emotes. Only images. Not GIF or other animation.
+  - Twitch, BTTV, FFZ and 7TV emotes.
+
+    - Only images. Not GIF or other animation.
 
 - Cosmetics.
 
@@ -131,10 +133,10 @@ ToDo
 
 - Better zoom preset defaults. They should depend on phone model.
 
+- Take picture.
+
 Ideas/plan
 ==========
-
-- Better TV emotes in chat.
 
 - Audio filters. For example volume limiter.
 

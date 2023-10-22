@@ -380,3 +380,27 @@ func diffAngles(_ one: Double, _ two: Double) -> Int {
     let diff = abs(radiansToDegrees(one - two))
     return min(diff, 360 - diff)
 }
+
+extension URLResponse {
+    var http: HTTPURLResponse? {
+        return self as? HTTPURLResponse
+    }
+}
+
+extension HTTPURLResponse {
+    var isSuccessful: Bool {
+        return 200 ... 299 ~= statusCode
+    }
+}
+
+func httpGet(from: URL) async throws -> Data {
+    let (data, response) = try await URLSession.shared.data(from: from)
+    if let response = response.http {
+        if !response.isSuccessful {
+            throw "HTTP GET failed with code \(response.statusCode)"
+        }
+    } else {
+        throw "Not an HTTP response"
+    }
+    return data
+}

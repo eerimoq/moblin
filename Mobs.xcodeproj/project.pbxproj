@@ -95,6 +95,10 @@
 		03B374072AA0EA650028DDD5 /* MovieEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374062AA0EA650028DDD5 /* MovieEffect.swift */; };
 		03B374092AA0EA700028DDD5 /* ImageEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374082AA0EA700028DDD5 /* ImageEffect.swift */; };
 		03B374132AA277570028DDD5 /* Srtla.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374122AA277570028DDD5 /* Srtla.swift */; };
+		03BC115D2AE4BD7B00C38FC4 /* Bttv.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC115C2AE4BD7B00C38FC4 /* Bttv.swift */; };
+		03BC11602AE4BD9200C38FC4 /* Ffz.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC115F2AE4BD9200C38FC4 /* Ffz.swift */; };
+		03BC11622AE4BDA200C38FC4 /* Seventv.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC11612AE4BDA200C38FC4 /* Seventv.swift */; };
+		03BC11642AE4BEC400C38FC4 /* Emotes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC11632AE4BEC400C38FC4 /* Emotes.swift */; };
 		03CC5F892AD060DB0019CBA5 /* WidgetBrowserUrlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CC5F882AD060DB0019CBA5 /* WidgetBrowserUrlSettingsView.swift */; };
 		03E95AC62ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */; };
 		03E95ADF2ADB7A2E00DAE2DF /* MaximumScreenFpsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95ADE2ADB7A2E00DAE2DF /* MaximumScreenFpsSettingsView.swift */; };
@@ -193,6 +197,10 @@
 		03B374062AA0EA650028DDD5 /* MovieEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieEffect.swift; sourceTree = "<group>"; };
 		03B374082AA0EA700028DDD5 /* ImageEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEffect.swift; sourceTree = "<group>"; };
 		03B374122AA277570028DDD5 /* Srtla.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Srtla.swift; sourceTree = "<group>"; };
+		03BC115C2AE4BD7B00C38FC4 /* Bttv.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bttv.swift; sourceTree = "<group>"; };
+		03BC115F2AE4BD9200C38FC4 /* Ffz.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ffz.swift; sourceTree = "<group>"; };
+		03BC11612AE4BDA200C38FC4 /* Seventv.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Seventv.swift; sourceTree = "<group>"; };
+		03BC11632AE4BEC400C38FC4 /* Emotes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Emotes.swift; sourceTree = "<group>"; };
 		03CC5F882AD060DB0019CBA5 /* WidgetBrowserUrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBrowserUrlSettingsView.swift; sourceTree = "<group>"; };
 		03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomSwitchToSettingsView.swift; sourceTree = "<group>"; };
 		03E95ADE2ADB7A2E00DAE2DF /* MaximumScreenFpsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaximumScreenFpsSettingsView.swift; sourceTree = "<group>"; };
@@ -376,6 +384,7 @@
 		035E9E352A9A02D6009D4F5A /* Mobs */ = {
 			isa = PBXGroup;
 			children = (
+				03BC115B2AE4BD6200C38FC4 /* Emotes */,
 				032BC5B22AD8E18000DEC883 /* Info.plist */,
 				036BE2CD2ABD4C960048F9C5 /* Kick */,
 				0379BB712AA4BFA500B718B6 /* Twitch */,
@@ -651,6 +660,17 @@
 			path = VideoEffects;
 			sourceTree = "<group>";
 		};
+		03BC115B2AE4BD6200C38FC4 /* Emotes */ = {
+			isa = PBXGroup;
+			children = (
+				03BC115C2AE4BD7B00C38FC4 /* Bttv.swift */,
+				03BC115F2AE4BD9200C38FC4 /* Ffz.swift */,
+				03BC11612AE4BDA200C38FC4 /* Seventv.swift */,
+				03BC11632AE4BEC400C38FC4 /* Emotes.swift */,
+			);
+			path = Emotes;
+			sourceTree = "<group>";
+		};
 		03E95ADD2ADB7A0D00DAE2DF /* MaxScreenVideoFps */ = {
 			isa = PBXGroup;
 			children = (
@@ -789,6 +809,7 @@
 				03B373F92A9EFB340028DDD5 /* BatteryView.swift in Sources */,
 				03E95AE42ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift in Sources */,
 				0379BB8A2AA83A8B00B718B6 /* StreamVideoFpsSettingsView.swift in Sources */,
+				03BC11622AE4BDA200C38FC4 /* Seventv.swift in Sources */,
 				03B373FD2A9F35EF0028DDD5 /* Utils.swift in Sources */,
 				035D371E2AB039C800045B92 /* StreamVideoCodecSettingsView.swift in Sources */,
 				0379BBA02AAD823900B718B6 /* StreamOverlayTextView.swift in Sources */,
@@ -809,6 +830,7 @@
 				03403DF62AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift in Sources */,
 				032A49BC2AC5DF3F00ED3916 /* ImportExportSettingsView.swift in Sources */,
 				03A9836E2A9A05F9008FF0DB /* Model.swift in Sources */,
+				03BC11642AE4BEC400C38FC4 /* Emotes.swift in Sources */,
 				03A983722A9A0659008FF0DB /* TwitchChatMobs.swift in Sources */,
 				0379BBA52AAD945D00B718B6 /* LocalOverlaysSettingsView.swift in Sources */,
 				0379BB762AA6345400B718B6 /* ButtonSettingsView.swift in Sources */,
@@ -817,6 +839,7 @@
 				0379BBAD2AAD964000B718B6 /* AboutSettingsView.swift in Sources */,
 				03F5A8DF2AD5DACB00F354D2 /* Srt.swift in Sources */,
 				036BE2CF2ABD4CA60048F9C5 /* KickPusher.swift in Sources */,
+				03BC11602AE4BD9200C38FC4 /* Ffz.swift in Sources */,
 				0315A37E2AA43DCC00295443 /* TextEditView.swift in Sources */,
 				035E9E372A9A02D6009D4F5A /* MobsApp.swift in Sources */,
 				031A2E112ADDDD7E005CE350 /* VideoStabilizationSettingsView.swift in Sources */,
@@ -843,6 +866,7 @@
 				03A983612A9A05D7008FF0DB /* StreamsSettingsView.swift in Sources */,
 				03A08B802AC368860018BA95 /* Media.swift in Sources */,
 				036333282AAE2E5100FF1231 /* ImageStorage.swift in Sources */,
+				03BC115D2AE4BD7B00C38FC4 /* Bttv.swift in Sources */,
 				0315A3702AA3771F00295443 /* SceneWidgetSettingsView.swift in Sources */,
 				0379BB9E2AAD81AA00B718B6 /* StreamOverlayRightView.swift in Sources */,
 				0379BB862AA8363E00B718B6 /* StreamVideoResolutionSettingsView.swift in Sources */,
