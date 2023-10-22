@@ -36,6 +36,7 @@ class Emotes {
                     emote.image = UIImage(data: data)
                 } catch {
                     logger.error("Failed to fetch emote")
+                    parts.append(word)
                 }
             }
             segments.append(ChatPostSegment(
