@@ -61,7 +61,7 @@ struct LineView: View {
                     Image(uiImage: image)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(height: CGFloat(chat.fontSize * 1.7))
+                        .frame(height: CGFloat(chat.fontSize * 2))
                 }
             }
         }
