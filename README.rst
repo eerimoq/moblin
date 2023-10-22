@@ -127,6 +127,10 @@ ToDo
 
 - Improve adaptive bitrate algorithm.
 
+- Chat preview when configuring it.
+
+- Rework chat configuration. More on single page.
+  
 Ideas/plan
 ==========
 
