@@ -127,14 +127,6 @@ ToDo
 
 - Improve adaptive bitrate algorithm.
 
-- Sometimes video freezes when changing settings or when enter/exit
-  background mode. Looks like there is two sessions if changing stream
-  from RTMP to SRT. Should only be one.
-
-- Better zoom preset defaults. They should depend on phone model.
-
-- Take picture.
-
 Ideas/plan
 ==========
 
@@ -145,6 +137,8 @@ Ideas/plan
 - Battery level as percentage.
 
 - Non-mirrored widgets locally when using front camera.
+
+- Take picture.
 
 - Optionally show black screen to save energy. Possible to turn off
   completely?
