@@ -1,4 +1,6 @@
 import SwiftUI
+import SDWebImageSwiftUI
+import SDWebImageWebPCoder
 
 @main
 struct MobsApp: App {
@@ -6,6 +8,8 @@ struct MobsApp: App {
     @ObservedObject static var model = Model()
 
     init() {
+        let WebPCoder = SDImageWebPCoder.shared
+        SDImageCodersManager.shared.addCoder(WebPCoder)
         MobsApp.model.setup()
     }
 

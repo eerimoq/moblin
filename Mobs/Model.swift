@@ -13,14 +13,14 @@ let noValue = ""
 
 struct ChatMessageEmote: Identifiable {
     var id = UUID()
-    var image: UIImage
+    var url: URL
     var range: ClosedRange<Int>
 }
 
 struct ChatPostSegment: Identifiable {
     var id = UUID()
     var text: String?
-    var image: UIImage?
+    var url: URL?
 }
 
 struct ChatPost: Identifiable {

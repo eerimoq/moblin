@@ -164,6 +164,14 @@ struct LocalOverlaysChatSettingsView: View {
                 })) {
                     Text("Bold message")
                 }
+                Toggle(isOn: Binding(get: {
+                    model.database.chat!.animatedEmotes!
+                }, set: { value in
+                    model.database.chat!.animatedEmotes = value
+                    model.store()
+                })) {
+                    Text("Animated emotes")
+                }
             }
             Section("Colors") {
                 NavigationLink(destination: ColorEditView(

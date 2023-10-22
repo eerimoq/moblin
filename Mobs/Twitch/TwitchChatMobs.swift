@@ -7,18 +7,9 @@ private func getEmotes(from message: ChatMessage) async -> [ChatMessageEmote] {
     var emotes: [ChatMessageEmote] = []
     for emote in message.emotes {
         do {
-            if let emoteImage = try emotesCache[emote.imageURL.path] {
-                emotes.append(ChatMessageEmote(image: emoteImage, range: emote.range))
-            } else {
-                let data = try await httpGet(from: emote.imageURL)
-                guard let emoteImage = UIImage(data: data) else {
-                    throw "Not an image"
-                }
-                try emotesCache[emote.imageURL.path] = emoteImage
-                emotes.append(ChatMessageEmote(image: emoteImage, range: emote.range))
-            }
+            emotes.append(ChatMessageEmote(url: try emote.imageURL, range: emote.range))
         } catch {
-            logger.warning("twitch: chat: Failed to download emote")
+            logger.warning("twitch: chat: Failed to get emote URL")
         }
     }
     return emotes
@@ -58,7 +49,7 @@ final class TwitchChatMobs {
             }
             segments.append(ChatPostSegment(
                 text: text,
-                image: emote.image
+                url: emote.url
             ))
             startIndex = message.text.index(
                 message.text.startIndex,

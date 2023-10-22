@@ -1,5 +1,6 @@
 import Collections
 import SwiftUI
+import SDWebImageSwiftUI
 
 struct LineView: View {
     var post: ChatPost
@@ -57,11 +58,22 @@ struct LineView: View {
                         .bold(chat.boldMessage!)
                         .shadow(color: shadowColor(), radius: 0, x: 1.5, y: 1.5)
                 }
-                if let image = segment.image {
-                    Image(uiImage: image)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: CGFloat(chat.fontSize * 2))
+                if let url = segment.url {
+                    if chat.animatedEmotes! {
+                        WebImage(url: url)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(height: CGFloat(chat.fontSize * 2))
+                    } else {
+                        AsyncImage(url: url) { image in
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                        } placeholder: {
+                            EmptyView()
+                        }
+                       .frame(height: CGFloat(chat.fontSize * 2))
+                    }
                 }
             }
         }

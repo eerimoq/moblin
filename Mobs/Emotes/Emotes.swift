@@ -30,18 +30,9 @@ class Emotes {
                 parts.append(word)
                 continue
             }
-            if emote.image == nil {
-                do {
-                    let data = try await httpGet(from: emote.url)
-                    emote.image = UIImage(data: data)
-                } catch {
-                    logger.error("Failed to fetch emote")
-                    parts.append(word)
-                }
-            }
             segments.append(ChatPostSegment(
                 text: parts.joined(separator: " "),
-                image: emote.image
+                url: emote.url
             ))
             parts.removeAll()
         }

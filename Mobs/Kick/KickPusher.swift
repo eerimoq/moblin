@@ -93,7 +93,7 @@ final class KickPusher: NSObject {
         model.appendChatMessage(
             user: message.sender.username,
             userColor: nil,
-            segments: [ChatPostSegment(text: messageNoEmote, image: nil)]
+            segments: [ChatPostSegment(text: messageNoEmote)]
         )
     }
 

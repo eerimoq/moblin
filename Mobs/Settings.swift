@@ -384,6 +384,7 @@ class SettingsChat: Codable {
     var boldUsername: Bool? = false
     var boldMessage: Bool? = false
     var bold: Bool = false
+    var animatedEmotes: Bool? = true
 }
 
 class Database: Codable {
@@ -849,6 +850,10 @@ final class Settings {
         }
         if realDatabase.chat!.boldMessage == nil {
             realDatabase.chat!.boldMessage = realDatabase.chat!.bold
+            store()
+        }
+        if realDatabase.chat!.animatedEmotes == nil {
+            realDatabase.chat!.animatedEmotes = true
             store()
         }
     }
