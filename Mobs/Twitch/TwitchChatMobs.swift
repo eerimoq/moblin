@@ -7,7 +7,7 @@ private func getEmotes(from message: ChatMessage) async -> [ChatMessageEmote] {
     var emotes: [ChatMessageEmote] = []
     for emote in message.emotes {
         do {
-            emotes.append(ChatMessageEmote(url: try emote.imageURL, range: emote.range))
+            try emotes.append(ChatMessageEmote(url: emote.imageURL, range: emote.range))
         } catch {
             logger.warning("twitch: chat: Failed to get emote URL")
         }

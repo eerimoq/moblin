@@ -754,7 +754,10 @@ final class Model: ObservableObject {
     func reloadTwitchChat() {
         twitchChat.stop()
         if stream.twitchChannelName != "" {
-            twitchChat.start(channelName: stream.twitchChannelName, channelId: stream.twitchChannelId)
+            twitchChat.start(
+                channelName: stream.twitchChannelName,
+                channelId: stream.twitchChannelId
+            )
         } else {
             logger.info("Twitch channel name not configured. No Twitch chat.")
         }

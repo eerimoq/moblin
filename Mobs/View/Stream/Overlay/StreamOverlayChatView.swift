@@ -1,6 +1,6 @@
 import Collections
-import SwiftUI
 import SDWebImageSwiftUI
+import SwiftUI
 
 struct LineView: View {
     var post: ChatPost
@@ -65,14 +65,14 @@ struct LineView: View {
                             .aspectRatio(contentMode: .fit)
                             .frame(height: CGFloat(chat.fontSize * 2))
                     } else {
-                        AsyncImage(url: url) { image in
+                        CacheAsyncImage(url: url) { image in
                             image
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                         } placeholder: {
                             EmptyView()
                         }
-                       .frame(height: CGFloat(chat.fontSize * 2))
+                        .frame(height: CGFloat(chat.fontSize * 2))
                     }
                 }
             }

@@ -33,8 +33,17 @@ func fetchSeventvEmotes(channelId: String) async -> [String: Emote] {
         .merging(await fetchChannelEmotes(channelId: channelId)) { $1 }
 }
 
+private func getWebpName(files: [SeventvFile]) -> String? {
+    for file in files where file.name.hasSuffix(".webp") {
+        return file.name
+    }
+    return nil
+}
+
 private func makeUrl(data: SeventvEmoteData) -> URL? {
-    let name = data.host.files[1].name
+    guard let name = getWebpName(files: data.host.files) else {
+        return nil
+    }
     guard let url = URL(string: "https:\(data.host.url)/\(name)") else {
         return nil
     }
@@ -43,10 +52,10 @@ private func makeUrl(data: SeventvEmoteData) -> URL? {
 
 private func fetchGlobalEmotes() async -> [String: Emote] {
     return [:]
-    return await fetchEmotes(
-        url: "https://api.7tv.app/v2/emotes/global",
-        message: "global"
-    )
+    /* return await fetchEmotes(
+         url: "https://api.7tv.app/v2/emotes/global",
+         message: "global"
+     ) */
 }
 
 private func fetchChannelEmotes(channelId: String) async -> [String: Emote] {
