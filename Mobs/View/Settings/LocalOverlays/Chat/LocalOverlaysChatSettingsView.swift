@@ -149,12 +149,20 @@ struct LocalOverlaysChatSettingsView: View {
                     )
                 }
                 Toggle(isOn: Binding(get: {
-                    model.database.chat!.bold
+                    model.database.chat!.boldUsername!
                 }, set: { value in
-                    model.database.chat!.bold = value
+                    model.database.chat!.boldUsername = value
                     model.store()
                 })) {
-                    Text("Bold")
+                    Text("Bold username")
+                }
+                Toggle(isOn: Binding(get: {
+                    model.database.chat!.boldMessage!
+                }, set: { value in
+                    model.database.chat!.boldMessage = value
+                    model.store()
+                })) {
+                    Text("Bold message")
                 }
             }
             Section("Colors") {

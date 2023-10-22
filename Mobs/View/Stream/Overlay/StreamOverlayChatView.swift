@@ -44,17 +44,17 @@ struct LineView: View {
                 .lineLimit(1)
                 .padding([.leading], 5)
                 .padding([.trailing], 0)
-                .bold(chat.bold)
+                .bold(chat.boldUsername!)
                 .shadow(color: shadowColor(), radius: 0, x: 1.5, y: 1.5)
             Text(":")
-                .bold(chat.bold)
+                .bold(chat.boldMessage!)
                 .shadow(color: shadowColor(), radius: 0, x: 1.5, y: 1.5)
             ForEach(post.segments, id: \.id) { segment in
                 Text(" ")
                 if let text = segment.text {
                     Text(text)
                         .foregroundColor(chat.messageColor.color())
-                        .bold(chat.bold)
+                        .bold(chat.boldMessage!)
                         .shadow(color: shadowColor(), radius: 0, x: 1.5, y: 1.5)
                 }
                 if let image = segment.image {

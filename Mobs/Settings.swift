@@ -381,6 +381,8 @@ class SettingsChat: Codable {
     var shadowColor: RgbColor = .init(red: 0, green: 0, blue: 0)
     var shadowColorEnabled: Bool = false
     var alignedMessages: Bool = false
+    var boldUsername: Bool? = true
+    var boldMessage: Bool? = false
     var bold: Bool = false
 }
 
@@ -839,6 +841,14 @@ final class Settings {
         }
         if realDatabase.chat == nil {
             realDatabase.chat = .init()
+            store()
+        }
+        if realDatabase.chat!.boldUsername == nil {
+            realDatabase.chat!.boldUsername = true
+            store()
+        }
+        if realDatabase.chat!.boldMessage == nil {
+            realDatabase.chat!.boldMessage = realDatabase.chat!.bold
             store()
         }
     }
