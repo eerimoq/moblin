@@ -62,8 +62,8 @@ final class KickPusher: NSObject {
         webSocket = URLSession(configuration: .default).webSocketTask(with: url)
     }
 
-    private func handleError(message: String) {
-        model.makeErrorToast(title: message)
+    private func handleError(title: String, subTitle: String) {
+        model.makeErrorToast(title: title, subTitle: subTitle)
     }
 
     func start() {

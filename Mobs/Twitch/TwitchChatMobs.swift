@@ -25,8 +25,8 @@ final class TwitchChatMobs {
         emotes = Emotes()
     }
 
-    private func handleError(message: String) {
-        model.makeErrorToast(title: message)
+    private func handleError(title: String, subTitle: String) {
+        model.makeErrorToast(title: title, subTitle: subTitle)
     }
 
     func isConnected() -> Bool {
@@ -40,40 +40,45 @@ final class TwitchChatMobs {
     func start(channelName: String, channelId: String) {
         emotes.start(platform: .twitch, channelId: channelId, onError: handleError)
         task = Task.init {
-            var reconnectTime = firstReconnectTime
-            logger.info("twitch: chat: \(channelName): Connecting")
-            while true {
-                twitchChat = TwitchChat(
-                    token: "SCHMOOPIIE",
-                    nick: "justinfan67420",
-                    name: channelName
-                )
-                do {
-                    connected = true
-                    for try await message in self.twitchChat.messages {
-                        let emotes = getEmotes(from: message)
-                        reconnectTime = firstReconnectTime
-                        let segments = createSegments(
-                            message: message,
-                            emotes: emotes,
-                            emotesManager: self.emotes
-                        )
-                        await MainActor.run {
-                            self.model.appendChatMessage(
-                                user: message.sender,
-                                userColor: message.senderColor,
-                                segments: segments
+            do {
+                var reconnectTime = firstReconnectTime
+                logger.info("twitch: chat: \(channelName): Connecting")
+                while true {
+                    twitchChat = TwitchChat(
+                        token: "SCHMOOPIIE",
+                        nick: "justinfan67420",
+                        name: channelName
+                    )
+                    do {
+                        connected = true
+                        for try await message in self.twitchChat.messages {
+                            let emotes = getEmotes(from: message)
+                            reconnectTime = firstReconnectTime
+                            let segments = createSegments(
+                                message: message,
+                                emotes: emotes,
+                                emotesManager: self.emotes
                             )
+                            await MainActor.run {
+                                self.model.appendChatMessage(
+                                    user: message.sender,
+                                    userColor: message.senderColor,
+                                    segments: segments
+                                )
+                            }
                         }
+                    } catch {
+                        logger.warning("twitch: chat: \(channelName): Got error \(error)")
                     }
-                } catch {
-                    logger.warning("twitch: chat: \(channelName): Got error \(error)")
+                    connected = false
+                    logger.info("twitch: chat: \(channelName): Disconnected")
+                    try await Task
+                        .sleep(nanoseconds: UInt64(reconnectTime * 1_000_000_000))
+                    reconnectTime = nextReconnectTime(reconnectTime)
+                    logger.info("twitch: chat: \(channelName): Reconnecting")
                 }
-                connected = false
-                logger.info("twitch: chat: \(channelName): Disconnected")
-                try await Task.sleep(nanoseconds: UInt64(reconnectTime * 1_000_000_000))
-                reconnectTime = nextReconnectTime(reconnectTime)
-                logger.info("twitch: chat: \(channelName): Reconnecting")
+            } catch {
+                logger.info("Twitch chat ended with error \(error)")
             }
         }
     }

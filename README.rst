@@ -136,6 +136,8 @@ ToDo
 Ideas/plan
 ==========
 
+- Optional emotes cache on disk.
+
 - Audio filters. For example volume limiter.
 
 - Use external mic.
