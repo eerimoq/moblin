@@ -100,7 +100,7 @@ struct StreamOverlayChatView: View {
     func messageColor() -> Color {
         if !model.isChatConfigured() {
             return .white
-        } else if model.isChatConnected() {
+        } else if model.isChatConnected() && model.hasChatEmotes() {
             return .white
         } else {
             return .red

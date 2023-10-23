@@ -731,6 +731,10 @@ final class Model: ObservableObject {
         return twitchChat?.isConnected() ?? false
     }
 
+    func hasTwitchChatEmotes() -> Bool {
+        return twitchChat?.hasEmotes() ?? false
+    }
+
     func isTwitchPubSubConnected() -> Bool {
         return twitchPubSub?.isConnected() ?? false
     }
@@ -739,8 +743,16 @@ final class Model: ObservableObject {
         return kickPusher?.isConnected() ?? false
     }
 
+    func hasKickPusherEmotes() -> Bool {
+        return kickPusher?.hasEmotes() ?? false
+    }
+
     func isChatConnected() -> Bool {
         return isTwitchChatConnected() || isKickPusherConnected()
+    }
+
+    func hasChatEmotes() -> Bool {
+        return hasTwitchChatEmotes() || hasKickPusherEmotes()
     }
 
     func isStreamConnceted() -> Bool {

@@ -25,7 +25,7 @@ private struct SeventvEmoteSet: Codable {
 
 private struct SeventvUser: Codable {
     var id: String
-    var emote_set: SeventvEmoteSet?
+    var emote_set: SeventvEmoteSet
 }
 
 func fetchSeventvEmotes(platform: EmotesPlatform,
@@ -94,17 +94,13 @@ private func fetchEmotes(url: String, message _: String) async throws -> [String
     var fetchedEmotes: [String: Emote] = [:]
     let data = try await httpGet(from: URL(string: url)!)
     let user = try JSONDecoder().decode(SeventvUser.self, from: data)
-    guard let emote_set = user.emote_set else {
-        logger.info("Emote set missing")
-        return fetchedEmotes
-    }
-    guard let emotes = emote_set.emotes else {
+    guard let emotes = user.emote_set.emotes else {
         logger.info("Emotes missing")
-        return fetchedEmotes
+        throw "Emotes missing"
     }
     if emotes.isEmpty {
         logger.info("Emotes list empty")
-        return fetchedEmotes
+        throw "Emotes list empty"
     }
     for emote in emotes {
         guard let url = makeUrl(data: emote.data) else {

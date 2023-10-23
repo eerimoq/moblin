@@ -81,7 +81,11 @@ final class KickPusher: NSObject {
     }
 
     func isConnected() -> Bool {
-        return webSocket.state == .running && emotes.isReady()
+        return webSocket.state == .running
+    }
+
+    func hasEmotes() -> Bool {
+        return emotes.isReady()
     }
 
     private func setupWebsocket() {

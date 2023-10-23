@@ -30,7 +30,11 @@ final class TwitchChatMobs {
     }
 
     func isConnected() -> Bool {
-        return connected && emotes.isReady()
+        return connected
+    }
+
+    func hasEmotes() -> Bool {
+        return emotes.isReady()
     }
 
     func start(channelName: String, channelId: String) {
