@@ -27,21 +27,16 @@ struct StreamUrlSettingsView: View {
     var body: some View {
         Form {
             Section {
-                ZStack {
-                    if show {
-                        TextField("", text: $value, onEditingChanged: { isEditing in
-                            if !isEditing {
-                                submitUrl()
-                            }
-                        })
-                        .disableAutocorrection(true)
-                        .onSubmit {
+                if show {
+                    TextField("", text: $value, onEditingChanged: { isEditing in
+                        if !isEditing {
                             submitUrl()
                         }
-                    } else {
-                        Text(replaceSensitive(value: value, sensitive: true))
-                            .lineLimit(1)
-                    }
+                    })
+                    .disableAutocorrection(true)
+                } else {
+                    Text(replaceSensitive(value: value, sensitive: true))
+                        .lineLimit(1)
                 }
                 HStack {
                     Spacer()
