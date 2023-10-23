@@ -197,9 +197,9 @@ class RemoteConnection {
         if isDataPacket(packet: packet) {
             var numberOfMpegTsPackets = (packet.count - 16) / 188
             numberOfNonNullPacketsSent += UInt64(numberOfMpegTsPackets)
-            if numberOfMpegTsPackets < 6 {
+            if numberOfMpegTsPackets < 7 {
                 var paddedPacket = packet
-                while numberOfMpegTsPackets < 6 {
+                while numberOfMpegTsPackets < 7 {
                     paddedPacket.append(nullPacket)
                     numberOfMpegTsPackets += 1
                     numberOfNullPacketsSent += 1

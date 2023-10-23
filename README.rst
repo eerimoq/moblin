@@ -127,10 +127,6 @@ ToDo
 
 - Improve adaptive bitrate algorithm.
 
-- Chat preview when configuring it.
-
-- Rework chat configuration. More on single page.
-
 - Investigate what can be moved from main thread for a snappier UI.
 
 Ideas/plan
