@@ -133,6 +133,9 @@ ToDo
 
 - Make it easier to see if a button is pressed or not?
 
+- Long chat messages makes video smaller, leaving white rectangle on
+  left part of screen.
+
 Ideas/plan
 ==========
 
