@@ -32,7 +32,6 @@ class Emotes {
         emotes.removeAll()
         task = Task.init {
             while !self.ready {
-                logger.info("getting enotes")
                 let (bttvEmotes, bttvError) = await fetchBttvEmotes(
                     platform: platform,
                     channelId: channelId
