@@ -16,100 +16,87 @@ struct ColorCircle: View {
 
 struct ColorEditView: View {
     @ObservedObject var model: Model
-    var toolbar: Toolbar
-    var title: String
     var color: RgbColor
     @State var red: Float
     @State var green: Float
     @State var blue: Float
+    private let onChange: () -> Void
 
-    init(model: Model, toolbar: Toolbar, title: String, color: RgbColor) {
+    init(model: Model, color: RgbColor, onChange: @escaping () -> Void) {
         self.model = model
-        self.toolbar = toolbar
-        self.title = title
         self.color = color
+        self.onChange = onChange
         red = Float(color.red)
         green = Float(color.green)
         blue = Float(color.blue)
     }
 
     var body: some View {
-        Form {
-            Section {
-                HStack {
-                    Spacer()
-                    Circle()
-                        .frame(width: 50, height: 50)
-                        .foregroundColor(Color(
-                            red: Double(red) / 255,
-                            green: Double(green) / 255,
-                            blue: Double(blue) / 255
-                        ))
-                        .overlay(
-                            Circle()
-                                .stroke(.secondary, lineWidth: 2)
-                        )
-                    Spacer()
+        HStack {
+            Text("Red")
+                .frame(width: 60)
+            Slider(
+                value: $red,
+                in: 0 ... 255,
+                step: 1,
+                onEditingChanged: { begin in
+                    guard !begin else {
+                        return
+                    }
+                    color.red = Int(red)
+                    model.store()
                 }
-                HStack {
-                    Text("Red")
-                        .frame(width: 60)
-                    Slider(
-                        value: $red,
-                        in: 0 ... 255,
-                        step: 1,
-                        onEditingChanged: { begin in
-                            guard !begin else {
-                                return
-                            }
-                            color.red = Int(red)
-                            model.store()
-                        }
-                    )
-                    Text(String(Int(red)))
-                        .frame(width: 35)
-                }
-                HStack {
-                    Text("Green")
-                        .frame(width: 60)
-                    Slider(
-                        value: $green,
-                        in: 0 ... 255,
-                        step: 1,
-                        onEditingChanged: { begin in
-                            guard !begin else {
-                                return
-                            }
-                            color.green = Int(green)
-                            model.store()
-                        }
-                    )
-                    Text(String(Int(green)))
-                        .frame(width: 35)
-                }
-                HStack {
-                    Text("Blue")
-                        .frame(width: 60)
-                    Slider(
-                        value: $blue,
-                        in: 0 ... 255,
-                        step: 1,
-                        onEditingChanged: { begin in
-                            guard !begin else {
-                                return
-                            }
-                            color.blue = Int(blue)
-                            model.store()
-                        }
-                    )
-                    Text(String(Int(blue)))
-                        .frame(width: 35)
-                }
+            )
+            .onChange(of: red) {value in
+                color.red = Int(value)
+                onChange()
             }
+            Text(String(Int(red)))
+                .frame(width: 35)
         }
-        .navigationTitle(title)
-        .toolbar {
-            toolbar
+        HStack {
+            Text("Green")
+                .frame(width: 60)
+            Slider(
+                value: $green,
+                in: 0 ... 255,
+                step: 1,
+                onEditingChanged: { begin in
+                    guard !begin else {
+                        return
+                    }
+                    color.green = Int(green)
+                    model.store()
+                }
+            )
+            .onChange(of: green) {value in
+                color.green = Int(value)
+                onChange()
+            }
+            Text(String(Int(green)))
+                .frame(width: 35)
+        }
+        HStack {
+            Text("Blue")
+                .frame(width: 60)
+            Slider(
+                value: $blue,
+                in: 0 ... 255,
+                step: 1,
+                onEditingChanged: { begin in
+                    guard !begin else {
+                        return
+                    }
+                    color.blue = Int(blue)
+                    model.store()
+                }
+            )
+            .onChange(of: blue) {value in
+                color.blue = Int(value)
+                onChange()
+            }
+            Text(String(Int(blue)))
+                .frame(width: 35)
         }
     }
 }
@@ -117,10 +104,22 @@ struct ColorEditView: View {
 struct LocalOverlaysChatSettingsView: View {
     @ObservedObject var model: Model
     var toolbar: Toolbar
+    @State var showUsernameColor: Bool = false
+    @State var showMessageColor: Bool = false
+    @State var showBackgroundColor: Bool = false
+    @State var showShadowColor: Bool = false
+    @State var usernameColor: Color
+    @State var messageColor: Color
+    @State var backgroundColor: Color
+    @State var shadowColor: Color
 
     init(model: Model, toolbar: Toolbar) {
         self.model = model
         self.toolbar = toolbar
+        self.usernameColor = model.database.chat!.usernameColor.color()
+        self.messageColor = model.database.chat!.messageColor.color()
+        self.backgroundColor = model.database.chat!.backgroundColor.color()
+        self.shadowColor = model.database.chat!.shadowColor.color()
     }
 
     func submitFontSize(value: String) {
@@ -178,36 +177,39 @@ struct LocalOverlaysChatSettingsView: View {
                 Text("Animated emotes are fairly CPU intensive.")
             }
             Section("Colors") {
-                NavigationLink(destination: ColorEditView(
-                    model: model,
-                    toolbar: toolbar,
-                    title: "Username",
-                    color: model.database.chat!.usernameColor
-                )) {
+                Button {
+                    showUsernameColor.toggle()
+                } label: {
                     HStack {
                         Text("Username")
                         Spacer()
-                        ColorCircle(color: model.database.chat!.usernameColor.color())
+                        ColorCircle(color: usernameColor)
                     }
                 }
-                NavigationLink(destination: ColorEditView(
-                    model: model,
-                    toolbar: toolbar,
-                    title: "Message",
-                    color: model.database.chat!.messageColor
-                )) {
+                .foregroundColor(.primary)
+                if showUsernameColor {
+                    ColorEditView(model: model, color: model.database.chat!.usernameColor) {
+                        usernameColor = model.database.chat!.usernameColor.color()
+                    }
+                }
+                Button {
+                    showMessageColor.toggle()
+                } label: {
                     HStack {
                         Text("Message")
                         Spacer()
                         ColorCircle(color: model.database.chat!.messageColor.color())
                     }
                 }
-                NavigationLink(destination: ColorEditView(
-                    model: model,
-                    toolbar: toolbar,
-                    title: "Background",
-                    color: model.database.chat!.backgroundColor
-                )) {
+                .foregroundColor(.primary)
+                if showMessageColor {
+                    ColorEditView(model: model, color: model.database.chat!.messageColor) {
+                       messageColor = model.database.chat!.messageColor.color()
+                    }
+                }
+                Button {
+                    showBackgroundColor.toggle()
+                } label: {
                     Toggle(isOn: Binding(get: {
                         model.database.chat!.backgroundColorEnabled
                     }, set: { value in
@@ -217,17 +219,19 @@ struct LocalOverlaysChatSettingsView: View {
                         HStack {
                             Text("Background")
                             Spacer()
-                            ColorCircle(color: model.database.chat!.backgroundColor
-                                .color())
+                            ColorCircle(color: model.database.chat!.backgroundColor.color())
                         }
                     }
                 }
-                NavigationLink(destination: ColorEditView(
-                    model: model,
-                    toolbar: toolbar,
-                    title: "Shadow",
-                    color: model.database.chat!.shadowColor
-                )) {
+                .foregroundColor(.primary)
+                if showBackgroundColor {
+                    ColorEditView(model: model, color: model.database.chat!.backgroundColor) {
+                        backgroundColor = model.database.chat!.backgroundColor.color()
+                    }
+                }
+                Button {
+                    showShadowColor.toggle()
+                } label: {
                     Toggle(isOn: Binding(get: {
                         model.database.chat!.shadowColorEnabled
                     }, set: { value in
@@ -239,6 +243,12 @@ struct LocalOverlaysChatSettingsView: View {
                             Spacer()
                             ColorCircle(color: model.database.chat!.shadowColor.color())
                         }
+                    }
+                }
+                .foregroundColor(.primary)
+                if showShadowColor {
+                    ColorEditView(model: model, color: model.database.chat!.shadowColor) {
+                        shadowColor = model.database.chat!.shadowColor.color()
                     }
                 }
             }
