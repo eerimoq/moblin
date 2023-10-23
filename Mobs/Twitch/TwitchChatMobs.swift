@@ -1,9 +1,7 @@
 import SwiftUI
 import TwitchChat
 
-private var emotesCache: [String: UIImage] = [:]
-
-private func getEmotes(from message: ChatMessage) async -> [ChatMessageEmote] {
+private func getEmotes(from message: ChatMessage) -> [ChatMessageEmote] {
     var emotes: [ChatMessageEmote] = []
     for emote in message.emotes {
         do {
@@ -20,13 +18,62 @@ final class TwitchChatMobs {
     private var model: Model
     private var task: Task<Void, Error>?
     private var connected: Bool = false
+    private var emotes: Emotes
 
     init(model: Model) {
         self.model = model
+        emotes = Emotes()
     }
 
     func isConnected() -> Bool {
         return connected
+    }
+
+    func start(channelName: String, channelId: String) {
+        emotes.start(platform: .twitch, channelId: channelId)
+        task = Task.init {
+            var reconnectTime = firstReconnectTime
+            logger.info("twitch: chat: \(channelName): Connecting")
+            while true {
+                twitchChat = TwitchChat(
+                    token: "SCHMOOPIIE",
+                    nick: "justinfan67420",
+                    name: channelName
+                )
+                do {
+                    connected = true
+                    for try await message in self.twitchChat.messages {
+                        let emotes = getEmotes(from: message)
+                        reconnectTime = firstReconnectTime
+                        let segments = createSegments(
+                            message: message,
+                            emotes: emotes,
+                            emotesManager: self.emotes
+                        )
+                        await MainActor.run {
+                            self.model.appendChatMessage(
+                                user: message.sender,
+                                userColor: message.senderColor,
+                                segments: segments
+                            )
+                        }
+                    }
+                } catch {
+                    logger.warning("twitch: chat: \(channelName): Got error \(error)")
+                }
+                connected = false
+                logger.info("twitch: chat: \(channelName): Disconnected")
+                try await Task.sleep(nanoseconds: UInt64(reconnectTime * 1_000_000_000))
+                reconnectTime = nextReconnectTime(reconnectTime)
+                logger.info("twitch: chat: \(channelName): Reconnecting")
+            }
+        }
+    }
+
+    func stop() {
+        emotes.stop()
+        task?.cancel()
+        task = nil
     }
 
     private func createTwitchSegments(message: ChatMessage,
@@ -65,63 +112,17 @@ final class TwitchChatMobs {
 
     private func createSegments(message: ChatMessage,
                                 emotes: [ChatMessageEmote],
-                                emotesManager: Emotes) async -> [ChatPostSegment]
+                                emotesManager: Emotes) -> [ChatPostSegment]
     {
         var segments: [ChatPostSegment] = []
         let twitchSegments = createTwitchSegments(message: message, emotes: emotes)
         for var segment in twitchSegments {
             if let text = segment.text {
-                segments += await emotesManager.createSegments(text: text)
+                segments += emotesManager.createSegments(text: text)
                 segment.text = nil
             }
             segments.append(segment)
         }
         return segments
-    }
-
-    func start(channelName: String, channelId: String) {
-        task = Task.init {
-            var reconnectTime = firstReconnectTime
-            logger.info("twitch: chat: \(channelName): Connecting")
-            let emotesManager = await Emotes(channelId: channelId)
-            while true {
-                twitchChat = TwitchChat(
-                    token: "SCHMOOPIIE",
-                    nick: "justinfan67420",
-                    name: channelName
-                )
-                do {
-                    connected = true
-                    for try await message in self.twitchChat.messages {
-                        let emotes = await getEmotes(from: message)
-                        reconnectTime = firstReconnectTime
-                        let segments = await createSegments(
-                            message: message,
-                            emotes: emotes,
-                            emotesManager: emotesManager
-                        )
-                        await MainActor.run {
-                            self.model.appendChatMessage(
-                                user: message.sender,
-                                userColor: message.senderColor,
-                                segments: segments
-                            )
-                        }
-                    }
-                } catch {
-                    logger.warning("twitch: chat: \(channelName): Got error \(error)")
-                }
-                connected = false
-                logger.info("twitch: chat: \(channelName): Disconnected")
-                try await Task.sleep(nanoseconds: UInt64(reconnectTime * 1_000_000_000))
-                reconnectTime = nextReconnectTime(reconnectTime)
-                logger.info("twitch: chat: \(channelName): Reconnecting")
-            }
-        }
-    }
-
-    func stop() {
-        task?.cancel()
-        task = nil
     }
 }

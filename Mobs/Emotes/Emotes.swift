@@ -1,28 +1,43 @@
 import Foundation
 import SwiftUI
 
-class Emote {
-    let name: String
-    let url: URL
-    var image: UIImage?
+enum EmotesPlatform {
+    case twitch
+    case kick
+}
 
-    init(name: String, url: URL, image: UIImage? = nil) {
-        self.name = name
+class Emote {
+    let url: URL
+
+    init(url: URL) {
         self.url = url
-        self.image = image
     }
 }
 
 class Emotes {
-    private let emotes: [String: Emote]
+    private var emotes: [String: Emote] = [:]
+    private var task: Task<Void, Error>?
 
-    init(channelId: String) async {
-        emotes = await fetchBttvEmotes(channelId: channelId)
-            .merging(await fetchFfzEmotes(channelId: channelId)) { $1 }
-            .merging(await fetchSeventvEmotes(channelId: channelId)) { $1 }
+    func start(platform: EmotesPlatform, channelId: String) {
+        emotes.removeAll()
+        task = Task.init {
+            self.emotes = await fetchBttvEmotes(platform: platform, channelId: channelId)
+                .merging(await fetchFfzEmotes(platform: platform, channelId: channelId)) {
+                    $1
+                }
+                .merging(await fetchSeventvEmotes(
+                    platform: platform,
+                    channelId: channelId
+                )) { $1 }
+        }
     }
 
-    func createSegments(text: String) async -> [ChatPostSegment] {
+    func stop() {
+        task?.cancel()
+        task = nil
+    }
+
+    func createSegments(text: String) -> [ChatPostSegment] {
         var segments: [ChatPostSegment] = []
         var parts: [String] = []
         for word in text.components(separatedBy: .whitespaces) {

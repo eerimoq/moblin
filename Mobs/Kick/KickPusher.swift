@@ -53,19 +53,23 @@ final class KickPusher: NSObject {
     private var reconnectTimer: Timer?
     private var reconnectTime = firstReconnectTime
     private var running = true
+    private var emotes: Emotes
 
     init(model: Model, channelId: String) {
         self.model = model
         self.channelId = channelId
+        emotes = Emotes()
         webSocket = URLSession(configuration: .default).webSocketTask(with: url)
     }
 
     func start() {
         reconnectTime = firstReconnectTime
         setupWebsocket()
+        emotes.start(platform: .kick, channelId: channelId)
     }
 
     func stop() {
+        emotes.stop()
         webSocket.cancel()
         reconnectTimer?.invalidate()
         reconnectTimer = nil

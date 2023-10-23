@@ -28,9 +28,12 @@ private struct SeventvUser: Codable {
     var emote_set: SeventvEmoteSet?
 }
 
-func fetchSeventvEmotes(channelId: String) async -> [String: Emote] {
+func fetchSeventvEmotes(platform: EmotesPlatform,
+                        channelId: String) async -> [String: Emote]
+{
     return await fetchGlobalEmotes()
-        .merging(await fetchChannelEmotes(channelId: channelId)) { $1 }
+        .merging(await fetchChannelEmotes(platform: platform, channelId: channelId)) { $1
+        }
 }
 
 private func getWebpName(files: [SeventvFile]) -> String? {
@@ -58,8 +61,13 @@ private func fetchGlobalEmotes() async -> [String: Emote] {
      ) */
 }
 
-private func fetchChannelEmotes(channelId: String) async -> [String: Emote] {
+private func fetchChannelEmotes(platform: EmotesPlatform,
+                                channelId: String) async -> [String: Emote]
+{
     if channelId.isEmpty {
+        return [:]
+    }
+    if platform == .kick {
         return [:]
     }
     return await fetchEmotes(
@@ -90,7 +98,7 @@ private func fetchEmotes(url: String, message: String) async -> [String: Emote] 
                 logger.error("Failed to create URL for 7TV emote \(emote.name)")
                 continue
             }
-            fetchedEmotes[emote.name] = Emote(name: emote.name, url: url)
+            fetchedEmotes[emote.name] = Emote(url: url)
         }
     } catch {
         logger.error("Failed to fetch \(message) 7TV emotes with error: \(error)")

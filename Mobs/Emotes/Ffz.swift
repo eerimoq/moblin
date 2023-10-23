@@ -15,9 +15,12 @@ private struct FfzEmote: Codable {
     var images: FfzImages
 }
 
-func fetchFfzEmotes(channelId: String) async -> [String: Emote] {
+func fetchFfzEmotes(platform: EmotesPlatform,
+                    channelId: String) async -> [String: Emote]
+{
     return await fetchGlobalEmotes()
-        .merging(await fetchChannelEmotes(channelId: channelId)) { $1 }
+        .merging(await fetchChannelEmotes(platform: platform, channelId: channelId)) { $1
+        }
 }
 
 private func makeUrl(emote: FfzEmote) -> URL? {
@@ -37,8 +40,13 @@ private func fetchGlobalEmotes() async -> [String: Emote] {
     )
 }
 
-private func fetchChannelEmotes(channelId: String) async -> [String: Emote] {
+private func fetchChannelEmotes(platform: EmotesPlatform,
+                                channelId: String) async -> [String: Emote]
+{
     if channelId.isEmpty {
+        return [:]
+    }
+    if platform == .kick {
         return [:]
     }
     return await fetchEmotes(
@@ -56,7 +64,7 @@ private func fetchEmotes(url: String, message: String) async -> [String: Emote] 
                 logger.error("Failed to create URL for FFZ emote \(emote.code)")
                 continue
             }
-            emotes[emote.code] = Emote(name: emote.code, url: url)
+            emotes[emote.code] = Emote(url: url)
         }
     } catch {
         logger.error("Failed to fetch \(message) FFZ emotes with error: \(error)")
