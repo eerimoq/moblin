@@ -25,12 +25,16 @@ final class TwitchChatMobs {
         emotes = Emotes()
     }
 
+    private func handleError(message: String) {
+        model.makeErrorToast(title: message)
+    }
+
     func isConnected() -> Bool {
-        return connected
+        return connected && emotes.isReady()
     }
 
     func start(channelName: String, channelId: String) {
-        emotes.start(platform: .twitch, channelId: channelId)
+        emotes.start(platform: .twitch, channelId: channelId, onError: handleError)
         task = Task.init {
             var reconnectTime = firstReconnectTime
             logger.info("twitch: chat: \(channelName): Connecting")

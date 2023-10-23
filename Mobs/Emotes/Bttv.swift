@@ -11,11 +11,24 @@ private struct BttvChannel: Codable {
 }
 
 func fetchBttvEmotes(platform: EmotesPlatform,
-                     channelId: String) async -> [String: Emote]
+                     channelId: String) async -> ([String: Emote], String?)
 {
-    return await fetchGlobalEmotes()
-        .merging(await fetchChannelEmotes(platform: platform, channelId: channelId)) { $1
-        }
+    var message: String?
+    var emotes: [String: Emote] = [:]
+    do {
+        emotes = try emotes.merging(await fetchGlobalEmotes()) { $1 }
+    } catch {
+        message = "Failed to get BTTV emotes"
+    }
+    do {
+        emotes = try emotes.merging(await fetchChannelEmotes(
+            platform: platform,
+            channelId: channelId
+        )) { $1 }
+    } catch {
+        message = "Failed to get BTTV emotes"
+    }
+    return (emotes, message)
 }
 
 private func makeUrl(emote: BttvEmote) -> URL? {
@@ -26,27 +39,23 @@ private func makeUrl(emote: BttvEmote) -> URL? {
     return url
 }
 
-private func fetchGlobalEmotes() async -> [String: Emote] {
+private func fetchGlobalEmotes() async throws -> [String: Emote] {
     var emotes: [String: Emote] = [:]
-    do {
-        let data =
-            try await httpGet(
-                from: URL(string: "https://api.betterttv.net/3/cached/emotes/global")!
-            )
-        for emote in try JSONDecoder().decode([BttvEmote].self, from: data) {
-            guard let url = makeUrl(emote: emote) else {
-                continue
-            }
-            emotes[emote.code] = Emote(url: url)
+    let data =
+        try await httpGet(
+            from: URL(string: "https://api.betterttv.net/3/cached/emotes/global")!
+        )
+    for emote in try JSONDecoder().decode([BttvEmote].self, from: data) {
+        guard let url = makeUrl(emote: emote) else {
+            continue
         }
-    } catch {
-        logger.error("Failed to fetch global BTTV emotes with error: \(error)")
+        emotes[emote.code] = Emote(url: url)
     }
     return emotes
 }
 
 private func fetchChannelEmotes(platform: EmotesPlatform,
-                                channelId: String) async -> [String: Emote]
+                                channelId: String) async throws -> [String: Emote]
 {
     if channelId.isEmpty {
         return [:]
@@ -55,25 +64,21 @@ private func fetchChannelEmotes(platform: EmotesPlatform,
         return [:]
     }
     var emotes: [String: Emote] = [:]
-    do {
-        let url =
-            URL(string: "https://api.betterttv.net/3/cached/users/twitch/\(channelId)")!
-        let data = try await httpGet(from: url)
-        let channel = try JSONDecoder().decode(BttvChannel.self, from: data)
-        for emote in channel.sharedEmotes ?? [] {
-            guard let url = makeUrl(emote: emote) else {
-                continue
-            }
-            emotes[emote.code] = Emote(url: url)
+    let url =
+        URL(string: "https://api.betterttv.net/3/cached/users/twitch/\(channelId)")!
+    let data = try await httpGet(from: url)
+    let channel = try JSONDecoder().decode(BttvChannel.self, from: data)
+    for emote in channel.sharedEmotes ?? [] {
+        guard let url = makeUrl(emote: emote) else {
+            continue
         }
-        for emote in channel.channelEmotes ?? [] {
-            guard let url = makeUrl(emote: emote) else {
-                continue
-            }
-            emotes[emote.code] = Emote(url: url)
+        emotes[emote.code] = Emote(url: url)
+    }
+    for emote in channel.channelEmotes ?? [] {
+        guard let url = makeUrl(emote: emote) else {
+            continue
         }
-    } catch {
-        logger.error("Failed to fetch channel BTTV emotes with error: \(error)")
+        emotes[emote.code] = Emote(url: url)
     }
     return emotes
 }

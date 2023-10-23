@@ -17,22 +17,47 @@ class Emote {
 class Emotes {
     private var emotes: [String: Emote] = [:]
     private var task: Task<Void, Error>?
+    private var ready: Bool = false
 
-    func start(platform: EmotesPlatform, channelId: String) {
+    func isReady() -> Bool {
+        return ready
+    }
+
+    func start(
+        platform: EmotesPlatform,
+        channelId: String,
+        onError: @escaping (String) -> Void
+    ) {
+        ready = false
         emotes.removeAll()
         task = Task.init {
-            self.emotes = await fetchBttvEmotes(platform: platform, channelId: channelId)
-                .merging(await fetchFfzEmotes(platform: platform, channelId: channelId)) {
-                    $1
-                }
-                .merging(await fetchSeventvEmotes(
-                    platform: platform,
-                    channelId: channelId
-                )) { $1 }
+            let (bttvEmotes, bttvError) = await fetchBttvEmotes(
+                platform: platform,
+                channelId: channelId
+            )
+            self.emotes = self.emotes.merging(bttvEmotes) { $1 }
+            let (ffzEmotes, ffzError) = await fetchFfzEmotes(
+                platform: platform,
+                channelId: channelId
+            )
+            self.emotes = self.emotes.merging(ffzEmotes) { $1 }
+            let (seventvEmotes, seventvError) = await fetchSeventvEmotes(
+                platform: platform,
+                channelId: channelId
+            )
+            self.emotes = self.emotes.merging(seventvEmotes) { $1 }
+            if let error = bttvError ?? ffzError ?? seventvError {
+                logger.warning(error)
+                onError(error)
+                self.ready = false
+            } else {
+                self.ready = true
+            }
         }
     }
 
     func stop() {
+        ready = false
         task?.cancel()
         task = nil
     }

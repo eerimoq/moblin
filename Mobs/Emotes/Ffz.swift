@@ -16,11 +16,24 @@ private struct FfzEmote: Codable {
 }
 
 func fetchFfzEmotes(platform: EmotesPlatform,
-                    channelId: String) async -> [String: Emote]
+                    channelId: String) async -> ([String: Emote], String?)
 {
-    return await fetchGlobalEmotes()
-        .merging(await fetchChannelEmotes(platform: platform, channelId: channelId)) { $1
-        }
+    var message: String?
+    var emotes: [String: Emote] = [:]
+    do {
+        emotes = try emotes.merging(await fetchGlobalEmotes()) { $1 }
+    } catch {
+        message = "Failed to get FFZ emotes"
+    }
+    do {
+        emotes = try emotes.merging(await fetchChannelEmotes(
+            platform: platform,
+            channelId: channelId
+        )) { $1 }
+    } catch {
+        message = "Failed to get FFZ emotes"
+    }
+    return (emotes, message)
 }
 
 private func makeUrl(emote: FfzEmote) -> URL? {
@@ -33,15 +46,15 @@ private func makeUrl(emote: FfzEmote) -> URL? {
     return url
 }
 
-private func fetchGlobalEmotes() async -> [String: Emote] {
-    return await fetchEmotes(
+private func fetchGlobalEmotes() async throws -> [String: Emote] {
+    return try await fetchEmotes(
         url: "https://api.betterttv.net/3/cached/frankerfacez/emotes/global",
         message: "global"
     )
 }
 
 private func fetchChannelEmotes(platform: EmotesPlatform,
-                                channelId: String) async -> [String: Emote]
+                                channelId: String) async throws -> [String: Emote]
 {
     if channelId.isEmpty {
         return [:]
@@ -49,25 +62,21 @@ private func fetchChannelEmotes(platform: EmotesPlatform,
     if platform == .kick {
         return [:]
     }
-    return await fetchEmotes(
+    return try await fetchEmotes(
         url: "https://api.betterttv.net/3/cached/frankerfacez/users/twitch/\(channelId)",
         message: "channel"
     )
 }
 
-private func fetchEmotes(url: String, message: String) async -> [String: Emote] {
+private func fetchEmotes(url: String, message _: String) async throws -> [String: Emote] {
     var emotes: [String: Emote] = [:]
-    do {
-        let data = try await httpGet(from: URL(string: url)!)
-        for emote in try JSONDecoder().decode([FfzEmote].self, from: data) {
-            guard let url = makeUrl(emote: emote) else {
-                logger.error("Failed to create URL for FFZ emote \(emote.code)")
-                continue
-            }
-            emotes[emote.code] = Emote(url: url)
+    let data = try await httpGet(from: URL(string: url)!)
+    for emote in try JSONDecoder().decode([FfzEmote].self, from: data) {
+        guard let url = makeUrl(emote: emote) else {
+            logger.error("Failed to create URL for FFZ emote \(emote.code)")
+            continue
         }
-    } catch {
-        logger.error("Failed to fetch \(message) FFZ emotes with error: \(error)")
+        emotes[emote.code] = Emote(url: url)
     }
     return emotes
 }

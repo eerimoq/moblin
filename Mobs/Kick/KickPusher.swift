@@ -62,10 +62,14 @@ final class KickPusher: NSObject {
         webSocket = URLSession(configuration: .default).webSocketTask(with: url)
     }
 
+    private func handleError(message: String) {
+        model.makeErrorToast(title: message)
+    }
+
     func start() {
         reconnectTime = firstReconnectTime
         setupWebsocket()
-        emotes.start(platform: .kick, channelId: channelId)
+        emotes.start(platform: .kick, channelId: channelId, onError: handleError)
     }
 
     func stop() {
@@ -77,7 +81,7 @@ final class KickPusher: NSObject {
     }
 
     func isConnected() -> Bool {
-        return webSocket.state == .running
+        return webSocket.state == .running && emotes.isReady()
     }
 
     private func setupWebsocket() {

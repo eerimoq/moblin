@@ -47,7 +47,7 @@ struct ColorEditView: View {
                     model.store()
                 }
             )
-            .onChange(of: red) {value in
+            .onChange(of: red) { value in
                 color.red = Int(value)
                 onChange()
             }
@@ -69,7 +69,7 @@ struct ColorEditView: View {
                     model.store()
                 }
             )
-            .onChange(of: green) {value in
+            .onChange(of: green) { value in
                 color.green = Int(value)
                 onChange()
             }
@@ -91,7 +91,7 @@ struct ColorEditView: View {
                     model.store()
                 }
             )
-            .onChange(of: blue) {value in
+            .onChange(of: blue) { value in
                 color.blue = Int(value)
                 onChange()
             }
@@ -116,10 +116,10 @@ struct LocalOverlaysChatSettingsView: View {
     init(model: Model, toolbar: Toolbar) {
         self.model = model
         self.toolbar = toolbar
-        self.usernameColor = model.database.chat!.usernameColor.color()
-        self.messageColor = model.database.chat!.messageColor.color()
-        self.backgroundColor = model.database.chat!.backgroundColor.color()
-        self.shadowColor = model.database.chat!.shadowColor.color()
+        usernameColor = model.database.chat!.usernameColor.color()
+        messageColor = model.database.chat!.messageColor.color()
+        backgroundColor = model.database.chat!.backgroundColor.color()
+        shadowColor = model.database.chat!.shadowColor.color()
     }
 
     func submitFontSize(value: String) {
@@ -188,7 +188,10 @@ struct LocalOverlaysChatSettingsView: View {
                 }
                 .foregroundColor(.primary)
                 if showUsernameColor {
-                    ColorEditView(model: model, color: model.database.chat!.usernameColor) {
+                    ColorEditView(
+                        model: model,
+                        color: model.database.chat!.usernameColor
+                    ) {
                         usernameColor = model.database.chat!.usernameColor.color()
                     }
                 }
@@ -203,8 +206,10 @@ struct LocalOverlaysChatSettingsView: View {
                 }
                 .foregroundColor(.primary)
                 if showMessageColor {
-                    ColorEditView(model: model, color: model.database.chat!.messageColor) {
-                       messageColor = model.database.chat!.messageColor.color()
+                    ColorEditView(model: model,
+                                  color: model.database.chat!.messageColor)
+                    {
+                        messageColor = model.database.chat!.messageColor.color()
                     }
                 }
                 Button {
@@ -219,13 +224,17 @@ struct LocalOverlaysChatSettingsView: View {
                         HStack {
                             Text("Background")
                             Spacer()
-                            ColorCircle(color: model.database.chat!.backgroundColor.color())
+                            ColorCircle(color: model.database.chat!.backgroundColor
+                                .color())
                         }
                     }
                 }
                 .foregroundColor(.primary)
                 if showBackgroundColor {
-                    ColorEditView(model: model, color: model.database.chat!.backgroundColor) {
+                    ColorEditView(
+                        model: model,
+                        color: model.database.chat!.backgroundColor
+                    ) {
                         backgroundColor = model.database.chat!.backgroundColor.color()
                     }
                 }
