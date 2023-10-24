@@ -31,7 +31,6 @@ struct StreamsSettingsView: View {
                                     }
                                     model.reloadStream()
                                     model.sceneUpdated()
-                                    model.objectWillChange.send()
                                 }))
                                 .disabled(stream.enabled)
                             }
@@ -46,12 +45,10 @@ struct StreamsSettingsView: View {
                         database.streams.remove(atOffsets: offsets)
                         model.store()
                         model.reloadStream()
-                        model.objectWillChange.send()
                     })
                     CreateButtonView(action: {
                         database.streams.append(SettingsStream(name: "My stream"))
                         model.store()
-                        model.objectWillChange.send()
                     })
                 } footer: {
                     Text("Only one stream can be used at a time.")

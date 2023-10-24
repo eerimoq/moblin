@@ -49,19 +49,16 @@ struct WidgetsSettingsView: View {
                 .onMove(perform: { froms, to in
                     database.widgets.move(fromOffsets: froms, toOffset: to)
                     model.store()
-                    model.objectWillChange.send()
                 })
                 .onDelete(perform: { offsets in
                     database.widgets.remove(atOffsets: offsets)
                     model.store()
                     model.resetSelectedScene()
-                    model.objectWillChange.send()
                 })
                 CreateButtonView(action: {
                     database.widgets.append(SettingsWidget(name: "My widget"))
                     model.store()
                     model.resetSelectedScene()
-                    model.objectWillChange.send()
                 })
             } footer: {
                 Text("Only unused widgets can be deleted.")

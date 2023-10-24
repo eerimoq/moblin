@@ -26,7 +26,6 @@ struct WidgetSettingsView: View {
                     widget.type = SettingsWidgetType(rawValue: value)!
                     model.store()
                     model.resetSelectedScene()
-                    model.objectWillChange.send()
                 })) {
                     ForEach(widgetTypes, id: \.self) {
                         Text($0)
