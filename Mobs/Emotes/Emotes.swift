@@ -26,11 +26,14 @@ class Emotes {
     func start(
         platform: EmotesPlatform,
         channelId: String,
-        onError: @escaping (String, String) -> Void
+        onError: @escaping (String, String) -> Void,
+        onOk: @escaping (String) -> Void
     ) {
         ready = false
         emotes.removeAll()
         task = Task.init {
+            var firstRetry = true
+            var retryTime: UInt64 = 30_000_000_000
             while !self.ready {
                 let (bttvEmotes, bttvError) = await fetchBttvEmotes(
                     platform: platform,
@@ -49,15 +52,23 @@ class Emotes {
                 self.emotes = self.emotes.merging(seventvEmotes) { $1 }
                 if let error = bttvError ?? ffzError ?? seventvError {
                     logger.warning(error)
-                    onError(error, "Retrying in 30 seconds")
+                    if firstRetry {
+                        onError(error, "Retrying later")
+                    }
+                    firstRetry = false
                     self.ready = false
                     do {
-                        try await Task.sleep(nanoseconds: 30_000_000_000)
+                        try await Task.sleep(nanoseconds: retryTime)
+                        retryTime *= 2
+                        retryTime = min(retryTime, 3600_000_000_000)
                     } catch {
                         return
                     }
                 } else {
                     self.ready = true
+                    if !firstRetry {
+                        onOk("Emotes fetched")
+                    }
                 }
                 if Task.isCancelled {
                     return

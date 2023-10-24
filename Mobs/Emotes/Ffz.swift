@@ -48,8 +48,7 @@ private func makeUrl(emote: FfzEmote) -> URL? {
 
 private func fetchGlobalEmotes() async throws -> [String: Emote] {
     return try await fetchEmotes(
-        url: "https://api.betterttv.net/3/cached/frankerfacez/emotes/global",
-        message: "global"
+        url: "https://api.betterttv.net/3/cached/frankerfacez/emotes/global"
     )
 }
 
@@ -63,14 +62,19 @@ private func fetchChannelEmotes(platform: EmotesPlatform,
         return [:]
     }
     return try await fetchEmotes(
-        url: "https://api.betterttv.net/3/cached/frankerfacez/users/twitch/\(channelId)",
-        message: "channel"
+        url: "https://api.betterttv.net/3/cached/frankerfacez/users/twitch/\(channelId)"
     )
 }
 
-private func fetchEmotes(url: String, message _: String) async throws -> [String: Emote] {
+private func fetchEmotes(url: String) async throws -> [String: Emote] {
     var emotes: [String: Emote] = [:]
-    let data = try await httpGet(from: URL(string: url)!)
+    guard let url = URL(string: url) else {
+        return [:]
+    }
+    let (data, response) = try await httpGet(from: url)
+    if !response.isSuccessful {
+        throw " Not successful"
+    }
     for emote in try JSONDecoder().decode([FfzEmote].self, from: data) {
         guard let url = makeUrl(emote: emote) else {
             logger.error("Failed to create URL for FFZ emote \(emote.code)")

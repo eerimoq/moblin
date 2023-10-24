@@ -391,17 +391,17 @@ extension HTTPURLResponse {
     var isSuccessful: Bool {
         return 200 ... 299 ~= statusCode
     }
+    var isNotFound: Bool {
+        return statusCode == 404
+    }
 }
 
-func httpGet(from: URL) async throws -> Data {
+func httpGet(from: URL) async throws -> (Data, HTTPURLResponse) {
     let (data, response) = try await URLSession.shared.data(from: from)
     if let response = response.http {
         logger.info("\(from) \(response.statusCode) \(data.count)")
-        if !response.isSuccessful {
-            throw "HTTP GET failed with code \(response.statusCode)"
-        }
+        return (data, response)
     } else {
         throw "Not an HTTP response"
     }
-    return data
 }

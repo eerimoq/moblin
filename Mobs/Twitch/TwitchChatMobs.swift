@@ -29,6 +29,10 @@ final class TwitchChatMobs {
         model.makeErrorToast(title: title, subTitle: subTitle)
     }
 
+    private func handleOk(title: String) {
+        model.makeToast(title: title)
+    }
+
     func isConnected() -> Bool {
         return connected
     }
@@ -38,7 +42,7 @@ final class TwitchChatMobs {
     }
 
     func start(channelName: String, channelId: String) {
-        emotes.start(platform: .twitch, channelId: channelId, onError: handleError)
+        emotes.start(platform: .twitch, channelId: channelId, onError: handleError, onOk: handleOk)
         task = Task.init {
             do {
                 var reconnectTime = firstReconnectTime

@@ -28,6 +28,11 @@ private struct SeventvUser: Codable {
     var emote_set: SeventvEmoteSet
 }
 
+private struct SeventvGlobalEmote: Codable {
+    var name: String
+    var urls: [[String]]
+}
+
 func fetchSeventvEmotes(platform: EmotesPlatform,
                         channelId: String) async -> ([String: Emote], String?)
 {
@@ -49,6 +54,31 @@ func fetchSeventvEmotes(platform: EmotesPlatform,
     return (emotes, message)
 }
 
+private func fetchGlobalEmotes() async throws -> [String: Emote] {
+    let url = "https://api.7tv.app/v2/emotes/global"
+    guard let url = URL(string: url) else {
+        return [:]
+    }
+    let (data, response) = try await httpGet(from: url)
+    if !response.isSuccessful {
+        throw "Not successful"
+    }
+    let emotes = try JSONDecoder().decode([SeventvGlobalEmote].self, from: data)
+    var fetchedEmotes: [String: Emote] = [:]
+    for emote in emotes {
+        guard let url = emote.urls.last?.last else {
+            logger.error("Failed to create URL for 7TV emote \(emote.name)")
+            throw "No URL found"
+        }
+        guard let url = URL(string: url) else {
+            logger.error("Bad 7TV emote URL '\(url)'")
+            throw "Invalid URL"
+        }
+        fetchedEmotes[emote.name] = Emote(url: url)
+    }
+    return fetchedEmotes
+}
+
 private func getWebpName(files: [SeventvFile]) -> String? {
     for file in files where file.name.hasSuffix(".webp") {
         return file.name
@@ -66,14 +96,6 @@ private func makeUrl(data: SeventvEmoteData) -> URL? {
     return url
 }
 
-private func fetchGlobalEmotes() async throws -> [String: Emote] {
-    return [:]
-    /* return await fetchEmotes(
-         url: "https://api.7tv.app/v2/emotes/global",
-         message: "global"
-     ) */
-}
-
 private func fetchChannelEmotes(platform: EmotesPlatform,
                                 channelId: String) async throws
     -> [String: Emote]
@@ -84,15 +106,17 @@ private func fetchChannelEmotes(platform: EmotesPlatform,
     if platform == .kick {
         return [:]
     }
-    return try await fetchEmotes(
-        url: "https://api.7tv.app/v3/users/twitch/\(channelId)",
-        message: "channel"
-    )
-}
-
-private func fetchEmotes(url: String, message _: String) async throws -> [String: Emote] {
-    var fetchedEmotes: [String: Emote] = [:]
-    let data = try await httpGet(from: URL(string: url)!)
+    let url = "https://api.7tv.app/v3/users/twitch/\(channelId)"
+    guard let url = URL(string: url) else {
+        return [:]
+    }
+    let (data, response) = try await httpGet(from: url)
+    if response.isNotFound {
+        return [:]
+    }
+    if !response.isSuccessful {
+        throw "Not successful"
+    }
     let user = try JSONDecoder().decode(SeventvUser.self, from: data)
     guard let emotes = user.emote_set.emotes else {
         logger.info("Emotes missing")
@@ -102,6 +126,7 @@ private func fetchEmotes(url: String, message _: String) async throws -> [String
         logger.info("Emotes list empty")
         throw "Emotes list empty"
     }
+    var fetchedEmotes: [String: Emote] = [:]
     for emote in emotes {
         guard let url = makeUrl(data: emote.data) else {
             logger.error("Failed to create URL for 7TV emote \(emote.name)")

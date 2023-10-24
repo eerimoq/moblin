@@ -129,8 +129,6 @@ ToDo
 
 - Investigate what can be moved from main thread for a snappier UI.
 
-- Try fetching emotes again on failure.
-
 - Make it easier to see if a button is pressed or not?
 
 - Long chat messages makes video smaller, leaving white rectangle on

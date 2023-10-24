@@ -41,10 +41,13 @@ private func makeUrl(emote: BttvEmote) -> URL? {
 
 private func fetchGlobalEmotes() async throws -> [String: Emote] {
     var emotes: [String: Emote] = [:]
-    let data =
-        try await httpGet(
-            from: URL(string: "https://api.betterttv.net/3/cached/emotes/global")!
-        )
+    guard let url = URL(string: "https://api.betterttv.net/3/cached/emotes/global") else {
+        return [:]
+    }
+    let (data, response) = try await httpGet(from: url)
+    if !response.isSuccessful {
+        throw "Not successful"
+    }
     for emote in try JSONDecoder().decode([BttvEmote].self, from: data) {
         guard let url = makeUrl(emote: emote) else {
             continue
@@ -64,9 +67,15 @@ private func fetchChannelEmotes(platform: EmotesPlatform,
         return [:]
     }
     var emotes: [String: Emote] = [:]
-    let url =
-        URL(string: "https://api.betterttv.net/3/cached/users/twitch/\(channelId)")!
-    let data = try await httpGet(from: url)
+    guard let url =
+        URL(string: "https://api.betterttv.net/3/cached/users/twitch/\(channelId)")
+    else {
+        return [:]
+    }
+    let (data, response) = try await httpGet(from: url)
+    if !response.isSuccessful {
+        throw " Not successful"
+    }
     let channel = try JSONDecoder().decode(BttvChannel.self, from: data)
     for emote in channel.sharedEmotes ?? [] {
         guard let url = makeUrl(emote: emote) else {

@@ -66,10 +66,14 @@ final class KickPusher: NSObject {
         model.makeErrorToast(title: title, subTitle: subTitle)
     }
 
+    private func handleOk(title: String) {
+        model.makeToast(title: title)
+    }
+
     func start() {
         reconnectTime = firstReconnectTime
         setupWebsocket()
-        emotes.start(platform: .kick, channelId: channelId, onError: handleError)
+        emotes.start(platform: .kick, channelId: channelId, onError: handleError, onOk: handleOk)
     }
 
     func stop() {
