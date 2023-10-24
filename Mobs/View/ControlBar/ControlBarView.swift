@@ -63,7 +63,7 @@ struct ControlBarView: View {
                     Spacer()
                     Text(model.digitalClock)
                         .foregroundColor(.white)
-                        .font(.system(size: 13))
+                        .font(smallFont)
                 }
                 HStack {
                     Image(model.iconImage)

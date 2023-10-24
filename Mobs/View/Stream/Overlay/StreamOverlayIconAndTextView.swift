@@ -10,18 +10,18 @@ struct StreamOverlayIconAndTextView: View {
         HStack(spacing: 1) {
             if textFirst {
                 StreamOverlayTextView(text: text)
-                    .font(.system(size: 13))
+                    .font(smallFont)
             }
             Image(systemName: icon)
                 .frame(width: 17, height: 17)
-                .font(.system(size: 13))
+                .font(smallFont)
                 .padding([.leading, .trailing], 2)
                 .foregroundColor(color)
                 .background(Color(white: 0, opacity: 0.6))
                 .cornerRadius(5)
             if !textFirst {
                 StreamOverlayTextView(text: text)
-                    .font(.system(size: 13))
+                    .font(smallFont)
             }
         }
         .padding(0)

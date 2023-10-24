@@ -5,19 +5,19 @@ private let redThresholdDb: Float = -8.5
 private let yellowThresholdDb: Float = -20
 private let zeroThresholdDb: Float = -60
 
+// Approx 40 * 0.3 = 12
+private let maxBars = "|||||||||||||||"
+
 struct AudioLevelView: View {
     var showBar: Bool
     var level: Float
 
-    private func bars(count: Float) -> String {
-        var bar = ""
-        for _ in stride(from: 0, to: count.rounded(.toNearestOrAwayFromZero), by: 1) {
-            bar.append("|")
-        }
-        return bar
+    private func bars(count: Float) -> Substring {
+        let barCount = Int(count.rounded(.toNearestOrAwayFromZero))
+        return maxBars.prefix(barCount)
     }
 
-    private func redText() -> String {
+    private func redText() -> Substring {
         guard level > redThresholdDb else {
             return ""
         }
@@ -25,7 +25,7 @@ struct AudioLevelView: View {
         return bars(count: db * barsPerDb)
     }
 
-    private func yellowText() -> String {
+    private func yellowText() -> Substring {
         guard level > yellowThresholdDb else {
             return ""
         }
@@ -33,7 +33,7 @@ struct AudioLevelView: View {
         return bars(count: db * barsPerDb)
     }
 
-    private func greenText() -> String {
+    private func greenText() -> Substring {
         guard level > zeroThresholdDb else {
             return ""
         }
@@ -57,14 +57,14 @@ struct AudioLevelView: View {
                     .padding([.bottom], 2)
                     .background(Color(white: 0, opacity: 0.6))
                     .cornerRadius(5)
-                    .font(.system(size: 13))
+                    .font(smallFont)
                     .bold()
                 } else {
                     Text("\(Int(level)) dB")
                         .padding([.leading, .trailing], 2)
                         .background(Color(white: 0, opacity: 0.6))
                         .cornerRadius(5)
-                        .font(.system(size: 13))
+                        .font(smallFont)
                 }
             } else {
                 Text("Muted")
@@ -72,11 +72,11 @@ struct AudioLevelView: View {
                     .foregroundColor(.white)
                     .background(Color(white: 0, opacity: 0.6))
                     .cornerRadius(5)
-                    .font(.system(size: 13))
+                    .font(smallFont)
             }
             Image(systemName: "waveform")
                 .frame(width: 17, height: 17)
-                .font(.system(size: 13))
+                .font(smallFont)
                 .padding([.leading, .trailing], 2)
                 .padding([.bottom], showBar ? 2 : 0)
                 .foregroundColor(.white)

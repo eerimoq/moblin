@@ -399,9 +399,11 @@ extension HTTPURLResponse {
 func httpGet(from: URL) async throws -> (Data, HTTPURLResponse) {
     let (data, response) = try await URLSession.shared.data(from: from)
     if let response = response.http {
-        logger.info("\(from) \(response.statusCode) \(data.count)")
+        // logger.info("\(from) \(response.statusCode) \(data.count)")
         return (data, response)
     } else {
         throw "Not an HTTP response"
     }
 }
+
+let smallFont = Font.system(size: 13)
