@@ -409,10 +409,10 @@ extension Media: SrtlaDelegate {
         }
     }
 
-    func srtlaError() {
+    func srtlaError(message: String) {
         DispatchQueue.main.async {
-            logger.info("stream: srtla: Error")
-            self.onSrtDisconnected("General SRT error")
+            logger.info("stream: SRT error: \(message)")
+            self.onSrtDisconnected("SRT error: \(message)")
         }
     }
 

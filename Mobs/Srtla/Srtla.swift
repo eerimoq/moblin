@@ -2,7 +2,7 @@ import Foundation
 
 protocol SrtlaDelegate: AnyObject {
     func srtlaReady(port: UInt16)
-    func srtlaError()
+    func srtlaError(message: String)
     func srtlaSetVideoStreamBitrate(bitrate: UInt32)
 }
 
@@ -73,7 +73,7 @@ class Srtla {
             self.connectTimer!.schedule(deadline: .now() + timeout)
             self.connectTimer!.setEventHandler {
                 logger.info("srtla: Connect timer expired")
-                self.onDisconnected()
+                self.onDisconnected(message: "connect timer expired")
             }
             self.connectTimer!.activate()
             self.state = .waitForRemoteSocketConnected
@@ -219,20 +219,20 @@ class Srtla {
         connectTimer = nil
     }
 
-    private func handleLocalError() {
-        onDisconnected()
+    private func handleLocalError(message: String) {
+        onDisconnected(message: message)
     }
 
-    private func onDisconnected() {
+    private func onDisconnected(message: String) {
         stop()
-        delegate?.srtlaError()
+        delegate?.srtlaError(message: message)
         state = .idle
     }
 
     private func handleLocalPacket(packet: Data) {
         guard let connection = selectRemoteConnection() else {
             logger.warning("srtla: local: No remote connection found")
-            onDisconnected()
+            onDisconnected(message: "no remote connection found")
             return
         }
         connection.sendSrtPacket(packet: packet)

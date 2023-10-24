@@ -6,7 +6,7 @@ class LocalListener {
     private var connection: NWConnection?
     var packetHandler: ((_ packet: Data) -> Void)?
     var onReady: ((_ port: UInt16) -> Void)?
-    var onError: (() -> Void)?
+    var onError: ((_ message: String) -> Void)?
 
     init() {}
 
@@ -39,7 +39,7 @@ class LocalListener {
         case .ready:
             onReady?(listener.port!.rawValue)
         default:
-            onError?()
+            onError?("bad network state")
         }
     }
 
