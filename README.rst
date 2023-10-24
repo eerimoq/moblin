@@ -123,17 +123,17 @@ ToDo
 
 - Improve the browser widget.
 
-- Improve adaptive bitrate algorithm.
+- Improve SRT adaptive bitrate algorithm.
 
 - Investigate what can be moved from main thread for a snappier UI.
-
-- Make it easier to see if a button is pressed or not?
 
 - Long chat messages makes video smaller sometimes, leaving white
   rectangle on left part of screen. How to reproduce?
 
 Ideas/plan
 ==========
+
+- Make it easier to see if a button is pressed or not?
 
 - Optional emotes cache on disk.
 
