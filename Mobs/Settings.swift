@@ -289,6 +289,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case widget = "Widget"
     case microphone = "Microphone"
     case mic = "Mic"
+    case chat = "Chat"
 }
 
 let buttonTypes = SettingsButtonType.allCases.filter { button in
@@ -426,7 +427,11 @@ class Database: Codable {
             from: settings.data(using: .utf8)!
         )
         for button in database.buttons {
-            button.isOn = false
+            if button.type == .chat {
+                button.isOn = !database.show.chat
+            } else {
+                button.isOn = false
+            }
         }
         if database.streams.isEmpty {
             addDefaultStreams(database: database)
@@ -505,6 +510,7 @@ func addDefaultScenes(database: Database) {
     scene.addButton(id: database.buttons[1].id)
     scene.addButton(id: database.buttons[2].id)
     scene.addButton(id: database.buttons[8].id)
+    scene.addButton(id: database.buttons[9].id)
     scene.addButton(id: database.buttons[3].id)
     scene.addButton(id: database.buttons[4].id)
     scene.addButton(id: database.buttons[5].id)
@@ -517,6 +523,7 @@ func addDefaultScenes(database: Database) {
     scene.addButton(id: database.buttons[1].id)
     scene.addButton(id: database.buttons[2].id)
     scene.addButton(id: database.buttons[8].id)
+    scene.addButton(id: database.buttons[9].id)
     scene.addButton(id: database.buttons[3].id)
     database.scenes.append(scene)
 }
@@ -644,6 +651,14 @@ func addDefaultButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "music.mic"
     button.systemImageNameOff = "music.mic"
+    database.buttons.append(button)
+
+    button = SettingsButton(name: "Chat")
+    button.id = UUID()
+    button.type = .chat
+    button.imageType = "System name"
+    button.systemImageNameOn = "message.fill"
+    button.systemImageNameOff = "message"
     database.buttons.append(button)
 }
 

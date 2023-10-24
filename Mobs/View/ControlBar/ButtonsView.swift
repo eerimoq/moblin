@@ -101,6 +101,13 @@ struct ButtonsView: View {
         model.sceneUpdated()
     }
 
+    func chatAction(state: ButtonState) {
+        state.button.isOn.toggle()
+        model.database.show.chat.toggle()
+        model.updateButtonStates()
+        model.sceneUpdated()
+    }
+
     var body: some View {
         VStack {
             ForEach(model.buttonPairs) { pair in
@@ -161,6 +168,15 @@ struct ButtonsView: View {
                                     on: second.isOn
                                 )
                             })
+                        case .chat:
+                            Button(action: {
+                                chatAction(state: second)
+                            }, label: {
+                                ButtonImage(
+                                    image: getImage(state: second),
+                                    on: second.isOn
+                                )
+                            })
                         }
                     } else {
                         ButtonPlaceholderImage()
@@ -214,6 +230,15 @@ struct ButtonsView: View {
                     case .mic:
                         Button(action: {
                             model.showingMic = true
+                        }, label: {
+                            ButtonImage(
+                                image: getImage(state: pair.first),
+                                on: pair.first.isOn
+                            )
+                        })
+                    case .chat:
+                        Button(action: {
+                            chatAction(state: pair.first)
                         }, label: {
                             ButtonImage(
                                 image: getImage(state: pair.first),

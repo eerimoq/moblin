@@ -105,6 +105,8 @@ var imageSystemNames = [
     "teddybear.fill",
     "pawprint",
     "pawprint.fill",
+    "message",
+    "message.fill",
 ]
 
 private let columns = [
