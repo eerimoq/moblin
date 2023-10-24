@@ -1,2 +1,3 @@
 disabled_rules:
   - function_parameter_count
+  - type_name

@@ -39,6 +39,28 @@ struct StreamVideoSettingsView: View {
                         value: formatBytesPerSecond(speed: Int64(stream.bitrate))
                     )
                 }
+                if logger.debugEnabled {
+                    NavigationLink(
+                        destination: StreamVideoCaptureSessionPresetSettingsView(
+                            model: model,
+                            stream: stream,
+                            toolbar: toolbar
+                        )
+                    ) {
+                        Toggle(isOn: Binding(get: {
+                            stream.captureSessionPresetEnabled!
+                        }, set: { value in
+                            stream.captureSessionPresetEnabled = value
+                            model.store()
+                            model.reloadStreamIfEnabled(stream: stream)
+                        })) {
+                            TextItemView(
+                                name: "Preset",
+                                value: stream.captureSessionPreset!.rawValue
+                            )
+                        }
+                    }
+                }
             }
         }
         .navigationTitle("Video")

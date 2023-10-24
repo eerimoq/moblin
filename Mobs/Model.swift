@@ -678,22 +678,51 @@ final class Model: ObservableObject {
         mthkView.attachStream(media.getNetStream())
     }
 
+    private func getPreset(preset: AVCaptureSession.Preset) -> AVCaptureSession.Preset {
+        if logger.debugEnabled && stream.captureSessionPresetEnabled! {
+            switch stream.captureSessionPreset! {
+            case .high:
+                return .high
+            case .medium:
+                return .medium
+            case .low:
+                return .low
+            case .hd1280x720:
+                return .hd1280x720
+            case .hd1920x1080:
+                return .hd1920x1080
+            case .hd4K3840x2160:
+                return .hd4K3840x2160
+            case .vga640x480:
+                return .vga640x480
+            case .iFrame960x540:
+                return .iFrame960x540
+            case .iFrame1280x720:
+                return .iFrame1280x720
+            case .cif352x288:
+                return .cif352x288
+            }
+        } else {
+            return preset
+        }
+    }
+
     private func setStreamResolution() {
         switch stream.resolution {
         case .r1920x1080:
-            media.setVideoSessionPreset(preset: .hd1920x1080)
+            media.setVideoSessionPreset(preset: getPreset(preset: .hd1920x1080))
             media.setVideoSize(size: .init(width: 1920, height: 1080))
         case .r1280x720:
-            media.setVideoSessionPreset(preset: .hd1280x720)
+            media.setVideoSessionPreset(preset: getPreset(preset: .hd1280x720))
             media.setVideoSize(size: .init(width: 1280, height: 720))
         case .r854x480:
-            media.setVideoSessionPreset(preset: .hd1280x720)
+            media.setVideoSessionPreset(preset: getPreset(preset: .hd1280x720))
             media.setVideoSize(size: .init(width: 854, height: 480))
         case .r640x360:
-            media.setVideoSessionPreset(preset: .hd1280x720)
+            media.setVideoSessionPreset(preset: getPreset(preset: .hd1280x720))
             media.setVideoSize(size: .init(width: 640, height: 360))
         case .r426x240:
-            media.setVideoSessionPreset(preset: .hd1280x720)
+            media.setVideoSessionPreset(preset: getPreset(preset: .hd1280x720))
             media.setVideoSize(size: .init(width: 426, height: 240))
         }
     }

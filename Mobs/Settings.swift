@@ -28,6 +28,21 @@ class SettingsStreamSrt: Codable {
     var latency: Int32 = 2000
 }
 
+enum SettingsCaptureSessionPreset: String, Codable, CaseIterable {
+    case high
+    case medium
+    case low
+    case hd1280x720
+    case hd1920x1080
+    case hd4K3840x2160
+    case vga640x480
+    case iFrame960x540
+    case iFrame1280x720
+    case cif352x288
+}
+
+let captureSessionPresets = SettingsCaptureSessionPreset.allCases.map { $0.rawValue }
+
 class SettingsStream: Codable, Identifiable {
     var name: String
     var id: UUID = .init()
@@ -42,6 +57,8 @@ class SettingsStream: Codable, Identifiable {
     var codec: SettingsStreamCodec = .h264avc
     var adaptiveBitrate: Bool? = false
     var srt: SettingsStreamSrt? = .init()
+    var captureSessionPresetEnabled: Bool? = false
+    var captureSessionPreset: SettingsCaptureSessionPreset? = .medium
 
     init(name: String) {
         self.name = name
@@ -854,6 +871,16 @@ final class Settings {
         }
         if realDatabase.chat!.animatedEmotes == nil {
             realDatabase.chat!.animatedEmotes = true
+            store()
+        }
+        for stream in realDatabase.streams
+            where stream.captureSessionPresetEnabled == nil
+        {
+            stream.captureSessionPresetEnabled = false
+            store()
+        }
+        for stream in realDatabase.streams where stream.captureSessionPreset == nil {
+            stream.captureSessionPreset = .medium
             store()
         }
     }
