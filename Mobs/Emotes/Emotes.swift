@@ -60,7 +60,7 @@ class Emotes {
                     do {
                         try await Task.sleep(nanoseconds: retryTime)
                         retryTime *= 2
-                        retryTime = min(retryTime, 3600_000_000_000)
+                        retryTime = min(retryTime, 3_600_000_000_000)
                     } catch {
                         return
                     }

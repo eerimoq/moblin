@@ -391,6 +391,7 @@ extension HTTPURLResponse {
     var isSuccessful: Bool {
         return 200 ... 299 ~= statusCode
     }
+
     var isNotFound: Bool {
         return statusCode == 404
     }

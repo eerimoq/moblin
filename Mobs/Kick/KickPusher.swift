@@ -73,7 +73,12 @@ final class KickPusher: NSObject {
     func start() {
         reconnectTime = firstReconnectTime
         setupWebsocket()
-        emotes.start(platform: .kick, channelId: channelId, onError: handleError, onOk: handleOk)
+        emotes.start(
+            platform: .kick,
+            channelId: channelId,
+            onError: handleError,
+            onOk: handleOk
+        )
     }
 
     func stop() {

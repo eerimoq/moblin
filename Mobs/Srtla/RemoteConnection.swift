@@ -294,7 +294,11 @@ class RemoteConnection {
                 guard offset <= packet.count - 4 else {
                     logger
                         .error(
-                            "srtla: \(typeString): Missing second sequence number in range nak"
+                            """
+                            srtla: \(typeString): Missing second sequence number in \
+                            range nak at offset \(offset) with packet length \(packet
+                                .count)
+                            """
                         )
                     return
                 }
@@ -435,7 +439,7 @@ class RemoteConnection {
 
     private func handlePacket(packet: Data) {
         guard packet.count >= 2 else {
-            logger.error("srtla: \(typeString): Packet too short.")
+            logger.error("srtla: \(typeString): Packet too short (\(packet.count) bytes.")
             return
         }
         latestReceivedDate = Date()

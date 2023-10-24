@@ -42,7 +42,12 @@ final class TwitchChatMobs {
     }
 
     func start(channelName: String, channelId: String) {
-        emotes.start(platform: .twitch, channelId: channelId, onError: handleError, onOk: handleOk)
+        emotes.start(
+            platform: .twitch,
+            channelId: channelId,
+            onError: handleError,
+            onOk: handleOk
+        )
         task = Task.init {
             do {
                 var reconnectTime = firstReconnectTime
