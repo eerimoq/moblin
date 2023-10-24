@@ -34,6 +34,9 @@ struct AudioLevelView: View {
     }
 
     private func greenText() -> String {
+        guard level > zeroThresholdDb else {
+            return ""
+        }
         let db = min(level - zeroThresholdDb, yellowThresholdDb - zeroThresholdDb)
         return bars(count: db * barsPerDb)
     }
