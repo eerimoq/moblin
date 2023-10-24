@@ -97,8 +97,6 @@ Features
 
   - Twitch, BTTV, FFZ and 7TV emotes.
 
-    - Only images. Not GIF or other animation.
-
 - Cosmetics.
 
   - Select MOBS icon to show in app and on home screen.
@@ -131,8 +129,8 @@ ToDo
 
 - Make it easier to see if a button is pressed or not?
 
-- Long chat messages makes video smaller, leaving white rectangle on
-  left part of screen.
+- Long chat messages makes video smaller sometimes, leaving white
+  rectangle on left part of screen. How to reproduce?
 
 Ideas/plan
 ==========
