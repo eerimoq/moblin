@@ -7,13 +7,6 @@ struct StreamUrlSettingsView: View {
     @State var value: String
     @State var show: Bool = false
 
-    init(model: Model, stream: SettingsStream, toolbar: Toolbar) {
-        self.model = model
-        self.toolbar = toolbar
-        self.stream = stream
-        value = stream.url
-    }
-
     func submitUrl() {
         value = value.trim()
         if let message = isValidUrl(url: value) {
@@ -27,23 +20,20 @@ struct StreamUrlSettingsView: View {
     var body: some View {
         Form {
             Section {
-                if show {
-                    TextField("", text: $value, onEditingChanged: { isEditing in
-                        if !isEditing {
-                            submitUrl()
-                        }
-                    })
-                    .disableAutocorrection(true)
-                } else {
-                    Text(replaceSensitive(value: value, sensitive: true))
-                        .lineLimit(1)
+                TextField("", text: $value, onEditingChanged: { isEditing in
+                    if !isEditing {
+                        submitUrl()
+                    }
+                })
+                .disableAutocorrection(true)
+                .onSubmit {
                 }
+                .opacity(show ? 1 : 0)
                 HStack {
                     Spacer()
                     if show {
                         Button("Hide sensitive URL") {
                             show = false
-                            submitUrl()
                         }
                     } else {
                         Button("Show sensitive URL", role: .destructive) {
@@ -89,18 +79,18 @@ struct StreamUrlSettingsView: View {
                     Group {
                         Text("YouTube").underline()
                         Text(
-                            """
-                            Example:  rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3
-                            """
+                                        """
+                                        Example:  rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3
+                                        """
                         )
                         Text("")
                     }
                     Group {
                         Text("Facebook").underline()
                         Text(
-                            """
-                            Example:  rtmps://live-api-s.facebook.com:443/rtmp/FB-11152522122511115-0-BctNCp9jzzz-AAA
-                            """
+                                            """
+                                            Example:  rtmps://live-api-s.facebook.com:443/rtmp/FB-11152522122511115-0-BctNCp9jzzz-AAA
+                                            """
                         )
                         Text("")
                     }
@@ -125,10 +115,10 @@ struct StreamUrlSettingsView: View {
                             .font(.footnote)
                         }
                         Text(
-                            """
-                            Example:  rtmps://fa723fc1b171.global-contribute.live-video.net/\
-                            sk_us-west-123hu43ui34hrkjh
-                            """
+                                            """
+                                            Example:  rtmps://fa723fc1b171.global-contribute.live-video.net/\
+                                            sk_us-west-123hu43ui34hrkjh
+                                            """
                         )
                         Text("")
                     }
