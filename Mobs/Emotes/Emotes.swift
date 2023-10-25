@@ -50,6 +50,9 @@ class Emotes {
                     channelId: channelId
                 )
                 self.emotes = self.emotes.merging(seventvEmotes) { $1 }
+                if Task.isCancelled {
+                    return
+                }
                 if let error = bttvError ?? ffzError ?? seventvError {
                     logger.warning(error)
                     if firstRetry {
@@ -69,9 +72,6 @@ class Emotes {
                     if !firstRetry {
                         onOk("Emotes fetched")
                     }
-                }
-                if Task.isCancelled {
-                    return
                 }
             }
             logger.info("Emotes lists fetched")
