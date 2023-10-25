@@ -11,8 +11,8 @@ struct WidgetVideoEffectSettingsView: View {
         self.model = model
         self.widget = widget
         selection = widget.videoEffect.type.rawValue
-        noiseLevel = widget.videoEffect.noiseReductionNoiseLevel! * 10
-        sharpness = widget.videoEffect.noiseReductionSharpness! / 10
+        noiseLevel = widget.videoEffect.noiseReductionNoiseLevel * 10
+        sharpness = widget.videoEffect.noiseReductionSharpness / 10
     }
 
     var body: some View {

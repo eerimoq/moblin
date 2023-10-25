@@ -17,7 +17,7 @@ struct StreamVideoBitrateSettingsView: View {
         Form {
             Section {
                 Picker("", selection: $selection) {
-                    ForEach(model.database.bitratePresets!) { preset in
+                    ForEach(model.database.bitratePresets) { preset in
                         Text(formatBytesPerSecond(speed: Int64(preset.bitrate)))
                             .tag(preset.bitrate)
                     }
@@ -67,7 +67,7 @@ struct StreamVideoBitrateSettingsButtonView: View {
             Form {
                 Section("Bitrate") {
                     Picker("", selection: $selection) {
-                        ForEach(model.database.bitratePresets!) { preset in
+                        ForEach(model.database.bitratePresets) { preset in
                             Text(formatBytesPerSecond(speed: Int64(preset.bitrate)))
                                 .tag(preset.bitrate)
                         }

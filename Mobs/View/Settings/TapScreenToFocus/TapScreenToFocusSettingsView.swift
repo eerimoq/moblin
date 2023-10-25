@@ -5,7 +5,7 @@ struct TapScreenToFocusSettingsView: View {
 
     var body: some View {
         Toggle("Tap screen to focus", isOn: Binding(get: {
-            model.database.tapToFocus!
+            model.database.tapToFocus
         }, set: { value in
             model.database.tapToFocus = value
             model.store()

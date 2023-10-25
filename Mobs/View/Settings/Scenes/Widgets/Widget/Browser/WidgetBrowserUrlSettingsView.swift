@@ -10,12 +10,12 @@ struct WidgetBrowserUrlSettingsView: View {
         self.model = model
         self.widget = widget
         self.toolbar = toolbar
-        value = widget.browser!.url
+        value = widget.browser.url
     }
 
     func submitUrl() {
         value = value.trim()
-        widget.browser!.url = value
+        widget.browser.url = value
         model.store()
         model.resetSelectedScene()
     }

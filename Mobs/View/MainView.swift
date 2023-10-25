@@ -107,7 +107,7 @@ struct MainView: View {
                             streamView
                                 .ignoresSafeArea()
                                 .onTapGesture(count: 1) { location in
-                                    guard model.database.tapToFocus! else {
+                                    guard model.database.tapToFocus else {
                                         return
                                     }
                                     let x = (location.x / metrics.size.width)
@@ -120,7 +120,7 @@ struct MainView: View {
                                     ))
                                 }
                                 .onLongPressGesture(perform: {
-                                    guard model.database.tapToFocus! else {
+                                    guard model.database.tapToFocus else {
                                         return
                                     }
                                     model.setAutoFocus()

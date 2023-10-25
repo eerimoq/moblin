@@ -37,7 +37,7 @@ struct WidgetBrowserSettingsView: View {
                 widget: widget,
                 toolbar: toolbar
             )) {
-                TextItemView(name: "URL", value: widget.browser!.url)
+                TextItemView(name: "URL", value: widget.browser.url)
             }
             /* NavigationLink(destination: TextEditView(
               title: "Width",

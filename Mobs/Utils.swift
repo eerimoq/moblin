@@ -145,10 +145,6 @@ func widgetImage(widget: SettingsWidget) -> String {
         return "photo"
     case .videoEffect:
         return "camera.filters"
-    case .camera:
-        return "camera"
-    case .webPage:
-        return "photo.stack"
     case .browser:
         return "photo.stack"
     case .time:

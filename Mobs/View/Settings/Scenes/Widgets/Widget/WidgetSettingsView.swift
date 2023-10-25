@@ -39,10 +39,6 @@ struct WidgetSettingsView: View {
                 WidgetImageSettingsView(model: model, widget: widget)
             case .videoEffect:
                 WidgetVideoEffectSettingsView(model: model, widget: widget)
-            case .camera:
-                EmptyView()
-            case .webPage:
-                EmptyView()
             case .browser:
                 WidgetBrowserSettingsView(model: model, widget: widget, toolbar: toolbar)
             case .time:

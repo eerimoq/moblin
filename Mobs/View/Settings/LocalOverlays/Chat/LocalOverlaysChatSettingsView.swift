@@ -201,7 +201,7 @@ struct LocalOverlaysChatSettingsView: View {
                     HStack {
                         Text("Message")
                         Spacer()
-                        ColorCircle(color: model.database.chat!.messageColor.color())
+                        ColorCircle(color: messageColor)
                     }
                 }
                 .foregroundColor(.primary)
@@ -224,8 +224,7 @@ struct LocalOverlaysChatSettingsView: View {
                         HStack {
                             Text("Background")
                             Spacer()
-                            ColorCircle(color: model.database.chat!.backgroundColor
-                                .color())
+                            ColorCircle(color: backgroundColor)
                         }
                     }
                 }
@@ -250,7 +249,7 @@ struct LocalOverlaysChatSettingsView: View {
                         HStack {
                             Text("Shadow")
                             Spacer()
-                            ColorCircle(color: model.database.chat!.shadowColor.color())
+                            ColorCircle(color: shadowColor)
                         }
                     }
                 }

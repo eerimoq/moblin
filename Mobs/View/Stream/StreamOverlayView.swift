@@ -20,7 +20,7 @@ struct StreamOverlayView: View {
 
     var body: some View {
         ZStack {
-            if model.database.tapToFocus!, let focusPoint = model.manualFocusPoint {
+            if model.database.tapToFocus, let focusPoint = model.manualFocusPoint {
                 GeometryReader { metrics in
                     Canvas { context, _ in
                         drawFocus(

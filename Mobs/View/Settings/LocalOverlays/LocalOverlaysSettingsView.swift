@@ -18,13 +18,13 @@ struct LocalOverlaysSettingsView: View {
                     model.store()
                 }))
                 Toggle("Mic", isOn: Binding(get: {
-                    show.microphone!
+                    show.microphone
                 }, set: { value in
                     show.microphone = value
                     model.store()
                 }))
                 Toggle("Zoom", isOn: Binding(get: {
-                    show.zoom!
+                    show.zoom
                 }, set: { value in
                     show.zoom = value
                     model.store()
@@ -42,7 +42,7 @@ struct LocalOverlaysSettingsView: View {
                     toolbar: toolbar
                 )) {
                     Toggle("Audio level", isOn: Binding(get: {
-                        show.audioLevel!
+                        show.audioLevel
                     }, set: { value in
                         show.audioLevel = value
                         model.store()
@@ -76,7 +76,7 @@ struct LocalOverlaysSettingsView: View {
             }
             Section {
                 Toggle("Zoom presets", isOn: Binding(get: {
-                    show.zoomPresets!
+                    show.zoomPresets
                 }, set: { value in
                     show.zoomPresets = value
                     model.store()

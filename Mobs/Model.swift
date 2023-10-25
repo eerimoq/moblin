@@ -268,8 +268,8 @@ final class Model: ObservableObject {
         updateIconImageFromDatabase()
         setupAudioSession()
         selectMic(orientation: mics[0])
-        backZoomPresetId = database.zoom!.back[0].id
-        frontZoomPresetId = database.zoom!.front[0].id
+        backZoomPresetId = database.zoom.back[0].id
+        frontZoomPresetId = database.zoom.front[0].id
         mthkView.videoGravity = .resizeAspect
         if database.maximumScreenFpsEnabled! {
             mthkView.fps = Double(database.maximumScreenFps!)
@@ -310,12 +310,12 @@ final class Model: ObservableObject {
     }
 
     func updateIconImageFromDatabase() {
-        if !isInMyIcons(image: database.iconImage!) {
-            logger.warning("Database icon image \(database.iconImage!) is not mine")
+        if !isInMyIcons(image: database.iconImage) {
+            logger.warning("Database icon image \(database.iconImage) is not mine")
             database.iconImage = plainIcon.image
             store()
         }
-        iconImage = database.iconImage!
+        iconImage = database.iconImage
     }
 
     func handleSettingsUrls(urls: Set<UIOpenURLContext>) {
@@ -518,8 +518,6 @@ final class Model: ObservableObject {
             videoEffects[widget.id] = TripleEffect()
         case .noiseReduction:
             videoEffects[widget.id] = NoiseReductionEffect()
-        case .seipa:
-            videoEffects[widget.id] = SepiaEffect()
         }
     }
 
@@ -565,7 +563,7 @@ final class Model: ObservableObject {
                 {
                     let videoSize = media.getVideoSize()
                     browserEffects[sceneWidget.id] = BrowserEffect(
-                        url: URL(string: widget.browser!.url)!,
+                        url: URL(string: widget.browser.url)!,
                         widget: sceneWidget,
                         videoSize: CGSize(
                             width: Double(videoSize.width),
@@ -930,8 +928,6 @@ final class Model: ObservableObject {
                 }
             }
             switch widget.type {
-            case .camera:
-                logger.error("Found camera widget")
             case .image:
                 if let imageEffect = imageEffects[sceneWidget.id] {
                     media.registerEffect(imageEffect)
@@ -946,17 +942,15 @@ final class Model: ObservableObject {
                 if var videoEffect = videoEffects[widget.id] {
                     if let noiseReductionEffect = videoEffect as? NoiseReductionEffect {
                         noiseReductionEffect.noiseLevel = widget.videoEffect
-                            .noiseReductionNoiseLevel!
+                            .noiseReductionNoiseLevel
                         noiseReductionEffect.sharpness = widget.videoEffect
-                            .noiseReductionSharpness!
+                            .noiseReductionSharpness
                     } else if videoEffect is RandomEffect {
                         videoEffect = RandomEffect()
                         videoEffects[widget.id] = videoEffect
                     }
                     media.registerEffect(videoEffect)
                 }
-            case .webPage:
-                logger.error("Found web page widget")
             case .browser:
                 if let browserEffect = browserEffects[sceneWidget.id] {
                     media.registerEffect(browserEffect)
@@ -1064,16 +1058,16 @@ final class Model: ObservableObject {
         cameraPosition = position
         switch position {
         case .back:
-            if database.zoom!.switchToBack!.enabled {
+            if database.zoom.switchToBack!.enabled {
                 clearZoomId()
-                backZoomLevel = Double(database.zoom!.switchToBack!.level)
+                backZoomLevel = Double(database.zoom.switchToBack!.level)
             }
             zoomLevel = backZoomLevel
             isMirrored = false
         case .front:
-            if database.zoom!.switchToFront!.enabled {
+            if database.zoom.switchToFront!.enabled {
                 clearZoomId()
-                frontZoomLevel = Double(database.zoom!.switchToFront!.level)
+                frontZoomLevel = Double(database.zoom.switchToFront!.level)
             }
             zoomLevel = frontZoomLevel
             isMirrored = true
@@ -1195,11 +1189,11 @@ final class Model: ObservableObject {
     private func findZoomPreset(id: UUID) -> SettingsZoomPreset? {
         switch cameraPosition {
         case .back:
-            return database.zoom!.back.first { preset in
+            return database.zoom.back.first { preset in
                 preset.id == id
             }
         case .front:
-            return database.zoom!.front.first { preset in
+            return database.zoom.front.first { preset in
                 preset.id == id
             }
         default:
@@ -1248,19 +1242,19 @@ final class Model: ObservableObject {
     }
 
     func backZoomUpdated() {
-        if !database.zoom!.back.contains(where: { level in
+        if !database.zoom.back.contains(where: { level in
             level.id == backZoomPresetId
         }) {
-            backZoomPresetId = database.zoom!.back[0].id
+            backZoomPresetId = database.zoom.back[0].id
         }
         sceneUpdated(store: true)
     }
 
     func frontZoomUpdated() {
-        if !database.zoom!.front.contains(where: { level in
+        if !database.zoom.front.contains(where: { level in
             level.id == frontZoomPresetId
         }) {
-            frontZoomPresetId = database.zoom!.front[0].id
+            frontZoomPresetId = database.zoom.front[0].id
         }
         sceneUpdated(store: true)
     }

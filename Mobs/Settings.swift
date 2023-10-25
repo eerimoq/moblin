@@ -164,23 +164,9 @@ class SettingsWidgetVideo: Codable {
     var url: String = "https://"
 }
 
-enum SettingsWidgetCameraType: String, Codable, CaseIterable {
-    case main = "Main"
-    case back = "Back"
-    case front = "Front"
-}
-
-class SettingsWidgetCamera: Codable {
-    var type: SettingsWidgetCameraType = .main
-}
-
 class SettingsWidgetChat: Codable {}
 
 class SettingsWidgetRecording: Codable {}
-
-class SettingsWidgetWebPage: Codable {
-    var url: String = "https://google.com"
-}
 
 class SettingsWidgetBrowser: Codable {
     var url: String = "https://google.com"
@@ -198,32 +184,24 @@ enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
     case random = "Random"
     case triple = "Triple"
     case noiseReduction = "Noise reduction"
-    // Deprecated
-    case seipa = "Seipa"
 }
 
-let videoEffects = SettingsWidgetVideoEffectType.allCases.filter { effect in
-    effect != .seipa
-}.map { $0.rawValue }
+let videoEffects = SettingsWidgetVideoEffectType.allCases.map { $0.rawValue }
 
 class SettingsWidgetVideoEffect: Codable {
     var type: SettingsWidgetVideoEffectType = .movie
-    var noiseReductionNoiseLevel: Float? = 0.01
-    var noiseReductionSharpness: Float? = 1.5
+    var noiseReductionNoiseLevel: Float = 0.01
+    var noiseReductionSharpness: Float = 1.5
 }
 
 enum SettingsWidgetType: String, Codable, CaseIterable {
-    case camera = "Camera"
     case videoEffect = "Video effect"
     case image = "Image"
-    case webPage = "Web page"
     case browser = "Browser"
     case time = "Time"
 }
 
-let widgetTypes = SettingsWidgetType.allCases.filter { widgetType in
-    widgetType != .camera && widgetType != .webPage
-}.map { $0.rawValue }
+let widgetTypes = SettingsWidgetType.allCases.map { $0.rawValue }
 
 class SettingsWidget: Codable, Identifiable, Equatable {
     var name: String
@@ -232,11 +210,9 @@ class SettingsWidget: Codable, Identifiable, Equatable {
     var text: SettingsWidgetText = .init()
     var image: SettingsWidgetImage = .init()
     var video: SettingsWidgetVideo = .init()
-    var camera: SettingsWidgetCamera = .init()
     var chat: SettingsWidgetChat = .init()
     var recording: SettingsWidgetRecording = .init()
-    var webPage: SettingsWidgetWebPage? = .init()
-    var browser: SettingsWidgetBrowser? = .init()
+    var browser: SettingsWidgetBrowser = .init()
     var videoEffect: SettingsWidgetVideoEffect = .init()
 
     init(name: String) {
@@ -330,10 +306,10 @@ class SettingsShow: Codable {
     var uptime: Bool = true
     var stream: Bool = true
     var speed: Bool = true
-    var audioLevel: Bool? = true
-    var zoom: Bool? = true
-    var zoomPresets: Bool? = true
-    var microphone: Bool? = true
+    var audioLevel: Bool = true
+    var zoom: Bool = true
+    var zoomPresets: Bool = true
+    var microphone: Bool = true
     var audioBar: Bool? = true
 }
 
@@ -412,10 +388,10 @@ class Database: Codable {
     var variables: [SettingsVariable] = []
     var buttons: [SettingsButton] = []
     var show: SettingsShow = .init()
-    var zoom: SettingsZoom? = .init()
-    var tapToFocus: Bool? = false
-    var bitratePresets: [SettingsBitratePreset]? = []
-    var iconImage: String? = plainIcon.image
+    var zoom: SettingsZoom = .init()
+    var tapToFocus: Bool = false
+    var bitratePresets: [SettingsBitratePreset] = []
+    var iconImage: String = plainIcon.image
     var maximumScreenFpsEnabled: Bool? = false
     var maximumScreenFps: Int? = 60
     var videoStabilizationMode: SettingsVideoStabilizationMode? = .off
@@ -436,16 +412,13 @@ class Database: Codable {
         if database.streams.isEmpty {
             addDefaultStreams(database: database)
         }
-        if database.zoom == nil {
-            database.zoom = SettingsZoom()
-        }
-        if database.zoom!.back.isEmpty {
+        if database.zoom.back.isEmpty {
             addDefaultBackZoomPresets(database: database)
         }
-        if database.zoom!.front.isEmpty {
+        if database.zoom.front.isEmpty {
             addDefaultFrontZoomPresets(database: database)
         }
-        if database.bitratePresets == nil {
+        if database.bitratePresets.isEmpty {
             addDefaultBitratePresets(database: database)
         }
         return database
@@ -545,7 +518,7 @@ func addDefaultZoomPresets(database: Database) {
 }
 
 func addDefaultBackZoomPresets(database: Database) {
-    database.zoom!.back = [
+    database.zoom.back = [
         SettingsZoomPreset(id: UUID(), name: "0.5x", level: 1.0),
         SettingsZoomPreset(id: UUID(), name: "1x", level: 2.0),
         SettingsZoomPreset(id: UUID(), name: "2x", level: 4.0),
@@ -555,7 +528,7 @@ func addDefaultBackZoomPresets(database: Database) {
 }
 
 func addDefaultFrontZoomPresets(database: Database) {
-    database.zoom!.front = [
+    database.zoom.front = [
         SettingsZoomPreset(id: UUID(), name: "1x", level: 1.0),
         SettingsZoomPreset(id: UUID(), name: "2x", level: 2.0),
         SettingsZoomPreset(id: UUID(), name: "4x", level: 4.0),
@@ -647,7 +620,7 @@ func addDefaultButtons(database: Database) {
 
     button = SettingsButton(name: "Mic")
     button.id = UUID()
-    button.type = .microphone
+    button.type = .mic
     button.imageType = "System name"
     button.systemImageNameOn = "music.mic"
     button.systemImageNameOff = "music.mic"
@@ -726,105 +699,6 @@ final class Settings {
     }
 
     private func migrateFromOlderVersions() {
-        if realDatabase.show.audioLevel == nil {
-            realDatabase.show.audioLevel = true
-            store()
-        }
-        if realDatabase.show.microphone == nil {
-            realDatabase.show.microphone = true
-            store()
-        }
-        if realDatabase.show.zoom == nil {
-            realDatabase.show.zoom = true
-            store()
-        }
-        if realDatabase.show.zoomPresets == nil {
-            realDatabase.show.zoomPresets = realDatabase.show.zoom
-            store()
-        }
-        for widget in realDatabase.widgets {
-            if widget.type != .videoEffect {
-                continue
-            }
-            if widget.videoEffect.type != .seipa {
-                continue
-            }
-            widget.videoEffect.type = .sepia
-            store()
-        }
-        for widget in realDatabase.widgets {
-            if widget.videoEffect.noiseReductionNoiseLevel == nil {
-                widget.videoEffect.noiseReductionNoiseLevel = 0.01
-                store()
-            }
-            if widget.videoEffect.noiseReductionSharpness == nil {
-                widget.videoEffect.noiseReductionSharpness = 1.5
-                store()
-            }
-        }
-        for widget in realDatabase.widgets {
-            if widget.type != .camera {
-                continue
-            }
-            if widget.camera.type == .main {
-                widget.camera.type = .back
-                store()
-            }
-        }
-        for scene in realDatabase.scenes where scene.cameraType == nil {
-            var sceneWidgetIndexesToRemove: IndexSet = .init()
-            for (index, widget) in scene.widgets.enumerated() {
-                for realWidget in database.widgets
-                    where widget.widgetId == realWidget.id
-                {
-                    if realWidget.type == .camera {
-                        switch realWidget.camera.type {
-                        case .back:
-                            scene.cameraType = .back
-                        case .main:
-                            scene.cameraType = .back
-                        case .front:
-                            scene.cameraType = .front
-                        }
-                        sceneWidgetIndexesToRemove.insert(index)
-                    }
-                }
-            }
-            if scene.cameraType == nil {
-                scene.cameraType = .back
-            }
-            scene.widgets.remove(atOffsets: sceneWidgetIndexesToRemove)
-            store()
-        }
-        let widgets = realDatabase.widgets.filter { widget in
-            widget.type != .camera
-        }
-        if realDatabase.widgets.count != widgets.count {
-            realDatabase.widgets = widgets
-            store()
-        }
-        for widget in realDatabase.widgets {
-            if widget.webPage != nil {
-                continue
-            }
-            widget.webPage = .init()
-            store()
-        }
-        for widget in realDatabase.widgets {
-            if widget.browser != nil {
-                continue
-            }
-            widget.browser = .init()
-            store()
-        }
-        for widget in realDatabase.widgets {
-            if widget.type != .webPage {
-                continue
-            }
-            widget.type = .browser
-            widget.browser!.url = widget.webPage!.url
-            store()
-        }
         for button in realDatabase.buttons {
             if button.type != .microphone {
                 continue
@@ -832,24 +706,16 @@ final class Settings {
             button.type = .mic
             store()
         }
-        if realDatabase.tapToFocus == nil {
-            realDatabase.tapToFocus = false
-            store()
-        }
         for stream in realDatabase.streams where stream.adaptiveBitrate == nil {
             stream.adaptiveBitrate = false
             store()
         }
-        if realDatabase.iconImage == nil {
-            realDatabase.iconImage = plainIcon.image
+        if realDatabase.zoom.switchToBack == nil {
+            realDatabase.zoom.switchToBack = .init()
             store()
         }
-        if realDatabase.zoom!.switchToBack == nil {
-            realDatabase.zoom!.switchToBack = .init()
-            store()
-        }
-        if realDatabase.zoom!.switchToFront == nil {
-            realDatabase.zoom!.switchToFront = .init()
+        if realDatabase.zoom.switchToFront == nil {
+            realDatabase.zoom.switchToFront = .init()
             store()
         }
         if realDatabase.maximumScreenFpsEnabled == nil {

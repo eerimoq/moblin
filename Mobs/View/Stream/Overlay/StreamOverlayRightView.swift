@@ -111,7 +111,7 @@ struct RightOverlayView: View {
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
-            if database.show.audioLevel! {
+            if database.show.audioLevel {
                 AudioLevelView(showBar: database.show.audioBar!, level: model.audioLevel)
             }
             if database.show.speed {
@@ -139,10 +139,10 @@ struct RightOverlayView: View {
                 )
             }
             Spacer()
-            if database.show.zoomPresets! {
+            if database.show.zoomPresets {
                 if model.cameraPosition == .front {
                     Picker("", selection: $model.frontZoomPresetId) {
-                        ForEach(database.zoom!.front) { preset in
+                        ForEach(database.zoom.front) { preset in
                             Text(preset.name).tag(preset.id)
                         }
                     }
@@ -152,7 +152,7 @@ struct RightOverlayView: View {
                     .pickerStyle(.segmented)
                     .padding([.bottom], 1)
                     .background(Color(uiColor: .systemBackground).opacity(0.8))
-                    .frame(width: CGFloat(50 * database.zoom!.front.count))
+                    .frame(width: CGFloat(50 * database.zoom.front.count))
                     .cornerRadius(7)
                     .overlay(
                         RoundedRectangle(cornerRadius: 7)
@@ -161,7 +161,7 @@ struct RightOverlayView: View {
                     .padding([.bottom], 5)
                 } else {
                     Picker("", selection: $model.backZoomPresetId) {
-                        ForEach(database.zoom!.back) { preset in
+                        ForEach(database.zoom.back) { preset in
                             Text(preset.name).tag(preset.id)
                         }
                     }
@@ -171,7 +171,7 @@ struct RightOverlayView: View {
                     .pickerStyle(.segmented)
                     .padding([.bottom], 1)
                     .background(Color(uiColor: .systemBackground).opacity(0.8))
-                    .frame(width: CGFloat(50 * database.zoom!.back.count))
+                    .frame(width: CGFloat(50 * database.zoom.back.count))
                     .cornerRadius(7)
                     .overlay(
                         RoundedRectangle(cornerRadius: 7)

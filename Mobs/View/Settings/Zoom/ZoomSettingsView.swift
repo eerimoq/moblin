@@ -8,7 +8,7 @@ struct ZoomSettingsView: View {
         Form {
             Section("Back camera presets") {
                 List {
-                    ForEach(model.database.zoom!.back) { preset in
+                    ForEach(model.database.zoom.back) { preset in
                         NavigationLink(destination: ZoomPresetSettingsView(
                             model: model,
                             preset: preset,
@@ -26,19 +26,19 @@ struct ZoomSettingsView: View {
                                 )
                             }
                         }
-                        .deleteDisabled(model.database.zoom!.back.count == 1)
+                        .deleteDisabled(model.database.zoom.back.count == 1)
                     }
                     .onMove(perform: { froms, to in
-                        model.database.zoom!.back.move(fromOffsets: froms, toOffset: to)
+                        model.database.zoom.back.move(fromOffsets: froms, toOffset: to)
                         model.backZoomUpdated()
                     })
                     .onDelete(perform: { offsets in
-                        model.database.zoom!.back.remove(atOffsets: offsets)
+                        model.database.zoom.back.remove(atOffsets: offsets)
                         model.backZoomUpdated()
                     })
                 }
                 CreateButtonView(action: {
-                    model.database.zoom!.back.append(SettingsZoomPreset(
+                    model.database.zoom.back.append(SettingsZoomPreset(
                         id: UUID(),
                         name: "1x",
                         level: xToFactor(position: .back, x: 1.0)
@@ -48,7 +48,7 @@ struct ZoomSettingsView: View {
             }
             Section("Front camera presets") {
                 List {
-                    ForEach(model.database.zoom!.front) { preset in
+                    ForEach(model.database.zoom.front) { preset in
                         NavigationLink(destination: ZoomPresetSettingsView(
                             model: model,
                             preset: preset,
@@ -63,19 +63,19 @@ struct ZoomSettingsView: View {
                                 )
                             }
                         }
-                        .deleteDisabled(model.database.zoom!.front.count == 1)
+                        .deleteDisabled(model.database.zoom.front.count == 1)
                     }
                     .onMove(perform: { froms, to in
-                        model.database.zoom!.front.move(fromOffsets: froms, toOffset: to)
+                        model.database.zoom.front.move(fromOffsets: froms, toOffset: to)
                         model.frontZoomUpdated()
                     })
                     .onDelete(perform: { offsets in
-                        model.database.zoom!.front.remove(atOffsets: offsets)
+                        model.database.zoom.front.remove(atOffsets: offsets)
                         model.frontZoomUpdated()
                     })
                 }
                 CreateButtonView(action: {
-                    model.database.zoom!.front.append(SettingsZoomPreset(
+                    model.database.zoom.front.append(SettingsZoomPreset(
                         id: UUID(),
                         name: "1x",
                         level: 1.0
@@ -89,14 +89,14 @@ struct ZoomSettingsView: View {
                     toolbar: toolbar,
                     name: "back",
                     position: .back,
-                    defaultZoom: model.database.zoom!.switchToBack!
+                    defaultZoom: model.database.zoom.switchToBack!
                 )
                 ZoomSwitchToSettingsView(
                     model: model,
                     toolbar: toolbar,
                     name: "front",
                     position: .front,
-                    defaultZoom: model.database.zoom!.switchToFront!
+                    defaultZoom: model.database.zoom.switchToFront!
                 )
             } header: {
                 Text("Camera switching")
