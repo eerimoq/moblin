@@ -5,6 +5,7 @@ import CoreMotion
 import HaishinKit
 import Network
 import PhotosUI
+import SRTHaishinKit
 import SwiftUI
 import TwitchChat
 import VideoToolbox
@@ -624,13 +625,15 @@ final class Model: ObservableObject {
         case .rtmp:
             rtmpStartStream()
         case .srt:
+            payloadSize = stream.srt!.mpegtsPacketsPerPacket! * 188
             media.srtStartStream(
                 isSrtla: stream.isSrtla(),
                 url: stream.url,
                 reconnectTime: reconnectTime,
                 targetBitrate: stream.bitrate,
                 adaptiveBitrate: stream.adaptiveBitrate!,
-                latency: stream.srt!.latency
+                latency: stream.srt!.latency,
+                mpegtsPacketsPerPacket: stream.srt!.mpegtsPacketsPerPacket!
             )
         }
         updateSpeed()

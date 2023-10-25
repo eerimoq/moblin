@@ -17,8 +17,7 @@ struct TextEditView: View {
                     }
                 })
                 .disableAutocorrection(true)
-                .onSubmit {
-                }
+                .onSubmit {}
             } footer: {
                 footer
             }

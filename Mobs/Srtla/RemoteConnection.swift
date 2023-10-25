@@ -1,5 +1,6 @@
 import Foundation
 import Network
+import SRTHaishinKit
 
 enum SrtlaPacketType: UInt16 {
     case keepalive = 0x1000
@@ -66,6 +67,7 @@ class RemoteConnection {
 
     private var host: String!
     private var port: UInt16!
+    private let mpegtsPacketsPerPacket: Int
     var typeString: String
     var onSocketConnected: (() -> Void)?
     var onReg2: ((_ groupId: Data) -> Void)?
@@ -75,8 +77,9 @@ class RemoteConnection {
     var onSrtNak: ((_ sn: UInt32) -> Void)?
     var onSrtlaAck: ((_ sn: UInt32) -> Void)?
 
-    init(type: NWInterface.InterfaceType?) {
+    init(type: NWInterface.InterfaceType?, mpegtsPacketsPerPacket: Int) {
         self.type = type
+        self.mpegtsPacketsPerPacket = mpegtsPacketsPerPacket
         switch type {
         case .wifi:
             typeString = "WiFi"
@@ -178,28 +181,25 @@ class RemoteConnection {
         guard let connection else {
             return
         }
-        connection
-            .receive(minimumIncompleteLength: 1, maximumLength: 4096) { packet, _, _, _ in
-                if let packet, !packet.isEmpty {
-                    self.handlePacket(packet: packet)
-                }
-                // if let error {
-                // I get message too long error for some reason when using hotspot,
-                // but stream works anyway.
-                // logger.warning("srtla: \(self.typeString): Receive \(error), done: \(done)")
-                // return
-                // }
-                self.receivePacket()
+        connection.receiveMessage { packet, _, _, error in
+            if let packet, !packet.isEmpty {
+                self.handlePacket(packet: packet)
             }
+            if let error {
+                logger.warning("srtla: \(self.typeString): Receive \(error)")
+                return
+            }
+            self.receivePacket()
+        }
     }
 
     private func sendPacket(packet: Data) {
         if isDataPacket(packet: packet) {
             var numberOfMpegTsPackets = (packet.count - 16) / 188
             numberOfNonNullPacketsSent += UInt64(numberOfMpegTsPackets)
-            if numberOfMpegTsPackets < 7 {
+            if numberOfMpegTsPackets < mpegtsPacketsPerPacket {
                 var paddedPacket = packet
-                while numberOfMpegTsPackets < 7 {
+                while numberOfMpegTsPackets < mpegtsPacketsPerPacket {
                     paddedPacket.append(nullPacket)
                     numberOfMpegTsPackets += 1
                     numberOfNullPacketsSent += 1

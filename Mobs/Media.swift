@@ -71,7 +71,8 @@ final class Media: NSObject {
         reconnectTime: Double,
         targetBitrate: UInt32,
         adaptiveBitrate: Bool,
-        latency: Int32
+        latency: Int32,
+        mpegtsPacketsPerPacket: Int
     ) {
         srtUrl = url
         self.latency = latency
@@ -82,7 +83,8 @@ final class Media: NSObject {
             delegate: self,
             passThrough: !isSrtla,
             targetBitrate: targetBitrate,
-            adaptiveBitrate: adaptiveBitrate
+            adaptiveBitrate: adaptiveBitrate,
+            mpegtsPacketsPerPacket: mpegtsPacketsPerPacket
         )
         srtla!.start(uri: url, timeout: reconnectTime + 1)
     }

@@ -36,7 +36,8 @@ class Srtla {
         delegate: SrtlaDelegate,
         passThrough: Bool,
         targetBitrate: UInt32,
-        adaptiveBitrate adaptiveBitrateEnabled: Bool
+        adaptiveBitrate adaptiveBitrateEnabled: Bool,
+        mpegtsPacketsPerPacket: Int
     ) {
         self.delegate = delegate
         self.passThrough = passThrough
@@ -47,11 +48,23 @@ class Srtla {
         delegate.srtlaSetVideoStreamBitrate(bitrate: adaptiveBitrate.getCurrentBitrate())
         logger.info("srtla: SRT instead of SRTLA: \(passThrough)")
         if passThrough {
-            remoteConnections.append(RemoteConnection(type: nil))
+            remoteConnections.append(RemoteConnection(
+                type: nil,
+                mpegtsPacketsPerPacket: mpegtsPacketsPerPacket
+            ))
         } else {
-            remoteConnections.append(RemoteConnection(type: .cellular))
-            remoteConnections.append(RemoteConnection(type: .wifi))
-            remoteConnections.append(RemoteConnection(type: .wiredEthernet))
+            remoteConnections.append(RemoteConnection(
+                type: .cellular,
+                mpegtsPacketsPerPacket: mpegtsPacketsPerPacket
+            ))
+            remoteConnections.append(RemoteConnection(
+                type: .wifi,
+                mpegtsPacketsPerPacket: mpegtsPacketsPerPacket
+            ))
+            remoteConnections.append(RemoteConnection(
+                type: .wiredEthernet,
+                mpegtsPacketsPerPacket: mpegtsPacketsPerPacket
+            ))
         }
     }
 

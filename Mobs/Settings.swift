@@ -26,6 +26,7 @@ enum SettingsStreamProtocol: String, Codable {
 
 class SettingsStreamSrt: Codable {
     var latency: Int32 = 2000
+    var mpegtsPacketsPerPacket: Int? = 7
 }
 
 enum SettingsCaptureSessionPreset: String, Codable, CaseIterable {
@@ -762,6 +763,12 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.captureSessionPreset == nil {
             stream.captureSessionPreset = .medium
+            store()
+        }
+        for stream in realDatabase.streams
+            where stream.srt!.mpegtsPacketsPerPacket == nil
+        {
+            stream.srt!.mpegtsPacketsPerPacket = 7
             store()
         }
     }

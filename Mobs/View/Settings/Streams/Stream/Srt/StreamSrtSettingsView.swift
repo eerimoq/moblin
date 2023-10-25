@@ -33,6 +33,17 @@ struct StreamSrtSettingsView: View {
                 )) {
                     TextItemView(name: "Latency", value: String(stream.srt!.latency))
                 }
+                Toggle("Big packets", isOn: Binding(get: {
+                    stream.srt!.mpegtsPacketsPerPacket == 7
+                }, set: { value in
+                    if value {
+                        stream.srt!.mpegtsPacketsPerPacket = 7
+                    } else {
+                        stream.srt!.mpegtsPacketsPerPacket = 6
+                    }
+                    model.store()
+                    model.reloadStreamIfEnabled(stream: stream)
+                }))
                 Toggle("Adaptive bitrate*", isOn: Binding(get: {
                     stream.adaptiveBitrate!
                 }, set: { value in
@@ -45,6 +56,10 @@ struct StreamSrtSettingsView: View {
             } footer: {
                 Text(
                     "* Adaptive bitrate is experimental and does not work very well."
+                )
+                Text("")
+                Text(
+                    "Big packets means 7 MPEG-TS packets per SRT packet, 6 otherwise."
                 )
             }
         }

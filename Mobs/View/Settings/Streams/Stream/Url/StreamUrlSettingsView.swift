@@ -26,8 +26,7 @@ struct StreamUrlSettingsView: View {
                     }
                 })
                 .disableAutocorrection(true)
-                .onSubmit {
-                }
+                .onSubmit {}
                 .opacity(show ? 1 : 0)
                 HStack {
                     Spacer()
@@ -79,18 +78,18 @@ struct StreamUrlSettingsView: View {
                     Group {
                         Text("YouTube").underline()
                         Text(
-                                        """
-                                        Example:  rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3
-                                        """
+                            """
+                            Example:  rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3
+                            """
                         )
                         Text("")
                     }
                     Group {
                         Text("Facebook").underline()
                         Text(
-                                            """
-                                            Example:  rtmps://live-api-s.facebook.com:443/rtmp/FB-11152522122511115-0-BctNCp9jzzz-AAA
-                                            """
+                            """
+                            Example:  rtmps://live-api-s.facebook.com:443/rtmp/FB-11152522122511115-0-BctNCp9jzzz-AAA
+                            """
                         )
                         Text("")
                     }
@@ -115,10 +114,10 @@ struct StreamUrlSettingsView: View {
                             .font(.footnote)
                         }
                         Text(
-                                            """
-                                            Example:  rtmps://fa723fc1b171.global-contribute.live-video.net/\
-                                            sk_us-west-123hu43ui34hrkjh
-                                            """
+                            """
+                            Example:  rtmps://fa723fc1b171.global-contribute.live-video.net/\
+                            sk_us-west-123hu43ui34hrkjh
+                            """
                         )
                         Text("")
                     }
