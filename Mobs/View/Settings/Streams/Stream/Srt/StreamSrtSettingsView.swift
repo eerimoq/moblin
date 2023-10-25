@@ -54,13 +54,15 @@ struct StreamSrtSettingsView: View {
                     }
                 }))
             } footer: {
-                Text(
-                    "* Adaptive bitrate is experimental and does not work very well."
-                )
-                Text("")
-                Text(
-                    "Big packets means 7 MPEG-TS packets per SRT packet, 6 otherwise."
-                )
+                VStack(alignment: .leading) {
+                    Text(
+                        "* Adaptive bitrate is experimental and does not work very well."
+                    )
+                    Text("")
+                    Text(
+                        "Big packets means 7 MPEG-TS packets per SRT packet, 6 otherwise."
+                    )
+                }
             }
         }
         .navigationTitle("SRT(LA)")

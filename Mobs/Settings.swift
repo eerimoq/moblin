@@ -379,7 +379,7 @@ class SettingsChat: Codable {
     var boldUsername: Bool? = false
     var boldMessage: Bool? = false
     var bold: Bool = false
-    var animatedEmotes: Bool? = true
+    var animatedEmotes: Bool? = false
 }
 
 class Database: Codable {
@@ -752,7 +752,7 @@ final class Settings {
             store()
         }
         if realDatabase.chat!.animatedEmotes == nil {
-            realDatabase.chat!.animatedEmotes = true
+            realDatabase.chat!.animatedEmotes = false
             store()
         }
         for stream in realDatabase.streams
