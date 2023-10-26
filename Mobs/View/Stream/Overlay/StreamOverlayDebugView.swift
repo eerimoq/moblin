@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct StreamOverlayDebugView: View {
-    @ObservedObject var model: Model
+    @EnvironmentObject var model: Model
 
     var body: some View {
         VStack(alignment: .leading, spacing: 1) {

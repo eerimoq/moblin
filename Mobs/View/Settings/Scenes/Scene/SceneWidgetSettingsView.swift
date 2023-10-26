@@ -60,17 +60,10 @@ struct ValueEditView: View {
 }
 
 struct SceneWidgetSettingsView: View {
-    @ObservedObject private var model: Model
-    private let hasPosition: Bool
-    private let hasSize: Bool
-    private var widget: SettingsSceneWidget
-
-    init(model: Model, widget: SettingsSceneWidget, hasPosition: Bool, hasSize: Bool) {
-        self.model = model
-        self.widget = widget
-        self.hasPosition = hasPosition
-        self.hasSize = hasSize
-    }
+    @EnvironmentObject private var model: Model
+    let hasPosition: Bool
+    let hasSize: Bool
+    var widget: SettingsSceneWidget
 
     func submitX(value: String) {
         if let value = Double(value) {

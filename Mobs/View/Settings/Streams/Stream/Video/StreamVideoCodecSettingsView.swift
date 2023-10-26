@@ -1,17 +1,9 @@
 import SwiftUI
 
 struct StreamVideoCodecSettingsView: View {
-    @ObservedObject var model: Model
-    var toolbar: Toolbar
-    private var stream: SettingsStream
-    @State private var selection: String
-
-    init(model: Model, stream: SettingsStream, toolbar: Toolbar) {
-        self.model = model
-        self.stream = stream
-        self.toolbar = toolbar
-        selection = stream.codec.rawValue
-    }
+    @EnvironmentObject var model: Model
+    var stream: SettingsStream
+    @State var selection: String
 
     var body: some View {
         Form {
@@ -30,8 +22,5 @@ struct StreamVideoCodecSettingsView: View {
             }
         }
         .navigationTitle("Codec")
-        .toolbar {
-            toolbar
-        }
     }
 }

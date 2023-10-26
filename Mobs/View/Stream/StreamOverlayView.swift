@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct StreamOverlayView: View {
-    @ObservedObject var model: Model
+    @EnvironmentObject var model: Model
 
     func drawFocus(context: GraphicsContext, metrics: GeometryProxy,
                    focusPoint: CGPoint)
@@ -34,22 +34,22 @@ struct StreamOverlayView: View {
             }
             HStack {
                 Spacer()
-                RightOverlayView(model: model)
+                RightOverlayView()
             }
             HStack {
-                LeftOverlayView(model: model)
-                    .allowsHitTesting(false)
+                LeftOverlayView()
                 Spacer()
             }
+            .allowsHitTesting(false)
             if model.database.show.chat {
-                StreamOverlayChatView(model: model)
+                StreamOverlayChatView()
                     .allowsHitTesting(false)
             }
             HStack {
-                StreamOverlayDebugView(model: model)
-                    .allowsHitTesting(false)
+                StreamOverlayDebugView()
                 Spacer()
             }
+            .allowsHitTesting(false)
         }
         .padding([.trailing, .top])
     }

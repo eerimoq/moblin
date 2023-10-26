@@ -1,8 +1,7 @@
 import SwiftUI
 
 struct StreamSrtSettingsView: View {
-    @ObservedObject var model: Model
-    var toolbar: Toolbar
+    @EnvironmentObject var model: Model
     var stream: SettingsStream
 
     func submitLatency(value: String) {
@@ -20,7 +19,6 @@ struct StreamSrtSettingsView: View {
         Form {
             Section {
                 NavigationLink(destination: TextEditView(
-                    toolbar: toolbar,
                     title: "Latency",
                     value: String(stream.srt!.latency),
                     onSubmit: submitLatency,
@@ -66,8 +64,5 @@ struct StreamSrtSettingsView: View {
             }
         }
         .navigationTitle("SRT(LA)")
-        .toolbar {
-            toolbar
-        }
     }
 }

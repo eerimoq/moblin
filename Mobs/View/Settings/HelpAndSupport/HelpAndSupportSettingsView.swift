@@ -1,8 +1,6 @@
 import SwiftUI
 
 struct HelpAndSupportSettingsView: View {
-    var toolbar: Toolbar
-
     func openUrl(url: String) {
         UIApplication.shared.open(URL(string: url)!)
     }
@@ -28,8 +26,5 @@ struct HelpAndSupportSettingsView: View {
             }
         }
         .navigationTitle("Help & support")
-        .toolbar {
-            toolbar
-        }
     }
 }

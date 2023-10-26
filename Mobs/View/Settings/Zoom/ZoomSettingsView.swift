@@ -1,8 +1,7 @@
 import SwiftUI
 
 struct ZoomSettingsView: View {
-    @ObservedObject var model: Model
-    var toolbar: Toolbar
+    @EnvironmentObject var model: Model
 
     var body: some View {
         Form {
@@ -10,10 +9,10 @@ struct ZoomSettingsView: View {
                 List {
                     ForEach(model.database.zoom.back) { preset in
                         NavigationLink(destination: ZoomPresetSettingsView(
-                            model: model,
                             preset: preset,
                             position: .back,
-                            toolbar: toolbar
+                            minX: getMinMaxZoomX(position: .back).0,
+                            maxX: getMinMaxZoomX(position: .back).1
                         )) {
                             HStack {
                                 DraggableItemPrefixView()
@@ -50,10 +49,10 @@ struct ZoomSettingsView: View {
                 List {
                     ForEach(model.database.zoom.front) { preset in
                         NavigationLink(destination: ZoomPresetSettingsView(
-                            model: model,
                             preset: preset,
                             position: .front,
-                            toolbar: toolbar
+                            minX: getMinMaxZoomX(position: .front).0,
+                            maxX: getMinMaxZoomX(position: .front).1
                         )) {
                             HStack {
                                 DraggableItemPrefixView()
@@ -85,15 +84,11 @@ struct ZoomSettingsView: View {
             }
             Section {
                 ZoomSwitchToSettingsView(
-                    model: model,
-                    toolbar: toolbar,
                     name: "back",
                     position: .back,
                     defaultZoom: model.database.zoom.switchToBack!
                 )
                 ZoomSwitchToSettingsView(
-                    model: model,
-                    toolbar: toolbar,
                     name: "front",
                     position: .front,
                     defaultZoom: model.database.zoom.switchToFront!
@@ -105,8 +100,5 @@ struct ZoomSettingsView: View {
             }
         }
         .navigationTitle("Zoom")
-        .toolbar {
-            toolbar
-        }
     }
 }

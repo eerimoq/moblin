@@ -1,38 +1,33 @@
 import SwiftUI
 
 struct StreamVideoSettingsView: View {
-    @ObservedObject var model: Model
-    var toolbar: Toolbar
+    @EnvironmentObject var model: Model
     var stream: SettingsStream
 
     var body: some View {
         Form {
             Section {
                 NavigationLink(destination: StreamVideoResolutionSettingsView(
-                    model: model,
                     stream: stream,
-                    toolbar: toolbar
+                    selection: stream.resolution.rawValue
                 )) {
                     TextItemView(name: "Resolution", value: stream.resolution.rawValue)
                 }
                 NavigationLink(destination: StreamVideoFpsSettingsView(
-                    model: model,
                     stream: stream,
-                    toolbar: toolbar
+                    selection: stream.fps
                 )) {
                     TextItemView(name: "FPS", value: String(stream.fps))
                 }
                 NavigationLink(destination: StreamVideoCodecSettingsView(
-                    model: model,
                     stream: stream,
-                    toolbar: toolbar
+                    selection: stream.codec.rawValue
                 )) {
                     TextItemView(name: "Codec", value: stream.codec.rawValue)
                 }
                 NavigationLink(destination: StreamVideoBitrateSettingsView(
-                    model: model,
                     stream: stream,
-                    toolbar: toolbar
+                    selection: stream.bitrate
                 )) {
                     TextItemView(
                         name: "Bitrate",
@@ -42,9 +37,8 @@ struct StreamVideoSettingsView: View {
                 if logger.debugEnabled {
                     NavigationLink(
                         destination: StreamVideoCaptureSessionPresetSettingsView(
-                            model: model,
                             stream: stream,
-                            toolbar: toolbar
+                            selection: stream.captureSessionPreset!.rawValue
                         )
                     ) {
                         Toggle(isOn: Binding(get: {
@@ -64,8 +58,5 @@ struct StreamVideoSettingsView: View {
             }
         }
         .navigationTitle("Video")
-        .toolbar {
-            toolbar
-        }
     }
 }

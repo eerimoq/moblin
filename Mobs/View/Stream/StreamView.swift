@@ -2,7 +2,7 @@ import HaishinKit
 import SwiftUI
 
 struct StreamView: UIViewRepresentable {
-    @ObservedObject var model: Model
+    @EnvironmentObject var model: Model
 
     func makeUIView(context _: Context) -> MTHKView {
         return model.mthkView

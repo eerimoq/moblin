@@ -85,7 +85,7 @@ struct LineView: View {
 }
 
 struct StreamOverlayChatView: View {
-    @ObservedObject var model: Model
+    @EnvironmentObject var model: Model
 
     func messageText() -> String {
         if !model.isChatConfigured() {

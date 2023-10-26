@@ -1,8 +1,7 @@
 import SwiftUI
 
 struct LocalOverlaysSettingsView: View {
-    @ObservedObject var model: Model
-    var toolbar: Toolbar
+    @EnvironmentObject var model: Model
 
     var show: SettingsShow {
         model.database.show
@@ -38,8 +37,9 @@ struct LocalOverlaysSettingsView: View {
             }
             Section("Top right") {
                 NavigationLink(destination: LocalOverlaysAudioLevelSettingsView(
-                    model: model,
-                    toolbar: toolbar
+                    meterType: model.database.show.audioBar! ?
+                        "Bar" :
+                        "Decibel"
                 )) {
                     Toggle("Audio level", isOn: Binding(get: {
                         show.audioLevel
@@ -63,8 +63,10 @@ struct LocalOverlaysSettingsView: View {
             }
             Section("Bottom left") {
                 NavigationLink(destination: LocalOverlaysChatSettingsView(
-                    model: model,
-                    toolbar: toolbar
+                    usernameColor: model.database.chat!.usernameColor.color(),
+                    messageColor: model.database.chat!.messageColor.color(),
+                    backgroundColor: model.database.chat!.backgroundColor.color(),
+                    shadowColor: model.database.chat!.shadowColor.color()
                 )) {
                     Toggle("Chat", isOn: Binding(get: {
                         show.chat
@@ -89,8 +91,5 @@ struct LocalOverlaysSettingsView: View {
             }
         }
         .navigationTitle("Local overlays")
-        .toolbar {
-            toolbar
-        }
     }
 }

@@ -14,7 +14,7 @@ struct StreamButtonText: View {
 }
 
 struct StreamButton: View {
-    @ObservedObject var model: Model
+    @EnvironmentObject var model: Model
     @State private var isPresentingGoLiveConfirm: Bool = false
     @State private var isPresentingStopConfirm: Bool = false
 
@@ -50,7 +50,7 @@ struct StreamButton: View {
 }
 
 struct ControlBarView: View {
-    @ObservedObject var model: Model
+    @EnvironmentObject var model: Model
     var showSettings: () -> Void
 
     var body: some View {
@@ -84,8 +84,8 @@ struct ControlBarView: View {
                     }
                 }
                 Spacer()
-                ButtonsView(model: model)
-                StreamButton(model: model)
+                ButtonsView()
+                StreamButton()
                     .padding([.top], 8)
             }
             .padding([.leading, .trailing], 10)

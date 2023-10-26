@@ -1,39 +1,11 @@
 import SwiftUI
 import WebKit
 
-struct Toolbar: ToolbarContent {
-    let toggleWideSettings: () -> Void
-    let hideSettings: () -> Void
-    let splitImage: () -> Image
-
-    var body: some ToolbarContent {
-        ToolbarItem(placement: .navigationBarTrailing) {
-            HStack {
-                Button(action: {
-                    toggleWideSettings()
-                }, label: {
-                    splitImage()
-                })
-                Button(action: {
-                    hideSettings()
-                }, label: {
-                    Text("Close")
-                })
-            }
-        }
-    }
-}
-
 struct MainView: View {
-    @ObservedObject var model: Model
+    @EnvironmentObject var model: Model
+    var streamView: StreamView
     @State private var showingSettings = false
     @State private var wideSettings = false
-    private var streamView: StreamView
-
-    init(model: Model) {
-        self.model = model
-        streamView = StreamView(model: model)
-    }
 
     private func hideSettings() {
         showingSettings = false
@@ -87,14 +59,7 @@ struct MainView: View {
                             }
                         }
                         NavigationStack {
-                            SettingsView(
-                                model: model,
-                                toolbar: Toolbar(
-                                    toggleWideSettings: toggleWideSettings,
-                                    hideSettings: hideSettings,
-                                    splitImage: splitImage
-                                )
-                            )
+                            SettingsView(hideSettings: hideSettings)
                         }
                         .frame(width: metrics.size.width * settingsWidth())
                     }
@@ -126,7 +91,7 @@ struct MainView: View {
                                     model.setAutoFocus()
                                 })
                         }
-                        StreamOverlayView(model: model)
+                        StreamOverlayView()
                     }
                     .gesture(
                         MagnificationGesture()
@@ -137,16 +102,18 @@ struct MainView: View {
                                 model.commitZoomLevel(amount: amount)
                             }
                     )
-                    ControlBarView(model: model, showSettings: showSettings)
+                    ControlBarView(showSettings: showSettings)
                 }
             }
             if model.showingBitrate {
                 GeometryReader { metrics in
                     HStack {
                         Spacer()
-                        StreamVideoBitrateSettingsButtonView(model: model, done: {
+                        StreamVideoBitrateSettingsButtonView(selection: model.stream
+                            .bitrate)
+                        {
                             model.showingBitrate = false
-                        })
+                        }
                         .frame(width: metrics.size.width * 0.5)
                     }
                 }
@@ -155,13 +122,16 @@ struct MainView: View {
                 GeometryReader { metrics in
                     HStack {
                         Spacer()
-                        MicButtonView(model: model, done: {
+                        MicButtonView(selection: model.mic) {
                             model.showingMic = false
-                        })
+                        }
                         .frame(width: metrics.size.width * 0.5)
                     }
                 }
             }
+        }
+        .onAppear {
+            model.setup()
         }
         .toast(isPresenting: $model.showingToast, duration: 5) {
             model.toast

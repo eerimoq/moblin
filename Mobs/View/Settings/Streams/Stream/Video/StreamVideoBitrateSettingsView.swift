@@ -1,17 +1,9 @@
 import SwiftUI
 
 struct StreamVideoBitrateSettingsView: View {
-    @ObservedObject var model: Model
-    var toolbar: Toolbar
+    @EnvironmentObject var model: Model
     var stream: SettingsStream
-    @State private var selection: UInt32
-
-    init(model: Model, stream: SettingsStream, toolbar: Toolbar) {
-        self.model = model
-        self.stream = stream
-        self.toolbar = toolbar
-        selection = stream.bitrate
-    }
+    @State var selection: UInt32
 
     var body: some View {
         Form {
@@ -34,22 +26,13 @@ struct StreamVideoBitrateSettingsView: View {
             }
         }
         .navigationTitle("Bitrate")
-        .toolbar {
-            toolbar
-        }
     }
 }
 
 struct StreamVideoBitrateSettingsButtonView: View {
-    @ObservedObject var model: Model
-    @State private var selection: UInt32
-    private var done: () -> Void
-
-    init(model: Model, done: @escaping () -> Void) {
-        self.model = model
-        self.done = done
-        selection = model.stream.bitrate
-    }
+    @EnvironmentObject var model: Model
+    @State var selection: UInt32
+    var done: () -> Void
 
     var body: some View {
         VStack(spacing: 0) {

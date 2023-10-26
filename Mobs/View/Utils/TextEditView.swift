@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct TextEditView: View {
-    var toolbar: Toolbar
     var title: String
     @State var value: String
     var onSubmit: (String) -> Void
@@ -10,21 +9,16 @@ struct TextEditView: View {
     var body: some View {
         Form {
             Section {
-                TextField("", text: $value, onEditingChanged: { isEditing in
-                    if !isEditing {
+                TextField("", text: $value)
+                    .disableAutocorrection(true)
+                    .onSubmit {
                         value = value.trim()
                         onSubmit(value)
                     }
-                })
-                .disableAutocorrection(true)
-                .onSubmit {}
             } footer: {
                 footer
             }
         }
         .navigationTitle(title)
-        .toolbar {
-            toolbar
-        }
     }
 }

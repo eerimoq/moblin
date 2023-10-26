@@ -5,17 +5,12 @@ import SwiftUI
 @main
 struct MobsApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    @ObservedObject static var model = Model()
-
-    init() {
-        let WebPCoder = SDImageWebPCoder.shared
-        SDImageCodersManager.shared.addCoder(WebPCoder)
-        MobsApp.model.setup()
-    }
+    @StateObject static var model = Model()
 
     var body: some Scene {
         WindowGroup {
-            MainView(model: MobsApp.model)
+            MainView(streamView: StreamView())
+                .environmentObject(MobsApp.model)
         }
     }
 }

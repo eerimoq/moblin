@@ -2,7 +2,7 @@ import SwiftUI
 import WebKit
 
 struct LeftOverlayView: View {
-    @ObservedObject var model: Model
+    @EnvironmentObject var model: Model
 
     var database: Database {
         model.settings.database

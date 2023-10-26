@@ -63,6 +63,7 @@ struct AudioLevelView: View {
                     Text("\(Int(level)) dB")
                         .padding([.leading, .trailing], 2)
                         .background(Color(white: 0, opacity: 0.6))
+                        .foregroundColor(.white)
                         .cornerRadius(5)
                         .font(smallFont)
                 }
@@ -88,7 +89,7 @@ struct AudioLevelView: View {
 }
 
 struct RightOverlayView: View {
-    @ObservedObject var model: Model
+    @EnvironmentObject var model: Model
 
     private var database: Database {
         model.settings.database

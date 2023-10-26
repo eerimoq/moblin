@@ -1,8 +1,7 @@
 import SwiftUI
 
 struct StreamKickSettingsView: View {
-    @ObservedObject var model: Model
-    var toolbar: Toolbar
+    @EnvironmentObject var model: Model
     var stream: SettingsStream
 
     func submitChannelId(value: String) {
@@ -17,7 +16,6 @@ struct StreamKickSettingsView: View {
         Form {
             Section {
                 NavigationLink(destination: TextEditView(
-                    toolbar: toolbar,
                     title: "Chatroom id",
                     value: stream.kickChatroomId,
                     onSubmit: submitChannelId
@@ -31,8 +29,5 @@ struct StreamKickSettingsView: View {
             }
         }
         .navigationTitle("Kick")
-        .toolbar {
-            toolbar
-        }
     }
 }

@@ -30,15 +30,9 @@ struct ButtonPlaceholderImage: View {
 }
 
 struct MicButtonView: View {
-    @ObservedObject var model: Model
-    @State private var selection: String
-    private var done: () -> Void
-
-    init(model: Model, done: @escaping () -> Void) {
-        self.model = model
-        self.done = done
-        selection = model.mic
-    }
+    @EnvironmentObject var model: Model
+    @State var selection: String
+    var done: () -> Void
 
     var body: some View {
         VStack(spacing: 0) {
@@ -73,7 +67,7 @@ struct MicButtonView: View {
 }
 
 struct ButtonsView: View {
-    @ObservedObject var model: Model
+    @EnvironmentObject var model: Model
 
     func getImage(state: ButtonState) -> String {
         if state.isOn {

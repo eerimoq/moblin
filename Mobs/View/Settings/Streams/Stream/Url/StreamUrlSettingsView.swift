@@ -1,8 +1,7 @@
 import SwiftUI
 
 struct StreamUrlSettingsView: View {
-    @ObservedObject var model: Model
-    var toolbar: Toolbar
+    @EnvironmentObject var model: Model
     var stream: SettingsStream
     @State var value: String
     @State var show: Bool = false
@@ -20,14 +19,12 @@ struct StreamUrlSettingsView: View {
     var body: some View {
         Form {
             Section {
-                TextField("", text: $value, onEditingChanged: { isEditing in
-                    if !isEditing {
+                TextField("", text: $value)
+                    .onSubmit {
                         submitUrl()
                     }
-                })
-                .disableAutocorrection(true)
-                .onSubmit {}
-                .opacity(show ? 1 : 0)
+                    .disableAutocorrection(true)
+                    .opacity(show ? 1 : 0)
                 HStack {
                     Spacer()
                     if show {
@@ -162,8 +159,5 @@ struct StreamUrlSettingsView: View {
             }
         }
         .navigationTitle("URL")
-        .toolbar {
-            toolbar
-        }
     }
 }

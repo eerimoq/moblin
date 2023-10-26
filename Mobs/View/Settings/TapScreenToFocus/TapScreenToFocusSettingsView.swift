@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct TapScreenToFocusSettingsView: View {
-    @ObservedObject var model: Model
+    @EnvironmentObject var model: Model
 
     var body: some View {
         Toggle("Tap screen to focus", isOn: Binding(get: {

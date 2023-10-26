@@ -2,15 +2,9 @@ import PhotosUI
 import SwiftUI
 
 struct WidgetImageSettingsView: View {
-    @ObservedObject var model: Model
+    @EnvironmentObject var model: Model
     var widget: SettingsWidget
     @State var selectedImageItem: PhotosPickerItem?
-
-    init(model: Model, widget: SettingsWidget) {
-        self.model = model
-        self.widget = widget
-        model.checkDeviceAuthorization()
-    }
 
     func loadImage() -> UIImage? {
         if let data = model.imageStorage.tryRead(id: widget.id) {
@@ -64,6 +58,9 @@ struct WidgetImageSettingsView: View {
                     )
                 }
             }
+        }
+        .onAppear {
+            model.checkDeviceAuthorization()
         }
     }
 }

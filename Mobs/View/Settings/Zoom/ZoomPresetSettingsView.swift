@@ -2,25 +2,11 @@ import AVFoundation
 import SwiftUI
 
 struct ZoomPresetSettingsView: View {
-    @ObservedObject var model: Model
-    var toolbar: Toolbar
-    private var preset: SettingsZoomPreset
-    private var position: AVCaptureDevice.Position
-    private let minX: Float
-    private let maxX: Float
-
-    init(
-        model: Model,
-        preset: SettingsZoomPreset,
-        position: AVCaptureDevice.Position,
-        toolbar: Toolbar
-    ) {
-        self.model = model
-        self.preset = preset
-        self.position = position
-        self.toolbar = toolbar
-        (minX, maxX) = getMinMaxZoomX(position: position)
-    }
+    @EnvironmentObject var model: Model
+    var preset: SettingsZoomPreset
+    var position: AVCaptureDevice.Position
+    let minX: Float
+    let maxX: Float
 
     func submitName(name: String) {
         preset.name = name
@@ -50,14 +36,12 @@ struct ZoomPresetSettingsView: View {
     var body: some View {
         Form {
             NavigationLink(destination: NameEditView(
-                toolbar: toolbar,
                 name: preset.name,
                 onSubmit: submitName
             )) {
                 TextItemView(name: "Name", value: preset.name)
             }
             NavigationLink(destination: TextEditView(
-                toolbar: toolbar,
                 title: "X",
                 value: String(x()),
                 onSubmit: submitX,
@@ -69,8 +53,5 @@ struct ZoomPresetSettingsView: View {
             }
         }
         .navigationTitle("Zoom preset")
-        .toolbar {
-            toolbar
-        }
     }
 }

@@ -1,8 +1,7 @@
 import SwiftUI
 
 struct ButtonsSettingsView: View {
-    @ObservedObject var model: Model
-    var toolbar: Toolbar
+    @EnvironmentObject var model: Model
 
     var database: Database {
         model.database
@@ -24,8 +23,11 @@ struct ButtonsSettingsView: View {
                     ForEach(database.buttons) { button in
                         NavigationLink(destination: ButtonSettingsView(
                             button: button,
-                            model: model,
-                            toolbar: toolbar
+                            selection: button.type.rawValue,
+                            selectedWidget: model.database.widgets
+                                .firstIndex(where: { widget in
+                                    widget.id == button.widget.widgetId
+                                }) ?? 0
                         )) {
                             HStack {
                                 DraggableItemPrefixView()
@@ -60,8 +62,5 @@ struct ButtonsSettingsView: View {
             }
         }
         .navigationTitle("Buttons")
-        .toolbar {
-            toolbar
-        }
     }
 }

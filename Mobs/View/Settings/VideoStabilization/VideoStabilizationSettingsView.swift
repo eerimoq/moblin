@@ -1,15 +1,8 @@
 import SwiftUI
 
 struct VideoStabilizationPickerView: View {
-    @ObservedObject var model: Model
-    var toolbar: Toolbar
+    @EnvironmentObject var model: Model
     @State var videoStabilizationMode: String
-
-    init(model: Model, toolbar: Toolbar) {
-        self.model = model
-        self.toolbar = toolbar
-        videoStabilizationMode = model.database.videoStabilizationMode!.rawValue
-    }
 
     var body: some View {
         Form {
@@ -33,20 +26,15 @@ struct VideoStabilizationPickerView: View {
             }
         }
         .navigationTitle("Video stabilization")
-        .toolbar {
-            toolbar
-        }
     }
 }
 
 struct VideoStabilizationSettingsView: View {
-    @ObservedObject var model: Model
-    var toolbar: Toolbar
+    @EnvironmentObject var model: Model
 
     var body: some View {
         NavigationLink(destination: VideoStabilizationPickerView(
-            model: model,
-            toolbar: toolbar
+            videoStabilizationMode: model.database.videoStabilizationMode!.rawValue
         )) {
             TextItemView(
                 name: "Video stabilization",

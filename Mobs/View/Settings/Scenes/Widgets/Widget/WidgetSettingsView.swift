@@ -1,9 +1,8 @@
 import SwiftUI
 
 struct WidgetSettingsView: View {
+    @EnvironmentObject var model: Model
     var widget: SettingsWidget
-    @ObservedObject var model: Model
-    var toolbar: Toolbar
 
     func submitName(name: String) {
         widget.name = name
@@ -13,7 +12,6 @@ struct WidgetSettingsView: View {
     var body: some View {
         Form {
             NavigationLink(destination: NameEditView(
-                toolbar: toolbar,
                 name: widget.name,
                 onSubmit: submitName
             )) {
@@ -36,18 +34,20 @@ struct WidgetSettingsView: View {
             }
             switch widget.type {
             case .image:
-                WidgetImageSettingsView(model: model, widget: widget)
+                WidgetImageSettingsView(widget: widget)
             case .videoEffect:
-                WidgetVideoEffectSettingsView(model: model, widget: widget)
+                WidgetVideoEffectSettingsView(widget: widget,
+                                              selection: widget.videoEffect.type.rawValue,
+                                              noiseLevel: widget.videoEffect
+                                                  .noiseReductionNoiseLevel * 10,
+                                              sharpness: widget.videoEffect
+                                                  .noiseReductionSharpness / 10)
             case .browser:
-                WidgetBrowserSettingsView(model: model, widget: widget, toolbar: toolbar)
+                WidgetBrowserSettingsView(widget: widget)
             case .time:
                 EmptyView()
             }
         }
         .navigationTitle("Widget")
-        .toolbar {
-            toolbar
-        }
     }
 }

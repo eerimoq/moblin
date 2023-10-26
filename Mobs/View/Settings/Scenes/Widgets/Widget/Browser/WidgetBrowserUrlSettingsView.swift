@@ -1,17 +1,9 @@
 import SwiftUI
 
 struct WidgetBrowserUrlSettingsView: View {
-    @ObservedObject var model: Model
-    var toolbar: Toolbar
+    @EnvironmentObject var model: Model
     var widget: SettingsWidget
     @State var value: String
-
-    init(model: Model, widget: SettingsWidget, toolbar: Toolbar) {
-        self.model = model
-        self.widget = widget
-        self.toolbar = toolbar
-        value = widget.browser.url
-    }
 
     func submitUrl() {
         value = value.trim()
@@ -35,8 +27,5 @@ struct WidgetBrowserUrlSettingsView: View {
             }
         }
         .navigationTitle("URL")
-        .toolbar {
-            toolbar
-        }
     }
 }

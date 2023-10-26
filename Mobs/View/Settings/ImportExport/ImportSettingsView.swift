@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ImportSettingsView: View {
-    @ObservedObject var model: Model
+    @EnvironmentObject var model: Model
 
     var body: some View {
         HStack {

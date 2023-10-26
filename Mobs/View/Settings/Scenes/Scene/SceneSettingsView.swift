@@ -1,20 +1,12 @@
 import SwiftUI
 
 struct SceneSettingsView: View {
-    @ObservedObject var model: Model
-    var toolbar: Toolbar
+    @EnvironmentObject var model: Model
     @State private var showingAddWidget = false
     @State private var showingAddButton = false
     @State private var expandedWidget: SettingsSceneWidget?
-    private var scene: SettingsScene
-    @State private var cameraSelection: String
-
-    init(scene: SettingsScene, model: Model, toolbar: Toolbar) {
-        self.scene = scene
-        self.model = model
-        self.toolbar = toolbar
-        cameraSelection = scene.cameraType!.rawValue
-    }
+    var scene: SettingsScene
+    @State var cameraSelection: String
 
     var widgets: [SettingsWidget] {
         model.database.widgets
@@ -71,7 +63,6 @@ struct SceneSettingsView: View {
     var body: some View {
         Form {
             NavigationLink(destination: NameEditView(
-                toolbar: toolbar,
                 name: scene.name,
                 onSubmit: submitName
             )) {
@@ -131,10 +122,9 @@ struct SceneSettingsView: View {
                                     widgetHasSize(id: realWidget.id))
                             {
                                 SceneWidgetSettingsView(
-                                    model: model,
-                                    widget: widget,
                                     hasPosition: widgetHasPosition(id: realWidget.id),
-                                    hasSize: widgetHasSize(id: realWidget.id)
+                                    hasSize: widgetHasSize(id: realWidget.id),
+                                    widget: widget
                                 )
                             }
                         }
@@ -256,9 +246,6 @@ struct SceneSettingsView: View {
             }
         }
         .navigationTitle("Scene")
-        .toolbar {
-            toolbar
-        }
         .onAppear {
             model.selectedSceneId = scene.id
             model.sceneUpdated()

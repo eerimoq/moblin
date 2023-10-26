@@ -1,17 +1,14 @@
 import SwiftUI
 
 struct BitratePresetsSettingsView: View {
-    @ObservedObject var model: Model
-    var toolbar: Toolbar
+    @EnvironmentObject var model: Model
 
     var body: some View {
         Form {
             List {
                 ForEach(model.database.bitratePresets) { preset in
                     NavigationLink(destination: BitratePresetsPresetSettingsView(
-                        model: model,
-                        preset: preset,
-                        toolbar: toolbar
+                        preset: preset
                     )) {
                         HStack {
                             DraggableItemPrefixView()
@@ -41,8 +38,5 @@ struct BitratePresetsSettingsView: View {
             })
         }
         .navigationTitle("Bitrate presets")
-        .toolbar {
-            toolbar
-        }
     }
 }

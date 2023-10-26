@@ -76,7 +76,7 @@ final class Model: ObservableObject {
     @Published var srtlaConnectionStatistics = noValue
     @Published var audioLevel: Float = -160.0
     var settings = Settings()
-    var digitalClock = noValue
+    @Published var digitalClock = noValue
     var selectedSceneId = UUID()
     private var twitchChat: TwitchChatMobs!
     private var twitchPubSub: TwitchPubSub?
@@ -135,7 +135,7 @@ final class Model: ObservableObject {
         for stream in database.streams where stream.enabled {
             return stream
         }
-        fatalError("stream: There is no stream!")
+        return SettingsStream(name: "")
     }
 
     private let networkPathMonitor = NWPathMonitor()

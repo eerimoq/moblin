@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ResetSettingsView: View {
-    @ObservedObject var model: Model
+    @EnvironmentObject var model: Model
     @State private var isPresentingResetConfirm: Bool = false
 
     var body: some View {

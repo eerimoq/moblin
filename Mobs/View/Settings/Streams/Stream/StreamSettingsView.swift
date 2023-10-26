@@ -1,15 +1,9 @@
 import SwiftUI
 
 struct StreamSettingsView: View {
-    @ObservedObject private var model: Model
-    var toolbar: Toolbar
-    private var stream: SettingsStream
-
-    init(stream: SettingsStream, model: Model, toolbar: Toolbar) {
-        self.model = model
-        self.stream = stream
-        self.toolbar = toolbar
-    }
+    @EnvironmentObject private var model: Model
+    var stream: SettingsStream
+    @State var text = ""
 
     func submitName(name: String) {
         stream.name = name
@@ -19,52 +13,38 @@ struct StreamSettingsView: View {
     var body: some View {
         Form {
             NavigationLink(destination: NameEditView(
-                toolbar: toolbar,
                 name: stream.name,
                 onSubmit: submitName
             )) {
                 TextItemView(name: "Name", value: stream.name)
             }
             NavigationLink(destination: StreamUrlSettingsView(
-                model: model,
-                toolbar: toolbar,
                 stream: stream,
                 value: stream.url
             )) {
                 TextItemView(name: "URL", value: schemeAndAddress(url: stream.url))
             }
             NavigationLink(destination: StreamVideoSettingsView(
-                model: model,
-                toolbar: toolbar,
                 stream: stream
             )) {
                 Text("Video")
             }
             NavigationLink(destination: StreamTwitchSettingsView(
-                model: model,
-                toolbar: toolbar,
                 stream: stream
             )) {
                 Text("Twitch")
             }
             NavigationLink(destination: StreamKickSettingsView(
-                model: model,
-                toolbar: toolbar,
                 stream: stream
             )) {
                 Text("Kick")
             }
             NavigationLink(destination: StreamSrtSettingsView(
-                model: model,
-                toolbar: toolbar,
                 stream: stream
             )) {
                 Text("SRT(LA)")
             }
         }
         .navigationTitle("Stream")
-        .toolbar {
-            toolbar
-        }
     }
 }

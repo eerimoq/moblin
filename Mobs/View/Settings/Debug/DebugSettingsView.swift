@@ -1,16 +1,12 @@
 import SwiftUI
 
 struct DebugSettingsView: View {
-    @ObservedObject var model: Model
-    var toolbar: Toolbar
+    @EnvironmentObject var model: Model
 
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: DebugLogSettingsView(
-                    model: model,
-                    toolbar: toolbar
-                )) {
+                NavigationLink(destination: DebugLogSettingsView()) {
                     Text("Log")
                 }
                 Toggle("Debug", isOn: Binding(get: {
@@ -21,8 +17,5 @@ struct DebugSettingsView: View {
             }
         }
         .navigationTitle("Debug")
-        .toolbar {
-            toolbar
-        }
     }
 }

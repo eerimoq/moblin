@@ -1,8 +1,7 @@
 import SwiftUI
 
 struct ScenesSettingsView: View {
-    @ObservedObject var model: Model
-    var toolbar: Toolbar
+    @EnvironmentObject var model: Model
 
     var database: Database {
         model.database
@@ -14,8 +13,7 @@ struct ScenesSettingsView: View {
                 ForEach(database.scenes) { scene in
                     NavigationLink(destination: SceneSettingsView(
                         scene: scene,
-                        model: model,
-                        toolbar: toolbar
+                        cameraSelection: scene.cameraType!.rawValue
                     )) {
                         Toggle(scene.name, isOn: Binding(get: {
                             scene.enabled
@@ -39,22 +37,15 @@ struct ScenesSettingsView: View {
             }
             Section {
                 NavigationLink(destination: WidgetsSettingsView(
-                    model: model,
-                    toolbar: toolbar
                 )) {
                     Text("Widgets")
                 }
                 NavigationLink(destination: ButtonsSettingsView(
-                    model: model,
-                    toolbar: toolbar
                 )) {
                     Text("Buttons")
                 }
             }
         }
         .navigationTitle("Scenes")
-        .toolbar {
-            toolbar
-        }
     }
 }

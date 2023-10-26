@@ -3,19 +3,8 @@ import SwiftUI
 let meterTypes = ["Bar", "Decibel"]
 
 struct LocalOverlaysAudioLevelSettingsView: View {
-    @ObservedObject var model: Model
-    var toolbar: Toolbar
+    @EnvironmentObject var model: Model
     @State var meterType: String
-
-    init(model: Model, toolbar: Toolbar) {
-        self.model = model
-        self.toolbar = toolbar
-        if model.database.show.audioBar! {
-            meterType = "Bar"
-        } else {
-            meterType = "Decibel"
-        }
-    }
 
     var body: some View {
         Form {
@@ -34,8 +23,5 @@ struct LocalOverlaysAudioLevelSettingsView: View {
             }
         }
         .navigationTitle("Audio level")
-        .toolbar {
-            toolbar
-        }
     }
 }

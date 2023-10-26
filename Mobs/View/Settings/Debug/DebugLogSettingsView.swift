@@ -1,8 +1,7 @@
 import SwiftUI
 
 struct DebugLogSettingsView: View {
-    @ObservedObject var model: Model
-    var toolbar: Toolbar
+    @EnvironmentObject var model: Model
 
     var body: some View {
         ScrollView {
@@ -31,7 +30,6 @@ struct DebugLogSettingsView: View {
                     })
                 }
             }
-            toolbar
         }
     }
 }

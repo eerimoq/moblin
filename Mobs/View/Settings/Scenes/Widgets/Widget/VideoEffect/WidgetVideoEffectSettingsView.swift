@@ -1,19 +1,11 @@
 import SwiftUI
 
 struct WidgetVideoEffectSettingsView: View {
-    @ObservedObject var model: Model
+    @EnvironmentObject var model: Model
     var widget: SettingsWidget
-    @State private var selection: String
-    @State private var noiseLevel: Float
-    @State private var sharpness: Float
-
-    init(model: Model, widget: SettingsWidget) {
-        self.model = model
-        self.widget = widget
-        selection = widget.videoEffect.type.rawValue
-        noiseLevel = widget.videoEffect.noiseReductionNoiseLevel * 10
-        sharpness = widget.videoEffect.noiseReductionSharpness / 10
-    }
+    @State var selection: String
+    @State var noiseLevel: Float
+    @State var sharpness: Float
 
     var body: some View {
         Section("Video effect") {

@@ -1,16 +1,15 @@
 import SwiftUI
 
 struct ImportExportSettingsView: View {
-    @ObservedObject var model: Model
-    var toolbar: Toolbar
+    @EnvironmentObject var model: Model
 
     var body: some View {
         Form {
             Section {
-                ImportSettingsView(model: model)
+                ImportSettingsView()
             }
             Section {
-                ExportSettingsView(model: model)
+                ExportSettingsView()
             } footer: {
                 VStack(alignment: .leading) {
                     Text("")
@@ -28,8 +27,5 @@ struct ImportExportSettingsView: View {
             }
         }
         .navigationTitle("Import and export settings")
-        .toolbar {
-            toolbar
-        }
     }
 }
