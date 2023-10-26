@@ -59,7 +59,11 @@ struct MainView: View {
                             }
                         }
                         NavigationStack {
-                            SettingsView(hideSettings: hideSettings)
+                            SettingsView(
+                                toggleWideSettings: toggleWideSettings,
+                                hideSettings: hideSettings,
+                                splitImage: splitImage
+                            )
                         }
                         .frame(width: metrics.size.width * settingsWidth())
                     }

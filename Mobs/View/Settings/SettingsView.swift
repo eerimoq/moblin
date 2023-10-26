@@ -2,7 +2,9 @@ import SwiftUI
 
 struct SettingsView: View {
     @EnvironmentObject var model: Model
-    var hideSettings: () -> Void
+    let toggleWideSettings: () -> Void
+    let hideSettings: () -> Void
+    let splitImage: () -> Image
 
     var body: some View {
         Form {
@@ -82,11 +84,18 @@ struct SettingsView: View {
         .navigationTitle("Settings")
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: {
-                    hideSettings()
-                }, label: {
-                    Text("Close")
-                })
+                HStack {
+                    Button(action: {
+                        toggleWideSettings()
+                    }, label: {
+                        splitImage()
+                    })
+                    Button(action: {
+                        hideSettings()
+                    }, label: {
+                        Text("Close")
+                    })
+                }
             }
         }
     }
