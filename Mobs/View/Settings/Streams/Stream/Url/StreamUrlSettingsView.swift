@@ -19,12 +19,16 @@ struct StreamUrlSettingsView: View {
     var body: some View {
         Form {
             Section {
-                TextField("", text: $value)
-                    .onSubmit {
-                        submitUrl()
-                    }
-                    .disableAutocorrection(true)
-                    .opacity(show ? 1 : 0)
+                ZStack(alignment: .leading) {
+                    TextField("", text: $value)
+                        .onSubmit {
+                            submitUrl()
+                        }
+                        .disableAutocorrection(true)
+                        .opacity(show ? 1 : 0)
+                    Text(replaceSensitive(value: value, sensitive: true))
+                        .opacity(show ? 0 : 1)
+                }
                 HStack {
                     Spacer()
                     if show {

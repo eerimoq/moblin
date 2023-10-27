@@ -130,8 +130,6 @@ ToDo
 - Long chat messages makes video smaller sometimes, leaving white
   rectangle on left part of screen. How to reproduce?
 
-- Hide/show chat button.
-
 Ideas/plan
 ==========
 
