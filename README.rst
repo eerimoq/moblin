@@ -133,8 +133,6 @@ ToDo
 Ideas/plan
 ==========
 
-- Make it easier to see if a button is pressed or not?
-
 - Optional emotes cache on disk.
 
 - Audio filters. For example volume limiter.

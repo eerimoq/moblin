@@ -59,6 +59,7 @@ final class TwitchChatMobs {
                         name: channelName
                     )
                     do {
+                        logger.info("twitch: chat: \(channelName): Connected")
                         connected = true
                         for try await message in self.twitchChat.messages {
                             let emotes = getEmotes(from: message)
@@ -79,8 +80,11 @@ final class TwitchChatMobs {
                     } catch {
                         logger.warning("twitch: chat: \(channelName): Got error \(error)")
                     }
-                    connected = false
                     logger.info("twitch: chat: \(channelName): Disconnected")
+                    if Task.isCancelled {
+                        return
+                    }
+                    connected = false
                     try await Task
                         .sleep(nanoseconds: UInt64(reconnectTime * 1_000_000_000))
                     reconnectTime = nextReconnectTime(reconnectTime)
@@ -96,6 +100,7 @@ final class TwitchChatMobs {
         emotes.stop()
         task?.cancel()
         task = nil
+        connected = false
     }
 
     private func createTwitchSegments(message: ChatMessage,
