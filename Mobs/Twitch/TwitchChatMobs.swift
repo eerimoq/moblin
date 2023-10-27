@@ -116,7 +116,7 @@ final class TwitchChatMobs {
                     .warning(
                         """
                         twitch: chat: Emote lower bound \(emote.range.lowerBound) after \
-                        message end \(message.text.count)
+                        message end \(message.text.count) '\(message.text)'
                         """
                     )
                 break
@@ -126,7 +126,7 @@ final class TwitchChatMobs {
                     .warning(
                         """
                         twitch: chat: Emote upper bound \(emote.range.upperBound) after \
-                        message end \(message.text.count)
+                        message end \(message.text.count) '\(message.text)'
                         """
                     )
                 break

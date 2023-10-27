@@ -5,10 +5,7 @@ struct CosmeticsSettingsView: View {
     @State var isPresentingBuyPopup = false
 
     private func setAppIcon(iconImage: String) {
-        var iconImage: String? = iconImage.replacingOccurrences(
-            of: "NoBackground",
-            with: ""
-        )
+        var iconImage: String? = iconImage
         if iconImage == "AppIcon" {
             iconImage = nil
         }
@@ -26,14 +23,14 @@ struct CosmeticsSettingsView: View {
                     ForEach(model.getMyIcons()) { icon in
                         HStack {
                             Text("")
-                            Image(icon.image)
+                            Image(icon.imageNoBackground())
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: 40, height: 40)
                             Spacer()
                             Text(icon.name)
                         }
-                        .tag(icon.image)
+                        .tag(icon.image())
                     }
                 }
                 .onChange(of: model.iconImage) { iconImage in
@@ -50,10 +47,10 @@ struct CosmeticsSettingsView: View {
             }
             Section {
                 List {
-                    ForEach(model.getIconsInStock()) { icon in
+                    ForEach(model.getIconsInStore()) { icon in
                         HStack {
                             Text("")
-                            Image(icon.image)
+                            Image(icon.imageNoBackground())
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: 40, height: 40)
@@ -70,13 +67,33 @@ struct CosmeticsSettingsView: View {
                                 isPresented: $isPresentingBuyPopup
                             ) {}
                         }
-                        .tag(icon.image)
+                        .tag(icon.image())
                     }
                 }
             } header: {
                 Text("Icons in store")
             } footer: {
                 Text("Support MOBS developers by buying icons.")
+            }
+            Section {
+                List {
+                    ForEach(model.getIconsNotYetInStore()) { icon in
+                        HStack {
+                            Text("")
+                            Image(icon.imageNoBackground())
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 40, height: 40)
+                            Spacer()
+                            Text(icon.name)
+                            Text(icon.price)
+                                .padding([.leading], 10)
+                        }
+                        .tag(icon.image())
+                    }
+                }
+            } header: {
+                Text("Icons not yet in store")
             }
         }
         .navigationTitle("Cosmetics")

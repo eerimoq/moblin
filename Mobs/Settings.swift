@@ -392,7 +392,7 @@ class Database: Codable {
     var zoom: SettingsZoom = .init()
     var tapToFocus: Bool = false
     var bitratePresets: [SettingsBitratePreset] = []
-    var iconImage: String = plainIcon.image
+    var iconImage: String = plainIcon.image()
     var maximumScreenFpsEnabled: Bool? = false
     var maximumScreenFps: Int? = 60
     var videoStabilizationMode: SettingsVideoStabilizationMode? = .off

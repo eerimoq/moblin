@@ -14,52 +14,59 @@ import VideoToolbox
 let noValue = ""
 
 struct Icon: Identifiable {
-    var id: UUID = .init()
     var name: String
-    var image: String
+    var id: String
     var price: String
+    
+    func imageNoBackground() -> String {
+        return "\(id)NoBackground"
+    }
+    
+    func image() -> String {
+        return id
+    }
 }
 
-let plainIcon = Icon(name: "Plain", image: "AppIconNoBackground", price: "$1.99")
+let plainIcon = Icon(name: "Plain", id: "AppIcon", price: "$1.99")
 
 private let myIcons = [
     plainIcon,
-    Icon(name: "Halloween", image: "AppIconNoBackgroundHalloween", price: "$1.99"),
+    Icon(name: "Halloween", id: "AppIconHalloween", price: "$1.99"),
     Icon(
         name: "Halloween pumpkin",
-        image: "AppIconNoBackgroundHalloweenPumpkin",
+        id: "AppIconHalloweenPumpkin",
         price: "$1.99"
     ),
 ]
 
-func isInMyIcons(image: String) -> Bool {
+func isInMyIcons(id: String) -> Bool {
     return myIcons.contains(where: { icon in
-        icon.image == image
+        icon.id == id
     })
 }
 
-private let allIcons = [
-    plainIcon,
-    Icon(name: "King", image: "AppIconNoBackgroundKing", price: "$1.99"),
-    Icon(name: "Heart", image: "AppIconNoBackgroundHeart", price: "$1.99"),
-    Icon(name: "Basque", image: "AppIconNoBackgroundBasque", price: "$1.99"),
-    Icon(name: "Looking", image: "AppIconNoBackgroundLooking", price: "$1.99"),
-    Icon(name: "Tetris", image: "AppIconNoBackgroundTetris", price: "$1.99"),
-    Icon(name: "Halloween", image: "AppIconNoBackgroundHalloween", price: "$1.99"),
+private var iconsInStore: [Icon] = []
+
+private let iconsNotYetInStore = [
+    Icon(name: "Heart", id: "AppIconHeart", price: "$1.99"),
+    Icon(name: "Basque", id: "AppIconBasque", price: "$1.99"),
+    Icon(name: "Looking", id: "AppIconLooking", price: "$1.99"),
+    Icon(name: "Tetris", id: "AppIconTetris", price: "$1.99"),
+    Icon(name: "Halloween", id: "AppIconHalloween", price: "$1.99"),
     Icon(
         name: "Halloween pumpkin",
-        image: "AppIconNoBackgroundHalloweenPumpkin",
+        id: "AppIconHalloweenPumpkin",
         price: "$1.99"
     ),
-    Icon(name: "Eyebrows", image: "AppIconNoBackgroundEyebrows", price: "$1.99"),
-    Icon(name: "South Korea", image: "AppIconNoBackgroundSouthKorea", price: "$1.99"),
-    Icon(name: "China", image: "AppIconNoBackgroundChina", price: "$1.99"),
-    Icon(name: "United Kingdom", image: "AppIconNoBackgroundUnitedKingdom", price: "$1.99"),
-    Icon(name: "Sweden", image: "AppIconNoBackgroundSweden", price: "$1.99"),
-    Icon(name: "United States", image: "AppIconNoBackgroundUnitedStates", price: "$1.99"),
-    Icon(name: "Millionaire", image: "AppIconNoBackgroundMillionaire", price: "$9.99"),
-    Icon(name: "Billionaire", image: "AppIconNoBackgroundBillionaire", price: "$24.99"),
-    Icon(name: "Trillionaire", image: "AppIconNoBackgroundTrillionaire", price: "$99.99"),
+    Icon(name: "Eyebrows", id: "AppIconEyebrows", price: "$1.99"),
+    Icon(name: "South Korea", id: "AppIconSouthKorea", price: "$1.99"),
+    Icon(name: "China", id: "AppIconChina", price: "$1.99"),
+    Icon(name: "United Kingdom", id: "AppIconUnitedKingdom", price: "$1.99"),
+    Icon(name: "Sweden", id: "AppIconSweden", price: "$1.99"),
+    Icon(name: "United States", id: "AppIconUnitedStates", price: "$1.99"),
+    Icon(name: "Millionaire", id: "AppIconMillionaire", price: "$9.99"),
+    Icon(name: "Billionaire", id: "AppIconBillionaire", price: "$24.99"),
+    Icon(name: "Trillionaire", id: "AppIconTrillionaire", price: "$99.99"),
 ]
 
 struct ChatMessageEmote: Identifiable {
@@ -163,7 +170,7 @@ final class Model: ObservableObject {
 
     @Published var showingBitrate = false
     @Published var showingMic = false
-    @Published var iconImage: String = plainIcon.image
+    @Published var iconImage: String = plainIcon.id
     @Published var manualFocusPoint: CGPoint?
     @Published var backZoomPresetId = UUID()
     @Published var frontZoomPresetId = UUID()
@@ -198,10 +205,12 @@ final class Model: ObservableObject {
         return myIcons
     }
 
-    func getIconsInStock() -> [Icon] {
-        return allIcons.filter { icon in
-            !isInMyIcons(image: icon.image)
-        }
+    func getIconsInStore() -> [Icon] {
+        return iconsInStore
+    }
+
+    func getIconsNotYetInStore() -> [Icon] {
+        return iconsNotYetInStore
     }
 
     @MainActor
@@ -212,7 +221,7 @@ final class Model: ObservableObject {
             for product in products {
                 logger
                     .info("\(product.id) \(product.displayName) \(product.displayPrice)")
-                // logger.info("\(product)")
+                iconsInStore.append(Icon(name: product.displayName, id: product.id, price: product.displayPrice))
             }
         } catch {
             logger.error("Failed to get products from the App Store server: \(error)")
@@ -389,9 +398,9 @@ final class Model: ObservableObject {
     }
 
     func updateIconImageFromDatabase() {
-        if !isInMyIcons(image: database.iconImage) {
+        if !isInMyIcons(id: database.iconImage) {
             logger.warning("Database icon image \(database.iconImage) is not mine")
-            database.iconImage = plainIcon.image
+            database.iconImage = plainIcon.id
             store()
         }
         iconImage = database.iconImage
