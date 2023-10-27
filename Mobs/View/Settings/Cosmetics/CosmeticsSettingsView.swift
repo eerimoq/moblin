@@ -38,7 +38,7 @@ private let allIcons = [
         image: "AppIconNoBackgroundHalloweenPumpkin",
         price: 2.0
     ),
-    Icon(name: "Eyebrows", image: "AppIconNoBackgroundEyes", price: 2.0),
+    Icon(name: "Eyebrows", image: "AppIconNoBackgroundEyebrows", price: 2.0),
     Icon(name: "South Korea", image: "AppIconNoBackgroundSouthKorea", price: 2.0),
     Icon(name: "China", image: "AppIconNoBackgroundChina", price: 2.0),
     Icon(name: "United Kingdom", image: "AppIconNoBackgroundUnitedKingdom", price: 2.0),
