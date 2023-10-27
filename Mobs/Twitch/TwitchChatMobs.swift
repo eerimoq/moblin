@@ -115,7 +115,7 @@ final class TwitchChatMobs {
             if emote.range.lowerBound > 0 {
                 let endIndex = message.text.index(
                     message.text.startIndex,
-                    offsetBy: emote.range.lowerBound - 1
+                    offsetBy: max(min(emote.range.lowerBound - 1, message.text.count), 0)
                 )
                 if startIndex < endIndex {
                     text = String(message.text[startIndex ... endIndex])

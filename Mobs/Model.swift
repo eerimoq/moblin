@@ -9,8 +9,58 @@ import SRTHaishinKit
 import SwiftUI
 import TwitchChat
 import VideoToolbox
+import StoreKit
 
 let noValue = ""
+
+struct Icon: Identifiable {
+    var id: UUID = .init()
+    var name: String
+    var image: String
+    var price: Float
+}
+
+let plainIcon = Icon(name: "Plain", image: "AppIconNoBackground", price: 1.99)
+
+private let myIcons = [
+    plainIcon,
+    Icon(name: "Halloween", image: "AppIconNoBackgroundHalloween", price: 1.99),
+    Icon(
+        name: "Halloween pumpkin",
+        image: "AppIconNoBackgroundHalloweenPumpkin",
+        price: 1.99
+    ),
+]
+
+func isInMyIcons(image: String) -> Bool {
+    return myIcons.contains(where: { icon in
+        icon.image == image
+    })
+}
+
+private let allIcons = [
+    plainIcon,
+    Icon(name: "King", image: "AppIconNoBackgroundKing", price: 1.99),
+    Icon(name: "Heart", image: "AppIconNoBackgroundHeart", price: 1.99),
+    Icon(name: "Basque", image: "AppIconNoBackgroundBasque", price: 1.99),
+    Icon(name: "Looking", image: "AppIconNoBackgroundLooking", price: 1.99),
+    Icon(name: "Tetris", image: "AppIconNoBackgroundTetris", price: 1.99),
+    Icon(name: "Halloween", image: "AppIconNoBackgroundHalloween", price: 1.99),
+    Icon(
+        name: "Halloween pumpkin",
+        image: "AppIconNoBackgroundHalloweenPumpkin",
+        price: 1.99
+    ),
+    Icon(name: "Eyebrows", image: "AppIconNoBackgroundEyebrows", price: 1.99),
+    Icon(name: "South Korea", image: "AppIconNoBackgroundSouthKorea", price: 1.99),
+    Icon(name: "China", image: "AppIconNoBackgroundChina", price: 1.99),
+    Icon(name: "United Kingdom", image: "AppIconNoBackgroundUnitedKingdom", price: 1.99),
+    Icon(name: "Sweden", image: "AppIconNoBackgroundSweden", price: 1.99),
+    Icon(name: "United States", image: "AppIconNoBackgroundUnitedStates", price: 1.99),
+    Icon(name: "Millionaire", image: "AppIconNoBackgroundMillionaire", price: 9.99),
+    Icon(name: "Billionaire", image: "AppIconNoBackgroundBillionaire", price: 24.99),
+    Icon(name: "Trillionaire", image: "AppIconNoBackgroundTrillionaire", price: 99.99),
+]
 
 struct ChatMessageEmote: Identifiable {
     var id = UUID()
@@ -142,6 +192,16 @@ final class Model: ObservableObject {
 
     var enabledScenes: [SettingsScene] {
         database.scenes.filter { scene in scene.enabled }
+    }
+
+    func getMyIcons() -> [Icon] {
+        return myIcons
+    }
+
+    func getIconsInStock() -> [Icon] {
+        return allIcons.filter { icon in
+            !isInMyIcons(image: icon.image)
+        }
     }
 
     func findButton(id: UUID) -> SettingsButton? {
