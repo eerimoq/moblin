@@ -3,7 +3,6 @@ import SwiftUI
 struct StreamSettingsView: View {
     @EnvironmentObject private var model: Model
     var stream: SettingsStream
-    @State var text = ""
 
     func submitName(name: String) {
         stream.name = name

@@ -1,8 +1,6 @@
 import SwiftUI
 
 struct ImportExportSettingsView: View {
-    @EnvironmentObject var model: Model
-
     var body: some View {
         Form {
             Section {

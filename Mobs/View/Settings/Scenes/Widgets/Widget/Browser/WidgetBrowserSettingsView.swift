@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct WidgetBrowserSettingsView: View {
-    @EnvironmentObject var model: Model
     var widget: SettingsWidget
 
     /* func submitWidth(value: String) {
