@@ -111,11 +111,19 @@ final class TwitchChatMobs {
         for emote in emotes.sorted(by: { lhs, rhs in
             lhs.range.lowerBound < rhs.range.lowerBound
         }) {
+            if !(emote.range.lowerBound < message.text.count) {
+                logger.warning("twitch: chat: Emote lower bound \(emote.range.lowerBound) after message end \(message.text.count)")
+                break
+            }
+            if !(emote.range.upperBound < message.text.count) {
+                logger.warning("twitch: chat: Emote upper bound \(emote.range.upperBound) after message end \(message.text.count)")
+                break
+            }
             var text: String?
             if emote.range.lowerBound > 0 {
                 let endIndex = message.text.index(
                     message.text.startIndex,
-                    offsetBy: max(min(emote.range.lowerBound - 1, message.text.count), 0)
+                    offsetBy: emote.range.lowerBound - 1
                 )
                 if startIndex < endIndex {
                     text = String(message.text[startIndex ... endIndex])
@@ -127,7 +135,7 @@ final class TwitchChatMobs {
             ))
             startIndex = message.text.index(
                 message.text.startIndex,
-                offsetBy: min(emote.range.upperBound + 1, message.text.count)
+                offsetBy: emote.range.upperBound + 1
             )
         }
         if startIndex < message.text.endIndex {
