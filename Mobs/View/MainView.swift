@@ -17,9 +17,9 @@ struct MainView: View {
 
     private func splitImage() -> Image {
         if wideSettings {
-            return Image(systemName: "rectangle.split.2x1")
+            return Image(systemName: "arrow.down.right.and.arrow.up.left")
         } else {
-            return Image(systemName: "rectangle")
+            return Image(systemName: "arrow.up.left.and.arrow.down.right")
         }
     }
 
