@@ -39,12 +39,6 @@ private let globalMyIcons = [
     ),
 ]
 
-func isInMyIcons(id: String) -> Bool {
-    return globalMyIcons.contains(where: { icon in
-        icon.id == id
-    })
-}
-
 private let globalIconsNotYetInStore = [
     Icon(name: "Heart", id: "AppIconHeart", price: "$1.99"),
     Icon(name: "Basque", id: "AppIconBasque", price: "$1.99"),
@@ -199,9 +193,11 @@ final class Model: ObservableObject {
         database.scenes.filter { scene in scene.enabled }
     }
 
-    @Published var myIcons = globalMyIcons
+    @Published var myIcons: [Icon] = []
     @Published var iconsInStore: [Icon] = []
     @Published var iconsNotYetInStore = globalIconsNotYetInStore
+    private var appStoreUpdateListenerTask: Task<Void, Error>?
+    private var products: [String: Product] = [:]
 
     @MainActor
     private func getProductsFromAppStore() async {
@@ -214,10 +210,95 @@ final class Model: ObservableObject {
                     id: product.id,
                     price: product.displayPrice
                 ))
+                self.products[product.id] = product
             }
-            iconsInStore = icons
+            iconsInStore = globalMyIcons + icons
         } catch {
             logger.error("Failed to get products from the App Store server: \(error)")
+        }
+    }
+
+    private func listenForAppStoreTransactions() -> Task<Void, Error> {
+        return Task.detached {
+            for await result in Transaction.updates {
+                logger.info("Got App Store transaction")
+                do {
+                    let transaction = try self.checkVerified(result)
+                    await self.updateProductFromAppStore()
+                    await transaction.finish()
+                } catch {
+                    logger.info("Transaction failed verification")
+                }
+            }
+        }
+    }
+
+    private func checkVerified<T>(_ result: VerificationResult<T>) throws -> T {
+        switch result {
+        case .unverified:
+            throw "Verification failed"
+        case let .verified(safe):
+            return safe
+        }
+    }
+
+    @MainActor
+    func updateProductFromAppStore() async {
+        logger.info("Update products from App Store")
+        var myIcons = globalMyIcons
+        for await result in Transaction.currentEntitlements {
+            do {
+                let transaction = try checkVerified(result)
+                guard let product = products[transaction.productID] else {
+                    logger.info("Product not found")
+                    continue
+                }
+                myIcons.append(Icon(
+                    name: product.displayName,
+                    id: product.id,
+                    price: product.displayPrice
+                ))
+            } catch {
+                logger.info("Check failed")
+            }
+        }
+        self.myIcons = myIcons
+        var iconsInStore: [Icon] = []
+        for product in products.values {
+            if myIcons.contains(where: { icon in
+                product.id == icon.id
+            }) {
+                continue
+            }
+            iconsInStore.append(Icon(
+                name: product.displayName,
+                id: product.id,
+                price: product.displayPrice
+            ))
+        }
+        self.iconsInStore = iconsInStore
+    }
+
+    private func findProduct(id: String) -> Product? {
+        return products[id]
+    }
+
+    func buyIcon(id: String) async throws {
+        guard let product = findProduct(id: id) else {
+            throw "Product not found"
+        }
+        let result = try await product.purchase()
+
+        switch result {
+        case let .success(verification):
+            logger.info("Success buy!")
+            let transaction = try checkVerified(verification)
+            await updateProductFromAppStore()
+            await transaction.finish()
+        case .userCancelled, .pending:
+            logger.info("Buy not done yet!")
+        default:
+            logger.info("What happend when buying? \(result)")
         }
     }
 
@@ -343,7 +424,6 @@ final class Model: ObservableObject {
         media.onRtmpConnected = handleRtmpConnected
         media.onRtmpDisconnected = handleRtmpDisconnected
         media.onAudioMuteChange = updateAudioLevel
-        updateIconImageFromDatabase()
         setupAudioSession()
         selectMic(orientation: mics[0])
         backZoomPresetId = database.zoom.back[0].id
@@ -370,8 +450,15 @@ final class Model: ObservableObject {
         networkPathMonitor.pathUpdateHandler = handleNetworkPathUpdate(path:)
         networkPathMonitor.start(queue: DispatchQueue.main)
         Task {
+            appStoreUpdateListenerTask = listenForAppStoreTransactions()
             await getProductsFromAppStore()
+            await updateProductFromAppStore()
+            updateIconImageFromDatabase()
         }
+    }
+
+    deinit {
+        appStoreUpdateListenerTask?.cancel()
     }
 
     private func handleNetworkPathUpdate(path: NWPath) {
@@ -388,6 +475,12 @@ final class Model: ObservableObject {
         default:
             break
         }
+    }
+
+    private func isInMyIcons(id: String) -> Bool {
+        return myIcons.contains(where: { icon in
+            icon.id == id
+        })
     }
 
     func updateIconImageFromDatabase() {

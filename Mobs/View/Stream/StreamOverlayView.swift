@@ -42,8 +42,11 @@ struct StreamOverlayView: View {
             }
             .allowsHitTesting(false)
             if model.database.show.chat {
-                StreamOverlayChatView()
-                    .allowsHitTesting(false)
+                GeometryReader { metrics in
+                    StreamOverlayChatView()
+                        .frame(width: metrics.size.width * 0.95)
+                        .allowsHitTesting(false)
+                }
             }
             HStack {
                 StreamOverlayDebugView()

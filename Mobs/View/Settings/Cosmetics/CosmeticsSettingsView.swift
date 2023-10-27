@@ -2,7 +2,6 @@ import SwiftUI
 
 struct CosmeticsSettingsView: View {
     @EnvironmentObject var model: Model
-    @State var isPresentingBuyPopup = false
 
     private func setAppIcon(iconImage: String) {
         var iconImage: String? = iconImage
@@ -46,28 +45,40 @@ struct CosmeticsSettingsView: View {
                 Text("Displayed in main view and as app icon.")
             }
             Section {
-                List {
-                    ForEach(model.iconsInStore) { icon in
-                        HStack {
-                            Text("")
-                            Image(icon.imageNoBackground())
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 40, height: 40)
-                            Spacer()
-                            Text(icon.name)
-                            Button(action: {
-                                isPresentingBuyPopup = true
-                            }, label: {
-                                Text(icon.price)
-                            })
-                            .padding([.leading], 10)
-                            .alert(
-                                "The store is closed",
-                                isPresented: $isPresentingBuyPopup
-                            ) {}
+                if model.iconsInStore.count > 0 {
+                    List {
+                        ForEach(model.iconsInStore) { icon in
+                            HStack {
+                                Text("")
+                                Image(icon.imageNoBackground())
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 40, height: 40)
+                                Spacer()
+                                Text(icon.name)
+                                Button(action: {
+                                    Task {
+                                        do {
+                                            try await model.buyIcon(id: icon.id)
+                                        } catch {
+                                            logger.info("Buy failed with error \(error)")
+                                        }
+                                    }
+                                }, label: {
+                                    Text(icon.price)
+                                })
+                                .padding([.leading], 10)
+                            }
+                            .tag(icon.image())
                         }
-                        .tag(icon.image())
+                    }
+                } else {
+                    HStack {
+                        Image(systemName: "heart.fill")
+                            .foregroundColor(.red)
+                        Text("You already bought everything!")
+                        Image(systemName: "heart.fill")
+                            .foregroundColor(.red)
                     }
                 }
             } header: {
@@ -86,8 +97,6 @@ struct CosmeticsSettingsView: View {
                                 .frame(width: 40, height: 40)
                             Spacer()
                             Text(icon.name)
-                            Text(icon.price)
-                                .padding([.leading], 10)
                         }
                         .tag(icon.image())
                     }
