@@ -7,15 +7,15 @@ struct Icon: Identifiable {
     var price: Float
 }
 
-let plainIcon = Icon(name: "Plain", image: "AppIconNoBackground", price: 2.0)
+let plainIcon = Icon(name: "Plain", image: "AppIconNoBackground", price: 1.99)
 
 private let myIcons = [
     plainIcon,
-    Icon(name: "Halloween", image: "AppIconNoBackgroundHalloween", price: 2.0),
+    Icon(name: "Halloween", image: "AppIconNoBackgroundHalloween", price: 1.99),
     Icon(
         name: "Halloween pumpkin",
         image: "AppIconNoBackgroundHalloweenPumpkin",
-        price: 2.0
+        price: 1.99
     ),
 ]
 
@@ -27,26 +27,26 @@ func isInMyIcons(image: String) -> Bool {
 
 private let allIcons = [
     plainIcon,
-    Icon(name: "King", image: "AppIconNoBackgroundCrown", price: 2.0),
-    Icon(name: "Heart", image: "AppIconNoBackgroundHeart", price: 2.0),
-    Icon(name: "Basque", image: "AppIconNoBackgroundBasque", price: 2.0),
-    Icon(name: "Looking", image: "AppIconNoBackgroundLooking", price: 2.0),
-    Icon(name: "Tetris", image: "AppIconNoBackgroundTetris", price: 2.0),
-    Icon(name: "Halloween", image: "AppIconNoBackgroundHalloween", price: 2.0),
+    Icon(name: "King", image: "AppIconNoBackgroundKing", price: 1.99),
+    Icon(name: "Heart", image: "AppIconNoBackgroundHeart", price: 1.99),
+    Icon(name: "Basque", image: "AppIconNoBackgroundBasque", price: 1.99),
+    Icon(name: "Looking", image: "AppIconNoBackgroundLooking", price: 1.99),
+    Icon(name: "Tetris", image: "AppIconNoBackgroundTetris", price: 1.99),
+    Icon(name: "Halloween", image: "AppIconNoBackgroundHalloween", price: 1.99),
     Icon(
         name: "Halloween pumpkin",
         image: "AppIconNoBackgroundHalloweenPumpkin",
-        price: 2.0
+        price: 1.99
     ),
-    Icon(name: "Eyebrows", image: "AppIconNoBackgroundEyebrows", price: 2.0),
-    Icon(name: "South Korea", image: "AppIconNoBackgroundSouthKorea", price: 2.0),
-    Icon(name: "China", image: "AppIconNoBackgroundChina", price: 2.0),
-    Icon(name: "United Kingdom", image: "AppIconNoBackgroundUnitedKingdom", price: 2.0),
-    Icon(name: "Sweden", image: "AppIconNoBackgroundSweden", price: 2.0),
-    Icon(name: "United States", image: "AppIconNoBackgroundUnitedStates", price: 2.0),
-    Icon(name: "Millionaire", image: "AppIconNoBackgroundMillionaire", price: 10.0),
-    Icon(name: "Billionaire", image: "AppIconNoBackgroundBillionaire", price: 25.0),
-    Icon(name: "Trillionaire", image: "AppIconNoBackgroundTrillionaire", price: 100.0),
+    Icon(name: "Eyebrows", image: "AppIconNoBackgroundEyebrows", price: 1.99),
+    Icon(name: "South Korea", image: "AppIconNoBackgroundSouthKorea", price: 1.99),
+    Icon(name: "China", image: "AppIconNoBackgroundChina", price: 1.99),
+    Icon(name: "United Kingdom", image: "AppIconNoBackgroundUnitedKingdom", price: 1.99),
+    Icon(name: "Sweden", image: "AppIconNoBackgroundSweden", price: 1.99),
+    Icon(name: "United States", image: "AppIconNoBackgroundUnitedStates", price: 1.99),
+    Icon(name: "Millionaire", image: "AppIconNoBackgroundMillionaire", price: 9.99),
+    Icon(name: "Billionaire", image: "AppIconNoBackgroundBillionaire", price: 24.99),
+    Icon(name: "Trillionaire", image: "AppIconNoBackgroundTrillionaire", price: 99.99),
 ]
 
 struct CosmeticsSettingsView: View {
