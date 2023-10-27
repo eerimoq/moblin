@@ -449,6 +449,7 @@ final class Model: ObservableObject {
         )
         networkPathMonitor.pathUpdateHandler = handleNetworkPathUpdate(path:)
         networkPathMonitor.start(queue: DispatchQueue.main)
+        iconImage = database.iconImage
         Task {
             appStoreUpdateListenerTask = listenForAppStoreTransactions()
             await getProductsFromAppStore()
