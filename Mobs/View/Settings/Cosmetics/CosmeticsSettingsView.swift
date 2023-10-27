@@ -62,7 +62,7 @@ struct CosmeticsSettingsView: View {
                             Button(action: {
                                 isPresentingBuyPopup = true
                             }, label: {
-                                Text("$\(String(format: "%.02f", icon.price))")
+                                Text(icon.price)
                             })
                             .padding([.leading], 10)
                             .alert(

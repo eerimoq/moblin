@@ -112,11 +112,23 @@ final class TwitchChatMobs {
             lhs.range.lowerBound < rhs.range.lowerBound
         }) {
             if !(emote.range.lowerBound < message.text.count) {
-                logger.warning("twitch: chat: Emote lower bound \(emote.range.lowerBound) after message end \(message.text.count)")
+                logger
+                    .warning(
+                        """
+                        twitch: chat: Emote lower bound \(emote.range.lowerBound) after \
+                        message end \(message.text.count)
+                        """
+                    )
                 break
             }
             if !(emote.range.upperBound < message.text.count) {
-                logger.warning("twitch: chat: Emote upper bound \(emote.range.upperBound) after message end \(message.text.count)")
+                logger
+                    .warning(
+                        """
+                        twitch: chat: Emote upper bound \(emote.range.upperBound) after \
+                        message end \(message.text.count)
+                        """
+                    )
                 break
             }
             var text: String?
