@@ -54,7 +54,11 @@ struct SettingsView: View {
             Section {
                 NavigationLink(destination: CosmeticsSettingsView(
                 )) {
-                    Text("Cosmetics")
+                    HStack {
+                        Image(systemName: "heart.fill")
+                            .foregroundColor(.red)
+                        Text("Cosmetics")
+                    }
                 }
             }
             Section {

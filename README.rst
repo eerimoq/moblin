@@ -130,6 +130,8 @@ ToDo
 - Long chat messages makes video smaller sometimes, leaving white
   rectangle on left part of screen. How to reproduce?
 
+- Fix Twitch emotes when UTF-8 > 1 bytes are received.
+
 Ideas/plan
 ==========
 

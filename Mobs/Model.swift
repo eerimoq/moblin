@@ -17,11 +17,11 @@ struct Icon: Identifiable {
     var name: String
     var id: String
     var price: String
-    
+
     func imageNoBackground() -> String {
         return "\(id)NoBackground"
     }
-    
+
     func image() -> String {
         return id
     }
@@ -29,7 +29,7 @@ struct Icon: Identifiable {
 
 let plainIcon = Icon(name: "Plain", id: "AppIcon", price: "$1.99")
 
-private let myIcons = [
+private let globalMyIcons = [
     plainIcon,
     Icon(name: "Halloween", id: "AppIconHalloween", price: "$1.99"),
     Icon(
@@ -40,14 +40,12 @@ private let myIcons = [
 ]
 
 func isInMyIcons(id: String) -> Bool {
-    return myIcons.contains(where: { icon in
+    return globalMyIcons.contains(where: { icon in
         icon.id == id
     })
 }
 
-private var iconsInStore: [Icon] = []
-
-private let iconsNotYetInStore = [
+private let globalIconsNotYetInStore = [
     Icon(name: "Heart", id: "AppIconHeart", price: "$1.99"),
     Icon(name: "Basque", id: "AppIconBasque", price: "$1.99"),
     Icon(name: "Looking", id: "AppIconLooking", price: "$1.99"),
@@ -201,28 +199,23 @@ final class Model: ObservableObject {
         database.scenes.filter { scene in scene.enabled }
     }
 
-    func getMyIcons() -> [Icon] {
-        return myIcons
-    }
-
-    func getIconsInStore() -> [Icon] {
-        return iconsInStore
-    }
-
-    func getIconsNotYetInStore() -> [Icon] {
-        return iconsNotYetInStore
-    }
+    @Published var myIcons = globalMyIcons
+    @Published var iconsInStore: [Icon] = []
+    @Published var iconsNotYetInStore = globalIconsNotYetInStore
 
     @MainActor
     private func getProductsFromAppStore() async {
-        logger.info("Getting products from App Store")
         do {
+            var icons: [Icon] = []
             let products = try await Product.products(for: ["AppIconKing"])
             for product in products {
-                logger
-                    .info("\(product.id) \(product.displayName) \(product.displayPrice)")
-                iconsInStore.append(Icon(name: product.displayName, id: product.id, price: product.displayPrice))
+                icons.append(Icon(
+                    name: product.displayName,
+                    id: product.id,
+                    price: product.displayPrice
+                ))
             }
+            iconsInStore = icons
         } catch {
             logger.error("Failed to get products from the App Store server: \(error)")
         }

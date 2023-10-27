@@ -20,7 +20,7 @@ struct CosmeticsSettingsView: View {
         Form {
             Section {
                 Picker("", selection: $model.iconImage) {
-                    ForEach(model.getMyIcons()) { icon in
+                    ForEach(model.myIcons) { icon in
                         HStack {
                             Text("")
                             Image(icon.imageNoBackground())
@@ -47,7 +47,7 @@ struct CosmeticsSettingsView: View {
             }
             Section {
                 List {
-                    ForEach(model.getIconsInStore()) { icon in
+                    ForEach(model.iconsInStore) { icon in
                         HStack {
                             Text("")
                             Image(icon.imageNoBackground())
@@ -77,7 +77,7 @@ struct CosmeticsSettingsView: View {
             }
             Section {
                 List {
-                    ForEach(model.getIconsNotYetInStore()) { icon in
+                    ForEach(model.iconsNotYetInStore) { icon in
                         HStack {
                             Text("")
                             Image(icon.imageNoBackground())
