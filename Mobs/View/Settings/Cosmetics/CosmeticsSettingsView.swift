@@ -44,8 +44,8 @@ struct CosmeticsSettingsView: View {
             } footer: {
                 Text("Displayed in main view and as app icon.")
             }
-            Section {
-                if model.iconsInStore.count > 0 {
+            if model.iconsInStore.count > 0 {
+                Section {
                     List {
                         ForEach(model.iconsInStore) { icon in
                             HStack {
@@ -75,7 +75,13 @@ struct CosmeticsSettingsView: View {
                             .tag(icon.image())
                         }
                     }
-                } else {
+                } header: {
+                    Text("Icons in store")
+                } footer: {
+                    Text("Support MOBS developers by buying icons.")
+                }
+            } else {
+                Section {
                     HStack {
                         Image(systemName: "heart.fill")
                             .foregroundColor(.red)
@@ -83,11 +89,11 @@ struct CosmeticsSettingsView: View {
                         Image(systemName: "heart.fill")
                             .foregroundColor(.red)
                     }
+                } header: {
+                    Text("Icons in store")
+                } footer: {
+                    Text("Many thanks from the MOBS developers!")
                 }
-            } header: {
-                Text("Icons in store")
-            } footer: {
-                Text("Support MOBS developers by buying icons.")
             }
             Section {
                 List {
