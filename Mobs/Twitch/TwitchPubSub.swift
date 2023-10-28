@@ -112,7 +112,7 @@ final class TwitchPubSub: NSObject {
         let type = try getMessageType(message: message.data.message)
         if type == "viewcount" {
             let message = try decodeMessageViewCount(message: message.data.message)
-            model.numberOfViewers = String(message.viewers)
+            model.numberOfViewers = countFormatter.format(message.viewers)
             model.numberOfViewersUpdateDate = Date()
         } else {
             logger

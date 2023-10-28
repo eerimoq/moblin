@@ -152,6 +152,10 @@ func widgetImage(widget: SettingsWidget) -> String {
     }
 }
 
+var countFormatter: IntegerFormatStyle<Int> {
+    return IntegerFormatStyle<Int>().notation(.compactName)
+}
+
 var sizeFormatter: ByteCountFormatter {
     let formatter = ByteCountFormatter()
     formatter.allowsNonnumericFormatting = false
