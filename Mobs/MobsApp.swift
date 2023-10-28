@@ -1,5 +1,3 @@
-import SDWebImageSwiftUI
-import SDWebImageWebPCoder
 import SwiftUI
 
 @main

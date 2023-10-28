@@ -10,6 +10,8 @@ import StoreKit
 import SwiftUI
 import TwitchChat
 import VideoToolbox
+import SDWebImageSwiftUI
+import SDWebImageWebPCoder
 
 let noValue = ""
 
@@ -416,6 +418,8 @@ final class Model: ObservableObject {
     }
 
     func setup() {
+        let WebPCoder = SDImageWebPCoder.shared
+        SDImageCodersManager.shared.addCoder(WebPCoder)
         UIDevice.current.isBatteryMonitoringEnabled = true
         updateBatteryLevel()
         settings.load()
