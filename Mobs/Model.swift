@@ -27,38 +27,38 @@ struct Icon: Identifiable {
     }
 }
 
-let plainIcon = Icon(name: "Plain", id: "AppIcon", price: "$1.99")
+let plainIcon = Icon(name: "Plain", id: "AppIcon", price: "")
 
 private let globalMyIcons = [
     plainIcon,
-    Icon(name: "Halloween", id: "AppIconHalloween", price: "$1.99"),
+    Icon(name: "Halloween", id: "AppIconHalloween", price: "$"),
     Icon(
         name: "Halloween pumpkin",
         id: "AppIconHalloweenPumpkin",
-        price: "$1.99"
+        price: ""
     ),
 ]
 
 private let globalIconsNotYetInStore = [
-    Icon(name: "Heart", id: "AppIconHeart", price: "$1.99"),
-    Icon(name: "Basque", id: "AppIconBasque", price: "$1.99"),
-    Icon(name: "Looking", id: "AppIconLooking", price: "$1.99"),
-    Icon(name: "Tetris", id: "AppIconTetris", price: "$1.99"),
-    Icon(name: "Halloween", id: "AppIconHalloween", price: "$1.99"),
+    Icon(name: "Heart", id: "AppIconHeart", price: ""),
+    Icon(name: "Basque", id: "AppIconBasque", price: ""),
+    Icon(name: "Looking", id: "AppIconLooking", price: ""),
+    Icon(name: "Tetris", id: "AppIconTetris", price: ""),
+    Icon(name: "Halloween", id: "AppIconHalloween", price: ""),
     Icon(
         name: "Halloween pumpkin",
         id: "AppIconHalloweenPumpkin",
-        price: "$1.99"
+        price: ""
     ),
-    Icon(name: "Eyebrows", id: "AppIconEyebrows", price: "$1.99"),
-    Icon(name: "South Korea", id: "AppIconSouthKorea", price: "$1.99"),
-    Icon(name: "China", id: "AppIconChina", price: "$1.99"),
-    Icon(name: "United Kingdom", id: "AppIconUnitedKingdom", price: "$1.99"),
-    Icon(name: "Sweden", id: "AppIconSweden", price: "$1.99"),
-    Icon(name: "United States", id: "AppIconUnitedStates", price: "$1.99"),
-    Icon(name: "Millionaire", id: "AppIconMillionaire", price: "$9.99"),
-    Icon(name: "Billionaire", id: "AppIconBillionaire", price: "$24.99"),
-    Icon(name: "Trillionaire", id: "AppIconTrillionaire", price: "$99.99"),
+    Icon(name: "Eyebrows", id: "AppIconEyebrows", price: ""),
+    Icon(name: "South Korea", id: "AppIconSouthKorea", price: ""),
+    Icon(name: "China", id: "AppIconChina", price: ""),
+    Icon(name: "United Kingdom", id: "AppIconUnitedKingdom", price: ""),
+    Icon(name: "Sweden", id: "AppIconSweden", price: ""),
+    Icon(name: "United States", id: "AppIconUnitedStates", price: ""),
+    Icon(name: "Millionaire", id: "AppIconMillionaire", price: ""),
+    Icon(name: "Billionaire", id: "AppIconBillionaire", price: ""),
+    Icon(name: "Trillionaire", id: "AppIconTrillionaire", price: ""),
 ]
 
 struct ChatMessageEmote: Identifiable {
