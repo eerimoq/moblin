@@ -132,6 +132,8 @@ ToDo
 
 - Fix Twitch emotes when UTF-8 > 1 bytes are received.
 
+- Wrap long chat messags.
+
 Ideas/plan
 ==========
 
