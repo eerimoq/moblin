@@ -101,6 +101,8 @@ Features
 
   - Select MOBS icon to show in app and on home screen.
 
+  - Optionally purchase additional MOBS icons to support developers.
+
 - Configure stream resolution, FPS, video codec, bitrate and more.
 
 - Configurable bitrate presets.
@@ -124,8 +126,6 @@ ToDo
 - Improve the browser widget.
 
 - Improve SRT adaptive bitrate algorithm.
-
-- Investigate what can be moved from main thread for a snappier UI.
 
 - Long chat messages makes video smaller sometimes, leaving white
   rectangle on left part of screen. How to reproduce?
