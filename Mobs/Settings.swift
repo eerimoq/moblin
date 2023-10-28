@@ -376,6 +376,8 @@ class SettingsChat: Codable {
     var boldUsername: Bool = false
     var boldMessage: Bool = false
     var animatedEmotes: Bool? = false
+    var timestampColor: RgbColor? = .init(red: 180, green: 180, blue: 180)
+    var timestampColorEnabled: Bool? = true
 }
 
 class Database: Codable {
@@ -714,6 +716,14 @@ final class Settings {
             where stream.srt.mpegtsPacketsPerPacket == nil
         {
             stream.srt.mpegtsPacketsPerPacket = 7
+            store()
+        }
+        if realDatabase.chat.timestampColorEnabled == nil {
+            realDatabase.chat.timestampColorEnabled = false
+            store()
+        }
+        if realDatabase.chat.timestampColor == nil {
+            realDatabase.chat.timestampColor = .init(red: 180, green: 180, blue: 180)
             store()
         }
     }

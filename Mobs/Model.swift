@@ -75,6 +75,7 @@ struct ChatPost: Identifiable {
     var user: String
     var userColor: String?
     var segments: [ChatPostSegment]
+    var timestamp: String
 }
 
 class ButtonState {
@@ -1030,7 +1031,8 @@ final class Model: ObservableObject {
             id: chatPostId,
             user: user,
             userColor: userColor,
-            segments: segments
+            segments: segments,
+            timestamp: digitalClock
         )
         chatPosts.append(post)
         numberOfChatPosts += 1

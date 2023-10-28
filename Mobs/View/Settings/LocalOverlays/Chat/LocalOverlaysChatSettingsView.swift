@@ -94,10 +94,12 @@ struct ColorEditView: View {
 
 struct LocalOverlaysChatSettingsView: View {
     @EnvironmentObject var model: Model
+    @State var showTimestampColor: Bool = false
     @State var showUsernameColor: Bool = false
     @State var showMessageColor: Bool = false
     @State var showBackgroundColor: Bool = false
     @State var showShadowColor: Bool = false
+    @State var timestampColor: Color
     @State var usernameColor: Color
     @State var messageColor: Color
     @State var backgroundColor: Color
@@ -126,6 +128,14 @@ struct LocalOverlaysChatSettingsView: View {
                         name: "Font size",
                         value: String(model.database.chat.fontSize)
                     )
+                }
+                Toggle(isOn: Binding(get: {
+                    model.database.chat.timestampColorEnabled!
+                }, set: { value in
+                    model.database.chat.timestampColorEnabled = value
+                    model.store()
+                })) {
+                    Text("Timestamp")
                 }
                 Toggle(isOn: Binding(get: {
                     model.database.chat.boldUsername
@@ -157,6 +167,28 @@ struct LocalOverlaysChatSettingsView: View {
                 Text("Animated emotes are fairly CPU intensive.")
             }
             Section("Colors") {
+                Button {
+                    showTimestampColor.toggle()
+                } label: {
+                    HStack {
+                        Text("Timestamp")
+                        Spacer()
+                        ColorCircle(color: timestampColor)
+                    }
+                }
+                .foregroundColor(.primary)
+                if showTimestampColor {
+                    ColorEditView(color: model.database.chat.timestampColor!,
+                                  red: Float(model.database.chat
+                                      .timestampColor!.red),
+                                  green: Float(model.database
+                                      .chat.timestampColor!.green),
+                                  blue: Float(model.database.chat
+                                      .timestampColor!.blue))
+                    {
+                        timestampColor = model.database.chat.timestampColor!.color()
+                    }
+                }
                 Button {
                     showUsernameColor.toggle()
                 } label: {

@@ -40,6 +40,12 @@ struct LineView: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: 0) {
+            if chat.timestampColorEnabled! {
+                Text("\(post.timestamp) ")
+                    .foregroundColor(chat.timestampColor!.color())
+                    .bold(chat.boldMessage)
+                    .shadow(color: shadowColor(), radius: 0, x: 1.5, y: 1.5)
+            }
             Text(post.user)
                 .foregroundColor(usernameColor())
                 .lineLimit(1)
