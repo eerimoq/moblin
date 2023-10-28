@@ -138,6 +138,8 @@ Ideas/plan
 
   - Hotplug. Automatically use external mic when plugged in.
 
+- Advanced settings toggle.
+    
 - Battery level as percentage.
 
 - Non-mirrored widgets locally when using front camera.

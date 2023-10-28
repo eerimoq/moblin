@@ -112,24 +112,26 @@ private func fetchChannelEmotes(platform: EmotesPlatform,
     }
     let (data, response) = try await httpGet(from: url)
     if response.isNotFound {
+        logger.warning("\(channelId): 7TV channel emotes not found (HTTP 404)")
         return [:]
     }
     if !response.isSuccessful {
+        logger.warning("\(channelId): Failed to fetch 7TV channel emotes (HTTP \(response.statusCode)")
         throw "Not successful"
     }
     let user = try JSONDecoder().decode(SeventvUser.self, from: data)
     guard let emotes = user.emote_set.emotes else {
-        logger.info("Emotes missing")
+        logger.warning("\(channelId): 7TV channel emotes missing")
         throw "Emotes missing"
     }
     if emotes.isEmpty {
-        logger.info("Emotes list empty")
+        logger.warning("\(channelId): 7TV channel emotes list empty")
         throw "Emotes list empty"
     }
     var fetchedEmotes: [String: Emote] = [:]
     for emote in emotes {
         guard let url = makeUrl(data: emote.data) else {
-            logger.error("Failed to create URL for 7TV emote \(emote.name)")
+            logger.error("\(channelId): Failed to create URL for 7TV emote \(emote.name)")
             continue
         }
         fetchedEmotes[emote.name] = Emote(url: url)

@@ -40,35 +40,41 @@ struct LineView: View {
     }
 
     var body: some View {
-        WrappingHStack(alignment: .leading, horizontalSpacing: 0, verticalSpacing: 0, fitContentWidth: true) {
+        let timestampColor = chat.timestampColor!.color()
+        let usernameColor = usernameColor()
+        let messageColor = chat.messageColor.color()
+        let shadowColor = shadowColor()
+        WrappingHStack(
+            alignment: .leading,
+            horizontalSpacing: 0,
+            verticalSpacing: 0,
+            fitContentWidth: true
+        ) {
             if chat.timestampColorEnabled! {
                 Text("\(post.timestamp) ")
-                    .foregroundColor(chat.timestampColor!.color())
+                    .foregroundColor(timestampColor)
                     .bold(chat.boldMessage)
-                    .shadow(color: shadowColor(), radius: 0, x: 1.5, y: 1.5)
             }
             Text(post.user)
-                .foregroundColor(usernameColor())
+                .foregroundColor(usernameColor)
                 .lineLimit(1)
                 .padding([.trailing], 0)
                 .bold(chat.boldUsername)
-                .shadow(color: shadowColor(), radius: 0, x: 1.5, y: 1.5)
             Text(": ")
                 .bold(chat.boldMessage)
-                .shadow(color: shadowColor(), radius: 0, x: 1.5, y: 1.5)
             ForEach(post.segments, id: \.id) { segment in
                 if let text = segment.text {
                     Text(text)
-                        .foregroundColor(chat.messageColor.color())
+                        .foregroundColor(messageColor)
                         .bold(chat.boldMessage)
-                        .shadow(color: shadowColor(), radius: 0, x: 1.5, y: 1.5)
                 }
                 if let url = segment.url {
                     if chat.animatedEmotes! {
                         WebImage(url: url)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .frame(height: CGFloat(chat.fontSize * 2))
+                            .padding([.top, .bottom], chat.shadowColorEnabled ? 1.5 : 0)
+                            .frame(height: CGFloat(chat.fontSize * 1.7))
                     } else {
                         CacheAsyncImage(url: url) { image in
                             image
@@ -77,12 +83,17 @@ struct LineView: View {
                         } placeholder: {
                             EmptyView()
                         }
-                        .frame(height: CGFloat(chat.fontSize * 1.8))
+                        .padding([.top, .bottom], chat.shadowColorEnabled ? 1.5 : 0)
+                        .frame(height: CGFloat(chat.fontSize * 1.7))
                     }
                     Text(" ")
                 }
             }
         }
+        .shadow(color: shadowColor, radius: 0, x: 1.5, y: 0.0)
+        .shadow(color: shadowColor, radius: 0, x: -1.5, y: 0.0)
+        .shadow(color: shadowColor, radius: 0, x: 0.0, y: 1.5)
+        .shadow(color: shadowColor, radius: 0, x: 0.0, y: -1.5)
         .padding([.leading], 5)
         .font(.system(size: CGFloat(chat.fontSize)))
         .background(backgroundColor())

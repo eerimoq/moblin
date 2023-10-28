@@ -166,7 +166,7 @@ struct LocalOverlaysChatSettingsView: View {
             } footer: {
                 Text("Animated emotes are fairly CPU intensive.")
             }
-            Section("Colors") {
+            Section {
                 Button {
                     showTimestampColor.toggle()
                 } label: {
@@ -272,7 +272,7 @@ struct LocalOverlaysChatSettingsView: View {
                         model.store()
                     })) {
                         HStack {
-                            Text("Shadow")
+                            Text("Border")
                             Spacer()
                             ColorCircle(color: shadowColor)
                         }
@@ -291,6 +291,10 @@ struct LocalOverlaysChatSettingsView: View {
                         shadowColor = model.database.chat.shadowColor.color()
                     }
                 }
+            } header: {
+                Text("Colors")
+            } footer: {
+                Text("Border is fairly CPU intensive.")
             }
         }
         .navigationTitle("Chat")
