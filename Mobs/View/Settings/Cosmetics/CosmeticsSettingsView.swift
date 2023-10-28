@@ -59,9 +59,9 @@ struct CosmeticsSettingsView: View {
                                 Button(action: {
                                     Task {
                                         do {
-                                            try await model.buyIcon(id: icon.id)
+                                            try await model.purchaseIcon(id: icon.id)
                                         } catch {
-                                            logger.info("Buy failed with error \(error)")
+                                            logger.info("cosmetics: Purchase failed with error \(error)")
                                         }
                                     }
                                 }, label: {

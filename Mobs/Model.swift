@@ -212,31 +212,30 @@ final class Model: ObservableObject {
                 ))
                 self.products[product.id] = product
             }
+            logger.info("cosmetics: Got \(icons.count) product(s) from App Store")
             iconsInStore = globalMyIcons + icons
         } catch {
-            logger.error("Failed to get products from the App Store server: \(error)")
+            logger.error("cosmetics: Failed to get products from App Store: \(error)")
         }
     }
 
     private func listenForAppStoreTransactions() -> Task<Void, Error> {
         return Task.detached {
             for await result in Transaction.updates {
-                logger.info("Got App Store transaction")
-                do {
-                    let transaction = try self.checkVerified(result)
-                    await self.updateProductFromAppStore()
-                    await transaction.finish()
-                } catch {
-                    logger.info("Transaction failed verification")
+                guard let transaction = self.checkVerified(result: result) else {
+                    logger.info("cosmetics: Updated transaction failed verification")
+                    continue
                 }
+                await self.updateProductFromAppStore()
+                await transaction.finish()
             }
         }
     }
 
-    private func checkVerified<T>(_ result: VerificationResult<T>) throws -> T {
+    private func checkVerified(result: VerificationResult<StoreKit.Transaction>) -> StoreKit.Transaction? {
         switch result {
         case .unverified:
-            throw "Verification failed"
+            return nil
         case let .verified(safe):
             return safe
         }
@@ -244,23 +243,22 @@ final class Model: ObservableObject {
 
     @MainActor
     func updateProductFromAppStore() async {
-        logger.info("Update products from App Store")
+        logger.info("cosmetics: Update my products from App Store")
         var myIcons = globalMyIcons
         for await result in Transaction.currentEntitlements {
-            do {
-                let transaction = try checkVerified(result)
-                guard let product = products[transaction.productID] else {
-                    logger.info("Product not found")
-                    continue
-                }
-                myIcons.append(Icon(
-                    name: product.displayName,
-                    id: product.id,
-                    price: product.displayPrice
-                ))
-            } catch {
-                logger.info("Check failed")
+            guard let transaction = checkVerified(result: result) else {
+                logger.info("cosmetics: Verification failed for my product")
+                continue
             }
+            guard let product = products[transaction.productID] else {
+                logger.info("cosmetics: My product \(transaction.productID) not found")
+                continue
+            }
+            myIcons.append(Icon(
+                name: product.displayName,
+                id: product.id,
+                price: product.displayPrice
+            ))
         }
         self.myIcons = myIcons
         var iconsInStore: [Icon] = []
@@ -283,22 +281,24 @@ final class Model: ObservableObject {
         return products[id]
     }
 
-    func buyIcon(id: String) async throws {
+    func purchaseIcon(id: String) async throws {
         guard let product = findProduct(id: id) else {
             throw "Product not found"
         }
         let result = try await product.purchase()
 
         switch result {
-        case let .success(verification):
-            logger.info("Success buy!")
-            let transaction = try checkVerified(verification)
+        case let .success(result):
+            logger.info("cosmetics: Purchase successful")
+            guard let transaction = checkVerified(result: result) else {
+                throw "Purchase failed verification"
+            }
             await updateProductFromAppStore()
             await transaction.finish()
         case .userCancelled, .pending:
-            logger.info("Buy not done yet!")
+            logger.info("cosmetics: Purchase not done yet")
         default:
-            logger.info("What happend when buying? \(result)")
+            logger.warning("cosmetics: What happend when buying? \(result)")
         }
     }
 
