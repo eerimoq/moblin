@@ -42,16 +42,11 @@ private let globalMyIcons = [
 ]
 
 private let globalIconsNotYetInStore = [
+    Icon(name: "Queen", id: "AppIconQueen", price: ""),
     Icon(name: "Heart", id: "AppIconHeart", price: ""),
     Icon(name: "Basque", id: "AppIconBasque", price: ""),
     Icon(name: "Looking", id: "AppIconLooking", price: ""),
     Icon(name: "Tetris", id: "AppIconTetris", price: ""),
-    Icon(name: "Halloween", id: "AppIconHalloween", price: ""),
-    Icon(
-        name: "Halloween pumpkin",
-        id: "AppIconHalloweenPumpkin",
-        price: ""
-    ),
     Icon(name: "Eyebrows", id: "AppIconEyebrows", price: ""),
     Icon(name: "South Korea", id: "AppIconSouthKorea", price: ""),
     Icon(name: "China", id: "AppIconChina", price: ""),
