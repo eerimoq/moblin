@@ -107,51 +107,52 @@ final class TwitchChatMobs {
                                       emotes: [ChatMessageEmote]) -> [ChatPostSegment]
     {
         var segments: [ChatPostSegment] = []
-        var startIndex = message.text.startIndex
+        let unicodeText = message.text.unicodeScalars
+        var startIndex = unicodeText.startIndex
         for emote in emotes.sorted(by: { lhs, rhs in
             lhs.range.lowerBound < rhs.range.lowerBound
         }) {
-            if !(emote.range.lowerBound < message.text.count) {
+            if !(emote.range.lowerBound < unicodeText.count) {
                 logger
                     .warning(
                         """
                         twitch: chat: Emote lower bound \(emote.range.lowerBound) after \
-                        message end \(message.text.count) '\(message.text)'
+                        message end \(unicodeText.count) '\(unicodeText)'
                         """
                     )
                 break
             }
-            if !(emote.range.upperBound < message.text.count) {
+            if !(emote.range.upperBound < unicodeText.count) {
                 logger
                     .warning(
                         """
                         twitch: chat: Emote upper bound \(emote.range.upperBound) after \
-                        message end \(message.text.count) '\(message.text)'
+                        message end \(unicodeText.count) '\(unicodeText)'
                         """
                     )
                 break
             }
             var text: String?
             if emote.range.lowerBound > 0 {
-                let endIndex = message.text.index(
-                    message.text.startIndex,
+                let endIndex = unicodeText.index(
+                    unicodeText.startIndex,
                     offsetBy: emote.range.lowerBound - 1
                 )
                 if startIndex < endIndex {
-                    text = String(message.text[startIndex ... endIndex])
+                    text = String(unicodeText[startIndex ... endIndex])
                 }
             }
             segments.append(ChatPostSegment(
                 text: text,
                 url: emote.url
             ))
-            startIndex = message.text.index(
-                message.text.startIndex,
+            startIndex = unicodeText.index(
+                unicodeText.startIndex,
                 offsetBy: emote.range.upperBound + 1
             )
         }
-        if startIndex < message.text.endIndex {
-            let text = message.text[startIndex...]
+        if startIndex < unicodeText.endIndex {
+            let text = unicodeText[startIndex...]
             segments.append(ChatPostSegment(text: String(text)))
         }
         return segments
