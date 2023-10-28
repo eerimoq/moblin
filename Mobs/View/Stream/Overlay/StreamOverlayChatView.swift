@@ -1,6 +1,7 @@
 import Collections
 import SDWebImageSwiftUI
 import SwiftUI
+import WrappingHStack
 
 struct LineView: View {
     var post: ChatPost
@@ -39,9 +40,9 @@ struct LineView: View {
     }
 
     var body: some View {
-        HStack(alignment: .center, spacing: 0) {
+        WrappingHStack(alignment: .leading, horizontalSpacing: 0, verticalSpacing: 0, fitContentWidth: true) {
             if chat.timestampColorEnabled! {
-                Text(post.timestamp)
+                Text("\(post.timestamp) ")
                     .foregroundColor(chat.timestampColor!.color())
                     .bold(chat.boldMessage)
                     .shadow(color: shadowColor(), radius: 0, x: 1.5, y: 1.5)
@@ -49,15 +50,13 @@ struct LineView: View {
             Text(post.user)
                 .foregroundColor(usernameColor())
                 .lineLimit(1)
-                .padding([.leading], 5)
                 .padding([.trailing], 0)
                 .bold(chat.boldUsername)
                 .shadow(color: shadowColor(), radius: 0, x: 1.5, y: 1.5)
-            Text(":")
+            Text(": ")
                 .bold(chat.boldMessage)
                 .shadow(color: shadowColor(), radius: 0, x: 1.5, y: 1.5)
             ForEach(post.segments, id: \.id) { segment in
-                Text(" ")
                 if let text = segment.text {
                     Text(text)
                         .foregroundColor(chat.messageColor.color())
@@ -78,11 +77,13 @@ struct LineView: View {
                         } placeholder: {
                             EmptyView()
                         }
-                        .frame(height: CGFloat(chat.fontSize * 2))
+                        .frame(height: CGFloat(chat.fontSize * 1.8))
                     }
+                    Text(" ")
                 }
             }
         }
+        .padding([.leading], 5)
         .font(.system(size: CGFloat(chat.fontSize)))
         .background(backgroundColor())
         .foregroundColor(.white)

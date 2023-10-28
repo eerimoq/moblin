@@ -113,8 +113,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ksemianov/WrappingHStack",
       "state" : {
-        "revision" : "2638bc5258607e8a32f2e5675d075896c2401678",
-        "version" : "0.1.3"
+        "revision" : "3300f68b6bf5f8a75ee7ca8a40f136a558053d10",
+        "version" : "0.2.0"
       }
     }
   ],

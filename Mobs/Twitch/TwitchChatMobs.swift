@@ -142,18 +142,24 @@ final class TwitchChatMobs {
                     text = String(unicodeText[startIndex ... endIndex])
                 }
             }
-            segments.append(ChatPostSegment(
-                text: text,
-                url: emote.url
-            ))
+            if let text {
+                for word in text.split(separator: " ") {
+                    segments.append(ChatPostSegment(
+                        text: "\(word) "
+                    ))
+                }
+            }
+            segments.append(ChatPostSegment(url: emote.url))
+            segments.append(ChatPostSegment(text: ""))
             startIndex = unicodeText.index(
                 unicodeText.startIndex,
                 offsetBy: emote.range.upperBound + 1
             )
         }
         if startIndex < unicodeText.endIndex {
-            let text = unicodeText[startIndex...]
-            segments.append(ChatPostSegment(text: String(text)))
+            for word in String(unicodeText[startIndex...]).split(separator: " ") {
+                segments.append(ChatPostSegment(text: "\(word) "))
+            }
         }
         return segments
     }

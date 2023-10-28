@@ -129,6 +129,8 @@ ToDo
 
 - Improve wrapping of long chat messags.
 
+- Add purchase waiting view.
+
 Ideas/plan
 ==========
 
