@@ -132,8 +132,6 @@ ToDo
 Ideas/plan
 ==========
 
-- Optional emotes cache on disk.
-
 - Audio filters. For example volume limiter.
 
 - Use external mic.
@@ -176,12 +174,6 @@ Ideas/plan
 
 - Interactive local browser(s).
 
-- Local horizon overlay.
-
-- Local grid overlay? What is this used for?
-
-- Safe margins local overlay? What is this used for?
-
 - Show web page on stream and/or locally. Audio kinda important.
 
 - Multiple Ethernet connections simultaneously?
@@ -194,8 +186,6 @@ Ideas/plan
 - Audio only when bad connection.
 
 - Show two cameras at the same time.
-
-- Bigger chat text? Bigger text in general?
 
 - Preview buttons.
 

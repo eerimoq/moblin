@@ -5,13 +5,13 @@ import CoreMotion
 import HaishinKit
 import Network
 import PhotosUI
+import SDWebImageSwiftUI
+import SDWebImageWebPCoder
 import SRTHaishinKit
 import StoreKit
 import SwiftUI
 import TwitchChat
 import VideoToolbox
-import SDWebImageSwiftUI
-import SDWebImageWebPCoder
 
 let noValue = ""
 
@@ -234,7 +234,9 @@ final class Model: ObservableObject {
         }
     }
 
-    private func checkVerified(result: VerificationResult<StoreKit.Transaction>) -> StoreKit.Transaction? {
+    private func checkVerified(result: VerificationResult<StoreKit.Transaction>)
+        -> StoreKit.Transaction?
+    {
         switch result {
         case .unverified:
             return nil

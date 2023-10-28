@@ -61,7 +61,10 @@ struct CosmeticsSettingsView: View {
                                         do {
                                             try await model.purchaseIcon(id: icon.id)
                                         } catch {
-                                            logger.info("cosmetics: Purchase failed with error \(error)")
+                                            logger
+                                                .info(
+                                                    "cosmetics: Purchase failed with error \(error)"
+                                                )
                                         }
                                     }
                                 }, label: {
