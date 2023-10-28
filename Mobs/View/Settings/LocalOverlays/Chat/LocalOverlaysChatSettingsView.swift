@@ -110,7 +110,7 @@ struct LocalOverlaysChatSettingsView: View {
         guard fontSize > 0 else {
             return
         }
-        model.database.chat!.fontSize = fontSize
+        model.database.chat.fontSize = fontSize
         model.store()
     }
 
@@ -119,34 +119,34 @@ struct LocalOverlaysChatSettingsView: View {
             Section {
                 NavigationLink(destination: TextEditView(
                     title: "Font size",
-                    value: String(model.database.chat!.fontSize),
+                    value: String(model.database.chat.fontSize),
                     onSubmit: submitFontSize
                 )) {
                     TextItemView(
                         name: "Font size",
-                        value: String(model.database.chat!.fontSize)
+                        value: String(model.database.chat.fontSize)
                     )
                 }
                 Toggle(isOn: Binding(get: {
-                    model.database.chat!.boldUsername!
+                    model.database.chat.boldUsername
                 }, set: { value in
-                    model.database.chat!.boldUsername = value
+                    model.database.chat.boldUsername = value
                     model.store()
                 })) {
                     Text("Bold username")
                 }
                 Toggle(isOn: Binding(get: {
-                    model.database.chat!.boldMessage!
+                    model.database.chat.boldMessage
                 }, set: { value in
-                    model.database.chat!.boldMessage = value
+                    model.database.chat.boldMessage = value
                     model.store()
                 })) {
                     Text("Bold message")
                 }
                 Toggle(isOn: Binding(get: {
-                    model.database.chat!.animatedEmotes!
+                    model.database.chat.animatedEmotes!
                 }, set: { value in
-                    model.database.chat!.animatedEmotes = value
+                    model.database.chat.animatedEmotes = value
                     model.store()
                 })) {
                     Text("Animated emotes")
@@ -168,15 +168,15 @@ struct LocalOverlaysChatSettingsView: View {
                 }
                 .foregroundColor(.primary)
                 if showUsernameColor {
-                    ColorEditView(color: model.database.chat!.usernameColor,
-                                  red: Float(model.database.chat!
+                    ColorEditView(color: model.database.chat.usernameColor,
+                                  red: Float(model.database.chat
                                       .usernameColor.red),
                                   green: Float(model.database
-                                      .chat!.usernameColor.green),
-                                  blue: Float(model.database.chat!
+                                      .chat.usernameColor.green),
+                                  blue: Float(model.database.chat
                                       .usernameColor.blue))
                     {
-                        usernameColor = model.database.chat!.usernameColor.color()
+                        usernameColor = model.database.chat.usernameColor.color()
                     }
                 }
                 Button {
@@ -190,24 +190,24 @@ struct LocalOverlaysChatSettingsView: View {
                 }
                 .foregroundColor(.primary)
                 if showMessageColor {
-                    ColorEditView(color: model.database.chat!.messageColor,
-                                  red: Float(model.database.chat!
+                    ColorEditView(color: model.database.chat.messageColor,
+                                  red: Float(model.database.chat
                                       .messageColor.red),
                                   green: Float(model.database
-                                      .chat!.messageColor.green),
-                                  blue: Float(model.database.chat!
+                                      .chat.messageColor.green),
+                                  blue: Float(model.database.chat
                                       .messageColor.blue))
                     {
-                        messageColor = model.database.chat!.messageColor.color()
+                        messageColor = model.database.chat.messageColor.color()
                     }
                 }
                 Button {
                     showBackgroundColor.toggle()
                 } label: {
                     Toggle(isOn: Binding(get: {
-                        model.database.chat!.backgroundColorEnabled
+                        model.database.chat.backgroundColorEnabled
                     }, set: { value in
-                        model.database.chat!.backgroundColorEnabled = value
+                        model.database.chat.backgroundColorEnabled = value
                         model.store()
                     })) {
                         HStack {
@@ -219,24 +219,24 @@ struct LocalOverlaysChatSettingsView: View {
                 }
                 .foregroundColor(.primary)
                 if showBackgroundColor {
-                    ColorEditView(color: model.database.chat!.backgroundColor,
-                                  red: Float(model.database.chat!
+                    ColorEditView(color: model.database.chat.backgroundColor,
+                                  red: Float(model.database.chat
                                       .backgroundColor.red),
                                   green: Float(model.database
-                                      .chat!.backgroundColor.green),
-                                  blue: Float(model.database.chat!
+                                      .chat.backgroundColor.green),
+                                  blue: Float(model.database.chat
                                       .backgroundColor.blue))
                     {
-                        backgroundColor = model.database.chat!.backgroundColor.color()
+                        backgroundColor = model.database.chat.backgroundColor.color()
                     }
                 }
                 Button {
                     showShadowColor.toggle()
                 } label: {
                     Toggle(isOn: Binding(get: {
-                        model.database.chat!.shadowColorEnabled
+                        model.database.chat.shadowColorEnabled
                     }, set: { value in
-                        model.database.chat!.shadowColorEnabled = value
+                        model.database.chat.shadowColorEnabled = value
                         model.store()
                     })) {
                         HStack {
@@ -248,15 +248,15 @@ struct LocalOverlaysChatSettingsView: View {
                 }
                 .foregroundColor(.primary)
                 if showShadowColor {
-                    ColorEditView(color: model.database.chat!.shadowColor,
-                                  red: Float(model.database.chat!
+                    ColorEditView(color: model.database.chat.shadowColor,
+                                  red: Float(model.database.chat
                                       .shadowColor.red),
                                   green: Float(model.database
-                                      .chat!.shadowColor.green),
-                                  blue: Float(model.database.chat!
+                                      .chat.shadowColor.green),
+                                  blue: Float(model.database.chat
                                       .shadowColor.blue))
                     {
-                        shadowColor = model.database.chat!.shadowColor.color()
+                        shadowColor = model.database.chat.shadowColor.color()
                     }
                 }
             }

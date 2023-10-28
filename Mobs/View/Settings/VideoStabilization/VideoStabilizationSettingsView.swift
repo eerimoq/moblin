@@ -34,11 +34,11 @@ struct VideoStabilizationSettingsView: View {
 
     var body: some View {
         NavigationLink(destination: VideoStabilizationPickerView(
-            videoStabilizationMode: model.database.videoStabilizationMode!.rawValue
+            videoStabilizationMode: model.database.videoStabilizationMode.rawValue
         )) {
             TextItemView(
                 name: "Video stabilization",
-                value: model.database.videoStabilizationMode!.rawValue
+                value: model.database.videoStabilizationMode.rawValue
             )
         }
     }

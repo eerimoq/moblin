@@ -56,8 +56,8 @@ class SettingsStream: Codable, Identifiable {
     var fps: Int = 30
     var bitrate: UInt32 = 3_000_000
     var codec: SettingsStreamCodec = .h264avc
-    var adaptiveBitrate: Bool? = false
-    var srt: SettingsStreamSrt? = .init()
+    var adaptiveBitrate: Bool = false
+    var srt: SettingsStreamSrt = .init()
     var captureSessionPresetEnabled: Bool? = false
     var captureSessionPreset: SettingsCaptureSessionPreset? = .medium
 
@@ -264,14 +264,11 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case mute = "Mute"
     case bitrate = "Bitrate"
     case widget = "Widget"
-    case microphone = "Microphone"
     case mic = "Mic"
     case chat = "Chat"
 }
 
-let buttonTypes = SettingsButtonType.allCases.filter { button in
-    button != .microphone
-}.map { $0.rawValue }
+let buttonTypes = SettingsButtonType.allCases.map { $0.rawValue }
 
 class SettingsButtonWidget: Codable, Identifiable {
     var widgetId: UUID
@@ -311,7 +308,7 @@ class SettingsShow: Codable {
     var zoom: Bool = true
     var zoomPresets: Bool = true
     var microphone: Bool = true
-    var audioBar: Bool? = true
+    var audioBar: Bool = true
 }
 
 class SettingsZoomPreset: Codable, Identifiable {
@@ -334,8 +331,8 @@ class SettingsZoomSwitchTo: Codable {
 class SettingsZoom: Codable {
     var back: [SettingsZoomPreset] = []
     var front: [SettingsZoomPreset] = []
-    var switchToBack: SettingsZoomSwitchTo? = .init()
-    var switchToFront: SettingsZoomSwitchTo? = .init()
+    var switchToBack: SettingsZoomSwitchTo = .init()
+    var switchToFront: SettingsZoomSwitchTo = .init()
 }
 
 class SettingsBitratePreset: Codable, Identifiable {
@@ -376,9 +373,8 @@ class SettingsChat: Codable {
     var shadowColor: RgbColor = .init(red: 0, green: 0, blue: 0)
     var shadowColorEnabled: Bool = false
     var alignedMessages: Bool = false
-    var boldUsername: Bool? = false
-    var boldMessage: Bool? = false
-    var bold: Bool = false
+    var boldUsername: Bool = false
+    var boldMessage: Bool = false
     var animatedEmotes: Bool? = false
 }
 
@@ -393,10 +389,10 @@ class Database: Codable {
     var tapToFocus: Bool = false
     var bitratePresets: [SettingsBitratePreset] = []
     var iconImage: String = plainIcon.image()
-    var maximumScreenFpsEnabled: Bool? = false
-    var maximumScreenFps: Int? = 60
-    var videoStabilizationMode: SettingsVideoStabilizationMode? = .off
-    var chat: SettingsChat? = .init()
+    var maximumScreenFpsEnabled: Bool = false
+    var maximumScreenFps: Int = 60
+    var videoStabilizationMode: SettingsVideoStabilizationMode = .off
+    var chat: SettingsChat = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -700,59 +696,8 @@ final class Settings {
     }
 
     private func migrateFromOlderVersions() {
-        for button in realDatabase.buttons {
-            if button.type != .microphone {
-                continue
-            }
-            button.type = .mic
-            store()
-        }
-        for stream in realDatabase.streams where stream.adaptiveBitrate == nil {
-            stream.adaptiveBitrate = false
-            store()
-        }
-        if realDatabase.zoom.switchToBack == nil {
-            realDatabase.zoom.switchToBack = .init()
-            store()
-        }
-        if realDatabase.zoom.switchToFront == nil {
-            realDatabase.zoom.switchToFront = .init()
-            store()
-        }
-        if realDatabase.maximumScreenFpsEnabled == nil {
-            realDatabase.maximumScreenFpsEnabled = false
-            store()
-        }
-        if realDatabase.maximumScreenFps == nil {
-            realDatabase.maximumScreenFps = 60
-            store()
-        }
-        if realDatabase.videoStabilizationMode == nil {
-            realDatabase.videoStabilizationMode = .off
-            store()
-        }
-        for stream in realDatabase.streams where stream.srt == nil {
-            stream.srt = .init()
-            store()
-        }
-        if realDatabase.show.audioBar == nil {
-            realDatabase.show.audioBar = true
-            store()
-        }
-        if realDatabase.chat == nil {
-            realDatabase.chat = .init()
-            store()
-        }
-        if realDatabase.chat!.boldUsername == nil {
-            realDatabase.chat!.boldUsername = false
-            store()
-        }
-        if realDatabase.chat!.boldMessage == nil {
-            realDatabase.chat!.boldMessage = realDatabase.chat!.bold
-            store()
-        }
-        if realDatabase.chat!.animatedEmotes == nil {
-            realDatabase.chat!.animatedEmotes = false
+        if realDatabase.chat.animatedEmotes == nil {
+            realDatabase.chat.animatedEmotes = false
             store()
         }
         for stream in realDatabase.streams
@@ -766,9 +711,9 @@ final class Settings {
             store()
         }
         for stream in realDatabase.streams
-            where stream.srt!.mpegtsPacketsPerPacket == nil
+            where stream.srt.mpegtsPacketsPerPacket == nil
         {
-            stream.srt!.mpegtsPacketsPerPacket = 7
+            stream.srt.mpegtsPacketsPerPacket = 7
             store()
         }
     }

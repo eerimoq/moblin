@@ -144,15 +144,6 @@ struct ButtonsView: View {
                                     on: second.isOn
                                 )
                             })
-                        case .microphone:
-                            Button(action: {
-                                model.showingMic = true
-                            }, label: {
-                                ButtonImage(
-                                    image: getImage(state: second),
-                                    on: second.isOn
-                                )
-                            })
                         case .mic:
                             Button(action: {
                                 model.showingMic = true
@@ -206,15 +197,6 @@ struct ButtonsView: View {
                     case .widget:
                         Button(action: {
                             widgetAction(state: pair.first)
-                        }, label: {
-                            ButtonImage(
-                                image: getImage(state: pair.first),
-                                on: pair.first.isOn
-                            )
-                        })
-                    case .microphone:
-                        Button(action: {
-                            model.showingMic = true
                         }, label: {
                             ButtonImage(
                                 image: getImage(state: pair.first),

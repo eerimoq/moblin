@@ -34,13 +34,13 @@ struct SettingsView: View {
                     destination: MaximumScreenFpsSettingsView()
                 ) {
                     Toggle(isOn: Binding(get: {
-                        model.database.maximumScreenFpsEnabled!
+                        model.database.maximumScreenFpsEnabled
                     }, set: { value in
                         model.setMaximumScreenFpsEnabled(value: value)
                     })) {
                         TextItemView(
                             name: "Maximum screen FPS",
-                            value: String(model.database.maximumScreenFps!)
+                            value: String(model.database.maximumScreenFps)
                         )
                     }
                 }

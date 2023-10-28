@@ -435,8 +435,8 @@ final class Model: ObservableObject {
         backZoomPresetId = database.zoom.back[0].id
         frontZoomPresetId = database.zoom.front[0].id
         mthkView.videoGravity = .resizeAspect
-        if database.maximumScreenFpsEnabled! {
-            mthkView.fps = Double(database.maximumScreenFps!)
+        if database.maximumScreenFpsEnabled {
+            mthkView.fps = Double(database.maximumScreenFps)
         }
         logger.handler = debugLog(message:)
         updateDigitalClock(now: Date())
@@ -545,7 +545,7 @@ final class Model: ObservableObject {
             self.media.updateSrtSpeed()
             self.updateSpeed()
             self.updateTwitchPubSub(now: now)
-            if !self.database.show.audioBar! {
+            if !self.database.show.audioBar {
                 self.updateAudioLevel()
             }
             self.updateSrtlaConnectionStatistics()
@@ -556,7 +556,7 @@ final class Model: ObservableObject {
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
             self.updateSrtDebugLines()
-            if self.database.show.audioBar! {
+            if self.database.show.audioBar {
                 self.updateAudioLevel()
             }
         })
@@ -771,7 +771,7 @@ final class Model: ObservableObject {
         database.maximumScreenFpsEnabled = value
         store()
         if value {
-            mthkView.fps = Double(database.maximumScreenFps!)
+            mthkView.fps = Double(database.maximumScreenFps)
         } else {
             mthkView.fps = nil
         }
@@ -805,15 +805,15 @@ final class Model: ObservableObject {
         case .rtmp:
             rtmpStartStream()
         case .srt:
-            payloadSize = stream.srt!.mpegtsPacketsPerPacket! * 188
+            payloadSize = stream.srt.mpegtsPacketsPerPacket! * 188
             media.srtStartStream(
                 isSrtla: stream.isSrtla(),
                 url: stream.url,
                 reconnectTime: reconnectTime,
                 targetBitrate: stream.bitrate,
-                adaptiveBitrate: stream.adaptiveBitrate!,
-                latency: stream.srt!.latency,
-                mpegtsPacketsPerPacket: stream.srt!.mpegtsPacketsPerPacket!
+                adaptiveBitrate: stream.adaptiveBitrate,
+                latency: stream.srt.latency,
+                mpegtsPacketsPerPacket: stream.srt.mpegtsPacketsPerPacket!
             )
         }
         updateSpeed()
@@ -917,7 +917,7 @@ final class Model: ObservableObject {
     }
 
     func setAdaptiveBitrate(stream: SettingsStream) {
-        media.setAdaptiveBitrate(enabled: stream.adaptiveBitrate!)
+        media.setAdaptiveBitrate(enabled: stream.adaptiveBitrate)
     }
 
     func setStreamCodec() {
@@ -1241,16 +1241,16 @@ final class Model: ObservableObject {
         cameraPosition = position
         switch position {
         case .back:
-            if database.zoom.switchToBack!.enabled {
+            if database.zoom.switchToBack.enabled {
                 clearZoomId()
-                backZoomLevel = Double(database.zoom.switchToBack!.level)
+                backZoomLevel = Double(database.zoom.switchToBack.level)
             }
             zoomLevel = backZoomLevel
             isMirrored = false
         case .front:
-            if database.zoom.switchToFront!.enabled {
+            if database.zoom.switchToFront.enabled {
                 clearZoomId()
-                frontZoomLevel = Double(database.zoom.switchToFront!.level)
+                frontZoomLevel = Double(database.zoom.switchToFront.level)
             }
             zoomLevel = frontZoomLevel
             isMirrored = true
@@ -1269,7 +1269,7 @@ final class Model: ObservableObject {
     }
 
     private func getVideoStabilizationMode() -> AVCaptureVideoStabilizationMode {
-        switch database.videoStabilizationMode! {
+        switch database.videoStabilizationMode {
         case .off:
             return .off
         case .standard:

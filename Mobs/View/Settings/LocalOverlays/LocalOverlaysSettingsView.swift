@@ -37,7 +37,7 @@ struct LocalOverlaysSettingsView: View {
             }
             Section("Top right") {
                 NavigationLink(destination: LocalOverlaysAudioLevelSettingsView(
-                    meterType: model.database.show.audioBar! ?
+                    meterType: model.database.show.audioBar ?
                         "Bar" :
                         "Decibel"
                 )) {
@@ -63,10 +63,10 @@ struct LocalOverlaysSettingsView: View {
             }
             Section("Bottom left") {
                 NavigationLink(destination: LocalOverlaysChatSettingsView(
-                    usernameColor: model.database.chat!.usernameColor.color(),
-                    messageColor: model.database.chat!.messageColor.color(),
-                    backgroundColor: model.database.chat!.backgroundColor.color(),
-                    shadowColor: model.database.chat!.shadowColor.color()
+                    usernameColor: model.database.chat.usernameColor.color(),
+                    messageColor: model.database.chat.messageColor.color(),
+                    backgroundColor: model.database.chat.backgroundColor.color(),
+                    shadowColor: model.database.chat.shadowColor.color()
                 )) {
                     Toggle("Chat", isOn: Binding(get: {
                         show.chat

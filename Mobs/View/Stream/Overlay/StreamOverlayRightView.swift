@@ -113,7 +113,7 @@ struct RightOverlayView: View {
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
             if database.show.audioLevel {
-                AudioLevelView(showBar: database.show.audioBar!, level: model.audioLevel)
+                AudioLevelView(showBar: database.show.audioBar, level: model.audioLevel)
             }
             if database.show.speed {
                 StreamOverlayIconAndTextView(

@@ -14,7 +14,7 @@ struct MaximumScreenFpsSettingsView: View {
     var body: some View {
         TextEditView(
             title: "Maximum screen FPS",
-            value: String(model.database.maximumScreenFps!),
+            value: String(model.database.maximumScreenFps),
             onSubmit: submit
         )
     }

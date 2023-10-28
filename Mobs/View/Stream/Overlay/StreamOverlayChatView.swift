@@ -45,17 +45,17 @@ struct LineView: View {
                 .lineLimit(1)
                 .padding([.leading], 5)
                 .padding([.trailing], 0)
-                .bold(chat.boldUsername!)
+                .bold(chat.boldUsername)
                 .shadow(color: shadowColor(), radius: 0, x: 1.5, y: 1.5)
             Text(":")
-                .bold(chat.boldMessage!)
+                .bold(chat.boldMessage)
                 .shadow(color: shadowColor(), radius: 0, x: 1.5, y: 1.5)
             ForEach(post.segments, id: \.id) { segment in
                 Text(" ")
                 if let text = segment.text {
                     Text(text)
                         .foregroundColor(chat.messageColor.color())
-                        .bold(chat.boldMessage!)
+                        .bold(chat.boldMessage)
                         .shadow(color: shadowColor(), radius: 0, x: 1.5, y: 1.5)
                 }
                 if let url = segment.url {
@@ -118,7 +118,7 @@ struct StreamOverlayChatView: View {
                 )
                 VStack(alignment: .leading, spacing: 1) {
                     ForEach(model.chatPosts) { post in
-                        LineView(post: post, chat: model.database.chat!)
+                        LineView(post: post, chat: model.database.chat)
                     }
                 }
             }

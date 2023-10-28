@@ -11,7 +11,7 @@ struct StreamSrtSettingsView: View {
         guard latency >= 0 else {
             return
         }
-        stream.srt!.latency = latency
+        stream.srt.latency = latency
         model.reloadStreamIfEnabled(stream: stream)
     }
 
@@ -20,7 +20,7 @@ struct StreamSrtSettingsView: View {
             Section {
                 NavigationLink(destination: TextEditView(
                     title: "Latency",
-                    value: String(stream.srt!.latency),
+                    value: String(stream.srt.latency),
                     onSubmit: submitLatency,
                     footer: Text(
                         """
@@ -29,21 +29,21 @@ struct StreamSrtSettingsView: View {
                         """
                     )
                 )) {
-                    TextItemView(name: "Latency", value: String(stream.srt!.latency))
+                    TextItemView(name: "Latency", value: String(stream.srt.latency))
                 }
                 Toggle("Big packets", isOn: Binding(get: {
-                    stream.srt!.mpegtsPacketsPerPacket == 7
+                    stream.srt.mpegtsPacketsPerPacket == 7
                 }, set: { value in
                     if value {
-                        stream.srt!.mpegtsPacketsPerPacket = 7
+                        stream.srt.mpegtsPacketsPerPacket = 7
                     } else {
-                        stream.srt!.mpegtsPacketsPerPacket = 6
+                        stream.srt.mpegtsPacketsPerPacket = 6
                     }
                     model.store()
                     model.reloadStreamIfEnabled(stream: stream)
                 }))
                 Toggle("Adaptive bitrate*", isOn: Binding(get: {
-                    stream.adaptiveBitrate!
+                    stream.adaptiveBitrate
                 }, set: { value in
                     stream.adaptiveBitrate = value
                     model.store()
