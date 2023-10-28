@@ -127,9 +127,8 @@ ToDo
 
 - Improve SRT adaptive bitrate algorithm.
 
-- Improve wrapping of long chat messags.
-
-- Add purchase waiting view.
+- Improve chat when many multi line messages are displayed. Always show
+  most recent message.
 
 Ideas/plan
 ==========
