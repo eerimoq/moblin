@@ -132,22 +132,19 @@ ToDo
 Ideas/plan
 ==========
 
-- Audio filters. For example volume limiter.
-
 - Use external mic.
 
 - Battery level as percentage.
 
 - Non-mirrored widgets locally when using front camera.
 
+- Audio filters. For example volume limiter.
+
+- Interactive local browser(s).
+
 - Take picture.
 
-- Optionally show black screen to save energy. Possible to turn off
-  completely?
-
-  - https://developer.apple.com/documentation/uikit/uiscreen
-
-    - ``brightness`` and ``wantsSoftwareDimming``.
+- Show two cameras at the same time.
 
 - Toggles to enable/disable "Go live" and "Stop" confirmations. Per
   stream?
@@ -156,40 +153,25 @@ Ideas/plan
   stream setting. Probably a good idea to go live again when entering
   foregound if was live when entering background
 
-- Adaptive bitrate for SRT(LA).
-
-  - Increase bitrate when RTT settles down?
-
-  - Decrease bitrate when RTT increases?
-
-  - Drop bitrate heavily when number of packets in flight is above a
-    threshold?
-
-  - Decrease bitrate when SRT NAKs are received?
-
-  - Decrease bitrate if number of packets in flight exceeds number of
-    packets needed for current bitrate?
-
 - Zoom meter with lines indicating likely lens switches.
-
-- Interactive local browser(s).
 
 - Show web page on stream and/or locally. Audio kinda important.
 
 - Multiple Ethernet connections simultaneously?
 
-- Snapshot button.
-
 - Lookup Twitch channel id from channel name. Possibly login to
   Twitch.
-
-- Audio only when bad connection.
-
-- Show two cameras at the same time.
 
 - Preview buttons.
 
 - Play music and short sound samples.
+
+- Optionally show black screen to save energy. Possible to turn off
+  completely?
+
+  - https://developer.apple.com/documentation/uikit/uiscreen
+
+    - ``brightness`` and ``wantsSoftwareDimming``.
 
 - Geolocation (with map?).
 
