@@ -127,7 +127,7 @@ ToDo
 
 - Improve SRT adaptive bitrate algorithm.
 
-- Wrap long chat messags.
+- Improve wrapping of long chat messags.
 
 Ideas/plan
 ==========
