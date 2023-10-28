@@ -107,6 +107,15 @@
         "branch" : "trunk",
         "revision" : "7a9b2fcc26a5a7015484d8f28d7a3fefc5e25a80"
       }
+    },
+    {
+      "identity" : "wrappinghstack",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ksemianov/WrappingHStack",
+      "state" : {
+        "revision" : "2638bc5258607e8a32f2e5675d075896c2401678",
+        "version" : "0.1.3"
+      }
     }
   ],
   "version" : 2
