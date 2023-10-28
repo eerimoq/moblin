@@ -134,6 +134,8 @@ Ideas/plan
 
 - Use external mic.
 
+  - Hotplug. Automatically use external mic when plugged in.
+
 - Battery level as percentage.
 
 - Non-mirrored widgets locally when using front camera.
