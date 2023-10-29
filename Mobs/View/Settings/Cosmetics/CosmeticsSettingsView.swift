@@ -2,6 +2,7 @@ import SwiftUI
 
 struct CosmeticsSettingsView: View {
     @EnvironmentObject var model: Model
+    @State var disabledPurchaseButtons: Set<String> = []
 
     private func setAppIcon(iconImage: String) {
         var iconImage: String? = iconImage
@@ -56,21 +57,38 @@ struct CosmeticsSettingsView: View {
                                     .frame(width: 40, height: 40)
                                 Spacer()
                                 Text(icon.name)
-                                Button(action: {
-                                    Task {
-                                        do {
-                                            try await model.purchaseIcon(id: icon.id)
-                                        } catch {
-                                            logger
-                                                .info(
-                                                    "cosmetics: Purchase failed with error \(error)"
-                                                )
+                                ZStack {
+                                    Button(action: {
+                                        disabledPurchaseButtons.insert(icon.name)
+                                        disabledPurchaseButtons =
+                                            disabledPurchaseButtons
+                                        Task {
+                                            do {
+                                                try await model
+                                                    .purchaseIcon(id: icon.id)
+                                            } catch {
+                                                logger
+                                                    .info(
+                                                        "cosmetics: Purchase failed with error \(error)"
+                                                    )
+                                            }
+                                            disabledPurchaseButtons.remove(icon.name)
+                                            disabledPurchaseButtons =
+                                                disabledPurchaseButtons
                                         }
+                                    }, label: {
+                                        Text(icon.price)
+                                    })
+                                    .padding([.leading], 10)
+                                    .disabled(disabledPurchaseButtons
+                                        .contains(icon.name))
+                                    .opacity(disabledPurchaseButtons
+                                        .contains(icon.name) ? 0.0 : 1.0)
+                                    if disabledPurchaseButtons.contains(icon.name) {
+                                        ProgressView()
+                                            .padding([.leading], 10)
                                     }
-                                }, label: {
-                                    Text(icon.price)
-                                })
-                                .padding([.leading], 10)
+                                }
                             }
                             .tag(icon.image())
                         }
