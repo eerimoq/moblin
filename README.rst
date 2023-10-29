@@ -134,12 +134,11 @@ ToDo
 
 - Do not block main thread when changing mic.
 
+- Optionally automatically select external mic when plugged in. And
+  select builtin when unplugged.
+  
 Ideas/plan
 ==========
-
-- Use external mic.
-
-  - Hotplug. Automatically use external mic when plugged in.
 
 - Advanced settings toggle.
 
