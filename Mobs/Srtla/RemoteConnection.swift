@@ -162,6 +162,8 @@ class RemoteConnection {
             windowSize = windowDefault * windowMultiply
             if type == nil {
                 state = .registered
+                connectTimer?.cancel()
+                connectTimer = nil
             } else if state == .shouldSendRegisterRequest || hasGroupId {
                 sendSrtlaReg2()
             } else {
