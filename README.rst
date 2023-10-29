@@ -131,7 +131,7 @@ ToDo
   most recent message.
 
 - Fix short stream interruption/freeze when changing mic.
-  
+
 Ideas/plan
 ==========
 
@@ -140,10 +140,16 @@ Ideas/plan
   - Hotplug. Automatically use external mic when plugged in.
 
 - Advanced settings toggle.
-    
+
 - Battery level as percentage.
 
 - Non-mirrored widgets locally when using front camera.
+
+- Something that is important for professional streamers: Ad
+  management. There are new endpoints to get and snooze the next ad
+  schedule. No app uses it afaik yet.
+
+  - https://dev.twitch.tv/docs/api/reference/#get-ad-schedule
 
 - Audio filters. For example volume limiter.
 
