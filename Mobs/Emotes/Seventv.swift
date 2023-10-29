@@ -116,7 +116,10 @@ private func fetchChannelEmotes(platform: EmotesPlatform,
         return [:]
     }
     if !response.isSuccessful {
-        logger.warning("\(channelId): Failed to fetch 7TV channel emotes (HTTP \(response.statusCode)")
+        logger
+            .warning(
+                "\(channelId): Failed to fetch 7TV channel emotes (HTTP \(response.statusCode)"
+            )
         throw "Not successful"
     }
     let user = try JSONDecoder().decode(SeventvUser.self, from: data)

@@ -15,6 +15,16 @@ import VideoToolbox
 
 let noValue = ""
 
+struct Mic: Identifiable {
+    var id: String {
+        "\(inputUid) \(dataSourceID ?? 0)"
+    }
+
+    var name: String
+    var inputUid: String
+    var dataSourceID: NSNumber?
+}
+
 struct Icon: Identifiable {
     var name: String
     var id: String
@@ -114,7 +124,7 @@ final class Model: ObservableObject {
     }
 
     private var streaming = false
-    @Published var mic = mics[0]
+    @Published var mic = Mic(name: "", inputUid: "")
     // private var wasStreamingWhenDidEnterBackground = false
     private var streamStartDate: Date?
     @Published var isLive = false
@@ -375,40 +385,81 @@ final class Model: ObservableObject {
         do {
             try session.setCategory(
                 .playAndRecord,
-                options: [.mixWithOthers]
+                options: [.mixWithOthers, .allowBluetooth]
             )
             try session.setActive(true)
         } catch {
             logger.error("app: Session error \(error)")
         }
-        for input in session.availableInputs ?? [] {
-            logger.info("Input: \(input)")
-        }
-        for input in session.inputDataSources ?? [] {
-            logger.info("Source: \(input)")
-        }
     }
 
-    func selectMic(orientation: String, showToast: Bool = false) {
-        let avOrientation = AVAudioSession.Orientation(rawValue: orientation)
+    func listMics() -> [Mic] {
+        var mics: [Mic] = []
         let session = AVAudioSession.sharedInstance()
-        do {
-            for inputSource in session.inputDataSources ?? [] {
-                if let inputSourceOrientation = inputSource.orientation {
-                    if inputSourceOrientation == avOrientation {
-                        media.attachAudio(device: nil)
-                        setupAudioSession()
-                        try session.setInputDataSource(inputSource)
-                        media
-                            .attachAudio(device: AVCaptureDevice.default(for: .audio))
-                        logger.info("\(orientation) mic")
-                        if showToast {
-                            makeToast(title: orientation)
-                        }
+        for inputPort in session.availableInputs ?? [] {
+            if let dataSources = inputPort.dataSources, !dataSources.isEmpty {
+                for dataSource in dataSources {
+                    if inputPort.portType == .builtInMic {
+                        mics.append(Mic(
+                            name: dataSource.dataSourceName,
+                            inputUid: inputPort.uid,
+                            dataSourceID: dataSource.dataSourceID
+                        ))
+                    } else {
+                        mics.append(Mic(
+                            name: "\(inputPort.portName): \(dataSource.dataSourceName)",
+                            inputUid: inputPort.uid,
+                            dataSourceID: dataSource.dataSourceID
+                        ))
                     }
                 }
+            } else {
+                mics.append(Mic(name: inputPort.portName, inputUid: inputPort.uid))
             }
-            mic = orientation
+        }
+        return mics
+    }
+
+    func selectMicById(id: String, showToast: Bool = false) {
+        guard let mic = listMics().first(where: { mic in mic.id == id }) else {
+            logger.info("Mic with id \(id) not found")
+            if showToast {
+                makeErrorToast(title: "Mic not found", subTitle: "Mic id \(id)")
+            }
+            return
+        }
+        selectMic(mic: mic, showToast: showToast)
+    }
+
+    func selectMic(mic: Mic, showToast: Bool = false) {
+        logger.info("Select mic \(mic)")
+        let session = AVAudioSession.sharedInstance()
+        do {
+            for inputPort in session.availableInputs ?? [] {
+                if mic.inputUid != inputPort.uid {
+                    continue
+                }
+                logger.info("Found input port: \(inputPort)")
+                media.attachAudio(device: nil)
+                setupAudioSession()
+                logger.info("Settings input port")
+                try session.setPreferredInput(inputPort)
+                if let dataSourceID = mic.dataSourceID {
+                    for dataSource in inputPort.dataSources ?? [] {
+                        if dataSourceID != dataSource.dataSourceID {
+                            continue
+                        }
+                        logger.info("Settings data source")
+                        try session.setInputDataSource(dataSource)
+                    }
+                }
+                media.attachAudio(device: AVCaptureDevice.default(for: .audio))
+                logger.info("Selected mic: \(mic.name)")
+                if showToast {
+                    makeToast(title: mic.name)
+                }
+            }
+            self.mic = mic
         } catch {
             logger.error("Failed to select mic: \(error)")
             makeErrorToast(title: "Failed to select mic", subTitle: "\(error)")
@@ -427,7 +478,7 @@ final class Model: ObservableObject {
         media.onRtmpDisconnected = handleRtmpDisconnected
         media.onAudioMuteChange = updateAudioLevel
         setupAudioSession()
-        selectMic(orientation: mics[0])
+        selectMic(mic: defaultMic())
         backZoomPresetId = database.zoom.back[0].id
         frontZoomPresetId = database.zoom.front[0].id
         mthkView.videoGravity = .resizeAspect
@@ -458,6 +509,11 @@ final class Model: ObservableObject {
             await updateProductFromAppStore()
             updateIconImageFromDatabase()
         }
+    }
+
+    private func defaultMic() -> Mic {
+        return listMics()
+            .first(where: { mic in mic.name.contains("Front") }) ?? listMics()[0]
     }
 
     deinit {

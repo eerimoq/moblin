@@ -83,9 +83,10 @@ class Srtla {
                 self.startRemote(connection: connection, host: host, port: port)
             }
             self.connectTimer = DispatchSource.makeTimerSource(queue: srtlaDispatchQueue)
+            logger.info("srtla: Setting connect timer to \(timeout) seconds")
             self.connectTimer!.schedule(deadline: .now() + timeout)
             self.connectTimer!.setEventHandler {
-                logger.info("srtla: Connect timer expired")
+                logger.info("srtla: Connect timer expired after \(timeout) seconds")
                 self.onDisconnected(message: "connect timer expired")
             }
             self.connectTimer!.activate()

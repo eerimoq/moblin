@@ -130,6 +130,8 @@ ToDo
 - Improve chat when many multi line messages are displayed. Always show
   most recent message.
 
+- Fix short stream interruption/freeze when changing mic.
+  
 Ideas/plan
 ==========
 

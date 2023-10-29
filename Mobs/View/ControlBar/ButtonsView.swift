@@ -1,3 +1,4 @@
+import AVFoundation
 import SwiftUI
 
 struct ButtonImage: View {
@@ -50,12 +51,13 @@ struct MicButtonView: View {
             Form {
                 Section("Mic") {
                     Picker("", selection: $selection) {
-                        ForEach(mics, id: \.self) { mic in
-                            Text(mic)
+                        ForEach(model.listMics()) { mic in
+                            Text(mic.name)
+                                .tag(mic.id)
                         }
                     }
-                    .onChange(of: selection) { mic in
-                        model.selectMic(orientation: mic, showToast: true)
+                    .onChange(of: selection) { id in
+                        model.selectMicById(id: id, showToast: true)
                         done()
                     }
                     .pickerStyle(.inline)

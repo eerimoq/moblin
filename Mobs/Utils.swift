@@ -289,8 +289,6 @@ func formatOneDecimal(value: Float) -> String {
     return String(format: "%.01f", value)
 }
 
-let mics = ["Front", "Back", "Bottom"]
-
 func factorToX(position: AVCaptureDevice.Position, factor: Float) -> Float {
     if position == .back {
         return factor / 2
