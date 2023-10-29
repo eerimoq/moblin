@@ -151,6 +151,8 @@ Ideas/plan
 
   - https://dev.twitch.tv/docs/api/reference/#get-ad-schedule
 
+- A list of usernames whos messages will not get displayed on screen.
+
 - Audio filters. For example volume limiter.
 
 - Interactive local browser(s).
