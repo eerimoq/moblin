@@ -132,6 +132,8 @@ ToDo
 
 - Fix short stream interruption/freeze when changing mic.
 
+- Do not block main thread when changing mic.
+
 Ideas/plan
 ==========
 
