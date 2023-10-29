@@ -40,7 +40,7 @@ class RemoteConnection {
 
     private var connectTimer: DispatchSourceTimer?
     private var reconnectTimer: DispatchSourceTimer?
-    private var reconnectTime = firstReconnectTime
+    private var reconnectTime = 1.0
     private var keepaliveTimer: DispatchSourceTimer?
     private var latestReceivedDate = Date()
     private var latestSentDate = Date()
@@ -103,7 +103,6 @@ class RemoteConnection {
         guard state == .idle else {
             return
         }
-        reconnectTime = firstReconnectTime
         let params = NWParameters(dtls: .none)
         if let type {
             params.requiredInterfaceType = type
@@ -193,7 +192,6 @@ class RemoteConnection {
         reconnectTimer!.setEventHandler {
             logger.warning("srtla: \(self.typeString): Reconnecting")
             self.startInternal()
-            self.reconnectTime = nextReconnectTime(self.reconnectTime)
         }
         reconnectTimer!.activate()
     }
