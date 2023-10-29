@@ -189,7 +189,7 @@ class Srtla {
     }
 
     private func stopRemote(connection: RemoteConnection) {
-        connection.stop()
+        connection.stop(reason: "Stopping stream")
         connection.onSocketConnected = nil
         connection.onReg2 = nil
         connection.onRegistered = nil

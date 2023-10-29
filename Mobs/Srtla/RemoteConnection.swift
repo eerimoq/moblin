@@ -38,9 +38,10 @@ class RemoteConnection {
         }
     }
 
-    private var reconnectTimer: Timer?
+    private var connectTimer: DispatchSourceTimer?
+    private var reconnectTimer: DispatchSourceTimer?
     private var reconnectTime = firstReconnectTime
-    private var keepaliveTimer: Timer?
+    private var keepaliveTimer: DispatchSourceTimer?
     private var latestReceivedDate = Date()
     private var latestSentDate = Date()
     private var packetsInFlight: Set<UInt32> = []
@@ -120,12 +121,10 @@ class RemoteConnection {
         state = .socketConnecting
     }
 
-    func stop() {
+    func stop(reason: String) {
+        logger.info("srtla: \(typeString): Stop with reason: \(reason)")
         connection = nil
-        reconnectTimer?.invalidate()
-        reconnectTimer = nil
-        keepaliveTimer?.invalidate()
-        keepaliveTimer = nil
+        cancelAllTimers()
         state = .idle
     }
 
@@ -141,9 +140,25 @@ class RemoteConnection {
         }
     }
 
+    private func cancelAllTimers() {
+        reconnectTimer?.cancel()
+        reconnectTimer = nil
+        keepaliveTimer?.cancel()
+        keepaliveTimer = nil
+        connectTimer?.cancel()
+        connectTimer = nil
+    }
+
     private func handleViabilityChange(to viability: Bool) {
         logger.info("srtla: \(typeString): Viability change to \(viability)")
+        cancelAllTimers()
         if viability {
+            connectTimer = DispatchSource.makeTimerSource(queue: srtlaDispatchQueue)
+            connectTimer!.schedule(deadline: .now() + 5)
+            connectTimer!.setEventHandler {
+                self.reconnect(reason: "Connection timeout")
+            }
+            connectTimer!.activate()
             latestReceivedDate = Date()
             latestSentDate = Date()
             packetsInFlight.removeAll()
@@ -159,8 +174,7 @@ class RemoteConnection {
             onSocketConnected?()
             onSocketConnected = nil
         } else {
-            stop()
-            reconnect()
+            reconnect(reason: "Viability false")
         }
     }
 
@@ -168,13 +182,20 @@ class RemoteConnection {
         logger.info("srtla: \(typeString): State change to \(state)")
     }
 
-    private func reconnect() {
-        reconnectTimer = Timer
-            .scheduledTimer(withTimeInterval: reconnectTime, repeats: false) { _ in
-                logger.warning("srtla: \(self.typeString): Reconnecting")
-                self.startInternal()
-                self.reconnectTime = nextReconnectTime(self.reconnectTime)
-            }
+    private func reconnect(reason: String) {
+        stop(reason: reason)
+        logger
+            .info(
+                "srtla: \(typeString): Scheduling reconnect in \(reconnectTime) seconds"
+            )
+        reconnectTimer = DispatchSource.makeTimerSource(queue: srtlaDispatchQueue)
+        reconnectTimer!.schedule(deadline: .now() + reconnectTime)
+        reconnectTimer!.setEventHandler {
+            logger.warning("srtla: \(self.typeString): Reconnecting")
+            self.startInternal()
+            self.reconnectTime = nextReconnectTime(self.reconnectTime)
+        }
+        reconnectTimer!.activate()
     }
 
     private func receivePacket() {
@@ -228,8 +249,7 @@ class RemoteConnection {
                     .error(
                         "srtla: \(self.typeString): Remote send error: \(error)"
                     )
-                self.stop()
-                self.reconnect()
+                self.reconnect(reason: "Failed to send packet")
             }
         })
     }
@@ -361,17 +381,20 @@ class RemoteConnection {
         }
         state = .registered
         onRegistered?()
-        keepaliveTimer = Timer
-            .scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
-                let now = Date()
-                if self.latestSentDate < now - 0.5 {
-                    self.sendSrtlaKeepalive()
-                }
-                if self.latestReceivedDate < now - 5 {
-                    self.stop()
-                    self.reconnect()
-                }
+        connectTimer?.cancel()
+        connectTimer = nil
+        keepaliveTimer = DispatchSource.makeTimerSource(queue: srtlaDispatchQueue)
+        keepaliveTimer!.schedule(deadline: .now() + 1, repeating: 1)
+        keepaliveTimer!.setEventHandler {
+            let now = Date()
+            if self.latestSentDate < now - 0.5 {
+                self.sendSrtlaKeepalive()
             }
+            if self.latestReceivedDate < now - 5 {
+                self.reconnect(reason: "No packet received in 5 seconds")
+            }
+        }
+        keepaliveTimer!.activate()
     }
 
     private func handleSrtlaRegErr() {
