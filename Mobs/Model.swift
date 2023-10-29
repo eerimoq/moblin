@@ -393,6 +393,30 @@ final class Model: ObservableObject {
         }
     }
 
+    @objc func handleAudioRouteChange(notification: Notification) {
+        logger.info("Handle audio change")
+        guard let userInfo = notification.userInfo,
+              let reasonValue = userInfo[AVAudioSessionRouteChangeReasonKey] as? UInt,
+              let reason = AVAudioSession.RouteChangeReason(rawValue: reasonValue)
+        else {
+            return
+        }
+        switch reason {
+        case .newDeviceAvailable:
+            logger.info("Audio device available")
+            for mic in listMics() {
+                logger.info("  \(mic.name)")
+            }
+        case .oldDeviceUnavailable:
+            logger.info("Audio device unavailable")
+            for mic in listMics() {
+                logger.info("  \(mic.name)")
+            }
+        default:
+            logger.info("Audio device change \(reason)")
+        }
+    }
+
     func listMics() -> [Mic] {
         var mics: [Mic] = []
         let session = AVAudioSession.sharedInstance()
@@ -509,6 +533,17 @@ final class Model: ObservableObject {
             await updateProductFromAppStore()
             updateIconImageFromDatabase()
         }
+        logger.info("Audio devices available")
+        for mic in listMics() {
+            logger.info("  \(mic.name)")
+        }
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(
+                                                   handleAudioRouteChange
+                                               ),
+                                               name: AVAudioSession
+                                                   .routeChangeNotification,
+                                               object: nil)
     }
 
     private func defaultMic() -> Mic {
