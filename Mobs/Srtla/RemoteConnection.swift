@@ -39,8 +39,6 @@ class RemoteConnection {
     }
 
     private var connectTimer: DispatchSourceTimer?
-    private var reconnectTimer: DispatchSourceTimer?
-    private var reconnectTime = 1.0
     private var keepaliveTimer: DispatchSourceTimer?
     private var latestReceivedDate = Date()
     private var latestSentDate = Date()
@@ -100,6 +98,7 @@ class RemoteConnection {
     }
 
     private func startInternal() {
+        logger.info("srtla: \(typeString): Start")
         guard state == .idle else {
             return
         }
@@ -140,8 +139,6 @@ class RemoteConnection {
     }
 
     private func cancelAllTimers() {
-        reconnectTimer?.cancel()
-        reconnectTimer = nil
         keepaliveTimer?.cancel()
         keepaliveTimer = nil
         connectTimer?.cancel()
@@ -183,17 +180,7 @@ class RemoteConnection {
 
     private func reconnect(reason: String) {
         stop(reason: reason)
-        logger
-            .info(
-                "srtla: \(typeString): Scheduling reconnect in \(reconnectTime) seconds"
-            )
-        reconnectTimer = DispatchSource.makeTimerSource(queue: srtlaDispatchQueue)
-        reconnectTimer!.schedule(deadline: .now() + reconnectTime)
-        reconnectTimer!.setEventHandler {
-            logger.warning("srtla: \(self.typeString): Reconnecting")
-            self.startInternal()
-        }
-        reconnectTimer!.activate()
+        startInternal()
     }
 
     private func receivePacket() {
