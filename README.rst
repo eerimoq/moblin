@@ -136,7 +136,7 @@ ToDo
 
 - Optionally automatically select external mic when plugged in. And
   select builtin when unplugged.
-  
+
 Ideas/plan
 ==========
 
@@ -162,11 +162,14 @@ Ideas/plan
 
 - Show two cameras at the same time.
 
+- Add Twitch/Kick Icons next to chat messages depending on which
+  platform the message came from.
+
 - Toggles to enable/disable "Go live" and "Stop" confirmations. Per
   stream?
 
 - RTMP server for external video and audio?
-  
+
 - Automatically go live when starting app, if configured for selected
   stream setting. Probably a good idea to go live again when entering
   foregound if was live when entering background
