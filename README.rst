@@ -62,7 +62,9 @@ Features
 
   - Front camera mirrored on screen for natural experience.
 
-- Back, front or bottom mic.
+- Back, front, bottom or external mic.
+
+  - Automatically changes to external mic when connected.
 
 - Video stabilization.
 
@@ -130,13 +132,6 @@ ToDo
 - Improve chat when many multi line messages are displayed. Always show
   most recent message.
 
-- Fix short stream interruption/freeze when changing mic.
-
-- Do not block main thread when changing mic.
-
-- Optionally automatically select external mic when plugged in. And
-  select builtin when unplugged.
-
 Ideas/plan
 ==========
 
@@ -147,6 +142,9 @@ Ideas/plan
 - Non-mirrored widgets locally when using front camera.
 
 - Kick chat emotes.
+
+- Optionally do not automatically ctart using external mic is plugged
+  in.
 
 - Something that is important for professional streamers: Ad
   management. There are new endpoints to get and snooze the next ad
