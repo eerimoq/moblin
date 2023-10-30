@@ -111,10 +111,18 @@ final class KickPusher: NSObject {
     private func handleChatMessageEvent(data: String) throws {
         let message = try decodeChatMessage(data: data)
         let messageNoEmote = removeEmote(message: message.content)
+        var segments: [ChatPostSegment] = []
+        for var segment in makeChatPostTextSegments(text: messageNoEmote) {
+            if let text = segment.text {
+                segments += emotes.createSegments(text: text)
+                segment.text = nil
+            }
+            segments.append(segment)
+        }
         model.appendChatMessage(
             user: message.sender.username,
             userColor: nil,
-            segments: [ChatPostSegment(text: messageNoEmote)]
+            segments: segments
         )
     }
 

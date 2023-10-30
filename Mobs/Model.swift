@@ -80,6 +80,16 @@ struct ChatPostSegment: Identifiable {
     var url: URL?
 }
 
+func makeChatPostTextSegments(text: String) -> [ChatPostSegment] {
+    var segments: [ChatPostSegment] = []
+    for word in text.split(separator: " ") {
+        segments.append(ChatPostSegment(
+            text: "\(word) "
+        ))
+    }
+    return segments
+}
+
 struct ChatPost: Identifiable {
     var id: Int
     var user: String

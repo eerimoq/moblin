@@ -143,11 +143,7 @@ final class TwitchChatMobs {
                 }
             }
             if let text {
-                for word in text.split(separator: " ") {
-                    segments.append(ChatPostSegment(
-                        text: "\(word) "
-                    ))
-                }
+                segments += makeChatPostTextSegments(text: text)
             }
             segments.append(ChatPostSegment(url: emote.url))
             segments.append(ChatPostSegment(text: ""))
