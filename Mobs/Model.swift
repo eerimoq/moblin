@@ -341,6 +341,20 @@ final class Model: ObservableObject {
         showingToast = true
     }
 
+    private func isZoomed() -> Bool {
+        return UIScreen.main.scale < UIScreen.main.nativeScale
+    }
+
+    private func maximumNumberOfButtons() -> Int {
+        if isZoomed() {
+            return 6
+        } else if UIFont.preferredFont(forTextStyle: .body).pointSize > 17.0 {
+            return 8
+        } else {
+            return 10
+        }
+    }
+
     func updateButtonStates() {
         guard let scene = findEnabledScene(id: selectedSceneId) else {
             buttonPairs = []
@@ -349,7 +363,7 @@ final class Model: ObservableObject {
         let states = scene
             .buttons
             .filter { button in button.enabled }
-            .prefix(10)
+            .prefix(maximumNumberOfButtons())
             .map { button in
                 let button = findButton(id: button.buttonId)!
                 return ButtonState(isOn: button.isOn, button: button)
@@ -554,6 +568,16 @@ final class Model: ObservableObject {
                                                name: AVAudioSession
                                                    .routeChangeNotification,
                                                object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(contentSizeCategorydidChange),
+            name: UIContentSizeCategory.didChangeNotification,
+            object: nil
+        )
+    }
+
+    @objc func contentSizeCategorydidChange(notification _: Notification) {
+        logger.info("contentSizeCategorydidChange")
     }
 
     private func defaultMic() -> Mic {
