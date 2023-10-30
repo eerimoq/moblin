@@ -126,7 +126,7 @@ struct MainView: View {
                 GeometryReader { metrics in
                     HStack {
                         Spacer()
-                        MicButtonView(selection: model.mic.id) {
+                        MicButtonView {
                             model.showingMic = false
                         }
                         .frame(width: metrics.size.width * 0.5)

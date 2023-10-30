@@ -15,7 +15,7 @@ import VideoToolbox
 
 let noValue = ""
 
-struct Mic: Identifiable {
+struct Mic: Identifiable, Hashable {
     var id: String {
         "\(inputUid) \(dataSourceID ?? 0)"
     }
@@ -417,27 +417,26 @@ final class Model: ObservableObject {
         }
     }
 
-    @objc func handleAudioRouteChange(notification: Notification) {
-        logger.info("Handle audio change")
-        guard let userInfo = notification.userInfo,
-              let reasonValue = userInfo[AVAudioSessionRouteChangeReasonKey] as? UInt,
-              let reason = AVAudioSession.RouteChangeReason(rawValue: reasonValue)
-        else {
-            return
-        }
-        switch reason {
-        case .newDeviceAvailable:
-            logger.info("Audio device available")
-            for mic in listMics() {
-                logger.info("  \(mic.name)")
+    @objc func handleAudioRouteChange(notification _: Notification) {
+        if let inputPort = AVAudioSession.sharedInstance().currentRoute.inputs.first {
+            if let dataSource = inputPort.preferredDataSource {
+                var name: String
+                if inputPort.portType == .builtInMic {
+                    name = dataSource.dataSourceName
+                } else {
+                    name = "\(inputPort.portName): \(dataSource.dataSourceName)"
+                }
+                mic = Mic(
+                    name: name,
+                    inputUid: inputPort.uid,
+                    dataSourceID: dataSource.dataSourceID
+                )
+            } else {
+                mic = Mic(name: inputPort.portName, inputUid: inputPort.uid)
             }
-        case .oldDeviceUnavailable:
-            logger.info("Audio device unavailable")
-            for mic in listMics() {
-                logger.info("  \(mic.name)")
-            }
-        default:
-            logger.info("Audio device change \(reason)")
+            logger.info("Selected mic: \(mic.name)")
+        } else {
+            logger.error("No mic found")
         }
     }
 
@@ -447,19 +446,17 @@ final class Model: ObservableObject {
         for inputPort in session.availableInputs ?? [] {
             if let dataSources = inputPort.dataSources, !dataSources.isEmpty {
                 for dataSource in dataSources {
+                    var name: String
                     if inputPort.portType == .builtInMic {
-                        mics.append(Mic(
-                            name: dataSource.dataSourceName,
-                            inputUid: inputPort.uid,
-                            dataSourceID: dataSource.dataSourceID
-                        ))
+                        name = dataSource.dataSourceName
                     } else {
-                        mics.append(Mic(
-                            name: "\(inputPort.portName): \(dataSource.dataSourceName)",
-                            inputUid: inputPort.uid,
-                            dataSourceID: dataSource.dataSourceID
-                        ))
+                        name = "\(inputPort.portName): \(dataSource.dataSourceName)"
                     }
+                    mics.append(Mic(
+                        name: name,
+                        inputUid: inputPort.uid,
+                        dataSourceID: dataSource.dataSourceID
+                    ))
                 }
             } else {
                 mics.append(Mic(name: inputPort.portName, inputUid: inputPort.uid))
@@ -480,29 +477,21 @@ final class Model: ObservableObject {
     }
 
     func selectMic(mic: Mic, showToast: Bool = false) {
-        logger.info("Select mic \(mic)")
         let session = AVAudioSession.sharedInstance()
         do {
             for inputPort in session.availableInputs ?? [] {
                 if mic.inputUid != inputPort.uid {
                     continue
                 }
-                logger.info("Found input port: \(inputPort)")
-                media.attachAudio(device: nil)
-                setupAudioSession()
-                logger.info("Settings input port")
                 try session.setPreferredInput(inputPort)
                 if let dataSourceID = mic.dataSourceID {
                     for dataSource in inputPort.dataSources ?? [] {
                         if dataSourceID != dataSource.dataSourceID {
                             continue
                         }
-                        logger.info("Settings data source")
                         try session.setInputDataSource(dataSource)
                     }
                 }
-                media.attachAudio(device: AVCaptureDevice.default(for: .audio))
-                logger.info("Selected mic: \(mic.name)")
                 if showToast {
                     makeToast(title: mic.name)
                 }
