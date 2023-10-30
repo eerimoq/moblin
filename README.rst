@@ -158,6 +158,8 @@ Ideas/plan
 
 - Interactive local browser(s).
 
+- Use multiple mics at the same time?
+  
 - Take picture.
 
 - Show two cameras at the same time.
