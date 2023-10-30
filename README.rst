@@ -146,6 +146,8 @@ Ideas/plan
 
 - Non-mirrored widgets locally when using front camera.
 
+- Kick chat emotes.
+
 - Something that is important for professional streamers: Ad
   management. There are new endpoints to get and snooze the next ad
   schedule. No app uses it afaik yet.
