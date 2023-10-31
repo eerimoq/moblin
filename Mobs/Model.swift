@@ -595,11 +595,6 @@ final class Model: ObservableObject {
         logger.info("contentSizeCategorydidChange")
     }
 
-    private func defaultMic() -> Mic {
-        return listMics()
-            .first(where: { mic in mic.name.contains("Front") }) ?? listMics()[0]
-    }
-
     deinit {
         appStoreUpdateListenerTask?.cancel()
     }
@@ -1531,7 +1526,7 @@ final class Model: ObservableObject {
 
     private func handleVideoDeviceInUseByAnotherClient() {
         DispatchQueue.main.async {
-            self.makeErrorToast(title: "Video in use by another app")
+            // self.makeErrorToast(title: "Video in use by another app")
         }
     }
 

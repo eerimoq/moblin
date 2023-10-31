@@ -72,6 +72,7 @@
 		03A08B7C2AC295620018BA95 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = 03A08B7B2AC295620018BA95 /* AlertToast */; };
 		03A08B802AC368860018BA95 /* Media.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A08B7F2AC368860018BA95 /* Media.swift */; };
 		03A14BE32ACC903E00D180FF /* ZoomSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A14BE22ACC903E00D180FF /* ZoomSettingsView.swift */; };
+		03A3F4B12AF0411300F465D1 /* VolumeAudioEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A3F4B02AF0411300F465D1 /* VolumeAudioEffect.swift */; };
 		03A974282AC137A000610E21 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 03A974272AC137A000610E21 /* Collections */; };
 		03A983422A9A03D3008FF0DB /* TwitchChat in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983412A9A03D3008FF0DB /* TwitchChat */; };
 		03A983452A9A03EA008FF0DB /* HaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983442A9A03EA008FF0DB /* HaishinKit */; };
@@ -182,6 +183,7 @@
 		038B67612AE84BFC000DC43B /* StreamVideoCaptureSessionPresetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoCaptureSessionPresetSettingsView.swift; sourceTree = "<group>"; };
 		03A08B7F2AC368860018BA95 /* Media.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Media.swift; sourceTree = "<group>"; };
 		03A14BE22ACC903E00D180FF /* ZoomSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomSettingsView.swift; sourceTree = "<group>"; };
+		03A3F4B02AF0411300F465D1 /* VolumeAudioEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeAudioEffect.swift; sourceTree = "<group>"; };
 		03A983552A9A05D7008FF0DB /* StreamsSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamsSettingsView.swift; sourceTree = "<group>"; };
 		03A983562A9A05D7008FF0DB /* MainView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		03A983572A9A05D7008FF0DB /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -398,6 +400,7 @@
 		035E9E352A9A02D6009D4F5A /* Mobs */ = {
 			isa = PBXGroup;
 			children = (
+				03A3F4AF2AF040FD00F465D1 /* AudioEffects */,
 				032BC5B22AD8E18000DEC883 /* Info.plist */,
 				03BC115B2AE4BD6200C38FC4 /* Emotes */,
 				036BE2CD2ABD4C960048F9C5 /* Kick */,
@@ -602,6 +605,14 @@
 				03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */,
 			);
 			path = Zoom;
+			sourceTree = "<group>";
+		};
+		03A3F4AF2AF040FD00F465D1 /* AudioEffects */ = {
+			isa = PBXGroup;
+			children = (
+				03A3F4B02AF0411300F465D1 /* VolumeAudioEffect.swift */,
+			);
+			path = AudioEffects;
 			sourceTree = "<group>";
 		};
 		03A983542A9A0582008FF0DB /* View */ = {
@@ -817,6 +828,7 @@
 				036BE2CC2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift in Sources */,
 				03EBEA632ACB4A17000DF427 /* BrowserEffect.swift in Sources */,
 				0379BB882AA836B500B718B6 /* StreamVideoSettingsView.swift in Sources */,
+				03A3F4B12AF0411300F465D1 /* VolumeAudioEffect.swift in Sources */,
 				03A983642A9A05D7008FF0DB /* StreamView.swift in Sources */,
 				0379BB9C2AAD819800B718B6 /* StreamOverlayLeftView.swift in Sources */,
 				0315A3672AA33C6A00295443 /* WidgetImageSettingsView.swift in Sources */,
