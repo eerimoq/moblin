@@ -156,10 +156,15 @@ Ideas/plan
 
 - Audio filters. For example volume limiter.
 
+  - An adjustable gain would be nice, then limiter (to keep audio from
+    clipping), and a noise gate would be my top 3 requested audio
+    filters when you have the time. I think that would be the same
+    order in terms of complexity to implement as well.
+
 - Interactive local browser(s).
 
 - Use multiple mics at the same time?
-  
+
 - Take picture.
 
 - Show two cameras at the same time.
