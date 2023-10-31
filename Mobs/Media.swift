@@ -36,6 +36,7 @@ final class Media: NSObject {
     var onRtmpConnected: (() -> Void)!
     var onRtmpDisconnected: ((_ message: String) -> Void)!
     var onAudioMuteChange: (() -> Void)!
+    var onVideoDeviceInUseByAnotherClient: (() -> Void)!
 
     func logStatistics() {
         srtla?.logStatistics()
@@ -347,6 +348,9 @@ extension Media: NetStreamDelegate {
                 .info(
                     "stream: \(kind(netStream)): Session was interrupted with reason: \(reason.toString())"
                 )
+            if reason == .videoDeviceInUseByAnotherClient {
+                onVideoDeviceInUseByAnotherClient()
+            }
         } else {
             logger
                 .info(

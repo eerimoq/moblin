@@ -420,35 +420,37 @@ final class Model: ObservableObject {
     }
 
     @objc func handleAudioRouteChange(notification _: Notification) {
-        if let inputPort = AVAudioSession.sharedInstance().currentRoute.inputs.first {
-            var newMic: Mic
-            if let dataSource = inputPort.preferredDataSource {
-                var name: String
-                if inputPort.portType == .builtInMic {
-                    name = dataSource.dataSourceName
-                } else {
-                    name = "\(inputPort.portName): \(dataSource.dataSourceName)"
-                }
-                newMic = Mic(
-                    name: name,
-                    inputUid: inputPort.uid,
-                    dataSourceID: dataSource.dataSourceID
-                )
-            } else {
-                newMic = Mic(name: inputPort.portName, inputUid: inputPort.uid)
-            }
-            if newMic == micChange {
-                return
-            }
-            if micChange != noMic {
-                makeToast(title: newMic.name)
-            }
-            logger.info("Mic: \(newMic.name)")
-            mic = newMic
-            micChange = newMic
-        } else {
-            logger.error("No mic found")
+        guard let inputPort = AVAudioSession.sharedInstance().currentRoute.inputs.first
+        else {
+            return
         }
+        var newMic: Mic
+        if let dataSource = inputPort.preferredDataSource {
+            var name: String
+            if inputPort.portType == .builtInMic {
+                name = dataSource.dataSourceName
+            } else {
+                name = "\(inputPort.portName): \(dataSource.dataSourceName)"
+            }
+            newMic = Mic(
+                name: name,
+                inputUid: inputPort.uid,
+                dataSourceID: dataSource.dataSourceID
+            )
+        } else if inputPort.portType != .builtInMic {
+            newMic = Mic(name: inputPort.portName, inputUid: inputPort.uid)
+        } else {
+            return
+        }
+        if newMic == micChange {
+            return
+        }
+        if micChange != noMic {
+            makeToast(title: newMic.name)
+        }
+        logger.info("Mic: \(newMic.name)")
+        mic = newMic
+        micChange = newMic
     }
 
     func listMics() -> [Mic] {
@@ -541,6 +543,7 @@ final class Model: ObservableObject {
         media.onRtmpConnected = handleRtmpConnected
         media.onRtmpDisconnected = handleRtmpDisconnected
         media.onAudioMuteChange = updateAudioLevel
+        media.onVideoDeviceInUseByAnotherClient = handleVideoDeviceInUseByAnotherClient
         setupAudioSession()
         setPreferFrontMic()
         backZoomPresetId = database.zoom.back[0].id
@@ -1524,6 +1527,12 @@ final class Model: ObservableObject {
 
     private func handleRtmpDisconnected(message: String) {
         onDisconnected(reason: "RTMP disconnected with message \(message)")
+    }
+
+    private func handleVideoDeviceInUseByAnotherClient() {
+        DispatchQueue.main.async {
+            self.makeErrorToast(title: "Video in use by another app")
+        }
     }
 
     private func onConnected() {
