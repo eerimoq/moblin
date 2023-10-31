@@ -32,6 +32,7 @@ struct ButtonPlaceholderImage: View {
 
 struct MicButtonView: View {
     @EnvironmentObject var model: Model
+    @State var selectedMic: Mic
     var done: () -> Void
 
     var body: some View {
@@ -49,13 +50,17 @@ struct MicButtonView: View {
             .background(Color(uiColor: .systemGroupedBackground))
             Form {
                 Section("Mic") {
-                    Picker("", selection: $model.mic) {
+                    Picker("", selection: Binding(get: {
+                        model.mic
+                    }, set: { mic, _ in
+                        selectedMic = mic
+                    })) {
                         ForEach(model.listMics()) { mic in
                             Text(mic.name).tag(mic)
                         }
                     }
-                    .onChange(of: model.mic) { mic in
-                        model.selectMicById(id: mic.id, showToast: true)
+                    .onChange(of: selectedMic) { mic in
+                        model.selectMicById(id: mic.id)
                         done()
                     }
                     .pickerStyle(.inline)

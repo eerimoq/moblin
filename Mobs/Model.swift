@@ -40,6 +40,7 @@ struct Icon: Identifiable {
 }
 
 let plainIcon = Icon(name: "Plain", id: "AppIcon", price: "")
+private let noMic = Mic(name: "", inputUid: "")
 
 private let globalMyIcons = [
     plainIcon,
@@ -134,7 +135,8 @@ final class Model: ObservableObject {
     }
 
     private var streaming = false
-    @Published var mic = Mic(name: "", inputUid: "")
+    @Published var mic = noMic
+    private var micChange = noMic
     // private var wasStreamingWhenDidEnterBackground = false
     private var streamStartDate: Date?
     @Published var isLive = false
@@ -419,6 +421,7 @@ final class Model: ObservableObject {
 
     @objc func handleAudioRouteChange(notification _: Notification) {
         if let inputPort = AVAudioSession.sharedInstance().currentRoute.inputs.first {
+            var newMic: Mic
             if let dataSource = inputPort.preferredDataSource {
                 var name: String
                 if inputPort.portType == .builtInMic {
@@ -426,15 +429,23 @@ final class Model: ObservableObject {
                 } else {
                     name = "\(inputPort.portName): \(dataSource.dataSourceName)"
                 }
-                mic = Mic(
+                newMic = Mic(
                     name: name,
                     inputUid: inputPort.uid,
                     dataSourceID: dataSource.dataSourceID
                 )
             } else {
-                mic = Mic(name: inputPort.portName, inputUid: inputPort.uid)
+                newMic = Mic(name: inputPort.portName, inputUid: inputPort.uid)
             }
-            logger.info("Selected mic: \(mic.name)")
+            if newMic == micChange {
+                return
+            }
+            if micChange != noMic {
+                makeToast(title: newMic.name)
+            }
+            logger.info("Mic: \(newMic.name)")
+            mic = newMic
+            micChange = newMic
         } else {
             logger.error("No mic found")
         }
@@ -465,18 +476,37 @@ final class Model: ObservableObject {
         return mics
     }
 
-    func selectMicById(id: String, showToast: Bool = false) {
-        guard let mic = listMics().first(where: { mic in mic.id == id }) else {
-            logger.info("Mic with id \(id) not found")
-            if showToast {
-                makeErrorToast(title: "Mic not found", subTitle: "Mic id \(id)")
+    private func setPreferFrontMic() {
+        let session = AVAudioSession.sharedInstance()
+        for inputPort in session.availableInputs ?? [] {
+            if inputPort.portType != .builtInMic {
+                continue
             }
-            return
+            if let dataSources = inputPort.dataSources, !dataSources.isEmpty {
+                for dataSource in dataSources where dataSource.orientation == .front {
+                    do {
+                        try inputPort.setPreferredDataSource(dataSource)
+                    } catch {
+                        logger
+                            .error(
+                                "Failed to set front mic as preferred with error \(error)"
+                            )
+                    }
+                }
+            }
         }
-        selectMic(mic: mic, showToast: showToast)
     }
 
-    func selectMic(mic: Mic, showToast: Bool = false) {
+    func selectMicById(id: String) {
+        guard let mic = listMics().first(where: { mic in mic.id == id }) else {
+            logger.info("Mic with id \(id) not found")
+            makeErrorToast(title: "Mic not found", subTitle: "Mic id \(id)")
+            return
+        }
+        selectMic(mic: mic)
+    }
+
+    private func selectMic(mic: Mic) {
         let session = AVAudioSession.sharedInstance()
         do {
             for inputPort in session.availableInputs ?? [] {
@@ -491,9 +521,6 @@ final class Model: ObservableObject {
                         }
                         try session.setInputDataSource(dataSource)
                     }
-                }
-                if showToast {
-                    makeToast(title: mic.name)
                 }
             }
             self.mic = mic
@@ -515,7 +542,7 @@ final class Model: ObservableObject {
         media.onRtmpDisconnected = handleRtmpDisconnected
         media.onAudioMuteChange = updateAudioLevel
         setupAudioSession()
-        selectMic(mic: defaultMic())
+        setPreferFrontMic()
         backZoomPresetId = database.zoom.back[0].id
         frontZoomPresetId = database.zoom.front[0].id
         mthkView.videoGravity = .resizeAspect
@@ -545,10 +572,6 @@ final class Model: ObservableObject {
             await getProductsFromAppStore()
             await updateProductFromAppStore()
             updateIconImageFromDatabase()
-        }
-        logger.info("Audio devices available")
-        for mic in listMics() {
-            logger.info("  \(mic.name)")
         }
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(
