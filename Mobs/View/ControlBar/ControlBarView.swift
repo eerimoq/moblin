@@ -54,43 +54,48 @@ struct ControlBarView: View {
     var showSettings: () -> Void
 
     var body: some View {
-        VStack {
-            VStack {
-                HStack {
-                    BatteryView(level: model.batteryLevel)
-                    Spacer()
-                    ThermalStateView(thermalState: model.thermalState)
-                    Spacer()
-                    Text(model.digitalClock)
-                        .foregroundColor(.white)
-                        .font(smallFont)
-                }
-                HStack {
-                    Image("\(model.iconImage)NoBackground")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .padding([.bottom], 5)
-                        .frame(width: 40, height: 40)
-                    Button {
-                        showSettings()
-                    } label: {
-                        Image(systemName: "gearshape")
-                            .frame(width: 40, height: 40)
-                            .overlay(
-                                Circle()
-                                    .stroke(.secondary)
-                            )
-                            .foregroundColor(.white)
-                    }
-                }
+        VStack(spacing: 0) {
+            HStack {
+                BatteryView(level: model.batteryLevel)
                 Spacer()
-                ButtonsView()
-                StreamButton()
-                    .padding([.top], 8)
+                ThermalStateView(thermalState: model.thermalState)
+                Spacer()
+                Text(model.digitalClock)
+                    .foregroundColor(.white)
+                    .font(smallFont)
             }
-            .padding([.leading, .trailing], 10)
-            .padding([.top, .bottom], 0)
+            .padding([.bottom], 10)
+            HStack(spacing: 0) {
+                Image("\(model.iconImage)NoBackground")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .padding([.bottom], 4)
+                    .offset(x: 7)
+                    .frame(width: 40, height: 40)
+                Button {
+                    showSettings()
+                } label: {
+                    Image(systemName: "gearshape")
+                        .frame(width: 40, height: 40)
+                        .overlay(
+                            Circle()
+                                .stroke(.secondary)
+                        )
+                        .foregroundColor(.white)
+                }
+                .padding([.leading], 15)
+            }
+            GeometryReader { metrics in
+                VStack(spacing: 0) {
+                    Spacer()
+                    ButtonsView(height: metrics.size.height)
+                }
+            }
+            StreamButton()
+                .padding([.top], 10)
         }
+        .padding([.leading, .trailing], 10)
+        .padding([.top, .bottom], 0)
         .frame(width: 100)
         .background(.black)
     }

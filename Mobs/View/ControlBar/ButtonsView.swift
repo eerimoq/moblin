@@ -73,6 +73,7 @@ struct MicButtonView: View {
 
 struct ButtonsView: View {
     @EnvironmentObject var model: Model
+    var height: CGFloat
 
     func getImage(state: ButtonState) -> String {
         if state.isOn {
@@ -109,7 +110,7 @@ struct ButtonsView: View {
 
     var body: some View {
         VStack {
-            ForEach(model.buttonPairs) { pair in
+            ForEach(model.buttonPairs.suffix(Int(height / 45))) { pair in
                 HStack {
                     if let second = pair.second {
                         switch second.button.type {
