@@ -1,23 +1,40 @@
 import AVFoundation
 import SwiftUI
 
+private let imageBackground = Color(red: 0.25, green: 0.25, blue: 0.25)
+
 struct ButtonImage: View {
     var image: String
     var on: Bool
+    var slash: Bool = false
 
     var body: some View {
         let image = Image(systemName: image)
             .frame(width: 40, height: 40)
             .foregroundColor(.white)
-            .background(.gray.opacity(0.5))
+            .background(imageBackground)
             .clipShape(Circle())
-        if on {
-            image.overlay(
-                Circle()
-                    .stroke(.white)
-            )
-        } else {
-            image
+        ZStack {
+            if on {
+                image.overlay(
+                    Circle()
+                        .stroke(.white)
+                )
+            } else {
+                image
+            }
+            if slash {
+                // Button press animation not perfect.
+                Image(systemName: "line.diagonal")
+                    .frame(width: 40, height: 40)
+                    .foregroundColor(.white)
+                    .rotationEffect(Angle(degrees: 90))
+                    .shadow(color: imageBackground, radius: 0, x: 1, y: 0)
+                    .shadow(color: imageBackground, radius: 0, x: -1, y: 0)
+                    .shadow(color: imageBackground, radius: 0, x: 0, y: 1)
+                    .shadow(color: imageBackground, radius: 0, x: 0, y: -1)
+                    .shadow(color: imageBackground, radius: 0, x: -2, y: -2)
+            }
         }
     }
 }
@@ -165,7 +182,8 @@ struct ButtonsView: View {
                             }, label: {
                                 ButtonImage(
                                     image: getImage(state: second),
-                                    on: second.isOn
+                                    on: second.isOn,
+                                    slash: true
                                 )
                             })
                         }
@@ -224,7 +242,8 @@ struct ButtonsView: View {
                         }, label: {
                             ButtonImage(
                                 image: getImage(state: pair.first),
-                                on: pair.first.isOn
+                                on: pair.first.isOn,
+                                slash: true
                             )
                         })
                     }
