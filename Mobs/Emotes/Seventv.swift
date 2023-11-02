@@ -28,11 +28,6 @@ private struct SeventvUser: Codable {
     var emote_set: SeventvEmoteSet
 }
 
-private struct SeventvGlobalEmote: Codable {
-    var name: String
-    var urls: [[String]]
-}
-
 func fetchSeventvEmotes(platform: EmotesPlatform,
                         channelId: String) async -> ([String: Emote], String?)
 {
@@ -41,7 +36,7 @@ func fetchSeventvEmotes(platform: EmotesPlatform,
     do {
         emotes = try emotes.merging(await fetchGlobalEmotes()) { $1 }
     } catch {
-        message = "Failed to get 7TV emotes"
+        message = "Failed to get 7TV global emotes"
     }
     do {
         emotes = try emotes.merging(await fetchChannelEmotes(
@@ -49,13 +44,13 @@ func fetchSeventvEmotes(platform: EmotesPlatform,
             channelId: channelId
         )) { $1 }
     } catch {
-        message = "Failed to get 7TV emotes"
+        message = "Failed to get 7TV channel emotes"
     }
     return (emotes, message)
 }
 
 private func fetchGlobalEmotes() async throws -> [String: Emote] {
-    let url = "https://api.7tv.app/v2/emotes/global"
+    let url = "https://7tv.io/v3/emote-sets/global"
     guard let url = URL(string: url) else {
         return [:]
     }
@@ -63,16 +58,20 @@ private func fetchGlobalEmotes() async throws -> [String: Emote] {
     if !response.isSuccessful {
         throw "Not successful"
     }
-    let emotes = try JSONDecoder().decode([SeventvGlobalEmote].self, from: data)
+    let emoteSet = try JSONDecoder().decode(SeventvEmoteSet.self, from: data)
+    guard let emotes = emoteSet.emotes else {
+        logger.warning("7TV global emotes missing")
+        throw "Emotes missing"
+    }
+    if emotes.isEmpty {
+        logger.warning("7TV global emotes list empty")
+        throw "Emotes list empty"
+    }
     var fetchedEmotes: [String: Emote] = [:]
     for emote in emotes {
-        guard let url = emote.urls.last?.last else {
+        guard let url = makeUrl(data: emote.data) else {
             logger.error("Failed to create URL for 7TV emote \(emote.name)")
-            throw "No URL found"
-        }
-        guard let url = URL(string: url) else {
-            logger.error("Bad 7TV emote URL '\(url)'")
-            throw "Invalid URL"
+            continue
         }
         fetchedEmotes[emote.name] = Emote(url: url)
     }
@@ -106,7 +105,7 @@ private func fetchChannelEmotes(platform: EmotesPlatform,
     if platform == .kick {
         return [:]
     }
-    let url = "https://api.7tv.app/v3/users/twitch/\(channelId)"
+    let url = "https://7tv.io/v3/users/twitch/\(channelId)"
     guard let url = URL(string: url) else {
         return [:]
     }
@@ -118,7 +117,7 @@ private func fetchChannelEmotes(platform: EmotesPlatform,
     if !response.isSuccessful {
         logger
             .warning(
-                "\(channelId): Failed to fetch 7TV channel emotes (HTTP \(response.statusCode)"
+                "\(channelId): Failed to fetch 7TV channel emotes (HTTP \(response.statusCode))"
             )
         throw "Not successful"
     }
