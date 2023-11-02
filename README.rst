@@ -146,6 +146,10 @@ Ideas/plan
 - Optionally do not automatically ctart using external mic is plugged
   in.
 
+- Scroll back chat.
+
+- Reintroduce settings in portraint.
+
 - Something that is important for professional streamers: Ad
   management. There are new endpoints to get and snooze the next ad
   schedule. No app uses it afaik yet.
