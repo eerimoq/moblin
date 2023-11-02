@@ -41,9 +41,12 @@ struct ButtonImage: View {
 
 struct ButtonPlaceholderImage: View {
     var body: some View {
-        Image(systemName: "pawprint")
-            .frame(width: 40, height: 40)
-            .foregroundColor(.black)
+        Button {} label: {
+            Image(systemName: "pawprint")
+                .frame(width: 40, height: 40)
+                .foregroundColor(.black)
+        }
+        .opacity(0.0)
     }
 }
 
@@ -91,8 +94,10 @@ struct MicButtonView: View {
 struct ButtonsView: View {
     @EnvironmentObject var model: Model
     var height: CGFloat
+    @Environment(\.accessibilityShowButtonShapes)
+    private var accessibilityShowButtonShapes
 
-    func getImage(state: ButtonState) -> String {
+    private func getImage(state: ButtonState) -> String {
         if state.isOn {
             return state.button.systemImageNameOn
         } else {
@@ -100,34 +105,42 @@ struct ButtonsView: View {
         }
     }
 
-    func torchAction(state: ButtonState) {
+    private func torchAction(state: ButtonState) {
         state.button.isOn.toggle()
         model.toggleTorch()
         model.updateButtonStates()
     }
 
-    func muteAction(state: ButtonState) {
+    private func muteAction(state: ButtonState) {
         state.button.isOn.toggle()
         model.toggleMute()
         model.updateButtonStates()
     }
 
-    func widgetAction(state: ButtonState) {
+    private func widgetAction(state: ButtonState) {
         state.button.isOn.toggle()
         model.updateButtonStates()
         model.sceneUpdated()
     }
 
-    func chatAction(state: ButtonState) {
+    private func chatAction(state: ButtonState) {
         state.button.isOn.toggle()
         model.database.show.chat.toggle()
         model.updateButtonStates()
         model.sceneUpdated()
     }
 
+    private func buttonHeight() -> CGFloat {
+        if accessibilityShowButtonShapes {
+            return 60
+        } else {
+            return 45
+        }
+    }
+
     var body: some View {
         VStack {
-            ForEach(model.buttonPairs.suffix(Int(height / 45))) { pair in
+            ForEach(model.buttonPairs.suffix(Int(height / buttonHeight()))) { pair in
                 HStack {
                     if let second = pair.second {
                         switch second.button.type {

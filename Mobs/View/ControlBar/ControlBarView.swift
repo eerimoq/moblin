@@ -24,11 +24,11 @@ struct StreamButton: View {
                 isPresentingStopConfirm = true
             }, label: {
                 StreamButtonText(text: "End")
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(.white)
+                    )
             })
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(.white)
-            )
             .confirmationDialog("", isPresented: $isPresentingStopConfirm) {
                 Button("End") {
                     model.stopStream()
