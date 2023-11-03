@@ -127,8 +127,6 @@ ToDo
 
 - Improve the browser widget.
 
-- Improve SRT adaptive bitrate algorithm.
-
 - Improve chat when many multi line messages are displayed. Always show
   most recent message.
 
