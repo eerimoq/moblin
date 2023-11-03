@@ -630,7 +630,7 @@ final class Model: ObservableObject {
                 continue
             }
             do {
-                let query = try MobsSettingsUrl.fromString(query: query)
+                let query = try MoblinSettingsUrl.fromString(query: query)
                 var streamCount = 0
                 for stream in query.streams ?? [] {
                     let newStream = SettingsStream(name: stream.name)

@@ -1,21 +1,21 @@
 import Foundation
 
-class MobsSettingsUrlStreamVideo: Codable {
+class MoblinSettingsUrlStreamVideo: Codable {
     var codec: SettingsStreamCodec?
 }
 
-class MobsSettingsUrlStream: Codable {
+class MoblinSettingsUrlStream: Codable {
     var name: String
     var url: String
-    var video: MobsSettingsUrlStreamVideo?
+    var video: MoblinSettingsUrlStreamVideo?
 }
 
-class MobsSettingsUrl: Codable {
-    var streams: [MobsSettingsUrlStream]?
+class MoblinSettingsUrl: Codable {
+    var streams: [MoblinSettingsUrlStream]?
 
-    static func fromString(query: String) throws -> MobsSettingsUrl {
+    static func fromString(query: String) throws -> MoblinSettingsUrl {
         let query = try JSONDecoder().decode(
-            MobsSettingsUrl.self,
+            MoblinSettingsUrl.self,
             from: query.data(using: .utf8)!
         )
         for stream in query.streams ?? [] {
