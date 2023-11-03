@@ -680,8 +680,9 @@ final class Model: ObservableObject {
     }
 
     private func updateSrtDebugLines() {
+        let lines = media.getSrtStats()
         if logger.debugEnabled {
-            srtDebugLines = media.getSrtStats()
+            srtDebugLines = lines
         } else {
             srtDebugLines = []
         }
@@ -960,7 +961,7 @@ final class Model: ObservableObject {
         reloadKickPusher()
     }
 
-    func reloadStreamIfEnabled(stream: SettingsStream) {
+    func storeAndReloadStreamIfEnabled(stream: SettingsStream) {
         store()
         if stream.enabled {
             reloadStream()
@@ -1030,10 +1031,6 @@ final class Model: ObservableObject {
 
     func setStreamBitrate(stream: SettingsStream) {
         media.setVideoStreamBitrate(bitrate: stream.bitrate)
-    }
-
-    func setAdaptiveBitrate(stream: SettingsStream) {
-        media.setAdaptiveBitrate(enabled: stream.adaptiveBitrate)
     }
 
     func setStreamCodec() {

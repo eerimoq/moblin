@@ -494,8 +494,4 @@ class RemoteConnection {
         }
         return totalDataSentByteCount
     }
-
-    func getNumberOfPacketsInFlight() -> Int {
-        return packetsInFlight.count
-    }
 }

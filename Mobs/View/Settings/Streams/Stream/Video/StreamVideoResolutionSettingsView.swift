@@ -15,7 +15,7 @@ struct StreamVideoResolutionSettingsView: View {
                 }
                 .onChange(of: selection) { resolution in
                     stream.resolution = SettingsStreamResolution(rawValue: resolution)!
-                    model.reloadStreamIfEnabled(stream: stream)
+                    model.storeAndReloadStreamIfEnabled(stream: stream)
                 }
                 .pickerStyle(.inline)
                 .labelsHidden()

@@ -23,24 +23,16 @@ struct StreamSettingsView: View {
             )) {
                 TextItemView(name: "URL", value: schemeAndAddress(url: stream.url))
             }
-            NavigationLink(destination: StreamVideoSettingsView(
-                stream: stream
-            )) {
+            NavigationLink(destination: StreamVideoSettingsView(stream: stream)) {
                 Text("Video")
             }
-            NavigationLink(destination: StreamTwitchSettingsView(
-                stream: stream
-            )) {
+            NavigationLink(destination: StreamTwitchSettingsView(stream: stream)) {
                 Text("Twitch")
             }
-            NavigationLink(destination: StreamKickSettingsView(
-                stream: stream
-            )) {
+            NavigationLink(destination: StreamKickSettingsView(stream: stream)) {
                 Text("Kick")
             }
-            NavigationLink(destination: StreamSrtSettingsView(
-                stream: stream
-            )) {
+            NavigationLink(destination: StreamSrtSettingsView(stream: stream)) {
                 Text("SRT(LA)")
             }
         }

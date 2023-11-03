@@ -12,7 +12,7 @@ struct StreamSrtSettingsView: View {
             return
         }
         stream.srt.latency = latency
-        model.reloadStreamIfEnabled(stream: stream)
+        model.storeAndReloadStreamIfEnabled(stream: stream)
     }
 
     var body: some View {
@@ -39,26 +39,23 @@ struct StreamSrtSettingsView: View {
                     } else {
                         stream.srt.mpegtsPacketsPerPacket = 6
                     }
-                    model.store()
-                    model.reloadStreamIfEnabled(stream: stream)
+                    model.storeAndReloadStreamIfEnabled(stream: stream)
                 }))
-                Toggle("Adaptive bitrate*", isOn: Binding(get: {
+                Toggle("Adaptive bitrate", isOn: Binding(get: {
                     stream.adaptiveBitrate
                 }, set: { value in
                     stream.adaptiveBitrate = value
-                    model.store()
-                    if stream.enabled {
-                        model.setAdaptiveBitrate(stream: stream)
-                    }
+                    model.storeAndReloadStreamIfEnabled(stream: stream)
                 }))
             } footer: {
                 VStack(alignment: .leading) {
-                    Text(
-                        "* Adaptive bitrate is experimental and does not work very well."
-                    )
+                    Text("Adaptive bitrate is experimental.")
                     Text("")
                     Text(
-                        "Big packets means 7 MPEG-TS packets per SRT packet, 6 otherwise."
+                        """
+                        Big packets means 7 MPEG-TS packets per SRT packet, 6 otherwise, \
+                        which sometimes makes Android hotspot work.
+                        """
                     )
                 }
             }

@@ -12,35 +12,12 @@ enum SrtPacketType: UInt16 {
     case peerError = 0x0008
 }
 
-func isControlPacket(packet: Data) -> Bool {
-    return (packet[0] & 0x80) == 0x80
-}
-
 func isDataPacket(packet: Data) -> Bool {
     return (packet[0] & 0x80) == 0
 }
 
 func getControlPacketType(packet: Data) -> UInt16 {
     return packet.getUInt16Be() & 0x7FFF
-}
-
-func isFullAckPacket(packet: Data) -> Bool {
-    if packet.count != 44 {
-        return false
-    }
-    return packet.getUInt32Be(offset: 4) != 0
-}
-
-func getFullAckPacketRtt(packet: Data) -> UInt32 {
-    return packet.getUInt32Be(offset: 20)
-}
-
-func getFullAckPacketRttVariance(packet: Data) -> UInt32 {
-    return packet.getUInt32Be(offset: 24)
-}
-
-func getFullAckPacketPacketsReceivingRate(packet: Data) -> UInt32 {
-    return packet.getUInt32Be(offset: 32)
 }
 
 func getSequenceNumber(packet: Data) -> UInt32 {

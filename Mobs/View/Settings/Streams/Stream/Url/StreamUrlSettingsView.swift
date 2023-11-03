@@ -13,7 +13,7 @@ struct StreamUrlSettingsView: View {
             return
         }
         stream.url = value
-        model.reloadStreamIfEnabled(stream: stream)
+        model.storeAndReloadStreamIfEnabled(stream: stream)
     }
 
     var body: some View {

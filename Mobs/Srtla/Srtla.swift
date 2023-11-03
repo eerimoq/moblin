@@ -3,7 +3,6 @@ import Foundation
 protocol SrtlaDelegate: AnyObject {
     func srtlaReady(port: UInt16)
     func srtlaError(message: String)
-    func srtlaSetVideoStreamBitrate(bitrate: UInt32)
 }
 
 private enum State {
@@ -30,22 +29,15 @@ class Srtla {
     }
 
     private var totalByteCount: Int64 = 0
-    private let adaptiveBitrate: AdaptiveBitrate
 
     init(
         delegate: SrtlaDelegate,
         passThrough: Bool,
-        targetBitrate: UInt32,
-        adaptiveBitrate adaptiveBitrateEnabled: Bool,
+        targetBitrate _: UInt32,
         mpegtsPacketsPerPacket: Int
     ) {
         self.delegate = delegate
         self.passThrough = passThrough
-        adaptiveBitrate = AdaptiveBitrate(
-            targetBitrate: targetBitrate,
-            enabled: adaptiveBitrateEnabled
-        )
-        delegate.srtlaSetVideoStreamBitrate(bitrate: adaptiveBitrate.getCurrentBitrate())
         logger.info("srtla: SRT instead of SRTLA: \(passThrough)")
         if passThrough {
             remoteConnections.append(RemoteConnection(
@@ -103,21 +95,6 @@ class Srtla {
             self.stopListener()
             self.cancelConnectTimer()
             self.state = .idle
-        }
-    }
-
-    func setTargetBitrate(value: UInt32) {
-        srtlaDispatchQueue.async {
-            if let bitrate = self.adaptiveBitrate.setTargetBitrate(value: value) {
-                self.delegate?.srtlaSetVideoStreamBitrate(bitrate: bitrate)
-            }
-        }
-    }
-
-    func setAdaptiveBitrate(enabled: Bool) {
-        srtlaDispatchQueue.async {
-            let bitrate = self.adaptiveBitrate.setAdaptiveBitrate(enabled: enabled)
-            self.delegate?.srtlaSetVideoStreamBitrate(bitrate: bitrate)
         }
     }
 
@@ -251,18 +228,6 @@ class Srtla {
         }
         connection.sendSrtPacket(packet: packet)
         totalByteCount += Int64(packet.count)
-        if let bitrate = adaptiveBitrate.outgoingPacket(
-            packet: packet,
-            numberOfPacketsInFlight: getNumberOfPacketsInFlight()
-        ) {
-            delegate?.srtlaSetVideoStreamBitrate(bitrate: bitrate)
-        }
-    }
-
-    private func getNumberOfPacketsInFlight() -> Int {
-        return remoteConnections.reduce(0) { partialResult, connection in
-            partialResult + connection.getNumberOfPacketsInFlight()
-        }
     }
 
     private func handleRemoteConnected(connection: RemoteConnection) {
@@ -287,12 +252,6 @@ class Srtla {
     private func handleRemotePacket(packet: Data) {
         localListener?.sendPacket(packet: packet)
         totalByteCount += Int64(packet.count)
-        if let bitrate = adaptiveBitrate.incomingPacket(
-            packet: packet,
-            numberOfPacketsInFlight: getNumberOfPacketsInFlight()
-        ) {
-            delegate?.srtlaSetVideoStreamBitrate(bitrate: bitrate)
-        }
     }
 
     private func handleSrtAck(sn: UInt32) {

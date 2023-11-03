@@ -45,8 +45,7 @@ struct StreamVideoSettingsView: View {
                             stream.captureSessionPresetEnabled!
                         }, set: { value in
                             stream.captureSessionPresetEnabled = value
-                            model.store()
-                            model.reloadStreamIfEnabled(stream: stream)
+                            model.storeAndReloadStreamIfEnabled(stream: stream)
                         })) {
                             TextItemView(
                                 name: "Preset",

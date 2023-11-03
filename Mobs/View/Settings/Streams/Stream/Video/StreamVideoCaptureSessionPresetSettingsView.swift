@@ -18,7 +18,7 @@ struct StreamVideoCaptureSessionPresetSettingsView: View {
                         .captureSessionPreset =
                         SettingsCaptureSessionPreset(rawValue: preset)!
                     if stream.captureSessionPresetEnabled! {
-                        model.reloadStreamIfEnabled(stream: stream)
+                        model.storeAndReloadStreamIfEnabled(stream: stream)
                     }
                 }
                 .pickerStyle(.inline)
