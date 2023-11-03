@@ -1,5 +1,5 @@
-MOBS
-====
+Moblin
+======
 
 A free iOS app for IRL streaming. Mainly targetting `Twitch`_, but can
 stream to `YouTube`_, `Kick`_, `Facebook`_ and `OBS Studio`_ as well
@@ -15,14 +15,11 @@ Github: https://github.com/eerimoq/mobs
 
 TestFlight: https://testflight.apple.com/join/PDpxEaGh
 
-This project is **not** part of `OBS`_. It's just the name that is
-inspired by it.
-
 Features
 ========
 
-- Stream using RTMP, RTMPS, SRT or SRTLA to any platform that
-  supportes them.
+- Stream using RTMP, RTMPS, SRT or SRTLA to any platform that supports
+  them.
 
 - H.264/AVC and H.265/HEVC video codecs.
 
@@ -101,9 +98,9 @@ Features
 
 - Cosmetics.
 
-  - Select MOBS icon to show in app and on home screen.
+  - Select Moblin icon to show in app and on home screen.
 
-  - Optionally purchase additional MOBS icons to support developers.
+  - Optionally purchase additional Moblin icons to support developers.
 
 - Configure stream resolution, FPS, video codec, bitrate and more.
 
@@ -113,7 +110,7 @@ Features
 
 - Mute audio.
 
-- Deep link settings (mobs://).
+- Deep link settings (moblin://).
 
 - Configure maximum screen FPS (to save energy).
 
@@ -141,7 +138,7 @@ Ideas/plan
 
 - Kick chat emotes.
 
-- Optionally do not automatically ctart using external mic is plugged
+- Optionally do not automatically start using external mic is plugged
   in.
 
 - Scroll back chat.
@@ -209,14 +206,14 @@ Ideas/plan
 
 - LIDAR, altitude.
 
-Import settings using mobs:// (custom URL)
-==========================================
+Import settings using moblin:// (custom URL)
+============================================
 
 An example creating a new stream is
 
 .. code-block::
 
-   mobs://?{"streams":[{"name":"BELABOX%20UK","url":"srtla://uk.srt.belabox.net:5000?streamid=9812098rh9hf8942hid","video":{"codec":"H.265/HEVC"}}]}
+   moblin://?{"streams":[{"name":"BELABOX%20UK","url":"srtla://uk.srt.belabox.net:5000?streamid=9812098rh9hf8942hid","video":{"codec":"H.265/HEVC"}}]}
 
 where the URL decoded pretty printed JSON blob is
 
@@ -234,10 +231,10 @@ where the URL decoded pretty printed JSON blob is
      ]
    }
 
-Format: ``mobs://?<URL encoded JSON blob>``
+Format: ``moblin://?<URL encoded JSON blob>``
 
-The ``MobsSettingsUrl`` class in `MobsSettingsUrl.swift`_ defines the
-JSON blob format. Class members are JSON object keys. Members with
+The ``MoblinSettingsUrl`` class in `MoblinSettingsUrl.swift`_ defines
+the JSON blob format. Class members are JSON object keys. Members with
 ``?`` after the type are optional. Some types are defined in
 `Settings.swift`_.
 
@@ -249,8 +246,6 @@ Similar software
 - Twitch app.
 
 - https://softvelum.com/larix/ios/
-
-.. _OBS: https://obsproject.com
 
 .. _OBS Studio: https://obsproject.com
 
@@ -268,6 +263,6 @@ Similar software
 
 .. _TestFlight: https://testflight.apple.com/join/PDpxEaGh
 
-.. _MobsSettingsUrl.swift: https://github.com/eerimoq/mobs/blob/main/Mobs/MobsSettingsUrl.swift
+.. _MoblinSettingsUrl.swift: https://github.com/eerimoq/mobs/blob/main/Mobs/MoblinSettingsUrl.swift
 
 .. _Settings.swift: https://github.com/eerimoq/mobs/blob/main/Mobs/Settings.swift
