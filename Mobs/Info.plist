@@ -13,7 +13,7 @@
 			<string>com.eerimoq.Mobs</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>mobs</string>
+				<string>moblin</string>
 			</array>
 		</dict>
 	</array>

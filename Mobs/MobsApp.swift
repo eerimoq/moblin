@@ -3,12 +3,18 @@ import SwiftUI
 @main
 struct MobsApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    @StateObject static var model = Model()
+    @StateObject var model: Model
+    static var globalModel: Model?
+
+    init() {
+        MobsApp.globalModel = Model()
+        _model = StateObject(wrappedValue: MobsApp.globalModel!)
+    }
 
     var body: some Scene {
         WindowGroup {
             MainView(streamView: StreamView())
-                .environmentObject(MobsApp.model)
+                .environmentObject(model)
         }
     }
 }
@@ -19,11 +25,11 @@ class SceneDelegate: NSObject, UIWindowSceneDelegate {
         willConnectTo _: UISceneSession,
         options connectionOptions: UIScene.ConnectionOptions
     ) {
-        MobsApp.model.handleSettingsUrls(urls: connectionOptions.urlContexts)
+        MobsApp.globalModel?.handleSettingsUrls(urls: connectionOptions.urlContexts)
     }
 
     func scene(_: UIScene, openURLContexts urlContexts: Set<UIOpenURLContext>) {
-        MobsApp.model.handleSettingsUrls(urls: urlContexts)
+        MobsApp.globalModel?.handleSettingsUrls(urls: urlContexts)
     }
 }
 

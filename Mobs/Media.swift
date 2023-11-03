@@ -31,7 +31,6 @@ final class Media: NSObject {
     private var currentAudioLevel: Float = 100.0
     private var srtUrl: String = ""
     private var latency: Int32 = 2000
-    private let volumeAudioEffect = VolumeAudioEffect()
     var onSrtConnected: (() -> Void)!
     var onSrtDisconnected: ((_ reason: String) -> Void)!
     var onRtmpConnected: (() -> Void)!
@@ -239,16 +238,6 @@ final class Media: NSObject {
 
     func unregisterEffect(_ effect: VideoEffect) {
         _ = netStream.unregisterVideoEffect(effect)
-    }
-
-    func registerAudioEffect(_ effect: AudioEffect) {
-        if !netStream.registerAudioEffect(effect) {
-            logger.info("Failed to register video effect")
-        }
-    }
-
-    func unregisterAudioEffect(_ effect: AudioEffect) {
-        _ = netStream.unregisterAudioEffect(effect)
     }
 
     func setVideoSessionPreset(preset: AVCaptureSession.Preset) {

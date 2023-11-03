@@ -200,6 +200,11 @@ final class Model: ObservableObject {
     var cameraDevice: AVCaptureDevice?
     @Published var srtDebugLines: [String] = []
 
+    init() {
+        print("Init model")
+        settings.load()
+    }
+
     var stream: SettingsStream {
         for stream in database.streams where stream.enabled {
             return stream
@@ -522,7 +527,6 @@ final class Model: ObservableObject {
         SDImageCodersManager.shared.addCoder(WebPCoder)
         UIDevice.current.isBatteryMonitoringEnabled = true
         updateBatteryLevel()
-        settings.load()
         media.onSrtConnected = handleSrtConnected
         media.onSrtDisconnected = handleSrtDisconnected
         media.onRtmpConnected = handleRtmpConnected
