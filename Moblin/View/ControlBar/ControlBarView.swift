@@ -51,7 +51,17 @@ struct StreamButton: View {
 
 struct ControlBarView: View {
     @EnvironmentObject var model: Model
+    @Environment(\.accessibilityShowButtonShapes)
+    private var accessibilityShowButtonShapes
     var showSettings: () -> Void
+
+    private func controlBarWidth() -> CGFloat {
+        if accessibilityShowButtonShapes {
+            return 150
+        } else {
+            return 100
+        }
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -70,7 +80,7 @@ struct ControlBarView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .padding([.bottom], 4)
-                    .offset(x: 7)
+                    .offset(x: 2)
                     .frame(width: 40, height: 40)
                 Button {
                     showSettings()
@@ -83,12 +93,13 @@ struct ControlBarView: View {
                         )
                         .foregroundColor(.white)
                 }
-                .padding([.leading], 15)
+                .padding([.leading], 10)
             }
             GeometryReader { metrics in
                 VStack(spacing: 0) {
                     Spacer()
                     ButtonsView(height: metrics.size.height)
+                        .frame(width: metrics.size.width)
                 }
             }
             StreamButton()
@@ -96,7 +107,7 @@ struct ControlBarView: View {
         }
         .padding([.leading, .trailing], 10)
         .padding([.top, .bottom], 0)
-        .frame(width: 100)
+        .frame(width: controlBarWidth())
         .background(.black)
     }
 }
