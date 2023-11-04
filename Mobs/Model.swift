@@ -572,16 +572,20 @@ final class Model: ObservableObject {
                                                name: AVAudioSession
                                                    .routeChangeNotification,
                                                object: nil)
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(contentSizeCategorydidChange),
-            name: UIContentSizeCategory.didChangeNotification,
-            object: nil
-        )
+        logger.info("Cameras:")
+        for camera in listCameras() {
+            logger.info("  \(camera.localizedName)")
+        }
     }
 
-    @objc func contentSizeCategorydidChange(notification _: Notification) {
-        logger.info("contentSizeCategorydidChange")
+    private func listCameras() -> [AVCaptureDevice] {
+        let deviceDiscovery = AVCaptureDevice.DiscoverySession(
+            deviceTypes: [.builtInTelephotoCamera, .builtInWideAngleCamera,
+                          .builtInLiDARDepthCamera /* , .external iOS 17 */ ],
+            mediaType: nil,
+            position: .unspecified
+        )
+        return deviceDiscovery.devices
     }
 
     deinit {
