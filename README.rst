@@ -166,6 +166,8 @@ Ideas/plan
 
 - Take picture.
 
+- Use external camera. Looks like iOS 17 supports them.
+
 - Show two cameras at the same time.
 
 - Add Twitch/Kick Icons next to chat messages depending on which
