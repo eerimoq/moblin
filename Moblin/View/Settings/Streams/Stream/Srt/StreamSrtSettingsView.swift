@@ -53,8 +53,8 @@ struct StreamSrtSettingsView: View {
                     Text("")
                     Text(
                         """
-                        Big packets means 7 MPEG-TS packets per SRT packet, 6 otherwise, \
-                        which sometimes makes Android hotspot work.
+                        Big packets means 7 MPEG-TS packets per SRT packet, 6 otherwise. \
+                        Sometimes Android hotspots does not work with big packets.
                         """
                     )
                 }
