@@ -7,11 +7,11 @@ stream to `YouTube`_, `Kick`_, `Facebook`_ and `OBS Studio`_ as well
 
 Not yet in App Store, but on `TestFlight`_!
 
-.. image:: https://github.com/eerimoq/mobs/raw/main/Docs/main.jpg
+.. image:: https://github.com/eerimoq/moblin/raw/main/Docs/main.jpg
 
 Discord: https://discord.gg/nt3UwHqbMM
 
-Github: https://github.com/eerimoq/mobs
+Github: https://github.com/eerimoq/moblin
 
 TestFlight: https://testflight.apple.com/join/PDpxEaGh
 
@@ -265,6 +265,6 @@ Similar software
 
 .. _TestFlight: https://testflight.apple.com/join/PDpxEaGh
 
-.. _MoblinSettingsUrl.swift: https://github.com/eerimoq/mobs/blob/main/Mobs/MoblinSettingsUrl.swift
+.. _MoblinSettingsUrl.swift: https://github.com/eerimoq/moblin/blob/main/Mobs/MoblinSettingsUrl.swift
 
-.. _Settings.swift: https://github.com/eerimoq/mobs/blob/main/Mobs/Settings.swift
+.. _Settings.swift: https://github.com/eerimoq/moblin/blob/main/Mobs/Settings.swift
