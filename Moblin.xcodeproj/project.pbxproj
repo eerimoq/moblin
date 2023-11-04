@@ -36,7 +36,7 @@
 		035D372C2AB103E600045B92 /* SRTHaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 035D372B2AB103E600045B92 /* SRTHaishinKit */; };
 		035D37372AB230E700045B92 /* StreamVideoBitrateSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37362AB230E700045B92 /* StreamVideoBitrateSettingsView.swift */; };
 		035E775C2ACC969D00738DCE /* ZoomPresetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035E775B2ACC969D00738DCE /* ZoomPresetSettingsView.swift */; };
-		035E9E372A9A02D6009D4F5A /* MobsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035E9E362A9A02D6009D4F5A /* MobsApp.swift */; };
+		035E9E372A9A02D6009D4F5A /* MoblinApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035E9E362A9A02D6009D4F5A /* MoblinApp.swift */; };
 		035E9E3B2A9A02D7009D4F5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */; };
 		035E9E3E2A9A02D7009D4F5A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3D2A9A02D7009D4F5A /* Preview Assets.xcassets */; };
 		036333282AAE2E5100FF1231 /* ImageStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036333272AAE2E5100FF1231 /* ImageStorage.swift */; };
@@ -89,7 +89,7 @@
 		03A9836C2A9A05D7008FF0DB /* WidgetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A983602A9A05D7008FF0DB /* WidgetSettingsView.swift */; };
 		03A9836E2A9A05F9008FF0DB /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9836D2A9A05F9008FF0DB /* Model.swift */; };
 		03A983712A9A0659008FF0DB /* TwitchPubSub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */; };
-		03A983722A9A0659008FF0DB /* TwitchChatMobs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A983702A9A0659008FF0DB /* TwitchChatMobs.swift */; };
+		03A983722A9A0659008FF0DB /* TwitchChatMoblin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A983702A9A0659008FF0DB /* TwitchChatMoblin.swift */; };
 		03B373F62A9EF98E0028DDD5 /* ControlBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373F52A9EF98E0028DDD5 /* ControlBarView.swift */; };
 		03B373F92A9EFB340028DDD5 /* BatteryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373F82A9EFB340028DDD5 /* BatteryView.swift */; };
 		03B373FD2A9F35EF0028DDD5 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FC2A9F35EF0028DDD5 /* Utils.swift */; };
@@ -146,8 +146,8 @@
 		035D37272AB0EBB500045B92 /* IconAndTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconAndTextView.swift; sourceTree = "<group>"; };
 		035D37362AB230E700045B92 /* StreamVideoBitrateSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoBitrateSettingsView.swift; sourceTree = "<group>"; };
 		035E775B2ACC969D00738DCE /* ZoomPresetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomPresetSettingsView.swift; sourceTree = "<group>"; };
-		035E9E332A9A02D6009D4F5A /* Mobs.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mobs.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		035E9E362A9A02D6009D4F5A /* MobsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobsApp.swift; sourceTree = "<group>"; };
+		035E9E332A9A02D6009D4F5A /* Moblin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Moblin.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		035E9E362A9A02D6009D4F5A /* MoblinApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinApp.swift; sourceTree = "<group>"; };
 		035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		035E9E3D2A9A02D7009D4F5A /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		036333272AAE2E5100FF1231 /* ImageStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStorage.swift; sourceTree = "<group>"; };
@@ -196,7 +196,7 @@
 		03A983602A9A05D7008FF0DB /* WidgetSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WidgetSettingsView.swift; sourceTree = "<group>"; };
 		03A9836D2A9A05F9008FF0DB /* Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitchPubSub.swift; sourceTree = "<group>"; };
-		03A983702A9A0659008FF0DB /* TwitchChatMobs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitchChatMobs.swift; sourceTree = "<group>"; };
+		03A983702A9A0659008FF0DB /* TwitchChatMoblin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitchChatMoblin.swift; sourceTree = "<group>"; };
 		03B373F52A9EF98E0028DDD5 /* ControlBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlBarView.swift; sourceTree = "<group>"; };
 		03B373F82A9EFB340028DDD5 /* BatteryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryView.swift; sourceTree = "<group>"; };
 		03B373FC2A9F35EF0028DDD5 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
@@ -381,7 +381,7 @@
 		035E9E2A2A9A02D6009D4F5A = {
 			isa = PBXGroup;
 			children = (
-				035E9E352A9A02D6009D4F5A /* Mobs */,
+				035E9E352A9A02D6009D4F5A /* Moblin */,
 				035E9E342A9A02D6009D4F5A /* Products */,
 				035D372A2AB103E600045B92 /* Frameworks */,
 			);
@@ -390,12 +390,12 @@
 		035E9E342A9A02D6009D4F5A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				035E9E332A9A02D6009D4F5A /* Mobs.app */,
+				035E9E332A9A02D6009D4F5A /* Moblin.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		035E9E352A9A02D6009D4F5A /* Mobs */ = {
+		035E9E352A9A02D6009D4F5A /* Moblin */ = {
 			isa = PBXGroup;
 			children = (
 				032BC5B22AD8E18000DEC883 /* Info.plist */,
@@ -409,7 +409,7 @@
 				03D445E12AE5966B00A0F6E9 /* CacheAsyncImage.swift */,
 				0379BB8F2AABA7DC00B718B6 /* Log.swift */,
 				036333272AAE2E5100FF1231 /* ImageStorage.swift */,
-				035E9E362A9A02D6009D4F5A /* MobsApp.swift */,
+				035E9E362A9A02D6009D4F5A /* MoblinApp.swift */,
 				03A9836D2A9A05F9008FF0DB /* Model.swift */,
 				0382933A2A9A73ED008963AA /* Settings.swift */,
 				03831D512AD90AB5008D26CC /* MoblinSettingsUrl.swift */,
@@ -417,7 +417,7 @@
 				03B373FC2A9F35EF0028DDD5 /* Utils.swift */,
 				035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */,
 			);
-			path = Mobs;
+			path = Moblin;
 			sourceTree = "<group>";
 		};
 		035E9E3C2A9A02D7009D4F5A /* Preview Content */ = {
@@ -456,7 +456,7 @@
 			isa = PBXGroup;
 			children = (
 				03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */,
-				03A983702A9A0659008FF0DB /* TwitchChatMobs.swift */,
+				03A983702A9A0659008FF0DB /* TwitchChatMoblin.swift */,
 			);
 			path = Twitch;
 			sourceTree = "<group>";
@@ -715,9 +715,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		035E9E322A9A02D6009D4F5A /* Mobs */ = {
+		035E9E322A9A02D6009D4F5A /* Moblin */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 035E9E412A9A02D7009D4F5A /* Build configuration list for PBXNativeTarget "Mobs" */;
+			buildConfigurationList = 035E9E412A9A02D7009D4F5A /* Build configuration list for PBXNativeTarget "Moblin" */;
 			buildPhases = (
 				035E9E2F2A9A02D6009D4F5A /* Sources */,
 				035E9E302A9A02D6009D4F5A /* Frameworks */,
@@ -728,7 +728,7 @@
 			dependencies = (
 				032815D72AC855B1001F8A85 /* PBXTargetDependency */,
 			);
-			name = Mobs;
+			name = Moblin;
 			packageProductDependencies = (
 				03A983412A9A03D3008FF0DB /* TwitchChat */,
 				03A983442A9A03EA008FF0DB /* HaishinKit */,
@@ -741,7 +741,7 @@
 				0320D8752AED36860030418F /* WrappingHStack */,
 			);
 			productName = Mobs;
-			productReference = 035E9E332A9A02D6009D4F5A /* Mobs.app */;
+			productReference = 035E9E332A9A02D6009D4F5A /* Moblin.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -759,7 +759,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 035E9E2E2A9A02D6009D4F5A /* Build configuration list for PBXProject "Mobs" */;
+			buildConfigurationList = 035E9E2E2A9A02D6009D4F5A /* Build configuration list for PBXProject "Moblin" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -782,7 +782,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				035E9E322A9A02D6009D4F5A /* Mobs */,
+				035E9E322A9A02D6009D4F5A /* Moblin */,
 			);
 		};
 /* End PBXProject section */
@@ -855,7 +855,7 @@
 				032A49BC2AC5DF3F00ED3916 /* ImportExportSettingsView.swift in Sources */,
 				03A9836E2A9A05F9008FF0DB /* Model.swift in Sources */,
 				03BC11642AE4BEC400C38FC4 /* Emotes.swift in Sources */,
-				03A983722A9A0659008FF0DB /* TwitchChatMobs.swift in Sources */,
+				03A983722A9A0659008FF0DB /* TwitchChatMoblin.swift in Sources */,
 				0379BBA52AAD945D00B718B6 /* LocalOverlaysSettingsView.swift in Sources */,
 				0379BB762AA6345400B718B6 /* ButtonSettingsView.swift in Sources */,
 				035E775C2ACC969D00738DCE /* ZoomPresetSettingsView.swift in Sources */,
@@ -865,7 +865,7 @@
 				036BE2CF2ABD4CA60048F9C5 /* KickPusher.swift in Sources */,
 				03BC11602AE4BD9200C38FC4 /* Ffz.swift in Sources */,
 				0315A37E2AA43DCC00295443 /* TextEditView.swift in Sources */,
-				035E9E372A9A02D6009D4F5A /* MobsApp.swift in Sources */,
+				035E9E372A9A02D6009D4F5A /* MoblinApp.swift in Sources */,
 				031A2E112ADDDD7E005CE350 /* VideoStabilizationSettingsView.swift in Sources */,
 				0315A33D2AA2FA7D00295443 /* RemoteConnection.swift in Sources */,
 				0379BB7E2AA7C55000B718B6 /* ButtonImagePickerSettingsView.swift in Sources */,
@@ -1041,16 +1041,17 @@
 		035E9E422A9A02D7009D4F5A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Mobs/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Moblin/Preview Content\"";
 				DEVELOPMENT_TEAM = L82N7LD4N5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Mobs/Info.plist;
+				INFOPLIST_FILE = Moblin/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Moblin;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
 				INFOPLIST_KEY_NSCameraUsageDescription = Yes;
@@ -1085,16 +1086,17 @@
 		035E9E432A9A02D7009D4F5A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Mobs/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Moblin/Preview Content\"";
 				DEVELOPMENT_TEAM = L82N7LD4N5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Mobs/Info.plist;
+				INFOPLIST_FILE = Moblin/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Moblin;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
 				INFOPLIST_KEY_NSCameraUsageDescription = Yes;
@@ -1129,7 +1131,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		035E9E2E2A9A02D6009D4F5A /* Build configuration list for PBXProject "Mobs" */ = {
+		035E9E2E2A9A02D6009D4F5A /* Build configuration list for PBXProject "Moblin" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				035E9E3F2A9A02D7009D4F5A /* Debug */,
@@ -1138,7 +1140,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		035E9E412A9A02D7009D4F5A /* Build configuration list for PBXNativeTarget "Mobs" */ = {
+		035E9E412A9A02D7009D4F5A /* Build configuration list for PBXNativeTarget "Moblin" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				035E9E422A9A02D7009D4F5A /* Debug */,

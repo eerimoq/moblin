@@ -13,7 +13,7 @@ private func getEmotes(from message: ChatMessage) -> [ChatMessageEmote] {
     return emotes
 }
 
-final class TwitchChatMobs {
+final class TwitchChatMoblin {
     private var twitchChat: TwitchChat!
     private var model: Model
     private var task: Task<Void, Error>?

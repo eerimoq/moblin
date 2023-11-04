@@ -3,11 +3,11 @@ all:
 	$(MAKE) lint
 
 style:
-	swiftformat --maxwidth 90 Mobs
-	swiftformat --maxwidth 90 --lint Mobs
+	swiftformat --maxwidth 90 Moblin
+	swiftformat --maxwidth 90 --lint Moblin
 
 lint:
-	swiftlint lint --strict Mobs
+	swiftlint lint --strict Moblin
 
 periphery:
 	periphery scan

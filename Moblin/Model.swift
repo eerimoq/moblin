@@ -147,7 +147,7 @@ final class Model: ObservableObject {
     var settings = Settings()
     @Published var digitalClock = noValue
     var selectedSceneId = UUID()
-    private var twitchChat: TwitchChatMobs!
+    private var twitchChat: TwitchChatMoblin!
     private var twitchPubSub: TwitchPubSub?
     private var kickPusher: KickPusher?
     private var chatPostId = 0
@@ -543,7 +543,7 @@ final class Model: ObservableObject {
         }
         logger.handler = debugLog(message:)
         updateDigitalClock(now: Date())
-        twitchChat = TwitchChatMobs(model: self)
+        twitchChat = TwitchChatMoblin(model: self)
         reloadStream()
         resetSelectedScene()
         setupPeriodicTimers()
@@ -563,7 +563,9 @@ final class Model: ObservableObject {
             appStoreUpdateListenerTask = listenForAppStoreTransactions()
             await getProductsFromAppStore()
             await updateProductFromAppStore()
-            updateIconImageFromDatabase()
+            DispatchQueue.main.async {
+                self.updateIconImageFromDatabase()
+            }
         }
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(

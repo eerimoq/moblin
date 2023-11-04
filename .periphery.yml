@@ -1,6 +1,6 @@
-project: Mobs.xcodeproj
+project: Moblin.xcodeproj
 retain_objc_accessible: true
 schemes:
-- Mobs
+- Moblin
 targets:
-- Mobs
+- Moblin

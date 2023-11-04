@@ -13,6 +13,14 @@ struct BatteryView: View {
         }
     }
 
+    private func width() -> Double {
+        if level >= 0.0 && level <= 1.0 {
+            return 17 * level
+        } else {
+            return 0
+        }
+    }
+
     var body: some View {
         HStack(spacing: 0) {
             ZStack(alignment: .leading) {
@@ -21,7 +29,7 @@ struct BatteryView: View {
                 RoundedRectangle(cornerRadius: 1)
                     .foregroundColor(color())
                     .padding([.leading], 1)
-                    .frame(width: 17 * level, height: 8)
+                    .frame(width: width(), height: 8)
             }
             Circle()
                 .trim(from: 0.0, to: 0.5)
