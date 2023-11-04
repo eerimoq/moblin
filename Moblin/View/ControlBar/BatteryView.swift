@@ -2,6 +2,7 @@ import SwiftUI
 
 struct BatteryView: View {
     var level: Double
+    var showPercentage: Bool
 
     private func color() -> Color {
         if level < 0.2 {
@@ -23,13 +24,30 @@ struct BatteryView: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            ZStack(alignment: .leading) {
-                RoundedRectangle(cornerRadius: 2)
-                    .stroke(.gray)
-                RoundedRectangle(cornerRadius: 1)
-                    .foregroundColor(color())
-                    .padding([.leading], 1)
-                    .frame(width: width(), height: 8)
+            if showPercentage {
+                ZStack(alignment: .center) {
+                    RoundedRectangle(cornerRadius: 2)
+                        .stroke(.white)
+                        .background(.white)
+                        .foregroundColor(.white)
+                        .frame(width: 18, height: 9)
+                    Text("100")
+                        .lineLimit(1)
+                        .padding(0)
+                        .fixedSize()
+                        .foregroundColor(.black)
+                        .font(.system(size: 10))
+                        .bold()
+                }
+            } else {
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 2)
+                        .stroke(.gray)
+                    RoundedRectangle(cornerRadius: 1)
+                        .foregroundColor(color())
+                        .padding([.leading], 1)
+                        .frame(width: width(), height: 8)
+                }
             }
             Circle()
                 .trim(from: 0.0, to: 0.5)

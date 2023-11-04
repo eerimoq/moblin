@@ -395,6 +395,7 @@ class Database: Codable {
     var maximumScreenFps: Int = 60
     var videoStabilizationMode: SettingsVideoStabilizationMode = .off
     var chat: SettingsChat = .init()
+    var batteryPercentage: Bool? = false
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -725,6 +726,9 @@ final class Settings {
         if realDatabase.chat.timestampColor == nil {
             realDatabase.chat.timestampColor = .init(red: 180, green: 180, blue: 180)
             store()
+        }
+        if realDatabase.batteryPercentage == nil {
+            realDatabase.batteryPercentage = false
         }
     }
 }

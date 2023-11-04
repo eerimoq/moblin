@@ -30,6 +30,12 @@ struct SettingsView: View {
                     Text("Bitrate presets")
                 }
                 VideoStabilizationSettingsView()
+                Toggle("Battery percentage", isOn: Binding(get: {
+                    model.database.batteryPercentage!
+                }, set: { value in
+                    model.database.batteryPercentage = value
+                    model.store()
+                }))
                 NavigationLink(
                     destination: MaximumScreenFpsSettingsView()
                 ) {

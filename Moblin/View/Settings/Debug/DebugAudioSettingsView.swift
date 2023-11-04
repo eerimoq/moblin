@@ -1,5 +1,5 @@
-import SwiftUI
 import HaishinKit
+import SwiftUI
 
 private let audioGenerators = ["Off", "Square wave"]
 
