@@ -14,13 +14,13 @@ struct HelpAndSupportSettingsView: View {
                     Text("Discord")
                 })
                 Button(action: {
-                    openUrl(url: "https://github.com/eerimoq/mobs")
+                    openUrl(url: "https://github.com/eerimoq/moblin")
                 }, label: {
                     Text("Github")
                 })
             } footer: {
                 Text("""
-                Feel free to join MOBS Discord server or write an issue on \
+                Feel free to join Moblin Discord server or write an issue on \
                 Github if you need help or want to give feedback.
                 """)
             }

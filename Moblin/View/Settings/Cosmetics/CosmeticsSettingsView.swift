@@ -96,7 +96,7 @@ struct CosmeticsSettingsView: View {
                 } header: {
                     Text("Icons in store")
                 } footer: {
-                    Text("Support MOBS developers by buying icons.")
+                    Text("Support Moblin developers by buying icons.")
                 }
             } else {
                 Section {
@@ -110,7 +110,7 @@ struct CosmeticsSettingsView: View {
                 } header: {
                     Text("Icons in store")
                 } footer: {
-                    Text("Many thanks from the MOBS developers!")
+                    Text("Many thanks from the Moblin developers!")
                 }
             }
             Section {

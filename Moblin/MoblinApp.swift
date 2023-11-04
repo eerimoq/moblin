@@ -1,14 +1,14 @@
 import SwiftUI
 
 @main
-struct MobsApp: App {
+struct MoblinApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject var model: Model
     static var globalModel: Model?
 
     init() {
-        MobsApp.globalModel = Model()
-        _model = StateObject(wrappedValue: MobsApp.globalModel!)
+        MoblinApp.globalModel = Model()
+        _model = StateObject(wrappedValue: MoblinApp.globalModel!)
     }
 
     var body: some Scene {
@@ -25,11 +25,11 @@ class SceneDelegate: NSObject, UIWindowSceneDelegate {
         willConnectTo _: UISceneSession,
         options connectionOptions: UIScene.ConnectionOptions
     ) {
-        MobsApp.globalModel?.handleSettingsUrls(urls: connectionOptions.urlContexts)
+        MoblinApp.globalModel?.handleSettingsUrls(urls: connectionOptions.urlContexts)
     }
 
     func scene(_: UIScene, openURLContexts urlContexts: Set<UIOpenURLContext>) {
-        MobsApp.globalModel?.handleSettingsUrls(urls: urlContexts)
+        MoblinApp.globalModel?.handleSettingsUrls(urls: urlContexts)
     }
 }
 
