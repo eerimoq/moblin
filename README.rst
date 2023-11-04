@@ -119,6 +119,8 @@ Features
   - Both 0 and 180 degrees orientation. Video always with gravity down
     (never upside down).
 
+- Battery indicator. Optionally with percentage.
+
 ToDo
 ====
 
@@ -131,8 +133,6 @@ Ideas/plan
 ==========
 
 - Advanced settings toggle.
-
-- Battery level as percentage.
 
 - Non-mirrored widgets locally when using front camera.
 
@@ -191,8 +191,6 @@ Ideas/plan
 - Lookup Twitch channel id from channel name. Possibly login to
   Twitch.
 
-- Preview buttons.
-
 - Play music and short sound samples.
 
 - Optionally show black screen to save energy. Possible to turn off
@@ -205,8 +203,6 @@ Ideas/plan
 - Geolocation (with map?).
 
 - Record to disk.
-
-- LIDAR, altitude.
 
 Import settings using moblin:// (custom URL)
 ============================================
