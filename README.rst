@@ -265,6 +265,6 @@ Similar software
 
 .. _TestFlight: https://testflight.apple.com/join/PDpxEaGh
 
-.. _MoblinSettingsUrl.swift: https://github.com/eerimoq/moblin/blob/main/Mobs/MoblinSettingsUrl.swift
+.. _MoblinSettingsUrl.swift: https://github.com/eerimoq/moblin/blob/main/Moblin/MoblinSettingsUrl.swift
 
-.. _Settings.swift: https://github.com/eerimoq/moblin/blob/main/Mobs/Settings.swift
+.. _Settings.swift: https://github.com/eerimoq/moblin/blob/main/Moblin/Settings.swift
