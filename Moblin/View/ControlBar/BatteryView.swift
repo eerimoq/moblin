@@ -1,10 +1,9 @@
 import SwiftUI
 
 struct BatteryView: View {
-    var level: Double
-    var showPercentage: Bool
+    @EnvironmentObject var model: Model
 
-    private func color() -> Color {
+    private func color(level: Double) -> Color {
         if level < 0.2 {
             return .red
         } else if level < 0.4 {
@@ -14,7 +13,7 @@ struct BatteryView: View {
         }
     }
 
-    private func width() -> Double {
+    private func width(level: Double) -> Double {
         if level >= 0.0 && level <= 1.0 {
             return 17 * level
         } else {
@@ -22,16 +21,20 @@ struct BatteryView: View {
         }
     }
 
+    private func percentage(level: Double) -> String {
+        return String(Int(level * 100))
+    }
+
     var body: some View {
         HStack(spacing: 0) {
-            if showPercentage {
+            if model.database.batteryPercentage! {
                 ZStack(alignment: .center) {
                     RoundedRectangle(cornerRadius: 2)
                         .stroke(.white)
                         .background(.white)
                         .foregroundColor(.white)
                         .frame(width: 18, height: 9)
-                    Text("100")
+                    Text(percentage(level: model.batteryLevel))
                         .lineLimit(1)
                         .padding(0)
                         .fixedSize()
@@ -44,9 +47,9 @@ struct BatteryView: View {
                     RoundedRectangle(cornerRadius: 2)
                         .stroke(.gray)
                     RoundedRectangle(cornerRadius: 1)
-                        .foregroundColor(color())
+                        .foregroundColor(color(level: model.batteryLevel))
                         .padding([.leading], 1)
-                        .frame(width: width(), height: 8)
+                        .frame(width: width(level: model.batteryLevel), height: 8)
                 }
             }
             Circle()

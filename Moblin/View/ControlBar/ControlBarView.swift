@@ -66,10 +66,7 @@ struct ControlBarView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                BatteryView(
-                    level: model.batteryLevel,
-                    showPercentage: model.database.batteryPercentage!
-                )
+                BatteryView()
                 Spacer()
                 ThermalStateView(thermalState: model.thermalState)
                 Spacer()
