@@ -43,7 +43,21 @@ struct AudioLevelView: View {
 
     var body: some View {
         HStack(spacing: 1) {
-            if !level.isNaN {
+            if level.isNaN {
+                Text("Muted")
+                    .padding([.leading, .trailing], 2)
+                    .foregroundColor(.white)
+                    .background(Color(white: 0, opacity: 0.6))
+                    .cornerRadius(5)
+                    .font(smallFont)
+            } else if level == .infinity {
+                Text("Unknown")
+                    .padding([.leading, .trailing], 2)
+                    .foregroundColor(.white)
+                    .background(Color(white: 0, opacity: 0.6))
+                    .cornerRadius(5)
+                    .font(smallFont)
+            } else {
                 if showBar {
                     HStack(spacing: 0) {
                         Text(redText())
@@ -67,13 +81,6 @@ struct AudioLevelView: View {
                         .cornerRadius(5)
                         .font(smallFont)
                 }
-            } else {
-                Text("Muted")
-                    .padding([.leading, .trailing], 2)
-                    .foregroundColor(.white)
-                    .background(Color(white: 0, opacity: 0.6))
-                    .cornerRadius(5)
-                    .font(smallFont)
             }
             Image(systemName: "waveform")
                 .frame(width: 17, height: 17)
