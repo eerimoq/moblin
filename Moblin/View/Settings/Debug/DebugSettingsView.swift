@@ -12,6 +12,9 @@ struct DebugSettingsView: View {
                 }, set: { value in
                     logger.debugEnabled = value
                 }))
+                NavigationLink(destination: DebugAudioSettingsView()) {
+                    Text("Audio")
+                }
             }
         }
         .navigationTitle("Debug")

@@ -134,6 +134,7 @@ final class Model: ObservableObject {
         }
     }
 
+    @Published var audioGenerator = "Off"
     private var streaming = false
     @Published var mic = noMic
     private var micChange = noMic
@@ -326,6 +327,17 @@ final class Model: ObservableObject {
             logger.info("cosmetics: Purchase not done yet")
         default:
             logger.warning("cosmetics: What happend when buying? \(result)")
+        }
+    }
+
+    func setAudioGenerator(generator: String) {
+        switch generator {
+        case "Off":
+            audioGeneratorMode = .off
+        case "Square wave":
+            audioGeneratorMode = .squareWave
+        default:
+            logger.error("Bad audio generator \(generator)")
         }
     }
 
