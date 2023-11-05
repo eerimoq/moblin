@@ -130,7 +130,7 @@ struct LocalOverlaysChatSettingsView: View {
                     )
                 }
                 Toggle(isOn: Binding(get: {
-                    model.database.chat.timestampColorEnabled!
+                    model.database.chat.timestampColorEnabled
                 }, set: { value in
                     model.database.chat.timestampColorEnabled = value
                     model.store()
@@ -154,7 +154,7 @@ struct LocalOverlaysChatSettingsView: View {
                     Text("Bold message")
                 }
                 Toggle(isOn: Binding(get: {
-                    model.database.chat.animatedEmotes!
+                    model.database.chat.animatedEmotes
                 }, set: { value in
                     model.database.chat.animatedEmotes = value
                     model.store()
@@ -180,15 +180,12 @@ struct LocalOverlaysChatSettingsView: View {
                 }
                 .foregroundColor(.primary)
                 if showTimestampColor {
-                    ColorEditView(color: model.database.chat.timestampColor!,
-                                  red: Float(model.database.chat
-                                      .timestampColor!.red),
-                                  green: Float(model.database
-                                      .chat.timestampColor!.green),
-                                  blue: Float(model.database.chat
-                                      .timestampColor!.blue))
+                    ColorEditView(color: model.database.chat.timestampColor,
+                                  red: Float(model.database.chat.timestampColor.red),
+                                  green: Float(model.database.chat.timestampColor.green),
+                                  blue: Float(model.database.chat.timestampColor.blue))
                     {
-                        timestampColor = model.database.chat.timestampColor!.color()
+                        timestampColor = model.database.chat.timestampColor.color()
                     }
                 }
                 Button {

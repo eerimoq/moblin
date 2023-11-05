@@ -40,7 +40,7 @@ struct LineView: View {
     }
 
     var body: some View {
-        let timestampColor = chat.timestampColor!.color()
+        let timestampColor = chat.timestampColor.color()
         let usernameColor = usernameColor()
         let messageColor = chat.messageColor.color()
         let shadowColor = shadowColor()
@@ -50,7 +50,7 @@ struct LineView: View {
             verticalSpacing: 0,
             fitContentWidth: true
         ) {
-            if chat.timestampColorEnabled! {
+            if chat.timestampColorEnabled {
                 Text("\(post.timestamp) ")
                     .foregroundColor(timestampColor)
                     .bold(chat.boldMessage)
@@ -69,7 +69,7 @@ struct LineView: View {
                         .bold(chat.boldMessage)
                 }
                 if let url = segment.url {
-                    if chat.animatedEmotes! {
+                    if chat.animatedEmotes {
                         WebImage(url: url)
                             .resizable()
                             .aspectRatio(contentMode: .fit)

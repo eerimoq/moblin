@@ -17,7 +17,7 @@ struct StreamVideoCaptureSessionPresetSettingsView: View {
                     stream
                         .captureSessionPreset =
                         SettingsCaptureSessionPreset(rawValue: preset)!
-                    if stream.captureSessionPresetEnabled! {
+                    if stream.captureSessionPresetEnabled {
                         model.storeAndReloadStreamIfEnabled(stream: stream)
                     }
                 }

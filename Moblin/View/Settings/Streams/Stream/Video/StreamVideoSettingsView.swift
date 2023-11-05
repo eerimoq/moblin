@@ -38,18 +38,18 @@ struct StreamVideoSettingsView: View {
                     NavigationLink(
                         destination: StreamVideoCaptureSessionPresetSettingsView(
                             stream: stream,
-                            selection: stream.captureSessionPreset!.rawValue
+                            selection: stream.captureSessionPreset.rawValue
                         )
                     ) {
                         Toggle(isOn: Binding(get: {
-                            stream.captureSessionPresetEnabled!
+                            stream.captureSessionPresetEnabled
                         }, set: { value in
                             stream.captureSessionPresetEnabled = value
                             model.storeAndReloadStreamIfEnabled(stream: stream)
                         })) {
                             TextItemView(
                                 name: "Preset",
-                                value: stream.captureSessionPreset!.rawValue
+                                value: stream.captureSessionPreset.rawValue
                             )
                         }
                     }

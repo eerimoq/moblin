@@ -969,7 +969,7 @@ final class Model: ObservableObject {
         case .rtmp:
             rtmpStartStream()
         case .srt:
-            payloadSize = stream.srt.mpegtsPacketsPerPacket! * 188
+            payloadSize = stream.srt.mpegtsPacketsPerPacket * 188
             media.srtStartStream(
                 isSrtla: stream.isSrtla(),
                 url: stream.url,
@@ -977,7 +977,7 @@ final class Model: ObservableObject {
                 targetBitrate: stream.bitrate,
                 adaptiveBitrate: stream.adaptiveBitrate,
                 latency: stream.srt.latency,
-                mpegtsPacketsPerPacket: stream.srt.mpegtsPacketsPerPacket!
+                mpegtsPacketsPerPacket: stream.srt.mpegtsPacketsPerPacket
             )
         }
         updateSpeed()
@@ -1024,8 +1024,8 @@ final class Model: ObservableObject {
     }
 
     private func getPreset(preset: AVCaptureSession.Preset) -> AVCaptureSession.Preset {
-        if logger.debugEnabled && stream.captureSessionPresetEnabled! {
-            switch stream.captureSessionPreset! {
+        if logger.debugEnabled && stream.captureSessionPresetEnabled {
+            switch stream.captureSessionPreset {
             case .high:
                 return .high
             case .medium:
@@ -1260,8 +1260,6 @@ final class Model: ObservableObject {
             attachCamera(position: .back)
         case .front:
             attachCamera(position: .front)
-        case nil:
-            logger.error("Camera type is nil?")
         }
         for sceneWidget in scene.widgets.filter({ widget in widget.enabled }) {
             guard let widget = findWidget(id: sceneWidget.widgetId) else {

@@ -13,7 +13,7 @@ struct ScenesSettingsView: View {
                 ForEach(database.scenes) { scene in
                     NavigationLink(destination: SceneSettingsView(
                         scene: scene,
-                        cameraSelection: scene.cameraType!.rawValue
+                        cameraSelection: scene.cameraType.rawValue
                     )) {
                         Toggle(scene.name, isOn: Binding(get: {
                             scene.enabled

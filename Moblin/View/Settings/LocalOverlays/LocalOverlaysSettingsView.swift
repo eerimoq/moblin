@@ -35,7 +35,7 @@ struct LocalOverlaysSettingsView: View {
                     model.store()
                 }))
                 NavigationLink(destination: LocalOverlaysChatSettingsView(
-                    timestampColor: model.database.chat.timestampColor!.color(),
+                    timestampColor: model.database.chat.timestampColor.color(),
                     usernameColor: model.database.chat.usernameColor.color(),
                     messageColor: model.database.chat.messageColor.color(),
                     backgroundColor: model.database.chat.backgroundColor.color(),

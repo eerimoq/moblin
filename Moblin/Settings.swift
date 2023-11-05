@@ -26,7 +26,7 @@ enum SettingsStreamProtocol: String, Codable {
 
 class SettingsStreamSrt: Codable {
     var latency: Int32 = 2000
-    var mpegtsPacketsPerPacket: Int? = 7
+    var mpegtsPacketsPerPacket: Int = 7
 }
 
 enum SettingsCaptureSessionPreset: String, Codable, CaseIterable {
@@ -58,8 +58,8 @@ class SettingsStream: Codable, Identifiable {
     var codec: SettingsStreamCodec = .h264avc
     var adaptiveBitrate: Bool = false
     var srt: SettingsStreamSrt = .init()
-    var captureSessionPresetEnabled: Bool? = false
-    var captureSessionPreset: SettingsCaptureSessionPreset? = .medium
+    var captureSessionPresetEnabled: Bool = false
+    var captureSessionPreset: SettingsCaptureSessionPreset = .medium
 
     init(name: String) {
         self.name = name
@@ -136,7 +136,7 @@ class SettingsScene: Codable, Identifiable, Equatable {
     var name: String
     var id: UUID = .init()
     var enabled: Bool = true
-    var cameraType: SettingsSceneCameraType? = .back
+    var cameraType: SettingsSceneCameraType = .back
     var widgets: [SettingsSceneWidget] = []
     var buttons: [SettingsSceneButton] = []
 
@@ -375,9 +375,9 @@ class SettingsChat: Codable {
     var alignedMessages: Bool = false
     var boldUsername: Bool = false
     var boldMessage: Bool = false
-    var animatedEmotes: Bool? = false
-    var timestampColor: RgbColor? = .init(red: 180, green: 180, blue: 180)
-    var timestampColorEnabled: Bool? = true
+    var animatedEmotes: Bool = false
+    var timestampColor: RgbColor = .init(red: 180, green: 180, blue: 180)
+    var timestampColorEnabled: Bool = true
 }
 
 class Database: Codable {
@@ -695,34 +695,6 @@ final class Settings {
     }
 
     private func migrateFromOlderVersions() {
-        if realDatabase.chat.animatedEmotes == nil {
-            realDatabase.chat.animatedEmotes = false
-            store()
-        }
-        for stream in realDatabase.streams
-            where stream.captureSessionPresetEnabled == nil
-        {
-            stream.captureSessionPresetEnabled = false
-            store()
-        }
-        for stream in realDatabase.streams where stream.captureSessionPreset == nil {
-            stream.captureSessionPreset = .medium
-            store()
-        }
-        for stream in realDatabase.streams
-            where stream.srt.mpegtsPacketsPerPacket == nil
-        {
-            stream.srt.mpegtsPacketsPerPacket = 7
-            store()
-        }
-        if realDatabase.chat.timestampColorEnabled == nil {
-            realDatabase.chat.timestampColorEnabled = false
-            store()
-        }
-        if realDatabase.chat.timestampColor == nil {
-            realDatabase.chat.timestampColor = .init(red: 180, green: 180, blue: 180)
-            store()
-        }
         if realDatabase.batteryPercentage == nil {
             realDatabase.batteryPercentage = false
             store()
