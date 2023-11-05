@@ -17,4 +17,4 @@ jobs:
           make lint
       - name: Build
         run: |
-          xcodebuild -scheme Moblin -skipPackagePluginValidation build
+          xcodebuild -scheme Moblin -skipPackagePluginValidation -allowProvisioningUpdates build
