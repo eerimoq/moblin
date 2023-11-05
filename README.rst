@@ -134,22 +134,12 @@ Ideas/plan
 
 - Advanced settings toggle.
 
-- Non-mirrored widgets locally when using front camera.
-
-- Kick chat emotes.
-
 - Optionally do not automatically start using external mic is plugged
   in.
 
 - Scroll back chat.
 
 - Reintroduce settings in portraint.
-
-- Something that is important for professional streamers: Ad
-  management. There are new endpoints to get and snooze the next ad
-  schedule. No app uses it afaik yet.
-
-  - https://dev.twitch.tv/docs/api/reference/#get-ad-schedule
 
 - A list of usernames whos messages will not get displayed on screen.
 
@@ -160,11 +150,13 @@ Ideas/plan
     filters when you have the time. I think that would be the same
     order in terms of complexity to implement as well.
 
-- Interactive local browser(s).
-
 - Use multiple mics at the same time?
 
+- Kick chat emotes.
+
 - Take picture.
+
+- Non-mirrored widgets locally when using front camera.
 
 - Use external camera. Looks like iOS 17 supports them.
 
@@ -182,10 +174,6 @@ Ideas/plan
   stream setting. Probably a good idea to go live again when entering
   foregound if was live when entering background
 
-- Zoom meter with lines indicating likely lens switches.
-
-- Show web page on stream and/or locally. Audio kinda important.
-
 - Multiple Ethernet connections simultaneously?
 
 - Lookup Twitch channel id from channel name. Possibly login to
@@ -200,9 +188,13 @@ Ideas/plan
 
     - ``brightness`` and ``wantsSoftwareDimming``.
 
-- Geolocation (with map?).
-
 - Record to disk.
+
+- Something that is important for professional streamers: Ad
+  management. There are new endpoints to get and snooze the next ad
+  schedule. No app uses it afaik yet.
+
+  - https://dev.twitch.tv/docs/api/reference/#get-ad-schedule
 
 Import settings using moblin:// (custom URL)
 ============================================
