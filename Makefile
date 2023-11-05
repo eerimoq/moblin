@@ -4,6 +4,8 @@ all:
 
 style:
 	swiftformat --maxwidth 90 Moblin
+
+style-check:
 	swiftformat --maxwidth 90 --lint Moblin
 
 lint:

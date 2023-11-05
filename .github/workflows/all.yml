@@ -11,10 +11,10 @@ jobs:
       - uses: actions/checkout@v3
       - name: Source code styling
         run: |
-          make style
+          make style-check
       - name: Linting
         run: |
           make lint
       - name: Build
         run: |
-          xcodebuild -scheme Moblin -destination 'platform=iOS,name=Any iOS Device' build
+          xcodebuild -scheme Moblin build
