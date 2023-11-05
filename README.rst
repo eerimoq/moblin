@@ -1,7 +1,7 @@
 Moblin - IRL Streaming
 ======================
 
-A free iOS app for IRL streaming. Mainly targetting `Twitch`_, but can
+A free iOS app for IRL streaming. Mainly targeting `Twitch`_, but can
 stream to `YouTube`_, `Kick`_, `Facebook`_ and `OBS Studio`_ as well
 (and probably more).
 
