@@ -94,18 +94,18 @@ struct LeftOverlayView: View {
                     text: String(format: "%.1f", model.zoomX())
                 )
             }
-            if database.show.viewers {
-                StreamOverlayIconAndTextView(
-                    icon: "eye",
-                    text: viewersText(),
-                    color: viewersColor()
-                )
-            }
             if model.database.show.chat {
                 StreamOverlayIconAndTextView(
                     icon: "message",
                     text: messageText(),
                     color: messageColor()
+                )
+            }
+            if database.show.viewers {
+                StreamOverlayIconAndTextView(
+                    icon: "eye",
+                    text: viewersText(),
+                    color: viewersColor()
                 )
             }
             Spacer()
