@@ -1,6 +1,8 @@
 name: All
 
-on: [push]
+on:
+  push:
+  pull_request:
 
 jobs:
   all:
@@ -8,6 +10,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Source code styling
-        run: make style
+        run: |
+          make style
       - name: Linting
-        run: make lint
+        run: |
+          make lint
+      - name: Build
+        run: |
+          xcodebuild -scheme Moblin -destination 'platform=iOS,name=Any iOS Device' build
