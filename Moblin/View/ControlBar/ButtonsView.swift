@@ -10,7 +10,7 @@ struct ButtonImage: View {
 
     var body: some View {
         let image = Image(systemName: image)
-            .frame(width: 40, height: 40)
+            .frame(width: buttonSize, height: buttonSize)
             .foregroundColor(.white)
             .background(imageBackground)
             .clipShape(Circle())
@@ -26,7 +26,7 @@ struct ButtonImage: View {
             if slash {
                 // Button press animation not perfect.
                 Image(systemName: "line.diagonal")
-                    .frame(width: 40, height: 40)
+                    .frame(width: buttonSize, height: buttonSize)
                     .foregroundColor(.white)
                     .rotationEffect(Angle(degrees: 90))
                     .shadow(color: imageBackground, radius: 0, x: 1, y: 0)
@@ -43,7 +43,7 @@ struct ButtonPlaceholderImage: View {
     var body: some View {
         Button {} label: {
             Image(systemName: "pawprint")
-                .frame(width: 40, height: 40)
+                .frame(width: buttonSize, height: buttonSize)
                 .foregroundColor(.black)
         }
         .opacity(0.0)

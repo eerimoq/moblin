@@ -26,7 +26,7 @@ struct CosmeticsSettingsView: View {
                             Image(icon.imageNoBackground())
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
-                                .frame(width: 40, height: 40)
+                                .frame(width: buttonSize, height: buttonSize)
                             Spacer()
                             Text(icon.name)
                         }
@@ -54,7 +54,7 @@ struct CosmeticsSettingsView: View {
                                 Image(icon.imageNoBackground())
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
-                                    .frame(width: 40, height: 40)
+                                    .frame(width: buttonSize, height: buttonSize)
                                 Spacer()
                                 Text(icon.name)
                                 ZStack {
@@ -121,7 +121,7 @@ struct CosmeticsSettingsView: View {
                             Image(icon.imageNoBackground())
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
-                                .frame(width: 40, height: 40)
+                                .frame(width: buttonSize, height: buttonSize)
                             Spacer()
                             Text(icon.name)
                         }

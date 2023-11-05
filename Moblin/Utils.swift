@@ -2,6 +2,7 @@ import AVKit
 import SwiftUI
 
 let firstReconnectTime = 5.0
+let buttonSize: CGFloat = 40
 
 func nextReconnectTime(_ reconnectTime: Double) -> Double {
     return min(reconnectTime * 1.3, 60)

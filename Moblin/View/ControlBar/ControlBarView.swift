@@ -81,12 +81,12 @@ struct ControlBarView: View {
                     .aspectRatio(contentMode: .fit)
                     .padding([.bottom], 4)
                     .offset(x: 2)
-                    .frame(width: 40, height: 40)
+                    .frame(width: buttonSize, height: buttonSize)
                 Button {
                     showSettings()
                 } label: {
                     Image(systemName: "gearshape")
-                        .frame(width: 40, height: 40)
+                        .frame(width: buttonSize, height: buttonSize)
                         .overlay(
                             Circle()
                                 .stroke(.secondary)
