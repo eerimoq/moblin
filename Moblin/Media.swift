@@ -123,7 +123,8 @@ final class Media: NSObject {
 
     func updateSrtSpeed() {
         srtTotalByteCount = srtla?.getTotalByteCount() ?? 0
-        srtSpeed = max(srtTotalByteCount - srtPreviousTotalByteCount, 0)
+        let byteCount = max(srtTotalByteCount - srtPreviousTotalByteCount, 0)
+        srtSpeed = Int64(Double(srtSpeed) * 0.7 + Double(byteCount) * 0.3)
         srtPreviousTotalByteCount = srtTotalByteCount
     }
 
