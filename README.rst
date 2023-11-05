@@ -284,16 +284,16 @@ Configured text:
 
 .. code-block:: text
 
-   clock:         {clock}
-   msRTT:         {srtStatsMsRtt}
+   clock: {clock}
+   msRTT: {srtStatsMsRtt}
    pktFlightSize: {srtStatsPktFlightSize}
 
 Rendered on stream:
 
 .. code-block:: text
 
-   clock:         12:32:51
-   msRTT:         33.1
+   clock: 12:32:51
+   msRTT: 33.1
    pktFlightSize: 3
 
 Similar software
