@@ -392,7 +392,7 @@ class Database: Codable {
     var bitratePresets: [SettingsBitratePreset] = []
     var iconImage: String = plainIcon.image()
     var maximumScreenFpsEnabled: Bool = false
-    var maximumScreenFps: Int = 60
+    var maximumScreenFps: Int = 15
     var videoStabilizationMode: SettingsVideoStabilizationMode = .off
     var chat: SettingsChat = .init()
     var batteryPercentage: Bool? = false
@@ -729,6 +729,7 @@ final class Settings {
         }
         if realDatabase.batteryPercentage == nil {
             realDatabase.batteryPercentage = false
+            store()
         }
     }
 }

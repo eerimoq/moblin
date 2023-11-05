@@ -164,7 +164,9 @@ struct LocalOverlaysChatSettingsView: View {
             } header: {
                 Text("General")
             } footer: {
-                Text("Animated emotes are fairly CPU intensive.")
+                Text(
+                    "Animated emotes are fairly CPU intensive. Disable for less power usage."
+                )
             }
             Section {
                 Button {
@@ -294,7 +296,7 @@ struct LocalOverlaysChatSettingsView: View {
             } header: {
                 Text("Colors")
             } footer: {
-                Text("Border is fairly CPU intensive.")
+                Text("Border is fairly CPU intensive. Disable for less power usage.")
             }
         }
         .navigationTitle("Chat")
