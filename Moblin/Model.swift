@@ -1325,13 +1325,17 @@ final class Model: ObservableObject {
 
     private func updateChatSpeed() {
         chatPostsTotal += numberOfChatPostsPerTick
-        chatPostsRatePerSecond = chatPostsRatePerSecond * 0.8 + Double(numberOfChatPostsPerTick) * 0.2
+        chatPostsRatePerSecond = chatPostsRatePerSecond * 0.8 +
+            Double(numberOfChatPostsPerTick) * 0.2
         numberOfChatPostsPerMinute += numberOfChatPostsPerTick
         if chatSpeedTicks % 60 == 0 {
-            chatPostsRatePerMinute = chatPostsRatePerMinute * 0.5 + Double(numberOfChatPostsPerMinute) * 0.5
+            chatPostsRatePerMinute = chatPostsRatePerMinute * 0.5 +
+                Double(numberOfChatPostsPerMinute) * 0.5
             numberOfChatPostsPerMinute = 0
         }
-        if chatPostsRatePerSecond > 0.5 || (chatPostsRatePerSecond > 0.05 && chatPostsRate.hasSuffix("/sec")) {
+        if chatPostsRatePerSecond > 0.5 ||
+            (chatPostsRatePerSecond > 0.05 && chatPostsRate.hasSuffix("/sec"))
+        {
             chatPostsRate = String(format: "%.1f/sec", chatPostsRatePerSecond)
         } else {
             chatPostsRate = String(format: "%.1f/min", chatPostsRatePerMinute)
