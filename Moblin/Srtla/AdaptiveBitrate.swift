@@ -8,7 +8,7 @@ protocol AdaptiveBitrateDelegate: AnyObject {
     func adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32)
 }
 
-var adaptiveBitratePacketsInFlightLimit: Int32 = 100
+var adaptiveBitratePacketsInFlightLimit: Int32 = 200
 
 class AdaptiveBitrate {
     private var avgRtt: Double = 0.0
