@@ -120,14 +120,14 @@ struct ButtonsView: View {
     private func widgetAction(state: ButtonState) {
         state.button.isOn.toggle()
         model.updateButtonStates()
-        model.sceneUpdated()
+        model.sceneUpdated(store: false)
     }
 
     private func chatAction(state: ButtonState) {
         state.button.isOn.toggle()
-        model.database.show.chat.toggle()
+        model.showChatMessages.toggle()
         model.updateButtonStates()
-        model.sceneUpdated()
+        model.sceneUpdated(store: false)
     }
 
     private func buttonHeight() -> CGFloat {

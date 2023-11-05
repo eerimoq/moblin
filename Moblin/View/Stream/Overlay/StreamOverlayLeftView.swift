@@ -50,6 +50,30 @@ struct LeftOverlayView: View {
         }
     }
 
+    func messageText() -> String {
+        if !model.isChatConfigured() {
+            return "Not configured"
+        } else if model.isChatConnected() {
+            return String(
+                format: "%@ (%@ total)",
+                model.chatPostsRate,
+                countFormatter.format(model.chatPostsTotal)
+            )
+        } else {
+            return ""
+        }
+    }
+
+    func messageColor() -> Color {
+        if !model.isChatConfigured() {
+            return .white
+        } else if model.isChatConnected() && model.hasChatEmotes() {
+            return .white
+        } else {
+            return .red
+        }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 1) {
             if database.show.stream {
@@ -75,6 +99,13 @@ struct LeftOverlayView: View {
                     icon: "eye",
                     text: viewersText(),
                     color: viewersColor()
+                )
+            }
+            if model.database.show.chat {
+                StreamOverlayIconAndTextView(
+                    icon: "message",
+                    text: messageText(),
+                    color: messageColor()
                 )
             }
             Spacer()

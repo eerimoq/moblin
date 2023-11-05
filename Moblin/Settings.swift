@@ -403,11 +403,7 @@ class Database: Codable {
             from: settings.data(using: .utf8)!
         )
         for button in database.buttons {
-            if button.type == .chat {
-                button.isOn = !database.show.chat
-            } else {
-                button.isOn = false
-            }
+            button.isOn = false
         }
         if database.streams.isEmpty {
             addDefaultStreams(database: database)

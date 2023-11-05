@@ -105,46 +105,28 @@ struct LineView: View {
 struct StreamOverlayChatView: View {
     @EnvironmentObject var model: Model
 
-    func messageText() -> String {
-        if !model.isChatConfigured() {
-            return "Not configured"
-        } else if model.isChatConnected() {
-            return String(
-                format: "%@ (%@ total)",
-                model.chatPostsRate,
-                countFormatter.format(model.chatPostsTotal)
-            )
-        } else {
-            return ""
-        }
-    }
-
-    func messageColor() -> Color {
-        if !model.isChatConfigured() {
-            return .white
-        } else if model.isChatConnected() && model.hasChatEmotes() {
-            return .white
-        } else {
-            return .red
-        }
-    }
-
     var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 1) {
-                Spacer()
-                StreamOverlayIconAndTextView(
-                    icon: "message",
-                    text: messageText(),
-                    color: messageColor()
-                )
-                VStack(alignment: .leading, spacing: 1) {
-                    ForEach(model.chatPosts) { post in
-                        LineView(post: post, chat: model.database.chat)
+        GeometryReader { metrics in
+            ScrollView {
+                ScrollViewReader { reader in
+                    VStack {
+                        Spacer(minLength: 0)
+                        LazyVStack(alignment: .leading, spacing: 1) {
+                            ForEach(model.chatPosts) { post in
+                                LineView(post: post, chat: model.database.chat)
+                                    .id(post)
+                            }
+                        }
+                    }
+                    .onChange(of: model.chatPosts) { _ in
+                        reader.scrollTo(model.chatPosts.last, anchor: .bottom)
+                    }
+                    .frame(minHeight: metrics.size.height)
+                    .onAppear {
+                        reader.scrollTo(model.chatPosts.last, anchor: .bottom)
                     }
                 }
             }
-            Spacer()
         }
     }
 }

@@ -92,7 +92,15 @@ func makeChatPostTextSegments(text: String) -> [ChatPostSegment] {
     return segments
 }
 
-struct ChatPost: Identifiable {
+struct ChatPost: Identifiable, Hashable {
+    static func == (lhs: ChatPost, rhs: ChatPost) -> Bool {
+        return lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
     var id: Int
     var user: String
     var userColor: String?
@@ -135,6 +143,7 @@ final class Model: ObservableObject {
         }
     }
 
+    @Published var showChatMessages = true
     @Published var audioGenerator = "Off"
     @Published var squareWaveGeneratorAmplitude = 200.0
     @Published var squareWaveGeneratorInterval = 60.0
@@ -1184,7 +1193,7 @@ final class Model: ObservableObject {
         userColor: String?,
         segments: [ChatPostSegment]
     ) {
-        if chatPosts.count > 6 {
+        if chatPosts.count > 14 {
             chatPosts.removeFirst()
         }
         let post = ChatPost(

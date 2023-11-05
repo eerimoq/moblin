@@ -41,7 +41,7 @@ struct StreamOverlayView: View {
                 Spacer()
             }
             .allowsHitTesting(false)
-            if model.database.show.chat {
+            if model.database.show.chat && model.showChatMessages {
                 GeometryReader { metrics in
                     StreamOverlayChatView()
                         .frame(width: metrics.size.width * 0.95)

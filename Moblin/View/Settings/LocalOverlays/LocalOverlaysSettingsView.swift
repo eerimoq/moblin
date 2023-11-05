@@ -34,6 +34,20 @@ struct LocalOverlaysSettingsView: View {
                     show.viewers = value
                     model.store()
                 }))
+                NavigationLink(destination: LocalOverlaysChatSettingsView(
+                    timestampColor: model.database.chat.timestampColor!.color(),
+                    usernameColor: model.database.chat.usernameColor.color(),
+                    messageColor: model.database.chat.messageColor.color(),
+                    backgroundColor: model.database.chat.backgroundColor.color(),
+                    shadowColor: model.database.chat.shadowColor.color()
+                )) {
+                    Toggle("Chat", isOn: Binding(get: {
+                        show.chat
+                    }, set: { value in
+                        show.chat = value
+                        model.store()
+                    }))
+                }
             }
             Section("Top right") {
                 NavigationLink(destination: LocalOverlaysAudioLevelSettingsView(
@@ -60,22 +74,6 @@ struct LocalOverlaysSettingsView: View {
                     show.uptime = value
                     model.store()
                 }))
-            }
-            Section("Bottom left") {
-                NavigationLink(destination: LocalOverlaysChatSettingsView(
-                    timestampColor: model.database.chat.timestampColor!.color(),
-                    usernameColor: model.database.chat.usernameColor.color(),
-                    messageColor: model.database.chat.messageColor.color(),
-                    backgroundColor: model.database.chat.backgroundColor.color(),
-                    shadowColor: model.database.chat.shadowColor.color()
-                )) {
-                    Toggle("Chat", isOn: Binding(get: {
-                        show.chat
-                    }, set: { value in
-                        show.chat = value
-                        model.store()
-                    }))
-                }
             }
             Section {
                 Toggle("Zoom presets", isOn: Binding(get: {
