@@ -109,7 +109,11 @@ struct StreamOverlayChatView: View {
         if !model.isChatConfigured() {
             return "Not configured"
         } else if model.isChatConnected() {
-            return String(format: "%.2f m/s", model.chatPostsPerSecond)
+            return String(
+                format: "%@ (%@ total)",
+                model.chatPostsRate,
+                countFormatter.format(model.chatPostsTotal)
+            )
         } else {
             return ""
         }

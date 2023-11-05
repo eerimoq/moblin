@@ -156,8 +156,13 @@ final class Model: ObservableObject {
     private var kickPusher: KickPusher?
     private var chatPostId = 0
     @Published var chatPosts: Deque<ChatPost> = []
-    var numberOfChatPosts = 0
-    @Published var chatPostsPerSecond = 0.0
+    private var numberOfChatPostsPerTick = 0
+    private var chatPostsRatePerSecond = 0.0
+    private var chatPostsRatePerMinute = 0.0
+    private var numberOfChatPostsPerMinute = 0
+    @Published var chatPostsRate = "0.0/min"
+    @Published var chatPostsTotal: Int = 0
+    private var chatSpeedTicks = 0
     @Published var numberOfViewers = noValue
     var numberOfViewersUpdateDate = Date()
     @Published var batteryLevel = Double(UIDevice.current.batteryLevel)
@@ -1121,9 +1126,14 @@ final class Model: ObservableObject {
         } else {
             logger.info("Twitch channel name not configured. No Twitch chat.")
         }
-        chatPostsPerSecond = 0
+        chatPostsRate = "0.0/min"
+        chatPostsTotal = 0
+        chatSpeedTicks = 0
         chatPosts = []
-        numberOfChatPosts = 0
+        numberOfChatPostsPerTick = 0
+        chatPostsRatePerSecond = 0
+        chatPostsRatePerMinute = 0
+        numberOfChatPostsPerMinute = 0
     }
 
     private func reloadTwitchPubSub() {
@@ -1177,7 +1187,7 @@ final class Model: ObservableObject {
             timestamp: digitalClock
         )
         chatPosts.append(post)
-        numberOfChatPosts += 1
+        numberOfChatPostsPerTick += 1
         chatPostId += 1
     }
 
@@ -1314,9 +1324,20 @@ final class Model: ObservableObject {
     }
 
     private func updateChatSpeed() {
-        chatPostsPerSecond = chatPostsPerSecond * 0.8 +
-            Double(numberOfChatPosts) * 0.2
-        numberOfChatPosts = 0
+        chatPostsTotal += numberOfChatPostsPerTick
+        chatPostsRatePerSecond = chatPostsRatePerSecond * 0.8 + Double(numberOfChatPostsPerTick) * 0.2
+        numberOfChatPostsPerMinute += numberOfChatPostsPerTick
+        if chatSpeedTicks % 60 == 0 {
+            chatPostsRatePerMinute = chatPostsRatePerMinute * 0.8 + Double(numberOfChatPostsPerMinute) * 0.2
+            numberOfChatPostsPerMinute = 0
+        }
+        if chatPostsRatePerSecond > 0.5 || (chatPostsRatePerSecond > 0.05 && chatPostsRate.hasSuffix("/sec")) {
+            chatPostsRate = String(format: "%.1f/sec", chatPostsRatePerSecond)
+        } else {
+            chatPostsRate = String(format: "%.1f/min", chatPostsRatePerMinute)
+        }
+        numberOfChatPostsPerTick = 0
+        chatSpeedTicks += 1
     }
 
     private func updateSpeed() {
