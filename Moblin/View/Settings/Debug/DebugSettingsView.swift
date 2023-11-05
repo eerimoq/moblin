@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct DebugSettingsView: View {
+    @EnvironmentObject var model: Model
+
     var body: some View {
         Form {
             Section {
@@ -14,6 +16,14 @@ struct DebugSettingsView: View {
                 }))
                 NavigationLink(destination: DebugAudioSettingsView()) {
                     Text("Audio")
+                }
+                NavigationLink(
+                    destination: DebugAdaptiveBitrateSettingsView(
+                        packetsInFlight: Double(model
+                            .getAdaptiveBitratePacketsInFlight())
+                    )
+                ) {
+                    Text("Adaptive bitrate")
                 }
             }
         }

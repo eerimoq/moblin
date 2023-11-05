@@ -233,6 +233,14 @@ final class Model: ObservableObject {
     private var appStoreUpdateListenerTask: Task<Void, Error>?
     private var products: [String: Product] = [:]
 
+    func setAdaptiveBitratePacketsInFlight(value: Int32) {
+        adaptiveBitratePacketsInFlightLimit = value
+    }
+
+    func getAdaptiveBitratePacketsInFlight() -> Int32 {
+        return adaptiveBitratePacketsInFlightLimit
+    }
+
     @MainActor
     private func getProductsFromAppStore() async {
         do {

@@ -8,6 +8,8 @@ protocol AdaptiveBitrateDelegate: AnyObject {
     func adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32)
 }
 
+var adaptiveBitratePacketsInFlightLimit: Int32 = 100
+
 class AdaptiveBitrate {
     private var avgRtt: Double = 0.0
     private var fastRtt: Double = 0.0
