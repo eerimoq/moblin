@@ -236,6 +236,66 @@ the JSON blob format. Class members are JSON object keys. Members with
 ``?`` after the type are optional. Some types are defined in
 `Settings.swift`_.
 
+Ideas
+=====
+
+Examples of text widgets
+------------------------
+
+Default SRT stats
+^^^^^^^^^^^^^^^^^
+
+Configured text:
+
+.. code-block:: text
+
+   {srtStats}
+
+Rendered on stream:
+
+.. code-block:: text
+
+   pktRetransTotal: 524
+   pktRecvNAKTotal: 203
+   pktSndDropTotal: 2
+   msRTT: 42.47
+   pktFlightSize: 12
+   pktSndBuf: 2
+
+Clock
+^^^^^
+
+Configured text:
+
+.. code-block:: text
+
+   {clock}
+
+Rendered on stream:
+
+.. code-block:: text
+
+   12:32:51
+
+Clock and two SRT stats
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Configured text:
+
+.. code-block:: text
+
+   clock:         {clock}
+   msRTT:         {srtStatsMsRtt}
+   pktFlightSize: {srtStatsPktFlightSize}
+
+Rendered on stream:
+
+.. code-block:: text
+
+   clock:         12:32:51
+   msRTT:         33.1
+   pktFlightSize: 3
+
 Similar software
 ================
 
