@@ -152,6 +152,16 @@ struct StreamUrlSettingsView: View {
                             Text("")
                         }
                         Group {
+                            Text("SRT Live Server (SLS)").underline()
+                            Text(
+                                "Template: srt://my_public_ip:my_public_port?streamid=publish/live/my_key"
+                            )
+                            Text(
+                                "Example: srt://120.12.32.12:4000?streamid=publish/live/feed"
+                            )
+                            Text("")
+                        }
+                        Group {
                             Text("RTMP server").underline()
                             Text(
                                 "Template: rtmp://my_public_ip:my_public_port/my_stream_key"
