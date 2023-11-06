@@ -126,22 +126,12 @@ ToDo
 
 - Improve the browser widget.
 
-- Improve chat when many multi line messages are displayed. Always show
-  most recent message.
-
 Ideas/plan
 ==========
 
-- Advanced settings toggle.
-
-- Optionally do not automatically start using external mic is plugged
-  in.
+- A list of usernames whos messages will not get displayed on screen.
 
 - Scroll back chat.
-
-- Reintroduce settings in portraint.
-
-- A list of usernames whos messages will not get displayed on screen.
 
 - Audio filters. For example volume limiter.
 
@@ -154,7 +144,14 @@ Ideas/plan
 
 - Kick chat emotes.
 
+- Reintroduce settings in portrait.
+
 - Take picture.
+
+- Optionally do not automatically start using external mic is plugged
+  in.
+
+- Advanced settings toggle.
 
 - Non-mirrored widgets locally when using front camera.
 
@@ -170,11 +167,11 @@ Ideas/plan
 
 - RTMP server for external video and audio?
 
+- Multiple Ethernet connections simultaneously?
+
 - Automatically go live when starting app, if configured for selected
   stream setting. Probably a good idea to go live again when entering
   foregound if was live when entering background
-
-- Multiple Ethernet connections simultaneously?
 
 - Lookup Twitch channel id from channel name. Possibly login to
   Twitch.
