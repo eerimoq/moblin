@@ -379,6 +379,7 @@ class SettingsChat: Codable {
     var animatedEmotes: Bool = false
     var timestampColor: RgbColor = .init(red: 180, green: 180, blue: 180)
     var timestampColorEnabled: Bool = true
+    var height: Double? = 1.0
 }
 
 class Database: Codable {
@@ -708,6 +709,10 @@ final class Settings {
     private func migrateFromOlderVersions() {
         if realDatabase.batteryPercentage == nil {
             realDatabase.batteryPercentage = false
+            store()
+        }
+        if realDatabase.chat.height == nil {
+            realDatabase.chat.height = 1.0
             store()
         }
     }

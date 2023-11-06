@@ -39,7 +39,8 @@ struct LocalOverlaysSettingsView: View {
                     usernameColor: model.database.chat.usernameColor.color(),
                     messageColor: model.database.chat.messageColor.color(),
                     backgroundColor: model.database.chat.backgroundColor.color(),
-                    shadowColor: model.database.chat.shadowColor.color()
+                    shadowColor: model.database.chat.shadowColor.color(),
+                    height: model.database.chat.height!
                 )) {
                     Toggle("Chat", isOn: Binding(get: {
                         show.chat

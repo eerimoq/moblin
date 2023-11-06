@@ -104,6 +104,7 @@ struct LocalOverlaysChatSettingsView: View {
     @State var messageColor: Color
     @State var backgroundColor: Color
     @State var shadowColor: Color
+    @State var height: Double
 
     func submitFontSize(value: String) {
         guard let fontSize = Float(value) else {
@@ -167,6 +168,28 @@ struct LocalOverlaysChatSettingsView: View {
                 Text(
                     "Animated emotes are fairly CPU intensive. Disable for less power usage."
                 )
+            }
+            Section("Geometry") {
+                HStack {
+                    Text("Height")
+                    Slider(
+                        value: $height,
+                        in: 0.2 ... 1.0,
+                        step: 0.05,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            model.database.chat.height = height
+                            model.store()
+                        }
+                    )
+                    .onChange(of: height) { value in
+                        model.database.chat.height = value
+                    }
+                    Text("\(Int(100 * height)) %")
+                        .frame(width: 55)
+                }
             }
             Section {
                 Button {

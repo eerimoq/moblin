@@ -106,38 +106,50 @@ struct StreamOverlayChatView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
-        GeometryReader { metrics in
-            ScrollView {
-                ScrollViewReader { reader in
-                    VStack {
-                        Spacer(minLength: 0)
-                        LazyVStack(alignment: .leading, spacing: 1) {
-                            ForEach(model.chatPosts) { post in
-                                if post.user != nil {
-                                    LineView(post: post, chat: model.database.chat)
-                                        .id(post)
-                                } else {
-                                    Rectangle()
-                                        .fill(.red)
-                                        .frame(width: metrics.size.width, height: 1.5)
-                                        .padding(2)
-                                        .id(post)
+        GeometryReader { fullMetrics in
+            VStack {
+                Spacer(minLength: 0)
+                GeometryReader { metrics in
+                    ScrollView {
+                        ScrollViewReader { reader in
+                            VStack {
+                                Spacer(minLength: 0)
+                                LazyVStack(alignment: .leading, spacing: 1) {
+                                    ForEach(model.chatPosts) { post in
+                                        if post.user != nil {
+                                            LineView(
+                                                post: post,
+                                                chat: model.database.chat
+                                            )
+                                            .id(post)
+                                        } else {
+                                            Rectangle()
+                                                .fill(.red)
+                                                .frame(
+                                                    width: metrics.size.width,
+                                                    height: 1.5
+                                                )
+                                                .padding(2)
+                                                .id(post)
+                                        }
+                                    }
+                                }
+                            }
+                            .onChange(of: model.chatPosts) { _ in
+                                if !model.chatPaused {
+                                    reader.scrollTo(model.chatPosts.last, anchor: .bottom)
+                                }
+                            }
+                            .frame(minHeight: metrics.size.height)
+                            .onAppear {
+                                if !model.chatPaused {
+                                    reader.scrollTo(model.chatPosts.last, anchor: .bottom)
                                 }
                             }
                         }
                     }
-                    .onChange(of: model.chatPosts) { _ in
-                        if !model.chatPaused {
-                            reader.scrollTo(model.chatPosts.last, anchor: .bottom)
-                        }
-                    }
-                    .frame(minHeight: metrics.size.height)
-                    .onAppear {
-                        if !model.chatPaused {
-                            reader.scrollTo(model.chatPosts.last, anchor: .bottom)
-                        }
-                    }
                 }
+                .frame(height: fullMetrics.size.height * model.database.chat.height!)
             }
         }
     }
