@@ -26,11 +26,15 @@ final class TwitchChatMoblin {
     }
 
     private func handleError(title: String, subTitle: String) {
-        model.makeErrorToast(title: title, subTitle: subTitle)
+        DispatchQueue.main.async {
+            self.model.makeErrorToast(title: title, subTitle: subTitle)
+        }
     }
 
     private func handleOk(title: String) {
-        model.makeToast(title: title)
+        DispatchQueue.main.async {
+            self.model.makeToast(title: title)
+        }
     }
 
     func isConnected() -> Bool {
@@ -73,7 +77,8 @@ final class TwitchChatMoblin {
                                 self.model.appendChatMessage(
                                     user: message.sender,
                                     userColor: message.senderColor,
-                                    segments: segments
+                                    segments: segments,
+                                    timestamp: model.digitalClock
                                 )
                             }
                         }

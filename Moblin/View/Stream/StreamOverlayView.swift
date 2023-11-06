@@ -45,7 +45,7 @@ struct StreamOverlayView: View {
                 GeometryReader { metrics in
                     StreamOverlayChatView()
                         .frame(width: metrics.size.width * 0.95)
-                        .allowsHitTesting(false)
+                        .allowsHitTesting(model.chatPaused)
                 }
             }
             HStack {

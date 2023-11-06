@@ -266,6 +266,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case widget = "Widget"
     case mic = "Mic"
     case chat = "Chat"
+    case pauseChat = "Pause chat"
 }
 
 let buttonTypes = SettingsButtonType.allCases.map { $0.rawValue }
@@ -480,6 +481,7 @@ func addDefaultScenes(database: Database) {
     scene.addButton(id: database.buttons[2].id)
     scene.addButton(id: database.buttons[8].id)
     scene.addButton(id: database.buttons[9].id)
+    scene.addButton(id: database.buttons[10].id)
     scene.addButton(id: database.buttons[3].id)
     scene.addButton(id: database.buttons[4].id)
     scene.addButton(id: database.buttons[5].id)
@@ -493,6 +495,7 @@ func addDefaultScenes(database: Database) {
     scene.addButton(id: database.buttons[2].id)
     scene.addButton(id: database.buttons[8].id)
     scene.addButton(id: database.buttons[9].id)
+    scene.addButton(id: database.buttons[10].id)
     scene.addButton(id: database.buttons[3].id)
     database.scenes.append(scene)
 }
@@ -625,6 +628,14 @@ func addDefaultButtons(database: Database) {
     button = SettingsButton(name: "Chat")
     button.id = UUID()
     button.type = .chat
+    button.imageType = "System name"
+    button.systemImageNameOn = "message.fill"
+    button.systemImageNameOff = "message"
+    database.buttons.append(button)
+
+    button = SettingsButton(name: "Pause chat")
+    button.id = UUID()
+    button.type = .pauseChat
     button.imageType = "System name"
     button.systemImageNameOn = "message.fill"
     button.systemImageNameOff = "message"

@@ -7,6 +7,8 @@ struct ButtonImage: View {
     var image: String
     var on: Bool
     var slash: Bool = false
+    var pause: Bool = false
+    var overlayColor: Color = .white
 
     var body: some View {
         let image = Image(systemName: image)
@@ -34,6 +36,15 @@ struct ButtonImage: View {
                     .shadow(color: imageBackground, radius: 0, x: 0, y: 1)
                     .shadow(color: imageBackground, radius: 0, x: 0, y: -1)
                     .shadow(color: imageBackground, radius: 0, x: -2, y: -2)
+            }
+            if pause {
+                // Button press animation not perfect.
+                Image(systemName: "pause")
+                    .bold()
+                    .font(.system(size: 9))
+                    .frame(width: buttonSize, height: buttonSize)
+                    .offset(y: -1)
+                    .foregroundColor(overlayColor)
             }
         }
     }
@@ -130,6 +141,21 @@ struct ButtonsView: View {
         model.sceneUpdated(store: false)
     }
 
+    private func pauseChatAction(state: ButtonState) {
+        state.button.isOn.toggle()
+        model.toggleChatPaused()
+        model.updateButtonStates()
+        model.sceneUpdated(store: false)
+    }
+
+    private func pauseChatOverlayColor() -> Color {
+        if model.chatPaused {
+            return imageBackground
+        } else {
+            return .white
+        }
+    }
+
     private func buttonHeight() -> CGFloat {
         if accessibilityShowButtonShapes {
             return 60
@@ -199,6 +225,17 @@ struct ButtonsView: View {
                                     slash: true
                                 )
                             })
+                        case .pauseChat:
+                            Button(action: {
+                                pauseChatAction(state: second)
+                            }, label: {
+                                ButtonImage(
+                                    image: getImage(state: second),
+                                    on: second.isOn,
+                                    pause: true,
+                                    overlayColor: pauseChatOverlayColor()
+                                )
+                            })
                         }
                     } else {
                         ButtonPlaceholderImage()
@@ -257,6 +294,17 @@ struct ButtonsView: View {
                                 image: getImage(state: pair.first),
                                 on: pair.first.isOn,
                                 slash: true
+                            )
+                        })
+                    case .pauseChat:
+                        Button(action: {
+                            pauseChatAction(state: pair.first)
+                        }, label: {
+                            ButtonImage(
+                                image: getImage(state: pair.first),
+                                on: pair.first.isOn,
+                                pause: true,
+                                overlayColor: pauseChatOverlayColor()
                             )
                         })
                     }

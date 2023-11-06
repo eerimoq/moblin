@@ -14,6 +14,14 @@ import TwitchChat
 import VideoToolbox
 
 let noValue = ""
+let maximumNumberOfChatMessages = 50
+
+struct PausedChatMessage {
+    var user: String
+    var userColor: String?
+    var segments: [ChatPostSegment]
+    var timestamp: String
+}
 
 struct Mic: Identifiable, Hashable {
     var id: String {
@@ -102,7 +110,7 @@ struct ChatPost: Identifiable, Hashable {
     }
 
     var id: Int
-    var user: String
+    var user: String?
     var userColor: String?
     var segments: [ChatPostSegment]
     var timestamp: String
@@ -144,13 +152,13 @@ final class Model: ObservableObject {
     }
 
     @Published var showChatMessages = true
+    @Published var chatPaused = false
     @Published var audioGenerator = "Off"
     @Published var squareWaveGeneratorAmplitude = 200.0
     @Published var squareWaveGeneratorInterval = 60.0
     private var streaming = false
     @Published var mic = noMic
     private var micChange = noMic
-    // private var wasStreamingWhenDidEnterBackground = false
     private var streamStartDate: Date?
     @Published var isLive = false
     private var subscriptions = Set<AnyCancellable>()
@@ -165,6 +173,7 @@ final class Model: ObservableObject {
     private var kickPusher: KickPusher?
     private var chatPostId = 0
     @Published var chatPosts: Deque<ChatPost> = []
+    private var pausedChatMessages: Deque<PausedChatMessage> = []
     private var numberOfChatPostsPerTick = 0
     private var chatPostsRatePerSecond = 0.0
     private var chatPostsRatePerMinute = 0.0
@@ -1189,23 +1198,67 @@ final class Model: ObservableObject {
     }
 
     func appendChatMessage(
-        user: String,
+        user: String?,
         userColor: String?,
-        segments: [ChatPostSegment]
+        segments: [ChatPostSegment],
+        timestamp: String
     ) {
-        if chatPosts.count > 14 {
-            chatPosts.removeFirst()
-        }
         let post = ChatPost(
             id: chatPostId,
             user: user,
             userColor: userColor,
             segments: segments,
-            timestamp: digitalClock
+            timestamp: timestamp
         )
-        chatPosts.append(post)
+        if chatPaused {
+            if pausedChatMessages.count > maximumNumberOfChatMessages - 1 {
+                pausedChatMessages.removeFirst()
+            }
+            pausedChatMessages.append(PausedChatMessage(
+                user: user!,
+                userColor: userColor,
+                segments: segments,
+                timestamp: digitalClock
+            ))
+        } else {
+            if chatPosts.count > maximumNumberOfChatMessages - 1 {
+                chatPosts.removeFirst()
+            }
+            chatPosts.append(post)
+        }
         numberOfChatPostsPerTick += 1
         chatPostId += 1
+    }
+
+    func toggleChatPaused() {
+        chatPaused.toggle()
+        if chatPaused {
+            return
+        }
+        chatPosts = chatPosts.filter { post in
+            post.user != nil
+        }
+        if !pausedChatMessages.isEmpty {
+            appendChatMessage(user: nil, userColor: nil, segments: [], timestamp: "")
+        }
+        for message in pausedChatMessages {
+            appendChatMessage(
+                user: message.user,
+                userColor: message.userColor,
+                segments: message.segments,
+                timestamp: message.timestamp
+            )
+        }
+        pausedChatMessages = []
+        if !chatPosts.isEmpty {
+            let post = chatPosts.popLast()!
+            appendChatMessage(
+                user: post.user,
+                userColor: post.userColor,
+                segments: post.segments,
+                timestamp: post.timestamp
+            )
+        }
     }
 
     func findWidget(id: UUID) -> SettingsWidget? {

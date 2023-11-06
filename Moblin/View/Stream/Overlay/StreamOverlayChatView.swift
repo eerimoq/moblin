@@ -55,7 +55,7 @@ struct LineView: View {
                     .foregroundColor(timestampColor)
                     .bold(chat.boldMessage)
             }
-            Text(post.user)
+            Text(post.user!)
                 .foregroundColor(usernameColor)
                 .lineLimit(1)
                 .padding([.trailing], 0)
@@ -113,17 +113,29 @@ struct StreamOverlayChatView: View {
                         Spacer(minLength: 0)
                         LazyVStack(alignment: .leading, spacing: 1) {
                             ForEach(model.chatPosts) { post in
-                                LineView(post: post, chat: model.database.chat)
-                                    .id(post)
+                                if post.user != nil {
+                                    LineView(post: post, chat: model.database.chat)
+                                        .id(post)
+                                } else {
+                                    Rectangle()
+                                        .fill(.red)
+                                        .frame(width: metrics.size.width, height: 1.5)
+                                        .padding(2)
+                                        .id(post)
+                                }
                             }
                         }
                     }
                     .onChange(of: model.chatPosts) { _ in
-                        reader.scrollTo(model.chatPosts.last, anchor: .bottom)
+                        if !model.chatPaused {
+                            reader.scrollTo(model.chatPosts.last, anchor: .bottom)
+                        }
                     }
                     .frame(minHeight: metrics.size.height)
                     .onAppear {
-                        reader.scrollTo(model.chatPosts.last, anchor: .bottom)
+                        if !model.chatPaused {
+                            reader.scrollTo(model.chatPosts.last, anchor: .bottom)
+                        }
                     }
                 }
             }

@@ -63,11 +63,15 @@ final class KickPusher: NSObject {
     }
 
     private func handleError(title: String, subTitle: String) {
-        model.makeErrorToast(title: title, subTitle: subTitle)
+        DispatchQueue.main.async {
+            self.model.makeErrorToast(title: title, subTitle: subTitle)
+        }
     }
 
     private func handleOk(title: String) {
-        model.makeToast(title: title)
+        DispatchQueue.main.async {
+            self.model.makeToast(title: title)
+        }
     }
 
     func start() {
@@ -122,7 +126,8 @@ final class KickPusher: NSObject {
         model.appendChatMessage(
             user: message.sender.username,
             userColor: nil,
-            segments: segments
+            segments: segments,
+            timestamp: model.digitalClock
         )
     }
 
