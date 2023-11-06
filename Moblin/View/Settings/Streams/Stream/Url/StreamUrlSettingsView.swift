@@ -80,7 +80,7 @@ struct StreamUrlSettingsView: View {
                         Text("YouTube").underline()
                         Text(
                             """
-                            Example:  rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3
+                            Example: rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3
                             """
                         )
                         Text("")
@@ -89,7 +89,7 @@ struct StreamUrlSettingsView: View {
                         Text("Facebook").underline()
                         Text(
                             """
-                            Example:  rtmps://live-api-s.facebook.com:443/rtmp/FB-11152522122511115-0-BctNCp9jzzz-AAA
+                            Example: rtmps://live-api-s.facebook.com:443/rtmp/FB-11152522122511115-0-BctNCp9jzzz-AAA
                             """
                         )
                         Text("")
@@ -132,14 +132,14 @@ struct StreamUrlSettingsView: View {
                         Group {
                             Text("BELABOX cloud SRTLA").underline()
                             Text(
-                                "Example:  srtla://uk.srt.belabox.net:5000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
+                                "Example: srtla://uk.srt.belabox.net:5000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
                             )
                             Text("")
                         }
                         Group {
                             Text("BELABOX cloud SRT").underline()
                             Text(
-                                "Example:  srt://uk.srt.belabox.net:4000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
+                                "Example: srt://uk.srt.belabox.net:4000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
                             )
                             Text("")
                         }
@@ -157,7 +157,7 @@ struct StreamUrlSettingsView: View {
                                 "Template: srt://my_public_ip:my_public_port?streamid=publish/live/my_key"
                             )
                             Text(
-                                "Example: srt://120.12.32.12:4000?streamid=publish/live/feed"
+                                "Example:  srt://120.12.32.12:4000?streamid=publish/live/feed"
                             )
                             Text("")
                         }
