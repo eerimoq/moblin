@@ -124,8 +124,8 @@ struct StreamUrlSettingsView: View {
                     }
                     Group {
                         Text("OBS Media Source (SRT)").underline()
-                        Text("Template: srt://my_public_ip:my_public_port/my_stream_key")
-                        Text("Example:  srt://134.20.342.12:5000/1234")
+                        Text("Template: srt://my_public_ip:my_public_port")
+                        Text("Example:  srt://134.20.342.12:5000")
                         Text("")
                     }
                     Group {
@@ -146,9 +146,9 @@ struct StreamUrlSettingsView: View {
                         Group {
                             Text("SRTLA server").underline()
                             Text(
-                                "Template: srtla://my_public_ip:my_public_port/my_stream_key"
+                                "Template: srtla://my_public_ip:my_public_port"
                             )
-                            Text("Example:  srtla://foobar.org:4432/5678")
+                            Text("Example:  srtla://foobar.org:4432")
                             Text("")
                         }
                         Group {
