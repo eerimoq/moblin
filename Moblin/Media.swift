@@ -111,15 +111,27 @@ final class Media: NSObject {
     func getSrtStats() -> [String] {
         let stats = srtConnection.performanceData
         adaptiveBitrate?.update(stats: stats)
-        return [
+        if let  adapativeStats = adaptiveBitrate {
+            return [
+                "pktRetransTotal: \(stats.pktRetransTotal)",
+                "pktRecvNAKTotal: \(stats.pktRecvNAKTotal)",
+                "pktSndDropTotal: \(stats.pktSndDropTotal)",
+                "msRTT: \(stats.msRTT)",
+                "pktFlightSize: \(stats.pktFlightSize)",
+                "pktSndBuf: \(stats.pktSndBuf)",
+                "B: \(adapativeStats.GetCurrentBitrate) /  \( adapativeStats.GetTempMaxBitrate) "
+            ] +  adapativeStats.GetAdaptiveActions
+        }
+        return   [
             "pktRetransTotal: \(stats.pktRetransTotal)",
             "pktRecvNAKTotal: \(stats.pktRecvNAKTotal)",
             "pktSndDropTotal: \(stats.pktSndDropTotal)",
             "msRTT: \(stats.msRTT)",
             "pktFlightSize: \(stats.pktFlightSize)",
             "pktSndBuf: \(stats.pktSndBuf)",
-        ]
+            ]
     }
+
 
     func updateSrtSpeed() {
         srtTotalByteCount = srtla?.getTotalByteCount() ?? 0
@@ -177,7 +189,11 @@ final class Media: NSObject {
         }) {
             queryItems.append(URLQueryItem(name: "latency", value: String(latency)))
         }
-        urlComponents.queryItems = queryItems
+        queryItems.append(URLQueryItem(name: "maxbw", value: "0"))
+        queryItems.append(URLQueryItem(name: "lossmaxttl", value: "1000"))
+        queryItems.append(URLQueryItem(name: "oheadbw", value: "5"))
+     
+        
         return urlComponents.url
     }
 

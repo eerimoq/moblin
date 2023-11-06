@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		0303990F2AE2477700D27530 /* LocalOverlaysAudioLevelSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0303990E2AE2477700D27530 /* LocalOverlaysAudioLevelSettingsView.swift */; };
 		030399132AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030399122AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift */; };
-		0307869A2AEC23FB0061FDE2 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 030786992AEC23FB0061FDE2 /* StoreKit.framework */; };
 		030947C32A9C0496003FC387 /* StreamOverlayChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030947C22A9C0496003FC387 /* StreamOverlayChatView.swift */; };
 		0315A33B2AA2FA7100295443 /* LocalListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33A2AA2FA7100295443 /* LocalListener.swift */; };
 		0315A33D2AA2FA7D00295443 /* RemoteConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */; };
@@ -123,7 +122,6 @@
 /* Begin PBXFileReference section */
 		0303990E2AE2477700D27530 /* LocalOverlaysAudioLevelSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalOverlaysAudioLevelSettingsView.swift; sourceTree = "<group>"; };
 		030399122AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalOverlaysChatSettingsView.swift; sourceTree = "<group>"; };
-		030786992AEC23FB0061FDE2 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		030947C22A9C0496003FC387 /* StreamOverlayChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOverlayChatView.swift; sourceTree = "<group>"; };
 		0315A33A2AA2FA7100295443 /* LocalListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalListener.swift; sourceTree = "<group>"; };
 		0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteConnection.swift; sourceTree = "<group>"; };
@@ -232,7 +230,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0307869A2AEC23FB0061FDE2 /* StoreKit.framework in Frameworks */,
 				03BC11672AE5654700C38FC4 /* SDWebImageSwiftUI in Frameworks */,
 				03A983452A9A03EA008FF0DB /* HaishinKit in Frameworks */,
 				03A983422A9A03D3008FF0DB /* TwitchChat in Frameworks */,
@@ -377,7 +374,6 @@
 		035D372A2AB103E600045B92 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				030786992AEC23FB0061FDE2 /* StoreKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -977,7 +973,7 @@
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = Yes;
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = Yes;
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = Yes;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1036,7 +1032,7 @@
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = Yes;
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = Yes;
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = Yes;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -1056,7 +1052,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Moblin/Preview Content\"";
-				DEVELOPMENT_TEAM = L82N7LD4N5;
+				DEVELOPMENT_TEAM = 67L4CU97F2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Moblin/Info.plist;
@@ -1079,7 +1075,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.66.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
+				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Moblinr;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -1101,7 +1097,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Moblin/Preview Content\"";
-				DEVELOPMENT_TEAM = L82N7LD4N5;
+				DEVELOPMENT_TEAM = 67L4CU97F2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Moblin/Info.plist;
@@ -1124,7 +1120,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.66.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
+				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Moblinr;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
