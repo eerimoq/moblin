@@ -113,12 +113,9 @@ final class Media: NSObject {
         adaptiveBitrate?.update(stats: stats)
         if let  adapativeStats = adaptiveBitrate {
             return [
-                "pktRetransTotal: \(stats.pktRetransTotal)",
-                "pktRecvNAKTotal: \(stats.pktRecvNAKTotal)",
-                "pktSndDropTotal: \(stats.pktSndDropTotal)",
+                "R: \(stats.pktRetransTotal) N: \(stats.pktRecvNAKTotal) D: \(stats.pktSndDropTotal)",
                 "msRTT: \(stats.msRTT)",
-                "pktFlightSize: \(stats.pktFlightSize)",
-                "pktSndBuf: \(stats.pktSndBuf)",
+                "pktFlightSize: \(stats.pktFlightSize)    \(adapativeStats.GetFastPif)    \(adapativeStats.GetSmoothPif)",
                 "B: \(adapativeStats.GetCurrentBitrate) /  \( adapativeStats.GetTempMaxBitrate) "
             ] +  adapativeStats.GetAdaptiveActions
         }
@@ -192,6 +189,8 @@ final class Media: NSObject {
         queryItems.append(URLQueryItem(name: "maxbw", value: "0"))
         queryItems.append(URLQueryItem(name: "lossmaxttl", value: "1000"))
         queryItems.append(URLQueryItem(name: "oheadbw", value: "5"))
+        queryItems.append(URLQueryItem(name: "maxrexmitbw", value: "0"))
+        
      
         
         return urlComponents.url
@@ -337,6 +336,7 @@ final class Media: NSObject {
         netStream?.attachAudio(device) { error in
             logger.error("stream: Attach audio error: \(error)")
         }
+        
     }
 
     func getNetStream() -> NetStream {
@@ -463,5 +463,8 @@ extension Media: AdaptiveBitrateDelegate {
 
     func adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32) {
         netStream.videoSettings.bitRate = bitrate
+        
+        
+        
     }
 }

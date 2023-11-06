@@ -22,6 +22,7 @@ class AdaptiveBitrate {
     private var targetVideoSize: VideoSize
     private weak var delegate: (any AdaptiveBitrateDelegate)!
     private var adaptiveActionsTaken: [String] = []
+    
     init(
         targetVideoSize: VideoSize,
         targetBitrate: UInt32,
@@ -115,8 +116,15 @@ class AdaptiveBitrate {
         }
     }
     private func logAdaptiveAcion(actionTaken:String){
-        adaptiveActionsTaken.append(actionTaken)
-        while adaptiveActionsTaken.count > 4
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "HH:mm:ss.SSS"
+        let dateString = dateFormatter.string(from: Date())
+        
+      // var action : AdaptiveAction =   AdaptiveAction(actionTaken:   actionTaken)
+        
+        adaptiveActionsTaken.append(dateString + " " +  actionTaken)
+        while adaptiveActionsTaken.count > 6
         {
             adaptiveActionsTaken.remove(at: 0)
         }
@@ -146,6 +154,18 @@ class AdaptiveBitrate {
     public var GetAdaptiveActions : [String] {
         get {
             return adaptiveActionsTaken
+        }
+    }
+    
+    public var GetFastPif : Int32 {
+        get {
+            return Int32(fastPif)
+        }
+    }
+    
+    public var GetSmoothPif : Int32 {
+        get {
+            return Int32(smoothPif)
         }
     }
     
@@ -213,15 +233,23 @@ class AdaptiveBitrate {
         _ stats: SRTPerformanceData
     ) {
         let videoSize = delegate.adaptiveBitrateGetVideoSize()
-        if curBitrate < 250_000,
-           stats.msRTT > 450 || stats.msRTT > avgRtt * 3 || smoothPif > 200
+        if curBitrate <= 250_000,
+           stats.msRTT > 450 || stats.msRTT > avgRtt * 3 || smoothPif > Double( adaptiveBitratePacketsInFlightLimit)
         {
             if videoSize.width != 16 {
                 delegate.adaptiveBitrateSetTemporaryVideoSize(videoSize: .init(
                     width: 16,
                     height: 9
                 ))
-                // setMute(on: true)
+                
+            }
+        } else if stats.msRTT > 450 {
+            if videoSize.width != 16 {
+                delegate.adaptiveBitrateSetTemporaryVideoSize(videoSize: .init(
+                    width: 16,
+                    height: 9
+                ))
+                
             }
         } else if videoSize.width != targetVideoSize.width {
             delegate.adaptiveBitrateSetTemporaryVideoSize(videoSize: targetVideoSize)
@@ -264,3 +292,6 @@ class AdaptiveBitrate {
         prevBitrate = curBitrate
     }
 }
+
+
+
