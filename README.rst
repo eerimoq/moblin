@@ -131,8 +131,6 @@ Ideas/plan
 
 - A list of usernames whos messages will not get displayed on screen.
 
-- Scroll back chat.
-
 - Audio filters. For example volume limiter.
 
   - An adjustable gain would be nice, then limiter (to keep audio from
