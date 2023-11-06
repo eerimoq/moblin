@@ -158,7 +158,7 @@ Ideas/plan
 
 - Non-mirrored widgets locally when using front camera.
 
-- Use external camera. Looks like iOS 17 supports them.
+- Use external UVC camera. Looks like iOS 17 supports them.
 
 - Show two cameras at the same time.
 
