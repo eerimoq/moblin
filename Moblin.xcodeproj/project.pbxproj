@@ -32,6 +32,8 @@
 		032A49B82AC54DD000ED3916 /* ExportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A49B72AC54DD000ED3916 /* ExportSettingsView.swift */; };
 		032A49BA2AC54E6500ED3916 /* ImportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A49B92AC54E6500ED3916 /* ImportSettingsView.swift */; };
 		032A49BC2AC5DF3F00ED3916 /* ImportExportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A49BB2AC5DF3F00ED3916 /* ImportExportSettingsView.swift */; };
+		0330F2B02AFAD26C001262C3 /* YouTubeLiveChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0330F2AF2AFAD26C001262C3 /* YouTubeLiveChat.swift */; };
+		0330F2B52AFADD18001262C3 /* StreamYouTubeSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0330F2B42AFADD18001262C3 /* StreamYouTubeSettingsView.swift */; };
 		03403DF62AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */; };
 		035D371E2AB039C800045B92 /* StreamVideoCodecSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D371D2AB039C800045B92 /* StreamVideoCodecSettingsView.swift */; };
 		035D37282AB0EBB500045B92 /* IconAndTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37272AB0EBB500045B92 /* IconAndTextView.swift */; };
@@ -145,6 +147,8 @@
 		032A49B92AC54E6500ED3916 /* ImportSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportSettingsView.swift; sourceTree = "<group>"; };
 		032A49BB2AC5DF3F00ED3916 /* ImportExportSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportExportSettingsView.swift; sourceTree = "<group>"; };
 		032BC5B22AD8E18000DEC883 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		0330F2AF2AFAD26C001262C3 /* YouTubeLiveChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YouTubeLiveChat.swift; sourceTree = "<group>"; };
+		0330F2B42AFADD18001262C3 /* StreamYouTubeSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamYouTubeSettingsView.swift; sourceTree = "<group>"; };
 		03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBrowserSettingsView.swift; sourceTree = "<group>"; };
 		035D371D2AB039C800045B92 /* StreamVideoCodecSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoCodecSettingsView.swift; sourceTree = "<group>"; };
 		035D37272AB0EBB500045B92 /* IconAndTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconAndTextView.swift; sourceTree = "<group>"; };
@@ -279,6 +283,7 @@
 		0315A3402AA31ADC00295443 /* Stream */ = {
 			isa = PBXGroup;
 			children = (
+				0330F2B22AFADD05001262C3 /* YouTube */,
 				032469A72AE1B2D80097B18B /* Srt */,
 				036BE2D02ABD51770048F9C5 /* Kick */,
 				036BE2CA2ABBF0A30048F9C5 /* Url */,
@@ -365,6 +370,22 @@
 			path = ImportExport;
 			sourceTree = "<group>";
 		};
+		0330F2AE2AFAD24F001262C3 /* YouTube */ = {
+			isa = PBXGroup;
+			children = (
+				0330F2AF2AFAD26C001262C3 /* YouTubeLiveChat.swift */,
+			);
+			path = YouTube;
+			sourceTree = "<group>";
+		};
+		0330F2B22AFADD05001262C3 /* YouTube */ = {
+			isa = PBXGroup;
+			children = (
+				0330F2B42AFADD18001262C3 /* StreamYouTubeSettingsView.swift */,
+			);
+			path = YouTube;
+			sourceTree = "<group>";
+		};
 		03403DF32AD05C700079D8E4 /* Browser */ = {
 			isa = PBXGroup;
 			children = (
@@ -402,6 +423,7 @@
 		035E9E352A9A02D6009D4F5A /* Moblin */ = {
 			isa = PBXGroup;
 			children = (
+				0330F2AE2AFAD24F001262C3 /* YouTube */,
 				032BC5B22AD8E18000DEC883 /* Info.plist */,
 				03BC115B2AE4BD6200C38FC4 /* Emotes */,
 				036BE2CD2ABD4C960048F9C5 /* Kick */,
@@ -867,6 +889,7 @@
 				0379BB762AA6345400B718B6 /* ButtonSettingsView.swift in Sources */,
 				035E775C2ACC969D00738DCE /* ZoomPresetSettingsView.swift in Sources */,
 				03A983672A9A05D7008FF0DB /* ScenesSettingsView.swift in Sources */,
+				0330F2B02AFAD26C001262C3 /* YouTubeLiveChat.swift in Sources */,
 				0379BBAD2AAD964000B718B6 /* AboutSettingsView.swift in Sources */,
 				03F5A8DF2AD5DACB00F354D2 /* Srt.swift in Sources */,
 				036BE2CF2ABD4CA60048F9C5 /* KickPusher.swift in Sources */,
@@ -900,6 +923,7 @@
 				03BC115D2AE4BD7B00C38FC4 /* Bttv.swift in Sources */,
 				0315A3702AA3771F00295443 /* SceneWidgetSettingsView.swift in Sources */,
 				0379BB9E2AAD81AA00B718B6 /* StreamOverlayRightView.swift in Sources */,
+				0330F2B52AFADD18001262C3 /* StreamYouTubeSettingsView.swift in Sources */,
 				0379BB862AA8363E00B718B6 /* StreamVideoResolutionSettingsView.swift in Sources */,
 				031A2E002ADBE34F005CE350 /* DraggableItemPrefixView.swift in Sources */,
 				0379BB792AA64C9500B718B6 /* WidgetVideoEffectSettingsView.swift in Sources */,

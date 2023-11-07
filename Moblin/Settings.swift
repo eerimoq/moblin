@@ -52,6 +52,8 @@ class SettingsStream: Codable, Identifiable {
     var twitchChannelName: String = ""
     var twitchChannelId: String = ""
     var kickChatroomId: String = ""
+    var youTubeApiKey: String? = ""
+    var youTubeLiveChatId: String? = ""
     var resolution: SettingsStreamResolution = .r1280x720
     var fps: Int = 30
     var bitrate: UInt32 = 3_000_000
@@ -718,6 +720,14 @@ final class Settings {
         }
         if realDatabase.chat.width == nil {
             realDatabase.chat.width = 1.0
+            store()
+        }
+        for stream in realDatabase.streams where stream.youTubeApiKey == nil {
+            stream.youTubeApiKey = ""
+            store()
+        }
+        for stream in realDatabase.streams where stream.youTubeLiveChatId == nil {
+            stream.youTubeLiveChatId = ""
             store()
         }
     }

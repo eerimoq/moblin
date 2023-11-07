@@ -1,6 +1,6 @@
 import Foundation
 
-struct Sender: Decodable {
+private struct Sender: Decodable {
     var username: String
 }
 
@@ -9,7 +9,7 @@ private struct ChatMessage: Decodable {
     var sender: Sender
 }
 
-func decodeEvent(message: String) throws -> (String, String) {
+private func decodeEvent(message: String) throws -> (String, String) {
     if let jsonData = message.data(using: String.Encoding.utf8) {
         let data = try JSONSerialization.jsonObject(
             with: jsonData,
@@ -38,7 +38,7 @@ private var url =
         string: "wss://ws-us2.pusher.com/app/eb1d5f283081a78b932c?protocol=7&client=js&version=7.6.0&flash=false"
     )!
 
-func removeEmote(message: String) -> String {
+private func removeEmote(message: String) -> String {
     return message.replacingOccurrences(
         of: "\\[emote:\\d+:(.*?)]",
         with: "$1",

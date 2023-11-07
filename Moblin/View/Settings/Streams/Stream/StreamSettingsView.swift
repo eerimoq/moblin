@@ -32,6 +32,9 @@ struct StreamSettingsView: View {
             NavigationLink(destination: StreamKickSettingsView(stream: stream)) {
                 Text("Kick")
             }
+            NavigationLink(destination: StreamYouTubeSettingsView(stream: stream)) {
+                Text("YouTube")
+            }
             NavigationLink(destination: StreamSrtSettingsView(stream: stream)) {
                 Text("SRT(LA)")
             }

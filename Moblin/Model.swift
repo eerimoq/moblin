@@ -172,6 +172,7 @@ final class Model: ObservableObject {
     private var twitchChat: TwitchChatMoblin!
     private var twitchPubSub: TwitchPubSub?
     private var kickPusher: KickPusher?
+    private var youTubeLiveChat: YouTubeLiveChat?
     private var chatPostId = 0
     @Published var chatPosts: Deque<ChatPost> = []
     private var pausedChatMessages: Deque<PausedChatMessage> = []
@@ -1016,6 +1017,7 @@ final class Model: ObservableObject {
         reloadTwitchChat()
         reloadTwitchPubSub()
         reloadKickPusher()
+        reloadYouTubeLiveChat()
     }
 
     func storeAndReloadStreamIfEnabled(stream: SettingsStream) {
@@ -1183,6 +1185,21 @@ final class Model: ObservableObject {
             kickPusher!.start()
         } else {
             logger.info("Kick chatroom id not configured. No Kick chat.")
+        }
+    }
+
+    private func reloadYouTubeLiveChat() {
+        youTubeLiveChat?.stop()
+        youTubeLiveChat = nil
+        if stream.youTubeApiKey! != "" && stream.youTubeLiveChatId! != "" {
+            youTubeLiveChat = YouTubeLiveChat(
+                model: self,
+                apiKey: stream.youTubeApiKey!,
+                liveChatId: stream.youTubeLiveChatId!
+            )
+            youTubeLiveChat!.start()
+        } else {
+            logger.info("YouTube chat id not configured. No YouTube chat.")
         }
     }
 
