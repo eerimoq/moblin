@@ -66,6 +66,7 @@ struct StreamOverlayView: View {
                                 Spacer()
                             }
                         }
+                        .allowsHitTesting(false)
                     }
                 }
             }
