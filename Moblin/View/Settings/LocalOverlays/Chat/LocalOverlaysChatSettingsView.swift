@@ -105,6 +105,7 @@ struct LocalOverlaysChatSettingsView: View {
     @State var backgroundColor: Color
     @State var shadowColor: Color
     @State var height: Double
+    @State var width: Double
 
     func submitFontSize(value: String) {
         guard let fontSize = Float(value) else {
@@ -188,6 +189,26 @@ struct LocalOverlaysChatSettingsView: View {
                         model.database.chat.height = value
                     }
                     Text("\(Int(100 * height)) %")
+                        .frame(width: 55)
+                }
+                HStack {
+                    Text("Width")
+                    Slider(
+                        value: $width,
+                        in: 0.2 ... 1.0,
+                        step: 0.05,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            model.database.chat.width = width
+                            model.store()
+                        }
+                    )
+                    .onChange(of: width) { value in
+                        model.database.chat.width = value
+                    }
+                    Text("\(Int(100 * width)) %")
                         .frame(width: 55)
                 }
             }

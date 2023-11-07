@@ -380,6 +380,7 @@ class SettingsChat: Codable {
     var timestampColor: RgbColor = .init(red: 180, green: 180, blue: 180)
     var timestampColorEnabled: Bool = true
     var height: Double? = 1.0
+    var width: Double? = 1.0
 }
 
 class Database: Codable {
@@ -713,6 +714,10 @@ final class Settings {
         }
         if realDatabase.chat.height == nil {
             realDatabase.chat.height = 1.0
+            store()
+        }
+        if realDatabase.chat.width == nil {
+            realDatabase.chat.width = 1.0
             store()
         }
     }

@@ -42,10 +42,31 @@ struct StreamOverlayView: View {
             }
             .allowsHitTesting(false)
             if model.database.show.chat && model.showChatMessages {
-                GeometryReader { metrics in
-                    StreamOverlayChatView()
-                        .frame(width: metrics.size.width * 0.95)
-                        .allowsHitTesting(model.chatPaused)
+                ZStack {
+                    GeometryReader { metrics in
+                        StreamOverlayChatView()
+                            .frame(width: metrics.size.width * 0.95)
+                            .allowsHitTesting(model.chatPaused)
+                    }
+                    if model.chatPaused {
+                        VStack {
+                            Spacer()
+                            HStack {
+                                HStack {
+                                    Image(systemName: "exclamationmark.triangle.fill")
+                                        .foregroundColor(.yellow)
+                                    Text("Chat is paused")
+                                        .bold()
+                                        .foregroundColor(.white)
+                                }
+                                .padding([.top, .bottom], 5)
+                                .padding([.leading, .trailing], 10)
+                                .background(.black.opacity(0.8))
+                                .cornerRadius(10)
+                                Spacer()
+                            }
+                        }
+                    }
                 }
             }
             HStack {

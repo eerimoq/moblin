@@ -137,19 +137,26 @@ struct StreamOverlayChatView: View {
                             }
                             .onChange(of: model.chatPosts) { _ in
                                 if !model.chatPaused {
-                                    reader.scrollTo(model.chatPosts.last, anchor: .bottom)
+                                    reader.scrollTo(
+                                        model.chatPosts.last,
+                                        anchor: .bottom
+                                    )
                                 }
                             }
                             .frame(minHeight: metrics.size.height)
                             .onAppear {
                                 if !model.chatPaused {
-                                    reader.scrollTo(model.chatPosts.last, anchor: .bottom)
+                                    reader.scrollTo(
+                                        model.chatPosts.last,
+                                        anchor: .bottom
+                                    )
                                 }
                             }
                         }
                     }
                 }
-                .frame(height: fullMetrics.size.height * model.database.chat.height!)
+                .frame(width: fullMetrics.size.width * model.database.chat.width!,
+                       height: fullMetrics.size.height * model.database.chat.height!)
             }
         }
     }
