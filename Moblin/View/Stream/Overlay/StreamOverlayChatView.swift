@@ -53,7 +53,6 @@ struct LineView: View {
             if chat.timestampColorEnabled {
                 Text("\(post.timestamp) ")
                     .foregroundColor(timestampColor)
-                    .bold(chat.boldMessage)
             }
             Text(post.user!)
                 .foregroundColor(usernameColor)
@@ -61,7 +60,6 @@ struct LineView: View {
                 .padding([.trailing], 0)
                 .bold(chat.boldUsername)
             Text(": ")
-                .bold(chat.boldMessage)
             ForEach(post.segments, id: \.id) { segment in
                 if let text = segment.text {
                     Text(text)

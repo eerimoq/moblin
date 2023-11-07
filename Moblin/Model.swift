@@ -151,6 +151,7 @@ final class Model: ObservableObject {
         }
     }
 
+    @Published var settingsLayout: SettingsLayout = .right
     @Published var showChatMessages = true
     @Published var chatPaused = false
     @Published var audioGenerator = "Off"
@@ -1156,6 +1157,7 @@ final class Model: ObservableObject {
         chatPostsTotal = 0
         chatSpeedTicks = 0
         chatPosts = []
+        pausedChatMessages = []
         numberOfChatPostsPerTick = 0
         chatPostsRatePerSecond = 0
         chatPostsRatePerMinute = 0
@@ -1201,7 +1203,8 @@ final class Model: ObservableObject {
         user: String?,
         userColor: String?,
         segments: [ChatPostSegment],
-        timestamp: String
+        timestamp: String,
+        incrementCount: Bool = true
     ) {
         let post = ChatPost(
             id: chatPostId,
@@ -1226,8 +1229,24 @@ final class Model: ObservableObject {
             }
             chatPosts.append(post)
         }
-        numberOfChatPostsPerTick += 1
+        if incrementCount {
+            numberOfChatPostsPerTick += 1
+        }
         chatPostId += 1
+    }
+
+    func reloadChatMessages() {
+        let posts = chatPosts
+        chatPosts = []
+        for post in posts {
+            appendChatMessage(
+                user: post.user,
+                userColor: post.userColor,
+                segments: post.segments,
+                timestamp: post.timestamp,
+                incrementCount: false
+            )
+        }
     }
 
     func toggleChatPaused() {
@@ -1239,14 +1258,20 @@ final class Model: ObservableObject {
             post.user != nil
         }
         if !pausedChatMessages.isEmpty {
-            appendChatMessage(user: nil, userColor: nil, segments: [], timestamp: "")
+            appendChatMessage(
+                user: nil,
+                userColor: nil,
+                segments: [],
+                timestamp: "",
+                incrementCount: false
+            )
         }
         for message in pausedChatMessages {
             appendChatMessage(
                 user: message.user,
                 userColor: message.userColor,
                 segments: message.segments,
-                timestamp: message.timestamp
+                timestamp: message.timestamp, incrementCount: false
             )
         }
         pausedChatMessages = []
@@ -1256,7 +1281,7 @@ final class Model: ObservableObject {
                 user: post.user,
                 userColor: post.userColor,
                 segments: post.segments,
-                timestamp: post.timestamp
+                timestamp: post.timestamp, incrementCount: false
             )
         }
     }

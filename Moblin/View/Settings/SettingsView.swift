@@ -1,10 +1,36 @@
 import SwiftUI
 
+struct SettingsLayoutMenuItem {
+    var layout: SettingsLayout
+    var image: String
+    var text: String
+}
+
+private let layoutMenuItems: [SettingsLayoutMenuItem] = [
+    SettingsLayoutMenuItem(
+        layout: .right,
+        image: "rectangle.righthalf.filled",
+        text: "Right"
+    ),
+    SettingsLayoutMenuItem(
+        layout: .left,
+        image: "rectangle.lefthalf.filled",
+        text: "Left"
+    ),
+    SettingsLayoutMenuItem(layout: .full, image: "rectangle.fill", text: "Full"),
+]
+
 struct SettingsView: View {
     @EnvironmentObject var model: Model
-    let toggleWideSettings: () -> Void
     let hideSettings: () -> Void
-    let splitImage: () -> Image
+
+    private func splitImage() -> Image {
+        if model.settingsLayout == .full {
+            return Image(systemName: "arrow.down.right.and.arrow.up.left")
+        } else {
+            return Image(systemName: "arrow.up.left.and.arrow.down.right")
+        }
+    }
 
     var body: some View {
         Form {
@@ -90,12 +116,12 @@ struct SettingsView: View {
         .navigationTitle("Settings")
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                HStack {
-                    Button(action: {
-                        toggleWideSettings()
-                    }, label: {
-                        splitImage()
-                    })
+                HStack(spacing: 0) {
+                    Picker("", selection: $model.settingsLayout) {
+                        ForEach(layoutMenuItems, id: \.layout) { item in
+                            Image(systemName: item.image)
+                        }
+                    }
                     Button(action: {
                         hideSettings()
                     }, label: {

@@ -129,6 +129,9 @@ ToDo
 Ideas/plan
 ==========
 
+- Full screen, half screen with preview, left half or right half
+  settings layouts.
+
 - A list of usernames whos messages will not get displayed on screen.
 
 - Audio filters. For example volume limiter.

@@ -36,6 +36,7 @@ struct ColorEditView: View {
                     }
                     color.red = Int(red)
                     model.store()
+                    model.reloadChatMessages()
                 }
             )
             .onChange(of: red) { value in
@@ -58,6 +59,7 @@ struct ColorEditView: View {
                     }
                     color.green = Int(green)
                     model.store()
+                    model.reloadChatMessages()
                 }
             )
             .onChange(of: green) { value in
@@ -80,6 +82,7 @@ struct ColorEditView: View {
                     }
                     color.blue = Int(blue)
                     model.store()
+                    model.reloadChatMessages()
                 }
             )
             .onChange(of: blue) { value in
@@ -116,6 +119,7 @@ struct LocalOverlaysChatSettingsView: View {
         }
         model.database.chat.fontSize = fontSize
         model.store()
+        model.reloadChatMessages()
     }
 
     var body: some View {
@@ -136,6 +140,7 @@ struct LocalOverlaysChatSettingsView: View {
                 }, set: { value in
                     model.database.chat.timestampColorEnabled = value
                     model.store()
+                    model.reloadChatMessages()
                 })) {
                     Text("Timestamp")
                 }
@@ -144,6 +149,7 @@ struct LocalOverlaysChatSettingsView: View {
                 }, set: { value in
                     model.database.chat.boldUsername = value
                     model.store()
+                    model.reloadChatMessages()
                 })) {
                     Text("Bold username")
                 }
@@ -152,6 +158,7 @@ struct LocalOverlaysChatSettingsView: View {
                 }, set: { value in
                     model.database.chat.boldMessage = value
                     model.store()
+                    model.reloadChatMessages()
                 })) {
                     Text("Bold message")
                 }
@@ -160,6 +167,7 @@ struct LocalOverlaysChatSettingsView: View {
                 }, set: { value in
                     model.database.chat.animatedEmotes = value
                     model.store()
+                    model.reloadChatMessages()
                 })) {
                     Text("Animated emotes")
                 }
@@ -183,6 +191,7 @@ struct LocalOverlaysChatSettingsView: View {
                             }
                             model.database.chat.height = height
                             model.store()
+                            model.reloadChatMessages()
                         }
                     )
                     .onChange(of: height) { value in
@@ -203,6 +212,7 @@ struct LocalOverlaysChatSettingsView: View {
                             }
                             model.database.chat.width = width
                             model.store()
+                            model.reloadChatMessages()
                         }
                     )
                     .onChange(of: width) { value in
@@ -284,6 +294,7 @@ struct LocalOverlaysChatSettingsView: View {
                     }, set: { value in
                         model.database.chat.backgroundColorEnabled = value
                         model.store()
+                        model.reloadChatMessages()
                     })) {
                         HStack {
                             Text("Background")
@@ -313,6 +324,7 @@ struct LocalOverlaysChatSettingsView: View {
                     }, set: { value in
                         model.database.chat.shadowColorEnabled = value
                         model.store()
+                        model.reloadChatMessages()
                     })) {
                         HStack {
                             Text("Border")
