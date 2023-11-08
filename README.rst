@@ -129,8 +129,7 @@ ToDo
 Ideas/plan
 ==========
 
-- Full screen, half screen with preview, left half or right half
-  settings layouts.
+- Emotes cache on disk?
 
 - A list of usernames whos messages will not get displayed on screen.
 

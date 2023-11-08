@@ -63,6 +63,7 @@ private let globalMyIcons = [
 private let globalIconsNotYetInStore = [
     Icon(name: "Queen", id: "AppIconQueen", price: ""),
     Icon(name: "Goblin", id: "AppIconGoblin", price: ""),
+    Icon(name: "Goblina", id: "AppIconGoblina", price: ""),
     Icon(name: "Heart", id: "AppIconHeart", price: ""),
     Icon(name: "Basque", id: "AppIconBasque", price: ""),
     Icon(name: "Looking", id: "AppIconLooking", price: ""),
