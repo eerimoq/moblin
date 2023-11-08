@@ -24,14 +24,6 @@ struct SettingsView: View {
     @EnvironmentObject var model: Model
     let hideSettings: () -> Void
 
-    private func splitImage() -> Image {
-        if model.settingsLayout == .full {
-            return Image(systemName: "arrow.down.right.and.arrow.up.left")
-        } else {
-            return Image(systemName: "arrow.up.left.and.arrow.down.right")
-        }
-    }
-
     var body: some View {
         Form {
             Section {
