@@ -129,6 +129,8 @@ ToDo
 Ideas/plan
 ==========
 
+- Do not allow changing settings that stops a live stream.
+
 - Emotes cache on disk?
 
 - A list of usernames whos messages will not get displayed on screen.
