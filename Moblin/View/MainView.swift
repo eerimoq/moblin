@@ -20,11 +20,11 @@ struct MainView: View {
         showingSettings = true
     }
 
-    private func settingsWidth() -> Double {
+    private func settingsWidth(width: Double) -> Double {
         if model.settingsLayout == .full {
-            return 1.0
+            return width
         } else {
-            return 0.53
+            return 350
         }
     }
 
@@ -77,7 +77,7 @@ struct MainView: View {
                         NavigationStack {
                             SettingsView(hideSettings: hideSettings)
                         }
-                        .frame(width: metrics.size.width * settingsWidth())
+                        .frame(width: settingsWidth(width: metrics.size.width))
                         .background(Color(uiColor: .systemGroupedBackground))
                         if model.settingsLayout == .left {
                             Spacer()

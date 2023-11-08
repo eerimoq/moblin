@@ -1102,13 +1102,16 @@ final class Model: ObservableObject {
     }
 
     func isChatConfigured() -> Bool {
-        return stream.twitchChannelName != "" || stream
-            .kickChatroomId != "" ||
-            (stream.youTubeApiKey != "" && stream.youTubeVideoId != "")
+        return isTwitchChatConfigured() || isKickPusherConfigured() ||
+            isYouTubeLiveChatConfigured()
     }
 
     func isViewersConfigured() -> Bool {
         return stream.twitchChannelId != ""
+    }
+
+    func isTwitchChatConfigured() -> Bool {
+        return stream.twitchChannelName != ""
     }
 
     func isTwitchChatConnected() -> Bool {
@@ -1123,12 +1126,20 @@ final class Model: ObservableObject {
         return twitchPubSub?.isConnected() ?? false
     }
 
+    func isKickPusherConfigured() -> Bool {
+        return stream.kickChatroomId != ""
+    }
+
     func isKickPusherConnected() -> Bool {
         return kickPusher?.isConnected() ?? false
     }
 
     func hasKickPusherEmotes() -> Bool {
         return kickPusher?.hasEmotes() ?? false
+    }
+
+    func isYouTubeLiveChatConfigured() -> Bool {
+        return stream.youTubeApiKey != "" && stream.youTubeVideoId != ""
     }
 
     func isYouTubeLiveChatConnected() -> Bool {
@@ -1140,8 +1151,16 @@ final class Model: ObservableObject {
     }
 
     func isChatConnected() -> Bool {
-        return isTwitchChatConnected() || isKickPusherConnected() ||
-            isYouTubeLiveChatConnected()
+        if isTwitchChatConfigured() && !isTwitchChatConnected() {
+            return false
+        }
+        if isKickPusherConfigured() && !isKickPusherConnected() {
+            return false
+        }
+        if isYouTubeLiveChatConfigured() && !isYouTubeLiveChatConnected() {
+            return false
+        }
+        return true
     }
 
     func hasChatEmotes() -> Bool {

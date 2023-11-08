@@ -28,12 +28,6 @@ struct LocalOverlaysSettingsView: View {
                     show.zoom = value
                     model.store()
                 }))
-                Toggle("Viewers", isOn: Binding(get: {
-                    show.viewers
-                }, set: { value in
-                    show.viewers = value
-                    model.store()
-                }))
                 NavigationLink(destination: LocalOverlaysChatSettingsView(
                     timestampColor: model.database.chat.timestampColor.color(),
                     usernameColor: model.database.chat.usernameColor.color(),
@@ -50,6 +44,12 @@ struct LocalOverlaysSettingsView: View {
                         model.store()
                     }))
                 }
+                Toggle("Viewers", isOn: Binding(get: {
+                    show.viewers
+                }, set: { value in
+                    show.viewers = value
+                    model.store()
+                }))
             }
             Section("Top right") {
                 NavigationLink(destination: LocalOverlaysAudioLevelSettingsView(

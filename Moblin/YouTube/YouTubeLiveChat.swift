@@ -64,7 +64,6 @@ final class YouTubeLiveChat: NSObject {
     func start() {
         nextToken = nil
         pollingIntervalMillis = minimumPollingIntervalMillis
-        connected = true
         emotes.start(
             platform: .youtube,
             channelId: videoId,
@@ -81,8 +80,10 @@ final class YouTubeLiveChat: NSObject {
                 } else {
                     do {
                         try await getMessages()
+                        connected = true
                     } catch {
                         logger.info("youtube: chat: \(error)")
+                        connected = false
                     }
                 }
                 if Task.isCancelled {
