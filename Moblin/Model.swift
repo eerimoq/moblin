@@ -1102,7 +1102,9 @@ final class Model: ObservableObject {
     }
 
     func isChatConfigured() -> Bool {
-        return stream.twitchChannelName != "" || stream.kickChatroomId != ""
+        return stream.twitchChannelName != "" || stream
+            .kickChatroomId != "" ||
+            (stream.youTubeApiKey != "" && stream.youTubeVideoId != "")
     }
 
     func isViewersConfigured() -> Bool {
@@ -1129,12 +1131,22 @@ final class Model: ObservableObject {
         return kickPusher?.hasEmotes() ?? false
     }
 
+    func isYouTubeLiveChatConnected() -> Bool {
+        return youTubeLiveChat?.isConnected() ?? false
+    }
+
+    func hasYouTubeLiveChatEmotes() -> Bool {
+        return youTubeLiveChat?.hasEmotes() ?? false
+    }
+
     func isChatConnected() -> Bool {
-        return isTwitchChatConnected() || isKickPusherConnected()
+        return isTwitchChatConnected() || isKickPusherConnected() ||
+            isYouTubeLiveChatConnected()
     }
 
     func hasChatEmotes() -> Bool {
-        return hasTwitchChatEmotes() || hasKickPusherEmotes()
+        return hasTwitchChatEmotes() || hasKickPusherEmotes() ||
+            hasYouTubeLiveChatEmotes()
     }
 
     func isStreamConnceted() -> Bool {
@@ -1191,11 +1203,11 @@ final class Model: ObservableObject {
     private func reloadYouTubeLiveChat() {
         youTubeLiveChat?.stop()
         youTubeLiveChat = nil
-        if stream.youTubeApiKey! != "" && stream.youTubeLiveChatId! != "" {
+        if stream.youTubeApiKey! != "" && stream.youTubeVideoId! != "" {
             youTubeLiveChat = YouTubeLiveChat(
                 model: self,
                 apiKey: stream.youTubeApiKey!,
-                liveChatId: stream.youTubeLiveChatId!
+                videoId: stream.youTubeVideoId!
             )
             youTubeLiveChat!.start()
         } else {
@@ -1214,6 +1226,14 @@ final class Model: ObservableObject {
 
     func kickChatroomIdUpdated() {
         reloadKickPusher()
+    }
+
+    func youTubeApiKeyUpdated() {
+        reloadYouTubeLiveChat()
+    }
+
+    func youTubeVideoIdUpdated() {
+        reloadYouTubeLiveChat()
     }
 
     func appendChatMessage(

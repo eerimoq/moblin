@@ -102,7 +102,7 @@ private func fetchChannelEmotes(platform: EmotesPlatform,
     if channelId.isEmpty {
         return [:]
     }
-    if platform == .kick {
+    if platform != .twitch {
         return [:]
     }
     let url = "https://7tv.io/v3/users/twitch/\(channelId)"

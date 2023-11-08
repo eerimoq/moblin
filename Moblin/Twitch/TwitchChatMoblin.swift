@@ -25,26 +25,6 @@ final class TwitchChatMoblin {
         emotes = Emotes()
     }
 
-    private func handleError(title: String, subTitle: String) {
-        DispatchQueue.main.async {
-            self.model.makeErrorToast(title: title, subTitle: subTitle)
-        }
-    }
-
-    private func handleOk(title: String) {
-        DispatchQueue.main.async {
-            self.model.makeToast(title: title)
-        }
-    }
-
-    func isConnected() -> Bool {
-        return connected
-    }
-
-    func hasEmotes() -> Bool {
-        return emotes.isReady()
-    }
-
     func start(channelName: String, channelId: String) {
         emotes.start(
             platform: .twitch,
@@ -106,6 +86,26 @@ final class TwitchChatMoblin {
         task?.cancel()
         task = nil
         connected = false
+    }
+
+    func isConnected() -> Bool {
+        return connected
+    }
+
+    func hasEmotes() -> Bool {
+        return emotes.isReady()
+    }
+
+    private func handleError(title: String, subTitle: String) {
+        DispatchQueue.main.async {
+            self.model.makeErrorToast(title: title, subTitle: subTitle)
+        }
+    }
+
+    private func handleOk(title: String) {
+        DispatchQueue.main.async {
+            self.model.makeToast(title: title)
+        }
     }
 
     private func createTwitchSegments(message: ChatMessage,

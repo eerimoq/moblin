@@ -4,6 +4,7 @@ import SwiftUI
 enum EmotesPlatform {
     case twitch
     case kick
+    case youtube
 }
 
 class Emote {

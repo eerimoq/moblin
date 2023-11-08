@@ -7,11 +7,17 @@ struct StreamYouTubeSettingsView: View {
     func submitApiKey(value: String) {
         stream.youTubeApiKey = value
         model.store()
+        if stream.enabled {
+            model.youTubeApiKeyUpdated()
+        }
     }
 
-    func submitChatLiveId(value: String) {
-        stream.youTubeLiveChatId = value
+    func submitVideoId(value: String) {
+        stream.youTubeVideoId = value
         model.store()
+        if stream.enabled {
+            model.youTubeVideoIdUpdated()
+        }
     }
 
     var body: some View {
@@ -25,11 +31,11 @@ struct StreamYouTubeSettingsView: View {
                     TextItemView(name: "API Key", value: stream.youTubeApiKey!)
                 }
                 NavigationLink(destination: TextEditView(
-                    title: "Live chat id",
-                    value: stream.youTubeLiveChatId!,
-                    onSubmit: submitChatLiveId
+                    title: "Video id",
+                    value: stream.youTubeVideoId!,
+                    onSubmit: submitVideoId
                 )) {
-                    TextItemView(name: "Live chat id", value: stream.youTubeLiveChatId!)
+                    TextItemView(name: "Video id", value: stream.youTubeVideoId!)
                 }
             } footer: {
                 Text("Very experimental and very secret!")

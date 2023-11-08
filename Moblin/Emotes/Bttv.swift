@@ -63,7 +63,7 @@ private func fetchChannelEmotes(platform: EmotesPlatform,
     if channelId.isEmpty {
         return [:]
     }
-    if platform == .kick {
+    if platform != .twitch {
         return [:]
     }
     var emotes: [String: Emote] = [:]

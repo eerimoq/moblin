@@ -53,7 +53,7 @@ class SettingsStream: Codable, Identifiable {
     var twitchChannelId: String = ""
     var kickChatroomId: String = ""
     var youTubeApiKey: String? = ""
-    var youTubeLiveChatId: String? = ""
+    var youTubeVideoId: String? = ""
     var resolution: SettingsStreamResolution = .r1280x720
     var fps: Int = 30
     var bitrate: UInt32 = 3_000_000
@@ -508,9 +508,6 @@ func addDefaultStreams(database: Database) {
     let stream = SettingsStream(name: "Twitch")
     stream.enabled = true
     stream.url = "rtmp://arn03.contribute.live-video.net/app/your_stream_key"
-    stream.twitchChannelName = ""
-    stream.twitchChannelId = ""
-    stream.kickChatroomId = ""
     database.streams.append(stream)
 }
 
@@ -726,8 +723,8 @@ final class Settings {
             stream.youTubeApiKey = ""
             store()
         }
-        for stream in realDatabase.streams where stream.youTubeLiveChatId == nil {
-            stream.youTubeLiveChatId = ""
+        for stream in realDatabase.streams where stream.youTubeVideoId == nil {
+            stream.youTubeVideoId = ""
             store()
         }
     }
