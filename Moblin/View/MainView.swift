@@ -114,7 +114,7 @@ struct MainView: View {
                                             Image(systemName: item.image)
                                         }
                                     }
-                                    .padding([.trailing], -15)
+                                    .padding([.trailing], -12)
                                     .padding([.top], -2)
                                     Button(action: {
                                         hideSettings()
