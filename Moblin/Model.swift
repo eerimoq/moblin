@@ -13,8 +13,8 @@ import SwiftUI
 import TwitchChat
 import VideoToolbox
 
-let noValue = ""
-let maximumNumberOfChatMessages = 50
+private let noValue = ""
+private let maximumNumberOfChatMessages = 50
 
 struct PausedChatMessage {
     var user: String
