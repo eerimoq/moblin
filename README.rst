@@ -129,6 +129,9 @@ ToDo
 Ideas/plan
 ==========
 
+- Make old chat messages fade away. 30 or 60 seconds by
+  default. Toggle to enable feature.
+
 - A list of usernames whos messages will not get displayed on screen.
 
 - Audio filters. For example volume limiter.
