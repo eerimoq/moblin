@@ -149,6 +149,8 @@ Ideas/plan
 
 - Take picture.
 
+- OPUS audio codec? https://github.com/alta/swift-opus
+
 - Optionally do not automatically start using external mic is plugged
   in.
 
