@@ -122,6 +122,17 @@ struct LocalOverlaysChatSettingsView: View {
         model.reloadChatMessages()
     }
 
+    func submitMaximumAge(value: String) {
+        guard let maximumAge = Int(value) else {
+            return
+        }
+        guard maximumAge > 0 else {
+            return
+        }
+        model.database.chat.maximumAge = maximumAge
+        model.store()
+    }
+
     var body: some View {
         Form {
             Section {
@@ -170,6 +181,24 @@ struct LocalOverlaysChatSettingsView: View {
                     model.reloadChatMessages()
                 })) {
                     Text("Animated emotes")
+                }
+                NavigationLink(destination: TextEditView(
+                    title: "Maximum age",
+                    value: String(model.database.chat.maximumAge!),
+                    onSubmit: submitMaximumAge,
+                    footer: Text("Maximum message age in seconds.")
+                )) {
+                    Toggle(isOn: Binding(get: {
+                        model.database.chat.maximumAgeEnabled!
+                    }, set: { value in
+                        model.database.chat.maximumAgeEnabled = value
+                        model.store()
+                    })) {
+                        TextItemView(
+                            name: "Maximum age",
+                            value: String(model.database.chat.maximumAge!)
+                        )
+                    }
                 }
             } header: {
                 Text("General")

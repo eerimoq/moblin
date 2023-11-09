@@ -127,7 +127,8 @@ final class KickPusher: NSObject {
             user: message.sender.username,
             userColor: nil,
             segments: segments,
-            timestamp: model.digitalClock
+            timestamp: model.digitalClock,
+            timestampDate: Date()
         )
     }
 

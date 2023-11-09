@@ -21,6 +21,7 @@ struct PausedChatMessage {
     var userColor: String?
     var segments: [ChatPostSegment]
     var timestamp: String
+    var timestampDate: Date
 }
 
 struct Mic: Identifiable, Hashable {
@@ -115,6 +116,7 @@ struct ChatPost: Identifiable, Hashable {
     var userColor: String?
     var segments: [ChatPostSegment]
     var timestamp: String
+    var timestampDate: Date
 }
 
 class ButtonState {
@@ -724,6 +726,7 @@ final class Model: ObservableObject {
                 self.updateAudioLevel()
             }
             self.updateSrtlaConnectionStatistics()
+            self.removeOldChatMessages(now: now)
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
@@ -829,6 +832,19 @@ final class Model: ObservableObject {
             srtlaConnectionStatistics = statistics
         } else {
             srtlaConnectionStatistics = noValue
+        }
+    }
+
+    private func removeOldChatMessages(now: Date) {
+        guard database.chat.maximumAgeEnabled! else {
+            return
+        }
+        while let post = chatPosts.first {
+            if now > post.timestampDate + Double(database.chat.maximumAge!) {
+                _ = chatPosts.popFirst()
+            } else {
+                break
+            }
         }
     }
 
@@ -1261,15 +1277,9 @@ final class Model: ObservableObject {
         userColor: String?,
         segments: [ChatPostSegment],
         timestamp: String,
+        timestampDate: Date,
         incrementCount: Bool = true
     ) {
-        let post = ChatPost(
-            id: chatPostId,
-            user: user,
-            userColor: userColor,
-            segments: segments,
-            timestamp: timestamp
-        )
         if chatPaused {
             if pausedChatMessages.count > maximumNumberOfChatMessages - 1 {
                 pausedChatMessages.removeFirst()
@@ -1278,13 +1288,21 @@ final class Model: ObservableObject {
                 user: user!,
                 userColor: userColor,
                 segments: segments,
-                timestamp: digitalClock
+                timestamp: digitalClock,
+                timestampDate: timestampDate
             ))
         } else {
             if chatPosts.count > maximumNumberOfChatMessages - 1 {
                 chatPosts.removeFirst()
             }
-            chatPosts.append(post)
+            chatPosts.append(ChatPost(
+                id: chatPostId,
+                user: user,
+                userColor: userColor,
+                segments: segments,
+                timestamp: timestamp,
+                timestampDate: timestampDate
+            ))
         }
         if incrementCount {
             numberOfChatPostsPerTick += 1
@@ -1301,6 +1319,7 @@ final class Model: ObservableObject {
                 userColor: post.userColor,
                 segments: post.segments,
                 timestamp: post.timestamp,
+                timestampDate: post.timestampDate,
                 incrementCount: false
             )
         }
@@ -1320,6 +1339,7 @@ final class Model: ObservableObject {
                 userColor: nil,
                 segments: [],
                 timestamp: "",
+                timestampDate: Date(),
                 incrementCount: false
             )
         }
@@ -1328,7 +1348,9 @@ final class Model: ObservableObject {
                 user: message.user,
                 userColor: message.userColor,
                 segments: message.segments,
-                timestamp: message.timestamp, incrementCount: false
+                timestamp: message.timestamp,
+                timestampDate: message.timestampDate,
+                incrementCount: false
             )
         }
         pausedChatMessages = []
@@ -1338,7 +1360,9 @@ final class Model: ObservableObject {
                 user: post.user,
                 userColor: post.userColor,
                 segments: post.segments,
-                timestamp: post.timestamp, incrementCount: false
+                timestamp: post.timestamp,
+                timestampDate: post.timestampDate,
+                incrementCount: false
             )
         }
     }

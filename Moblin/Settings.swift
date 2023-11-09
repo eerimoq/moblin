@@ -383,6 +383,8 @@ class SettingsChat: Codable {
     var timestampColorEnabled: Bool = true
     var height: Double? = 1.0
     var width: Double? = 1.0
+    var maximumAge: Int? = 30
+    var maximumAgeEnabled: Bool? = false
 }
 
 class Database: Codable {
@@ -725,6 +727,14 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.youTubeVideoId == nil {
             stream.youTubeVideoId = ""
+            store()
+        }
+        if realDatabase.chat.maximumAge == nil {
+            realDatabase.chat.maximumAge = 30
+            store()
+        }
+        if realDatabase.chat.maximumAgeEnabled == nil {
+            realDatabase.chat.maximumAgeEnabled = false
             store()
         }
     }
