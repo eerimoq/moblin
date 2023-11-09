@@ -77,7 +77,7 @@ struct MainView: View {
                         NavigationStack {
                             SettingsView(hideSettings: hideSettings)
                         }
-                        .onAppear() {
+                        .onAppear {
                             if model.isLive {
                                 model.makeToast(title: "Some settings disabled when Live")
                             }
