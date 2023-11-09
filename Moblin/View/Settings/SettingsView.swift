@@ -1,25 +1,5 @@
 import SwiftUI
 
-struct SettingsLayoutMenuItem {
-    var layout: SettingsLayout
-    var image: String
-    var text: String
-}
-
-private let layoutMenuItems: [SettingsLayoutMenuItem] = [
-    SettingsLayoutMenuItem(
-        layout: .right,
-        image: "rectangle.righthalf.filled",
-        text: "Right"
-    ),
-    SettingsLayoutMenuItem(
-        layout: .left,
-        image: "rectangle.lefthalf.filled",
-        text: "Left"
-    ),
-    SettingsLayoutMenuItem(layout: .full, image: "rectangle.fill", text: "Full"),
-]
-
 struct SettingsView: View {
     @EnvironmentObject var model: Model
     let hideSettings: () -> Void
@@ -106,21 +86,5 @@ struct SettingsView: View {
             }
         }
         .navigationTitle("Settings")
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                HStack(spacing: 0) {
-                    Picker("", selection: $model.settingsLayout) {
-                        ForEach(layoutMenuItems, id: \.layout) { item in
-                            Image(systemName: item.image)
-                        }
-                    }
-                    Button(action: {
-                        hideSettings()
-                    }, label: {
-                        Text("Close")
-                    })
-                }
-            }
-        }
     }
 }

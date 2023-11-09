@@ -7,6 +7,26 @@ enum SettingsLayout {
     case right
 }
 
+struct SettingsLayoutMenuItem {
+    var layout: SettingsLayout
+    var image: String
+    var text: String
+}
+
+private let layoutMenuItems: [SettingsLayoutMenuItem] = [
+    SettingsLayoutMenuItem(
+        layout: .right,
+        image: "rectangle.righthalf.filled",
+        text: "Right"
+    ),
+    SettingsLayoutMenuItem(
+        layout: .left,
+        image: "rectangle.lefthalf.filled",
+        text: "Left"
+    ),
+    SettingsLayoutMenuItem(layout: .full, image: "rectangle.fill", text: "Full"),
+]
+
 struct MainView: View {
     @EnvironmentObject var model: Model
     var streamView: StreamView
@@ -74,12 +94,38 @@ struct MainView: View {
                         if model.settingsLayout == .right {
                             Spacer()
                         }
-                        NavigationStack {
-                            SettingsView(hideSettings: hideSettings)
-                        }
-                        .onAppear {
-                            if model.isLive {
-                                model.makeToast(title: "Some settings disabled when Live")
+                        ZStack {
+                            NavigationStack {
+                                SettingsView(hideSettings: hideSettings)
+                            }
+                            .onAppear {
+                                if model.isLive {
+                                    model
+                                        .makeToast(
+                                            title: "Some settings disabled when Live"
+                                        )
+                                }
+                            }
+                            VStack {
+                                HStack {
+                                    Spacer()
+                                    Picker("", selection: $model.settingsLayout) {
+                                        ForEach(layoutMenuItems, id: \.layout) { item in
+                                            Image(systemName: item.image)
+                                        }
+                                    }
+                                    .padding([.trailing], -15)
+                                    .padding([.top], -2)
+                                    Button(action: {
+                                        hideSettings()
+                                    }, label: {
+                                        Text("Close")
+                                            .padding([.trailing, .bottom], 5)
+                                            .padding([.top], 2)
+                                            .padding([.leading], 0)
+                                    })
+                                }
+                                Spacer()
                             }
                         }
                         .frame(width: settingsWidth(width: metrics.size.width))
