@@ -129,10 +129,6 @@ ToDo
 Ideas/plan
 ==========
 
-- Do not allow changing settings that stops a live stream.
-
-- Emotes cache on disk?
-
 - A list of usernames whos messages will not get displayed on screen.
 
 - Audio filters. For example volume limiter.
@@ -152,6 +148,8 @@ Ideas/plan
 
 - Optionally do not automatically start using external mic is plugged
   in.
+
+- Emotes cache on disk?
 
 - Advanced settings toggle.
 
