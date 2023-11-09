@@ -31,6 +31,7 @@ struct StreamSrtSettingsView: View {
                 )) {
                     TextItemView(name: "Latency", value: String(stream.srt.latency))
                 }
+                .disabled(stream.enabled && model.isLive)
                 Toggle("Big packets", isOn: Binding(get: {
                     stream.srt.mpegtsPacketsPerPacket == 7
                 }, set: { value in
@@ -41,12 +42,14 @@ struct StreamSrtSettingsView: View {
                     }
                     model.storeAndReloadStreamIfEnabled(stream: stream)
                 }))
+                .disabled(stream.enabled && model.isLive)
                 Toggle("Adaptive bitrate", isOn: Binding(get: {
                     stream.adaptiveBitrate
                 }, set: { value in
                     stream.adaptiveBitrate = value
                     model.storeAndReloadStreamIfEnabled(stream: stream)
                 }))
+                .disabled(stream.enabled && model.isLive)
             } footer: {
                 VStack(alignment: .leading) {
                     Text("Adaptive bitrate is experimental.")

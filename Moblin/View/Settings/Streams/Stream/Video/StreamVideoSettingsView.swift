@@ -13,18 +13,21 @@ struct StreamVideoSettingsView: View {
                 )) {
                     TextItemView(name: "Resolution", value: stream.resolution.rawValue)
                 }
+                .disabled(stream.enabled && model.isLive)
                 NavigationLink(destination: StreamVideoFpsSettingsView(
                     stream: stream,
                     selection: stream.fps
                 )) {
                     TextItemView(name: "FPS", value: String(stream.fps))
                 }
+                .disabled(stream.enabled && model.isLive)
                 NavigationLink(destination: StreamVideoCodecSettingsView(
                     stream: stream,
                     selection: stream.codec.rawValue
                 )) {
                     TextItemView(name: "Codec", value: stream.codec.rawValue)
                 }
+                .disabled(stream.enabled && model.isLive)
                 NavigationLink(destination: StreamVideoBitrateSettingsView(
                     stream: stream,
                     selection: stream.bitrate

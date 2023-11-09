@@ -28,7 +28,7 @@ struct StreamsSettingsView: View {
                                 model.reloadStream()
                                 model.sceneUpdated()
                             }))
-                            .disabled(stream.enabled)
+                            .disabled(stream.enabled || model.isLive)
                         }
                     }
                     .deleteDisabled(stream.enabled)

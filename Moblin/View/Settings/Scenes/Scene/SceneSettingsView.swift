@@ -246,9 +246,5 @@ struct SceneSettingsView: View {
             }
         }
         .navigationTitle("Scene")
-        .onAppear {
-            model.selectedSceneId = scene.id
-            model.sceneUpdated()
-        }
     }
 }

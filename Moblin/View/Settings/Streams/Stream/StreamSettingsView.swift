@@ -23,6 +23,7 @@ struct StreamSettingsView: View {
             )) {
                 TextItemView(name: "URL", value: schemeAndAddress(url: stream.url))
             }
+            .disabled(stream.enabled && model.isLive)
             NavigationLink(destination: StreamVideoSettingsView(stream: stream)) {
                 Text("Video")
             }

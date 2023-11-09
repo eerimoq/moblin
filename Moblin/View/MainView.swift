@@ -77,6 +77,11 @@ struct MainView: View {
                         NavigationStack {
                             SettingsView(hideSettings: hideSettings)
                         }
+                        .onAppear() {
+                            if model.isLive {
+                                model.makeToast(title: "Some settings disabled when Live")
+                            }
+                        }
                         .frame(width: settingsWidth(width: metrics.size.width))
                         .background(Color(uiColor: .systemGroupedBackground))
                         if model.settingsLayout == .left {
