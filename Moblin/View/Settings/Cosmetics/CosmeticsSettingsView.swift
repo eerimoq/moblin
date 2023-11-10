@@ -131,5 +131,8 @@ struct CosmeticsSettingsView: View {
             }
         }
         .navigationTitle("Cosmetics")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }

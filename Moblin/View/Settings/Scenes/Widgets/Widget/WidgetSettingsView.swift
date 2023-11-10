@@ -49,5 +49,8 @@ struct WidgetSettingsView: View {
             }
         }
         .navigationTitle("Widget")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }

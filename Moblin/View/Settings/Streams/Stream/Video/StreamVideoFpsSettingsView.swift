@@ -22,5 +22,8 @@ struct StreamVideoFpsSettingsView: View {
             }
         }
         .navigationTitle("FPS")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }

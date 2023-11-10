@@ -23,5 +23,8 @@ struct LocalOverlaysAudioLevelSettingsView: View {
             }
         }
         .navigationTitle("Audio level")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }

@@ -100,5 +100,8 @@ struct ZoomSettingsView: View {
             }
         }
         .navigationTitle("Zoom")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }

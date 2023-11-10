@@ -382,5 +382,8 @@ struct LocalOverlaysChatSettingsView: View {
             }
         }
         .navigationTitle("Chat")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }

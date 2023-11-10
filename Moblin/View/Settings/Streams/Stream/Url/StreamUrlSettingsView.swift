@@ -173,5 +173,8 @@ struct StreamUrlSettingsView: View {
             }
         }
         .navigationTitle("URL")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }

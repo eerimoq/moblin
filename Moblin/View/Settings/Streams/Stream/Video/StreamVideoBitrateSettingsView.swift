@@ -26,6 +26,9 @@ struct StreamVideoBitrateSettingsView: View {
             }
         }
         .navigationTitle("Bitrate")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }
 

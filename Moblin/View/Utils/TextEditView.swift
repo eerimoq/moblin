@@ -20,5 +20,8 @@ struct TextEditView: View {
             }
         }
         .navigationTitle(title)
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }

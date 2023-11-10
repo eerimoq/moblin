@@ -62,5 +62,8 @@ struct ButtonsSettingsView: View {
             }
         }
         .navigationTitle("Buttons")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }

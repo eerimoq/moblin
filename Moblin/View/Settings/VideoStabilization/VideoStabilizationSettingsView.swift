@@ -26,6 +26,9 @@ struct VideoStabilizationPickerView: View {
             }
         }
         .navigationTitle("Video stabilization")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }
 

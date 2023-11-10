@@ -1,8 +1,55 @@
 import SwiftUI
 
+enum SettingsLayout {
+    case full
+    case left
+    case right
+}
+
+struct SettingsLayoutMenuItem {
+    var layout: SettingsLayout
+    var image: String
+    var text: String
+}
+
+private let layoutMenuItems: [SettingsLayoutMenuItem] = [
+    SettingsLayoutMenuItem(
+        layout: .right,
+        image: "rectangle.righthalf.filled",
+        text: "Right"
+    ),
+    SettingsLayoutMenuItem(
+        layout: .left,
+        image: "rectangle.lefthalf.filled",
+        text: "Left"
+    ),
+    SettingsLayoutMenuItem(layout: .full, image: "rectangle.fill", text: "Full"),
+]
+
+struct SettingsToolbar: ToolbarContent {
+    @EnvironmentObject var model: Model
+
+    var body: some ToolbarContent {
+        ToolbarItem(placement: .navigationBarTrailing) {
+            HStack {
+                Picker("", selection: $model.settingsLayout) {
+                    ForEach(layoutMenuItems, id: \.layout) { item in
+                        Image(systemName: item.image)
+                    }
+                }
+                .padding([.trailing], -10)
+                Button(action: {
+                    model.showingSettings = false
+                }, label: {
+                    Text("Close")
+                })
+            }
+        }
+    }
+}
+
 struct SettingsView: View {
     @EnvironmentObject var model: Model
-    let hideSettings: () -> Void
 
     var body: some View {
         Form {
@@ -86,5 +133,8 @@ struct SettingsView: View {
             }
         }
         .navigationTitle("Settings")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }

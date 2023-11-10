@@ -154,6 +154,7 @@ final class Model: ObservableObject {
         }
     }
 
+    @Published var showingSettings = false
     @Published var settingsLayout: SettingsLayout = .right
     @Published var showChatMessages = true
     @Published var chatPaused = false

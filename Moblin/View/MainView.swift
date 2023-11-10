@@ -1,44 +1,9 @@
 import SwiftUI
 import WebKit
 
-enum SettingsLayout {
-    case full
-    case left
-    case right
-}
-
-struct SettingsLayoutMenuItem {
-    var layout: SettingsLayout
-    var image: String
-    var text: String
-}
-
-private let layoutMenuItems: [SettingsLayoutMenuItem] = [
-    SettingsLayoutMenuItem(
-        layout: .right,
-        image: "rectangle.righthalf.filled",
-        text: "Right"
-    ),
-    SettingsLayoutMenuItem(
-        layout: .left,
-        image: "rectangle.lefthalf.filled",
-        text: "Left"
-    ),
-    SettingsLayoutMenuItem(layout: .full, image: "rectangle.fill", text: "Full"),
-]
-
 struct MainView: View {
     @EnvironmentObject var model: Model
     var streamView: StreamView
-    @State private var showingSettings = false
-
-    private func hideSettings() {
-        showingSettings = false
-    }
-
-    private func showSettings() {
-        showingSettings = true
-    }
 
     private func settingsWidth(width: Double) -> Double {
         if model.settingsLayout == .full {
@@ -86,46 +51,23 @@ struct MainView: View {
                             model.commitZoomLevel(amount: amount)
                         }
                 )
-                ControlBarView(showSettings: showSettings)
+                ControlBarView()
             }
-            if showingSettings {
+            if model.showingSettings {
                 GeometryReader { metrics in
                     HStack {
                         if model.settingsLayout == .right {
                             Spacer()
                         }
-                        ZStack {
-                            NavigationStack {
-                                SettingsView(hideSettings: hideSettings)
-                            }
-                            .onAppear {
-                                if model.isLive {
-                                    model
-                                        .makeToast(
-                                            title: "Some settings disabled when Live"
-                                        )
-                                }
-                            }
-                            VStack {
-                                HStack {
-                                    Spacer()
-                                    Picker("", selection: $model.settingsLayout) {
-                                        ForEach(layoutMenuItems, id: \.layout) { item in
-                                            Image(systemName: item.image)
-                                        }
-                                    }
-                                    .padding([.trailing], -12)
-                                    .padding([.top], -2)
-                                    Button(action: {
-                                        hideSettings()
-                                    }, label: {
-                                        Text("Close")
-                                            .padding([.trailing, .bottom], 5)
-                                            .padding([.top], 2)
-                                            .padding([.leading], 0)
-                                    })
-                                }
-                                Spacer()
+                        NavigationStack {
+                            SettingsView()
+                        }
+                        .onAppear {
+                            if model.isLive {
+                                model
+                                    .makeToast(
+                                        title: "Some settings disabled when Live"
+                                    )
                             }
                         }
                         .frame(width: settingsWidth(width: metrics.size.width))

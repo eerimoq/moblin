@@ -26,5 +26,8 @@ struct StreamVideoCaptureSessionPresetSettingsView: View {
             }
         }
         .navigationTitle("Resolution")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }

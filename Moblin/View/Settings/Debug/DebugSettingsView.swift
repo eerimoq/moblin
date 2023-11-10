@@ -28,5 +28,8 @@ struct DebugSettingsView: View {
             }
         }
         .navigationTitle("Debug")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }

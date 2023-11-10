@@ -47,5 +47,8 @@ struct ScenesSettingsView: View {
             }
         }
         .navigationTitle("Scenes")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }

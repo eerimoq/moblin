@@ -27,5 +27,8 @@ struct WidgetBrowserUrlSettingsView: View {
             }
         }
         .navigationTitle("URL")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }

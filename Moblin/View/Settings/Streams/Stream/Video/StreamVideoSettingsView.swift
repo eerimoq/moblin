@@ -60,5 +60,8 @@ struct StreamVideoSettingsView: View {
             }
         }
         .navigationTitle("Video")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }

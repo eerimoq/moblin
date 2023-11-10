@@ -53,5 +53,8 @@ struct ZoomPresetSettingsView: View {
             }
         }
         .navigationTitle("Zoom preset")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }

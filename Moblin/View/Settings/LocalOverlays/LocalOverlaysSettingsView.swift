@@ -92,5 +92,8 @@ struct LocalOverlaysSettingsView: View {
             }
         }
         .navigationTitle("Local overlays")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }

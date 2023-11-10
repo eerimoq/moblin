@@ -22,5 +22,8 @@ struct StreamVideoCodecSettingsView: View {
             }
         }
         .navigationTitle("Codec")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }

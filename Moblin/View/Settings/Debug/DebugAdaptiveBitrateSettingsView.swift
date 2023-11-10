@@ -24,5 +24,8 @@ struct DebugAdaptiveBitrateSettingsView: View {
             }
         }
         .navigationTitle("Adaptive bitrate")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }

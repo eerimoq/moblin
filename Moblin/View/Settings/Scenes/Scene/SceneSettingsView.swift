@@ -246,5 +246,8 @@ struct SceneSettingsView: View {
             }
         }
         .navigationTitle("Scene")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }
