@@ -58,11 +58,8 @@ private func fetchChannelEmotes(platform: EmotesPlatform,
     if channelId.isEmpty {
         return [:]
     }
-    if platform != .twitch {
-        return [:]
-    }
     return try await fetchEmotes(
-        url: "https://api.betterttv.net/3/cached/frankerfacez/users/twitch/\(channelId)"
+        url: "https://api.betterttv.net/3/cached/frankerfacez/users/\(platform)/\(channelId)"
     )
 }
 
@@ -72,6 +69,10 @@ private func fetchEmotes(url: String) async throws -> [String: Emote] {
         return [:]
     }
     let (data, response) = try await httpGet(from: url)
+    if response.isNotFound {
+        logger.warning("FFZ emotes not found (HTTP 404)")
+        return [:]
+    }
     if !response.isSuccessful {
         throw " Not successful"
     }

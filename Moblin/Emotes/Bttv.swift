@@ -63,16 +63,17 @@ private func fetchChannelEmotes(platform: EmotesPlatform,
     if channelId.isEmpty {
         return [:]
     }
-    if platform != .twitch {
-        return [:]
-    }
     var emotes: [String: Emote] = [:]
     guard let url =
-        URL(string: "https://api.betterttv.net/3/cached/users/twitch/\(channelId)")
+        URL(string: "https://api.betterttv.net/3/cached/users/\(platform)/\(channelId)")
     else {
         return [:]
     }
     let (data, response) = try await httpGet(from: url)
+    if response.isNotFound {
+        logger.warning("\(channelId): BTTV channel emotes not found (HTTP 404)")
+        return [:]
+    }
     if !response.isSuccessful {
         throw " Not successful"
     }
