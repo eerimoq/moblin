@@ -71,7 +71,10 @@ private func fetchChannelEmotes(platform: EmotesPlatform,
     }
     let (data, response) = try await httpGet(from: url)
     if response.isNotFound {
-        logger.warning("emotes: \(platform): \(channelId): BTTV channel emotes not found (HTTP 404)")
+        logger
+            .warning(
+                "emotes: \(platform): \(channelId): BTTV channel emotes not found (HTTP 404)"
+            )
         return [:]
     }
     if !response.isSuccessful {

@@ -108,7 +108,10 @@ private func fetchChannelEmotes(platform: EmotesPlatform,
     }
     let (data, response) = try await httpGet(from: url)
     if response.isNotFound {
-        logger.warning("emotes: \(platform): \(channelId): 7TV channel emotes not found (HTTP 404)")
+        logger
+            .warning(
+                "emotes: \(platform): \(channelId): 7TV channel emotes not found (HTTP 404)"
+            )
         return [:]
     }
     if !response.isSuccessful {
@@ -130,7 +133,10 @@ private func fetchChannelEmotes(platform: EmotesPlatform,
     var fetchedEmotes: [String: Emote] = [:]
     for emote in emotes {
         guard let url = makeUrl(data: emote.data) else {
-            logger.error("emotes: \(platform): \(channelId): Failed to create URL for 7TV emote \(emote.name)")
+            logger
+                .error(
+                    "emotes: \(platform): \(channelId): Failed to create URL for 7TV emote \(emote.name)"
+                )
             continue
         }
         fetchedEmotes[emote.name] = Emote(url: url)

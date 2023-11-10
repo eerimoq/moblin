@@ -65,7 +65,9 @@ private func fetchChannelEmotes(platform: EmotesPlatform,
     )
 }
 
-private func fetchEmotes(url: String, platform: EmotesPlatform) async throws -> [String: Emote] {
+private func fetchEmotes(url: String,
+                         platform: EmotesPlatform) async throws -> [String: Emote]
+{
     var emotes: [String: Emote] = [:]
     guard let url = URL(string: url) else {
         return [:]
@@ -80,7 +82,10 @@ private func fetchEmotes(url: String, platform: EmotesPlatform) async throws -> 
     }
     for emote in try JSONDecoder().decode([FfzEmote].self, from: data) {
         guard let url = makeUrl(emote: emote) else {
-            logger.error("emotes: \(platform): Failed to create URL for FFZ emote \(emote.code)")
+            logger
+                .error(
+                    "emotes: \(platform): Failed to create URL for FFZ emote \(emote.code)"
+                )
             continue
         }
         emotes[emote.code] = Emote(url: url)

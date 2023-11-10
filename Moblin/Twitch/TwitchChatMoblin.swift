@@ -171,8 +171,7 @@ final class TwitchChatMoblin {
                                 emotesManager: Emotes) -> [ChatPostSegment]
     {
         var segments: [ChatPostSegment] = []
-        let twitchSegments = createTwitchSegments(message: message, emotes: emotes)
-        for var segment in twitchSegments {
+        for var segment in createTwitchSegments(message: message, emotes: emotes) {
             if let text = segment.text {
                 segments += emotesManager.createSegments(text: text)
                 segment.text = nil

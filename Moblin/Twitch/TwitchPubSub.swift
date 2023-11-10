@@ -220,7 +220,7 @@ extension TwitchPubSub: URLSessionWebSocketDelegate {
         webSocketTask _: URLSessionWebSocketTask,
         didOpenWithProtocol _: String?
     ) {
-        logger.info("twitch: pubsub: \(channelId): Connected to \(url)")
+        logger.debug("twitch: pubsub: \(channelId): Connected to \(url)")
         reconnectTime = firstReconnectTime
         sendPing()
         sendMessage(
