@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct TextEditView: View {
+    @Environment(\.dismiss) var dismiss
     var title: String
     @State var value: String
     var onSubmit: (String) -> Void
@@ -13,8 +14,10 @@ struct TextEditView: View {
                     .disableAutocorrection(true)
                     .onSubmit {
                         value = value.trim()
+                        dismiss()
                         onSubmit(value)
                     }
+                    .submitLabel(.done)
             } footer: {
                 footer
             }
