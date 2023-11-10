@@ -1052,7 +1052,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Moblin/Preview Content\"";
-				DEVELOPMENT_TEAM = 6A8UQLT74G;
+				DEVELOPMENT_TEAM = 67L4CU97F2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Moblin/Info.plist;
@@ -1076,7 +1076,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.66.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobling;
+				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Moblinr;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -1098,7 +1098,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Moblin/Preview Content\"";
-				DEVELOPMENT_TEAM = 6A8UQLT74G;
+				DEVELOPMENT_TEAM = 67L4CU97F2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Moblin/Info.plist;
@@ -1122,7 +1122,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.66.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobling;
+				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Moblinr;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;

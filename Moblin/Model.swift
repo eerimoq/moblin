@@ -512,7 +512,7 @@ final class Model: ObservableObject {
                 continue
             }
             if let dataSources = inputPort.dataSources, !dataSources.isEmpty {
-                for dataSource in dataSources where dataSource.orientation == .front {
+                for dataSource in dataSources where dataSource.orientation == .bottom {
                     do {
                         try inputPort.setPreferredDataSource(dataSource)
                     } catch {

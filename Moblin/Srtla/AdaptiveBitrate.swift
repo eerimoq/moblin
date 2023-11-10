@@ -62,6 +62,8 @@ class AdaptiveBitrate {
         if avgRtt > 450 {
             avgRtt = 450
         }
+        avgRtt = avgRtt*100.rounded()/100
+        fastRtt = fastRtt*100.rounded()/100
     }
 
     private func increaseTempMaxBitrate(
@@ -107,12 +109,17 @@ class AdaptiveBitrate {
         fastPif = fastPif + Double(stats.pktFlightSize) * 0.33
     }
 
-    private func decreaseMaxRateIfPifIsHigh(factor: Double, pifMax: Double) {
+    private func decreaseMaxRateIfPifIsHigh(factor: Double, pifMax: Double ,minimumDecrease : Int32) {
         if smoothPif > pifMax {
-            tempMaxBitrate = Int32(Double(tempMaxBitrate) * factor)
-            logger.debug("PIF: decreasing bitrate  by \(factor) smoothpif \(smoothPif) >  pifmax \(pifMax)")
-            
-            logAdaptiveAcion(actionTaken:  "PIF: decreasing bitrate  by \(factor) smoothpif \(smoothPif) >  pifmax \(pifMax)")
+            var newMaxBitrate = Int32(Double(tempMaxBitrate) * factor)
+            var differece = tempMaxBitrate - newMaxBitrate
+            if differece < minimumDecrease {
+                tempMaxBitrate = tempMaxBitrate - minimumDecrease
+                logAdaptiveAcion(actionTaken:  "PIF: decreasing bitrate  by \(minimumDecrease)  smoothpif \(smoothPif) >  pifmax \(pifMax)")
+            }else{
+                tempMaxBitrate = Int32(Double(tempMaxBitrate) * factor)
+                logAdaptiveAcion(actionTaken:  "PIF: decreasing bitrate  by \(factor) % smoothpif \(smoothPif) >  pifmax \(pifMax)")
+            }
         }
     }
     private func logAdaptiveAcion(actionTaken:String){
@@ -129,13 +136,26 @@ class AdaptiveBitrate {
             adaptiveActionsTaken.remove(at: 0)
         }
     }
-    private func decreaseMaxRateIfRttIsHigh(factor: Double, rttMax: Double) {
+    private func decreaseMaxRateIfRttIsHigh(factor: Double, rttMax: Double, minimumDecrease : Int32) {
         if avgRtt > rttMax {
-            tempMaxBitrate = Int32(Double(tempMaxBitrate) * factor)
-            logger.debug("RTT: decreasing bitrate  by \(factor) avgrtt \(avgRtt) >  rttmax \(rttMax)")
+            var newMaxBitrate = Int32(Double(tempMaxBitrate) * factor)
+            var differece = tempMaxBitrate - newMaxBitrate
+            
+            if differece < minimumDecrease {
+                tempMaxBitrate = tempMaxBitrate - minimumDecrease
+                logAdaptiveAcion(actionTaken:"RTT: dec bitrate  by \(minimumDecrease) avgrtt : \(avgRtt) > rttmax : \(rttMax )")
+            
+            }else{
+                tempMaxBitrate = newMaxBitrate
+                logAdaptiveAcion(actionTaken:"RTT: dec bitrate  to \(factor) % avgrtt : \(avgRtt) > rttmax : \(rttMax )")
+            }
             
             
-            logAdaptiveAcion(actionTaken:"RTT: decreasing bitrate  by \(factor) avgrtt \(avgRtt) >  rttmax \(rttMax)")
+            
+            
+           
+            
+            
         }
     }
 
@@ -172,13 +192,22 @@ class AdaptiveBitrate {
     private func decreaseMaxRateIfRttDiffIsHigh(
         _ stats: SRTPerformanceData,
         factor: Double,
-        rttSpikeAllowed: Double
+        rttSpikeAllowed: Double, minimumDecrease: Int32
     ) {
         if stats.msRTT > avgRtt + rttSpikeAllowed {
-            tempMaxBitrate = Int32(Double(tempMaxBitrate) * factor)
-            logger.debug("RTT: decreasing bitrate  by \(factor) msrtt \(stats.msRTT) >  avgrtt + rttspikeallow \(avgRtt)  + \(rttSpikeAllowed) " )
+            var newMaxBitrate = Int32(Double(tempMaxBitrate) * factor)
+            var differece = tempMaxBitrate - newMaxBitrate
+            if differece < minimumDecrease {
+                tempMaxBitrate = tempMaxBitrate - minimumDecrease
+                logAdaptiveAcion(actionTaken:"RTT: decreasing bitrate  by \(minimumDecrease) msrtt \(stats.msRTT) >  avgrtt + allow \(avgRtt)  + \(rttSpikeAllowed) " )
+            }else
+            {
+                tempMaxBitrate = newMaxBitrate
+                logAdaptiveAcion(actionTaken:"RTT: decreasing bitrate  by \(factor) % msrtt \(stats.msRTT) >  avgrtt + allow \(avgRtt)  + \(rttSpikeAllowed) " )
+            }
+           
             
-            logAdaptiveAcion(actionTaken:"RTT: decreasing bitrate  by \(factor) msrtt \(stats.msRTT) >  avgrtt + rttspikeallow \(avgRtt)  + \(rttSpikeAllowed) " )
+            
         }
     }
 
@@ -233,7 +262,7 @@ class AdaptiveBitrate {
         _ stats: SRTPerformanceData
     ) {
         let videoSize = delegate.adaptiveBitrateGetVideoSize()
-        if curBitrate <= 250_000,
+        if curBitrate <= 1000_000,
            stats.msRTT > 450 || stats.msRTT > avgRtt * 3 || smoothPif > Double( adaptiveBitratePacketsInFlightLimit)
         {
             if videoSize.width != 16 {
@@ -281,9 +310,9 @@ class AdaptiveBitrate {
             allowedPifJitter: 10
         )
         // slow decreases if needed
-        decreaseMaxRateIfPifIsHigh(factor: 0.9, pifMax: 100)
-        decreaseMaxRateIfRttIsHigh(factor: 0.9, rttMax: 250)
-        decreaseMaxRateIfRttDiffIsHigh(stats, factor: 0.9, rttSpikeAllowed: 50)
+        decreaseMaxRateIfPifIsHigh(factor: 0.9, pifMax: 100,minimumDecrease: 250_000)
+        decreaseMaxRateIfRttIsHigh(factor: 0.9, rttMax: 250,minimumDecrease: 250_000)
+        decreaseMaxRateIfRttDiffIsHigh(stats, factor: 0.9, rttSpikeAllowed: 50,minimumDecrease: 250_000)
         calculateCurrentBitrate(stats)
         adjustVideoQualityIfNeededToActuallyDropBitrateLow(stats)
         if prevBitrate != curBitrate {
