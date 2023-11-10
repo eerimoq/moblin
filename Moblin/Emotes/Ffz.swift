@@ -21,7 +21,7 @@ func fetchFfzEmotes(platform: EmotesPlatform,
     var message: String?
     var emotes: [String: Emote] = [:]
     do {
-        emotes = try emotes.merging(await fetchGlobalEmotes()) { $1 }
+        emotes = try emotes.merging(await fetchGlobalEmotes(platform: platform)) { $1 }
     } catch {
         message = "Failed to get FFZ emotes"
     }
@@ -46,9 +46,10 @@ private func makeUrl(emote: FfzEmote) -> URL? {
     return url
 }
 
-private func fetchGlobalEmotes() async throws -> [String: Emote] {
+private func fetchGlobalEmotes(platform: EmotesPlatform) async throws -> [String: Emote] {
     return try await fetchEmotes(
-        url: "https://api.betterttv.net/3/cached/frankerfacez/emotes/global"
+        url: "https://api.betterttv.net/3/cached/frankerfacez/emotes/global",
+        platform: platform
     )
 }
 
@@ -59,18 +60,19 @@ private func fetchChannelEmotes(platform: EmotesPlatform,
         return [:]
     }
     return try await fetchEmotes(
-        url: "https://api.betterttv.net/3/cached/frankerfacez/users/\(platform)/\(channelId)"
+        url: "https://api.betterttv.net/3/cached/frankerfacez/users/\(platform)/\(channelId)",
+        platform: platform
     )
 }
 
-private func fetchEmotes(url: String) async throws -> [String: Emote] {
+private func fetchEmotes(url: String, platform: EmotesPlatform) async throws -> [String: Emote] {
     var emotes: [String: Emote] = [:]
     guard let url = URL(string: url) else {
         return [:]
     }
     let (data, response) = try await httpGet(from: url)
     if response.isNotFound {
-        logger.warning("FFZ emotes not found (HTTP 404)")
+        logger.warning("emotes: \(platform): FFZ emotes not found (HTTP 404)")
         return [:]
     }
     if !response.isSuccessful {
@@ -78,7 +80,7 @@ private func fetchEmotes(url: String) async throws -> [String: Emote] {
     }
     for emote in try JSONDecoder().decode([FfzEmote].self, from: data) {
         guard let url = makeUrl(emote: emote) else {
-            logger.error("Failed to create URL for FFZ emote \(emote.code)")
+            logger.error("emotes: \(platform): Failed to create URL for FFZ emote \(emote.code)")
             continue
         }
         emotes[emote.code] = Emote(url: url)
