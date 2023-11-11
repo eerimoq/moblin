@@ -5,6 +5,9 @@ struct AboutSettingsView: View {
         Form {
             Section {
                 TextItemView(name: "Version", value: version())
+                NavigationLink(destination: AboutDesignedBySettingsView()) {
+                    Text("Designed by")
+                }
                 NavigationLink(destination: AboutLicensesSettingsView()) {
                     Text("Licenses")
                 }

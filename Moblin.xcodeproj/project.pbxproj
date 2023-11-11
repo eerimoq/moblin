@@ -35,6 +35,7 @@
 		0330F2B02AFAD26C001262C3 /* YouTubeLiveChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0330F2AF2AFAD26C001262C3 /* YouTubeLiveChat.swift */; };
 		0330F2B52AFADD18001262C3 /* StreamYouTubeSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0330F2B42AFADD18001262C3 /* StreamYouTubeSettingsView.swift */; };
 		03403DF62AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */; };
+		0344AFE72B00023E00C177DB /* AboutDesignedBySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0344AFE62B00023E00C177DB /* AboutDesignedBySettingsView.swift */; };
 		035D371E2AB039C800045B92 /* StreamVideoCodecSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D371D2AB039C800045B92 /* StreamVideoCodecSettingsView.swift */; };
 		035D37282AB0EBB500045B92 /* IconAndTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37272AB0EBB500045B92 /* IconAndTextView.swift */; };
 		035D372C2AB103E600045B92 /* SRTHaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 035D372B2AB103E600045B92 /* SRTHaishinKit */; };
@@ -150,6 +151,7 @@
 		0330F2AF2AFAD26C001262C3 /* YouTubeLiveChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YouTubeLiveChat.swift; sourceTree = "<group>"; };
 		0330F2B42AFADD18001262C3 /* StreamYouTubeSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamYouTubeSettingsView.swift; sourceTree = "<group>"; };
 		03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBrowserSettingsView.swift; sourceTree = "<group>"; };
+		0344AFE62B00023E00C177DB /* AboutDesignedBySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutDesignedBySettingsView.swift; sourceTree = "<group>"; };
 		035D371D2AB039C800045B92 /* StreamVideoCodecSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoCodecSettingsView.swift; sourceTree = "<group>"; };
 		035D37272AB0EBB500045B92 /* IconAndTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconAndTextView.swift; sourceTree = "<group>"; };
 		035D37362AB230E700045B92 /* StreamVideoBitrateSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoBitrateSettingsView.swift; sourceTree = "<group>"; };
@@ -584,6 +586,7 @@
 			children = (
 				0379BBAC2AAD964000B718B6 /* AboutSettingsView.swift */,
 				0379BBBF2AADC4EC00B718B6 /* AboutLicensesSettingsView.swift */,
+				0344AFE62B00023E00C177DB /* AboutDesignedBySettingsView.swift */,
 			);
 			path = About;
 			sourceTree = "<group>";
@@ -847,6 +850,7 @@
 				03A983642A9A05D7008FF0DB /* StreamView.swift in Sources */,
 				0379BB9C2AAD819800B718B6 /* StreamOverlayLeftView.swift in Sources */,
 				0315A3672AA33C6A00295443 /* WidgetImageSettingsView.swift in Sources */,
+				0344AFE72B00023E00C177DB /* AboutDesignedBySettingsView.swift in Sources */,
 				030947C32A9C0496003FC387 /* StreamOverlayChatView.swift in Sources */,
 				03CC5F892AD060DB0019CBA5 /* WidgetBrowserUrlSettingsView.swift in Sources */,
 				03A983622A9A05D7008FF0DB /* MainView.swift in Sources */,
