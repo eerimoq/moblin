@@ -12,7 +12,6 @@ struct TextEditView: View {
     private func submit() {
         submitted = true
         value = value.trim()
-        print("submit")
         onSubmit(value)
     }
 
