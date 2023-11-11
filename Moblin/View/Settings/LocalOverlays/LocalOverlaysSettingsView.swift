@@ -7,6 +7,10 @@ struct LocalOverlaysSettingsView: View {
         model.database.show
     }
 
+    var chat: SettingsChat {
+        model.database.chat
+    }
+
     var body: some View {
         Form {
             Section("Top left") {
@@ -29,13 +33,14 @@ struct LocalOverlaysSettingsView: View {
                     model.store()
                 }))
                 NavigationLink(destination: LocalOverlaysChatSettingsView(
-                    timestampColor: model.database.chat.timestampColor.color(),
-                    usernameColor: model.database.chat.usernameColor.color(),
-                    messageColor: model.database.chat.messageColor.color(),
-                    backgroundColor: model.database.chat.backgroundColor.color(),
-                    shadowColor: model.database.chat.shadowColor.color(),
-                    height: model.database.chat.height!,
-                    width: model.database.chat.width!
+                    timestampColor: chat.timestampColor.color(),
+                    usernameColor: chat.usernameColor.color(),
+                    messageColor: chat.messageColor.color(),
+                    backgroundColor: chat.backgroundColor.color(),
+                    shadowColor: chat.shadowColor.color(),
+                    height: chat.height!,
+                    width: chat.width!,
+                    fontSize: chat.fontSize
                 )) {
                     Toggle("Chat", isOn: Binding(get: {
                         show.chat

@@ -109,18 +109,7 @@ struct LocalOverlaysChatSettingsView: View {
     @State var shadowColor: Color
     @State var height: Double
     @State var width: Double
-
-    func submitFontSize(value: String) {
-        guard let fontSize = Float(value) else {
-            return
-        }
-        guard fontSize > 0 else {
-            return
-        }
-        model.database.chat.fontSize = fontSize
-        model.store()
-        model.reloadChatMessages()
-    }
+    @State var fontSize: Float
 
     func submitMaximumAge(value: String) {
         guard let maximumAge = Int(value) else {
@@ -136,15 +125,27 @@ struct LocalOverlaysChatSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: TextEditView(
-                    title: "Font size",
-                    value: String(model.database.chat.fontSize),
-                    onSubmit: submitFontSize
-                )) {
-                    TextItemView(
-                        name: "Font size",
-                        value: String(model.database.chat.fontSize)
+                HStack {
+                    Text("Font size")
+                    Slider(
+                        value: $fontSize,
+                        in: 10 ... 30,
+                        step: 1,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            model.database.chat.fontSize = fontSize
+                            model.store()
+                            model.reloadChatMessages()
+                        }
                     )
+                    .onChange(of: fontSize) { value in
+                        model.database.chat.fontSize = value
+                        model.reloadChatMessages()
+                    }
+                    Text(String(Int(fontSize)))
+                        .frame(width: 25)
                 }
                 Toggle(isOn: Binding(get: {
                     model.database.chat.timestampColorEnabled
