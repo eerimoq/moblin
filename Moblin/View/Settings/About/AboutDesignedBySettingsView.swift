@@ -4,7 +4,7 @@ struct Designer {
     var name: String
 }
 
-private let designers: [Designer] = [
+private let designers = [
     Designer(name: "Erik Moqvist"),
     Designer(name: "JohannesLiv"),
     Designer(name: "Rick9K"),

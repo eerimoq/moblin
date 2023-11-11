@@ -14,7 +14,7 @@ struct SettingsLayoutMenuItem {
     var text: String
 }
 
-private let layoutMenuItems: [SettingsLayoutMenuItem] = [
+private let layoutMenuItems = [
     SettingsLayoutMenuItem(
         layout: .right,
         image: "rectangle.righthalf.filled",
