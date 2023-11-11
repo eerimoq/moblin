@@ -2,9 +2,12 @@ import SwiftUI
 
 struct StreamUrlSettingsView: View {
     @EnvironmentObject var model: Model
+    @Environment(\.dismiss) var dismiss
     var stream: SettingsStream
     @State var value: String
     @State var show: Bool = false
+    @State var changed: Bool = false
+    @State var submitted: Bool = false
 
     func submitUrl() {
         value = value.trim()
@@ -12,8 +15,10 @@ struct StreamUrlSettingsView: View {
             model.makeErrorToast(title: message)
             return
         }
+        submitted = true
         stream.url = value
         model.storeAndReloadStreamIfEnabled(stream: stream)
+        dismiss()
     }
 
     var body: some View {
@@ -23,6 +28,10 @@ struct StreamUrlSettingsView: View {
                     TextField("", text: $value)
                         .onSubmit {
                             submitUrl()
+                        }
+                        .submitLabel(.done)
+                        .onChange(of: value) { _ in
+                            changed = true
                         }
                         .disableAutocorrection(true)
                         .opacity(show ? 1 : 0)
@@ -170,6 +179,11 @@ struct StreamUrlSettingsView: View {
                         }
                     }
                 }
+            }
+        }
+        .onDisappear {
+            if changed && !submitted {
+                submitUrl()
             }
         }
         .navigationTitle("URL")
