@@ -895,8 +895,8 @@ final class Model: ObservableObject {
         }
     }
 
-    func resetSelectedScene() {
-        if !enabledScenes.isEmpty {
+    func resetSelectedScene(changeScene: Bool = true) {
+        if !enabledScenes.isEmpty && changeScene {
             selectedSceneId = enabledScenes[0].id
             sceneIndex = 0
         }
