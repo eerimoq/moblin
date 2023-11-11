@@ -82,7 +82,7 @@ struct ControlBarView: View {
                     .offset(x: 2)
                     .frame(width: buttonSize, height: buttonSize)
                 Button {
-                    model.showingSettings = true
+                    model.showingSettings.toggle()
                 } label: {
                     Image(systemName: "gearshape")
                         .frame(width: buttonSize, height: buttonSize)
