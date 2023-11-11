@@ -1,5 +1,7 @@
 import SwiftUI
 
+let settingsHalfWidth = 350.0
+
 enum SettingsLayout {
     case full
     case left
@@ -44,6 +46,20 @@ struct SettingsToolbar: ToolbarContent {
                     Text("Close")
                 })
             }
+        }
+    }
+}
+
+struct QuickSettingsToolbar: ToolbarContent {
+    let done: () -> Void
+
+    var body: some ToolbarContent {
+        ToolbarItem(placement: .navigationBarTrailing) {
+            Button(action: {
+                done()
+            }, label: {
+                Text("Close")
+            })
         }
     }
 }

@@ -67,37 +67,27 @@ struct MicButtonView: View {
     var done: () -> Void
 
     var body: some View {
-        VStack(spacing: 0) {
-            HStack {
-                Spacer()
-                Button(action: {
-                    done()
-                }, label: {
-                    Text("Close")
-                        .padding(5)
-                        .foregroundColor(.blue)
-                })
-            }
-            .background(Color(uiColor: .systemGroupedBackground))
-            Form {
-                Section("Mic") {
-                    Picker("", selection: Binding(get: {
-                        model.mic
-                    }, set: { mic, _ in
-                        selectedMic = mic
-                    })) {
-                        ForEach(model.listMics()) { mic in
-                            Text(mic.name).tag(mic)
-                        }
+        Form {
+            Section("Mic") {
+                Picker("", selection: Binding(get: {
+                    model.mic
+                }, set: { mic, _ in
+                    selectedMic = mic
+                })) {
+                    ForEach(model.listMics()) { mic in
+                        Text(mic.name).tag(mic)
                     }
-                    .onChange(of: selectedMic) { mic in
-                        model.selectMicById(id: mic.id)
-                        done()
-                    }
-                    .pickerStyle(.inline)
-                    .labelsHidden()
                 }
+                .onChange(of: selectedMic) { mic in
+                    model.selectMicById(id: mic.id)
+                    done()
+                }
+                .pickerStyle(.inline)
+                .labelsHidden()
             }
+        }
+        .toolbar {
+            QuickSettingsToolbar(done: done)
         }
     }
 }

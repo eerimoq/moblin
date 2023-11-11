@@ -9,7 +9,7 @@ struct MainView: View {
         if model.settingsLayout == .full {
             return width
         } else {
-            return 350
+            return settingsHalfWidth
         }
     }
 
@@ -79,27 +79,27 @@ struct MainView: View {
                 }
             }
             if model.showingBitrate {
-                GeometryReader { metrics in
-                    HStack {
-                        Spacer()
+                HStack {
+                    Spacer()
+                    NavigationStack {
                         StreamVideoBitrateSettingsButtonView(selection: model.stream
                             .bitrate)
                         {
                             model.showingBitrate = false
                         }
-                        .frame(width: metrics.size.width * 0.5)
                     }
+                    .frame(width: settingsHalfWidth)
                 }
             }
             if model.showingMic {
-                GeometryReader { metrics in
-                    HStack {
-                        Spacer()
+                HStack {
+                    Spacer()
+                    NavigationStack {
                         MicButtonView(selectedMic: model.mic) {
                             model.showingMic = false
                         }
-                        .frame(width: metrics.size.width * 0.5)
                     }
+                    .frame(width: settingsHalfWidth)
                 }
             }
         }
