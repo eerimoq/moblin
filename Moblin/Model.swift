@@ -1602,9 +1602,20 @@ final class Model: ObservableObject {
             onSuccess: {
                 self.mthkView.isMirrored = isMirrored
                 _ = self.media.setCameraZoomLevel(level: self.zoomLevel, ramp: false)
+                if let device = self.cameraDevice {
+                    // self.setMaxAutoExposure(device: device)
+                }
             }
         )
         zoomLevelPinch = zoomLevel
+    }
+
+    private func setMaxAutoExposure(device: AVCaptureDevice) {
+        do {
+            try device.lockForConfiguration()
+            device.activeMaxExposureDuration = device.activeFormat.maxExposureDuration
+            device.unlockForConfiguration()
+        } catch {}
     }
 
     private func getVideoStabilizationMode() -> AVCaptureVideoStabilizationMode {
