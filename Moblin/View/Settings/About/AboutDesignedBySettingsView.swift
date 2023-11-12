@@ -14,8 +14,15 @@ private let designers = [
 struct AboutDesignedBySettingsView: View {
     var body: some View {
         Form {
-            ForEach(designers, id: \.name) { designer in
-                Text(designer.name)
+            Section {
+                ForEach(designers, id: \.name) { designer in
+                    Text(designer.name)
+                }
+            } footer: {
+                Text("""
+                An incomplete list of people who has contributed ideas, programming,
+                testing, promotion and more.
+                """)
             }
         }
         .navigationTitle("Designed by")
