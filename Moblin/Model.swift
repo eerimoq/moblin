@@ -154,6 +154,7 @@ final class Model: ObservableObject {
         }
     }
 
+    @Published var bias: Float = 0.0
     @Published var showingSettings = false
     @Published var settingsLayout: SettingsLayout = .right
     @Published var showChatMessages = true
@@ -1603,7 +1604,7 @@ final class Model: ObservableObject {
                 self.mthkView.isMirrored = isMirrored
                 _ = self.media.setCameraZoomLevel(level: self.zoomLevel, ramp: false)
                 if let device = self.cameraDevice {
-                    // self.setMaxAutoExposure(device: device)
+                    self.setMaxAutoExposure(device: device)
                 }
             }
         )
@@ -1614,6 +1615,26 @@ final class Model: ObservableObject {
         do {
             try device.lockForConfiguration()
             device.activeMaxExposureDuration = device.activeFormat.maxExposureDuration
+            device.unlockForConfiguration()
+        } catch {}
+    }
+
+    func setExposureBias(bias: Float) {
+        guard let position = cameraPosition else {
+            return
+        }
+        guard let device = preferredCamera(position: position) else {
+            return
+        }
+        if bias < device.minExposureTargetBias {
+            return
+        }
+        if bias > device.maxExposureTargetBias {
+            return
+        }
+        do {
+            try device.lockForConfiguration()
+            device.setExposureTargetBias(bias)
             device.unlockForConfiguration()
         } catch {}
     }

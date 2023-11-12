@@ -25,6 +25,20 @@ struct DebugSettingsView: View {
                 ) {
                     Text("Adaptive bitrate")
                 }
+                Slider(
+                    value: $model.bias,
+                    in: -2 ... 2,
+                    step: 0.2,
+                    onEditingChanged: { begin in
+                        guard !begin else {
+                            return
+                        }
+                        model.setExposureBias(bias: model.bias)
+                    }
+                )
+                .onChange(of: model.bias) { _ in
+                    model.setExposureBias(bias: model.bias)
+                }
             }
         }
         .navigationTitle("Debug")

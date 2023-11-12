@@ -102,6 +102,8 @@ final class Media: NSObject {
 
     func srtStopStream() {
         clearTemporaryVideoSize()
+        srtStream?.close()
+        srtStream = nil
         srtConnection.close()
         srtla?.stop()
         srtla = nil
@@ -198,7 +200,9 @@ final class Media: NSObject {
             observer: self
         )
         rtmpStream?.close()
+        rtmpStream = nil
         rtmpConnection.close()
+        rtmpConnection = RTMPConnection()
     }
 
     @objc
