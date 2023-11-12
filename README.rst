@@ -40,7 +40,7 @@ Features
 
 - YouTube integration.
 
-  - None.
+  - Scuffed chat.
 
 - Kick integration.
 
@@ -131,8 +131,6 @@ Ideas/plan
 
 - Image exposure?
 
-- Image night mode?
-
 - A list of usernames whos messages will not get displayed on screen.
 
 - Audio filters. For example volume limiter.
@@ -142,9 +140,11 @@ Ideas/plan
     filters when you have the time. I think that would be the same
     order in terms of complexity to implement as well.
 
-- Use multiple mics at the same time?
+- Show two cameras at the same time.
 
-- Kick chat emotes.
+- Use external UVC camera. Looks like iOS 17 supports them.
+
+- Use multiple mics at the same time?
 
 - Reintroduce settings in portrait.
 
@@ -155,15 +155,9 @@ Ideas/plan
 - Optionally do not automatically start using external mic is plugged
   in.
 
-- Emotes cache on disk?
-
 - Advanced settings toggle.
 
 - Non-mirrored widgets locally when using front camera.
-
-- Use external UVC camera. Looks like iOS 17 supports them.
-
-- Show two cameras at the same time.
 
 - Add Twitch/Kick Icons next to chat messages depending on which
   platform the message came from.
@@ -183,13 +177,6 @@ Ideas/plan
   Twitch.
 
 - Play music and short sound samples.
-
-- Optionally show black screen to save energy. Possible to turn off
-  completely?
-
-  - https://developer.apple.com/documentation/uikit/uiscreen
-
-    - ``brightness`` and ``wantsSoftwareDimming``.
 
 - Record to disk.
 
