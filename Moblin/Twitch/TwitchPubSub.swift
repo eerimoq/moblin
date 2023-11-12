@@ -159,7 +159,6 @@ final class TwitchPubSub: NSObject {
         webSocket.receive { result in
             switch result {
             case .failure:
-                self.reconnect()
                 return
             case let .success(message):
                 switch message {
