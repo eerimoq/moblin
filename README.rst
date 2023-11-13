@@ -129,6 +129,8 @@ ToDo
 Ideas/plan
 ==========
 
+- Mic settings per scene.
+
 - Image exposure?
 
 - A list of usernames whos messages will not get displayed on screen.
