@@ -351,6 +351,7 @@ class SettingsBitratePreset: Codable, Identifiable {
 enum SettingsVideoStabilizationMode: String, Codable, CaseIterable {
     case off = "Off"
     case standard = "Standard"
+    case cinematic = "Cinematic"
 }
 
 var videoStabilizationModes = SettingsVideoStabilizationMode.allCases.map { $0.rawValue }

@@ -1680,6 +1680,8 @@ final class Model: ObservableObject {
             return .off
         case .standard:
             return .standard
+        case .cinematic:
+            return .cinematic
         }
     }
 
