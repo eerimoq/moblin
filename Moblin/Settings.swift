@@ -387,6 +387,14 @@ class SettingsChat: Codable {
     var maximumAgeEnabled: Bool? = false
 }
 
+enum SettingsMic: String, Codable, CaseIterable {
+    case bottom = "Bottom"
+    case front = "Front"
+    case back = "Back"
+}
+
+var mics = SettingsMic.allCases.map { $0.rawValue }
+
 class Database: Codable {
     var streams: [SettingsStream] = []
     var scenes: [SettingsScene] = []
@@ -403,6 +411,7 @@ class Database: Codable {
     var videoStabilizationMode: SettingsVideoStabilizationMode = .off
     var chat: SettingsChat = .init()
     var batteryPercentage: Bool? = false
+    var mic: SettingsMic? = .bottom
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -735,6 +744,10 @@ final class Settings {
         }
         if realDatabase.chat.maximumAgeEnabled == nil {
             realDatabase.chat.maximumAgeEnabled = false
+            store()
+        }
+        if realDatabase.mic == nil {
+            realDatabase.mic = .bottom
             store()
         }
     }

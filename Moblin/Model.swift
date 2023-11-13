@@ -521,20 +521,31 @@ final class Model: ObservableObject {
         return mics
     }
 
-    private func setPreferFrontMic() {
+    private func setMic() {
+        var wantedOrientation: AVAudioSession.Orientation
+        switch database.mic! {
+        case .bottom:
+            wantedOrientation = .bottom
+        case .front:
+            wantedOrientation = .front
+        case .back:
+            wantedOrientation = .back
+        }
         let session = AVAudioSession.sharedInstance()
         for inputPort in session.availableInputs ?? [] {
             if inputPort.portType != .builtInMic {
                 continue
             }
             if let dataSources = inputPort.dataSources, !dataSources.isEmpty {
-                for dataSource in dataSources where dataSource.orientation == .front {
+                for dataSource in dataSources
+                    where dataSource.orientation == wantedOrientation
+                {
                     do {
                         try inputPort.setPreferredDataSource(dataSource)
                     } catch {
                         logger
                             .error(
-                                "Failed to set front mic as preferred with error \(error)"
+                                "Failed to set bottom mic as preferred with error \(error)"
                             )
                     }
                 }
@@ -587,7 +598,7 @@ final class Model: ObservableObject {
         media.onAudioMuteChange = updateAudioLevel
         media.onVideoDeviceInUseByAnotherClient = handleVideoDeviceInUseByAnotherClient
         setupAudioSession()
-        setPreferFrontMic()
+        setMic()
         backZoomPresetId = database.zoom.back[0].id
         frontZoomPresetId = database.zoom.front[0].id
         mthkView.videoGravity = .resizeAspect
