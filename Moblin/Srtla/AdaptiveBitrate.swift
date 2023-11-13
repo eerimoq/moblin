@@ -118,8 +118,8 @@ class AdaptiveBitrate {
         minimumDecrease: Int32
     ) {
         if smoothPif > pifMax {
-            var newMaxBitrate = Int32(Double(tempMaxBitrate) * factor)
-            var differece = tempMaxBitrate - newMaxBitrate
+            let newMaxBitrate = Int32(Double(tempMaxBitrate) * factor)
+            let differece = tempMaxBitrate - newMaxBitrate
             if differece < minimumDecrease {
                 tempMaxBitrate -= minimumDecrease
                 logAdaptiveAcion(
@@ -159,8 +159,8 @@ class AdaptiveBitrate {
         minimumDecrease: Int32
     ) {
         if avgRtt > rttMax {
-            var newMaxBitrate = Int32(Double(tempMaxBitrate) * factor)
-            var differece = tempMaxBitrate - newMaxBitrate
+            let newMaxBitrate = Int32(Double(tempMaxBitrate) * factor)
+            let differece = tempMaxBitrate - newMaxBitrate
 
             if differece < minimumDecrease {
                 tempMaxBitrate -= minimumDecrease
@@ -203,8 +203,8 @@ class AdaptiveBitrate {
         rttSpikeAllowed: Double, minimumDecrease: Int32
     ) {
         if stats.msRTT > avgRtt + rttSpikeAllowed {
-            var newMaxBitrate = Int32(Double(tempMaxBitrate) * factor)
-            var differece = tempMaxBitrate - newMaxBitrate
+            let newMaxBitrate = Int32(Double(tempMaxBitrate) * factor)
+            let differece = tempMaxBitrate - newMaxBitrate
             if differece < minimumDecrease {
                 tempMaxBitrate -= minimumDecrease
                 logAdaptiveAcion(
