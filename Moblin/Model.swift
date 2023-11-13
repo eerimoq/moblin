@@ -1015,7 +1015,7 @@ final class Model: ObservableObject {
 
     private func stopNetStream() {
         reconnectTimer?.invalidate()
-        rtmpStopStream()
+        media.rtmpStopStream()
         media.srtStopStream()
         streamStartDate = nil
         updateUptime(now: Date())
@@ -1650,10 +1650,6 @@ final class Model: ObservableObject {
 
     private func rtmpStartStream() {
         media.rtmpStartStream(url: stream.url)
-    }
-
-    private func rtmpStopStream() {
-        media.rtmpStopStream()
     }
 
     func toggleTorch() {

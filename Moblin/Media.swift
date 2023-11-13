@@ -102,8 +102,6 @@ final class Media: NSObject {
 
     func srtStopStream() {
         clearTemporaryVideoSize()
-        srtStream?.close()
-        srtStream = nil
         srtConnection.close()
         srtla?.stop()
         srtla = nil
