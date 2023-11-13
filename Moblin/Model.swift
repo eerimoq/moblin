@@ -631,6 +631,17 @@ final class Model: ObservableObject {
         for camera in listCameras() {
             logger.info("  \(camera.localizedName)")
         }
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(
+                                                   handleWillEnterForegroundNotification
+                                               ),
+                                               name: UIApplication
+                                                   .willEnterForegroundNotification,
+                                               object: nil)
+    }
+
+    @objc func handleWillEnterForegroundNotification() {
+        reloadConnections()
     }
 
     private func listCameras() -> [AVCaptureDevice] {
@@ -1033,6 +1044,11 @@ final class Model: ObservableObject {
         setStreamFPS()
         setStreamCodec()
         setStreamBitrate(stream: stream)
+        reloadConnections()
+        resetChat()
+    }
+
+    private func reloadConnections() {
         reloadTwitchChat()
         reloadTwitchPubSub()
         reloadKickPusher()
@@ -1195,16 +1211,7 @@ final class Model: ObservableObject {
         return streaming
     }
 
-    func reloadTwitchChat() {
-        twitchChat.stop()
-        if stream.twitchChannelName != "" {
-            twitchChat.start(
-                channelName: stream.twitchChannelName,
-                channelId: stream.twitchChannelId
-            )
-        } else {
-            logger.info("Twitch channel name not configured. No Twitch chat.")
-        }
+    private func resetChat() {
         chatPostsRate = "0.0/min"
         chatPostsTotal = 0
         chatSpeedTicks = 0
@@ -1214,6 +1221,18 @@ final class Model: ObservableObject {
         chatPostsRatePerSecond = 0
         chatPostsRatePerMinute = 0
         numberOfChatPostsPerMinute = 0
+    }
+
+    private func reloadTwitchChat() {
+        twitchChat.stop()
+        if stream.twitchChannelName != "" {
+            twitchChat.start(
+                channelName: stream.twitchChannelName,
+                channelId: stream.twitchChannelId
+            )
+        } else {
+            logger.info("Twitch channel name not configured. No Twitch chat.")
+        }
     }
 
     private func reloadTwitchPubSub() {
@@ -1255,23 +1274,28 @@ final class Model: ObservableObject {
 
     func twitchChannelNameUpdated() {
         reloadTwitchChat()
+        resetChat()
     }
 
     func twitchChannelIdUpdated() {
         reloadTwitchPubSub()
         reloadTwitchChat()
+        resetChat()
     }
 
     func kickChatroomIdUpdated() {
         reloadKickPusher()
+        resetChat()
     }
 
     func youTubeApiKeyUpdated() {
         reloadYouTubeLiveChat()
+        resetChat()
     }
 
     func youTubeVideoIdUpdated() {
         reloadYouTubeLiveChat()
+        resetChat()
     }
 
     func appendChatMessage(
