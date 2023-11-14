@@ -47,12 +47,7 @@ class LogAppender: LBLoggerAppender {
         line: Int,
         message: String
     ) {
-        let message = "haishinkit: \(filename(file.description)):\(line): \(message)"
-        if level == .trace {
-            logger.debug(message)
-        } else {
-            logger.info(message)
-        }
+        logger.debug("haishinkit: \(filename(file.description)):\(line): \(message)")
     }
 }
 
