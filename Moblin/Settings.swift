@@ -394,7 +394,18 @@ enum SettingsMic: String, Codable, CaseIterable {
     case back = "Back"
 }
 
-var mics = SettingsMic.allCases.map { $0.rawValue }
+enum SettingsLogLevel: String, Codable, CaseIterable {
+    case error = "Error"
+    case info = "Info"
+    case debug = "Debug"
+}
+
+let logLevels = SettingsLogLevel.allCases.map { $0.rawValue }
+
+class SettingsDebug: Codable {
+    var logLevel: SettingsLogLevel = .error
+    var srtOverlay: Bool = false
+}
 
 class Database: Codable {
     var streams: [SettingsStream] = []
@@ -413,6 +424,7 @@ class Database: Codable {
     var chat: SettingsChat = .init()
     var batteryPercentage: Bool? = false
     var mic: SettingsMic? = .bottom
+    var debug: SettingsDebug? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -749,6 +761,10 @@ final class Settings {
         }
         if realDatabase.mic == nil {
             realDatabase.mic = .bottom
+            store()
+        }
+        if realDatabase.debug == nil {
+            realDatabase.debug = .init()
             store()
         }
     }

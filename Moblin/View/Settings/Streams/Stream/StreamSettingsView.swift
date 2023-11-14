@@ -28,7 +28,7 @@ struct StreamSettingsView: View {
                 Text("Video")
             }
             NavigationLink(destination: StreamTwitchSettingsView(stream: stream)) {
-                Text("Twitch")
+                TextItemView(name: "Twitch", value: stream.twitchChannelName)
             }
             NavigationLink(destination: StreamKickSettingsView(stream: stream)) {
                 Text("Kick")

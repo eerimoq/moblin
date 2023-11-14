@@ -9,14 +9,23 @@ struct DebugSettingsView: View {
                 NavigationLink(destination: DebugLogSettingsView()) {
                     Text("Log")
                 }
-                Toggle("Debug", isOn: Binding(get: {
-                    logger.debugEnabled
-                }, set: { value in
-                    logger.debugEnabled = value
-                }))
+                NavigationLink(destination: DebugLogLevelSettingsView(level: model
+                        .database.debug!.logLevel.rawValue))
+                {
+                    TextItemView(
+                        name: "Log level",
+                        value: model.database.debug!.logLevel.rawValue
+                    )
+                }
                 NavigationLink(destination: DebugAudioSettingsView()) {
                     Text("Audio")
                 }
+                Toggle("SRT overlay", isOn: Binding(get: {
+                    model.database.debug!.srtOverlay
+                }, set: { value in
+                    model.database.debug!.srtOverlay = value
+                    model.store()
+                }))
                 NavigationLink(
                     destination: DebugAdaptiveBitrateSettingsView(
                         packetsInFlight: Double(model

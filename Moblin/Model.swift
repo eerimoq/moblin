@@ -3,6 +3,7 @@ import Collections
 import Combine
 import CoreMotion
 import HaishinKit
+import Logboard
 import Network
 import PhotosUI
 import SDWebImageSwiftUI
@@ -606,6 +607,7 @@ final class Model: ObservableObject {
             mthkView.fps = Double(database.maximumScreenFps)
         }
         logger.handler = debugLog(message:)
+        logger.debugEnabled = database.debug!.logLevel == .debug
         updateDigitalClock(now: Date())
         twitchChat = TwitchChatMoblin(model: self)
         reloadStream()
@@ -649,6 +651,11 @@ final class Model: ObservableObject {
                                                name: UIApplication
                                                    .willEnterForegroundNotification,
                                                object: nil)
+        let appender = LogAppender()
+        LBLogger.with("com.haishinkit.HaishinKit").appender = appender
+        LBLogger.with("com.haishinkit.SRTHaishinKit").appender = appender
+        LBLogger.with("com.haishinkit.HaishinKit").level = .debug
+        LBLogger.with("com.haishinkit.SRTHaishinKit").level = .debug
     }
 
     @objc func handleWillEnterForegroundNotification() {
@@ -767,7 +774,7 @@ final class Model: ObservableObject {
 
     private func updateSrtDebugLines() {
         let lines = media.getSrtStats()
-        if logger.debugEnabled {
+        if database.debug!.srtOverlay {
             srtDebugLines = lines
         } else {
             srtDebugLines = []
