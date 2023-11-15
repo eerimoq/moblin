@@ -111,6 +111,7 @@ final class Media: NSObject {
     func getSrtStats() -> [String] {
         let stats = srtConnection.performanceData
         adaptiveBitrate?.update(stats: stats)
+        
         if let  adapativeStats = adaptiveBitrate {
             return [
                 "R: \(stats.pktRetransTotal) N: \(stats.pktRecvNAKTotal) D: \(stats.pktSndDropTotal)",
@@ -459,10 +460,19 @@ extension Media: AdaptiveBitrateDelegate {
 
     func adaptiveBitrateSetTemporaryVideoSize(videoSize: VideoSize) {
         setTemporaryVideoSize(size: videoSize)
+        if videoSize.width == 16 {
+           // netStream.videoSettings.scalingMode = .trim
+        }else{
+           // netStream.videoSettings.scalingMode = .normal
+        }
+            
+        
     }
 
     func adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32) {
         netStream.videoSettings.bitRate = bitrate
+        
+        
         
         
         

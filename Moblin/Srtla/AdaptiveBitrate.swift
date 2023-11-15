@@ -21,8 +21,7 @@ class AdaptiveBitrate {
     private var fastPif : Double = 0
     private var targetVideoSize: VideoSize
     private weak var delegate: (any AdaptiveBitrateDelegate)!
-    private var adaptiveActionsTaken: [String] = []
-    
+    private var srtAdaptiveActions = Set<SrtAdaptiveAction>()
     init(
         targetVideoSize: VideoSize,
         targetBitrate: UInt32,
@@ -62,8 +61,7 @@ class AdaptiveBitrate {
         if avgRtt > 450 {
             avgRtt = 450
         }
-        avgRtt = avgRtt*100.rounded()/100
-        fastRtt = fastRtt*100.rounded()/100
+       
     }
 
     private func increaseTempMaxBitrate(
@@ -115,26 +113,27 @@ class AdaptiveBitrate {
             var differece = tempMaxBitrate - newMaxBitrate
             if differece < minimumDecrease {
                 tempMaxBitrate = tempMaxBitrate - minimumDecrease
-                logAdaptiveAcion(actionTaken:  "PIF: decreasing bitrate  by \(minimumDecrease)  smoothpif \(smoothPif) >  pifmax \(pifMax)")
+                logAdaptiveAcion(actionTaken:  "PIF: decreasing bitrate  by \(minimumDecrease/1000)  smoothpif \(Int( smoothPif)) >  pifmax \(pifMax)")
             }else{
                 tempMaxBitrate = Int32(Double(tempMaxBitrate) * factor)
-                logAdaptiveAcion(actionTaken:  "PIF: decreasing bitrate  by \(factor) % smoothpif \(smoothPif) >  pifmax \(pifMax)")
+                logAdaptiveAcion(actionTaken:  "PIF: decreasing bitrate  by \(factor) % smoothpif \(Int(smoothPif)) >  pifmax \(pifMax)")
             }
         }
     }
     private func logAdaptiveAcion(actionTaken:String){
         
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "HH:mm:ss.SSS"
-        let dateString = dateFormatter.string(from: Date())
+      
         
-      // var action : AdaptiveAction =   AdaptiveAction(actionTaken:   actionTaken)
+      
+        var action : SrtAdaptiveAction = SrtAdaptiveAction(actionTaken:   actionTaken)
+        srtAdaptiveActions.insert(action)
         
-        adaptiveActionsTaken.append(dateString + " " +  actionTaken)
-        while adaptiveActionsTaken.count > 6
-        {
-            adaptiveActionsTaken.remove(at: 0)
+        
+        while srtAdaptiveActions.count > 8 {
+            srtAdaptiveActions.removeFirst()
         }
+        
+       
     }
     private func decreaseMaxRateIfRttIsHigh(factor: Double, rttMax: Double, minimumDecrease : Int32) {
         if avgRtt > rttMax {
@@ -143,11 +142,11 @@ class AdaptiveBitrate {
             
             if differece < minimumDecrease {
                 tempMaxBitrate = tempMaxBitrate - minimumDecrease
-                logAdaptiveAcion(actionTaken:"RTT: dec bitrate  by \(minimumDecrease) avgrtt : \(avgRtt) > rttmax : \(rttMax )")
+                logAdaptiveAcion(actionTaken:"RTT: dec bitrate  by \(minimumDecrease/1000) avgrtt : \(Int(avgRtt)) > rttmax : \(rttMax )")
             
             }else{
                 tempMaxBitrate = newMaxBitrate
-                logAdaptiveAcion(actionTaken:"RTT: dec bitrate  to \(factor) % avgrtt : \(avgRtt) > rttmax : \(rttMax )")
+                logAdaptiveAcion(actionTaken:"RTT: dec bitrate  to \(factor) % avgrtt : \(Int(avgRtt)) > rttmax : \(rttMax )")
             }
             
             
@@ -173,7 +172,15 @@ class AdaptiveBitrate {
     }
     public var GetAdaptiveActions : [String] {
         get {
-            return adaptiveActionsTaken
+            var actions : [String] = []
+            for item in srtAdaptiveActions {
+                if item.isOld() {
+                    srtAdaptiveActions.remove(item)
+                }
+                actions.append(item.actionTaken)
+            }
+            
+            return actions
         }
     }
     
@@ -194,16 +201,16 @@ class AdaptiveBitrate {
         factor: Double,
         rttSpikeAllowed: Double, minimumDecrease: Int32
     ) {
-        if stats.msRTT > avgRtt + rttSpikeAllowed {
+        if fastRtt > avgRtt + rttSpikeAllowed {
             var newMaxBitrate = Int32(Double(tempMaxBitrate) * factor)
             var differece = tempMaxBitrate - newMaxBitrate
             if differece < minimumDecrease {
                 tempMaxBitrate = tempMaxBitrate - minimumDecrease
-                logAdaptiveAcion(actionTaken:"RTT: decreasing bitrate  by \(minimumDecrease) msrtt \(stats.msRTT) >  avgrtt + allow \(avgRtt)  + \(rttSpikeAllowed) " )
+                logAdaptiveAcion(actionTaken:"RTT: decreasing bitrate  by \(minimumDecrease/1000) msrtt \(fastRtt) >  avgrtt + allow \(Int(avgRtt))  + \(rttSpikeAllowed) " )
             }else
             {
                 tempMaxBitrate = newMaxBitrate
-                logAdaptiveAcion(actionTaken:"RTT: decreasing bitrate  by \(factor) % msrtt \(stats.msRTT) >  avgrtt + allow \(avgRtt)  + \(rttSpikeAllowed) " )
+                logAdaptiveAcion(actionTaken:"RTT: decreasing bitrate  by \(factor) % msrtt \(fastRtt) >  avgrtt + allow \(Int(avgRtt))  + \(rttSpikeAllowed) " )
             }
            
             
@@ -261,8 +268,11 @@ class AdaptiveBitrate {
     private func adjustVideoQualityIfNeededToActuallyDropBitrateLow(
         _ stats: SRTPerformanceData
     ) {
+        
+       
+        
         let videoSize = delegate.adaptiveBitrateGetVideoSize()
-        if curBitrate <= 1000_000,
+        if curBitrate <= 2000_000,
            stats.msRTT > 450 || stats.msRTT > avgRtt * 3 || smoothPif > Double( adaptiveBitratePacketsInFlightLimit)
         {
             if videoSize.width != 16 {
@@ -270,6 +280,7 @@ class AdaptiveBitrate {
                     width: 16,
                     height: 9
                 ))
+                
                 
             }
         } else if stats.msRTT > 450 {
@@ -310,9 +321,9 @@ class AdaptiveBitrate {
             allowedPifJitter: 10
         )
         // slow decreases if needed
-        decreaseMaxRateIfPifIsHigh(factor: 0.9, pifMax: 100,minimumDecrease: 250_000)
-        decreaseMaxRateIfRttIsHigh(factor: 0.9, rttMax: 250,minimumDecrease: 250_000)
-        decreaseMaxRateIfRttDiffIsHigh(stats, factor: 0.9, rttSpikeAllowed: 50,minimumDecrease: 250_000)
+        decreaseMaxRateIfPifIsHigh(factor: 0.9, pifMax: 100,minimumDecrease: 500_000)
+        decreaseMaxRateIfRttIsHigh(factor: 0.9, rttMax: 250,minimumDecrease: 500_000)
+        decreaseMaxRateIfRttDiffIsHigh(stats, factor: 0.9, rttSpikeAllowed: 50,minimumDecrease: 500_000)
         calculateCurrentBitrate(stats)
         adjustVideoQualityIfNeededToActuallyDropBitrateLow(stats)
         if prevBitrate != curBitrate {
@@ -322,5 +333,45 @@ class AdaptiveBitrate {
     }
 }
 
-
+class SrtAdaptiveAction : Hashable {
+    
+    private var _actionTaken : String
+    public var actionTaken : String {
+        get {
+            return _actionTaken
+        }
+    }
+    var dateCreated : Date
+    init(actionTaken : String) {
+        self.dateCreated = Date.now
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "HH:mm:ss.SSS"
+        let dateString = dateFormatter.string(from: self.dateCreated)
+        
+        self._actionTaken = dateString + ": " + actionTaken
+       
+    }
+    
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(dateCreated)
+    }
+    
+    static func == (lhs: SrtAdaptiveAction, rhs: SrtAdaptiveAction) -> Bool {
+        if lhs.dateCreated.timeIntervalSince1970 == rhs.dateCreated.timeIntervalSince1970 {
+            return true
+        }
+        return false
+    }
+    
+    public func isOld() -> Bool{
+        
+        
+        let x = Date.now.timeIntervalSince(dateCreated)*1000
+        if Int( x.rounded()) > 10000 {
+            return true
+        }
+        return false
+    }
+}
 
