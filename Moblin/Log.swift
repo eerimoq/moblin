@@ -10,14 +10,13 @@ class LogAppender: LBLoggerAppender {
 
     func append(
         _: LBLogger,
-        level: LBLogger.Level,
+        level _: LBLogger.Level,
         message: [Any],
         file: StaticString,
         function _: StaticString,
         line: Int
     ) {
         log(
-            level: level,
             file: file,
             line: line,
             message: message.map { String(describing: $0) }.joined(separator: "")
@@ -26,7 +25,7 @@ class LogAppender: LBLoggerAppender {
 
     func append(
         _: LBLogger,
-        level: LBLogger.Level,
+        level _: LBLogger.Level,
         format: String,
         arguments: CVarArg,
         file: StaticString,
@@ -34,7 +33,6 @@ class LogAppender: LBLoggerAppender {
         line: Int
     ) {
         log(
-            level: level,
             file: file,
             line: line,
             message: String(format: format, arguments)
