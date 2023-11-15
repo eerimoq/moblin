@@ -41,12 +41,7 @@ class LogAppender: LBLoggerAppender {
         )
     }
 
-    private func log(
-        level: LBLogger.Level,
-        file: StaticString,
-        line: Int,
-        message: String
-    ) {
+    private func log(file: StaticString, line: Int, message: String) {
         logger.debug("haishinkit: \(filename(file.description)):\(line): \(message)")
     }
 }
