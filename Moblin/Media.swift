@@ -111,14 +111,27 @@ final class Media: NSObject {
     func getSrtStats() -> [String] {
         let stats = srtConnection.performanceData
         adaptiveBitrate?.update(stats: stats)
-        return [
-            "pktRetransTotal: \(stats.pktRetransTotal)",
-            "pktRecvNAKTotal: \(stats.pktRecvNAKTotal)",
-            "pktSndDropTotal: \(stats.pktSndDropTotal)",
-            "msRTT: \(stats.msRTT)",
-            "pktFlightSize: \(stats.pktFlightSize)",
-            "pktSndBuf: \(stats.pktSndBuf)",
-        ]
+        if let adapativeStats = adaptiveBitrate {
+            return [
+                "R: \(stats.pktRetransTotal) N: \(stats.pktRecvNAKTotal) S: \(stats.pktSndDropTotal)",
+                "msRTT: \(stats.msRTT)",
+                """
+                pktFlightSize: \(stats.pktFlightSize)   \
+                \(adapativeStats.GetFastPif)   \
+                \(adapativeStats.GetSmoothPif)
+                """,
+                "B: \(adapativeStats.getCurrentBitrate) /  \(adapativeStats.getTempMaxBitrate)",
+            ] + adapativeStats.getAdaptiveActions
+        } else {
+            return [
+                "pktRetransTotal: \(stats.pktRetransTotal)",
+                "pktRecvNAKTotal: \(stats.pktRecvNAKTotal)",
+                "pktSndDropTotal: \(stats.pktSndDropTotal)",
+                "msRTT: \(stats.msRTT)",
+                "pktFlightSize: \(stats.pktFlightSize)",
+                "pktSndBuf: \(stats.pktSndBuf)",
+            ]
+        }
     }
 
     func updateSrtSpeed() {

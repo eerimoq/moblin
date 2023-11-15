@@ -177,15 +177,15 @@ class AdaptiveBitrate {
         }
     }
 
-    public var GetCurrentBitrate: Int32 {
+    public var getCurrentBitrate: Int32 {
         return curBitrate / 1000
     }
 
-    public var GetTempMaxBitrate: Int32 {
+    public var getTempMaxBitrate: Int32 {
         return tempMaxBitrate / 1000
     }
 
-    public var GetAdaptiveActions: [String] {
+    public var getAdaptiveActions: [String] {
         return adaptiveActionsTaken
     }
 
