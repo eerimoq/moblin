@@ -177,23 +177,23 @@ class AdaptiveBitrate {
         }
     }
 
-    public var getCurrentBitrate: Int32 {
+    var getCurrentBitrate: Int32 {
         return curBitrate / 1000
     }
 
-    public var getTempMaxBitrate: Int32 {
+    var getTempMaxBitrate: Int32 {
         return tempMaxBitrate / 1000
     }
 
-    public var getAdaptiveActions: [String] {
+    var getAdaptiveActions: [String] {
         return adaptiveActionsTaken
     }
 
-    public var GetFastPif: Int32 {
+    var GetFastPif: Int32 {
         return Int32(fastPif)
     }
 
-    public var GetSmoothPif: Int32 {
+    var GetSmoothPif: Int32 {
         return Int32(smoothPif)
     }
 
