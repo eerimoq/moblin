@@ -340,7 +340,7 @@ class AdaptiveBitrate {
             minimumDecrease: 250_000
         )
         calculateCurrentBitrate(stats)
-        adjustVideoQualityIfNeededToActuallyDropBitrateLow(stats)
+        // adjustVideoQualityIfNeededToActuallyDropBitrateLow(stats)
         if prevBitrate != curBitrate {
             delegate.adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32(curBitrate))
         }

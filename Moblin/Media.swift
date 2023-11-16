@@ -62,10 +62,6 @@ final class Media: NSObject {
         netStream.delegate = self
         netStream.videoOrientation = .landscapeRight
         attachAudio(device: AVCaptureDevice.default(for: .audio))
-        // !!! Not correct !!! Encoder fails.
-        // let dataRateLimits = [NSNumber(value: 1), NSNumber(value: 2)] as! CFArray
-        // netStream.videoSettings.extraOptions = [.init(key: .dataRateLimits, value:
-        // dataRateLimits)]
     }
 
     func getAudioLevel() -> Float {
@@ -98,6 +94,17 @@ final class Media: NSObject {
                 targetBitrate: targetBitrate,
                 delegate: self
             )
+            if let dataRateLimits = [
+                NSNumber(value: 15000 / 8 * 1024),
+                NSNumber(value: 1),
+            ] as? CFArray {
+                netStream.videoSettings.extraOptions = [.init(
+                    key: .dataRateLimits,
+                    value: dataRateLimits
+                )]
+            } else {
+                logger.error("Failed to cast initial data rate limits")
+            }
         } else {
             adaptiveBitrate = nil
         }
@@ -110,6 +117,7 @@ final class Media: NSObject {
         srtla?.stop()
         srtla = nil
         srtConnectedObservation = nil
+        adaptiveBitrate = nil
     }
 
     func getSrtStats() -> [String] {
