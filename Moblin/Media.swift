@@ -62,7 +62,10 @@ final class Media: NSObject {
         netStream.delegate = self
         netStream.videoOrientation = .landscapeRight
         attachAudio(device: AVCaptureDevice.default(for: .audio))
-    }
+        // !!! Not correct !!! Encoder fails.
+        // let dataRateLimits = [NSNumber(value: 1), NSNumber(value: 2)] as! CFArray
+        // netStream.videoSettings.extraOptions = [.init(key: .dataRateLimits, value: dataRateLimits)]
+   }
 
     func getAudioLevel() -> Float {
         return currentAudioLevel
@@ -457,6 +460,7 @@ extension Media: AdaptiveBitrateDelegate {
     }
 
     func adaptiveBitrateSetTemporaryVideoSize(videoSize: VideoSize) {
+        logger.info("Setting temporary resolution to \(videoSize)")
         setTemporaryVideoSize(size: videoSize)
     }
 
