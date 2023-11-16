@@ -64,8 +64,9 @@ final class Media: NSObject {
         attachAudio(device: AVCaptureDevice.default(for: .audio))
         // !!! Not correct !!! Encoder fails.
         // let dataRateLimits = [NSNumber(value: 1), NSNumber(value: 2)] as! CFArray
-        // netStream.videoSettings.extraOptions = [.init(key: .dataRateLimits, value: dataRateLimits)]
-   }
+        // netStream.videoSettings.extraOptions = [.init(key: .dataRateLimits, value:
+        // dataRateLimits)]
+    }
 
     func getAudioLevel() -> Float {
         return currentAudioLevel
