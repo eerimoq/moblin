@@ -133,7 +133,10 @@ struct SettingsView: View {
                 NavigationLink(destination: AboutSettingsView()) {
                     Text("About")
                 }
-                NavigationLink(destination: DebugSettingsView()) {
+                NavigationLink(
+                    destination: DebugSettingsView(srtOverheadBandwidth: Float(model
+                            .database.debug!.srtOverheadBandwidth!))
+                ) {
                     Text("Debug")
                 }
             }

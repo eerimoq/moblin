@@ -3,8 +3,6 @@ import HaishinKit
 import SRTHaishinKit
 
 protocol AdaptiveBitrateDelegate: AnyObject {
-    func adaptiveBitrateGetVideoSize() -> VideoSize
-    func adaptiveBitrateSetTemporaryVideoSize(videoSize: VideoSize)
     func adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32)
 }
 
@@ -19,16 +17,10 @@ class AdaptiveBitrate {
     private var tempMaxBitrate: Int32 = 250_000
     private var smoothPif: Double = 0
     private var fastPif: Double = 0
-    private var targetVideoSize: VideoSize
     private weak var delegate: (any AdaptiveBitrateDelegate)!
     private var adaptiveActionsTaken: [String] = []
 
-    init(
-        targetVideoSize: VideoSize,
-        targetBitrate: UInt32,
-        delegate: AdaptiveBitrateDelegate
-    ) {
-        self.targetVideoSize = targetVideoSize
+    init(targetBitrate: UInt32, delegate: AdaptiveBitrateDelegate) {
         self.targetBitrate = Int32(targetBitrate)
         self.delegate = delegate
     }
@@ -280,33 +272,6 @@ class AdaptiveBitrate {
         }
     }
 
-    private func adjustVideoQualityIfNeededToActuallyDropBitrateLow(
-        _ stats: SRTPerformanceData
-    ) {
-        let videoSize = delegate.adaptiveBitrateGetVideoSize()
-        if curBitrate <= 1_000_000,
-           stats.msRTT > 450 || stats
-           .msRTT > avgRtt * 3 || smoothPif > Double(adaptiveBitratePacketsInFlightLimit)
-        {
-            if videoSize.width != 16 {
-                delegate.adaptiveBitrateSetTemporaryVideoSize(videoSize: .init(
-                    width: 16,
-                    height: 9
-                ))
-            }
-        } else if stats.msRTT > 450 {
-            if videoSize.width != 16 {
-                delegate.adaptiveBitrateSetTemporaryVideoSize(videoSize: .init(
-                    width: 16,
-                    height: 9
-                ))
-            }
-        } else if videoSize.width != targetVideoSize.width {
-            delegate.adaptiveBitrateSetTemporaryVideoSize(videoSize: targetVideoSize)
-            // setMute(on: false)
-        }
-    }
-
     // NB:To be called every 200ms when live
     // Tested to 15000 sane bitrate, 2000ms latency, rtt generally under 100
     // Assuming rtt is generally < 100 under normal conditions means avg PIF < 100 up
@@ -340,7 +305,6 @@ class AdaptiveBitrate {
             minimumDecrease: 250_000
         )
         calculateCurrentBitrate(stats)
-        // adjustVideoQualityIfNeededToActuallyDropBitrateLow(stats)
         if prevBitrate != curBitrate {
             delegate.adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32(curBitrate))
         }

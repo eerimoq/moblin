@@ -31,6 +31,7 @@ final class Media: NSObject {
     private var currentAudioLevel: Float = 100.0
     private var srtUrl: String = ""
     private var latency: Int32 = 2000
+    private var overheadBandwidth: Int32 = 25
     var onSrtConnected: (() -> Void)!
     var onSrtDisconnected: ((_ reason: String) -> Void)!
     var onRtmpConnected: (() -> Void)!
@@ -38,7 +39,6 @@ final class Media: NSObject {
     var onAudioMuteChange: (() -> Void)!
     var onVideoDeviceInUseByAnotherClient: (() -> Void)!
     private var adaptiveBitrate: AdaptiveBitrate?
-    private var videoSize = VideoSize(width: 1280, height: 720)
 
     func logStatistics() {
         srtla?.logStatistics()
@@ -75,10 +75,12 @@ final class Media: NSObject {
         targetBitrate: UInt32,
         adaptiveBitrate adaptiveBitrateEnabled: Bool,
         latency: Int32,
+        overheadBandwidth: Int32,
         mpegtsPacketsPerPacket: Int
     ) {
         srtUrl = url
         self.latency = latency
+        self.overheadBandwidth = overheadBandwidth
         srtTotalByteCount = 0
         srtPreviousTotalByteCount = 0
         srtla?.stop()
@@ -89,7 +91,6 @@ final class Media: NSObject {
         )
         if adaptiveBitrateEnabled {
             adaptiveBitrate = AdaptiveBitrate(
-                targetVideoSize: videoSize,
                 targetBitrate: targetBitrate,
                 delegate: self
             )
@@ -111,7 +112,6 @@ final class Media: NSObject {
     }
 
     func srtStopStream() {
-        clearTemporaryVideoSize()
         srtConnection.close()
         srtla?.stop()
         srtla = nil
@@ -186,7 +186,16 @@ final class Media: NSObject {
         }
     }
 
-    func makeLocalhostSrtUrl(url: String, port: UInt16, latency: Int32) -> URL? {
+    private func queryContains(queryItems: [URLQueryItem], name: String) -> Bool {
+        return queryItems.contains(where: { parameter in parameter.name == name })
+    }
+
+    func makeLocalhostSrtUrl(
+        url: String,
+        port: UInt16,
+        latency: Int32,
+        overheadBandwidth: Int32
+    ) -> URL? {
         guard let url = URL(string: url) else {
             return nil
         }
@@ -196,10 +205,16 @@ final class Media: NSObject {
         var urlComponents = URLComponents(url: localUrl, resolvingAgainstBaseURL: false)!
         urlComponents.query = url.query
         var queryItems: [URLQueryItem] = urlComponents.queryItems ?? []
-        if !queryItems.contains(where: { parameter in
-            parameter.name == "latency"
-        }) {
+        if !queryContains(queryItems: queryItems, name: "latency") {
+            logger.debug("Setting SRT latency to \(latency)")
             queryItems.append(URLQueryItem(name: "latency", value: String(latency)))
+        }
+        if !queryContains(queryItems: queryItems, name: "oheadbw") {
+            logger.debug("Setting SRT oheadbw to \(overheadBandwidth)")
+            queryItems.append(URLQueryItem(
+                name: "oheadbw",
+                value: String(overheadBandwidth)
+            ))
         }
         urlComponents.queryItems = queryItems
         return urlComponents.url
@@ -272,16 +287,7 @@ final class Media: NSObject {
     }
 
     func setVideoSize(size: VideoSize) {
-        videoSize = size
         netStream.videoSettings.videoSize = size
-    }
-
-    func setTemporaryVideoSize(size: VideoSize) {
-        netStream.videoSettings.videoSize = size
-    }
-
-    func clearTemporaryVideoSize() {
-        netStream?.videoSettings.videoSize = videoSize
     }
 
     func getVideoSize() -> VideoSize {
@@ -442,7 +448,8 @@ extension Media: SrtlaDelegate {
                     try self.srtConnection.open(self.makeLocalhostSrtUrl(
                         url: self.srtUrl,
                         port: port,
-                        latency: self.latency
+                        latency: self.latency,
+                        overheadBandwidth: self.overheadBandwidth
                     ))
                     self.srtStream?.publish()
                 } catch {
@@ -463,15 +470,6 @@ extension Media: SrtlaDelegate {
 }
 
 extension Media: AdaptiveBitrateDelegate {
-    func adaptiveBitrateGetVideoSize() -> VideoSize {
-        return getVideoSize()
-    }
-
-    func adaptiveBitrateSetTemporaryVideoSize(videoSize: VideoSize) {
-        logger.info("Setting temporary resolution to \(videoSize)")
-        setTemporaryVideoSize(size: videoSize)
-    }
-
     func adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32) {
         netStream.videoSettings.bitRate = bitrate
     }

@@ -1036,6 +1036,7 @@ final class Model: ObservableObject {
                 targetBitrate: stream.bitrate,
                 adaptiveBitrate: stream.adaptiveBitrate,
                 latency: stream.srt.latency,
+                overheadBandwidth: database.debug!.srtOverheadBandwidth!,
                 mpegtsPacketsPerPacket: stream.srt.mpegtsPacketsPerPacket
             )
         }

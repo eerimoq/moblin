@@ -2,6 +2,7 @@ import SwiftUI
 
 struct DebugSettingsView: View {
     @EnvironmentObject var model: Model
+    @State var srtOverheadBandwidth: Float
 
     var body: some View {
         Form {
@@ -51,6 +52,24 @@ struct DebugSettingsView: View {
                         model.setExposureBias(bias: model.bias)
                     }
                     Text(formatOneDecimal(value: model.bias))
+                        .frame(width: 40)
+                }
+                HStack {
+                    Text("SRT oheadbw")
+                    Slider(
+                        value: $srtOverheadBandwidth,
+                        in: 5 ... 50,
+                        step: 5,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            model.database.debug!
+                                .srtOverheadBandwidth = Int32(srtOverheadBandwidth)
+                            model.store()
+                        }
+                    )
+                    Text(String(Int32(srtOverheadBandwidth)))
                         .frame(width: 40)
                 }
             }

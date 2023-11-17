@@ -405,6 +405,7 @@ let logLevels = SettingsLogLevel.allCases.map { $0.rawValue }
 class SettingsDebug: Codable {
     var logLevel: SettingsLogLevel = .error
     var srtOverlay: Bool = false
+    var srtOverheadBandwidth: Int32? = 25
 }
 
 class Database: Codable {
@@ -765,6 +766,10 @@ final class Settings {
         }
         if realDatabase.debug == nil {
             realDatabase.debug = .init()
+            store()
+        }
+        if realDatabase.debug!.srtOverheadBandwidth == nil {
+            realDatabase.debug!.srtOverheadBandwidth = 25
             store()
         }
     }
