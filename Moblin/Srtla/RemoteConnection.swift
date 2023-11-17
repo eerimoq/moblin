@@ -91,6 +91,10 @@ class RemoteConnection {
         }
     }
 
+    deinit {
+        logger.info("srtla: \(typeString): deinit remote connection")
+    }
+
     func start(host: String, port: UInt16) {
         self.host = host
         self.port = port
@@ -121,6 +125,7 @@ class RemoteConnection {
 
     func stop(reason: String) {
         logger.info("srtla: \(typeString): Stop with reason: \(reason)")
+        connection?.cancel()
         connection = nil
         cancelAllTimers()
         state = .idle

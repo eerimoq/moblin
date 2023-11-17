@@ -85,7 +85,6 @@ final class Media: NSObject {
         srtla = Srtla(
             delegate: self,
             passThrough: !isSrtla,
-            targetBitrate: targetBitrate,
             mpegtsPacketsPerPacket: mpegtsPacketsPerPacket
         )
         if adaptiveBitrateEnabled {
