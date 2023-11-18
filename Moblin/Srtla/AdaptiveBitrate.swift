@@ -26,6 +26,7 @@ class AdaptiveBitrate {
     }
 
     func setTargetBitrate(bitrate: UInt32) {
+        logger.debug("srtla: adaptive-bitrate: New target bitrate \(bitrate)")
         targetBitrate = Int32(bitrate)
     }
 
@@ -133,12 +134,10 @@ class AdaptiveBitrate {
     }
 
     private func logAdaptiveAcion(actionTaken: String) {
+        logger.debug("srtla: adaptive-bitrate: \(actionTaken)")
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "HH:mm:ss.SSS"
         let dateString = dateFormatter.string(from: Date())
-
-        // var action : AdaptiveAction =   AdaptiveAction(actionTaken:   actionTaken)
-
         adaptiveActionsTaken.append(dateString + " " + actionTaken)
         while adaptiveActionsTaken.count > 6 {
             adaptiveActionsTaken.remove(at: 0)
@@ -221,15 +220,9 @@ class AdaptiveBitrate {
         var pifDiffThing = Int32(fastPif) - Int32(smoothPif)
         // lazy decrease
         if pifDiffThing > adaptiveBitratePacketsInFlightLimit {
-            logger
-                .debug(
-                    "Lazy dec pifdiff \(pifDiffThing) >   limit  \(adaptiveBitratePacketsInFlightLimit)"
-                )
-
             logAdaptiveAcion(
                 actionTaken: "Lazy dec pifdiff \(pifDiffThing) >   limit  \(adaptiveBitratePacketsInFlightLimit)"
             )
-
             tempMaxBitrate = Int32(Double(tempMaxBitrate) * 0.95)
         }
         if pifDiffThing <= (adaptiveBitratePacketsInFlightLimit / 5) {
@@ -244,11 +237,6 @@ class AdaptiveBitrate {
         // harder decrease
         if pifDiffThing == adaptiveBitratePacketsInFlightLimit {
             tempMaxBitrate -= 500_000
-            logger
-                .debug(
-                    "-500 dec pifdiff \(pifDiffThing) =   limit  \(adaptiveBitratePacketsInFlightLimit)"
-                )
-
             logAdaptiveAcion(
                 actionTaken: "-500 dec pifdiff \(pifDiffThing) =   limit  \(adaptiveBitratePacketsInFlightLimit)"
             )
@@ -306,6 +294,7 @@ class AdaptiveBitrate {
         )
         calculateCurrentBitrate(stats)
         if prevBitrate != curBitrate {
+            logger.debug("srtla: adaptive-bitrate: Setting bitrate \(curBitrate)")
             delegate.adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32(curBitrate))
         }
         prevBitrate = curBitrate
