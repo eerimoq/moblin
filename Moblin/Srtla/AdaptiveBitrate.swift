@@ -117,16 +117,16 @@ class AdaptiveBitrate {
                 tempMaxBitrate -= minimumDecrease
                 logAdaptiveAcion(
                     actionTaken: """
-                    PIF: decreasing bitrate  by \(minimumDecrease)  \
-                    smoothpif \(smoothPif) >  pifmax \(pifMax)
+                    PIF: decreasing bitrate by \(minimumDecrease), \
+                    smoothpif \(smoothPif) > pifmax \(pifMax)
                     """
                 )
             } else {
                 tempMaxBitrate = Int32(Double(tempMaxBitrate) * factor)
                 logAdaptiveAcion(
                     actionTaken: """
-                    PIF: decreasing bitrate  by \(factor) % \
-                    smoothpif \(smoothPif) >  pifmax \(pifMax)
+                    PIF: decreasing bitrate by \(100 * factor) %, \
+                    smoothpif \(smoothPif) > pifmax \(pifMax)
                     """
                 )
             }
@@ -156,13 +156,13 @@ class AdaptiveBitrate {
             if differece < minimumDecrease {
                 tempMaxBitrate -= minimumDecrease
                 logAdaptiveAcion(
-                    actionTaken: "RTT: dec bitrate  by \(minimumDecrease) avgrtt : \(avgRtt) > rttmax : \(rttMax)"
+                    actionTaken: "RTT: dec bitrate by \(minimumDecrease), avgrtt: \(avgRtt) > rttmax: \(rttMax)"
                 )
 
             } else {
                 tempMaxBitrate = newMaxBitrate
                 logAdaptiveAcion(
-                    actionTaken: "RTT: dec bitrate  to \(factor) % avgrtt : \(avgRtt) > rttmax : \(rttMax)"
+                    actionTaken: "RTT: dec bitrate to \(factor) %, avgrtt: \(avgRtt) > rttmax: \(rttMax)"
                 )
             }
         }
@@ -200,16 +200,16 @@ class AdaptiveBitrate {
                 tempMaxBitrate -= minimumDecrease
                 logAdaptiveAcion(
                     actionTaken: """
-                    RTT: decreasing bitrate  by \(minimumDecrease) msrtt \
-                    \(stats.msRTT) >  avgrtt + allow \(avgRtt)  + \(rttSpikeAllowed)
+                    RTT: decreasing bitrate by \(minimumDecrease), msrtt \
+                    \(stats.msRTT) > avgrtt + allow \(avgRtt) + \(rttSpikeAllowed)
                     """
                 )
             } else {
                 tempMaxBitrate = newMaxBitrate
                 logAdaptiveAcion(
                     actionTaken: """
-                    RTT: decreasing bitrate  by \(factor) % msrtt \(stats.msRTT) >  \
-                    avgrtt + allow \(avgRtt)  + \(rttSpikeAllowed)
+                    RTT: decreasing bitrate by \(100 * factor) %, msrtt \(stats.msRTT) > \
+                    avgrtt + allow \(avgRtt) + \(rttSpikeAllowed)
                     """
                 )
             }
@@ -221,7 +221,7 @@ class AdaptiveBitrate {
         // lazy decrease
         if pifDiffThing > adaptiveBitratePacketsInFlightLimit {
             logAdaptiveAcion(
-                actionTaken: "Lazy dec pifdiff \(pifDiffThing) >   limit  \(adaptiveBitratePacketsInFlightLimit)"
+                actionTaken: "Lazy dec pifdiff \(pifDiffThing) > limit \(adaptiveBitratePacketsInFlightLimit)"
             )
             tempMaxBitrate = Int32(Double(tempMaxBitrate) * 0.95)
         }
@@ -238,7 +238,7 @@ class AdaptiveBitrate {
         if pifDiffThing == adaptiveBitratePacketsInFlightLimit {
             tempMaxBitrate -= 500_000
             logAdaptiveAcion(
-                actionTaken: "-500 dec pifdiff \(pifDiffThing) =   limit  \(adaptiveBitratePacketsInFlightLimit)"
+                actionTaken: "-500 dec pifdiff \(pifDiffThing) = limit \(adaptiveBitratePacketsInFlightLimit)"
             )
         }
         pifDiffThing = adaptiveBitratePacketsInFlightLimit - pifDiffThing
