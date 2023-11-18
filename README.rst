@@ -131,8 +131,6 @@ Ideas/plan
 
 - Button to turn maximum screen FPS on and off.
 
-- No settings page alert. Write on setting page instead.
-
 - A list of usernames whos messages will not get displayed on screen.
 
 - Rework zoom. Fine tune similar to builtin camera app.
