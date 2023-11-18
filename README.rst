@@ -129,6 +129,10 @@ ToDo
 Ideas/plan
 ==========
 
+- Button to turn maximum screen FPS on and off.
+
+- No settings page alert. Write on setting page instead.
+
 - A list of usernames whos messages will not get displayed on screen.
 
 - Audio filters. For example volume limiter.
