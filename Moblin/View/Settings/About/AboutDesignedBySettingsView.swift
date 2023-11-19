@@ -8,6 +8,7 @@ private let designers = [
     Designer(name: "Erik Moqvist"),
     Designer(name: "JohannesLiv"),
     Designer(name: "Rick9K"),
+    Designer(name: "adriportela95"),
     Designer(name: "megahallon"),
     Designer(name: "TicanUK"),
 ]
