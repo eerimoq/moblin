@@ -129,6 +129,14 @@ ToDo
 Ideas/plan
 ==========
 
+- Show two cameras at the same time.
+
+- Use lossy video format? More effecient?
+
+- Always receive sampels from all mics for smoother transition between mics?
+
+- Optionally disable wide angle lens (use dual camera).
+  
 - A list of usernames whos messages will not get displayed on screen.
 
 - Rework zoom. Fine tune similar to builtin camera app.
@@ -142,8 +150,6 @@ Ideas/plan
 
 - Button to turn maximum screen FPS on and off. Or possibly "low
   power" mode?
-
-- Show two cameras at the same time.
 
 - Use external UVC camera. Looks like iOS 17 supports them.
 
