@@ -334,6 +334,14 @@ final class Media: NSObject {
     ) {
         netStream.videoCapture(for: 0)?
             .preferredVideoStabilizationMode = videoStabilizationMode
+        if false {
+            let front = AVCaptureDevice.default(.builtInWideAngleCamera,
+                                                for: .video,
+                                                position: .front)
+            netStream.attachMultiCamera(front) { error in
+                print("error: \(error)")
+            }
+        }
         netStream.attachCamera(device, onError: { error in
             logger.error("stream: Attach camera error: \(error)")
         }, onSuccess: {
@@ -341,12 +349,6 @@ final class Media: NSObject {
                 onSuccess?()
             }
         })
-        /* let front = AVCaptureDevice.default(.builtInWideAngleCamera,
-                                             for: .video,
-                                             position: .front)
-         netStream.attachMultiCamera(front) { error in
-             print("error: \(error)")
-         } */
     }
 
     func attachAudio(device: AVCaptureDevice?) {
