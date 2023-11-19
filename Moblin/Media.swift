@@ -19,8 +19,8 @@ private func becameUnmuted(old: Float, new: Float) -> Bool {
 final class Media: NSObject {
     private var rtmpConnection = RTMPConnection()
     private var srtConnection = SRTConnection()
-    private var rtmpStream: RTMPStream!
-    private var srtStream: SRTStream!
+    private var rtmpStream: RTMPStream?
+    private var srtStream: SRTStream?
     private var srtla: Srtla?
     private var netStream: NetStream!
     private var srtTotalByteCount: Int64 = 0
@@ -51,12 +51,15 @@ final class Media: NSObject {
     func setNetStream(proto: SettingsStreamProtocol) {
         srtStopStream()
         rtmpStopStream()
+        rtmpConnection = RTMPConnection()
         switch proto {
         case .rtmp:
             rtmpStream = RTMPStream(connection: rtmpConnection)
+            srtStream = nil
             netStream = rtmpStream
         case .srt:
             srtStream = SRTStream(srtConnection)
+            rtmpStream = nil
             netStream = srtStream
         }
         netStream.delegate = self
@@ -154,7 +157,7 @@ final class Media: NSObject {
 
     func streamSpeed() -> Int64 {
         if netStream === rtmpStream {
-            return Int64(8 * rtmpStream.info.currentBytesPerSecond)
+            return Int64(8 * (rtmpStream?.info.currentBytesPerSecond ?? 0))
         } else {
             return 8 * srtSpeed
         }
@@ -162,7 +165,7 @@ final class Media: NSObject {
 
     func streamTotal() -> Int64 {
         if netStream === rtmpStream {
-            return rtmpStream.info.byteCount.value
+            return rtmpStream?.info.byteCount.value ?? 0
         } else {
             return srtTotalByteCount
         }
@@ -237,9 +240,7 @@ final class Media: NSObject {
             observer: self
         )
         rtmpStream?.close()
-        rtmpStream = nil
         rtmpConnection.close()
-        rtmpConnection = RTMPConnection()
     }
 
     @objc
@@ -253,7 +254,7 @@ final class Media: NSObject {
         DispatchQueue.main.async {
             switch code {
             case RTMPConnection.Code.connectSuccess.rawValue:
-                self.rtmpStream.publish(self.rtmpStreamName)
+                self.rtmpStream?.publish(self.rtmpStreamName)
                 self.onRtmpConnected()
             case RTMPConnection.Code.connectFailed.rawValue,
                  RTMPConnection.Code.connectClosed.rawValue:
