@@ -129,8 +129,6 @@ ToDo
 Ideas/plan
 ==========
 
-- Button to turn maximum screen FPS on and off.
-
 - A list of usernames whos messages will not get displayed on screen.
 
 - Rework zoom. Fine tune similar to builtin camera app.
@@ -141,6 +139,9 @@ Ideas/plan
     clipping), and a noise gate would be my top 3 requested audio
     filters when you have the time. I think that would be the same
     order in terms of complexity to implement as well.
+
+- Button to turn maximum screen FPS on and off. Or possibly "low
+  power" mode?
 
 - Show two cameras at the same time.
 
