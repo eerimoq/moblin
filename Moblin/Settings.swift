@@ -134,11 +134,27 @@ enum SettingsSceneCameraType: String, Codable, CaseIterable {
 
 var cameraTypes = SettingsSceneCameraType.allCases.map { $0.rawValue }
 
+enum SettingsSceneCameraLayout: String, Codable, CaseIterable {
+    case single = "Single"
+    case pip = "Picture in Picture"
+}
+
+var cameraLayouts = SettingsSceneCameraLayout.allCases.map { $0.rawValue }
+
+class SettingsSceneCameraLayoutPip: Codable {
+    var x: Double = 65.0
+    var y: Double = 0.0
+    var width: Double = 35.0
+    var height: Double = 35.0
+}
+
 class SettingsScene: Codable, Identifiable, Equatable {
     var name: String
     var id: UUID = .init()
     var enabled: Bool = true
+    var cameraLayout: SettingsSceneCameraLayout? = .single
     var cameraType: SettingsSceneCameraType = .back
+    var cameraLayoutPip: SettingsSceneCameraLayoutPip? = .init()
     var widgets: [SettingsSceneWidget] = []
     var buttons: [SettingsSceneButton] = []
 
@@ -770,6 +786,14 @@ final class Settings {
         }
         if realDatabase.debug!.srtOverheadBandwidth == nil {
             realDatabase.debug!.srtOverheadBandwidth = 25
+            store()
+        }
+        for scene in realDatabase.scenes where scene.cameraLayout == nil {
+            scene.cameraLayout = .single
+            store()
+        }
+        for scene in realDatabase.scenes where scene.cameraLayoutPip == nil {
+            scene.cameraLayoutPip = .init()
             store()
         }
     }

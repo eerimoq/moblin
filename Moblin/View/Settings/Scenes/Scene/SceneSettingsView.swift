@@ -6,7 +6,7 @@ struct SceneSettingsView: View {
     @State private var showingAddButton = false
     @State private var expandedWidget: SettingsSceneWidget?
     var scene: SettingsScene
-    @State var cameraSelection: String
+    @State var showPipSmallCameraDimensions = false
 
     var widgets: [SettingsWidget] {
         model.database.widgets
@@ -60,6 +60,15 @@ struct SceneSettingsView: View {
         return sceneWidget
     }
 
+    private func pipSmall() -> String {
+        switch scene.cameraType {
+        case .back:
+            return SettingsSceneCameraType.front.rawValue
+        case .front:
+            return SettingsSceneCameraType.back.rawValue
+        }
+    }
+
     var body: some View {
         Form {
             NavigationLink(destination: NameEditView(
@@ -69,17 +78,41 @@ struct SceneSettingsView: View {
                 TextItemView(name: "Name", value: scene.name)
             }
             Section {
-                Picker("", selection: $cameraSelection) {
-                    ForEach(cameraTypes, id: \.self) { cameraType in
-                        Text(cameraType)
+                NavigationLink(destination: SceneCameraLayoutSettingsView(
+                    scene: scene, cameraLayout: scene.cameraLayout!.rawValue
+                )) {
+                    TextItemView(name: "Layout", value: scene.cameraLayout!.rawValue)
+                }
+                if scene.cameraLayout == .single {
+                    NavigationLink(destination: SceneCameraOrientationSettingsView(
+                        title: "Camera",
+                        scene: scene, cameraType: scene.cameraType.rawValue
+                    )) {
+                        TextItemView(
+                            name: "Camera",
+                            value: scene.cameraType.rawValue
+                        )
+                    }
+                } else if scene.cameraLayout == .pip {
+                    NavigationLink(destination: SceneCameraOrientationSettingsView(
+                        title: "Large camera",
+                        scene: scene, cameraType: scene.cameraType.rawValue
+                    )) {
+                        TextItemView(
+                            name: "Large camera",
+                            value: scene.cameraType.rawValue
+                        )
+                    }
+                    Button(action: {
+                        showPipSmallCameraDimensions.toggle()
+                    }, label: {
+                        TextItemView(name: "Small camera", value: pipSmall())
+                    })
+                    .foregroundColor(.primary)
+                    if showPipSmallCameraDimensions {
+                        SceneCameraPipSmallSettingsView(scene: scene)
                     }
                 }
-                .onChange(of: cameraSelection) { cameraType in
-                    scene.cameraType = SettingsSceneCameraType(rawValue: cameraType)!
-                    model.sceneUpdated(store: true)
-                }
-                .pickerStyle(.inline)
-                .labelsHidden()
             } header: {
                 Text("Camera")
             }
