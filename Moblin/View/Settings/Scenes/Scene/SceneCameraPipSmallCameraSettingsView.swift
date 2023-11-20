@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct SceneCameraPipSmallSettingsView: View {
+struct SceneCameraPipSmallCameraSettingsView: View {
     @EnvironmentObject private var model: Model
     var scene: SettingsScene
 

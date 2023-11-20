@@ -130,7 +130,7 @@ struct SceneSettingsView: View {
                     })
                     .foregroundColor(.primary)
                     if showPipSmallCameraDimensions {
-                        SceneCameraPipSmallSettingsView(scene: scene)
+                        SceneCameraPipSmallCameraSettingsView(scene: scene)
                     }
                 }
             } header: {
