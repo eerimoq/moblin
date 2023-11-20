@@ -43,7 +43,7 @@ struct ValueEditView: View {
             Divider()
             Button(action: {
                 add(offset: 1)
-                value =                onSubmit(value.trim())
+                value = onSubmit(value.trim())
             }, label: {
                 Text("+")
                     .frame(width: 40)

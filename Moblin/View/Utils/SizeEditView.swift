@@ -13,7 +13,7 @@ struct SizeEditView: View {
         }
         return value
     }
-    
+
     var body: some View {
         ValueEditView(
             title: title,
