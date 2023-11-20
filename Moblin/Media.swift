@@ -330,18 +330,21 @@ final class Media: NSObject {
 
     func attachCamera(
         device: AVCaptureDevice?,
+        secondDevice: AVCaptureDevice?,
         videoStabilizationMode: AVCaptureVideoStabilizationMode,
         onSuccess: (() -> Void)? = nil
     ) {
         netStream.videoCapture(for: 0)?
             .preferredVideoStabilizationMode = videoStabilizationMode
-        if false {
-            let front = AVCaptureDevice.default(.builtInWideAngleCamera,
-                                                for: .video,
-                                                position: .front)
-            netStream.attachMultiCamera(front) { error in
-                print("error: \(error)")
+        if let secondDevice, false {
+            logger.info("Attaching second camera (first)")
+            netStream.attachMultiCamera(secondDevice) { error in
+                logger.error("stream: second camera error: \(error)")
             }
+        } else {
+            /* netStream.attachMultiCamera(nil) { error in
+                 logger.error("stream: second camera error: \(error)")
+             } */
         }
         netStream.attachCamera(device, onError: { error in
             logger.error("stream: Attach camera error: \(error)")

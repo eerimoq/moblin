@@ -226,6 +226,7 @@ final class Model: ObservableObject {
     private var backZoomLevel = 1.0
     private var frontZoomLevel = 1.0
     var cameraPosition: AVCaptureDevice.Position?
+    var secondCameraPosition: AVCaptureDevice.Position?
     private let motionManager = CMMotionManager()
     private var manualFocusAttitude: CMAttitude?
     var database: Database {
@@ -233,6 +234,7 @@ final class Model: ObservableObject {
     }
 
     var cameraDevice: AVCaptureDevice?
+    var secondCameraDevice: AVCaptureDevice?
     @Published var srtDebugLines: [String] = []
 
     init() {
@@ -1458,12 +1460,30 @@ final class Model: ObservableObject {
         }
     }
 
-    private func sceneUpdatedOn(scene: SettingsScene) {
+    private func attachSingleLayout(scene: SettingsScene) {
         switch scene.cameraType {
         case .back:
             attachCamera(position: .back)
         case .front:
             attachCamera(position: .front)
+        }
+    }
+
+    private func attachPipLayout(scene: SettingsScene) {
+        switch scene.cameraType {
+        case .back:
+            attachCamera(position: .back, secondPosition: .front)
+        case .front:
+            attachCamera(position: .front, secondPosition: .back)
+        }
+    }
+
+    private func sceneUpdatedOn(scene: SettingsScene) {
+        switch scene.cameraLayout! {
+        case .single:
+            attachSingleLayout(scene: scene)
+        case .pip:
+            attachPipLayout(scene: scene)
         }
         for sceneWidget in scene.widgets.filter({ widget in widget.enabled }) {
             guard let widget = findWidget(id: sceneWidget.widgetId) else {
@@ -1607,21 +1627,35 @@ final class Model: ObservableObject {
     }
 
     func reattachCamera() {
-        media.attachCamera(device: nil, videoStabilizationMode: .off)
+        media.attachCamera(device: nil, secondDevice: nil, videoStabilizationMode: .off)
         media.attachCamera(
             device: cameraDevice,
+            secondDevice: secondCameraDevice,
             videoStabilizationMode: getVideoStabilizationMode()
         )
     }
 
-    private func attachCamera(position: AVCaptureDevice.Position) {
-        guard position != cameraPosition else {
+    private func attachCamera(
+        position: AVCaptureDevice.Position,
+        secondPosition: AVCaptureDevice.Position? = nil
+    ) {
+        guard position != cameraPosition || secondPosition != secondCameraPosition else {
             return
         }
         setAutoFocus()
         cameraDevice = preferredCamera(position: position)
+        if let secondPosition {
+            secondCameraDevice = preferredCamera(position: secondPosition)
+        } else {
+            secondCameraDevice = nil
+        }
         var isMirrored = false
         cameraPosition = position
+        if let secondPosition {
+            secondCameraPosition = secondPosition
+        } else {
+            secondCameraPosition = nil
+        }
         switch position {
         case .back:
             if database.zoom.switchToBack.enabled {
@@ -1642,6 +1676,7 @@ final class Model: ObservableObject {
         }
         media.attachCamera(
             device: cameraDevice,
+            secondDevice: secondCameraDevice,
             videoStabilizationMode: getVideoStabilizationMode(),
             onSuccess: {
                 self.mthkView.isMirrored = isMirrored
