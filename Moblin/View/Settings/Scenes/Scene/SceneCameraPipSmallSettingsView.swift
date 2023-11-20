@@ -4,64 +4,47 @@ struct SceneCameraPipSmallSettingsView: View {
     @EnvironmentObject private var model: Model
     var scene: SettingsScene
 
-    func submitX(value: String) {
-        if let value = Double(value) {
-            scene.cameraLayoutPip!.x = value.clamped(to: 0 ... 99)
-            model.store()
-            model.sceneUpdated(imageEffectChanged: true)
-        }
+    func submitX(value: Double) {
+        scene.cameraLayoutPip!.x = value
+        model.sceneUpdated(imageEffectChanged: true)
     }
 
-    func submitY(value: String) {
-        if let value = Double(value) {
-            scene.cameraLayoutPip!.y = value.clamped(to: 0 ... 99)
-            model.sceneUpdated(imageEffectChanged: true)
-        }
+    func submitY(value: Double) {
+        scene.cameraLayoutPip!.y = value
+        model.sceneUpdated(imageEffectChanged: true)
     }
 
-    func submitW(value: String) {
-        if let value = Double(value) {
-            scene.cameraLayoutPip!.width = value.clamped(to: 1 ... 100)
-            model.sceneUpdated(imageEffectChanged: true)
-        }
+    func submitWidth(value: Double) {
+        scene.cameraLayoutPip!.width = value
+        model.sceneUpdated(imageEffectChanged: true)
     }
 
-    func submitH(value: String) {
-        if let value = Double(value) {
-            scene.cameraLayoutPip!.height = value.clamped(to: 1 ... 100)
-            model.sceneUpdated(imageEffectChanged: true)
-        }
+    func submitHeight(value: Double) {
+        scene.cameraLayoutPip!.height = value
+        model.sceneUpdated(imageEffectChanged: true)
     }
 
     var body: some View {
         Section {
-            ValueEditView(
+            PositionEditView(
                 title: "X",
-                value: String(scene.cameraLayoutPip!.x),
-                minimum: 0,
-                maximum: 99,
+                value: scene.cameraLayoutPip!.x,
                 onSubmit: submitX
             )
-            ValueEditView(
+            PositionEditView(
                 title: "Y",
-                value: String(scene.cameraLayoutPip!.y),
-                minimum: 0,
-                maximum: 99,
+                value: scene.cameraLayoutPip!.y,
                 onSubmit: submitY
             )
-            ValueEditView(
+            SizeEditView(
                 title: "Width",
-                value: String(scene.cameraLayoutPip!.width),
-                minimum: 1,
-                maximum: 100,
-                onSubmit: submitW
+                value: scene.cameraLayoutPip!.width,
+                onSubmit: submitWidth
             )
-            ValueEditView(
+            SizeEditView(
                 title: "Height",
-                value: String(scene.cameraLayoutPip!.height),
-                minimum: 1,
-                maximum: 100,
-                onSubmit: submitH
+                value: scene.cameraLayoutPip!.height,
+                onSubmit: submitHeight
             )
         }
     }
