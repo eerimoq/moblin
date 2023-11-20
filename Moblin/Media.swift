@@ -479,16 +479,7 @@ extension Media: AdaptiveBitrateDelegate {
         return getVideoSize()
     }
 
-    func adaptiveBitrateSetTemporaryVideoSize(videoSize: VideoSize) {
-        setTemporaryVideoSize(size: videoSize)
-        if videoSize.width == 16 {
-           // netStream.videoSettings.scalingMode = .trim
-        }else{
-           // netStream.videoSettings.scalingMode = .normal
-        }
-            
-        
-    }
+   
 
     func adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32) {
         netStream.videoSettings.bitRate = bitrate
