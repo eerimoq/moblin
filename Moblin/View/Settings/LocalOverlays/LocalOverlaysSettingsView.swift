@@ -1,5 +1,7 @@
 import SwiftUI
 
+private let audioLevels = ["Bar", "Decibel"]
+
 struct LocalOverlaysSettingsView: View {
     @EnvironmentObject var model: Model
 
@@ -9,6 +11,15 @@ struct LocalOverlaysSettingsView: View {
 
     var chat: SettingsChat {
         model.database.chat
+    }
+
+    private func onAudioLevelChange(type: String) {
+        model.database.show.audioBar = type == "Bar"
+        model.store()
+    }
+
+    private func audioLevel() -> String {
+        return model.database.show.audioBar ? "Bar" : "Decibel"
     }
 
     var body: some View {
@@ -57,17 +68,19 @@ struct LocalOverlaysSettingsView: View {
                 }))
             }
             Section("Top right") {
-                NavigationLink(destination: LocalOverlaysAudioLevelSettingsView(
-                    meterType: model.database.show.audioBar ?
-                        "Bar" :
-                        "Decibel"
-                )) {
-                    Toggle("Audio level", isOn: Binding(get: {
+                NavigationLink(destination: InlinePickerView(title: "Audio level",
+                                                             onChange: onAudioLevelChange,
+                                                             items: audioLevels,
+                                                             selected: audioLevel()))
+                {
+                    Toggle(isOn: Binding(get: {
                         show.audioLevel
                     }, set: { value in
                         show.audioLevel = value
                         model.store()
-                    }))
+                    })) {
+                        TextItemView(name: "Audio level", value: audioLevel())
+                    }
                 }
                 Toggle("Bitrate", isOn: Binding(get: {
                     show.speed

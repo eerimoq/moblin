@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0303990F2AE2477700D27530 /* LocalOverlaysAudioLevelSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0303990E2AE2477700D27530 /* LocalOverlaysAudioLevelSettingsView.swift */; };
 		030399132AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030399122AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift */; };
 		0307869A2AEC23FB0061FDE2 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 030786992AEC23FB0061FDE2 /* StoreKit.framework */; };
 		030947C32A9C0496003FC387 /* StreamOverlayChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030947C22A9C0496003FC387 /* StreamOverlayChatView.swift */; };
@@ -36,8 +35,6 @@
 		0330F2B52AFADD18001262C3 /* StreamYouTubeSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0330F2B42AFADD18001262C3 /* StreamYouTubeSettingsView.swift */; };
 		03403DF62AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */; };
 		0344AFE72B00023E00C177DB /* AboutDesignedBySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0344AFE62B00023E00C177DB /* AboutDesignedBySettingsView.swift */; };
-		03522ECD2B0A856C0071B394 /* SceneCameraLayoutSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03522ECC2B0A856C0071B394 /* SceneCameraLayoutSettingsView.swift */; };
-		03522ED12B0A87730071B394 /* SceneCameraOrientationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03522ED02B0A87730071B394 /* SceneCameraOrientationSettingsView.swift */; };
 		035D371E2AB039C800045B92 /* StreamVideoCodecSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D371D2AB039C800045B92 /* StreamVideoCodecSettingsView.swift */; };
 		035D37282AB0EBB500045B92 /* IconAndTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37272AB0EBB500045B92 /* IconAndTextView.swift */; };
 		035D372C2AB103E600045B92 /* SRTHaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 035D372B2AB103E600045B92 /* SRTHaishinKit */; };
@@ -113,6 +110,7 @@
 		03BC11672AE5654700C38FC4 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 03BC11662AE5654700C38FC4 /* SDWebImageSwiftUI */; };
 		03BC116B2AE56C2200C38FC4 /* SDWebImageWebPCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 03BC116A2AE56C2200C38FC4 /* SDWebImageWebPCoder */; };
 		03C088302B0A939F000990DA /* SceneCameraPipSmallSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C0882F2B0A939F000990DA /* SceneCameraPipSmallSettingsView.swift */; };
+		03C088372B0AFFA8000990DA /* InlinePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C088362B0AFFA8000990DA /* InlinePickerView.swift */; };
 		03CC5F892AD060DB0019CBA5 /* WidgetBrowserUrlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CC5F882AD060DB0019CBA5 /* WidgetBrowserUrlSettingsView.swift */; };
 		03D445E22AE5966B00A0F6E9 /* CacheAsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D445E12AE5966B00A0F6E9 /* CacheAsyncImage.swift */; };
 		03E95AC62ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */; };
@@ -128,7 +126,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0303990E2AE2477700D27530 /* LocalOverlaysAudioLevelSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalOverlaysAudioLevelSettingsView.swift; sourceTree = "<group>"; };
 		030399122AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalOverlaysChatSettingsView.swift; sourceTree = "<group>"; };
 		030786992AEC23FB0061FDE2 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		030947C22A9C0496003FC387 /* StreamOverlayChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOverlayChatView.swift; sourceTree = "<group>"; };
@@ -156,8 +153,6 @@
 		0330F2B42AFADD18001262C3 /* StreamYouTubeSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamYouTubeSettingsView.swift; sourceTree = "<group>"; };
 		03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBrowserSettingsView.swift; sourceTree = "<group>"; };
 		0344AFE62B00023E00C177DB /* AboutDesignedBySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutDesignedBySettingsView.swift; sourceTree = "<group>"; };
-		03522ECC2B0A856C0071B394 /* SceneCameraLayoutSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneCameraLayoutSettingsView.swift; sourceTree = "<group>"; };
-		03522ED02B0A87730071B394 /* SceneCameraOrientationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneCameraOrientationSettingsView.swift; sourceTree = "<group>"; };
 		035D371D2AB039C800045B92 /* StreamVideoCodecSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoCodecSettingsView.swift; sourceTree = "<group>"; };
 		035D37272AB0EBB500045B92 /* IconAndTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconAndTextView.swift; sourceTree = "<group>"; };
 		035D37362AB230E700045B92 /* StreamVideoBitrateSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoBitrateSettingsView.swift; sourceTree = "<group>"; };
@@ -227,6 +222,7 @@
 		03BC11612AE4BDA200C38FC4 /* Seventv.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Seventv.swift; sourceTree = "<group>"; };
 		03BC11632AE4BEC400C38FC4 /* Emotes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Emotes.swift; sourceTree = "<group>"; };
 		03C0882F2B0A939F000990DA /* SceneCameraPipSmallSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneCameraPipSmallSettingsView.swift; sourceTree = "<group>"; };
+		03C088362B0AFFA8000990DA /* InlinePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlinePickerView.swift; sourceTree = "<group>"; };
 		03CC5F882AD060DB0019CBA5 /* WidgetBrowserUrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBrowserUrlSettingsView.swift; sourceTree = "<group>"; };
 		03D445E12AE5966B00A0F6E9 /* CacheAsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheAsyncImage.swift; sourceTree = "<group>"; };
 		03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomSwitchToSettingsView.swift; sourceTree = "<group>"; };
@@ -262,14 +258,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0303990C2AE2476300D27530 /* AudioLevel */ = {
-			isa = PBXGroup;
-			children = (
-				0303990E2AE2477700D27530 /* LocalOverlaysAudioLevelSettingsView.swift */,
-			);
-			path = AudioLevel;
-			sourceTree = "<group>";
-		};
 		030399112AE2D0E900D27530 /* Chat */ = {
 			isa = PBXGroup;
 			children = (
@@ -317,8 +305,6 @@
 			children = (
 				03A9835C2A9A05D7008FF0DB /* SceneSettingsView.swift */,
 				0315A36F2AA3771F00295443 /* SceneWidgetSettingsView.swift */,
-				03522ECC2B0A856C0071B394 /* SceneCameraLayoutSettingsView.swift */,
-				03522ED02B0A87730071B394 /* SceneCameraOrientationSettingsView.swift */,
 				03C0882F2B0A939F000990DA /* SceneCameraPipSmallSettingsView.swift */,
 			);
 			path = Scene;
@@ -334,6 +320,7 @@
 				0315A37D2AA43DCC00295443 /* TextEditView.swift */,
 				035D37272AB0EBB500045B92 /* IconAndTextView.swift */,
 				031A2DFF2ADBE34F005CE350 /* DraggableItemPrefixView.swift */,
+				03C088362B0AFFA8000990DA /* InlinePickerView.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -579,7 +566,6 @@
 			isa = PBXGroup;
 			children = (
 				030399112AE2D0E900D27530 /* Chat */,
-				0303990C2AE2476300D27530 /* AudioLevel */,
 				0379BBA42AAD945D00B718B6 /* LocalOverlaysSettingsView.swift */,
 			);
 			path = LocalOverlays;
@@ -873,6 +859,7 @@
 				0379BBAF2AAD96B200B718B6 /* DebugSettingsView.swift in Sources */,
 				03FB4B2F2AD8CF83005AA183 /* BitratePresetsSettingsView.swift in Sources */,
 				03B373F92A9EFB340028DDD5 /* BatteryView.swift in Sources */,
+				03C088372B0AFFA8000990DA /* InlinePickerView.swift in Sources */,
 				03E95AE42ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift in Sources */,
 				0379BB8A2AA83A8B00B718B6 /* StreamVideoFpsSettingsView.swift in Sources */,
 				03BC11622AE4BDA200C38FC4 /* Seventv.swift in Sources */,
@@ -907,7 +894,6 @@
 				03C088302B0A939F000990DA /* SceneCameraPipSmallSettingsView.swift in Sources */,
 				035E775C2ACC969D00738DCE /* ZoomPresetSettingsView.swift in Sources */,
 				03A983672A9A05D7008FF0DB /* ScenesSettingsView.swift in Sources */,
-				03522ECD2B0A856C0071B394 /* SceneCameraLayoutSettingsView.swift in Sources */,
 				0330F2B02AFAD26C001262C3 /* YouTubeLiveChat.swift in Sources */,
 				0379BBAD2AAD964000B718B6 /* AboutSettingsView.swift in Sources */,
 				03F5A8DF2AD5DACB00F354D2 /* Srt.swift in Sources */,
@@ -921,7 +907,6 @@
 				03B373FF2A9FCA790028DDD5 /* ThermalStateView.swift in Sources */,
 				032A49B82AC54DD000ED3916 /* ExportSettingsView.swift in Sources */,
 				03831D522AD90AB5008D26CC /* MoblinSettingsUrl.swift in Sources */,
-				03522ED12B0A87730071B394 /* SceneCameraOrientationSettingsView.swift in Sources */,
 				032A49BA2AC54E6500ED3916 /* ImportSettingsView.swift in Sources */,
 				03E95ADF2ADB7A2E00DAE2DF /* MaximumScreenFpsSettingsView.swift in Sources */,
 				03A14BE32ACC903E00D180FF /* ZoomSettingsView.swift in Sources */,
@@ -950,7 +935,6 @@
 				0315A33B2AA2FA7100295443 /* LocalListener.swift in Sources */,
 				035D37372AB230E700045B92 /* StreamVideoBitrateSettingsView.swift in Sources */,
 				0318391B2AF79DDF00320FB2 /* DebugAdaptiveBitrateSettingsView.swift in Sources */,
-				0303990F2AE2477700D27530 /* LocalOverlaysAudioLevelSettingsView.swift in Sources */,
 				03F5A8E52AD6FF8E00F354D2 /* StreamOverlayDebugView.swift in Sources */,
 				030399132AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift in Sources */,
 			);

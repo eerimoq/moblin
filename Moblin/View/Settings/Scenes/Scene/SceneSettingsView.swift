@@ -69,6 +69,16 @@ struct SceneSettingsView: View {
         }
     }
 
+    private func onLayoutChange(layout: String) {
+        scene.cameraLayout = SettingsSceneCameraLayout(rawValue: layout)!
+        model.sceneUpdated(store: true)
+    }
+
+    private func onCameraChange(camera: String) {
+        scene.cameraType = SettingsSceneCameraType(rawValue: camera)!
+        model.sceneUpdated(store: true)
+    }
+
     var body: some View {
         Form {
             NavigationLink(destination: NameEditView(
@@ -78,15 +88,23 @@ struct SceneSettingsView: View {
                 TextItemView(name: "Name", value: scene.name)
             }
             Section {
-                NavigationLink(destination: SceneCameraLayoutSettingsView(
-                    scene: scene, cameraLayout: scene.cameraLayout!.rawValue
+                NavigationLink(destination: InlinePickerView(
+                    title: "Layout",
+                    onChange: onLayoutChange,
+                    footer: Text(
+                        "The Picture in Picture layout is experimental and does not work."
+                    ),
+                    items: cameraLayouts,
+                    selected: scene.cameraLayout!.rawValue
                 )) {
                     TextItemView(name: "Layout", value: scene.cameraLayout!.rawValue)
                 }
                 if scene.cameraLayout == .single {
-                    NavigationLink(destination: SceneCameraOrientationSettingsView(
+                    NavigationLink(destination: InlinePickerView(
                         title: "Camera",
-                        scene: scene, cameraType: scene.cameraType.rawValue
+                        onChange: onCameraChange,
+                        items: cameraTypes,
+                        selected: scene.cameraType.rawValue
                     )) {
                         TextItemView(
                             name: "Camera",
@@ -94,9 +112,11 @@ struct SceneSettingsView: View {
                         )
                     }
                 } else if scene.cameraLayout == .pip {
-                    NavigationLink(destination: SceneCameraOrientationSettingsView(
+                    NavigationLink(destination: InlinePickerView(
                         title: "Large camera",
-                        scene: scene, cameraType: scene.cameraType.rawValue
+                        onChange: onCameraChange,
+                        items: cameraTypes,
+                        selected: scene.cameraType.rawValue
                     )) {
                         TextItemView(
                             name: "Large camera",
