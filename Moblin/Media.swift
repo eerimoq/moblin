@@ -336,15 +336,17 @@ final class Media: NSObject {
     ) {
         netStream.videoCapture(for: 0)?
             .preferredVideoStabilizationMode = videoStabilizationMode
-        if let secondDevice, false {
-            logger.info("Attaching second camera (first)")
-            netStream.attachMultiCamera(secondDevice) { error in
-                logger.error("stream: second camera error: \(error)")
+        if let secondDevice {
+            logger.info("Should use two cameras")
+            if false {
+                netStream.attachMultiCamera(secondDevice) { error in
+                    logger.error("stream: second camera error: \(error)")
+                }
             }
         } else {
-            /* netStream.attachMultiCamera(nil) { error in
-                 logger.error("stream: second camera error: \(error)")
-             } */
+            netStream.attachMultiCamera(nil) { error in
+                logger.error("stream: remove second camera error: \(error)")
+            }
         }
         netStream.attachCamera(device, onError: { error in
             logger.error("stream: Attach camera error: \(error)")
