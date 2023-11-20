@@ -6,7 +6,7 @@ struct SceneSettingsView: View {
     @State private var showingAddButton = false
     @State private var expandedWidget: SettingsSceneWidget?
     var scene: SettingsScene
-    @State var cameraSelection: String
+    @State var showPipSmallCameraDimensions = false
 
     var widgets: [SettingsWidget] {
         model.database.widgets
@@ -60,6 +60,25 @@ struct SceneSettingsView: View {
         return sceneWidget
     }
 
+    private func pipSmall() -> String {
+        switch scene.cameraType {
+        case .back:
+            return SettingsSceneCameraType.front.rawValue
+        case .front:
+            return SettingsSceneCameraType.back.rawValue
+        }
+    }
+
+    private func onLayoutChange(layout: String) {
+        scene.cameraLayout = SettingsSceneCameraLayout(rawValue: layout)!
+        model.sceneUpdated(store: true)
+    }
+
+    private func onCameraChange(camera: String) {
+        scene.cameraType = SettingsSceneCameraType(rawValue: camera)!
+        model.sceneUpdated(store: true)
+    }
+
     var body: some View {
         Form {
             NavigationLink(destination: NameEditView(
@@ -69,17 +88,51 @@ struct SceneSettingsView: View {
                 TextItemView(name: "Name", value: scene.name)
             }
             Section {
-                Picker("", selection: $cameraSelection) {
-                    ForEach(cameraTypes, id: \.self) { cameraType in
-                        Text(cameraType)
+                NavigationLink(destination: InlinePickerView(
+                    title: "Layout",
+                    onChange: onLayoutChange,
+                    footer: Text(
+                        "The Picture in Picture layout is experimental and does not work."
+                    ),
+                    items: cameraLayouts,
+                    selected: scene.cameraLayout!.rawValue
+                )) {
+                    TextItemView(name: "Layout", value: scene.cameraLayout!.rawValue)
+                }
+                if scene.cameraLayout == .single {
+                    NavigationLink(destination: InlinePickerView(
+                        title: "Camera",
+                        onChange: onCameraChange,
+                        items: cameraTypes,
+                        selected: scene.cameraType.rawValue
+                    )) {
+                        TextItemView(
+                            name: "Camera",
+                            value: scene.cameraType.rawValue
+                        )
+                    }
+                } else if scene.cameraLayout == .pip {
+                    NavigationLink(destination: InlinePickerView(
+                        title: "Large camera",
+                        onChange: onCameraChange,
+                        items: cameraTypes,
+                        selected: scene.cameraType.rawValue
+                    )) {
+                        TextItemView(
+                            name: "Large camera",
+                            value: scene.cameraType.rawValue
+                        )
+                    }
+                    Button(action: {
+                        showPipSmallCameraDimensions.toggle()
+                    }, label: {
+                        TextItemView(name: "Small camera", value: pipSmall())
+                    })
+                    .foregroundColor(.primary)
+                    if showPipSmallCameraDimensions {
+                        SceneCameraPipSmallCameraSettingsView(scene: scene)
                     }
                 }
-                .onChange(of: cameraSelection) { cameraType in
-                    scene.cameraType = SettingsSceneCameraType(rawValue: cameraType)!
-                    model.sceneUpdated(store: true)
-                }
-                .pickerStyle(.inline)
-                .labelsHidden()
             } header: {
                 Text("Camera")
             }
@@ -246,9 +299,8 @@ struct SceneSettingsView: View {
             }
         }
         .navigationTitle("Scene")
-        .onAppear {
-            model.selectedSceneId = scene.id
-            model.sceneUpdated()
+        .toolbar {
+            SettingsToolbar()
         }
     }
 }

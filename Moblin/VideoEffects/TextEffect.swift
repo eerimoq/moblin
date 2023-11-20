@@ -35,6 +35,8 @@ final class TextEffect: VideoEffect {
         nextUpdateTime += 1
         DispatchQueue.main.async {
             let text = Text(self.formatted())
+                .background(.black)
+                .foregroundColor(.white)
                 .font(.system(size: self.fontSize))
             let renderer = ImageRenderer(content: text)
             let image = renderer.uiImage

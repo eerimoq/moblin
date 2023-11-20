@@ -17,6 +17,7 @@ struct ImportSettingsView: View {
                     model.updateIconImageFromDatabase()
                 }
             }
+            .disabled(model.isLive)
             Spacer()
         }
     }

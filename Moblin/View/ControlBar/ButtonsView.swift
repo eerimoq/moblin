@@ -7,6 +7,8 @@ struct ButtonImage: View {
     var image: String
     var on: Bool
     var slash: Bool = false
+    var pause: Bool = false
+    var overlayColor: Color = .white
 
     var body: some View {
         let image = Image(systemName: image)
@@ -35,6 +37,15 @@ struct ButtonImage: View {
                     .shadow(color: imageBackground, radius: 0, x: 0, y: -1)
                     .shadow(color: imageBackground, radius: 0, x: -2, y: -2)
             }
+            if pause {
+                // Button press animation not perfect.
+                Image(systemName: "pause")
+                    .bold()
+                    .font(.system(size: 9))
+                    .frame(width: buttonSize, height: buttonSize)
+                    .offset(y: -1)
+                    .foregroundColor(overlayColor)
+            }
         }
     }
 }
@@ -56,37 +67,31 @@ struct MicButtonView: View {
     var done: () -> Void
 
     var body: some View {
-        VStack(spacing: 0) {
-            HStack {
-                Spacer()
-                Button(action: {
-                    done()
-                }, label: {
-                    Text("Close")
-                        .padding(5)
-                        .foregroundColor(.blue)
-                })
-            }
-            .background(Color(uiColor: .systemGroupedBackground))
-            Form {
-                Section("Mic") {
-                    Picker("", selection: Binding(get: {
-                        model.mic
-                    }, set: { mic, _ in
-                        selectedMic = mic
-                    })) {
-                        ForEach(model.listMics()) { mic in
-                            Text(mic.name).tag(mic)
-                        }
+        Form {
+            Section("Mic") {
+                Picker("", selection: Binding(get: {
+                    model.mic
+                }, set: { mic, _ in
+                    selectedMic = mic
+                    if let mic = SettingsMic(rawValue: mic.name) {
+                        model.database.mic = mic
+                        model.store()
                     }
-                    .onChange(of: selectedMic) { mic in
-                        model.selectMicById(id: mic.id)
-                        done()
+                })) {
+                    ForEach(model.listMics()) { mic in
+                        Text(mic.name).tag(mic)
                     }
-                    .pickerStyle(.inline)
-                    .labelsHidden()
                 }
+                .onChange(of: selectedMic) { mic in
+                    model.selectMicById(id: mic.id)
+                    done()
+                }
+                .pickerStyle(.inline)
+                .labelsHidden()
             }
+        }
+        .toolbar {
+            QuickSettingsToolbar(done: done)
         }
     }
 }
@@ -128,6 +133,21 @@ struct ButtonsView: View {
         model.showChatMessages.toggle()
         model.updateButtonStates()
         model.sceneUpdated(store: false)
+    }
+
+    private func pauseChatAction(state: ButtonState) {
+        state.button.isOn.toggle()
+        model.toggleChatPaused()
+        model.updateButtonStates()
+        model.sceneUpdated(store: false)
+    }
+
+    private func pauseChatOverlayColor() -> Color {
+        if model.chatPaused {
+            return imageBackground
+        } else {
+            return .white
+        }
     }
 
     private func buttonHeight() -> CGFloat {
@@ -199,6 +219,17 @@ struct ButtonsView: View {
                                     slash: true
                                 )
                             })
+                        case .pauseChat:
+                            Button(action: {
+                                pauseChatAction(state: second)
+                            }, label: {
+                                ButtonImage(
+                                    image: getImage(state: second),
+                                    on: second.isOn,
+                                    pause: true,
+                                    overlayColor: pauseChatOverlayColor()
+                                )
+                            })
                         }
                     } else {
                         ButtonPlaceholderImage()
@@ -257,6 +288,17 @@ struct ButtonsView: View {
                                 image: getImage(state: pair.first),
                                 on: pair.first.isOn,
                                 slash: true
+                            )
+                        })
+                    case .pauseChat:
+                        Button(action: {
+                            pauseChatAction(state: pair.first)
+                        }, label: {
+                            ButtonImage(
+                                image: getImage(state: pair.first),
+                                on: pair.first.isOn,
+                                pause: true,
+                                overlayColor: pauseChatOverlayColor()
                             )
                         })
                     }

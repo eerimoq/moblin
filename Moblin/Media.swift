@@ -19,8 +19,8 @@ private func becameUnmuted(old: Float, new: Float) -> Bool {
 final class Media: NSObject {
     private var rtmpConnection = RTMPConnection()
     private var srtConnection = SRTConnection()
-    private var rtmpStream: RTMPStream!
-    private var srtStream: SRTStream!
+    private var rtmpStream: RTMPStream?
+    private var srtStream: SRTStream?
     private var srtla: Srtla?
     private var netStream: NetStream!
     private var srtTotalByteCount: Int64 = 0
@@ -31,6 +31,7 @@ final class Media: NSObject {
     private var currentAudioLevel: Float = 100.0
     private var srtUrl: String = ""
     private var latency: Int32 = 2000
+    private var overheadBandwidth: Int32 = 25
     var onSrtConnected: (() -> Void)!
     var onSrtDisconnected: ((_ reason: String) -> Void)!
     var onRtmpConnected: (() -> Void)!
@@ -38,7 +39,6 @@ final class Media: NSObject {
     var onAudioMuteChange: (() -> Void)!
     var onVideoDeviceInUseByAnotherClient: (() -> Void)!
     private var adaptiveBitrate: AdaptiveBitrate?
-    private var videoSize = VideoSize(width: 1280, height: 720)
 
     func logStatistics() {
         srtla?.logStatistics()
@@ -51,12 +51,15 @@ final class Media: NSObject {
     func setNetStream(proto: SettingsStreamProtocol) {
         srtStopStream()
         rtmpStopStream()
+        rtmpConnection = RTMPConnection()
         switch proto {
         case .rtmp:
             rtmpStream = RTMPStream(connection: rtmpConnection)
+            srtStream = nil
             netStream = rtmpStream
         case .srt:
             srtStream = SRTStream(srtConnection)
+            rtmpStream = nil
             netStream = srtStream
         }
         netStream.delegate = self
@@ -75,25 +78,36 @@ final class Media: NSObject {
         targetBitrate: UInt32,
         adaptiveBitrate adaptiveBitrateEnabled: Bool,
         latency: Int32,
+        overheadBandwidth: Int32,
         mpegtsPacketsPerPacket: Int
     ) {
         srtUrl = url
         self.latency = latency
+        self.overheadBandwidth = overheadBandwidth
         srtTotalByteCount = 0
         srtPreviousTotalByteCount = 0
         srtla?.stop()
         srtla = Srtla(
             delegate: self,
             passThrough: !isSrtla,
-            targetBitrate: targetBitrate,
             mpegtsPacketsPerPacket: mpegtsPacketsPerPacket
         )
         if adaptiveBitrateEnabled {
             adaptiveBitrate = AdaptiveBitrate(
-                targetVideoSize: videoSize,
                 targetBitrate: targetBitrate,
                 delegate: self
             )
+            if let dataRateLimits = [
+                NSNumber(value: 15000 / 8 * 1024),
+                NSNumber(value: 1),
+            ] as? CFArray {
+                netStream.videoSettings.extraOptions = [.init(
+                    key: .dataRateLimits,
+                    value: dataRateLimits
+                )]
+            } else {
+                logger.error("Failed to cast initial data rate limits")
+            }
         } else {
             adaptiveBitrate = nil
         }
@@ -101,33 +115,37 @@ final class Media: NSObject {
     }
 
     func srtStopStream() {
-        clearTemporaryVideoSize()
         srtConnection.close()
         srtla?.stop()
         srtla = nil
         srtConnectedObservation = nil
+        adaptiveBitrate = nil
     }
 
     func getSrtStats() -> [String] {
         let stats = srtConnection.performanceData
         adaptiveBitrate?.update(stats: stats)
-        
-        if let  adapativeStats = adaptiveBitrate {
+        if let adapativeStats = adaptiveBitrate {
             return [
-                "R: \(stats.pktRetransTotal) N: \(stats.pktRecvNAKTotal) D: \(stats.pktSndDropTotal)",
+                "R: \(stats.pktRetransTotal) N: \(stats.pktRecvNAKTotal) S: \(stats.pktSndDropTotal)",
                 "msRTT: \(stats.msRTT)",
-                "pktFlightSize: \(stats.pktFlightSize)    \(adapativeStats.GetFastPif)    \(adapativeStats.GetSmoothPif)",
-                "B: \(adapativeStats.GetCurrentBitrate) /  \( adapativeStats.GetTempMaxBitrate) "
-            ] +  adapativeStats.GetAdaptiveActions
-        }
-        return   [
-            "pktRetransTotal: \(stats.pktRetransTotal)",
-            "pktRecvNAKTotal: \(stats.pktRecvNAKTotal)",
-            "pktSndDropTotal: \(stats.pktSndDropTotal)",
-            "msRTT: \(stats.msRTT)",
-            "pktFlightSize: \(stats.pktFlightSize)",
-            "pktSndBuf: \(stats.pktSndBuf)",
+                """
+                pktFlightSize: \(stats.pktFlightSize)   \
+                \(adapativeStats.GetFastPif)   \
+                \(adapativeStats.GetSmoothPif)
+                """,
+                "B: \(adapativeStats.getCurrentBitrate) /  \(adapativeStats.getTempMaxBitrate)",
+            ] + adapativeStats.getAdaptiveActions
+        } else {
+            return [
+                "pktRetransTotal: \(stats.pktRetransTotal)",
+                "pktRecvNAKTotal: \(stats.pktRecvNAKTotal)",
+                "pktSndDropTotal: \(stats.pktSndDropTotal)",
+                "msRTT: \(stats.msRTT)",
+                "pktFlightSize: \(stats.pktFlightSize)",
+                "pktSndBuf: \(stats.pktSndBuf)",
             ]
+        }
     }
 
 
@@ -140,7 +158,7 @@ final class Media: NSObject {
 
     func streamSpeed() -> Int64 {
         if netStream === rtmpStream {
-            return Int64(8 * rtmpStream.info.currentBytesPerSecond)
+            return Int64(8 * (rtmpStream?.info.currentBytesPerSecond ?? 0))
         } else {
             return 8 * srtSpeed
         }
@@ -148,7 +166,7 @@ final class Media: NSObject {
 
     func streamTotal() -> Int64 {
         if netStream === rtmpStream {
-            return rtmpStream.info.byteCount.value
+            return rtmpStream?.info.byteCount.value ?? 0
         } else {
             return srtTotalByteCount
         }
@@ -172,7 +190,16 @@ final class Media: NSObject {
         }
     }
 
-    func makeLocalhostSrtUrl(url: String, port: UInt16, latency: Int32) -> URL? {
+    private func queryContains(queryItems: [URLQueryItem], name: String) -> Bool {
+        return queryItems.contains(where: { parameter in parameter.name == name })
+    }
+
+    func makeLocalhostSrtUrl(
+        url: String,
+        port: UInt16,
+        latency: Int32,
+        overheadBandwidth: Int32
+    ) -> URL? {
         guard let url = URL(string: url) else {
             return nil
         }
@@ -182,18 +209,18 @@ final class Media: NSObject {
         var urlComponents = URLComponents(url: localUrl, resolvingAgainstBaseURL: false)!
         urlComponents.query = url.query
         var queryItems: [URLQueryItem] = urlComponents.queryItems ?? []
-        if !queryItems.contains(where: { parameter in
-            parameter.name == "latency"
-        }) {
+        if !queryContains(queryItems: queryItems, name: "latency") {
+            logger.debug("Setting SRT latency to \(latency)")
             queryItems.append(URLQueryItem(name: "latency", value: String(latency)))
         }
-        queryItems.append(URLQueryItem(name: "maxbw", value: "0"))
-        queryItems.append(URLQueryItem(name: "lossmaxttl", value: "1000"))
-        queryItems.append(URLQueryItem(name: "oheadbw", value: "5"))
-        queryItems.append(URLQueryItem(name: "maxrexmitbw", value: "0"))
-        
-     
-        
+        if !queryContains(queryItems: queryItems, name: "oheadbw") {
+            logger.debug("Setting SRT oheadbw to \(overheadBandwidth)")
+            queryItems.append(URLQueryItem(
+                name: "oheadbw",
+                value: String(overheadBandwidth)
+            ))
+        }
+        urlComponents.queryItems = queryItems
         return urlComponents.url
     }
 
@@ -228,7 +255,7 @@ final class Media: NSObject {
         DispatchQueue.main.async {
             switch code {
             case RTMPConnection.Code.connectSuccess.rawValue:
-                self.rtmpStream.publish(self.rtmpStreamName)
+                self.rtmpStream?.publish(self.rtmpStreamName)
                 self.onRtmpConnected()
             case RTMPConnection.Code.connectFailed.rawValue,
                  RTMPConnection.Code.connectClosed.rawValue:
@@ -262,16 +289,7 @@ final class Media: NSObject {
     }
 
     func setVideoSize(size: VideoSize) {
-        videoSize = size
         netStream.videoSettings.videoSize = size
-    }
-
-    func setTemporaryVideoSize(size: VideoSize) {
-        netStream.videoSettings.videoSize = size
-    }
-
-    func clearTemporaryVideoSize() {
-        netStream?.videoSettings.videoSize = videoSize
     }
 
     func getVideoSize() -> VideoSize {
@@ -318,6 +336,14 @@ final class Media: NSObject {
     ) {
         netStream.videoCapture(for: 0)?
             .preferredVideoStabilizationMode = videoStabilizationMode
+        if false {
+            let front = AVCaptureDevice.default(.builtInWideAngleCamera,
+                                                for: .video,
+                                                position: .front)
+            netStream.attachMultiCamera(front) { error in
+                print("error: \(error)")
+            }
+        }
         netStream.attachCamera(device, onError: { error in
             logger.error("stream: Attach camera error: \(error)")
         }, onSuccess: {
@@ -325,12 +351,6 @@ final class Media: NSObject {
                 onSuccess?()
             }
         })
-        /* let front = AVCaptureDevice.default(.builtInWideAngleCamera,
-                                             for: .video,
-                                             position: .front)
-         netStream.attachMultiCamera(front) { error in
-             print("error: \(error)")
-         } */
     }
 
     func attachAudio(device: AVCaptureDevice?) {
@@ -433,7 +453,8 @@ extension Media: SrtlaDelegate {
                     try self.srtConnection.open(self.makeLocalhostSrtUrl(
                         url: self.srtUrl,
                         port: port,
-                        latency: self.latency
+                        latency: self.latency,
+                        overheadBandwidth: self.overheadBandwidth
                     ))
                     self.srtStream?.publish()
                 } catch {

@@ -17,7 +17,7 @@ enum SettingsStreamResolution: String, Codable, CaseIterable {
 
 let resolutions = SettingsStreamResolution.allCases.map { $0.rawValue }
 
-let fpss = [60, 30, 15, 5]
+let fpss = ["60", "30", "15", "5"]
 
 enum SettingsStreamProtocol: String, Codable {
     case rtmp = "RTMP"
@@ -52,6 +52,8 @@ class SettingsStream: Codable, Identifiable {
     var twitchChannelName: String = ""
     var twitchChannelId: String = ""
     var kickChatroomId: String = ""
+    var youTubeApiKey: String? = ""
+    var youTubeVideoId: String? = ""
     var resolution: SettingsStreamResolution = .r1280x720
     var fps: Int = 30
     var bitrate: UInt32 = 3_000_000
@@ -132,11 +134,27 @@ enum SettingsSceneCameraType: String, Codable, CaseIterable {
 
 var cameraTypes = SettingsSceneCameraType.allCases.map { $0.rawValue }
 
+enum SettingsSceneCameraLayout: String, Codable, CaseIterable {
+    case single = "Single"
+    case pip = "Picture in Picture"
+}
+
+var cameraLayouts = SettingsSceneCameraLayout.allCases.map { $0.rawValue }
+
+class SettingsSceneCameraLayoutPip: Codable {
+    var x: Double = 65.0
+    var y: Double = 0.0
+    var width: Double = 35.0
+    var height: Double = 35.0
+}
+
 class SettingsScene: Codable, Identifiable, Equatable {
     var name: String
     var id: UUID = .init()
     var enabled: Bool = true
+    var cameraLayout: SettingsSceneCameraLayout? = .single
     var cameraType: SettingsSceneCameraType = .back
+    var cameraLayoutPip: SettingsSceneCameraLayoutPip? = .init()
     var widgets: [SettingsSceneWidget] = []
     var buttons: [SettingsSceneButton] = []
 
@@ -266,6 +284,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case widget = "Widget"
     case mic = "Mic"
     case chat = "Chat"
+    case pauseChat = "Pause chat"
 }
 
 let buttonTypes = SettingsButtonType.allCases.map { $0.rawValue }
@@ -348,6 +367,7 @@ class SettingsBitratePreset: Codable, Identifiable {
 enum SettingsVideoStabilizationMode: String, Codable, CaseIterable {
     case off = "Off"
     case standard = "Standard"
+    case cinematic = "Cinematic"
 }
 
 var videoStabilizationModes = SettingsVideoStabilizationMode.allCases.map { $0.rawValue }
@@ -378,6 +398,30 @@ class SettingsChat: Codable {
     var animatedEmotes: Bool = false
     var timestampColor: RgbColor = .init(red: 180, green: 180, blue: 180)
     var timestampColorEnabled: Bool = true
+    var height: Double? = 1.0
+    var width: Double? = 1.0
+    var maximumAge: Int? = 30
+    var maximumAgeEnabled: Bool? = false
+}
+
+enum SettingsMic: String, Codable, CaseIterable {
+    case bottom = "Bottom"
+    case front = "Front"
+    case back = "Back"
+}
+
+enum SettingsLogLevel: String, Codable, CaseIterable {
+    case error = "Error"
+    case info = "Info"
+    case debug = "Debug"
+}
+
+let logLevels = SettingsLogLevel.allCases.map { $0.rawValue }
+
+class SettingsDebug: Codable {
+    var logLevel: SettingsLogLevel = .error
+    var srtOverlay: Bool = false
+    var srtOverheadBandwidth: Int32? = 25
 }
 
 class Database: Codable {
@@ -396,6 +440,8 @@ class Database: Codable {
     var videoStabilizationMode: SettingsVideoStabilizationMode = .off
     var chat: SettingsChat = .init()
     var batteryPercentage: Bool? = false
+    var mic: SettingsMic? = .bottom
+    var debug: SettingsDebug? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -480,6 +526,7 @@ func addDefaultScenes(database: Database) {
     scene.addButton(id: database.buttons[2].id)
     scene.addButton(id: database.buttons[8].id)
     scene.addButton(id: database.buttons[9].id)
+    scene.addButton(id: database.buttons[10].id)
     scene.addButton(id: database.buttons[3].id)
     scene.addButton(id: database.buttons[4].id)
     scene.addButton(id: database.buttons[5].id)
@@ -493,6 +540,7 @@ func addDefaultScenes(database: Database) {
     scene.addButton(id: database.buttons[2].id)
     scene.addButton(id: database.buttons[8].id)
     scene.addButton(id: database.buttons[9].id)
+    scene.addButton(id: database.buttons[10].id)
     scene.addButton(id: database.buttons[3].id)
     database.scenes.append(scene)
 }
@@ -501,9 +549,6 @@ func addDefaultStreams(database: Database) {
     let stream = SettingsStream(name: "Twitch")
     stream.enabled = true
     stream.url = "rtmp://arn03.contribute.live-video.net/app/your_stream_key"
-    stream.twitchChannelName = ""
-    stream.twitchChannelId = ""
-    stream.kickChatroomId = ""
     database.streams.append(stream)
 }
 
@@ -629,6 +674,14 @@ func addDefaultButtons(database: Database) {
     button.systemImageNameOn = "message.fill"
     button.systemImageNameOff = "message"
     database.buttons.append(button)
+
+    button = SettingsButton(name: "Pause chat")
+    button.id = UUID()
+    button.type = .pauseChat
+    button.imageType = "System name"
+    button.systemImageNameOn = "message.fill"
+    button.systemImageNameOff = "message"
+    database.buttons.append(button)
 }
 
 func createDefault() -> Database {
@@ -697,6 +750,50 @@ final class Settings {
     private func migrateFromOlderVersions() {
         if realDatabase.batteryPercentage == nil {
             realDatabase.batteryPercentage = false
+            store()
+        }
+        if realDatabase.chat.height == nil {
+            realDatabase.chat.height = 1.0
+            store()
+        }
+        if realDatabase.chat.width == nil {
+            realDatabase.chat.width = 1.0
+            store()
+        }
+        for stream in realDatabase.streams where stream.youTubeApiKey == nil {
+            stream.youTubeApiKey = ""
+            store()
+        }
+        for stream in realDatabase.streams where stream.youTubeVideoId == nil {
+            stream.youTubeVideoId = ""
+            store()
+        }
+        if realDatabase.chat.maximumAge == nil {
+            realDatabase.chat.maximumAge = 30
+            store()
+        }
+        if realDatabase.chat.maximumAgeEnabled == nil {
+            realDatabase.chat.maximumAgeEnabled = false
+            store()
+        }
+        if realDatabase.mic == nil {
+            realDatabase.mic = .bottom
+            store()
+        }
+        if realDatabase.debug == nil {
+            realDatabase.debug = .init()
+            store()
+        }
+        if realDatabase.debug!.srtOverheadBandwidth == nil {
+            realDatabase.debug!.srtOverheadBandwidth = 25
+            store()
+        }
+        for scene in realDatabase.scenes where scene.cameraLayout == nil {
+            scene.cameraLayout = .single
+            store()
+        }
+        for scene in realDatabase.scenes where scene.cameraLayoutPip == nil {
+            scene.cameraLayoutPip = .init()
             store()
         }
     }

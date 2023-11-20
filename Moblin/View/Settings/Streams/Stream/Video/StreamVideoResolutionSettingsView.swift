@@ -22,5 +22,8 @@ struct StreamVideoResolutionSettingsView: View {
             }
         }
         .navigationTitle("Resolution")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }

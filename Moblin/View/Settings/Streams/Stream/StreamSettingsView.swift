@@ -23,19 +23,26 @@ struct StreamSettingsView: View {
             )) {
                 TextItemView(name: "URL", value: schemeAndAddress(url: stream.url))
             }
+            .disabled(stream.enabled && model.isLive)
             NavigationLink(destination: StreamVideoSettingsView(stream: stream)) {
                 Text("Video")
             }
             NavigationLink(destination: StreamTwitchSettingsView(stream: stream)) {
-                Text("Twitch")
+                TextItemView(name: "Twitch", value: stream.twitchChannelName)
             }
             NavigationLink(destination: StreamKickSettingsView(stream: stream)) {
                 Text("Kick")
+            }
+            NavigationLink(destination: StreamYouTubeSettingsView(stream: stream)) {
+                Text("YouTube")
             }
             NavigationLink(destination: StreamSrtSettingsView(stream: stream)) {
                 Text("SRT(LA)")
             }
         }
         .navigationTitle("Stream")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }

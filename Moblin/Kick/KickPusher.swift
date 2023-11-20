@@ -1,6 +1,6 @@
 import Foundation
 
-struct Sender: Decodable {
+private struct Sender: Decodable {
     var username: String
 }
 
@@ -9,7 +9,7 @@ private struct ChatMessage: Decodable {
     var sender: Sender
 }
 
-func decodeEvent(message: String) throws -> (String, String) {
+private func decodeEvent(message: String) throws -> (String, String) {
     if let jsonData = message.data(using: String.Encoding.utf8) {
         let data = try JSONSerialization.jsonObject(
             with: jsonData,
@@ -38,14 +38,6 @@ private var url =
         string: "wss://ws-us2.pusher.com/app/eb1d5f283081a78b932c?protocol=7&client=js&version=7.6.0&flash=false"
     )!
 
-func removeEmote(message: String) -> String {
-    return message.replacingOccurrences(
-        of: "\\[emote:\\d+:(.*?)]",
-        with: "$1",
-        options: .regularExpression
-    )
-}
-
 final class KickPusher: NSObject {
     private var model: Model
     private var webSocket: URLSessionWebSocketTask
@@ -63,11 +55,15 @@ final class KickPusher: NSObject {
     }
 
     private func handleError(title: String, subTitle: String) {
-        model.makeErrorToast(title: title, subTitle: subTitle)
+        DispatchQueue.main.async {
+            self.model.makeErrorToast(title: title, subTitle: subTitle)
+        }
     }
 
     private func handleOk(title: String) {
-        model.makeToast(title: title)
+        DispatchQueue.main.async {
+            self.model.makeToast(title: title)
+        }
     }
 
     func start() {
@@ -108,11 +104,27 @@ final class KickPusher: NSObject {
         readMessage()
     }
 
+    private func createKickSegments(message: String) -> [ChatPostSegment] {
+        var segments: [ChatPostSegment] = []
+        var startIndex = message.startIndex
+        for match in message[startIndex...].matches(of: /\[emote:(\d+):[^\]]+\]/) {
+            let emoteId = match.output.1
+            let textBeforeEmote = message[startIndex ..< match.range.lowerBound]
+            let url = URL(string: "https://files.kick.com/emotes/\(emoteId)/fullsize")
+            segments += makeChatPostTextSegments(text: String(textBeforeEmote))
+            segments.append(ChatPostSegment(url: url))
+            startIndex = match.range.upperBound
+        }
+        if startIndex != message.endIndex {
+            segments += makeChatPostTextSegments(text: String(message[startIndex...]))
+        }
+        return segments
+    }
+
     private func handleChatMessageEvent(data: String) throws {
         let message = try decodeChatMessage(data: data)
-        let messageNoEmote = removeEmote(message: message.content)
         var segments: [ChatPostSegment] = []
-        for var segment in makeChatPostTextSegments(text: messageNoEmote) {
+        for var segment in createKickSegments(message: message.content) {
             if let text = segment.text {
                 segments += emotes.createSegments(text: text)
                 segment.text = nil
@@ -122,7 +134,9 @@ final class KickPusher: NSObject {
         model.appendChatMessage(
             user: message.sender.username,
             userColor: nil,
-            segments: segments
+            segments: segments,
+            timestamp: model.digitalClock,
+            timestampDate: Date()
         )
     }
 
@@ -158,7 +172,6 @@ final class KickPusher: NSObject {
         webSocket.receive { result in
             switch result {
             case .failure:
-                self.reconnect()
                 return
             case let .success(message):
                 switch message {
@@ -203,7 +216,7 @@ extension KickPusher: URLSessionWebSocketDelegate {
         webSocketTask _: URLSessionWebSocketTask,
         didOpenWithProtocol _: String?
     ) {
-        logger.info("kick: pusher: \(channelId): Connected to \(url)")
+        logger.debug("kick: pusher: \(channelId): Connected to \(url)")
         reconnectTime = firstReconnectTime
         sendMessage(
             message: """

@@ -1,5 +1,30 @@
 import SwiftUI
 
+struct ChatWarning: View {
+    var message: String
+
+    var body: some View {
+        VStack {
+            Spacer()
+            HStack {
+                HStack {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundColor(.yellow)
+                    Text(message)
+                        .bold()
+                        .foregroundColor(.white)
+                }
+                .padding([.top, .bottom], 5)
+                .padding([.leading, .trailing], 10)
+                .background(.black.opacity(0.8))
+                .cornerRadius(10)
+                Spacer()
+            }
+        }
+        .allowsHitTesting(false)
+    }
+}
+
 struct StreamOverlayView: View {
     @EnvironmentObject var model: Model
 
@@ -41,11 +66,20 @@ struct StreamOverlayView: View {
                 Spacer()
             }
             .allowsHitTesting(false)
-            if model.database.show.chat && model.showChatMessages {
-                GeometryReader { metrics in
-                    StreamOverlayChatView()
-                        .frame(width: metrics.size.width * 0.95)
-                        .allowsHitTesting(false)
+            if model.database.show.chat {
+                if model.showChatMessages {
+                    ZStack {
+                        GeometryReader { metrics in
+                            StreamOverlayChatView()
+                                .frame(width: metrics.size.width * 0.95)
+                                .allowsHitTesting(model.chatPaused)
+                        }
+                        if model.chatPaused {
+                            ChatWarning(message: "Chat is paused")
+                        }
+                    }
+                } else {
+                    ChatWarning(message: "Chat is hidden")
                 }
             }
             HStack {

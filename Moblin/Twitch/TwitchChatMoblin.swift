@@ -25,22 +25,6 @@ final class TwitchChatMoblin {
         emotes = Emotes()
     }
 
-    private func handleError(title: String, subTitle: String) {
-        model.makeErrorToast(title: title, subTitle: subTitle)
-    }
-
-    private func handleOk(title: String) {
-        model.makeToast(title: title)
-    }
-
-    func isConnected() -> Bool {
-        return connected
-    }
-
-    func hasEmotes() -> Bool {
-        return emotes.isReady()
-    }
-
     func start(channelName: String, channelId: String) {
         emotes.start(
             platform: .twitch,
@@ -73,7 +57,9 @@ final class TwitchChatMoblin {
                                 self.model.appendChatMessage(
                                     user: message.sender,
                                     userColor: message.senderColor,
-                                    segments: segments
+                                    segments: segments,
+                                    timestamp: model.digitalClock,
+                                    timestampDate: Date()
                                 )
                             }
                         }
@@ -101,6 +87,26 @@ final class TwitchChatMoblin {
         task?.cancel()
         task = nil
         connected = false
+    }
+
+    func isConnected() -> Bool {
+        return connected
+    }
+
+    func hasEmotes() -> Bool {
+        return emotes.isReady()
+    }
+
+    private func handleError(title: String, subTitle: String) {
+        DispatchQueue.main.async {
+            self.model.makeErrorToast(title: title, subTitle: subTitle)
+        }
+    }
+
+    private func handleOk(title: String) {
+        DispatchQueue.main.async {
+            self.model.makeToast(title: title)
+        }
     }
 
     private func createTwitchSegments(message: ChatMessage,
@@ -165,8 +171,7 @@ final class TwitchChatMoblin {
                                 emotesManager: Emotes) -> [ChatPostSegment]
     {
         var segments: [ChatPostSegment] = []
-        let twitchSegments = createTwitchSegments(message: message, emotes: emotes)
-        for var segment in twitchSegments {
+        for var segment in createTwitchSegments(message: message, emotes: emotes) {
             if let text = segment.text {
                 segments += emotesManager.createSegments(text: text)
                 segment.text = nil

@@ -2,9 +2,12 @@ import SwiftUI
 
 struct StreamUrlSettingsView: View {
     @EnvironmentObject var model: Model
+    @Environment(\.dismiss) var dismiss
     var stream: SettingsStream
     @State var value: String
     @State var show: Bool = false
+    @State var changed: Bool = false
+    @State var submitted: Bool = false
 
     func submitUrl() {
         value = value.trim()
@@ -12,8 +15,10 @@ struct StreamUrlSettingsView: View {
             model.makeErrorToast(title: message)
             return
         }
+        submitted = true
         stream.url = value
         model.storeAndReloadStreamIfEnabled(stream: stream)
+        dismiss()
     }
 
     var body: some View {
@@ -23,6 +28,10 @@ struct StreamUrlSettingsView: View {
                     TextField("", text: $value)
                         .onSubmit {
                             submitUrl()
+                        }
+                        .submitLabel(.done)
+                        .onChange(of: value) { _ in
+                            changed = true
                         }
                         .disableAutocorrection(true)
                         .opacity(show ? 1 : 0)
@@ -80,7 +89,7 @@ struct StreamUrlSettingsView: View {
                         Text("YouTube").underline()
                         Text(
                             """
-                            Example:  rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3
+                            Example: rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3
                             """
                         )
                         Text("")
@@ -89,7 +98,7 @@ struct StreamUrlSettingsView: View {
                         Text("Facebook").underline()
                         Text(
                             """
-                            Example:  rtmps://live-api-s.facebook.com:443/rtmp/FB-11152522122511115-0-BctNCp9jzzz-AAA
+                            Example: rtmps://live-api-s.facebook.com:443/rtmp/FB-11152522122511115-0-BctNCp9jzzz-AAA
                             """
                         )
                         Text("")
@@ -124,31 +133,41 @@ struct StreamUrlSettingsView: View {
                     }
                     Group {
                         Text("OBS Media Source (SRT)").underline()
-                        Text("Template: srt://my_public_ip:my_public_port/my_stream_key")
-                        Text("Example:  srt://134.20.342.12:5000/1234")
+                        Text("Template: srt://my_public_ip:my_public_port")
+                        Text("Example:  srt://134.20.342.12:5000")
                         Text("")
                     }
                     Group {
                         Group {
                             Text("BELABOX cloud SRTLA").underline()
                             Text(
-                                "Example:  srtla://uk.srt.belabox.net:5000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
+                                "Example: srtla://uk.srt.belabox.net:5000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
                             )
                             Text("")
                         }
                         Group {
                             Text("BELABOX cloud SRT").underline()
                             Text(
-                                "Example:  srt://uk.srt.belabox.net:4000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
+                                "Example: srt://uk.srt.belabox.net:4000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
                             )
                             Text("")
                         }
                         Group {
                             Text("SRTLA server").underline()
                             Text(
-                                "Template: srtla://my_public_ip:my_public_port/my_stream_key"
+                                "Template: srtla://my_public_ip:my_public_port"
                             )
-                            Text("Example:  srtla://foobar.org:4432/5678")
+                            Text("Example:  srtla://foobar.org:4432")
+                            Text("")
+                        }
+                        Group {
+                            Text("SRT Live Server (SLS)").underline()
+                            Text(
+                                "Template: srt://my_public_ip:my_public_port?streamid=publish/live/my_key"
+                            )
+                            Text(
+                                "Example:  srt://120.12.32.12:4000?streamid=publish/live/feed"
+                            )
                             Text("")
                         }
                         Group {
@@ -162,6 +181,14 @@ struct StreamUrlSettingsView: View {
                 }
             }
         }
+        .onDisappear {
+            if changed && !submitted {
+                submitUrl()
+            }
+        }
         .navigationTitle("URL")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }

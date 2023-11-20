@@ -3,6 +3,7 @@ import Collections
 import Combine
 import CoreMotion
 import HaishinKit
+import Logboard
 import Network
 import PhotosUI
 import SDWebImageSwiftUI
@@ -13,7 +14,16 @@ import SwiftUI
 import TwitchChat
 import VideoToolbox
 
-let noValue = ""
+private let noValue = ""
+private let maximumNumberOfChatMessages = 50
+
+struct PausedChatMessage {
+    var user: String
+    var userColor: String?
+    var segments: [ChatPostSegment]
+    var timestamp: String
+    var timestampDate: Date
+}
 
 struct Mic: Identifiable, Hashable {
     var id: String {
@@ -55,19 +65,20 @@ private let globalMyIcons = [
 private let globalIconsNotYetInStore = [
     Icon(name: "Queen", id: "AppIconQueen", price: ""),
     Icon(name: "Goblin", id: "AppIconGoblin", price: ""),
-    Icon(name: "Heart", id: "AppIconHeart", price: ""),
-    Icon(name: "Basque", id: "AppIconBasque", price: ""),
+    Icon(name: "Goblina", id: "AppIconGoblina", price: ""),
     Icon(name: "Looking", id: "AppIconLooking", price: ""),
+    Icon(name: "Heart", id: "AppIconHeart", price: ""),
+    Icon(name: "Millionaire", id: "AppIconMillionaire", price: ""),
+    Icon(name: "Billionaire", id: "AppIconBillionaire", price: ""),
+    Icon(name: "Trillionaire", id: "AppIconTrillionaire", price: ""),
+    Icon(name: "Basque", id: "AppIconBasque", price: ""),
     Icon(name: "Tetris", id: "AppIconTetris", price: ""),
-    Icon(name: "Eyebrows", id: "AppIconEyebrows", price: ""),
     Icon(name: "South Korea", id: "AppIconSouthKorea", price: ""),
     Icon(name: "China", id: "AppIconChina", price: ""),
     Icon(name: "United Kingdom", id: "AppIconUnitedKingdom", price: ""),
     Icon(name: "Sweden", id: "AppIconSweden", price: ""),
     Icon(name: "United States", id: "AppIconUnitedStates", price: ""),
-    Icon(name: "Millionaire", id: "AppIconMillionaire", price: ""),
-    Icon(name: "Billionaire", id: "AppIconBillionaire", price: ""),
-    Icon(name: "Trillionaire", id: "AppIconTrillionaire", price: ""),
+    Icon(name: "Eyebrows", id: "AppIconEyebrows", price: ""),
 ]
 
 struct ChatMessageEmote: Identifiable {
@@ -102,10 +113,11 @@ struct ChatPost: Identifiable, Hashable {
     }
 
     var id: Int
-    var user: String
+    var user: String?
     var userColor: String?
     var segments: [ChatPostSegment]
     var timestamp: String
+    var timestampDate: Date
 }
 
 class ButtonState {
@@ -143,14 +155,17 @@ final class Model: ObservableObject {
         }
     }
 
+    @Published var bias: Float = 0.0
+    @Published var showingSettings = false
+    @Published var settingsLayout: SettingsLayout = .right
     @Published var showChatMessages = true
+    @Published var chatPaused = false
     @Published var audioGenerator = "Off"
     @Published var squareWaveGeneratorAmplitude = 200.0
     @Published var squareWaveGeneratorInterval = 60.0
     private var streaming = false
     @Published var mic = noMic
     private var micChange = noMic
-    // private var wasStreamingWhenDidEnterBackground = false
     private var streamStartDate: Date?
     @Published var isLive = false
     private var subscriptions = Set<AnyCancellable>()
@@ -163,8 +178,10 @@ final class Model: ObservableObject {
     private var twitchChat: TwitchChatMoblin!
     private var twitchPubSub: TwitchPubSub?
     private var kickPusher: KickPusher?
+    private var youTubeLiveChat: YouTubeLiveChat?
     private var chatPostId = 0
     @Published var chatPosts: Deque<ChatPost> = []
+    private var pausedChatMessages: Deque<PausedChatMessage> = []
     private var numberOfChatPostsPerTick = 0
     private var chatPostsRatePerSecond = 0.0
     private var chatPostsRatePerMinute = 0.0
@@ -505,20 +522,31 @@ final class Model: ObservableObject {
         return mics
     }
 
-    private func setPreferFrontMic() {
+    private func setMic() {
+        var wantedOrientation: AVAudioSession.Orientation
+        switch database.mic! {
+        case .bottom:
+            wantedOrientation = .bottom
+        case .front:
+            wantedOrientation = .front
+        case .back:
+            wantedOrientation = .back
+        }
         let session = AVAudioSession.sharedInstance()
         for inputPort in session.availableInputs ?? [] {
             if inputPort.portType != .builtInMic {
                 continue
             }
             if let dataSources = inputPort.dataSources, !dataSources.isEmpty {
-                for dataSource in dataSources where dataSource.orientation == .bottom {
+                for dataSource in dataSources
+                    where dataSource.orientation == wantedOrientation
+                {
                     do {
                         try inputPort.setPreferredDataSource(dataSource)
                     } catch {
                         logger
                             .error(
-                                "Failed to set front mic as preferred with error \(error)"
+                                "Failed to set bottom mic as preferred with error \(error)"
                             )
                     }
                 }
@@ -571,7 +599,7 @@ final class Model: ObservableObject {
         media.onAudioMuteChange = updateAudioLevel
         media.onVideoDeviceInUseByAnotherClient = handleVideoDeviceInUseByAnotherClient
         setupAudioSession()
-        setPreferFrontMic()
+        setMic()
         backZoomPresetId = database.zoom.back[0].id
         frontZoomPresetId = database.zoom.front[0].id
         mthkView.videoGravity = .resizeAspect
@@ -579,6 +607,7 @@ final class Model: ObservableObject {
             mthkView.fps = Double(database.maximumScreenFps)
         }
         logger.handler = debugLog(message:)
+        logger.debugEnabled = database.debug!.logLevel == .debug
         updateDigitalClock(now: Date())
         twitchChat = TwitchChatMoblin(model: self)
         reloadStream()
@@ -615,6 +644,22 @@ final class Model: ObservableObject {
         for camera in listCameras() {
             logger.info("  \(camera.localizedName)")
         }
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(
+                                                   handleWillEnterForegroundNotification
+                                               ),
+                                               name: UIApplication
+                                                   .willEnterForegroundNotification,
+                                               object: nil)
+        let appender = LogAppender()
+        LBLogger.with("com.haishinkit.HaishinKit").appender = appender
+        LBLogger.with("com.haishinkit.SRTHaishinKit").appender = appender
+        LBLogger.with("com.haishinkit.HaishinKit").level = .debug
+        LBLogger.with("com.haishinkit.SRTHaishinKit").level = .debug
+    }
+
+    @objc func handleWillEnterForegroundNotification() {
+        reloadConnections()
     }
 
     private func listCameras() -> [AVCaptureDevice] {
@@ -712,6 +757,7 @@ final class Model: ObservableObject {
                 self.updateAudioLevel()
             }
             self.updateSrtlaConnectionStatistics()
+            self.removeOldChatMessages(now: now)
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
@@ -728,7 +774,7 @@ final class Model: ObservableObject {
 
     private func updateSrtDebugLines() {
         let lines = media.getSrtStats()
-        if logger.debugEnabled {
+        if database.debug!.srtOverlay {
             srtDebugLines = lines
         } else {
             srtDebugLines = []
@@ -820,6 +866,19 @@ final class Model: ObservableObject {
         }
     }
 
+    private func removeOldChatMessages(now: Date) {
+        guard database.chat.maximumAgeEnabled! else {
+            return
+        }
+        while let post = chatPosts.first {
+            if now > post.timestampDate + Double(database.chat.maximumAge!) {
+                _ = chatPosts.popFirst()
+            } else {
+                break
+            }
+        }
+    }
+
     private func reloadImageEffects() {
         imageEffects.removeAll()
         for scene in database.scenes {
@@ -866,8 +925,8 @@ final class Model: ObservableObject {
         }
     }
 
-    func resetSelectedScene() {
-        if !enabledScenes.isEmpty {
+    func resetSelectedScene(changeScene: Bool = true) {
+        if !enabledScenes.isEmpty && changeScene {
             selectedSceneId = enabledScenes[0].id
             sceneIndex = 0
         }
@@ -977,6 +1036,7 @@ final class Model: ObservableObject {
                 targetBitrate: stream.bitrate,
                 adaptiveBitrate: stream.adaptiveBitrate,
                 latency: stream.srt.latency,
+                overheadBandwidth: database.debug!.srtOverheadBandwidth!,
                 mpegtsPacketsPerPacket: stream.srt.mpegtsPacketsPerPacket
             )
         }
@@ -985,7 +1045,7 @@ final class Model: ObservableObject {
 
     private func stopNetStream() {
         reconnectTimer?.invalidate()
-        rtmpStopStream()
+        media.rtmpStopStream()
         media.srtStopStream()
         streamStartDate = nil
         updateUptime(now: Date())
@@ -1003,9 +1063,15 @@ final class Model: ObservableObject {
         setStreamFPS()
         setStreamCodec()
         setStreamBitrate(stream: stream)
+        reloadConnections()
+        resetChat()
+    }
+
+    private func reloadConnections() {
         reloadTwitchChat()
         reloadTwitchPubSub()
         reloadKickPusher()
+        reloadYouTubeLiveChat()
     }
 
     func storeAndReloadStreamIfEnabled(stream: SettingsStream) {
@@ -1090,11 +1156,16 @@ final class Model: ObservableObject {
     }
 
     func isChatConfigured() -> Bool {
-        return stream.twitchChannelName != "" || stream.kickChatroomId != ""
+        return isTwitchChatConfigured() || isKickPusherConfigured() ||
+            isYouTubeLiveChatConfigured()
     }
 
     func isViewersConfigured() -> Bool {
         return stream.twitchChannelId != ""
+    }
+
+    func isTwitchChatConfigured() -> Bool {
+        return stream.twitchChannelName != ""
     }
 
     func isTwitchChatConnected() -> Bool {
@@ -1109,6 +1180,10 @@ final class Model: ObservableObject {
         return twitchPubSub?.isConnected() ?? false
     }
 
+    func isKickPusherConfigured() -> Bool {
+        return stream.kickChatroomId != ""
+    }
+
     func isKickPusherConnected() -> Bool {
         return kickPusher?.isConnected() ?? false
     }
@@ -1117,12 +1192,34 @@ final class Model: ObservableObject {
         return kickPusher?.hasEmotes() ?? false
     }
 
+    func isYouTubeLiveChatConfigured() -> Bool {
+        return stream.youTubeApiKey != "" && stream.youTubeVideoId != ""
+    }
+
+    func isYouTubeLiveChatConnected() -> Bool {
+        return youTubeLiveChat?.isConnected() ?? false
+    }
+
+    func hasYouTubeLiveChatEmotes() -> Bool {
+        return youTubeLiveChat?.hasEmotes() ?? false
+    }
+
     func isChatConnected() -> Bool {
-        return isTwitchChatConnected() || isKickPusherConnected()
+        if isTwitchChatConfigured() && !isTwitchChatConnected() {
+            return false
+        }
+        if isKickPusherConfigured() && !isKickPusherConnected() {
+            return false
+        }
+        if isYouTubeLiveChatConfigured() && !isYouTubeLiveChatConnected() {
+            return false
+        }
+        return true
     }
 
     func hasChatEmotes() -> Bool {
-        return hasTwitchChatEmotes() || hasKickPusherEmotes()
+        return hasTwitchChatEmotes() || hasKickPusherEmotes() ||
+            hasYouTubeLiveChatEmotes()
     }
 
     func isStreamConnceted() -> Bool {
@@ -1133,7 +1230,19 @@ final class Model: ObservableObject {
         return streaming
     }
 
-    func reloadTwitchChat() {
+    private func resetChat() {
+        chatPostsRate = "0.0/min"
+        chatPostsTotal = 0
+        chatSpeedTicks = 0
+        chatPosts = []
+        pausedChatMessages = []
+        numberOfChatPostsPerTick = 0
+        chatPostsRatePerSecond = 0
+        chatPostsRatePerMinute = 0
+        numberOfChatPostsPerMinute = 0
+    }
+
+    private func reloadTwitchChat() {
         twitchChat.stop()
         if stream.twitchChannelName != "" {
             twitchChat.start(
@@ -1143,14 +1252,6 @@ final class Model: ObservableObject {
         } else {
             logger.info("Twitch channel name not configured. No Twitch chat.")
         }
-        chatPostsRate = "0.0/min"
-        chatPostsTotal = 0
-        chatSpeedTicks = 0
-        chatPosts = []
-        numberOfChatPostsPerTick = 0
-        chatPostsRatePerSecond = 0
-        chatPostsRatePerMinute = 0
-        numberOfChatPostsPerMinute = 0
     }
 
     private func reloadTwitchPubSub() {
@@ -1175,37 +1276,140 @@ final class Model: ObservableObject {
         }
     }
 
+    private func reloadYouTubeLiveChat() {
+        youTubeLiveChat?.stop()
+        youTubeLiveChat = nil
+        if stream.youTubeApiKey! != "" && stream.youTubeVideoId! != "" {
+            youTubeLiveChat = YouTubeLiveChat(
+                model: self,
+                apiKey: stream.youTubeApiKey!,
+                videoId: stream.youTubeVideoId!
+            )
+            youTubeLiveChat!.start()
+        } else {
+            logger.info("YouTube chat id not configured. No YouTube chat.")
+        }
+    }
+
     func twitchChannelNameUpdated() {
         reloadTwitchChat()
+        resetChat()
     }
 
     func twitchChannelIdUpdated() {
         reloadTwitchPubSub()
         reloadTwitchChat()
+        resetChat()
     }
 
     func kickChatroomIdUpdated() {
         reloadKickPusher()
+        resetChat()
+    }
+
+    func youTubeApiKeyUpdated() {
+        reloadYouTubeLiveChat()
+        resetChat()
+    }
+
+    func youTubeVideoIdUpdated() {
+        reloadYouTubeLiveChat()
+        resetChat()
     }
 
     func appendChatMessage(
-        user: String,
+        user: String?,
         userColor: String?,
-        segments: [ChatPostSegment]
+        segments: [ChatPostSegment],
+        timestamp: String,
+        timestampDate: Date,
+        incrementCount: Bool = true
     ) {
-        if chatPosts.count > 14 {
-            chatPosts.removeFirst()
+        if chatPaused {
+            if pausedChatMessages.count > maximumNumberOfChatMessages - 1 {
+                pausedChatMessages.removeFirst()
+            }
+            pausedChatMessages.append(PausedChatMessage(
+                user: user!,
+                userColor: userColor,
+                segments: segments,
+                timestamp: digitalClock,
+                timestampDate: timestampDate
+            ))
+        } else {
+            if chatPosts.count > maximumNumberOfChatMessages - 1 {
+                chatPosts.removeFirst()
+            }
+            chatPosts.append(ChatPost(
+                id: chatPostId,
+                user: user,
+                userColor: userColor,
+                segments: segments,
+                timestamp: timestamp,
+                timestampDate: timestampDate
+            ))
         }
-        let post = ChatPost(
-            id: chatPostId,
-            user: user,
-            userColor: userColor,
-            segments: segments,
-            timestamp: digitalClock
-        )
-        chatPosts.append(post)
-        numberOfChatPostsPerTick += 1
+        if incrementCount {
+            numberOfChatPostsPerTick += 1
+        }
         chatPostId += 1
+    }
+
+    func reloadChatMessages() {
+        let posts = chatPosts
+        chatPosts = []
+        for post in posts {
+            appendChatMessage(
+                user: post.user,
+                userColor: post.userColor,
+                segments: post.segments,
+                timestamp: post.timestamp,
+                timestampDate: post.timestampDate,
+                incrementCount: false
+            )
+        }
+    }
+
+    func toggleChatPaused() {
+        chatPaused.toggle()
+        if chatPaused {
+            return
+        }
+        chatPosts = chatPosts.filter { post in
+            post.user != nil
+        }
+        if !pausedChatMessages.isEmpty {
+            appendChatMessage(
+                user: nil,
+                userColor: nil,
+                segments: [],
+                timestamp: "",
+                timestampDate: Date(),
+                incrementCount: false
+            )
+        }
+        for message in pausedChatMessages {
+            appendChatMessage(
+                user: message.user,
+                userColor: message.userColor,
+                segments: message.segments,
+                timestamp: message.timestamp,
+                timestampDate: message.timestampDate,
+                incrementCount: false
+            )
+        }
+        pausedChatMessages = []
+        if !chatPosts.isEmpty {
+            let post = chatPosts.popLast()!
+            appendChatMessage(
+                user: post.user,
+                userColor: post.userColor,
+                segments: post.segments,
+                timestamp: post.timestamp,
+                timestampDate: post.timestampDate,
+                incrementCount: false
+            )
+        }
     }
 
     func findWidget(id: UUID) -> SettingsWidget? {
@@ -1442,9 +1646,40 @@ final class Model: ObservableObject {
             onSuccess: {
                 self.mthkView.isMirrored = isMirrored
                 _ = self.media.setCameraZoomLevel(level: self.zoomLevel, ramp: false)
+                if let device = self.cameraDevice {
+                    self.setMaxAutoExposure(device: device)
+                }
             }
         )
         zoomLevelPinch = zoomLevel
+    }
+
+    private func setMaxAutoExposure(device: AVCaptureDevice) {
+        do {
+            try device.lockForConfiguration()
+            device.activeMaxExposureDuration = device.activeFormat.maxExposureDuration
+            device.unlockForConfiguration()
+        } catch {}
+    }
+
+    func setExposureBias(bias: Float) {
+        guard let position = cameraPosition else {
+            return
+        }
+        guard let device = preferredCamera(position: position) else {
+            return
+        }
+        if bias < device.minExposureTargetBias {
+            return
+        }
+        if bias > device.maxExposureTargetBias {
+            return
+        }
+        do {
+            try device.lockForConfiguration()
+            device.setExposureTargetBias(bias)
+            device.unlockForConfiguration()
+        } catch {}
     }
 
     private func getVideoStabilizationMode() -> AVCaptureVideoStabilizationMode {
@@ -1453,15 +1688,13 @@ final class Model: ObservableObject {
             return .off
         case .standard:
             return .standard
+        case .cinematic:
+            return .cinematic
         }
     }
 
     private func rtmpStartStream() {
         media.rtmpStartStream(url: stream.url)
-    }
-
-    private func rtmpStopStream() {
-        media.rtmpStopStream()
     }
 
     func toggleTorch() {

@@ -29,5 +29,8 @@ struct StreamKickSettingsView: View {
             }
         }
         .navigationTitle("Kick")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }

@@ -161,5 +161,8 @@ struct ButtonImagePickerSettingsView: View {
             }
         }
         .navigationTitle(title)
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }

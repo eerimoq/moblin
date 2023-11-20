@@ -4,27 +4,51 @@ struct StreamVideoSettingsView: View {
     @EnvironmentObject var model: Model
     var stream: SettingsStream
 
+    private func onResolutionChange(resolution: String) {
+        stream.resolution = SettingsStreamResolution(rawValue: resolution)!
+        model.storeAndReloadStreamIfEnabled(stream: stream)
+    }
+
+    private func onFpsChange(fps: String) {
+        stream.fps = Int(fps)!
+        model.storeAndReloadStreamIfEnabled(stream: stream)
+    }
+
+    private func onCodecChange(codec: String) {
+        stream.codec = SettingsStreamCodec(rawValue: codec)!
+        model.storeAndReloadStreamIfEnabled(stream: stream)
+    }
+
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: StreamVideoResolutionSettingsView(
-                    stream: stream,
-                    selection: stream.resolution.rawValue
-                )) {
+                NavigationLink(destination: InlinePickerView(title: "Resolution",
+                                                             onChange: onResolutionChange,
+                                                             items: resolutions,
+                                                             selected: stream.resolution
+                                                                 .rawValue))
+                {
                     TextItemView(name: "Resolution", value: stream.resolution.rawValue)
                 }
-                NavigationLink(destination: StreamVideoFpsSettingsView(
-                    stream: stream,
-                    selection: stream.fps
-                )) {
+                .disabled(stream.enabled && model.isLive)
+                NavigationLink(destination: InlinePickerView(title: "FPS",
+                                                             onChange: onFpsChange,
+                                                             items: fpss,
+                                                             selected: String(stream
+                                                                 .fps)))
+                {
                     TextItemView(name: "FPS", value: String(stream.fps))
                 }
-                NavigationLink(destination: StreamVideoCodecSettingsView(
-                    stream: stream,
-                    selection: stream.codec.rawValue
-                )) {
+                .disabled(stream.enabled && model.isLive)
+                NavigationLink(destination: InlinePickerView(title: "Codec",
+                                                             onChange: onCodecChange,
+                                                             items: codecs,
+                                                             selected: stream.codec
+                                                                 .rawValue))
+                {
                     TextItemView(name: "Codec", value: stream.codec.rawValue)
                 }
+                .disabled(stream.enabled && model.isLive)
                 NavigationLink(destination: StreamVideoBitrateSettingsView(
                     stream: stream,
                     selection: stream.bitrate
@@ -57,5 +81,8 @@ struct StreamVideoSettingsView: View {
             }
         }
         .navigationTitle("Video")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }

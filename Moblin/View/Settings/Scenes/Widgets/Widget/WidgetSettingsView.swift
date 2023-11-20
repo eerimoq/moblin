@@ -17,7 +17,7 @@ struct WidgetSettingsView: View {
             )) {
                 TextItemView(name: "Name", value: widget.name)
             }
-            Section("Type") {
+            Section {
                 Picker("", selection: Binding(get: {
                     widget.type.rawValue
                 }, set: { value in
@@ -31,6 +31,10 @@ struct WidgetSettingsView: View {
                 }
                 .pickerStyle(.inline)
                 .labelsHidden()
+            } header: {
+                Text("Type")
+            } footer: {
+                Text("The browser widget is experimental does not work very well yet.")
             }
             switch widget.type {
             case .image:
@@ -49,5 +53,8 @@ struct WidgetSettingsView: View {
             }
         }
         .navigationTitle("Widget")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }

@@ -11,10 +11,7 @@ struct ScenesSettingsView: View {
         Form {
             Section {
                 ForEach(database.scenes) { scene in
-                    NavigationLink(destination: SceneSettingsView(
-                        scene: scene,
-                        cameraSelection: scene.cameraType.rawValue
-                    )) {
+                    NavigationLink(destination: SceneSettingsView(scene: scene)) {
                         Toggle(scene.name, isOn: Binding(get: {
                             scene.enabled
                         }, set: { value in
@@ -47,5 +44,8 @@ struct ScenesSettingsView: View {
             }
         }
         .navigationTitle("Scenes")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }

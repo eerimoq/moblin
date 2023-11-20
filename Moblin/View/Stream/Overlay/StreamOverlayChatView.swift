@@ -53,15 +53,13 @@ struct LineView: View {
             if chat.timestampColorEnabled {
                 Text("\(post.timestamp) ")
                     .foregroundColor(timestampColor)
-                    .bold(chat.boldMessage)
             }
-            Text(post.user)
+            Text(post.user!)
                 .foregroundColor(usernameColor)
                 .lineLimit(1)
                 .padding([.trailing], 0)
                 .bold(chat.boldUsername)
             Text(": ")
-                .bold(chat.boldMessage)
             ForEach(post.segments, id: \.id) { segment in
                 if let text = segment.text {
                     Text(text)
@@ -106,26 +104,57 @@ struct StreamOverlayChatView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
-        GeometryReader { metrics in
-            ScrollView {
-                ScrollViewReader { reader in
-                    VStack {
-                        Spacer(minLength: 0)
-                        LazyVStack(alignment: .leading, spacing: 1) {
-                            ForEach(model.chatPosts) { post in
-                                LineView(post: post, chat: model.database.chat)
-                                    .id(post)
+        GeometryReader { fullMetrics in
+            VStack {
+                Spacer(minLength: 0)
+                GeometryReader { metrics in
+                    ScrollView {
+                        ScrollViewReader { reader in
+                            VStack {
+                                Spacer(minLength: 0)
+                                LazyVStack(alignment: .leading, spacing: 1) {
+                                    ForEach(model.chatPosts) { post in
+                                        if post.user != nil {
+                                            LineView(
+                                                post: post,
+                                                chat: model.database.chat
+                                            )
+                                            .id(post)
+                                        } else {
+                                            Rectangle()
+                                                .fill(.red)
+                                                .frame(
+                                                    width: metrics.size.width,
+                                                    height: 1.5
+                                                )
+                                                .padding(2)
+                                                .id(post)
+                                        }
+                                    }
+                                }
+                            }
+                            .onChange(of: model.chatPosts) { _ in
+                                if !model.chatPaused {
+                                    reader.scrollTo(
+                                        model.chatPosts.last,
+                                        anchor: .bottom
+                                    )
+                                }
+                            }
+                            .frame(minHeight: metrics.size.height)
+                            .onAppear {
+                                if !model.chatPaused {
+                                    reader.scrollTo(
+                                        model.chatPosts.last,
+                                        anchor: .bottom
+                                    )
+                                }
                             }
                         }
                     }
-                    .onChange(of: model.chatPosts) { _ in
-                        reader.scrollTo(model.chatPosts.last, anchor: .bottom)
-                    }
-                    .frame(minHeight: metrics.size.height)
-                    .onAppear {
-                        reader.scrollTo(model.chatPosts.last, anchor: .bottom)
-                    }
                 }
+                .frame(width: fullMetrics.size.width * model.database.chat.width!,
+                       height: fullMetrics.size.height * model.database.chat.height!)
             }
         }
     }

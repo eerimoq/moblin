@@ -36,6 +36,7 @@ struct ColorEditView: View {
                     }
                     color.red = Int(red)
                     model.store()
+                    model.reloadChatMessages()
                 }
             )
             .onChange(of: red) { value in
@@ -58,6 +59,7 @@ struct ColorEditView: View {
                     }
                     color.green = Int(green)
                     model.store()
+                    model.reloadChatMessages()
                 }
             )
             .onChange(of: green) { value in
@@ -80,6 +82,7 @@ struct ColorEditView: View {
                     }
                     color.blue = Int(blue)
                     model.store()
+                    model.reloadChatMessages()
                 }
             )
             .onChange(of: blue) { value in
@@ -104,36 +107,52 @@ struct LocalOverlaysChatSettingsView: View {
     @State var messageColor: Color
     @State var backgroundColor: Color
     @State var shadowColor: Color
+    @State var height: Double
+    @State var width: Double
+    @State var fontSize: Float
 
-    func submitFontSize(value: String) {
-        guard let fontSize = Float(value) else {
+    func submitMaximumAge(value: String) {
+        guard let maximumAge = Int(value) else {
             return
         }
-        guard fontSize > 0 else {
+        guard maximumAge > 0 else {
             return
         }
-        model.database.chat.fontSize = fontSize
+        model.database.chat.maximumAge = maximumAge
         model.store()
     }
 
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: TextEditView(
-                    title: "Font size",
-                    value: String(model.database.chat.fontSize),
-                    onSubmit: submitFontSize
-                )) {
-                    TextItemView(
-                        name: "Font size",
-                        value: String(model.database.chat.fontSize)
+                HStack {
+                    Text("Font size")
+                    Slider(
+                        value: $fontSize,
+                        in: 10 ... 30,
+                        step: 1,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            model.database.chat.fontSize = fontSize
+                            model.store()
+                            model.reloadChatMessages()
+                        }
                     )
+                    .onChange(of: fontSize) { value in
+                        model.database.chat.fontSize = value
+                        model.reloadChatMessages()
+                    }
+                    Text(String(Int(fontSize)))
+                        .frame(width: 25)
                 }
                 Toggle(isOn: Binding(get: {
                     model.database.chat.timestampColorEnabled
                 }, set: { value in
                     model.database.chat.timestampColorEnabled = value
                     model.store()
+                    model.reloadChatMessages()
                 })) {
                     Text("Timestamp")
                 }
@@ -142,6 +161,7 @@ struct LocalOverlaysChatSettingsView: View {
                 }, set: { value in
                     model.database.chat.boldUsername = value
                     model.store()
+                    model.reloadChatMessages()
                 })) {
                     Text("Bold username")
                 }
@@ -150,6 +170,7 @@ struct LocalOverlaysChatSettingsView: View {
                 }, set: { value in
                     model.database.chat.boldMessage = value
                     model.store()
+                    model.reloadChatMessages()
                 })) {
                     Text("Bold message")
                 }
@@ -158,8 +179,27 @@ struct LocalOverlaysChatSettingsView: View {
                 }, set: { value in
                     model.database.chat.animatedEmotes = value
                     model.store()
+                    model.reloadChatMessages()
                 })) {
                     Text("Animated emotes")
+                }
+                NavigationLink(destination: TextEditView(
+                    title: "Maximum age",
+                    value: String(model.database.chat.maximumAge!),
+                    onSubmit: submitMaximumAge,
+                    footer: Text("Maximum message age in seconds.")
+                )) {
+                    Toggle(isOn: Binding(get: {
+                        model.database.chat.maximumAgeEnabled!
+                    }, set: { value in
+                        model.database.chat.maximumAgeEnabled = value
+                        model.store()
+                    })) {
+                        TextItemView(
+                            name: "Maximum age",
+                            value: String(model.database.chat.maximumAge!)
+                        )
+                    }
                 }
             } header: {
                 Text("General")
@@ -167,6 +207,50 @@ struct LocalOverlaysChatSettingsView: View {
                 Text(
                     "Animated emotes are fairly CPU intensive. Disable for less power usage."
                 )
+            }
+            Section("Geometry") {
+                HStack {
+                    Text("Height")
+                    Slider(
+                        value: $height,
+                        in: 0.2 ... 1.0,
+                        step: 0.05,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            model.database.chat.height = height
+                            model.store()
+                            model.reloadChatMessages()
+                        }
+                    )
+                    .onChange(of: height) { value in
+                        model.database.chat.height = value
+                    }
+                    Text("\(Int(100 * height)) %")
+                        .frame(width: 55)
+                }
+                HStack {
+                    Text("Width")
+                    Slider(
+                        value: $width,
+                        in: 0.2 ... 1.0,
+                        step: 0.05,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            model.database.chat.width = width
+                            model.store()
+                            model.reloadChatMessages()
+                        }
+                    )
+                    .onChange(of: width) { value in
+                        model.database.chat.width = value
+                    }
+                    Text("\(Int(100 * width)) %")
+                        .frame(width: 55)
+                }
             }
             Section {
                 Button {
@@ -240,6 +324,7 @@ struct LocalOverlaysChatSettingsView: View {
                     }, set: { value in
                         model.database.chat.backgroundColorEnabled = value
                         model.store()
+                        model.reloadChatMessages()
                     })) {
                         HStack {
                             Text("Background")
@@ -269,6 +354,7 @@ struct LocalOverlaysChatSettingsView: View {
                     }, set: { value in
                         model.database.chat.shadowColorEnabled = value
                         model.store()
+                        model.reloadChatMessages()
                     })) {
                         HStack {
                             Text("Border")
@@ -297,5 +383,8 @@ struct LocalOverlaysChatSettingsView: View {
             }
         }
         .navigationTitle("Chat")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }

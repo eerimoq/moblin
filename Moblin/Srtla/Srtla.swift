@@ -30,12 +30,7 @@ class Srtla {
 
     private var totalByteCount: Int64 = 0
 
-    init(
-        delegate: SrtlaDelegate,
-        passThrough: Bool,
-        targetBitrate _: UInt32,
-        mpegtsPacketsPerPacket: Int
-    ) {
+    init(delegate: SrtlaDelegate, passThrough: Bool, mpegtsPacketsPerPacket: Int) {
         self.delegate = delegate
         self.passThrough = passThrough
         logger.info("srtla: SRT instead of SRTLA: \(passThrough)")
@@ -58,6 +53,10 @@ class Srtla {
                 mpegtsPacketsPerPacket: mpegtsPacketsPerPacket
             ))
         }
+    }
+
+    deinit {
+        logger.info("srtla: srtla deinit")
     }
 
     func start(uri: String, timeout: Double) {

@@ -60,17 +60,17 @@ private func fetchGlobalEmotes() async throws -> [String: Emote] {
     }
     let emoteSet = try JSONDecoder().decode(SeventvEmoteSet.self, from: data)
     guard let emotes = emoteSet.emotes else {
-        logger.warning("7TV global emotes missing")
+        logger.warning("emotes: 7TV global emotes missing")
         throw "Emotes missing"
     }
     if emotes.isEmpty {
-        logger.warning("7TV global emotes list empty")
+        logger.warning("emotes: 7TV global emotes list empty")
         throw "Emotes list empty"
     }
     var fetchedEmotes: [String: Emote] = [:]
     for emote in emotes {
         guard let url = makeUrl(data: emote.data) else {
-            logger.error("Failed to create URL for 7TV emote \(emote.name)")
+            logger.error("emotes: Failed to create URL for 7TV emote \(emote.name)")
             continue
         }
         fetchedEmotes[emote.name] = Emote(url: url)
@@ -102,38 +102,41 @@ private func fetchChannelEmotes(platform: EmotesPlatform,
     if channelId.isEmpty {
         return [:]
     }
-    if platform == .kick {
-        return [:]
-    }
-    let url = "https://7tv.io/v3/users/twitch/\(channelId)"
+    let url = "https://7tv.io/v3/users/\(platform)/\(channelId)"
     guard let url = URL(string: url) else {
         return [:]
     }
     let (data, response) = try await httpGet(from: url)
     if response.isNotFound {
-        logger.warning("\(channelId): 7TV channel emotes not found (HTTP 404)")
+        logger
+            .warning(
+                "emotes: \(platform): \(channelId): 7TV channel emotes not found (HTTP 404)"
+            )
         return [:]
     }
     if !response.isSuccessful {
         logger
             .warning(
-                "\(channelId): Failed to fetch 7TV channel emotes (HTTP \(response.statusCode))"
+                "emotes: \(platform): \(channelId): Failed to fetch 7TV channel emotes (HTTP \(response.statusCode))"
             )
         throw "Not successful"
     }
     let user = try JSONDecoder().decode(SeventvUser.self, from: data)
     guard let emotes = user.emote_set.emotes else {
-        logger.warning("\(channelId): 7TV channel emotes missing")
+        logger.warning("emotes: \(platform): \(channelId): 7TV channel emotes missing")
         throw "Emotes missing"
     }
     if emotes.isEmpty {
-        logger.warning("\(channelId): 7TV channel emotes list empty")
+        logger.warning("emotes: \(platform): \(channelId): 7TV channel emotes list empty")
         throw "Emotes list empty"
     }
     var fetchedEmotes: [String: Emote] = [:]
     for emote in emotes {
         guard let url = makeUrl(data: emote.data) else {
-            logger.error("\(channelId): Failed to create URL for 7TV emote \(emote.name)")
+            logger
+                .error(
+                    "emotes: \(platform): \(channelId): Failed to create URL for 7TV emote \(emote.name)"
+                )
             continue
         }
         fetchedEmotes[emote.name] = Emote(url: url)

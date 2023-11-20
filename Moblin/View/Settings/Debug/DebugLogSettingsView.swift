@@ -4,15 +4,26 @@ struct DebugLogSettingsView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
-        ScrollView {
-            if model.log.isEmpty {
-                Text("The log is empty.")
-            } else {
-                VStack {
-                    ForEach(model.log) { item in
-                        HStack {
-                            Text(item.message)
-                            Spacer()
+        VStack {
+            HStack {
+                Spacer()
+                ShareLink(item: model.formatLog())
+                Button(action: {
+                    model.clearLog()
+                }, label: {
+                    Image(systemName: "trash")
+                })
+            }
+            ScrollView {
+                if model.log.isEmpty {
+                    Text("The log is empty.")
+                } else {
+                    VStack {
+                        ForEach(model.log) { item in
+                            HStack {
+                                Text(item.message)
+                                Spacer()
+                            }
                         }
                     }
                 }
@@ -20,16 +31,7 @@ struct DebugLogSettingsView: View {
         }
         .navigationTitle("Log")
         .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                HStack {
-                    ShareLink(item: model.formatLog())
-                    Button(action: {
-                        model.clearLog()
-                    }, label: {
-                        Image(systemName: "trash")
-                    })
-                }
-            }
+            SettingsToolbar()
         }
     }
 }

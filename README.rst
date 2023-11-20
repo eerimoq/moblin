@@ -40,7 +40,7 @@ Features
 
 - YouTube integration.
 
-  - None.
+  - Scuffed chat.
 
 - Kick integration.
 
@@ -126,22 +126,24 @@ ToDo
 
 - Improve the browser widget.
 
-- Improve chat when many multi line messages are displayed. Always show
-  most recent message.
-
 Ideas/plan
 ==========
 
-- Advanced settings toggle.
+- Show two cameras at the same time.
 
-- Optionally do not automatically start using external mic is plugged
-  in.
+- Use lossy video format? More effecient?
 
-- Scroll back chat.
+- Always receive sampels from all mics for smoother transition between mics?
 
-- Reintroduce settings in portraint.
+- Button to show black screen.
 
+- Reduce brightness when thermal state is critical.
+  
+- Optionally disable wide angle lens (use dual camera).
+  
 - A list of usernames whos messages will not get displayed on screen.
+
+- Rework zoom. Fine tune similar to builtin camera app.
 
 - Audio filters. For example volume limiter.
 
@@ -150,17 +152,25 @@ Ideas/plan
     filters when you have the time. I think that would be the same
     order in terms of complexity to implement as well.
 
+- Button to turn maximum screen FPS on and off. Or possibly "low
+  power" mode?
+
+- Use external UVC camera. Looks like iOS 17 supports them.
+
 - Use multiple mics at the same time?
 
-- Kick chat emotes.
+- Reintroduce settings in portrait.
 
 - Take picture.
 
+- OPUS audio codec? https://github.com/alta/swift-opus
+
+- Optionally do not automatically start using external mic is plugged
+  in.
+
+- Advanced settings toggle.
+
 - Non-mirrored widgets locally when using front camera.
-
-- Use external camera. Looks like iOS 17 supports them.
-
-- Show two cameras at the same time.
 
 - Add Twitch/Kick Icons next to chat messages depending on which
   platform the message came from.
@@ -170,23 +180,16 @@ Ideas/plan
 
 - RTMP server for external video and audio?
 
+- Multiple Ethernet connections simultaneously?
+
 - Automatically go live when starting app, if configured for selected
   stream setting. Probably a good idea to go live again when entering
   foregound if was live when entering background
-
-- Multiple Ethernet connections simultaneously?
 
 - Lookup Twitch channel id from channel name. Possibly login to
   Twitch.
 
 - Play music and short sound samples.
-
-- Optionally show black screen to save energy. Possible to turn off
-  completely?
-
-  - https://developer.apple.com/documentation/uikit/uiscreen
-
-    - ``brightness`` and ``wantsSoftwareDimming``.
 
 - Record to disk.
 

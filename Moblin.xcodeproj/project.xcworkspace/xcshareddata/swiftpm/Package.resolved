@@ -15,7 +15,7 @@
       "location" : "https://github.com/eerimoq/HaishinKit.swift",
       "state" : {
         "branch" : "main",
-        "revision" : "6fb1261f0389647694d7633633090d6231f0d02d"
+        "revision" : "61d18677390ec73b9bd42c8cb1398bcfd559babe"
       }
     },
     {
@@ -50,8 +50,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SDWebImage/SDWebImage.git",
       "state" : {
-        "revision" : "1f06ef5007b6a580b3873ed2adee19e05d3b215a",
-        "version" : "5.18.3"
+        "revision" : "1b9a2e902cbde5fdf362faa0f4fd76ea74d74305",
+        "version" : "5.18.5"
       }
     },
     {
@@ -68,8 +68,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SDWebImage/SDWebImageWebPCoder",
       "state" : {
-        "revision" : "b442fafefeee8d3f489e33e69e0bb9407deb4757",
-        "version" : "0.14.0"
+        "revision" : "db4603921b31a6ce0f8c26d36d6a3fffc2dba481",
+        "version" : "0.14.2"
       }
     },
     {

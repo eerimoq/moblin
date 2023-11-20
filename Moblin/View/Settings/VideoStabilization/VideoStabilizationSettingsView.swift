@@ -1,40 +1,22 @@
 import SwiftUI
 
-struct VideoStabilizationPickerView: View {
-    @EnvironmentObject var model: Model
-    @State var videoStabilizationMode: String
-
-    var body: some View {
-        Form {
-            Section {
-                Picker("", selection: $videoStabilizationMode) {
-                    ForEach(videoStabilizationModes, id: \.self) { mode in
-                        Text(mode)
-                    }
-                }
-                .onChange(of: videoStabilizationMode) { mode in
-                    model.database
-                        .videoStabilizationMode =
-                        SettingsVideoStabilizationMode(rawValue: mode)!
-                    model.store()
-                    model.reattachCamera()
-                }
-                .pickerStyle(.inline)
-                .labelsHidden()
-            } footer: {
-                Text("Video stabilization sometimes gives audio-video sync issues.")
-            }
-        }
-        .navigationTitle("Video stabilization")
-    }
-}
-
 struct VideoStabilizationSettingsView: View {
     @EnvironmentObject var model: Model
 
+    private func onChange(mode: String) {
+        model.database
+            .videoStabilizationMode = SettingsVideoStabilizationMode(rawValue: mode)!
+        model.store()
+        model.reattachCamera()
+    }
+
     var body: some View {
-        NavigationLink(destination: VideoStabilizationPickerView(
-            videoStabilizationMode: model.database.videoStabilizationMode.rawValue
+        NavigationLink(destination: InlinePickerView(
+            title: "Video stabilization",
+            onChange: onChange,
+            footer: Text("Video stabilization sometimes gives audio-video sync issues."),
+            items: videoStabilizationModes,
+            selected: model.database.videoStabilizationMode.rawValue
         )) {
             TextItemView(
                 name: "Video stabilization",

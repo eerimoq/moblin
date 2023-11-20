@@ -101,8 +101,6 @@ struct CosmeticsSettingsView: View {
             } else {
                 Section {
                     HStack {
-                        Image(systemName: "heart.fill")
-                            .foregroundColor(.red)
                         Text("You already bought everything!")
                         Image(systemName: "heart.fill")
                             .foregroundColor(.red)
@@ -133,5 +131,8 @@ struct CosmeticsSettingsView: View {
             }
         }
         .navigationTitle("Cosmetics")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }

@@ -1,134 +1,55 @@
 import SwiftUI
 
-struct ValueEditView: View {
-    var title: String
-    @State var value: String
-    var minimum: Double
-    var maximum: Double
-    var onSubmit: (String) -> Void
-
-    func add(offset: Double) {
-        if var value = Double(value) {
-            value += offset
-            if value >= minimum && value <= maximum {
-                self.value = String(value)
-            }
-        }
-    }
-
-    var body: some View {
-        HStack {
-            HStack {
-                Text(title)
-                Spacer()
-            }
-            .frame(width: 70)
-            TextField("", text: $value, onEditingChanged: { isEditing in
-                if !isEditing {
-                    value = value.trim()
-                    onSubmit(value)
-                }
-            })
-            .onSubmit {
-                value = value.trim()
-                onSubmit(value)
-            }
-            Divider()
-            Button(action: {
-                add(offset: -1)
-                value = value.trim()
-                onSubmit(value)
-            }, label: {
-                Text("-")
-                    .frame(width: 40)
-                    .font(.system(size: 25))
-            })
-            Divider()
-            Button(action: {
-                add(offset: 1)
-                value = value.trim()
-                onSubmit(value)
-            }, label: {
-                Text("+")
-                    .frame(width: 40)
-                    .font(.system(size: 25))
-            })
-            Divider()
-        }
-        .buttonStyle(BorderlessButtonStyle())
-    }
-}
-
 struct SceneWidgetSettingsView: View {
     @EnvironmentObject private var model: Model
     let hasPosition: Bool
     let hasSize: Bool
     var widget: SettingsSceneWidget
 
-    func submitX(value: String) {
-        if let value = Double(value) {
-            widget.x = value.clamped(to: 0 ... 99)
-            model.store()
-            model.resetSelectedScene()
-        }
+    func submitX(value: Double) {
+        widget.x = value
+        model.sceneUpdated(imageEffectChanged: true)
     }
 
-    func submitY(value: String) {
-        if let value = Double(value) {
-            widget.y = value.clamped(to: 0 ... 99)
-            model.store()
-            model.resetSelectedScene()
-        }
+    func submitY(value: Double) {
+        widget.y = value
+        model.sceneUpdated(imageEffectChanged: true)
     }
 
-    func submitW(value: String) {
-        if let value = Double(value) {
-            widget.width = value.clamped(to: 1 ... 100)
-            model.store()
-            model.resetSelectedScene()
-        }
+    func submitWidth(value: Double) {
+        widget.width = value
+        model.sceneUpdated(imageEffectChanged: true)
     }
 
-    func submitH(value: String) {
-        if let value = Double(value) {
-            widget.height = value.clamped(to: 1 ... 100)
-            model.store()
-            model.resetSelectedScene()
-        }
+    func submitHeight(value: Double) {
+        widget.height = value
+        model.sceneUpdated(imageEffectChanged: true)
     }
 
     var body: some View {
         Section {
             if hasPosition {
-                ValueEditView(
+                PositionEditView(
                     title: "X",
-                    value: String(widget.x),
-                    minimum: 0,
-                    maximum: 99,
+                    value: widget.x,
                     onSubmit: submitX
                 )
-                ValueEditView(
+                PositionEditView(
                     title: "Y",
-                    value: String(widget.y),
-                    minimum: 0,
-                    maximum: 99,
+                    value: widget.y,
                     onSubmit: submitY
                 )
             }
             if hasSize {
-                ValueEditView(
+                SizeEditView(
                     title: "Width",
-                    value: String(widget.width),
-                    minimum: 1,
-                    maximum: 100,
-                    onSubmit: submitW
+                    value: widget.width,
+                    onSubmit: submitWidth
                 )
-                ValueEditView(
+                SizeEditView(
                     title: "Height",
-                    value: String(widget.height),
-                    minimum: 1,
-                    maximum: 100,
-                    onSubmit: submitH
+                    value: widget.height,
+                    onSubmit: submitHeight
                 )
             }
         }

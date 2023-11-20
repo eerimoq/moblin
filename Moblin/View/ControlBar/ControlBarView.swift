@@ -53,7 +53,6 @@ struct ControlBarView: View {
     @EnvironmentObject var model: Model
     @Environment(\.accessibilityShowButtonShapes)
     private var accessibilityShowButtonShapes
-    var showSettings: () -> Void
 
     private func controlBarWidth() -> CGFloat {
         if accessibilityShowButtonShapes {
@@ -83,7 +82,7 @@ struct ControlBarView: View {
                     .offset(x: 2)
                     .frame(width: buttonSize, height: buttonSize)
                 Button {
-                    showSettings()
+                    model.showingSettings.toggle()
                 } label: {
                     Image(systemName: "gearshape")
                         .frame(width: buttonSize, height: buttonSize)

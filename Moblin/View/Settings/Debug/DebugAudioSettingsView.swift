@@ -58,5 +58,8 @@ struct DebugAudioSettingsView: View {
             }
         }
         .navigationTitle("Audio")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }
