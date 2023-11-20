@@ -3,7 +3,7 @@ import SwiftUI
 struct StreamVideoFpsSettingsView: View {
     @EnvironmentObject var model: Model
     var stream: SettingsStream
-    @State var selection: Int = 1
+    @State var selection: Int
 
     var body: some View {
         Form {

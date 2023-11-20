@@ -4,14 +4,27 @@ struct DebugSettingsView: View {
     @EnvironmentObject var model: Model
     @State var srtOverheadBandwidth: Float
 
+    private func onLogLevelChange(level: String) {
+        guard let level = SettingsLogLevel(rawValue: level) else {
+            return
+        }
+        logger.debugEnabled = level == .debug
+        model.database.debug!.logLevel = level
+        model.store()
+    }
+
     var body: some View {
         Form {
             Section {
                 NavigationLink(destination: DebugLogSettingsView()) {
                     Text("Log")
                 }
-                NavigationLink(destination: DebugLogLevelSettingsView(level: model
-                        .database.debug!.logLevel.rawValue))
+                NavigationLink(destination: InlinePickerView(title: "Log Level",
+                                                             onChange: onLogLevelChange,
+                                                             items: logLevels,
+                                                             selected: model.database
+                                                                 .debug!.logLevel
+                                                                 .rawValue))
                 {
                     TextItemView(
                         name: "Log level",

@@ -25,7 +25,7 @@ struct StreamVideoCaptureSessionPresetSettingsView: View {
                 .labelsHidden()
             }
         }
-        .navigationTitle("Resolution")
+        .navigationTitle("Preset")
         .toolbar {
             SettingsToolbar()
         }

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct StreamVideoBitrateSettingsView: View {
     @EnvironmentObject var model: Model
+    @Environment(\.dismiss) var dismiss
     var stream: SettingsStream
     @State var selection: UInt32
 
@@ -20,6 +21,7 @@ struct StreamVideoBitrateSettingsView: View {
                     if stream.enabled {
                         model.setStreamBitrate(stream: stream)
                     }
+                    dismiss()
                 }
                 .pickerStyle(.inline)
                 .labelsHidden()
