@@ -610,6 +610,11 @@ final class Model: ObservableObject {
         }
         logger.handler = debugLog(message:)
         logger.debugEnabled = database.debug!.logLevel == .debug
+        let appender = LogAppender()
+        LBLogger.with("com.haishinkit.HaishinKit").appender = appender
+        LBLogger.with("com.haishinkit.SRTHaishinKit").appender = appender
+        LBLogger.with("com.haishinkit.HaishinKit").level = .debug
+        LBLogger.with("com.haishinkit.SRTHaishinKit").level = .debug
         updateDigitalClock(now: Date())
         twitchChat = TwitchChatMoblin(model: self)
         reloadStream()
@@ -653,11 +658,6 @@ final class Model: ObservableObject {
                                                name: UIApplication
                                                    .willEnterForegroundNotification,
                                                object: nil)
-        let appender = LogAppender()
-        LBLogger.with("com.haishinkit.HaishinKit").appender = appender
-        LBLogger.with("com.haishinkit.SRTHaishinKit").appender = appender
-        LBLogger.with("com.haishinkit.HaishinKit").level = .debug
-        LBLogger.with("com.haishinkit.SRTHaishinKit").level = .debug
     }
 
     @objc func handleWillEnterForegroundNotification() {
