@@ -309,7 +309,7 @@ final class Media: NSObject {
     }
 
     func setCameraZoomLevel(level: Double, ramp: Bool) -> Double? {
-        guard let device = netStream.videoCapture(for: 0)?.device else {
+        guard let device = netStream.videoCapture()?.device else {
             logger.warning("Device not ready to zoom")
             return nil
         }
@@ -334,8 +334,8 @@ final class Media: NSObject {
         videoStabilizationMode: AVCaptureVideoStabilizationMode,
         onSuccess: (() -> Void)? = nil
     ) {
-        netStream.videoCapture(for: 0)?.preferredVideoStabilizationMode = videoStabilizationMode
-        netStream.videoCapture(for: 1)?.preferredVideoStabilizationMode = videoStabilizationMode
+        netStream.videoCapture()?.preferredVideoStabilizationMode = videoStabilizationMode
+        netStream.multiVideoCapture()?.preferredVideoStabilizationMode = videoStabilizationMode
         if let secondDevice {
             logger.info("Should use two cameras")
             if false {
@@ -377,18 +377,6 @@ extension Media: NetStreamDelegate {
         } else {
             return "Unknown"
         }
-    }
-
-    func stream(
-        _: NetStream,
-        didOutput _: AVAudioBuffer,
-        presentationTimeStamp _: CMTime
-    ) {
-        // logger.debug("stream: Playback an audio packet incoming.")
-    }
-
-    func stream(_: NetStream, didOutput _: CMSampleBuffer) {
-        // logger.debug("stream: Playback a video packet incoming.")
     }
 
     func stream(
