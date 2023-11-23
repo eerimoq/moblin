@@ -775,10 +775,9 @@ final class Model: ObservableObject {
     }
 
     private func updateSrtDebugLines() {
-        let lines = media.getSrtStats()
-        if database.debug!.srtOverlay {
+        if let lines = media.getSrtStats(overlay: database.debug!.srtOverlay) {
             srtDebugLines = lines
-        } else {
+        } else if !srtDebugLines.isEmpty {
             srtDebugLines = []
         }
     }
@@ -857,13 +856,16 @@ final class Model: ObservableObject {
     }
 
     private func updateAudioLevel() {
-        audioLevel = media.getAudioLevel()
+        let newAudioLevel = media.getAudioLevel()
+        if abs(audioLevel - newAudioLevel) > 5 {
+            audioLevel = newAudioLevel
+        }
     }
 
     private func updateSrtlaConnectionStatistics() {
         if isStreamConnceted(), let statistics = media.srtlaConnectionStatistics() {
             srtlaConnectionStatistics = statistics
-        } else {
+        } else if srtlaConnectionStatistics != noValue {
             srtlaConnectionStatistics = noValue
         }
     }
@@ -1549,13 +1551,16 @@ final class Model: ObservableObject {
         if streamStartDate != nil && isStreamConnceted() {
             let elapsed = now.timeIntervalSince(streamStartDate!)
             uptime = uptimeFormatter.string(from: elapsed)!
-        } else {
+        } else if uptime != noValue {
             uptime = noValue
         }
     }
 
     private func updateDigitalClock(now: Date) {
-        digitalClock = digitalClockFormatter.string(from: now)
+        let newDigitalClock = digitalClockFormatter.string(from: now)
+        if digitalClock != newDigitalClock {
+            digitalClock = newDigitalClock
+        }
     }
 
     private func updateBatteryLevel() {
@@ -1563,7 +1568,9 @@ final class Model: ObservableObject {
     }
 
     private func updateChatSpeed() {
-        chatPostsTotal += numberOfChatPostsPerTick
+        if numberOfChatPostsPerTick != 0 {
+            chatPostsTotal += numberOfChatPostsPerTick
+        }
         chatPostsRatePerSecond = chatPostsRatePerSecond * 0.8 +
             Double(numberOfChatPostsPerTick) * 0.2
         numberOfChatPostsPerMinute += numberOfChatPostsPerTick
@@ -1572,12 +1579,16 @@ final class Model: ObservableObject {
                 Double(numberOfChatPostsPerMinute) * 0.5
             numberOfChatPostsPerMinute = 0
         }
+        let newChatPostsRate: String
         if chatPostsRatePerSecond > 0.5 ||
             (chatPostsRatePerSecond > 0.05 && chatPostsRate.hasSuffix("/sec"))
         {
-            chatPostsRate = String(format: "%.1f/sec", chatPostsRatePerSecond)
+            newChatPostsRate = String(format: "%.1f/sec", chatPostsRatePerSecond)
         } else {
-            chatPostsRate = String(format: "%.1f/min", chatPostsRatePerMinute)
+            newChatPostsRate = String(format: "%.1f/min", chatPostsRatePerMinute)
+        }
+        if chatPostsRate != newChatPostsRate {
+            chatPostsRate = newChatPostsRate
         }
         numberOfChatPostsPerTick = 0
         chatSpeedTicks += 1

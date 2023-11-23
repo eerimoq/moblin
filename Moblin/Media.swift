@@ -122,9 +122,12 @@ final class Media: NSObject {
         adaptiveBitrate = nil
     }
 
-    func getSrtStats() -> [String] {
+    func getSrtStats(overlay: Bool) -> [String]? {
         let stats = srtConnection.performanceData
         adaptiveBitrate?.update(stats: stats)
+        guard overlay else {
+            return nil
+        }
         if let adapativeStats = adaptiveBitrate {
             return [
                 "R: \(stats.pktRetransTotal) N: \(stats.pktRecvNAKTotal) S: \(stats.pktSndDropTotal)",
