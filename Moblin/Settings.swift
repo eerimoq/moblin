@@ -62,6 +62,7 @@ class SettingsStream: Codable, Identifiable {
     var srt: SettingsStreamSrt = .init()
     var captureSessionPresetEnabled: Bool = false
     var captureSessionPreset: SettingsCaptureSessionPreset = .medium
+    var maxKeyFrameInterval: Int32? = 2
 
     init(name: String) {
         self.name = name
@@ -794,6 +795,10 @@ final class Settings {
         }
         for scene in realDatabase.scenes where scene.cameraLayoutPip == nil {
             scene.cameraLayoutPip = .init()
+            store()
+        }
+        for stream in realDatabase.streams where stream.maxKeyFrameInterval == nil {
+            stream.maxKeyFrameInterval = 2
             store()
         }
     }

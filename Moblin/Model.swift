@@ -1066,6 +1066,7 @@ final class Model: ObservableObject {
         setStreamResolution()
         setStreamFPS()
         setStreamCodec()
+        setStreamKeyFrameInterval()
         setStreamBitrate(stream: stream)
         reloadConnections()
         resetChat()
@@ -1150,13 +1151,17 @@ final class Model: ObservableObject {
         media.setVideoStreamBitrate(bitrate: stream.bitrate)
     }
 
-    func setStreamCodec() {
+    private func setStreamCodec() {
         switch stream.codec {
         case .h264avc:
             media.setVideoProfile(profile: kVTProfileLevel_H264_High_AutoLevel)
         case .h265hevc:
             media.setVideoProfile(profile: kVTProfileLevel_HEVC_Main_AutoLevel)
         }
+    }
+
+    private func setStreamKeyFrameInterval() {
+        media.setStreamKeyFrameInterval(seconds: stream.maxKeyFrameInterval!)
     }
 
     func isChatConfigured() -> Bool {

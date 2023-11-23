@@ -311,6 +311,10 @@ final class Media: NSObject {
         netStream.videoSettings.profileLevel = profile as String
     }
 
+    func setStreamKeyFrameInterval(seconds: Int32) {
+        netStream.videoSettings.maxKeyFrameIntervalDuration = seconds
+    }
+
     func setCameraZoomLevel(level: Double, ramp: Bool) -> Double? {
         guard let device = netStream.videoCapture()?.device else {
             logger.warning("Device not ready to zoom")
