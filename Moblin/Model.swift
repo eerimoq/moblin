@@ -17,14 +17,6 @@ import VideoToolbox
 private let noValue = ""
 private let maximumNumberOfChatMessages = 50
 
-struct PausedChatMessage {
-    var user: String
-    var userColor: String?
-    var segments: [ChatPostSegment]
-    var timestamp: String
-    var timestampDate: Date
-}
-
 struct Mic: Identifiable, Hashable {
     var id: String {
         "\(inputUid) \(dataSourceID ?? 0)"
@@ -181,7 +173,8 @@ final class Model: ObservableObject {
     private var youTubeLiveChat: YouTubeLiveChat?
     private var chatPostId = 0
     @Published var chatPosts: Deque<ChatPost> = []
-    private var pausedChatMessages: Deque<PausedChatMessage> = []
+    private var pausedChatPosts: Deque<ChatPost> = []
+    private var newChatPosts: Deque<ChatPost> = []
     private var numberOfChatPostsPerTick = 0
     private var chatPostsRatePerSecond = 0.0
     private var chatPostsRatePerMinute = 0.0
@@ -770,6 +763,7 @@ final class Model: ObservableObject {
             if self.database.show.audioBar {
                 self.updateAudioLevel()
             }
+            self.updateChat()
         })
         takeBrowserSnapshots()
     }
@@ -880,6 +874,19 @@ final class Model: ObservableObject {
             } else {
                 break
             }
+        }
+    }
+
+    private func updateChat() {
+        if chatPaused {
+            return
+        }
+        while let post = newChatPosts.popFirst() {
+            if chatPosts.count > maximumNumberOfChatMessages - 1 {
+                chatPosts.removeFirst()
+            }
+            chatPosts.append(post)
+            numberOfChatPostsPerTick += 1
         }
     }
 
@@ -1244,7 +1251,8 @@ final class Model: ObservableObject {
         chatPostsTotal = 0
         chatSpeedTicks = 0
         chatPosts = []
-        pausedChatMessages = []
+        pausedChatPosts = []
+        newChatPosts = []
         numberOfChatPostsPerTick = 0
         chatPostsRatePerSecond = 0
         chatPostsRatePerMinute = 0
@@ -1326,56 +1334,48 @@ final class Model: ObservableObject {
         resetChat()
     }
 
+    private func appendChatPost(post: ChatPost) {
+        appendChatMessage(user: post.user,
+                          userColor: post.userColor,
+                          segments: post.segments,
+                          timestamp: post.timestamp,
+                          timestampDate: post.timestampDate)
+    }
+
     func appendChatMessage(
         user: String?,
         userColor: String?,
         segments: [ChatPostSegment],
         timestamp: String,
-        timestampDate: Date,
-        incrementCount: Bool = true
+        timestampDate: Date
     ) {
-        if chatPaused {
-            if pausedChatMessages.count > maximumNumberOfChatMessages - 1 {
-                pausedChatMessages.removeFirst()
-            }
-            pausedChatMessages.append(PausedChatMessage(
-                user: user!,
-                userColor: userColor,
-                segments: segments,
-                timestamp: digitalClock,
-                timestampDate: timestampDate
-            ))
-        } else {
-            if chatPosts.count > maximumNumberOfChatMessages - 1 {
-                chatPosts.removeFirst()
-            }
-            chatPosts.append(ChatPost(
-                id: chatPostId,
-                user: user,
-                userColor: userColor,
-                segments: segments,
-                timestamp: timestamp,
-                timestampDate: timestampDate
-            ))
-        }
-        if incrementCount {
-            numberOfChatPostsPerTick += 1
-        }
+        let post = ChatPost(
+            id: chatPostId,
+            user: user,
+            userColor: userColor,
+            segments: segments,
+            timestamp: timestamp,
+            timestampDate: timestampDate
+        )
         chatPostId += 1
+        if chatPaused {
+            if pausedChatPosts.count > maximumNumberOfChatMessages - 1 {
+                pausedChatPosts.removeFirst()
+            }
+            pausedChatPosts.append(post)
+        } else {
+            if newChatPosts.count > maximumNumberOfChatMessages - 1 {
+                newChatPosts.removeFirst()
+            }
+            newChatPosts.append(post)
+        }
     }
 
     func reloadChatMessages() {
         let posts = chatPosts
         chatPosts = []
         for post in posts {
-            appendChatMessage(
-                user: post.user,
-                userColor: post.userColor,
-                segments: post.segments,
-                timestamp: post.timestamp,
-                timestampDate: post.timestampDate,
-                incrementCount: false
-            )
+            appendChatPost(post: post)
         }
     }
 
@@ -1387,38 +1387,23 @@ final class Model: ObservableObject {
         chatPosts = chatPosts.filter { post in
             post.user != nil
         }
-        if !pausedChatMessages.isEmpty {
+        if !chatPosts.isEmpty {
+            appendChatPost(post: chatPosts.popLast()!)
+        }
+        if !pausedChatPosts.isEmpty {
             appendChatMessage(
                 user: nil,
                 userColor: nil,
                 segments: [],
                 timestamp: "",
-                timestampDate: Date(),
-                incrementCount: false
+                timestampDate: Date()
             )
         }
-        for message in pausedChatMessages {
-            appendChatMessage(
-                user: message.user,
-                userColor: message.userColor,
-                segments: message.segments,
-                timestamp: message.timestamp,
-                timestampDate: message.timestampDate,
-                incrementCount: false
-            )
+        for post in pausedChatPosts {
+            appendChatPost(post: post)
         }
-        pausedChatMessages = []
-        if !chatPosts.isEmpty {
-            let post = chatPosts.popLast()!
-            appendChatMessage(
-                user: post.user,
-                userColor: post.userColor,
-                segments: post.segments,
-                timestamp: post.timestamp,
-                timestampDate: post.timestampDate,
-                incrementCount: false
-            )
-        }
+        pausedChatPosts = []
+        updateChat()
     }
 
     func findWidget(id: UUID) -> SettingsWidget? {
