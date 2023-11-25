@@ -187,7 +187,7 @@ final class Model: ObservableObject {
     @Published var batteryLevel = Double(UIDevice.current.batteryLevel)
     @Published var speedAndTotal = noValue
     @Published var thermalState = ProcessInfo.processInfo.thermalState
-    var mthkView = MTHKView(frame: .zero)
+    var videoView = PiPHKView(frame: .zero)
     private var textEffects: [UUID: TextEffect] = [:]
     private var imageEffects: [UUID: ImageEffect] = [:]
     private var videoEffects: [UUID: VideoEffect] = [:]
@@ -610,9 +610,9 @@ final class Model: ObservableObject {
         setMic()
         backZoomPresetId = database.zoom.back[0].id
         frontZoomPresetId = database.zoom.front[0].id
-        mthkView.videoGravity = .resizeAspect
+        videoView.videoGravity = .resizeAspect
         if database.maximumScreenFpsEnabled {
-            mthkView.fps = Double(database.maximumScreenFps)
+             videoView.fps = Double(database.maximumScreenFps)
         }
         logger.handler = debugLog(message:)
         logger.debugEnabled = database.debug!.logLevel == .debug
@@ -708,9 +708,13 @@ final class Model: ObservableObject {
     @objc private func orientationDidChange(animated _: Bool) {
         switch UIDevice.current.orientation {
         case .landscapeLeft:
-            mthkView.videoOrientation = .landscapeRight
+            if videoView.videoOrientation != .landscapeRight {
+                videoView.videoOrientation = .landscapeRight
+            }
         case .landscapeRight:
-            mthkView.videoOrientation = .landscapeLeft
+            if videoView.videoOrientation != .landscapeLeft {
+                videoView.videoOrientation = .landscapeLeft
+            }
         default:
             break
         }
@@ -1032,17 +1036,17 @@ final class Model: ObservableObject {
     func setMaximumScreenFps(fps: Int) {
         database.maximumScreenFps = fps
         store()
-        mthkView.fps = Double(fps)
+        videoView.fps = Double(fps)
     }
 
     func setMaximumScreenFpsEnabled(value: Bool) {
         database.maximumScreenFpsEnabled = value
         store()
-        if value {
-            mthkView.fps = Double(database.maximumScreenFps)
-        } else {
-            mthkView.fps = nil
-        }
+         if value {
+             videoView.fps = Double(database.maximumScreenFps)
+         } else {
+             videoView.fps = nil
+         }
     }
 
     func startStream() {
@@ -1132,7 +1136,7 @@ final class Model: ObservableObject {
         media.setNetStream(proto: stream.getProtocol())
         updateTorch()
         updateMute()
-        mthkView.attachStream(media.getNetStream())
+        videoView.attachStream(media.getNetStream())
     }
 
     private func getPreset(preset: AVCaptureSession.Preset) -> AVCaptureSession.Preset {
@@ -1737,7 +1741,7 @@ final class Model: ObservableObject {
             secondDevice: secondCameraDevice,
             videoStabilizationMode: getVideoStabilizationMode(),
             onSuccess: {
-                self.mthkView.isMirrored = isMirrored
+                self.videoView.isMirrored = isMirrored
                 _ = self.media.setCameraZoomLevel(level: self.zoomLevel, ramp: false)
                 if let device = self.cameraDevice {
                     self.setMaxAutoExposure(device: device)
