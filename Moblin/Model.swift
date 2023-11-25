@@ -880,7 +880,12 @@ final class Model: ObservableObject {
 
     private func updateAudioLevel() {
         let newAudioLevel = media.getAudioLevel()
-        if abs(audioLevel - newAudioLevel) > 5 {
+        if newAudioLevel == audioLevel {
+            return
+        }
+        if abs(audioLevel - newAudioLevel) > 5 || newAudioLevel
+            .isNaN || newAudioLevel == .infinity || audioLevel.isNaN || audioLevel == .infinity
+        {
             audioLevel = newAudioLevel
         }
     }
