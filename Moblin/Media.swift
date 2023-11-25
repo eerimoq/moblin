@@ -453,7 +453,14 @@ extension Media: SrtlaDelegate {
                         port: port,
                         latency: self.latency,
                         overheadBandwidth: self.overheadBandwidth
-                    ))
+                    )) { data in
+                        if let srtla = self.srtla {
+                            srtlaDispatchQueue.async {
+                                srtla.handleLocalPacket(packet: data)
+                            }
+                        }
+                        return true
+                    }
                     self.srtStream?.publish()
                 } catch {
                     DispatchQueue.main.async {
