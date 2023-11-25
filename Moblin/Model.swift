@@ -230,6 +230,9 @@ final class Model: ObservableObject {
     var secondCameraDevice: AVCaptureDevice?
     @Published var srtDebugLines: [String] = []
 
+    var backCameras: [String] = []
+    var frontCameras: [String] = []
+
     init() {
         print("Init model")
         settings.load()
@@ -586,6 +589,16 @@ final class Model: ObservableObject {
         let WebPCoder = SDImageWebPCoder.shared
         SDImageCodersManager.shared.addCoder(WebPCoder)
         UIDevice.current.isBatteryMonitoringEnabled = true
+        backCameras = listCameras(position: .back)
+        if !backCameras.contains(database.backCameraType!.rawValue) {
+            database.backCameraType = SettingsCameraType(rawValue: backCameras.first!)!
+            store()
+        }
+        frontCameras = listCameras(position: .front)
+        if !frontCameras.contains(database.frontCameraType!.rawValue) {
+            database.frontCameraType = SettingsCameraType(rawValue: frontCameras.first!)!
+            store()
+        }
         updateBatteryLevel()
         media.onSrtConnected = handleSrtConnected
         media.onSrtDisconnected = handleSrtDisconnected
@@ -640,10 +653,6 @@ final class Model: ObservableObject {
                                                name: AVAudioSession
                                                    .routeChangeNotification,
                                                object: nil)
-        logger.info("Cameras:")
-        for camera in listCameras() {
-            logger.info("  \(camera.localizedName)")
-        }
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(
                                                    handleWillEnterForegroundNotification
@@ -657,14 +666,34 @@ final class Model: ObservableObject {
         reloadConnections()
     }
 
-    private func listCameras() -> [AVCaptureDevice] {
+    private func listCameras(position: AVCaptureDevice.Position) -> [String] {
         let deviceDiscovery = AVCaptureDevice.DiscoverySession(
-            deviceTypes: [.builtInTelephotoCamera, .builtInWideAngleCamera,
-                          .builtInLiDARDepthCamera /* , .external iOS 17 */ ],
-            mediaType: nil,
-            position: .unspecified
+            deviceTypes: [
+                .builtInTripleCamera,
+                .builtInDualCamera,
+                .builtInUltraWideCamera,
+                .builtInWideAngleCamera,
+                .builtInTelephotoCamera,
+            ],
+            mediaType: .video,
+            position: position
         )
-        return deviceDiscovery.devices
+        return deviceDiscovery.devices.map { device in
+            switch device.deviceType {
+            case .builtInTripleCamera:
+                return "Triple"
+            case .builtInDualCamera:
+                return "Dual"
+            case .builtInUltraWideCamera:
+                return "Ultra Wide"
+            case .builtInWideAngleCamera:
+                return "Wide"
+            case .builtInTelephotoCamera:
+                return "Telephoto"
+            default:
+                return "Unknown"
+            }
+        }
     }
 
     deinit {
@@ -1453,7 +1482,7 @@ final class Model: ObservableObject {
     }
 
     private func attachSingleLayout(scene: SettingsScene) {
-        switch scene.cameraType {
+        switch scene.cameraPosition! {
         case .back:
             attachCamera(position: .back)
         case .front:
@@ -1462,7 +1491,7 @@ final class Model: ObservableObject {
     }
 
     private func attachPipLayout(scene: SettingsScene) {
-        switch scene.cameraType {
+        switch scene.cameraPosition! {
         case .back:
             attachCamera(position: .back, secondPosition: .front)
         case .front:
@@ -1636,11 +1665,34 @@ final class Model: ObservableObject {
         )
     }
 
+    private func hasCameraChanged(
+        oldCameraDevice: AVCaptureDevice?,
+        oldPosition: AVCaptureDevice.Position?,
+        newPosition: AVCaptureDevice.Position?
+    ) -> Bool {
+        if oldPosition != newPosition {
+            return true
+        }
+        if let newPosition {
+            return oldCameraDevice != preferredCamera(position: newPosition)
+        } else {
+            return oldCameraDevice != nil
+        }
+    }
+
     private func attachCamera(
         position: AVCaptureDevice.Position,
         secondPosition: AVCaptureDevice.Position? = nil
     ) {
-        guard position != cameraPosition || secondPosition != secondCameraPosition else {
+        guard hasCameraChanged(
+            oldCameraDevice: cameraDevice,
+            oldPosition: cameraPosition,
+            newPosition: position
+        ) || hasCameraChanged(
+            oldCameraDevice: secondCameraDevice,
+            oldPosition: secondCameraPosition,
+            newPosition: secondPosition
+        ) else {
             return
         }
         setAutoFocus()
@@ -1992,5 +2044,51 @@ final class Model: ObservableObject {
 
     private func stopMotionDetection() {
         motionManager.stopDeviceMotionUpdates()
+    }
+
+    func preferredCamera(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
+        var cameraType: SettingsCameraType
+        if position == .back {
+            cameraType = database.backCameraType!
+        } else {
+            cameraType = database.frontCameraType!
+        }
+        var deviceType: AVCaptureDevice.DeviceType
+        switch cameraType {
+        case .triple:
+            deviceType = .builtInTripleCamera
+        case .dual:
+            deviceType = .builtInDualCamera
+        case .ultraWide:
+            deviceType = .builtInUltraWideCamera
+        case .wide:
+            deviceType = .builtInWideAngleCamera
+        case .telephoto:
+            deviceType = .builtInTelephotoCamera
+        }
+        if let device = AVCaptureDevice.default(deviceType, for: .video, position: position) {
+            return device
+        }
+        logger.error("No camera")
+        return nil
+    }
+
+    func getMinMaxZoomX(position: AVCaptureDevice.Position) -> (Float, Float) {
+        var minX: Float
+        var maxX: Float
+        if let device = preferredCamera(position: position) {
+            minX = factorToX(
+                position: position,
+                factor: Float(device.minAvailableVideoZoomFactor)
+            )
+            maxX = factorToX(
+                position: position,
+                factor: Float(device.maxAvailableVideoZoomFactor)
+            )
+        } else {
+            minX = 1.0
+            maxX = 1.0
+        }
+        return (minX, maxX)
     }
 }

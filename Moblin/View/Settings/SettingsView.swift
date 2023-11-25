@@ -67,6 +67,16 @@ struct QuickSettingsToolbar: ToolbarContent {
 struct SettingsView: View {
     @EnvironmentObject var model: Model
 
+    private func onChangeBackCamera(camera: String) {
+        model.database.backCameraType = SettingsCameraType(rawValue: camera)!
+        model.sceneUpdated()
+    }
+
+    private func onChangeFrontCamera(camera: String) {
+        model.database.frontCameraType = SettingsCameraType(rawValue: camera)!
+        model.sceneUpdated()
+    }
+
     var body: some View {
         Form {
             if model.isLive {
@@ -100,6 +110,22 @@ struct SettingsView: View {
                     destination: BitratePresetsSettingsView()
                 ) {
                     Text("Bitrate presets")
+                }
+                NavigationLink(destination: InlinePickerView(
+                    title: "Back camera",
+                    onChange: onChangeBackCamera,
+                    items: model.backCameras,
+                    selected: model.database.backCameraType!.rawValue
+                )) {
+                    TextItemView(name: "Back camera", value: model.database.backCameraType!.rawValue)
+                }
+                NavigationLink(destination: InlinePickerView(
+                    title: "Front camera",
+                    onChange: onChangeFrontCamera,
+                    items: model.frontCameras,
+                    selected: model.database.frontCameraType!.rawValue
+                )) {
+                    TextItemView(name: "Front camera", value: model.database.frontCameraType!.rawValue)
                 }
                 VideoStabilizationSettingsView()
                 Toggle("Battery percentage", isOn: Binding(get: {

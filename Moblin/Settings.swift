@@ -128,12 +128,20 @@ class SettingsSceneButton: Codable, Identifiable, Equatable {
     }
 }
 
-enum SettingsSceneCameraType: String, Codable, CaseIterable {
+enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
     case back = "Back"
     case front = "Front"
 }
 
-var cameraTypes = SettingsSceneCameraType.allCases.map { $0.rawValue }
+var cameraPositions = SettingsSceneCameraPosition.allCases.map { $0.rawValue }
+
+enum SettingsCameraType: String, Codable, CaseIterable {
+    case triple = "Triple"
+    case dual = "Dual"
+    case wide = "Wide"
+    case ultraWide = "Ultra Wide"
+    case telephoto = "Telephoto"
+}
 
 enum SettingsSceneCameraLayout: String, Codable, CaseIterable {
     case single = "Single"
@@ -154,7 +162,8 @@ class SettingsScene: Codable, Identifiable, Equatable {
     var id: UUID = .init()
     var enabled: Bool = true
     var cameraLayout: SettingsSceneCameraLayout? = .single
-    var cameraType: SettingsSceneCameraType = .back
+    var cameraType: SettingsSceneCameraPosition = .back
+    var cameraPosition: SettingsSceneCameraPosition? = .back
     var cameraLayoutPip: SettingsSceneCameraLayoutPip? = .init()
     var widgets: [SettingsSceneWidget] = []
     var buttons: [SettingsSceneButton] = []
@@ -438,6 +447,8 @@ class Database: Codable {
     var iconImage: String = plainIcon.image()
     var maximumScreenFpsEnabled: Bool = false
     var maximumScreenFps: Int = 15
+    var backCameraType: SettingsCameraType? = .triple
+    var frontCameraType: SettingsCameraType? = .wide
     var videoStabilizationMode: SettingsVideoStabilizationMode = .off
     var chat: SettingsChat = .init()
     var batteryPercentage: Bool? = false
@@ -517,7 +528,7 @@ func createSceneWidgetVideoEffectRandom(database: Database) -> SettingsSceneWidg
 
 func addDefaultScenes(database: Database) {
     var scene = SettingsScene(name: "Back")
-    scene.cameraType = .back
+    scene.cameraPosition = .back
     scene.widgets.append(createSceneWidgetVideoEffectMovie(database: database))
     scene.widgets.append(createSceneWidgetVideoEffectGrayScale(database: database))
     scene.widgets.append(createSceneWidgetVideoEffectSepia(database: database))
@@ -535,7 +546,7 @@ func addDefaultScenes(database: Database) {
     database.scenes.append(scene)
 
     scene = SettingsScene(name: "Front")
-    scene.cameraType = .front
+    scene.cameraPosition = .front
     scene.widgets.append(createSceneWidgetVideoEffectMovie(database: database))
     scene.addButton(id: database.buttons[1].id)
     scene.addButton(id: database.buttons[2].id)
@@ -799,6 +810,18 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.maxKeyFrameInterval == nil {
             stream.maxKeyFrameInterval = 2
+            store()
+        }
+        if realDatabase.backCameraType == nil {
+            realDatabase.backCameraType = .triple
+            store()
+        }
+        if realDatabase.frontCameraType == nil {
+            realDatabase.frontCameraType = .wide
+            store()
+        }
+        for scene in realDatabase.scenes where scene.cameraPosition == nil {
+            scene.cameraPosition = scene.cameraType
             store()
         }
     }

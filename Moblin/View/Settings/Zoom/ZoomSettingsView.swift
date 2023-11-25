@@ -11,8 +11,8 @@ struct ZoomSettingsView: View {
                         NavigationLink(destination: ZoomPresetSettingsView(
                             preset: preset,
                             position: .back,
-                            minX: getMinMaxZoomX(position: .back).0,
-                            maxX: getMinMaxZoomX(position: .back).1
+                            minX: model.getMinMaxZoomX(position: .back).0,
+                            maxX: model.getMinMaxZoomX(position: .back).1
                         )) {
                             HStack {
                                 DraggableItemPrefixView()
@@ -51,8 +51,8 @@ struct ZoomSettingsView: View {
                         NavigationLink(destination: ZoomPresetSettingsView(
                             preset: preset,
                             position: .front,
-                            minX: getMinMaxZoomX(position: .front).0,
-                            maxX: getMinMaxZoomX(position: .front).1
+                            minX: model.getMinMaxZoomX(position: .front).0,
+                            maxX: model.getMinMaxZoomX(position: .front).1
                         )) {
                             HStack {
                                 DraggableItemPrefixView()

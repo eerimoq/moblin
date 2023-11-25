@@ -23,7 +23,7 @@ struct ZoomSwitchToSettingsView: View {
                 guard let x = Float(x) else {
                     return
                 }
-                let (minX, maxX) = getMinMaxZoomX(position: position)
+                let (minX, maxX) = model.getMinMaxZoomX(position: position)
                 guard x >= minX, x <= maxX else {
                     model.makeErrorToast(title: "X must be \(minX) - \(maxX)")
                     return

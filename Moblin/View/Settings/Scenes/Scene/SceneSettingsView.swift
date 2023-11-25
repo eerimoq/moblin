@@ -61,11 +61,11 @@ struct SceneSettingsView: View {
     }
 
     private func pipSmall() -> String {
-        switch scene.cameraType {
+        switch scene.cameraPosition! {
         case .back:
-            return SettingsSceneCameraType.front.rawValue
+            return SettingsSceneCameraPosition.front.rawValue
         case .front:
-            return SettingsSceneCameraType.back.rawValue
+            return SettingsSceneCameraPosition.back.rawValue
         }
     }
 
@@ -75,7 +75,7 @@ struct SceneSettingsView: View {
     }
 
     private func onCameraChange(camera: String) {
-        scene.cameraType = SettingsSceneCameraType(rawValue: camera)!
+        scene.cameraPosition = SettingsSceneCameraPosition(rawValue: camera)!
         model.sceneUpdated(store: true)
     }
 
@@ -103,24 +103,24 @@ struct SceneSettingsView: View {
                     NavigationLink(destination: InlinePickerView(
                         title: "Camera",
                         onChange: onCameraChange,
-                        items: cameraTypes,
-                        selected: scene.cameraType.rawValue
+                        items: cameraPositions,
+                        selected: scene.cameraPosition!.rawValue
                     )) {
                         TextItemView(
                             name: "Camera",
-                            value: scene.cameraType.rawValue
+                            value: scene.cameraPosition!.rawValue
                         )
                     }
                 } else if scene.cameraLayout == .pip {
                     NavigationLink(destination: InlinePickerView(
                         title: "Large camera",
                         onChange: onCameraChange,
-                        items: cameraTypes,
-                        selected: scene.cameraType.rawValue
+                        items: cameraPositions,
+                        selected: scene.cameraPosition!.rawValue
                     )) {
                         TextItemView(
                             name: "Large camera",
-                            value: scene.cameraType.rawValue
+                            value: scene.cameraPosition!.rawValue
                         )
                     }
                     Button(action: {
