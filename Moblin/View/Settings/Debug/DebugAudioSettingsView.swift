@@ -9,6 +9,15 @@ struct DebugAudioSettingsView: View {
     var body: some View {
         Form {
             Section {
+                Toggle("Røde audio level", isOn: Binding(get: {
+                    useFirstChannelForAudioLevel
+                }, set: { value in
+                    useFirstChannelForAudioLevel = value
+                }))
+            } footer: {
+                Text("Use first channel for audio level. To debug Røde mic Unknown level.")
+            }
+            Section {
                 Picker("", selection: $model.audioGenerator) {
                     ForEach(audioGenerators, id: \.self) { mode in
                         Text(mode)

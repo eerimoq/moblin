@@ -612,7 +612,7 @@ final class Model: ObservableObject {
         frontZoomPresetId = database.zoom.front[0].id
         videoView.videoGravity = .resizeAspect
         if database.maximumScreenFpsEnabled {
-             videoView.fps = Double(database.maximumScreenFps)
+            videoView.fps = Double(database.maximumScreenFps)
         }
         logger.handler = debugLog(message:)
         logger.debugEnabled = database.debug!.logLevel == .debug
@@ -1042,11 +1042,11 @@ final class Model: ObservableObject {
     func setMaximumScreenFpsEnabled(value: Bool) {
         database.maximumScreenFpsEnabled = value
         store()
-         if value {
-             videoView.fps = Double(database.maximumScreenFps)
-         } else {
-             videoView.fps = nil
-         }
+        if value {
+            videoView.fps = Double(database.maximumScreenFps)
+        } else {
+            videoView.fps = nil
+        }
     }
 
     func startStream() {
