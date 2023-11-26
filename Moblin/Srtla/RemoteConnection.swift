@@ -241,7 +241,7 @@ class RemoteConnection {
                     .error(
                         "srtla: \(self.typeString): Remote send error: \(error)"
                     )
-                self.reconnect(reason: "Failed to send packet")
+                // self.reconnect(reason: "Failed to send packet")
             }
         })
     }
