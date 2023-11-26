@@ -102,15 +102,6 @@ struct SettingsView: View {
                 ) {
                     Text("Local overlays")
                 }
-                NavigationLink(destination: ZoomSettingsView()) {
-                    Text("Zoom")
-                }
-                TapScreenToFocusSettingsView()
-                NavigationLink(
-                    destination: BitratePresetsSettingsView()
-                ) {
-                    Text("Bitrate presets")
-                }
                 NavigationLink(destination: InlinePickerView(
                     title: "Back camera",
                     onChange: onChangeBackCamera,
@@ -127,7 +118,16 @@ struct SettingsView: View {
                 )) {
                     TextItemView(name: "Front camera", value: model.database.frontCameraType!.rawValue)
                 }
+                NavigationLink(destination: ZoomSettingsView()) {
+                    Text("Zoom")
+                }
                 VideoStabilizationSettingsView()
+                TapScreenToFocusSettingsView()
+                NavigationLink(
+                    destination: BitratePresetsSettingsView()
+                ) {
+                    Text("Bitrate presets")
+                }
                 Toggle("Battery percentage", isOn: Binding(get: {
                     model.database.batteryPercentage!
                 }, set: { value in
@@ -149,7 +149,7 @@ struct SettingsView: View {
                     }
                 }
             } footer: {
-                Text("A low maximum screen FPS reduces power usage.")
+                Text("Maximum screen FPS is not used anymore.")
             }
             Section {
                 NavigationLink(destination: CosmeticsSettingsView(
