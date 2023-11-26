@@ -122,34 +122,18 @@ struct SettingsView: View {
                     Text("Zoom")
                 }
                 VideoStabilizationSettingsView()
-                TapScreenToFocusSettingsView()
                 NavigationLink(
                     destination: BitratePresetsSettingsView()
                 ) {
                     Text("Bitrate presets")
                 }
+                TapScreenToFocusSettingsView()
                 Toggle("Battery percentage", isOn: Binding(get: {
                     model.database.batteryPercentage!
                 }, set: { value in
                     model.database.batteryPercentage = value
                     model.store()
                 }))
-                NavigationLink(
-                    destination: MaximumScreenFpsSettingsView()
-                ) {
-                    Toggle(isOn: Binding(get: {
-                        model.database.maximumScreenFpsEnabled
-                    }, set: { value in
-                        model.setMaximumScreenFpsEnabled(value: value)
-                    })) {
-                        TextItemView(
-                            name: "Maximum screen FPS",
-                            value: String(model.database.maximumScreenFps)
-                        )
-                    }
-                }
-            } footer: {
-                Text("Maximum screen FPS is not used anymore.")
             }
             Section {
                 NavigationLink(destination: CosmeticsSettingsView(
