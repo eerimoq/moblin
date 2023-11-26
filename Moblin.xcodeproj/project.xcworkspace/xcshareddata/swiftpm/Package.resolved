@@ -15,7 +15,7 @@
       "location" : "https://github.com/eerimoq/HaishinKit.swift",
       "state" : {
         "branch" : "main",
-        "revision" : "bde86af9f948b3a133d7c583b4ec5de0b0ef6c8a"
+        "revision" : "1de49395bde23fec2b1076dfd9f1c1344857281e"
       }
     },
     {
@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/cybozu/LicenseList.git",
       "state" : {
-        "revision" : "49cd8579e56fc4f1f53523f44740f138d8c4a1cc",
-        "version" : "0.3.2"
+        "revision" : "6430e46911396b8d8b99de2cdefb54294ade0c24",
+        "version" : "0.4.0"
       }
     },
     {
@@ -41,8 +41,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/shogo4405/Logboard.git",
       "state" : {
-        "revision" : "6a7cbf54553936103084ed72cfb6d6f836758229",
-        "version" : "2.4.1"
+        "revision" : "e597fa65bb2ce9fc56935b4161b1af74495ddb52",
+        "version" : "2.3.1"
       }
     },
     {
@@ -79,6 +79,24 @@
       "state" : {
         "revision" : "a902f1823a7ff3c9ab2fba0f992396b948eda307",
         "version" : "1.0.5"
+      }
+    },
+    {
+      "identity" : "swift-docc-plugin",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-docc-plugin",
+      "state" : {
+        "revision" : "26ac5758409154cc448d7ab82389c520fa8a8247",
+        "version" : "1.3.0"
+      }
+    },
+    {
+      "identity" : "swift-docc-symbolkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-docc-symbolkit",
+      "state" : {
+        "revision" : "b45d1f2ed151d057b54504d653e0da5552844e34",
+        "version" : "1.0.0"
       }
     },
     {
