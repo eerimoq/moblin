@@ -790,6 +790,7 @@ final class Model: ObservableObject {
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
             self.media.logStatistics()
+            self.media.logAudioStatistics()
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
             self.updateSrtDebugLines()
