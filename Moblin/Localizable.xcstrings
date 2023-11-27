@@ -45,13 +45,34 @@
       }
     },
     "Adaptive bitrate" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adaptiv bitrate"
+          }
+        }
+      }
     },
     "Adaptive bitrate is experimental." : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adaptiv bitrate är experimentell."
+          }
+        }
+      }
     },
     "Add" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lägg till"
+          }
+        }
+      }
     },
     "Allowed range is %@ - %@." : {
       "localizations" : {
@@ -60,35 +81,90 @@
             "state" : "new",
             "value" : "Allowed range is %1$@ - %2$@."
           }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tillåtna värden är %1$@ - %2$@."
+          }
         }
       }
     },
     "Amplitude" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Amplitud"
+          }
+        }
+      }
     },
     "An incomplete list of people who has contributed ideas, programming,\ntesting, promotion and more." : {
 
     },
     "Animated emotes" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Animerate emotes"
+          }
+        }
+      }
     },
     "Animated emotes are fairly CPU intensive. Disable for less power usage." : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Animerate emotes använder mycket CPU. Stäng av dom för mindre energiförkrukning."
+          }
+        }
+      }
     },
     "Are you sure?" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Är du säker?"
+          }
+        }
+      }
     },
     "Audio" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ljud"
+          }
+        }
+      }
     },
     "Back camera presets" : {
 
     },
     "Background" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bakgrund"
+          }
+        }
+      }
     },
     "Battery percentage" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Batterinivå i procent"
+          }
+        }
+      }
     },
     "BELABOX cloud SRT" : {
 
@@ -97,82 +173,229 @@
 
     },
     "Big packets" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stora paket"
+          }
+        }
+      }
     },
     "Big packets means 7 MPEG-TS packets per SRT packet, 6 otherwise. Sometimes Android hotspots does not work with big packets." : {
 
     },
     "Bitrate" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bitrate"
+          }
+        }
+      }
     },
     "Bitrate presets" : {
 
     },
     "Blue" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blå"
+          }
+        }
+      }
     },
     "Bold message" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meddelande i fet stil"
+          }
+        }
+      }
     },
     "Bold username" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Användare i fet stil"
+          }
+        }
+      }
     },
     "Border" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kant"
+          }
+        }
+      }
     },
     "Border is fairly CPU intensive. Disable for less power usage." : {
 
     },
     "Bottom right" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nere till höger"
+          }
+        }
+      }
     },
     "Browser" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Webbläsare"
+          }
+        }
+      }
     },
     "Button" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Knapp"
+          }
+        }
+      }
     },
     "Button name" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Knappnamn"
+          }
+        }
+      }
     },
     "Buttons" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Knappar"
+          }
+        }
+      }
     },
     "Buttons appear from bottom to top." : {
 
     },
     "Camera" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kamera"
+          }
+        }
+      }
     },
     "Camera switching" : {
 
     },
     "Cancel" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avbryt"
+          }
+        }
+      }
     },
     "Chat" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chatt"
+          }
+        }
+      }
     },
     "Close" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stäng"
+          }
+        }
+      }
     },
     "Colors" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Färger"
+          }
+        }
+      }
     },
     "Cosmetics" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kosmetik"
+          }
+        }
+      }
     },
     "Create" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skapa"
+          }
+        }
+      }
     },
     "Debug" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Felsökning"
+          }
+        }
+      }
     },
     "Designed by" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Designat av"
+          }
+        }
+      }
     },
     "Discord" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Discord"
+          }
+        }
+      }
     },
     "Displayed in main view and as app icon." : {
 
@@ -184,7 +407,14 @@
 
     },
     "End" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Slut"
+          }
+        }
+      }
     },
     "Example:  rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef" : {
 
@@ -232,7 +462,14 @@
 
     },
     "Font size" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teckenstorlek"
+          }
+        }
+      }
     },
     "Front camera presets" : {
 
@@ -241,52 +478,157 @@
 
     },
     "Generator" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Generator"
+          }
+        }
+      }
     },
     "Geometry" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geometri"
+          }
+        }
+      }
     },
     "Github" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Github"
+          }
+        }
+      }
     },
     "Go live" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gå live"
+          }
+        }
+      }
     },
     "Green" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grön"
+          }
+        }
+      }
     },
     "Height" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Höjd"
+          }
+        }
+      }
     },
     "Help & support" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hjälp & support"
+          }
+        }
+      }
     },
     "Hide sensitive URL" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Göm känslig URL"
+          }
+        }
+      }
     },
     "Icons" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ikoner"
+          }
+        }
+      }
     },
     "Icons in store" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ikoner i shoppen"
+          }
+        }
+      }
     },
     "Icons not yet in store" : {
 
     },
     "Import and export settings" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importera och exportera inställningar"
+          }
+        }
+      }
     },
     "Import from clipboard" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importera från utklipp"
+          }
+        }
+      }
     },
     "Interval" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Intervall"
+          }
+        }
+      }
     },
     "Kick" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kick"
+          }
+        }
+      }
     },
     "Licenses" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Licenser"
+          }
+        }
+      }
     },
     "Local overlays" : {
 
@@ -295,7 +637,14 @@
 
     },
     "Log" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Logg"
+          }
+        }
+      }
     },
     "Many thanks from the Moblin developers!" : {
 
@@ -307,19 +656,47 @@
 
     },
     "Message" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meddelande"
+          }
+        }
+      }
     },
     "Mic" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mikrofon"
+          }
+        }
+      }
     },
     "moblin:// deep links can be used to import some settings, often using QR codes or a browser. See https://github.com/eerimoq/moblin for details." : {
 
     },
     "Muted" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ljud av"
+          }
+        }
+      }
     },
     "My icons" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mina ikoner"
+          }
+        }
+      }
     },
     "my_stream_key" : {
 
@@ -343,19 +720,47 @@
 
     },
     "Packets in flight" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utestående paket"
+          }
+        }
+      }
     },
     "Parameters" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Parametrar"
+          }
+        }
+      }
     },
     "Preset" : {
 
     },
     "Red" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Röd"
+          }
+        }
+      }
     },
     "Reset settings" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Återställ inställningarna"
+          }
+        }
+      }
     },
     "Røde audio level" : {
 
@@ -364,25 +769,67 @@
 
     },
     "Scene" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scen"
+          }
+        }
+      }
     },
     "Scenes" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scener"
+          }
+        }
+      }
     },
     "Select image" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Välj bild"
+          }
+        }
+      }
     },
     "Settings" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inställningar"
+          }
+        }
+      }
     },
     "Settings that would stop the stream are disabled when live." : {
 
     },
     "Sharpness" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skärpa"
+          }
+        }
+      }
     },
     "Show sensitive URL" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visa känslig URL"
+          }
+        }
+      }
     },
     "SRT Live Server (SLS)" : {
 
@@ -400,13 +847,27 @@
 
     },
     "Stream" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ström"
+          }
+        }
+      }
     },
     "stream_url" : {
 
     },
     "Streams" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Strömmar"
+          }
+        }
+      }
     },
     "Support Moblin developers by buying icons." : {
 
@@ -445,31 +906,94 @@
 
     },
     "Timestamp" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tidsstämpel"
+          }
+        }
+      }
     },
     "Top left" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uppe till vänster"
+          }
+        }
+      }
     },
     "Top right" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uppe till höger"
+          }
+        }
+      }
     },
     "Twitch" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Twitch"
+          }
+        }
+      }
     },
     "Type" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Typ"
+          }
+        }
+      }
     },
     "Unknown" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Okänd"
+          }
+        }
+      }
     },
     "Unused" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oanvänd"
+          }
+        }
+      }
     },
     "Uptime" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Upptid"
+          }
+        }
+      }
     },
     "URL" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL"
+          }
+        }
+      }
     },
     "Use first channel for audio level. To debug Røde mic Unknown level." : {
 
@@ -478,7 +1002,14 @@
 
     },
     "Username" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Användare"
+          }
+        }
+      }
     },
     "Very experimental and very secret!" : {
 
