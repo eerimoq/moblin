@@ -129,6 +129,8 @@ ToDo
 Ideas/plan
 ==========
 
+- App localization.
+
 - Show two cameras at the same time.
 
 - Use lossy video format? More effecient?
