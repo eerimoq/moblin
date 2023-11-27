@@ -1,0 +1,533 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "" : {
+
+    },
+    " " : {
+
+    },
+    "-" : {
+
+    },
+    ": " : {
+
+    },
+    "/" : {
+
+    },
+    "/app/" : {
+
+    },
+    "%@ " : {
+
+    },
+    "%lld %%" : {
+
+    },
+    "%lld dB" : {
+
+    },
+    "+" : {
+
+    },
+    "A large number. Use developer tools (F11) in your browser. Look at websocket messages." : {
+
+    },
+    "About" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Om"
+          }
+        }
+      }
+    },
+    "Adaptive bitrate" : {
+
+    },
+    "Adaptive bitrate is experimental." : {
+
+    },
+    "Add" : {
+
+    },
+    "Allowed range is %@ - %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Allowed range is %1$@ - %2$@."
+          }
+        }
+      }
+    },
+    "Amplitude" : {
+
+    },
+    "An incomplete list of people who has contributed ideas, programming,\ntesting, promotion and more." : {
+
+    },
+    "Animated emotes" : {
+
+    },
+    "Animated emotes are fairly CPU intensive. Disable for less power usage." : {
+
+    },
+    "Are you sure?" : {
+
+    },
+    "Audio" : {
+
+    },
+    "Back camera presets" : {
+
+    },
+    "Background" : {
+
+    },
+    "Battery percentage" : {
+
+    },
+    "BELABOX cloud SRT" : {
+
+    },
+    "BELABOX cloud SRTLA" : {
+
+    },
+    "Big packets" : {
+
+    },
+    "Big packets means 7 MPEG-TS packets per SRT packet, 6 otherwise. Sometimes Android hotspots does not work with big packets." : {
+
+    },
+    "Bitrate" : {
+
+    },
+    "Bitrate presets" : {
+
+    },
+    "Blue" : {
+
+    },
+    "Bold message" : {
+
+    },
+    "Bold username" : {
+
+    },
+    "Border" : {
+
+    },
+    "Border is fairly CPU intensive. Disable for less power usage." : {
+
+    },
+    "Bottom right" : {
+
+    },
+    "Browser" : {
+
+    },
+    "Button" : {
+
+    },
+    "Button name" : {
+
+    },
+    "Buttons" : {
+
+    },
+    "Buttons appear from bottom to top." : {
+
+    },
+    "Camera" : {
+
+    },
+    "Camera switching" : {
+
+    },
+    "Cancel" : {
+
+    },
+    "Chat" : {
+
+    },
+    "Close" : {
+
+    },
+    "Colors" : {
+
+    },
+    "Cosmetics" : {
+
+    },
+    "Create" : {
+
+    },
+    "Debug" : {
+
+    },
+    "Designed by" : {
+
+    },
+    "Discord" : {
+
+    },
+    "Displayed in main view and as app icon." : {
+
+    },
+    "Do not share your settings with anyone as they may contain sensitive data (stream keys, etc.)!" : {
+
+    },
+    "Do not share your URL with anyone or they can hijack your channel!" : {
+
+    },
+    "End" : {
+
+    },
+    "Example:  rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef" : {
+
+    },
+    "Example:  rtmp://foobar.org:3321/5678" : {
+
+    },
+    "Example:  rtmps://fa723fc1b171.global-contribute.live-video.net/sk_us-west-123hu43ui34hrkjh" : {
+
+    },
+    "Example:  srt://120.12.32.12:4000?streamid=publish/live/feed" : {
+
+    },
+    "Example:  srt://134.20.342.12:5000" : {
+
+    },
+    "Example:  srtla://foobar.org:4432" : {
+
+    },
+    "Example: rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3" : {
+
+    },
+    "Example: rtmps://live-api-s.facebook.com:443/rtmp/FB-11152522122511115-0-BctNCp9jzzz-AAA" : {
+
+    },
+    "Example: srt://uk.srt.belabox.net:4000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3" : {
+
+    },
+    "Example: srtla://uk.srt.belabox.net:5000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3" : {
+
+    },
+    "Export to clipboard" : {
+
+    },
+    "Exposure" : {
+
+    },
+    "Facebook" : {
+
+    },
+    "Feel free to join Moblin Discord server or write an issue on Github if you need help or want to give feedback." : {
+
+    },
+    "Find your chatroom id at https://kick.com/api/v1/channels/my_user. Replace my_user with you user." : {
+
+    },
+    "Font size" : {
+
+    },
+    "Front camera presets" : {
+
+    },
+    "General" : {
+
+    },
+    "Generator" : {
+
+    },
+    "Geometry" : {
+
+    },
+    "Github" : {
+
+    },
+    "Go live" : {
+
+    },
+    "Green" : {
+
+    },
+    "Height" : {
+
+    },
+    "Help & support" : {
+
+    },
+    "Hide sensitive URL" : {
+
+    },
+    "Icons" : {
+
+    },
+    "Icons in store" : {
+
+    },
+    "Icons not yet in store" : {
+
+    },
+    "Import and export settings" : {
+
+    },
+    "Import from clipboard" : {
+
+    },
+    "Interval" : {
+
+    },
+    "Kick" : {
+
+    },
+    "Licenses" : {
+
+    },
+    "Local overlays" : {
+
+    },
+    "Local overlays do not appear on stream." : {
+
+    },
+    "Log" : {
+
+    },
+    "Many thanks from the Moblin developers!" : {
+
+    },
+    "Maximum key frame interval in seconds. Set to 0 for automatic." : {
+
+    },
+    "Maximum message age in seconds." : {
+
+    },
+    "Message" : {
+
+    },
+    "Mic" : {
+
+    },
+    "moblin:// deep links can be used to import some settings, often using QR codes or a browser. See https://github.com/eerimoq/moblin for details." : {
+
+    },
+    "Muted" : {
+
+    },
+    "My icons" : {
+
+    },
+    "my_stream_key" : {
+
+    },
+    "nearby_ingest_endpoint" : {
+
+    },
+    "Noise level" : {
+
+    },
+    "OBS Media Source (SRT)" : {
+
+    },
+    "Only one stream can be used at a time." : {
+
+    },
+    "Only unused buttons can be deleted." : {
+
+    },
+    "Only unused widgets can be deleted." : {
+
+    },
+    "Packets in flight" : {
+
+    },
+    "Parameters" : {
+
+    },
+    "Preset" : {
+
+    },
+    "Red" : {
+
+    },
+    "Reset settings" : {
+
+    },
+    "Røde audio level" : {
+
+    },
+    "RTMP server" : {
+
+    },
+    "Scene" : {
+
+    },
+    "Scenes" : {
+
+    },
+    "Select image" : {
+
+    },
+    "Settings" : {
+
+    },
+    "Settings that would stop the stream are disabled when live." : {
+
+    },
+    "Sharpness" : {
+
+    },
+    "Show sensitive URL" : {
+
+    },
+    "SRT Live Server (SLS)" : {
+
+    },
+    "SRT oheadbw" : {
+
+    },
+    "SRT overlay" : {
+
+    },
+    "SRT(LA)" : {
+
+    },
+    "SRTLA server" : {
+
+    },
+    "Stream" : {
+
+    },
+    "stream_url" : {
+
+    },
+    "Streams" : {
+
+    },
+    "Support Moblin developers by buying icons." : {
+
+    },
+    "Tap screen to focus" : {
+
+    },
+    "Template: rtmp://" : {
+
+    },
+    "Template: rtmp://my_public_ip:my_public_port/my_stream_key" : {
+
+    },
+    "Template: srt://my_public_ip:my_public_port" : {
+
+    },
+    "Template: srt://my_public_ip:my_public_port?streamid=publish/live/my_key" : {
+
+    },
+    "Template: srtla://my_public_ip:my_public_port" : {
+
+    },
+    "The browser widget is experimental does not work very well yet." : {
+
+    },
+    "The log is empty." : {
+
+    },
+    "The name of your channel." : {
+
+    },
+    "The Picture in Picture layout is experimental and does not work." : {
+
+    },
+    "The zoom (in X) to set when switching to given camera, if enabled." : {
+
+    },
+    "Timestamp" : {
+
+    },
+    "Top left" : {
+
+    },
+    "Top right" : {
+
+    },
+    "Twitch" : {
+
+    },
+    "Type" : {
+
+    },
+    "Unknown" : {
+
+    },
+    "Unused" : {
+
+    },
+    "Uptime" : {
+
+    },
+    "URL" : {
+
+    },
+    "Use first channel for audio level. To debug Røde mic Unknown level." : {
+
+    },
+    "Use generated audio as source instead of mic." : {
+
+    },
+    "Username" : {
+
+    },
+    "Very experimental and very secret!" : {
+
+    },
+    "Video" : {
+
+    },
+    "Video effect" : {
+
+    },
+    "Video stabilization sometimes gives audio-video sync issues." : {
+
+    },
+    "Viewers" : {
+
+    },
+    "Widget" : {
+
+    },
+    "Widget name" : {
+
+    },
+    "Widgets" : {
+
+    },
+    "Widgets are stacked from back to front." : {
+
+    },
+    "Width" : {
+
+    },
+    "You already bought everything!" : {
+
+    },
+    "YouTube" : {
+
+    },
+    "Zero or more milliseconds. Any latency parameter given in the URL overrides this value." : {
+
+    },
+    "Zoom" : {
+
+    },
+    "Zoom preset" : {
+
+    },
+    "Zoom presets" : {
+
+    }
+  },
+  "version" : "1.0"
+}
