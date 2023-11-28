@@ -28,6 +28,12 @@
             "state" : "translated",
             "value" : "-"
           }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "-"
+          }
         }
       }
     },
@@ -38,12 +44,24 @@
             "state" : "translated",
             "value" : ": "
           }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ":"
+          }
         }
       }
     },
     "/" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "/"
+          }
+        },
+        "sv" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "/"
@@ -58,12 +76,24 @@
             "state" : "translated",
             "value" : "/app/"
           }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "/app/"
+          }
         }
       }
     },
     "%@ " : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@"
+          }
+        },
+        "sv" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@"
@@ -78,6 +108,12 @@
             "state" : "new",
             "value" : "%1$@ (%2$@ total)"
           }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ (%2$@ totalt)"
+          }
         }
       }
     },
@@ -88,12 +124,24 @@
             "state" : "new",
             "value" : "%1$@ (%2$@)"
           }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ (%2$@)"
+          }
         }
       }
     },
     "%lld %%" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld %%"
+          }
+        },
+        "sv" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld %%"
@@ -108,12 +156,24 @@
             "state" : "translated",
             "value" : "%lld db"
           }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld dB"
+          }
         }
       }
     },
     "+" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+"
+          }
+        },
+        "sv" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "+"
@@ -250,7 +310,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "En ofullständig lista av människor som har designat Moblin."
+            "value" : "En ofullständig lista med människor som har designat Moblin."
           }
         }
       }
@@ -320,7 +380,14 @@
       }
     },
     "Audio level" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ljudnivå"
+          }
+        }
+      }
     },
     "Back camera" : {
       "localizations" : {
@@ -737,10 +804,24 @@
       }
     },
     "Chat is hidden" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chatten är gömd"
+          }
+        }
+      }
     },
     "Chat is paused" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chatten är pausad"
+          }
+        }
+      }
     },
     "Chatroom id" : {
       "localizations" : {
@@ -859,7 +940,14 @@
       }
     },
     "Dimensions" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dimensioner"
+          }
+        }
+      }
     },
     "Discord" : {
       "localizations" : {
@@ -1643,7 +1731,14 @@
       }
     },
     "Maximum age" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maximal ålder"
+          }
+        }
+      }
     },
     "Maximum key frame interval in seconds. Set to 0 for automatic." : {
       "localizations" : {
@@ -1826,7 +1921,14 @@
       }
     },
     "Not configured" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inte konfigurerat"
+          }
+        }
+      }
     },
     "OBS Media Source (SRT)" : {
       "localizations" : {
@@ -1845,10 +1947,24 @@
       }
     },
     "Off" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Av"
+          }
+        }
+      }
     },
     "On" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "På"
+          }
+        }
+      }
     },
     "Only unused buttons can be deleted." : {
       "localizations" : {
@@ -2637,7 +2753,14 @@
       }
     },
     "Version" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version"
+          }
+        }
+      }
     },
     "Very experimental and very secret!" : {
       "localizations" : {
@@ -2860,6 +2983,12 @@
     "Zoom" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoom"
+          }
+        },
+        "sv" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zoom"
