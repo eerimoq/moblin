@@ -191,10 +191,7 @@ class RemoteConnection {
     }
 
     private func receivePacket() {
-        guard let connection else {
-            return
-        }
-        connection.receiveMessage { packet, _, _, error in
+        connection?.receiveMessage { packet, _, _, error in
             if let packet, !packet.isEmpty {
                 self.handlePacket(packet: packet)
             }
@@ -230,20 +227,7 @@ class RemoteConnection {
 
     private func sendPacketInternal(packet: Data) {
         latestSentDate = Date()
-        guard let connection else {
-            logger
-                .warning("srtla: \(typeString): Dropping packet. No connection.")
-            return
-        }
-        connection.send(content: packet, completion: .contentProcessed { error in
-            if let error {
-                logger
-                    .error(
-                        "srtla: \(self.typeString): Remote send error: \(error)"
-                    )
-                // self.reconnect(reason: "Failed to send packet")
-            }
-        })
+        connection?.send(content: packet, completion: .contentProcessed { error in })
     }
 
     func sendSrtPacket(packet: Data) {
