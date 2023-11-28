@@ -1204,6 +1204,12 @@
     },
     "Find your chatroom id at https://kick.com/api/v1/channels/my_user. Replace my_user with your user." : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Encuentra tu chatroom id en https://kick.com/api/v1/channels/my_user. Remplaza my_user por tu usuario."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
