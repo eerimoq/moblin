@@ -1576,7 +1576,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lokala överlägg"
+            "value" : "Lokala overlays"
           }
         }
       }
@@ -1592,7 +1592,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lokala överlägg syns inte i strömmen."
+            "value" : "Lokala overlays syns inte i strömmen."
           }
         }
       }
@@ -2176,7 +2176,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "SRT överlägg"
+            "value" : "SRT overlay"
           }
         }
       }
