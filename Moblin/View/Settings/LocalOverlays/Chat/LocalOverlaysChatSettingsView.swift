@@ -184,7 +184,7 @@ struct LocalOverlaysChatSettingsView: View {
                     Text("Animated emotes")
                 }
                 NavigationLink(destination: TextEditView(
-                    title: "Maximum age",
+                    title: String(localized: "Maximum age"),
                     value: String(model.database.chat.maximumAge!),
                     onSubmit: submitMaximumAge,
                     footer: Text("Maximum message age in seconds.")
@@ -196,7 +196,7 @@ struct LocalOverlaysChatSettingsView: View {
                         model.store()
                     })) {
                         TextItemView(
-                            name: "Maximum age",
+                            name: String(localized: "Maximum age"),
                             value: String(model.database.chat.maximumAge!)
                         )
                     }

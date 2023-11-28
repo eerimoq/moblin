@@ -38,6 +38,7 @@
 		0330F2B52AFADD18001262C3 /* StreamYouTubeSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0330F2B42AFADD18001262C3 /* StreamYouTubeSettingsView.swift */; };
 		03403DF62AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */; };
 		0344AFE72B00023E00C177DB /* AboutDesignedBySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0344AFE62B00023E00C177DB /* AboutDesignedBySettingsView.swift */; };
+		034838162B166AD70090CF11 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 034838142B166AD70090CF11 /* InfoPlist.strings */; };
 		035D37282AB0EBB500045B92 /* IconAndTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37272AB0EBB500045B92 /* IconAndTextView.swift */; };
 		035D372C2AB103E600045B92 /* SRTHaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 035D372B2AB103E600045B92 /* SRTHaishinKit */; };
 		035D37372AB230E700045B92 /* StreamVideoBitrateSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37362AB230E700045B92 /* StreamVideoBitrateSettingsView.swift */; };
@@ -156,6 +157,7 @@
 		0330F2B42AFADD18001262C3 /* StreamYouTubeSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamYouTubeSettingsView.swift; sourceTree = "<group>"; };
 		03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBrowserSettingsView.swift; sourceTree = "<group>"; };
 		0344AFE62B00023E00C177DB /* AboutDesignedBySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutDesignedBySettingsView.swift; sourceTree = "<group>"; };
+		034838152B166AD70090CF11 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		035D37272AB0EBB500045B92 /* IconAndTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconAndTextView.swift; sourceTree = "<group>"; };
 		035D37362AB230E700045B92 /* StreamVideoBitrateSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoBitrateSettingsView.swift; sourceTree = "<group>"; };
 		035E775B2ACC969D00738DCE /* ZoomPresetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomPresetSettingsView.swift; sourceTree = "<group>"; };
@@ -427,6 +429,7 @@
 			isa = PBXGroup;
 			children = (
 				032BC5B22AD8E18000DEC883 /* Info.plist */,
+				034838142B166AD70090CF11 /* InfoPlist.strings */,
 				03BC115B2AE4BD6200C38FC4 /* Emotes */,
 				036BE2CD2ABD4C960048F9C5 /* Kick */,
 				0379BB712AA4BFA500B718B6 /* Twitch */,
@@ -837,6 +840,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				035E9E3E2A9A02D7009D4F5A /* Preview Assets.xcassets in Resources */,
+				034838162B166AD70090CF11 /* InfoPlist.strings in Resources */,
 				035E9E3B2A9A02D7009D4F5A /* Assets.xcassets in Resources */,
 				03F853B32B151FA700719B89 /* Localizable.xcstrings in Resources */,
 			);
@@ -963,6 +967,17 @@
 			productRef = 032815D62AC855B1001F8A85 /* PrepareLicenseList */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		034838142B166AD70090CF11 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				034838152B166AD70090CF11 /* es */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		035E9E3F2A9A02D7009D4F5A /* Debug */ = {

@@ -79,7 +79,7 @@ struct StreamOverlayView: View {
                         }
                     }
                 } else {
-                    ChatWarning(message: "Chat is hidden")
+                    ChatWarning(message: String(localized: "Chat is hidden"))
                 }
             }
             HStack {

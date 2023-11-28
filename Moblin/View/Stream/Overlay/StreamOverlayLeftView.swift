@@ -32,7 +32,7 @@ struct LeftOverlayView: View {
 
     func viewersText() -> String {
         if !model.isViewersConfigured() {
-            return "Not configured"
+            return String(localized: "Not configured")
         } else if model.isTwitchPubSubConnected() {
             return model.numberOfViewers
         } else {
@@ -52,10 +52,10 @@ struct LeftOverlayView: View {
 
     func messageText() -> String {
         if !model.isChatConfigured() {
-            return "Not configured"
+            return String(localized: "Not configured")
         } else if model.isChatConnected() {
             return String(
-                format: "%@ (%@ total)",
+                format: String(localized: "%@ (%@ total)"),
                 model.chatPostsRate,
                 countFormatter.format(model.chatPostsTotal)
             )

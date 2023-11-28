@@ -68,7 +68,7 @@ struct LocalOverlaysSettingsView: View {
                 }))
             }
             Section("Top right") {
-                NavigationLink(destination: InlinePickerView(title: "Audio level",
+                NavigationLink(destination: InlinePickerView(title: String(localized: "Audio level"),
                                                              onChange: onAudioLevelChange,
                                                              items: audioLevels,
                                                              selected: audioLevel()))
@@ -79,7 +79,7 @@ struct LocalOverlaysSettingsView: View {
                         show.audioLevel = value
                         model.store()
                     })) {
-                        TextItemView(name: "Audio level", value: audioLevel())
+                        TextItemView(name: String(localized: "Audio level"), value: audioLevel())
                     }
                 }
                 Toggle("Bitrate", isOn: Binding(get: {

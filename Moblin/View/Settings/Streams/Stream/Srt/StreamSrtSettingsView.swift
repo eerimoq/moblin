@@ -19,7 +19,7 @@ struct StreamSrtSettingsView: View {
         Form {
             Section {
                 NavigationLink(destination: TextEditView(
-                    title: "Latency",
+                    title: String(localized: "Latency"),
                     value: String(stream.srt.latency),
                     onSubmit: submitLatency,
                     footer: Text(
@@ -29,7 +29,7 @@ struct StreamSrtSettingsView: View {
                         """
                     )
                 )) {
-                    TextItemView(name: "Latency", value: String(stream.srt.latency))
+                    TextItemView(name: String(localized: "Latency"), value: String(stream.srt.latency))
                 }
                 .disabled(stream.enabled && model.isLive)
                 Toggle("Big packets", isOn: Binding(get: {
