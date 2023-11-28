@@ -15,7 +15,7 @@ struct StreamSettingsView: View {
                 name: stream.name,
                 onSubmit: submitName
             )) {
-                TextItemView(name: "Name", value: stream.name)
+                TextItemView(name: String(localized: "Name"), value: stream.name)
             }
             NavigationLink(destination: StreamUrlSettingsView(
                 stream: stream,

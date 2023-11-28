@@ -19,7 +19,7 @@ struct DebugSettingsView: View {
                 NavigationLink(destination: DebugLogSettingsView()) {
                     Text("Log")
                 }
-                NavigationLink(destination: InlinePickerView(title: "Log Level",
+                NavigationLink(destination: InlinePickerView(title: String(localized: "Log level"),
                                                              onChange: onLogLevelChange,
                                                              items: logLevels,
                                                              selected: model.database
@@ -27,7 +27,7 @@ struct DebugSettingsView: View {
                                                                  .rawValue))
                 {
                     TextItemView(
-                        name: "Log level",
+                        name: String(localized: "Log level"),
                         value: model.database.debug!.logLevel.rawValue
                     )
                 }

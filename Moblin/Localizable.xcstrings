@@ -143,6 +143,16 @@
         }
       }
     },
+    "Back camera" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bakre kamera"
+          }
+        }
+      }
+    },
     "Back camera presets" : {
 
     },
@@ -305,7 +315,14 @@
       }
     },
     "Camera switching" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Byta kamera"
+          }
+        }
+      }
     },
     "Cancel" : {
       "localizations" : {
@@ -398,7 +415,14 @@
       }
     },
     "Displayed in main view and as app icon." : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visas i huvudvyn och som appikon."
+          }
+        }
+      }
     },
     "Do not share your settings with anyone as they may contain sensitive data (stream keys, etc.)!" : {
 
@@ -411,7 +435,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Slut"
+            "value" : "Sluta"
           }
         }
       }
@@ -450,13 +474,27 @@
 
     },
     "Exposure" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exponering"
+          }
+        }
+      }
     },
     "Facebook" : {
 
     },
     "Feel free to join Moblin Discord server or write an issue on Github if you need help or want to give feedback." : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Joina gärna Moblins Discord server eller skriv ett ärende på Github om du behöver hjälp eller vill ge feedback."
+          }
+        }
+      }
     },
     "Find your chatroom id at https://kick.com/api/v1/channels/my_user. Replace my_user with you user." : {
 
@@ -471,11 +509,28 @@
         }
       }
     },
+    "Front camera" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Främre kamera"
+          }
+        }
+      }
+    },
     "Front camera presets" : {
 
     },
     "General" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allmänt"
+          }
+        }
+      }
     },
     "Generator" : {
       "localizations" : {
@@ -508,11 +563,22 @@
       }
     },
     "Go live" : {
+      "extractionState" : "stale",
       "localizations" : {
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gå live"
+          }
+        }
+      }
+    },
+    "Go Live" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gå Live"
           }
         }
       }
@@ -578,7 +644,14 @@
       }
     },
     "Icons not yet in store" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ikoner snart i shoppen"
+          }
+        }
+      }
     },
     "Import and export settings" : {
       "localizations" : {
@@ -631,10 +704,24 @@
       }
     },
     "Local overlays" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lokala överdrag"
+          }
+        }
+      }
     },
     "Local overlays do not appear on stream." : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lokala överdrag syns inte i strömmen."
+          }
+        }
+      }
     },
     "Log" : {
       "localizations" : {
@@ -642,6 +729,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Logg"
+          }
+        }
+      }
+    },
+    "Log level" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loggningsnivå"
           }
         }
       }
@@ -701,11 +798,28 @@
     "my_stream_key" : {
 
     },
+    "Name" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Namn"
+          }
+        }
+      }
+    },
     "nearby_ingest_endpoint" : {
 
     },
     "Noise level" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brusnivå"
+          }
+        }
+      }
     },
     "OBS Media Source (SRT)" : {
 
@@ -894,10 +1008,24 @@
 
     },
     "The log is empty." : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loggen är tom."
+          }
+        }
+      }
     },
     "The name of your channel." : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Din kanals namn."
+          }
+        }
+      }
     },
     "The Picture in Picture layout is experimental and does not work." : {
 
@@ -1015,16 +1143,54 @@
 
     },
     "Video" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Video"
+          }
+        }
+      }
     },
     "Video effect" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Videoeffekt"
+          }
+        }
+      }
+    },
+    "Video stabilization" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bildstabilisering"
+          }
+        }
+      }
     },
     "Video stabilization sometimes gives audio-video sync issues." : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bildstabilisering kan göra att ljud och bild inte blir i synk."
+          }
+        }
+      }
     },
     "Viewers" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tittare"
+          }
+        }
+      }
     },
     "Widget" : {
 
@@ -1039,7 +1205,14 @@
 
     },
     "Width" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bredd"
+          }
+        }
+      }
     },
     "You already bought everything!" : {
       "localizations" : {

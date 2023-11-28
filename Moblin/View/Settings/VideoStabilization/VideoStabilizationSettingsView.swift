@@ -12,14 +12,14 @@ struct VideoStabilizationSettingsView: View {
 
     var body: some View {
         NavigationLink(destination: InlinePickerView(
-            title: "Video stabilization",
+            title: String(localized: "Video stabilization"),
             onChange: onChange,
             footer: Text("Video stabilization sometimes gives audio-video sync issues."),
             items: videoStabilizationModes,
             selected: model.database.videoStabilizationMode.rawValue
         )) {
             TextItemView(
-                name: "Video stabilization",
+                name: String(localized: "Video stabilization"),
                 value: model.database.videoStabilizationMode.rawValue
             )
         }

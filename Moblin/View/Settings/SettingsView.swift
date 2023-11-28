@@ -103,20 +103,20 @@ struct SettingsView: View {
                     Text("Local overlays")
                 }
                 NavigationLink(destination: InlinePickerView(
-                    title: "Back camera",
+                    title: String(localized: "Back camera"),
                     onChange: onChangeBackCamera,
                     items: model.backCameras,
                     selected: model.database.backCameraType!.rawValue
                 )) {
-                    TextItemView(name: "Back camera", value: model.database.backCameraType!.rawValue)
+                    TextItemView(name: String(localized: "Back camera"), value: model.database.backCameraType!.rawValue)
                 }
                 NavigationLink(destination: InlinePickerView(
-                    title: "Front camera",
+                    title: String(localized: "Front camera"),
                     onChange: onChangeFrontCamera,
                     items: model.frontCameras,
                     selected: model.database.frontCameraType!.rawValue
                 )) {
-                    TextItemView(name: "Front camera", value: model.database.frontCameraType!.rawValue)
+                    TextItemView(name: String(localized: "Front camera"), value: model.database.frontCameraType!.rawValue)
                 }
                 NavigationLink(destination: ZoomSettingsView()) {
                     Text("Zoom")

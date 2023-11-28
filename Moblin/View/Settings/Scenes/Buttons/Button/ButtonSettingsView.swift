@@ -40,7 +40,7 @@ struct ButtonSettingsView: View {
                 name: button.name,
                 onSubmit: submitName
             )) {
-                TextItemView(name: "Name", value: button.name)
+                TextItemView(name: String(localized: "Name"), value: button.name)
             }
             Section("Type") {
                 Picker("", selection: $selection) {

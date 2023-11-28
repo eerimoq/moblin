@@ -39,7 +39,7 @@ struct ZoomPresetSettingsView: View {
                 name: preset.name,
                 onSubmit: submitName
             )) {
-                TextItemView(name: "Name", value: preset.name)
+                TextItemView(name: String(localized: "Name"), value: preset.name)
             }
             NavigationLink(destination: TextEditView(
                 title: "X",

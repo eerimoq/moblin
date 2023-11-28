@@ -23,7 +23,7 @@ struct StreamButton: View {
             Button(action: {
                 isPresentingStopConfirm = true
             }, label: {
-                StreamButtonText(text: "End")
+                StreamButtonText(text: String(localized: "End"))
                     .overlay(
                         RoundedRectangle(cornerRadius: 10)
                             .stroke(.white)
@@ -38,10 +38,10 @@ struct StreamButton: View {
             Button(action: {
                 isPresentingGoLiveConfirm = true
             }, label: {
-                StreamButtonText(text: "Go Live")
+                StreamButtonText(text: String(localized: "Go Live"))
             })
             .confirmationDialog("", isPresented: $isPresentingGoLiveConfirm) {
-                Button("Go live") {
+                Button("Go Live") {
                     model.startStream()
                 }
             }

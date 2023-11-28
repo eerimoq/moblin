@@ -15,7 +15,7 @@ struct WidgetSettingsView: View {
                 name: widget.name,
                 onSubmit: submitName
             )) {
-                TextItemView(name: "Name", value: widget.name)
+                TextItemView(name: String(localized: "Name"), value: widget.name)
             }
             Section {
                 Picker("", selection: Binding(get: {

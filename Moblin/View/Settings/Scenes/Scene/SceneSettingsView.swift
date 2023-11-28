@@ -85,7 +85,7 @@ struct SceneSettingsView: View {
                 name: scene.name,
                 onSubmit: submitName
             )) {
-                TextItemView(name: "Name", value: scene.name)
+                TextItemView(name: String(localized: "Name"), value: scene.name)
             }
             Section {
                 NavigationLink(destination: InlinePickerView(

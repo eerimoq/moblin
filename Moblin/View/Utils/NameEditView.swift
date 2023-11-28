@@ -11,6 +11,6 @@ struct NameEditView: View {
     }
 
     var body: some View {
-        TextEditView(title: "Name", value: name, onSubmit: handleSubmit)
+        TextEditView(title: String(localized: "Name"), value: name, onSubmit: handleSubmit)
     }
 }
