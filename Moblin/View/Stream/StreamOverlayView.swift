@@ -75,7 +75,7 @@ struct StreamOverlayView: View {
                                 .allowsHitTesting(model.chatPaused)
                         }
                         if model.chatPaused {
-                            ChatWarning(message: "Chat is paused")
+                            ChatWarning(message: String(localized: "Chat is paused"))
                         }
                     }
                 } else {

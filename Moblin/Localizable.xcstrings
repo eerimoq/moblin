@@ -739,6 +739,9 @@
     "Chat is hidden" : {
 
     },
+    "Chat is paused" : {
+
+    },
     "Chatroom id" : {
       "localizations" : {
         "sv" : {
@@ -2632,6 +2635,9 @@
           }
         }
       }
+    },
+    "Version" : {
+
     },
     "Very experimental and very secret!" : {
       "localizations" : {
