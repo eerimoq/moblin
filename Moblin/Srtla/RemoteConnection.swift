@@ -32,7 +32,6 @@ class RemoteConnection {
     private var type: NWInterface.InterfaceType?
     private var connection: NWConnection? {
         didSet {
-            oldValue?.viabilityUpdateHandler = nil
             oldValue?.stateUpdateHandler = nil
             oldValue?.forceCancel()
         }
@@ -117,14 +116,17 @@ class RemoteConnection {
             using: params
         )
         connection!.stateUpdateHandler = handleStateUpdate(to:)
-        connection!.viabilityUpdateHandler = handleViabilityChange(to:)
         connection!.start(queue: srtlaDispatchQueue)
         receivePacket()
         state = .socketConnecting
     }
 
     func stop(reason: String) {
-        logger.info("srtla: \(typeString): Stop with reason: \(reason)")
+        let sent = sizeFormatter.string(fromByteCount: Int64(totalDataSentByteCount))
+        logger
+            .info(
+                "srtla: \(typeString): Stop with reason: \(reason) (\(sent) sent)"
+            )
         connection?.cancel()
         connection = nil
         cancelAllTimers()
@@ -150,10 +152,11 @@ class RemoteConnection {
         connectTimer = nil
     }
 
-    private func handleViabilityChange(to viability: Bool) {
-        logger.info("srtla: \(typeString): Viability change to \(viability)")
-        cancelAllTimers()
-        if viability {
+    private func handleStateUpdate(to state: NWConnection.State) {
+        logger.info("srtla: \(typeString): State change to \(state)")
+        switch state {
+        case .ready:
+            cancelAllTimers()
             connectTimer = DispatchSource.makeTimerSource(queue: srtlaDispatchQueue)
             connectTimer!.schedule(deadline: .now() + 5)
             connectTimer!.setEventHandler {
@@ -166,23 +169,21 @@ class RemoteConnection {
             totalDataSentByteCount = 0
             windowSize = windowDefault * windowMultiply
             if type == nil {
-                state = .registered
+                self.state = .registered
                 connectTimer?.cancel()
                 connectTimer = nil
-            } else if state == .shouldSendRegisterRequest || hasGroupId {
+            } else if self.state == .shouldSendRegisterRequest || hasGroupId {
                 sendSrtlaReg2()
             } else {
-                state = .shouldSendRegisterRequest
+                self.state = .shouldSendRegisterRequest
             }
             onSocketConnected?()
             onSocketConnected = nil
-        } else {
-            reconnect(reason: "Viability false")
+        case .failed:
+            reconnect(reason: "Connection failed")
+        default:
+            break
         }
-    }
-
-    private func handleStateUpdate(to state: NWConnection.State) {
-        logger.info("srtla: \(typeString): State change to \(state)")
     }
 
     private func reconnect(reason: String) {
@@ -227,7 +228,7 @@ class RemoteConnection {
 
     private func sendPacketInternal(packet: Data) {
         latestSentDate = Date()
-        connection?.send(content: packet, completion: .contentProcessed { error in })
+        connection?.send(content: packet, completion: .contentProcessed { _ in })
     }
 
     func sendSrtPacket(packet: Data) {
