@@ -24,22 +24,22 @@ struct StreamTwitchSettingsView: View {
         Form {
             Section {
                 NavigationLink(destination: TextEditView(
-                    title: "Channel name",
+                    title: String(localized: "Channel name"),
                     value: stream.twitchChannelName,
                     onSubmit: submitChannelName
                 )) {
-                    TextItemView(name: "Channel name", value: stream.twitchChannelName)
+                    TextItemView(name: String(localized: "Channel name"), value: stream.twitchChannelName)
                 }
             } footer: {
                 Text("The name of your channel.")
             }
             Section {
                 NavigationLink(destination: TextEditView(
-                    title: "Channel id",
+                    title: String(localized: "Channel id"),
                     value: stream.twitchChannelId,
                     onSubmit: submitChannelId
                 )) {
-                    TextItemView(name: "Channel id", value: stream.twitchChannelId)
+                    TextItemView(name: String(localized: "Channel id"), value: stream.twitchChannelId)
                 }
             } footer: {
                 Text(

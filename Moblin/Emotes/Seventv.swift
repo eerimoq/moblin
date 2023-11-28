@@ -36,7 +36,7 @@ func fetchSeventvEmotes(platform: EmotesPlatform,
     do {
         emotes = try emotes.merging(await fetchGlobalEmotes()) { $1 }
     } catch {
-        message = "Failed to get 7TV global emotes"
+        message = String(localized: "Failed to get 7TV global emotes")
     }
     do {
         emotes = try emotes.merging(await fetchChannelEmotes(
@@ -44,7 +44,7 @@ func fetchSeventvEmotes(platform: EmotesPlatform,
             channelId: channelId
         )) { $1 }
     } catch {
-        message = "Failed to get 7TV channel emotes"
+        message = String(localized: "Failed to get 7TV channel emotes")
     }
     return (emotes, message)
 }

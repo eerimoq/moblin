@@ -42,11 +42,9 @@ struct StreamsSettingsView: View {
                     model.store()
                 })
                 CreateButtonView(action: {
-                    database.streams.append(SettingsStream(name: "My stream"))
+                    database.streams.append(SettingsStream(name: String(localized: "My stream")))
                     model.store()
                 })
-            } footer: {
-                Text("Only one stream can be used at a time.")
             }
         }
         .navigationTitle("Streams")

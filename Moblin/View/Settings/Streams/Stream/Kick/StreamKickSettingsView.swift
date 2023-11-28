@@ -16,15 +16,15 @@ struct StreamKickSettingsView: View {
         Form {
             Section {
                 NavigationLink(destination: TextEditView(
-                    title: "Chatroom id",
+                    title: String(localized: "Chatroom id"),
                     value: stream.kickChatroomId,
                     onSubmit: submitChannelId
                 )) {
-                    TextItemView(name: "Chatroom id", value: stream.kickChatroomId)
+                    TextItemView(name: String(localized: "Chatroom id"), value: stream.kickChatroomId)
                 }
             } footer: {
                 Text(
-                    "Find your chatroom id at https://kick.com/api/v1/channels/my_user. Replace my_user with you user."
+                    "Find your chatroom id at https://kick.com/api/v1/channels/my_user. Replace my_user with your user."
                 )
             }
         }

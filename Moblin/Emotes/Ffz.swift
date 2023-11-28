@@ -23,7 +23,7 @@ func fetchFfzEmotes(platform: EmotesPlatform,
     do {
         emotes = try emotes.merging(await fetchGlobalEmotes(platform: platform)) { $1 }
     } catch {
-        message = "Failed to get FFZ emotes"
+        message = String(localized: "Failed to get FFZ emotes")
     }
     do {
         emotes = try emotes.merging(await fetchChannelEmotes(
@@ -31,7 +31,7 @@ func fetchFfzEmotes(platform: EmotesPlatform,
             channelId: channelId
         )) { $1 }
     } catch {
-        message = "Failed to get FFZ emotes"
+        message = String(localized: "Failed to get FFZ emotes")
     }
     return (emotes, message)
 }

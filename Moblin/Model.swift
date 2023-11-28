@@ -1627,7 +1627,7 @@ final class Model: ObservableObject {
         if isLive {
             let speed = formatBytesPerSecond(speed: media.streamSpeed())
             let total = sizeFormatter.string(fromByteCount: media.streamTotal())
-            speedAndTotal = "\(speed) (\(total))"
+            speedAndTotal = String(localized: "\(speed) (\(total))")
         } else {
             speedAndTotal = noValue
         }

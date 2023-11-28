@@ -89,7 +89,7 @@ struct SceneSettingsView: View {
             }
             Section {
                 NavigationLink(destination: InlinePickerView(
-                    title: "Layout",
+                    title: String(localized: "Layout"),
                     onChange: onLayoutChange,
                     footer: Text(
                         "The Picture in Picture layout is experimental and does not work."
@@ -97,36 +97,36 @@ struct SceneSettingsView: View {
                     items: cameraLayouts,
                     selected: scene.cameraLayout!.rawValue
                 )) {
-                    TextItemView(name: "Layout", value: scene.cameraLayout!.rawValue)
+                    TextItemView(name: String(localized: "Layout"), value: scene.cameraLayout!.rawValue)
                 }
                 if scene.cameraLayout == .single {
                     NavigationLink(destination: InlinePickerView(
-                        title: "Camera",
+                        title: String(localized: "Camera"),
                         onChange: onCameraChange,
                         items: cameraPositions,
                         selected: scene.cameraPosition!.rawValue
                     )) {
                         TextItemView(
-                            name: "Camera",
+                            name: String(localized: "Camera"),
                             value: scene.cameraPosition!.rawValue
                         )
                     }
                 } else if scene.cameraLayout == .pip {
                     NavigationLink(destination: InlinePickerView(
-                        title: "Large camera",
+                        title: String(localized: "Large camera"),
                         onChange: onCameraChange,
                         items: cameraPositions,
                         selected: scene.cameraPosition!.rawValue
                     )) {
                         TextItemView(
-                            name: "Large camera",
+                            name: String(localized: "Large camera"),
                             value: scene.cameraPosition!.rawValue
                         )
                     }
                     Button(action: {
                         showPipSmallCameraDimensions.toggle()
                     }, label: {
-                        TextItemView(name: "Small camera", value: pipSmall())
+                        TextItemView(name: String(localized: "Small camera"), value: pipSmall())
                     })
                     .foregroundColor(.primary)
                     if showPipSmallCameraDimensions {

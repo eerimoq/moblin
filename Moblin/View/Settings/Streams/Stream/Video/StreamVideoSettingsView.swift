@@ -33,13 +33,13 @@ struct StreamVideoSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: InlinePickerView(title: "Resolution",
+                NavigationLink(destination: InlinePickerView(title: String(localized: "Resolution"),
                                                              onChange: onResolutionChange,
                                                              items: resolutions,
                                                              selected: stream.resolution
                                                                  .rawValue))
                 {
-                    TextItemView(name: "Resolution", value: stream.resolution.rawValue)
+                    TextItemView(name: String(localized: "Resolution"), value: stream.resolution.rawValue)
                 }
                 .disabled(stream.enabled && model.isLive)
                 NavigationLink(destination: InlinePickerView(title: "FPS",
@@ -51,13 +51,13 @@ struct StreamVideoSettingsView: View {
                     TextItemView(name: "FPS", value: String(stream.fps))
                 }
                 .disabled(stream.enabled && model.isLive)
-                NavigationLink(destination: InlinePickerView(title: "Codec",
+                NavigationLink(destination: InlinePickerView(title: String(localized: "Codec"),
                                                              onChange: onCodecChange,
                                                              items: codecs,
                                                              selected: stream.codec
                                                                  .rawValue))
                 {
-                    TextItemView(name: "Codec", value: stream.codec.rawValue)
+                    TextItemView(name: String(localized: "Codec"), value: stream.codec.rawValue)
                 }
                 .disabled(stream.enabled && model.isLive)
                 NavigationLink(destination: StreamVideoBitrateSettingsView(
@@ -65,17 +65,17 @@ struct StreamVideoSettingsView: View {
                     selection: stream.bitrate
                 )) {
                     TextItemView(
-                        name: "Bitrate",
+                        name: String(localized: "Bitrate"),
                         value: formatBytesPerSecond(speed: Int64(stream.bitrate))
                     )
                 }
                 NavigationLink(destination: TextEditView(
-                    title: "Key frame interval",
+                    title: String(localized: "Key frame interval"),
                     value: String(stream.maxKeyFrameInterval!),
                     onSubmit: submitMaxKeyFrameInterval,
                     footer: Text("Maximum key frame interval in seconds. Set to 0 for automatic.")
                 )) {
-                    TextItemView(name: "Key frame interval", value: String(stream.maxKeyFrameInterval!))
+                    TextItemView(name: String(localized: "Key frame interval"), value: String(stream.maxKeyFrameInterval!))
                 }
                 if logger.debugEnabled {
                     NavigationLink(
@@ -91,7 +91,7 @@ struct StreamVideoSettingsView: View {
                             model.storeAndReloadStreamIfEnabled(stream: stream)
                         })) {
                             TextItemView(
-                                name: "Preset",
+                                name: String(localized: "Preset"),
                                 value: stream.captureSessionPreset.rawValue
                             )
                         }

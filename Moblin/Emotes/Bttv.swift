@@ -18,7 +18,7 @@ func fetchBttvEmotes(platform: EmotesPlatform,
     do {
         emotes = try emotes.merging(await fetchGlobalEmotes()) { $1 }
     } catch {
-        message = "Failed to get BTTV emotes"
+        message = String(localized: "Failed to get BTTV emotes")
     }
     do {
         emotes = try emotes.merging(await fetchChannelEmotes(
@@ -26,7 +26,7 @@ func fetchBttvEmotes(platform: EmotesPlatform,
             channelId: channelId
         )) { $1 }
     } catch {
-        message = "Failed to get BTTV emotes"
+        message = String(localized: "Failed to get BTTV emotes")
     }
     return (emotes, message)
 }

@@ -22,6 +22,16 @@
     "%@ " : {
 
     },
+    "%@ (%@)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ (%2$@)"
+          }
+        }
+      }
+    },
     "%lld %%" : {
 
     },
@@ -32,7 +42,14 @@
 
     },
     "A large number. Use developer tools (F11) in your browser. Look at websocket messages." : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ett stort tal. Använd utvecklarverktyg (F11) i webbläsaren. Titta på websocketmeddelanden."
+          }
+        }
+      }
     },
     "About" : {
       "localizations" : {
@@ -101,7 +118,14 @@
       }
     },
     "An incomplete list of people who has contributed ideas, programming,\ntesting, promotion and more." : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En ofullständig lista av människor som har designat Moblin."
+          }
+        }
+      }
     },
     "Animated emotes" : {
       "localizations" : {
@@ -118,7 +142,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Animerate emotes använder mycket CPU. Stäng av dom för mindre energiförkrukning."
+            "value" : "Animerade emotes använder mycket CPU. Stäng av dom för mindre energiförbrukning."
           }
         }
       }
@@ -154,7 +178,14 @@
       }
     },
     "Back camera presets" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bakre kamerans förinställningar"
+          }
+        }
+      }
     },
     "Background" : {
       "localizations" : {
@@ -177,10 +208,24 @@
       }
     },
     "BELABOX cloud SRT" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "BELABOX cloud SRT"
+          }
+        }
+      }
     },
     "BELABOX cloud SRTLA" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "BELABOX cloud SRTLA"
+          }
+        }
+      }
     },
     "Big packets" : {
       "localizations" : {
@@ -193,7 +238,14 @@
       }
     },
     "Big packets means 7 MPEG-TS packets per SRT packet, 6 otherwise. Sometimes Android hotspots does not work with big packets." : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stora paket betyder 7 MPEG-TS paket per SRT paket, annars 6. Ibland fungerar inte Android hotspots med stora paket."
+          }
+        }
+      }
     },
     "Bitrate" : {
       "localizations" : {
@@ -206,7 +258,14 @@
       }
     },
     "Bitrate presets" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Förinställda bitrates"
+          }
+        }
+      }
     },
     "Blue" : {
       "localizations" : {
@@ -249,7 +308,14 @@
       }
     },
     "Border is fairly CPU intensive. Disable for less power usage." : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kanter använder ganska mycket CPU. Stäng av dom för mindre energiförbrukning."
+          }
+        }
+      }
     },
     "Bottom right" : {
       "localizations" : {
@@ -302,7 +368,14 @@
       }
     },
     "Buttons appear from bottom to top." : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Knappar visas nedifrån och uppåt."
+          }
+        }
+      }
     },
     "Camera" : {
       "localizations" : {
@@ -334,6 +407,26 @@
         }
       }
     },
+    "Channel id" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kanalid"
+          }
+        }
+      }
+    },
+    "Channel name" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kanalnamn"
+          }
+        }
+      }
+    },
     "Chat" : {
       "localizations" : {
         "sv" : {
@@ -344,12 +437,32 @@
         }
       }
     },
+    "Chatroom id" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chattrumsid"
+          }
+        }
+      }
+    },
     "Close" : {
       "localizations" : {
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Stäng"
+          }
+        }
+      }
+    },
+    "Codec" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Codec"
           }
         }
       }
@@ -425,10 +538,24 @@
       }
     },
     "Do not share your settings with anyone as they may contain sensitive data (stream keys, etc.)!" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dela inte dina inställningar med någon då dom kan innehålla känslig information (strömnycklar, etc.)."
+          }
+        }
+      }
     },
     "Do not share your URL with anyone or they can hijack your channel!" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dela inte din URL med någon då den kan innehålla känslig information (strömnycklar, etc.)."
+          }
+        }
+      }
     },
     "End" : {
       "localizations" : {
@@ -441,37 +568,114 @@
       }
     },
     "Example:  rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exampel:  rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef"
+          }
+        }
+      }
     },
     "Example:  rtmp://foobar.org:3321/5678" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exampel:  rtmp://foobar.org:3321/5678"
+          }
+        }
+      }
     },
     "Example:  rtmps://fa723fc1b171.global-contribute.live-video.net/sk_us-west-123hu43ui34hrkjh" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exampel:  rtmps://fa723fc1b171.global-contribute.live-video.net/sk_us-west-123hu43ui34hrkjh"
+          }
+        }
+      }
     },
     "Example:  srt://120.12.32.12:4000?streamid=publish/live/feed" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exampel:  srt://120.12.32.12:4000?streamid=publish/live/feed"
+          }
+        }
+      }
     },
     "Example:  srt://134.20.342.12:5000" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exampel:  srt://134.20.342.12:5000"
+          }
+        }
+      }
     },
     "Example:  srtla://foobar.org:4432" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exampel:  srtla://foobar.org:4432"
+          }
+        }
+      }
     },
     "Example: rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exampel: rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3"
+          }
+        }
+      }
     },
     "Example: rtmps://live-api-s.facebook.com:443/rtmp/FB-11152522122511115-0-BctNCp9jzzz-AAA" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exampel: rtmps://live-api-s.facebook.com:443/rtmp/FB-11152522122511115-0-BctNCp9jzzz-AAA"
+          }
+        }
+      }
     },
     "Example: srt://uk.srt.belabox.net:4000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exampel: srt://uk.srt.belabox.net:4000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
+          }
+        }
+      }
     },
     "Example: srtla://uk.srt.belabox.net:5000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exampel: srtla://uk.srt.belabox.net:5000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
+          }
+        }
+      }
     },
     "Export to clipboard" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exportera till utklipp"
+          }
+        }
+      }
     },
     "Exposure" : {
       "localizations" : {
@@ -484,7 +688,54 @@
       }
     },
     "Facebook" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Facebook"
+          }
+        }
+      }
+    },
+    "Failed to get 7TV channel emotes" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Misslyckades med att hämta 7TV emotes"
+          }
+        }
+      }
+    },
+    "Failed to get 7TV global emotes" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Misslyckades med att hämta globala 7TV emotes"
+          }
+        }
+      }
+    },
+    "Failed to get BTTV emotes" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Misslyckades med att hämta BTTV emotes"
+          }
+        }
+      }
+    },
+    "Failed to get FFZ emotes" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Misslyckades med att hämta FFZ emotes"
+          }
+        }
+      }
     },
     "Feel free to join Moblin Discord server or write an issue on Github if you need help or want to give feedback." : {
       "localizations" : {
@@ -496,8 +747,15 @@
         }
       }
     },
-    "Find your chatroom id at https://kick.com/api/v1/channels/my_user. Replace my_user with you user." : {
-
+    "Find your chatroom id at https://kick.com/api/v1/channels/my_user. Replace my_user with your user." : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hitta ditt chattrumsid på https://kick.com/api/v1/channels/min_användare. Byt ut min_användare med din användare."
+          }
+        }
+      }
     },
     "Font size" : {
       "localizations" : {
@@ -520,7 +778,14 @@
       }
     },
     "Front camera presets" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Främre kamerans förinställningar"
+          }
+        }
+      }
     },
     "General" : {
       "localizations" : {
@@ -558,17 +823,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Github"
-          }
-        }
-      }
-    },
-    "Go live" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gå live"
           }
         }
       }
@@ -683,12 +937,42 @@
         }
       }
     },
+    "Key frame interval" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nyckelbildsintervall"
+          }
+        }
+      }
+    },
     "Kick" : {
       "localizations" : {
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kick"
+          }
+        }
+      }
+    },
+    "Large camera" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stor kamera"
+          }
+        }
+      }
+    },
+    "Layout" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Layout"
           }
         }
       }
@@ -708,7 +992,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lokala överdrag"
+            "value" : "Lokala överlägg"
           }
         }
       }
@@ -718,7 +1002,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lokala överdrag syns inte i strömmen."
+            "value" : "Lokala överlägg syns inte i strömmen."
           }
         }
       }
@@ -744,13 +1028,34 @@
       }
     },
     "Many thanks from the Moblin developers!" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stort tack från Moblins utvecklare!"
+          }
+        }
+      }
     },
     "Maximum key frame interval in seconds. Set to 0 for automatic." : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maximalt nyckelbildsintervall i sekunder. Sätt till 0 för automatiskt val."
+          }
+        }
+      }
     },
     "Maximum message age in seconds." : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maximal meddelandeålder i sekunder."
+          }
+        }
+      }
     },
     "Message" : {
       "localizations" : {
@@ -773,7 +1078,14 @@
       }
     },
     "moblin:// deep links can be used to import some settings, often using QR codes or a browser. See https://github.com/eerimoq/moblin for details." : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Djupa länkar som börjar med  moblin:// kan användas för att importera vissa inställningar, ofta via QR-koder eller i en webbläsare. Se https://github.com/eerimoq/moblin för mer information."
+          }
+        }
+      }
     },
     "Muted" : {
       "localizations" : {
@@ -795,8 +1107,25 @@
         }
       }
     },
+    "My stream" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Min ström"
+          }
+        }
+      }
+    },
     "my_stream_key" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "min_strömnyckel"
+          }
+        }
+      }
     },
     "Name" : {
       "localizations" : {
@@ -809,7 +1138,14 @@
       }
     },
     "nearby_ingest_endpoint" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ingest_i_närheten"
+          }
+        }
+      }
     },
     "Noise level" : {
       "localizations" : {
@@ -822,16 +1158,34 @@
       }
     },
     "OBS Media Source (SRT)" : {
-
-    },
-    "Only one stream can be used at a time." : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OBS Media Source (SRT)"
+          }
+        }
+      }
     },
     "Only unused buttons can be deleted." : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bara oanvända knappar kan raderas."
+          }
+        }
+      }
     },
     "Only unused widgets can be deleted." : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bara oanvända widgets kan raderas."
+          }
+        }
+      }
     },
     "Packets in flight" : {
       "localizations" : {
@@ -854,7 +1208,14 @@
       }
     },
     "Preset" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Förinställning"
+          }
+        }
+      }
     },
     "Red" : {
       "localizations" : {
@@ -876,11 +1237,45 @@
         }
       }
     },
+    "Resolution" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Upplösning"
+          }
+        }
+      }
+    },
+    "Retrying later" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Försöker igen senare"
+          }
+        }
+      }
+    },
     "Røde audio level" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Røde ljudnivå"
+          }
+        }
+      }
     },
     "RTMP server" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RTMP server"
+          }
+        }
+      }
     },
     "Scene" : {
       "localizations" : {
@@ -923,7 +1318,14 @@
       }
     },
     "Settings that would stop the stream are disabled when live." : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inställningar som skulle stoppa strömmen är inte tillgängliga när man är live."
+          }
+        }
+      }
     },
     "Sharpness" : {
       "localizations" : {
@@ -945,20 +1347,65 @@
         }
       }
     },
+    "Small camera" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Liten kamera"
+          }
+        }
+      }
+    },
     "SRT Live Server (SLS)" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT Live Server (SLS)"
+          }
+        }
+      }
     },
     "SRT oheadbw" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT oheadbw"
+          }
+        }
+      }
     },
     "SRT overlay" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT överlägg"
+          }
+        }
+      }
     },
     "SRT(LA)" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT(LA)"
+          }
+        }
+      }
     },
     "SRTLA server" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRTLA server"
+          }
+        }
+      }
     },
     "Stream" : {
       "localizations" : {
@@ -971,7 +1418,14 @@
       }
     },
     "stream_url" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ström_url"
+          }
+        }
+      }
     },
     "Streams" : {
       "localizations" : {
@@ -984,28 +1438,84 @@
       }
     },
     "Support Moblin developers by buying icons." : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stöd Moblins utvecklare genom att köpa ikoner."
+          }
+        }
+      }
     },
     "Tap screen to focus" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tryck på skärmen för att fokusera"
+          }
+        }
+      }
     },
     "Template: rtmp://" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mall: rtmp://"
+          }
+        }
+      }
     },
     "Template: rtmp://my_public_ip:my_public_port/my_stream_key" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mall: rtmp://my_public_ip:my_public_port/my_stream_key"
+          }
+        }
+      }
     },
     "Template: srt://my_public_ip:my_public_port" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mall: srt://my_public_ip:my_public_port"
+          }
+        }
+      }
     },
     "Template: srt://my_public_ip:my_public_port?streamid=publish/live/my_key" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mall: srt://my_public_ip:my_public_port?streamid=publish/live/my_key"
+          }
+        }
+      }
     },
     "Template: srtla://my_public_ip:my_public_port" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mall: srtla://my_public_ip:my_public_port"
+          }
+        }
+      }
     },
     "The browser widget is experimental does not work very well yet." : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Webbläsarwidgets är experimentella och fungerar inte bra ännu."
+          }
+        }
+      }
     },
     "The log is empty." : {
       "localizations" : {
@@ -1028,10 +1538,24 @@
       }
     },
     "The Picture in Picture layout is experimental and does not work." : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bild i bild-layout är experimentell och fungerar inte."
+          }
+        }
+      }
     },
     "The zoom (in X) to set when switching to given camera, if enabled." : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoomen (i X) som sätts när man byter till given kamera."
+          }
+        }
+      }
     },
     "Timestamp" : {
       "localizations" : {
@@ -1140,7 +1664,14 @@
       }
     },
     "Very experimental and very secret!" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Väldigt experimentell och väldigt hemlig."
+          }
+        }
+      }
     },
     "Video" : {
       "localizations" : {
@@ -1193,16 +1724,44 @@
       }
     },
     "Widget" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widget"
+          }
+        }
+      }
     },
     "Widget name" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widgetnamn"
+          }
+        }
+      }
     },
     "Widgets" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widgets"
+          }
+        }
+      }
     },
     "Widgets are stacked from back to front." : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widgets visas uppifrån och nedåt."
+          }
+        }
+      }
     },
     "Width" : {
       "localizations" : {
@@ -1225,19 +1784,47 @@
       }
     },
     "YouTube" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YouTube"
+          }
+        }
+      }
     },
     "Zero or more milliseconds. Any latency parameter given in the URL overrides this value." : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Noll eller fler millisekunder."
+          }
+        }
+      }
     },
     "Zoom" : {
 
     },
     "Zoom preset" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Förinställd zoom"
+          }
+        }
+      }
     },
     "Zoom presets" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Förinställda zooms"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
