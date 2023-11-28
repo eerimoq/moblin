@@ -75,7 +75,10 @@ struct StreamVideoSettingsView: View {
                     onSubmit: submitMaxKeyFrameInterval,
                     footer: Text("Maximum key frame interval in seconds. Set to 0 for automatic.")
                 )) {
-                    TextItemView(name: String(localized: "Key frame interval"), value: String(stream.maxKeyFrameInterval!))
+                    TextItemView(
+                        name: String(localized: "Key frame interval"),
+                        value: String(stream.maxKeyFrameInterval!)
+                    )
                 }
                 if logger.debugEnabled {
                     NavigationLink(
