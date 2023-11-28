@@ -801,6 +801,15 @@
 				fr,
 				pl,
 				vi,
+				nl,
+				"zh-HK",
+				"zh-Hans",
+				"zh-Hant",
+				el,
+				tr,
+				"pt-BR",
+				"pt-PT",
+				id,
 			);
 			mainGroup = 035E9E2A2A9A02D6009D4F5A;
 			packageReferences = (
