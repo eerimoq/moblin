@@ -80,6 +80,7 @@ struct StreamVideoSettingsView: View {
                         value: String(stream.maxKeyFrameInterval!)
                     )
                 }
+                .disabled(stream.enabled && model.isLive)
                 if logger.debugEnabled {
                     NavigationLink(
                         destination: StreamVideoCaptureSessionPresetSettingsView(
