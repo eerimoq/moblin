@@ -407,6 +407,16 @@
         }
       }
     },
+    "back" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "bakre"
+          }
+        }
+      }
+    },
     "Back" : {
       "localizations" : {
         "es" : {
@@ -1186,7 +1196,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Exampel:  rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef"
+            "value" : "Exempel:  rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef"
           }
         }
       }
@@ -1202,7 +1212,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Exampel:  rtmp://foobar.org:3321/5678"
+            "value" : "Exempel:  rtmp://foobar.org:3321/5678"
           }
         }
       }
@@ -1218,7 +1228,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Exampel:  rtmps://fa723fc1b171.global-contribute.live-video.net/sk_us-west-123hu43ui34hrkjh"
+            "value" : "Exempel:  rtmps://fa723fc1b171.global-contribute.live-video.net/sk_us-west-123hu43ui34hrkjh"
           }
         }
       }
@@ -1234,7 +1244,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Exampel:  srt://120.12.32.12:4000?streamid=publish/live/feed"
+            "value" : "Exempel:  srt://120.12.32.12:4000?streamid=publish/live/feed"
           }
         }
       }
@@ -1250,7 +1260,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Exampel:  srt://134.20.342.12:5000"
+            "value" : "Exempel:  srt://134.20.342.12:5000"
           }
         }
       }
@@ -1266,7 +1276,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Exampel:  srtla://foobar.org:4432"
+            "value" : "Exempel:  srtla://foobar.org:4432"
           }
         }
       }
@@ -1282,7 +1292,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Exampel: rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3"
+            "value" : "Exempel: rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3"
           }
         }
       }
@@ -1298,7 +1308,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Exampel: rtmps://live-api-s.facebook.com:443/rtmp/FB-11152522122511115-0-BctNCp9jzzz-AAA"
+            "value" : "Exempel: rtmps://live-api-s.facebook.com:443/rtmp/FB-11152522122511115-0-BctNCp9jzzz-AAA"
           }
         }
       }
@@ -1314,7 +1324,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Exampel: srt://uk.srt.belabox.net:4000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
+            "value" : "Exempel: srt://uk.srt.belabox.net:4000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
           }
         }
       }
@@ -1330,7 +1340,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Exampel: srtla://uk.srt.belabox.net:5000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
+            "value" : "Exempel: srtla://uk.srt.belabox.net:5000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
           }
         }
       }
@@ -1491,6 +1501,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Teckenstorlek"
+          }
+        }
+      }
+    },
+    "front" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "främre"
           }
         }
       }
@@ -2418,7 +2438,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Picture in Picture"
+            "value" : "Bild-i-bild"
           }
         }
       }
@@ -3026,7 +3046,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Picture in Picture-layouten är experimentell och fungerar inte."
+            "value" : "Bild-i-bild-layouten är experimentell och fungerar inte."
           }
         }
       }
@@ -3075,6 +3095,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tidsstämpel"
+          }
+        }
+      }
+    },
+    "To %@ camera" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Till %@ kameran"
           }
         }
       }
@@ -3463,6 +3493,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bredd"
+          }
+        }
+      }
+    },
+    "X must be %f - %f" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "X must be %1$f - %2$f"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "X måste vara mellan %1$f och %2$f"
           }
         }
       }

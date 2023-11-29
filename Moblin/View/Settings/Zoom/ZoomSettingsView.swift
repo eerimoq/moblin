@@ -84,12 +84,12 @@ struct ZoomSettingsView: View {
             }
             Section {
                 ZoomSwitchToSettingsView(
-                    name: "back",
+                    name: String(localized: "back"),
                     position: .back,
                     defaultZoom: model.database.zoom.switchToBack
                 )
                 ZoomSwitchToSettingsView(
-                    name: "front",
+                    name: String(localized: "front"),
                     position: .front,
                     defaultZoom: model.database.zoom.switchToFront
                 )

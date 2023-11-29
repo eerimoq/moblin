@@ -17,7 +17,7 @@ struct ZoomSwitchToSettingsView: View {
 
     var body: some View {
         NavigationLink(destination: TextEditView(
-            title: "To \(name) camera",
+            title: String(localized: "To \(name) camera"),
             value: formatX(x: x()),
             onSubmit: { x in
                 guard let x = Float(x) else {
@@ -25,7 +25,7 @@ struct ZoomSwitchToSettingsView: View {
                 }
                 let (minX, maxX) = model.getMinMaxZoomX(position: position)
                 guard x >= minX, x <= maxX else {
-                    model.makeErrorToast(title: "X must be \(minX) - \(maxX)")
+                    model.makeErrorToast(title: String(localized: "X must be \(minX) - \(maxX)"))
                     return
                 }
                 defaultZoom.level = xToFactor(position: position, x: x)
@@ -39,7 +39,7 @@ struct ZoomSwitchToSettingsView: View {
                 model.store()
             })) {
                 TextItemView(
-                    name: "To \(name) camera",
+                    name: String(localized: "To \(name) camera"),
                     value: formatX(x: x())
                 )
             }
