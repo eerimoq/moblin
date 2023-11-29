@@ -131,9 +131,29 @@ class SettingsSceneButton: Codable, Identifiable, Equatable {
 enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
     case back = "Back"
     case front = "Front"
+
+    static func fromString(value: String) -> SettingsSceneCameraPosition {
+        switch value {
+        case String(localized: "Back"):
+            return .back
+        case String(localized: "Front"):
+            return .front
+        default:
+            return .back
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .back:
+            return String(localized: "Back")
+        case .front:
+            return String(localized: "Front")
+        }
+    }
 }
 
-var cameraPositions = SettingsSceneCameraPosition.allCases.map { $0.rawValue }
+var cameraPositions = SettingsSceneCameraPosition.allCases.map { $0.toString() }
 
 enum SettingsCameraType: String, Codable, CaseIterable {
     case triple = "Triple"
@@ -146,9 +166,29 @@ enum SettingsCameraType: String, Codable, CaseIterable {
 enum SettingsSceneCameraLayout: String, Codable, CaseIterable {
     case single = "Single"
     case pip = "Picture in Picture"
+
+    static func fromString(value: String) -> SettingsSceneCameraLayout {
+        switch value {
+        case String(localized: "Single"):
+            return .single
+        case String(localized: "Picture in Picture"):
+            return .pip
+        default:
+            return .single
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .single:
+            return String(localized: "Single")
+        case .pip:
+            return String(localized: "Picture in Picture")
+        }
+    }
 }
 
-var cameraLayouts = SettingsSceneCameraLayout.allCases.map { $0.rawValue }
+var cameraLayouts = SettingsSceneCameraLayout.allCases.map { $0.toString() }
 
 class SettingsSceneCameraLayoutPip: Codable {
     var x: Double = 65.0
@@ -213,9 +253,49 @@ enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
     case random = "Random"
     case triple = "Triple"
     case noiseReduction = "Noise reduction"
+
+    static func fromString(value: String) -> SettingsWidgetVideoEffectType {
+        switch value {
+        case String(localized: "Movie"):
+            return .movie
+        case String(localized: "Gray scale"):
+            return .grayScale
+        case String(localized: "Sepia"):
+            return .sepia
+        case String(localized: "Bloom"):
+            return .bloom
+        case String(localized: "Random"):
+            return .random
+        case String(localized: "Triple"):
+            return .triple
+        case String(localized: "Noise reduction"):
+            return .noiseReduction
+        default:
+            return .movie
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .movie:
+            return String(localized: "Movie")
+        case .grayScale:
+            return String(localized: "Gray scale")
+        case .sepia:
+            return String(localized: "Sepia")
+        case .bloom:
+            return String(localized: "Bloom")
+        case .random:
+            return String(localized: "Random")
+        case .triple:
+            return String(localized: "Triple")
+        case .noiseReduction:
+            return String(localized: "Noise reduction")
+        }
+    }
 }
 
-let videoEffects = SettingsWidgetVideoEffectType.allCases.map { $0.rawValue }
+let videoEffects = SettingsWidgetVideoEffectType.allCases.map { $0.toString() }
 
 class SettingsWidgetVideoEffect: Codable {
     var type: SettingsWidgetVideoEffectType = .movie
@@ -228,9 +308,37 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case image = "Image"
     case browser = "Browser"
     case time = "Time"
+
+    static func fromString(value: String) -> SettingsWidgetType {
+        switch value {
+        case String(localized: "Video effect"):
+            return .videoEffect
+        case String(localized: "Image"):
+            return .image
+        case String(localized: "Browser"):
+            return .browser
+        case String(localized: "Time"):
+            return .time
+        default:
+            return .videoEffect
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .videoEffect:
+            return String(localized: "Video effect")
+        case .image:
+            return String(localized: "Image")
+        case .browser:
+            return String(localized: "Browser")
+        case .time:
+            return String(localized: "Time")
+        }
+    }
 }
 
-let widgetTypes = SettingsWidgetType.allCases.map { $0.rawValue }
+let widgetTypes = SettingsWidgetType.allCases.map { $0.toString() }
 
 class SettingsWidget: Codable, Identifiable, Equatable {
     var name: String
@@ -295,9 +403,49 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case mic = "Mic"
     case chat = "Chat"
     case pauseChat = "Pause chat"
+
+    static func fromString(value: String) -> SettingsButtonType {
+        switch value {
+        case String(localized: "Torch"):
+            return .torch
+        case String(localized: "Mute"):
+            return .mute
+        case String(localized: "Bitrate"):
+            return .bitrate
+        case String(localized: "Widget"):
+            return .widget
+        case String(localized: "Mic"):
+            return .mic
+        case String(localized: "Chat"):
+            return .chat
+        case String(localized: "Pause chat"):
+            return .pauseChat
+        default:
+            return .torch
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .torch:
+            return String(localized: "Torch")
+        case .mute:
+            return String(localized: "Mute")
+        case .bitrate:
+            return String(localized: "Bitrate")
+        case .widget:
+            return String(localized: "Widget")
+        case .mic:
+            return String(localized: "Mic")
+        case .chat:
+            return String(localized: "Chat")
+        case .pauseChat:
+            return String(localized: "Pause chat")
+        }
+    }
 }
 
-let buttonTypes = SettingsButtonType.allCases.map { $0.rawValue }
+let buttonTypes = SettingsButtonType.allCases.map { $0.toString() }
 
 class SettingsButtonWidget: Codable, Identifiable {
     var widgetId: UUID
@@ -378,9 +526,33 @@ enum SettingsVideoStabilizationMode: String, Codable, CaseIterable {
     case off = "Off"
     case standard = "Standard"
     case cinematic = "Cinematic"
+
+    static func fromString(value: String) -> SettingsVideoStabilizationMode {
+        switch value {
+        case String(localized: "Off"):
+            return .off
+        case String(localized: "Standard"):
+            return .standard
+        case String(localized: "Cinematic"):
+            return .cinematic
+        default:
+            return .off
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .off:
+            return String(localized: "Off")
+        case .standard:
+            return String(localized: "Standard")
+        case .cinematic:
+            return String(localized: "Cinematic")
+        }
+    }
 }
 
-var videoStabilizationModes = SettingsVideoStabilizationMode.allCases.map { $0.rawValue }
+var videoStabilizationModes = SettingsVideoStabilizationMode.allCases.map { $0.toString() }
 
 class RgbColor: Codable {
     var red: Int = 0
@@ -484,27 +656,27 @@ class Database: Codable {
 }
 
 func addDefaultWidgets(database: Database) {
-    var widget = SettingsWidget(name: "Movie")
+    var widget = SettingsWidget(name: String(localized: "Movie"))
     widget.type = .videoEffect
     widget.videoEffect.type = .movie
     database.widgets.append(widget)
 
-    widget = SettingsWidget(name: "Gray scale")
+    widget = SettingsWidget(name: String(localized: "Gray scale"))
     widget.type = .videoEffect
     widget.videoEffect.type = .grayScale
     database.widgets.append(widget)
 
-    widget = SettingsWidget(name: "Sepia")
+    widget = SettingsWidget(name: String(localized: "Sepia"))
     widget.type = .videoEffect
     widget.videoEffect.type = .sepia
     database.widgets.append(widget)
 
-    widget = SettingsWidget(name: "Bloom")
+    widget = SettingsWidget(name: String(localized: "Bloom"))
     widget.type = .videoEffect
     widget.videoEffect.type = .bloom
     database.widgets.append(widget)
 
-    widget = SettingsWidget(name: "Random")
+    widget = SettingsWidget(name: String(localized: "Random"))
     widget.type = .videoEffect
     widget.videoEffect.type = .random
     database.widgets.append(widget)
@@ -527,7 +699,7 @@ func createSceneWidgetVideoEffectRandom(database: Database) -> SettingsSceneWidg
 }
 
 func addDefaultScenes(database: Database) {
-    var scene = SettingsScene(name: "Back")
+    var scene = SettingsScene(name: String(localized: "Back"))
     scene.cameraPosition = .back
     scene.widgets.append(createSceneWidgetVideoEffectMovie(database: database))
     scene.widgets.append(createSceneWidgetVideoEffectGrayScale(database: database))
@@ -545,7 +717,7 @@ func addDefaultScenes(database: Database) {
     scene.addButton(id: database.buttons[7].id)
     database.scenes.append(scene)
 
-    scene = SettingsScene(name: "Front")
+    scene = SettingsScene(name: String(localized: "Front"))
     scene.cameraPosition = .front
     scene.widgets.append(createSceneWidgetVideoEffectMovie(database: database))
     scene.addButton(id: database.buttons[1].id)
@@ -602,7 +774,7 @@ func addDefaultBitratePresets(database: Database) {
 }
 
 func addDefaultButtons(database: Database) {
-    var button = SettingsButton(name: "Torch")
+    var button = SettingsButton(name: String(localized: "Torch"))
     button.id = UUID()
     button.type = .torch
     button.imageType = "System name"
@@ -610,7 +782,7 @@ func addDefaultButtons(database: Database) {
     button.systemImageNameOff = "lightbulb"
     database.buttons.append(button)
 
-    button = SettingsButton(name: "Mute")
+    button = SettingsButton(name: String(localized: "Mute"))
     button.id = UUID()
     button.type = .mute
     button.imageType = "System name"
@@ -618,7 +790,7 @@ func addDefaultButtons(database: Database) {
     button.systemImageNameOff = "mic"
     database.buttons.append(button)
 
-    button = SettingsButton(name: "Bitrate")
+    button = SettingsButton(name: String(localized: "Bitrate"))
     button.id = UUID()
     button.type = .bitrate
     button.imageType = "System name"
@@ -626,7 +798,7 @@ func addDefaultButtons(database: Database) {
     button.systemImageNameOff = "speedometer"
     database.buttons.append(button)
 
-    button = SettingsButton(name: "Movie")
+    button = SettingsButton(name: String(localized: "Movie"))
     button.id = UUID()
     button.type = .widget
     button.imageType = "System name"
@@ -635,7 +807,7 @@ func addDefaultButtons(database: Database) {
     button.widget.widgetId = database.widgets[0].id
     database.buttons.append(button)
 
-    button = SettingsButton(name: "Gray scale")
+    button = SettingsButton(name: String(localized: "Gray scale"))
     button.id = UUID()
     button.type = .widget
     button.imageType = "System name"
@@ -644,7 +816,7 @@ func addDefaultButtons(database: Database) {
     button.widget.widgetId = database.widgets[1].id
     database.buttons.append(button)
 
-    button = SettingsButton(name: "Sepia")
+    button = SettingsButton(name: String(localized: "Sepia"))
     button.id = UUID()
     button.type = .widget
     button.imageType = "System name"
@@ -653,7 +825,7 @@ func addDefaultButtons(database: Database) {
     button.widget.widgetId = database.widgets[2].id
     database.buttons.append(button)
 
-    button = SettingsButton(name: "Bloom")
+    button = SettingsButton(name: String(localized: "Bloom"))
     button.id = UUID()
     button.type = .widget
     button.imageType = "System name"
@@ -662,7 +834,7 @@ func addDefaultButtons(database: Database) {
     button.widget.widgetId = database.widgets[3].id
     database.buttons.append(button)
 
-    button = SettingsButton(name: "Random")
+    button = SettingsButton(name: String(localized: "Random"))
     button.id = UUID()
     button.type = .widget
     button.imageType = "System name"
@@ -671,7 +843,7 @@ func addDefaultButtons(database: Database) {
     button.widget.widgetId = database.widgets[4].id
     database.buttons.append(button)
 
-    button = SettingsButton(name: "Mic")
+    button = SettingsButton(name: String(localized: "Mic"))
     button.id = UUID()
     button.type = .mic
     button.imageType = "System name"
@@ -679,7 +851,7 @@ func addDefaultButtons(database: Database) {
     button.systemImageNameOff = "music.mic"
     database.buttons.append(button)
 
-    button = SettingsButton(name: "Chat")
+    button = SettingsButton(name: String(localized: "Chat"))
     button.id = UUID()
     button.type = .chat
     button.imageType = "System name"
@@ -687,7 +859,7 @@ func addDefaultButtons(database: Database) {
     button.systemImageNameOff = "message"
     database.buttons.append(button)
 
-    button = SettingsButton(name: "Pause chat")
+    button = SettingsButton(name: String(localized: "Pause chat"))
     button.id = UUID()
     button.type = .pauseChat
     button.imageType = "System name"

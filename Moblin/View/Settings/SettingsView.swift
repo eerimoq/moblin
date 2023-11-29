@@ -68,13 +68,17 @@ struct SettingsView: View {
     @EnvironmentObject var model: Model
 
     private func onChangeBackCamera(camera: String) {
-        model.database.backCameraType = SettingsCameraType(rawValue: camera)!
+        model.database.backCameraType = model.backCameras.first { $0.name == camera }!.type
         model.sceneUpdated()
     }
 
     private func onChangeFrontCamera(camera: String) {
-        model.database.frontCameraType = SettingsCameraType(rawValue: camera)!
+        model.database.frontCameraType = model.frontCameras.first { $0.name == camera }!.type
         model.sceneUpdated()
+    }
+
+    private func toCameraName(value: SettingsCameraType, cameras: [Camera]) -> String {
+        return cameras.first(where: { $0.type == value })!.name
     }
 
     var body: some View {
@@ -105,23 +109,29 @@ struct SettingsView: View {
                 NavigationLink(destination: InlinePickerView(
                     title: String(localized: "Back camera"),
                     onChange: onChangeBackCamera,
-                    items: model.backCameras,
-                    selected: model.database.backCameraType!.rawValue
+                    items: model.backCameras.map { $0.name },
+                    selected: toCameraName(value: model.database.backCameraType!, cameras: model.backCameras)
                 )) {
                     TextItemView(
                         name: String(localized: "Back camera"),
-                        value: model.database.backCameraType!.rawValue
+                        value: toCameraName(value: model.database.backCameraType!, cameras: model.backCameras)
                     )
                 }
                 NavigationLink(destination: InlinePickerView(
                     title: String(localized: "Front camera"),
                     onChange: onChangeFrontCamera,
-                    items: model.frontCameras,
-                    selected: model.database.frontCameraType!.rawValue
+                    items: model.frontCameras.map { $0.name },
+                    selected: toCameraName(
+                        value: model.database.frontCameraType!,
+                        cameras: model.frontCameras
+                    )
                 )) {
                     TextItemView(
                         name: String(localized: "Front camera"),
-                        value: model.database.frontCameraType!.rawValue
+                        value: toCameraName(
+                            value: model.database.frontCameraType!,
+                            cameras: model.frontCameras
+                        )
                     )
                 }
                 NavigationLink(destination: ZoomSettingsView()) {

@@ -73,10 +73,6 @@ struct MicButtonView: View {
                     model.mic
                 }, set: { mic, _ in
                     selectedMic = mic
-                    if let mic = SettingsMic(rawValue: mic.name) {
-                        model.database.mic = mic
-                        model.store()
-                    }
                 })) {
                     ForEach(model.listMics()) { mic in
                         Text(mic.name).tag(mic)

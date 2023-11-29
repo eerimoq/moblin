@@ -5,7 +5,7 @@ struct VideoStabilizationSettingsView: View {
 
     private func onChange(mode: String) {
         model.database
-            .videoStabilizationMode = SettingsVideoStabilizationMode(rawValue: mode)!
+            .videoStabilizationMode = SettingsVideoStabilizationMode.fromString(value: mode)
         model.store()
         model.reattachCamera()
     }
@@ -16,11 +16,11 @@ struct VideoStabilizationSettingsView: View {
             onChange: onChange,
             footer: Text("Video stabilization sometimes gives audio-video sync issues."),
             items: videoStabilizationModes,
-            selected: model.database.videoStabilizationMode.rawValue
+            selected: model.database.videoStabilizationMode.toString()
         )) {
             TextItemView(
                 name: String(localized: "Video stabilization"),
-                value: model.database.videoStabilizationMode.rawValue
+                value: model.database.videoStabilizationMode.toString()
             )
         }
     }

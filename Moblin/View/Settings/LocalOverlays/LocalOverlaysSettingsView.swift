@@ -1,6 +1,6 @@
 import SwiftUI
 
-private let audioLevels = ["Bar", "Decibel"]
+private let audioLevels = [String(localized: "Bar"), String(localized: "Decibel")]
 
 struct LocalOverlaysSettingsView: View {
     @EnvironmentObject var model: Model
@@ -14,12 +14,12 @@ struct LocalOverlaysSettingsView: View {
     }
 
     private func onAudioLevelChange(type: String) {
-        model.database.show.audioBar = type == "Bar"
+        model.database.show.audioBar = type == String(localized: "Bar")
         model.store()
     }
 
     private func audioLevel() -> String {
-        return model.database.show.audioBar ? "Bar" : "Decibel"
+        return model.database.show.audioBar ? String(localized: "Bar") : String(localized: "Decibel")
     }
 
     var body: some View {

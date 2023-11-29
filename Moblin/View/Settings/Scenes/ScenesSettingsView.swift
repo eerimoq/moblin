@@ -27,7 +27,7 @@ struct ScenesSettingsView: View {
                     model.resetSelectedScene()
                 })
                 CreateButtonView(action: {
-                    database.scenes.append(SettingsScene(name: "My scene"))
+                    database.scenes.append(SettingsScene(name: String(localized: "My scene")))
                     model.store()
                     model.resetSelectedScene()
                 })

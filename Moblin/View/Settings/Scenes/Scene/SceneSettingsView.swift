@@ -63,19 +63,19 @@ struct SceneSettingsView: View {
     private func pipSmall() -> String {
         switch scene.cameraPosition! {
         case .back:
-            return SettingsSceneCameraPosition.front.rawValue
+            return SettingsSceneCameraPosition.front.toString()
         case .front:
-            return SettingsSceneCameraPosition.back.rawValue
+            return SettingsSceneCameraPosition.back.toString()
         }
     }
 
     private func onLayoutChange(layout: String) {
-        scene.cameraLayout = SettingsSceneCameraLayout(rawValue: layout)!
+        scene.cameraLayout = SettingsSceneCameraLayout.fromString(value: layout)
         model.sceneUpdated(store: true)
     }
 
     private func onCameraChange(camera: String) {
-        scene.cameraPosition = SettingsSceneCameraPosition(rawValue: camera)!
+        scene.cameraPosition = SettingsSceneCameraPosition.fromString(value: camera)
         model.sceneUpdated(store: true)
     }
 
@@ -95,20 +95,20 @@ struct SceneSettingsView: View {
                         "The Picture in Picture layout is experimental and does not work."
                     ),
                     items: cameraLayouts,
-                    selected: scene.cameraLayout!.rawValue
+                    selected: scene.cameraLayout!.toString()
                 )) {
-                    TextItemView(name: String(localized: "Layout"), value: scene.cameraLayout!.rawValue)
+                    TextItemView(name: String(localized: "Layout"), value: scene.cameraLayout!.toString())
                 }
                 if scene.cameraLayout == .single {
                     NavigationLink(destination: InlinePickerView(
                         title: String(localized: "Camera"),
                         onChange: onCameraChange,
                         items: cameraPositions,
-                        selected: scene.cameraPosition!.rawValue
+                        selected: scene.cameraPosition!.toString()
                     )) {
                         TextItemView(
                             name: String(localized: "Camera"),
-                            value: scene.cameraPosition!.rawValue
+                            value: scene.cameraPosition!.toString()
                         )
                     }
                 } else if scene.cameraLayout == .pip {
@@ -116,11 +116,11 @@ struct SceneSettingsView: View {
                         title: String(localized: "Large camera"),
                         onChange: onCameraChange,
                         items: cameraPositions,
-                        selected: scene.cameraPosition!.rawValue
+                        selected: scene.cameraPosition!.toString()
                     )) {
                         TextItemView(
                             name: String(localized: "Large camera"),
-                            value: scene.cameraPosition!.rawValue
+                            value: scene.cameraPosition!.toString()
                         )
                     }
                     Button(action: {

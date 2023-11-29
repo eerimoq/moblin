@@ -23,7 +23,7 @@ struct ButtonsSettingsView: View {
                     ForEach(database.buttons) { button in
                         NavigationLink(destination: ButtonSettingsView(
                             button: button,
-                            selection: button.type.rawValue,
+                            selection: button.type.toString(),
                             selectedWidget: model.database.widgets
                                 .firstIndex(where: { widget in
                                     widget.id == button.widget.widgetId

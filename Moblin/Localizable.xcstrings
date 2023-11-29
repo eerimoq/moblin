@@ -389,6 +389,16 @@
         }
       }
     },
+    "Back" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bakre"
+          }
+        }
+      }
+    },
     "Back camera" : {
       "localizations" : {
         "sv" : {
@@ -427,6 +437,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bakgrund"
+          }
+        }
+      }
+    },
+    "Bar" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Staplar"
           }
         }
       }
@@ -539,6 +559,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Förinställda bitrates"
+          }
+        }
+      }
+    },
+    "Bloom" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bloom"
           }
         }
       }
@@ -833,6 +863,16 @@
         }
       }
     },
+    "Cinematic" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cinematic"
+          }
+        }
+      }
+    },
     "Close" : {
       "localizations" : {
         "es" : {
@@ -919,6 +959,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Felsökning"
+          }
+        }
+      }
+    },
+    "Decibel" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Decibel"
           }
         }
       }
@@ -1325,6 +1375,16 @@
         }
       }
     },
+    "Front" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Främre"
+          }
+        }
+      }
+    },
     "Front camera" : {
       "localizations" : {
         "sv" : {
@@ -1427,6 +1487,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gå Live"
+          }
+        }
+      }
+    },
+    "Gray scale" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gråskala"
           }
         }
       }
@@ -1543,6 +1613,16 @@
         }
       }
     },
+    "Image" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bild"
+          }
+        }
+      }
+    },
     "Import and export settings" : {
       "localizations" : {
         "es" : {
@@ -1628,7 +1708,14 @@
       }
     },
     "Latency" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Latens"
+          }
+        }
+      }
     },
     "Layout" : {
       "localizations" : {
@@ -1820,6 +1907,26 @@
         }
       }
     },
+    "Movie" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Film"
+          }
+        }
+      }
+    },
+    "Mute" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mute"
+          }
+        }
+      }
+    },
     "Muted" : {
       "localizations" : {
         "es" : {
@@ -1831,7 +1938,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ljud av"
+            "value" : "Muted"
           }
         }
       }
@@ -1848,6 +1955,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mina ikoner"
+          }
+        }
+      }
+    },
+    "My scene" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Min scen"
           }
         }
       }
@@ -1916,6 +2033,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Brusnivå"
+          }
+        }
+      }
+    },
+    "Noise reduction" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brusreducering"
           }
         }
       }
@@ -2030,6 +2157,26 @@
         }
       }
     },
+    "Pause chat" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pausa chatten"
+          }
+        }
+      }
+    },
+    "Picture in Picture" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Picture in Picture"
+          }
+        }
+      }
+    },
     "Preset" : {
       "localizations" : {
         "es" : {
@@ -2042,6 +2189,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Förinställning"
+          }
+        }
+      }
+    },
+    "Random" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Slumpmässig"
           }
         }
       }
@@ -2178,6 +2335,16 @@
         }
       }
     },
+    "Sepia" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sepia"
+          }
+        }
+      }
+    },
     "Settings" : {
       "localizations" : {
         "es" : {
@@ -2238,6 +2405,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Visa känslig URL"
+          }
+        }
+      }
+    },
+    "Single" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enkel"
           }
         }
       }
@@ -2328,6 +2505,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "SRTLA server"
+          }
+        }
+      }
+    },
+    "Standard" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard"
           }
         }
       }
@@ -2551,7 +2738,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bild i bild-layout är experimentell och fungerar inte."
+            "value" : "Picture in Picture-layouten är experimentell och fungerar inte."
           }
         }
       }
@@ -2568,6 +2755,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zoomen (i X) som sätts när man byter till given kamera."
+          }
+        }
+      }
+    },
+    "Time" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tid"
           }
         }
       }
@@ -2616,6 +2813,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Uppe till höger"
+          }
+        }
+      }
+    },
+    "Torch" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ficklampa"
+          }
+        }
+      }
+    },
+    "Triple" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trippel"
           }
         }
       }

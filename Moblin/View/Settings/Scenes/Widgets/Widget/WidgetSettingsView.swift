@@ -19,9 +19,9 @@ struct WidgetSettingsView: View {
             }
             Section {
                 Picker("", selection: Binding(get: {
-                    widget.type.rawValue
+                    widget.type.toString()
                 }, set: { value in
-                    widget.type = SettingsWidgetType(rawValue: value)!
+                    widget.type = SettingsWidgetType.fromString(value: value)
                     model.store()
                     model.resetSelectedScene()
                 })) {
@@ -41,7 +41,7 @@ struct WidgetSettingsView: View {
                 WidgetImageSettingsView(widget: widget)
             case .videoEffect:
                 WidgetVideoEffectSettingsView(widget: widget,
-                                              selection: widget.videoEffect.type.rawValue,
+                                              selection: widget.videoEffect.type.toString(),
                                               noiseLevel: widget.videoEffect
                                                   .noiseReductionNoiseLevel * 10,
                                               sharpness: widget.videoEffect

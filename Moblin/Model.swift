@@ -17,6 +17,11 @@ import VideoToolbox
 private let noValue = ""
 private let maximumNumberOfChatMessages = 50
 
+struct Camera {
+    var type: SettingsCameraType
+    var name: String
+}
+
 struct Mic: Identifiable, Hashable {
     var id: String {
         "\(inputUid) \(dataSourceID ?? 0)"
@@ -25,6 +30,7 @@ struct Mic: Identifiable, Hashable {
     var name: String
     var inputUid: String
     var dataSourceID: NSNumber?
+    var builtInOrientation: SettingsMic?
 }
 
 struct Icon: Identifiable {
@@ -230,8 +236,8 @@ final class Model: ObservableObject {
     var secondCameraDevice: AVCaptureDevice?
     @Published var srtDebugLines: [String] = []
 
-    var backCameras: [String] = []
-    var frontCameras: [String] = []
+    var backCameras: [Camera] = []
+    var frontCameras: [Camera] = []
 
     init() {
         print("Init model")
@@ -469,15 +475,18 @@ final class Model: ObservableObject {
         var newMic: Mic
         if let dataSource = inputPort.preferredDataSource {
             var name: String
+            var builtInMicOrientation: SettingsMic?
             if inputPort.portType == .builtInMic {
                 name = dataSource.dataSourceName
+                builtInMicOrientation = getBuiltInMicOrientation(orientation: dataSource.orientation)
             } else {
                 name = "\(inputPort.portName): \(dataSource.dataSourceName)"
             }
             newMic = Mic(
                 name: name,
                 inputUid: inputPort.uid,
-                dataSourceID: dataSource.dataSourceID
+                dataSourceID: dataSource.dataSourceID,
+                builtInOrientation: builtInMicOrientation
             )
         } else if inputPort.portType != .builtInMic {
             newMic = Mic(name: inputPort.portName, inputUid: inputPort.uid)
@@ -495,6 +504,22 @@ final class Model: ObservableObject {
         micChange = newMic
     }
 
+    private func getBuiltInMicOrientation(orientation: AVAudioSession.Orientation?) -> SettingsMic? {
+        guard let orientation else {
+            return nil
+        }
+        switch orientation {
+        case .bottom:
+            return .bottom
+        case .front:
+            return .front
+        case .back:
+            return .back
+        default:
+            return nil
+        }
+    }
+
     func listMics() -> [Mic] {
         var mics: [Mic] = []
         let session = AVAudioSession.sharedInstance()
@@ -502,15 +527,18 @@ final class Model: ObservableObject {
             if let dataSources = inputPort.dataSources, !dataSources.isEmpty {
                 for dataSource in dataSources {
                     var name: String
+                    var builtInOrientation: SettingsMic?
                     if inputPort.portType == .builtInMic {
                         name = dataSource.dataSourceName
+                        builtInOrientation = getBuiltInMicOrientation(orientation: dataSource.orientation)
                     } else {
                         name = "\(inputPort.portName): \(dataSource.dataSourceName)"
                     }
                     mics.append(Mic(
                         name: name,
                         inputUid: inputPort.uid,
-                        dataSourceID: dataSource.dataSourceID
+                        dataSourceID: dataSource.dataSourceID,
+                        builtInOrientation: builtInOrientation
                     ))
                 }
             } else {
@@ -558,6 +586,10 @@ final class Model: ObservableObject {
             makeErrorToast(title: "Mic not found", subTitle: "Mic id \(id)")
             return
         }
+        if let builtInOrientation = mic.builtInOrientation {
+            database.mic = builtInOrientation
+            store()
+        }
         selectMic(mic: mic)
     }
 
@@ -590,13 +622,13 @@ final class Model: ObservableObject {
         SDImageCodersManager.shared.addCoder(WebPCoder)
         UIDevice.current.isBatteryMonitoringEnabled = true
         backCameras = listCameras(position: .back)
-        if !backCameras.contains(database.backCameraType!.rawValue) {
-            database.backCameraType = SettingsCameraType(rawValue: backCameras.first!)!
+        if !backCameras.contains(where: { $0.type == database.backCameraType! }) {
+            database.backCameraType = backCameras.first!.type
             store()
         }
         frontCameras = listCameras(position: .front)
-        if !frontCameras.contains(database.frontCameraType!.rawValue) {
-            database.frontCameraType = SettingsCameraType(rawValue: frontCameras.first!)!
+        if !frontCameras.contains(where: { $0.type == database.frontCameraType! }) {
+            database.frontCameraType = frontCameras.first!.type
             store()
         }
         updateBatteryLevel()
@@ -666,7 +698,7 @@ final class Model: ObservableObject {
         reloadConnections()
     }
 
-    private func listCameras(position: AVCaptureDevice.Position) -> [String] {
+    private func listCameras(position: AVCaptureDevice.Position) -> [Camera] {
         let deviceDiscovery = AVCaptureDevice.DiscoverySession(
             deviceTypes: [
                 .builtInTripleCamera,
@@ -681,17 +713,17 @@ final class Model: ObservableObject {
         return deviceDiscovery.devices.map { device in
             switch device.deviceType {
             case .builtInTripleCamera:
-                return "Triple"
+                return Camera(type: .triple, name: device.localizedName)
             case .builtInDualCamera:
-                return "Dual"
+                return Camera(type: .dual, name: device.localizedName)
             case .builtInUltraWideCamera:
-                return "Ultra Wide"
+                return Camera(type: .ultraWide, name: device.localizedName)
             case .builtInWideAngleCamera:
-                return "Wide"
+                return Camera(type: .wide, name: device.localizedName)
             case .builtInTelephotoCamera:
-                return "Telephoto"
+                return Camera(type: .telephoto, name: device.localizedName)
             default:
-                return "Unknown"
+                fatalError("Bad camera")
             }
         }
     }

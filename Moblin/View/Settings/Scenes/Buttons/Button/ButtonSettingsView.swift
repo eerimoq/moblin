@@ -49,7 +49,7 @@ struct ButtonSettingsView: View {
                     }
                 }
                 .onChange(of: selection) { type in
-                    button.type = SettingsButtonType(rawValue: type)!
+                    button.type = SettingsButtonType.fromString(value: type)
                     model.store()
                 }
                 .pickerStyle(.inline)
