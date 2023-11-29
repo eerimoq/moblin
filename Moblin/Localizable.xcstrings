@@ -109,6 +109,12 @@
             "value" : "%1$@ (%2$@ total)"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ (%2$@ total)"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -122,6 +128,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "%1$@ (%2$@)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "%1$@ (%2$@)"
           }
         },
@@ -381,6 +393,12 @@
     },
     "Audio level" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nivel de audio"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -391,6 +409,12 @@
     },
     "Back" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trasera"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -401,6 +425,12 @@
     },
     "Back camera" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cámara trasera"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -430,7 +460,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Segundo plano"
+            "value" : "Fondo"
           }
         },
         "sv" : {
@@ -443,6 +473,12 @@
     },
     "Bar" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Barras"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -552,7 +588,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Presets del Bitrate"
+            "value" : "Presets de Bitrate"
           }
         },
         "sv" : {
@@ -565,6 +601,12 @@
     },
     "Bloom" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resplandor"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -799,6 +841,12 @@
     },
     "Channel id" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ID del canal"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -809,6 +857,12 @@
     },
     "Channel name" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nombre del canal"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -835,6 +889,12 @@
     },
     "Chat is hidden" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chat ocultado"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -845,6 +905,12 @@
     },
     "Chat is paused" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chat pausado"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -855,6 +921,12 @@
     },
     "Chatroom id" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chatroom ID"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -865,6 +937,12 @@
     },
     "Cinematic" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cinemático"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -891,6 +969,12 @@
     },
     "Codec" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Códec"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -965,6 +1049,12 @@
     },
     "Decibel" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Decibelios"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -991,6 +1081,12 @@
     },
     "Dimensions" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dimensiones"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1068,7 +1164,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Detener"
+            "value" : "Stop"
           }
         },
         "sv" : {
@@ -1289,6 +1385,12 @@
     },
     "Failed to get 7TV channel emotes" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fallo al obtener los emotes del canal de 7TV"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1299,6 +1401,12 @@
     },
     "Failed to get 7TV global emotes" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fallo al obtener los emotes globales de 7TV"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1309,6 +1417,12 @@
     },
     "Failed to get BTTV emotes" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fallo al obtener los emotes de BTTV"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1319,6 +1433,12 @@
     },
     "Failed to get FFZ emotes" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fallo al obtener los emotes de FFZ"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1377,6 +1497,12 @@
     },
     "Front" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frontal"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1387,6 +1513,12 @@
     },
     "Front camera" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cámara frontal"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1493,6 +1625,12 @@
     },
     "Gray scale" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escala de grises"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1615,6 +1753,12 @@
     },
     "Image" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imagen"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1673,6 +1817,12 @@
     },
     "Key frame interval" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Key frame interval"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1699,6 +1849,12 @@
     },
     "Large camera" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cámara grande"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1709,6 +1865,12 @@
     },
     "Latency" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Latencia"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1719,6 +1881,12 @@
     },
     "Layout" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disposición"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1793,6 +1961,12 @@
     },
     "Log level" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nivel de log"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1819,6 +1993,12 @@
     },
     "Maximum age" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duración máxima"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1848,7 +2028,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Duración máxima de los mensajes en segundos."
+            "value" : "Duración máxima de cada mensaje en segundos."
           }
         },
         "sv" : {
@@ -1909,6 +2089,12 @@
     },
     "Movie" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Película"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1919,6 +2105,12 @@
     },
     "Mute" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Silenciar"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1932,7 +2124,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Muteado"
+            "value" : "Silenciado"
           }
         },
         "sv" : {
@@ -1961,6 +2153,12 @@
     },
     "My scene" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mis escenas"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1971,6 +2169,12 @@
     },
     "My stream" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mis streams"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1997,6 +2201,12 @@
     },
     "Name" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nombre"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2039,6 +2249,12 @@
     },
     "Noise reduction" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reducción de ruido"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2049,6 +2265,12 @@
     },
     "Not configured" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No configurado"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2075,6 +2297,12 @@
     },
     "Off" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apagado"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2085,6 +2313,12 @@
     },
     "On" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Encendido"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2159,6 +2393,12 @@
     },
     "Pause chat" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pausar chat"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2169,6 +2409,12 @@
     },
     "Picture in Picture" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Picture in Picture (PiP)"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2195,6 +2441,12 @@
     },
     "Random" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aleatorio"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2237,6 +2489,12 @@
     },
     "Resolution" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resolución"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2247,6 +2505,12 @@
     },
     "Retrying later" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reintentar más tarde"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2260,7 +2524,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nivel de audio del Røde"
+            "value" : "Nivel de audio de los Røde"
           }
         },
         "sv" : {
@@ -2337,6 +2601,12 @@
     },
     "Sepia" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sepia"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2411,6 +2681,12 @@
     },
     "Single" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una cámara"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2421,6 +2697,12 @@
     },
     "Small camera" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cámara pequeña"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2511,6 +2793,12 @@
     },
     "Standard" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estándar"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2761,6 +3049,12 @@
     },
     "Time" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiempo"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2819,6 +3113,12 @@
     },
     "Torch" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Linterna"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2829,6 +3129,12 @@
     },
     "Triple" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Triple"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2938,7 +3244,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Utiliza el primer canal para el nivel de audio. Para depurar el nivel desconocido del micrófono Røde"
+            "value" : "Utiliza el primer canal para el nivel de audio. Para depurar el nivel desconocido de los micrófonos Røde"
           }
         }
       }
@@ -2971,6 +3277,12 @@
     },
     "Version" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versión"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3029,6 +3341,12 @@
     },
     "Video stabilization" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estabilización de vídeo"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3218,7 +3536,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Preset del Zoom"
+            "value" : "Preset de Zoom"
           }
         },
         "sv" : {
@@ -3234,7 +3552,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Presets del Zoom"
+            "value" : "Presets de Zoom"
           }
         },
         "sv" : {
