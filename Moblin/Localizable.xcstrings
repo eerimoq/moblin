@@ -1484,7 +1484,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hitta ditt chattrumsid på https://kick.com/api/v1/channels/min_användare. Byt ut min_användare med din användare."
+            "value" : "Hitta ditt chattrumsid på https://kick.com/api/v1/channels/min_användare. Byt ut min_användare mot din användare."
           }
         }
       }
