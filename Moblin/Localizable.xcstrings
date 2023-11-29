@@ -34,6 +34,12 @@
             "state" : "translated",
             "value" : "-"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "-"
+          }
         }
       }
     },
@@ -50,6 +56,12 @@
             "state" : "translated",
             "value" : ":"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "："
+          }
         }
       }
     },
@@ -62,6 +74,12 @@
           }
         },
         "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "/"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "/"
@@ -82,6 +100,12 @@
             "state" : "translated",
             "value" : "/app/"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "/app/"
+          }
         }
       }
     },
@@ -94,6 +118,12 @@
           }
         },
         "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@"
@@ -120,6 +150,12 @@
             "state" : "translated",
             "value" : "%1$@ (%2$@ totalt)"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ (%2$@ total)"
+          }
         }
       }
     },
@@ -142,6 +178,12 @@
             "state" : "translated",
             "value" : "%1$@ (%2$@)"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ (%2$@)"
+          }
         }
       }
     },
@@ -157,6 +199,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld %%"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld%%"
           }
         }
       }
@@ -174,6 +222,12 @@
             "state" : "translated",
             "value" : "%lld dB"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld分贝"
+          }
         }
       }
     },
@@ -186,6 +240,12 @@
           }
         },
         "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "+"
@@ -206,6 +266,12 @@
             "state" : "translated",
             "value" : "Ett stort tal. Använd utvecklarverktyg (F11) i webbläsaren. Titta på websocketmeddelanden."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一个大数字。在浏览器中使用开发者工具（F11）。查看网络接口信息。"
+          }
         }
       }
     },
@@ -221,6 +287,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Om"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关于"
           }
         }
       }
@@ -238,6 +310,12 @@
             "state" : "translated",
             "value" : "Adaptiv bitrate"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自适应比特率"
+          }
         }
       }
     },
@@ -254,6 +332,12 @@
             "state" : "translated",
             "value" : "Adaptiv bitrate är experimentell."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自适应比特率是试验性特性"
+          }
         }
       }
     },
@@ -269,6 +353,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lägg till"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新增"
           }
         }
       }
@@ -292,6 +382,12 @@
             "state" : "translated",
             "value" : "Tillåtna värden är %1$@ - %2$@."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "允许范围为%1$@ - %2$@"
+          }
         }
       }
     },
@@ -307,6 +403,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Amplitud"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "振幅"
           }
         }
       }
@@ -324,6 +426,12 @@
             "state" : "translated",
             "value" : "En ofullständig lista med människor som har designat Moblin."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "部分贡献用户列表（包括为该项目提供创意，代码，测试，赞助以及其他内容，该列表仍在增加中）"
+          }
         }
       }
     },
@@ -339,6 +447,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Animerate emotes"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "动画表情"
           }
         }
       }
@@ -356,6 +470,12 @@
             "state" : "translated",
             "value" : "Animerade emotes använder mycket CPU. Stäng av dom för mindre energiförbrukning."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高性能动画表情，在低耗电模式中禁用"
+          }
         }
       }
     },
@@ -371,6 +491,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Är du säker?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "确定吗？"
           }
         }
       }
@@ -388,6 +514,12 @@
             "state" : "translated",
             "value" : "Ljud"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音频"
+          }
         }
       }
     },
@@ -403,6 +535,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ljudnivå"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音频电平"
           }
         }
       }
@@ -430,6 +568,12 @@
             "state" : "translated",
             "value" : "Bakre"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "后置"
+          }
         }
       }
     },
@@ -445,6 +589,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bakre kamera"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "后置摄像头"
           }
         }
       }
@@ -462,6 +612,12 @@
             "state" : "translated",
             "value" : "Bakre kamerans förinställningar"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "预设后置摄像头"
+          }
         }
       }
     },
@@ -477,6 +633,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bakgrund"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "北京"
           }
         }
       }
@@ -510,6 +672,12 @@
             "state" : "translated",
             "value" : "Batterinivå i procent"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "电池百分比"
+          }
         }
       }
     },
@@ -525,6 +693,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "BELABOX cloud SRT"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "BELABOX云服务-安全可靠传输（SRT）"
           }
         }
       }
@@ -542,6 +716,12 @@
             "state" : "translated",
             "value" : "BELABOX cloud SRTLA"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "BELABOX云服务-具有链路聚合的安全可靠传输代理（SRTLA）"
+          }
         }
       }
     },
@@ -557,6 +737,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Stora paket"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "大型数据包"
           }
         }
       }
@@ -574,6 +760,12 @@
             "state" : "translated",
             "value" : "Stora paket betyder 7 MPEG-TS paket per SRT paket, annars 6. Ibland fungerar inte Android hotspots med stora paket."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "大型数据包是指在一个SRT包裹中包括6或7个MPEG-TS数据包。在一些情况下安卓热点不支持大型数据包"
+          }
         }
       }
     },
@@ -590,6 +782,12 @@
             "state" : "translated",
             "value" : "Bitrate"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "比特率"
+          }
         }
       }
     },
@@ -605,6 +803,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Förinställda bitrates"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "预设比特率"
           }
         }
       }
@@ -638,6 +842,12 @@
             "state" : "translated",
             "value" : "Blå"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "蓝"
+          }
         }
       }
     },
@@ -654,6 +864,12 @@
             "state" : "translated",
             "value" : "Meddelande i fet stil"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "粗体信息/醒目信息"
+          }
         }
       }
     },
@@ -669,6 +885,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Användare i fet stil"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "粗体用户名/醒目用户名"
           }
         }
       }
@@ -702,6 +924,12 @@
             "state" : "translated",
             "value" : "Kanter använder ganska mycket CPU. Stäng av dom för mindre energiförbrukning."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Border功能会大量使用CPU，在低耗电模式中禁用"
+          }
         }
       }
     },
@@ -717,6 +945,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nere till höger"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右下方"
           }
         }
       }
@@ -734,6 +968,12 @@
             "state" : "translated",
             "value" : "Webbläsare"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "浏览器"
+          }
         }
       }
     },
@@ -749,6 +989,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Knapp"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按键"
           }
         }
       }
@@ -766,6 +1012,12 @@
             "state" : "translated",
             "value" : "Knappnamn"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按键名"
+          }
         }
       }
     },
@@ -781,6 +1033,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Knappar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按键"
           }
         }
       }
@@ -798,6 +1056,12 @@
             "state" : "translated",
             "value" : "Knappar visas nedifrån och uppåt."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按键自下而上排列"
+          }
         }
       }
     },
@@ -813,6 +1077,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kamera"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "镜头"
           }
         }
       }
@@ -830,6 +1100,12 @@
             "state" : "translated",
             "value" : "Byta kamera"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切换镜头"
+          }
         }
       }
     },
@@ -845,6 +1121,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Avbryt"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取消"
           }
         }
       }
@@ -862,6 +1144,12 @@
             "state" : "translated",
             "value" : "Kanalid"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "频道ID"
+          }
         }
       }
     },
@@ -877,6 +1165,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kanalnamn"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "频道名"
           }
         }
       }
@@ -894,6 +1188,12 @@
             "state" : "translated",
             "value" : "Chatt"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "弹幕"
+          }
         }
       }
     },
@@ -909,6 +1209,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Chatten är gömd"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "弹幕已隐藏"
           }
         }
       }
@@ -926,6 +1232,12 @@
             "state" : "translated",
             "value" : "Chatten är pausad"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "弹幕已暂停"
+          }
         }
       }
     },
@@ -941,6 +1253,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Chattrumsid"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "聊天室ID"
           }
         }
       }
@@ -958,6 +1276,12 @@
             "state" : "translated",
             "value" : "Cinematic"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "影院模式"
+          }
         }
       }
     },
@@ -973,6 +1297,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Stäng"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭"
           }
         }
       }
@@ -1006,6 +1336,12 @@
             "state" : "translated",
             "value" : "Färger"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "颜色"
+          }
         }
       }
     },
@@ -1021,6 +1357,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kosmetik"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自定义（美化）"
           }
         }
       }
@@ -1038,6 +1380,12 @@
             "state" : "translated",
             "value" : "Skapa"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "创建"
+          }
         }
       }
     },
@@ -1053,6 +1401,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Felsökning"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Debug"
           }
         }
       }
@@ -1070,6 +1424,12 @@
             "state" : "translated",
             "value" : "Decibel"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分贝"
+          }
         }
       }
     },
@@ -1085,6 +1445,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Designat av"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设计"
           }
         }
       }
@@ -1118,6 +1484,12 @@
             "state" : "translated",
             "value" : "Discord"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Discord"
+          }
         }
       }
     },
@@ -1133,6 +1505,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Visas i huvudvyn och som appikon."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "展示在主视角中并作为App图标"
           }
         }
       }
@@ -1150,6 +1528,12 @@
             "state" : "translated",
             "value" : "Dela inte dina inställningar med någon då dom kan innehålla känslig information (strömnycklar, etc.)."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "由于自定义设置可能包含敏感信息，请不要和任何人分享你的设置！（如流密钥等）"
+          }
         }
       }
     },
@@ -1165,6 +1549,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dela inte din URL med någon då den kan innehålla känslig information (strömnycklar, etc.)."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请不要和任何人分享你的URL，否则他们可能会强行入侵你的频道！"
           }
         }
       }
@@ -1182,6 +1572,12 @@
             "state" : "translated",
             "value" : "Sluta"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "停止"
+          }
         }
       }
     },
@@ -1197,6 +1593,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Exempel:  rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例如：rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef"
           }
         }
       }
@@ -1214,6 +1616,12 @@
             "state" : "translated",
             "value" : "Exempel:  rtmp://foobar.org:3321/5678"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例如：rtmp://foobar.org:3321/5678"
+          }
         }
       }
     },
@@ -1229,6 +1637,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Exempel:  rtmps://fa723fc1b171.global-contribute.live-video.net/sk_us-west-123hu43ui34hrkjh"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例如：rtmps://fa723fc1b171.global-contribute.live-video.net/sk_us-west-123hu43ui34hrkjh"
           }
         }
       }
@@ -1246,6 +1660,12 @@
             "state" : "translated",
             "value" : "Exempel:  srt://120.12.32.12:4000?streamid=publish/live/feed"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例如：srt://120.12.32.12:4000?streamid=publish/live/feed"
+          }
         }
       }
     },
@@ -1261,6 +1681,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Exempel:  srt://134.20.342.12:5000"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例如：srt://134.20.342.12:5000"
           }
         }
       }
@@ -1278,6 +1704,12 @@
             "state" : "translated",
             "value" : "Exempel:  srtla://foobar.org:4432"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例如：srtla://foobar.org:4432"
+          }
         }
       }
     },
@@ -1293,6 +1725,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Exempel: rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例如：rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3"
           }
         }
       }
@@ -1310,6 +1748,12 @@
             "state" : "translated",
             "value" : "Exempel: rtmps://live-api-s.facebook.com:443/rtmp/FB-11152522122511115-0-BctNCp9jzzz-AAA"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例如：rtmps://live-api-s.facebook.com:443/rtmp/FB-11152522122511115-0-BctNCp9jzzz-AAA"
+          }
         }
       }
     },
@@ -1325,6 +1769,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Exempel: srt://uk.srt.belabox.net:4000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例如：srt://uk.srt.belabox.net:4000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
           }
         }
       }
@@ -1342,6 +1792,12 @@
             "state" : "translated",
             "value" : "Exempel: srtla://uk.srt.belabox.net:5000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例如：srtla://uk.srt.belabox.net:5000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
+          }
         }
       }
     },
@@ -1357,6 +1813,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Exportera till utklipp"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导出到剪贴板"
           }
         }
       }
@@ -1374,6 +1836,12 @@
             "state" : "translated",
             "value" : "Exponering"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "曝光"
+          }
         }
       }
     },
@@ -1389,6 +1857,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Facebook"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Facebook/脸书"
           }
         }
       }
@@ -1406,6 +1880,12 @@
             "state" : "translated",
             "value" : "Misslyckades med att hämta 7TV emotes"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "获取7TV频道表情失败"
+          }
         }
       }
     },
@@ -1421,6 +1901,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Misslyckades med att hämta globala 7TV emotes"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "获取7TV全局表情失败"
           }
         }
       }
@@ -1438,6 +1924,12 @@
             "state" : "translated",
             "value" : "Misslyckades med att hämta BTTV emotes"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "获取BTTV表情失败"
+          }
         }
       }
     },
@@ -1453,6 +1945,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Misslyckades med att hämta FFZ emotes"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "获取FFZ表情失败"
           }
         }
       }
@@ -1470,6 +1968,12 @@
             "state" : "translated",
             "value" : "Joina gärna Moblins Discord server eller skriv ett ärende på Github om du behöver hjälp eller vill ge feedback."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "如果你需要帮助或者想提供反馈，欢迎加入Moblin Discord服务器讨论或者在GitHub上写下你的问题。"
+          }
         }
       }
     },
@@ -1486,6 +1990,12 @@
             "state" : "translated",
             "value" : "Hitta ditt chattrumsid på https://kick.com/api/v1/channels/min_användare. Byt ut min_användare mot din användare."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用你的用户名替换my_user，在https://kick.com/api/v1/channels/my_user上找到你的聊天室ID。"
+          }
         }
       }
     },
@@ -1501,6 +2011,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Teckenstorlek"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "字号"
           }
         }
       }
@@ -1528,6 +2044,12 @@
             "state" : "translated",
             "value" : "Främre"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前置"
+          }
         }
       }
     },
@@ -1543,6 +2065,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Främre kamera"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前置摄像头"
           }
         }
       }
@@ -1560,6 +2088,12 @@
             "state" : "translated",
             "value" : "Främre kamerans förinställningar"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "预设前置摄像头"
+          }
         }
       }
     },
@@ -1575,6 +2109,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Allmänt"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通用"
           }
         }
       }
@@ -1608,6 +2148,12 @@
             "state" : "translated",
             "value" : "Geometri"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "几何效果"
+          }
         }
       }
     },
@@ -1623,6 +2169,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Github"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GitHub"
           }
         }
       }
@@ -1640,6 +2192,12 @@
             "state" : "translated",
             "value" : "Gå Live"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开始直播"
+          }
         }
       }
     },
@@ -1655,6 +2213,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gråskala"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "灰度"
           }
         }
       }
@@ -1672,6 +2236,12 @@
             "state" : "translated",
             "value" : "Grön"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "绿色"
+          }
         }
       }
     },
@@ -1687,6 +2257,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Höjd"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高度"
           }
         }
       }
@@ -1704,6 +2280,12 @@
             "state" : "translated",
             "value" : "Hjälp & support"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "帮助和支持"
+          }
         }
       }
     },
@@ -1719,6 +2301,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Göm känslig URL"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隐藏隐私URL"
           }
         }
       }
@@ -1736,6 +2324,12 @@
             "state" : "translated",
             "value" : "Ikoner"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "图标"
+          }
         }
       }
     },
@@ -1751,6 +2345,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ikoner i shoppen"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已上架的图标"
           }
         }
       }
@@ -1768,6 +2368,12 @@
             "state" : "translated",
             "value" : "Ikoner snart i shoppen"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未上架的图标"
+          }
         }
       }
     },
@@ -1783,6 +2389,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bild"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "图像"
           }
         }
       }
@@ -1800,6 +2412,12 @@
             "state" : "translated",
             "value" : "Importera och exportera inställningar"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导入/导出设置"
+          }
         }
       }
     },
@@ -1815,6 +2433,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Importera från utklipp"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "从剪贴板导入"
           }
         }
       }
@@ -1832,6 +2456,12 @@
             "state" : "translated",
             "value" : "Intervall"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "间隔"
+          }
         }
       }
     },
@@ -1847,6 +2477,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nyckelbildsintervall"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关键帧间隔"
           }
         }
       }
@@ -1896,6 +2532,12 @@
             "state" : "translated",
             "value" : "Latens"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "延迟"
+          }
         }
       }
     },
@@ -1911,6 +2553,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Layout"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "布局"
           }
         }
       }
@@ -1928,6 +2576,12 @@
             "state" : "translated",
             "value" : "Licenser"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "执照"
+          }
         }
       }
     },
@@ -1943,6 +2597,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lokala overlays"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "本地功能设置"
           }
         }
       }
@@ -1960,6 +2620,12 @@
             "state" : "translated",
             "value" : "Lokala overlays syns inte i strömmen."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不出现在直播流中的功能设置"
+          }
         }
       }
     },
@@ -1975,6 +2641,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Logg"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日志"
           }
         }
       }
@@ -1992,6 +2664,12 @@
             "state" : "translated",
             "value" : "Loggningsnivå"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日志级别"
+          }
         }
       }
     },
@@ -2007,6 +2685,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Stort tack från Moblins utvecklare!"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "非常感谢所有Mobilin的开发者们！"
           }
         }
       }
@@ -2040,6 +2724,12 @@
             "state" : "translated",
             "value" : "Maximalt nyckelbildsintervall i sekunder. Sätt till 0 för automatiskt val."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最大关键帧间隔（单位：秒）默认值为0"
+          }
         }
       }
     },
@@ -2072,6 +2762,12 @@
             "state" : "translated",
             "value" : "Meddelande"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "信息"
+          }
         }
       }
     },
@@ -2087,6 +2783,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mikrofon"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "麦克风"
           }
         }
       }
@@ -2104,6 +2806,12 @@
             "state" : "translated",
             "value" : "Djupa länkar som börjar med  moblin:// kan användas för att importera vissa inställningar, ofta via QR-koder eller i en webbläsare. Se https://github.com/eerimoq/moblin för mer information."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mobilin:// 深层链接可用于导入部分设置，可使用二维码或浏览器。参见https://github.com/eerimoq/moblin获取更多细节。"
+          }
         }
       }
     },
@@ -2119,6 +2827,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Film"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "影片"
           }
         }
       }
@@ -2136,6 +2850,12 @@
             "state" : "translated",
             "value" : "Mute"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "静音"
+          }
         }
       }
     },
@@ -2151,6 +2871,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Muted"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已静音"
           }
         }
       }
@@ -2168,6 +2894,12 @@
             "state" : "translated",
             "value" : "Mina ikoner"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "我的图标"
+          }
         }
       }
     },
@@ -2183,6 +2915,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Min scen"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "我的视角"
           }
         }
       }
@@ -2200,6 +2938,12 @@
             "state" : "translated",
             "value" : "Min ström"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "我的直播流"
+          }
         }
       }
     },
@@ -2215,6 +2959,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "min_strömnyckel"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "我的直播密钥"
           }
         }
       }
@@ -2232,6 +2982,12 @@
             "state" : "translated",
             "value" : "Namn"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "名字"
+          }
         }
       }
     },
@@ -2247,6 +3003,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ingest_i_närheten"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "附近的摄取节点"
           }
         }
       }
@@ -2264,6 +3026,12 @@
             "state" : "translated",
             "value" : "Brusnivå"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "噪音级别"
+          }
         }
       }
     },
@@ -2279,6 +3047,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Brusreducering"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "降噪"
           }
         }
       }
@@ -2296,6 +3070,12 @@
             "state" : "translated",
             "value" : "Inte konfigurerat"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未配置"
+          }
         }
       }
     },
@@ -2311,6 +3091,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "OBS Media Source (SRT)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OBS媒体源-安全可靠传输（SRT）"
           }
         }
       }
@@ -2328,6 +3114,12 @@
             "state" : "translated",
             "value" : "Av"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭"
+          }
         }
       }
     },
@@ -2343,6 +3135,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "På"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开启"
           }
         }
       }
@@ -2360,6 +3158,12 @@
             "state" : "translated",
             "value" : "Bara oanvända knappar kan raderas."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "只有未使用的按键可以被删除"
+          }
         }
       }
     },
@@ -2375,6 +3179,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bara oanvända widgets kan raderas."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "只有未使用的组件可以被删除"
           }
         }
       }
@@ -2392,6 +3202,12 @@
             "state" : "translated",
             "value" : "Utestående paket"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "传输中的数据包"
+          }
         }
       }
     },
@@ -2407,6 +3223,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Parametrar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "参数"
           }
         }
       }
@@ -2424,6 +3246,12 @@
             "state" : "translated",
             "value" : "Pausa chatten"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暂停弹幕"
+          }
         }
       }
     },
@@ -2439,6 +3267,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bild-i-bild"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画中画"
           }
         }
       }
@@ -2456,6 +3290,12 @@
             "state" : "translated",
             "value" : "Förinställning"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "预设"
+          }
         }
       }
     },
@@ -2471,6 +3311,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Slumpmässig"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "随机"
           }
         }
       }
@@ -2488,6 +3334,12 @@
             "state" : "translated",
             "value" : "Röd"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "红"
+          }
         }
       }
     },
@@ -2503,6 +3355,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Återställ inställningarna"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重新设置"
           }
         }
       }
@@ -2520,6 +3378,12 @@
             "state" : "translated",
             "value" : "Upplösning"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分辨率"
+          }
         }
       }
     },
@@ -2535,6 +3399,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Försöker igen senare"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请稍后重新尝试"
           }
         }
       }
@@ -2552,6 +3422,12 @@
             "state" : "translated",
             "value" : "Røde ljudnivå"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Røde音频电平"
+          }
         }
       }
     },
@@ -2567,6 +3443,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "RTMP server"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RTMP服务器"
           }
         }
       }
@@ -2584,6 +3466,12 @@
             "state" : "translated",
             "value" : "Scen"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "视野"
+          }
         }
       }
     },
@@ -2600,6 +3488,12 @@
             "state" : "translated",
             "value" : "Scener"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "视野"
+          }
         }
       }
     },
@@ -2615,6 +3509,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Välj bild"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择图片"
           }
         }
       }
@@ -2648,6 +3548,12 @@
             "state" : "translated",
             "value" : "Inställningar"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设置"
+          }
         }
       }
     },
@@ -2663,6 +3569,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Inställningar som skulle stoppa strömmen är inte tillgängliga när man är live."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在直播开启时，部分会阻止直播流的设置会被禁用"
           }
         }
       }
@@ -2680,6 +3592,12 @@
             "state" : "translated",
             "value" : "Skärpa"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "锐度"
+          }
         }
       }
     },
@@ -2695,6 +3613,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Visa känslig URL"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "展示隐私URL"
           }
         }
       }
@@ -2728,6 +3652,12 @@
             "state" : "translated",
             "value" : "Liten kamera"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "小镜头"
+          }
         }
       }
     },
@@ -2743,6 +3673,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "SRT Live Server (SLS)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "安全可靠传输（SRT）直播服务器（SLS）"
           }
         }
       }
@@ -2792,6 +3728,12 @@
             "state" : "translated",
             "value" : "SRT(LA)"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "具有链路聚合的安全可靠传输代理（SRTLA）"
+          }
         }
       }
     },
@@ -2807,6 +3749,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "SRTLA server"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "具有链路聚合的安全可靠传输代理（SRTLA）服务器"
           }
         }
       }
@@ -2824,6 +3772,12 @@
             "state" : "translated",
             "value" : "Standard"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "标准"
+          }
         }
       }
     },
@@ -2839,6 +3793,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ström"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "直播流"
           }
         }
       }
@@ -2856,6 +3816,12 @@
             "state" : "translated",
             "value" : "ström_url"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "直播流URL"
+          }
         }
       }
     },
@@ -2871,6 +3837,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Strömmar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "直播流"
           }
         }
       }
@@ -2888,6 +3860,12 @@
             "state" : "translated",
             "value" : "Stöd Moblins utvecklare genom att köpa ikoner."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "购买图标来支持Moblin的开发者"
+          }
         }
       }
     },
@@ -2903,6 +3881,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tryck på skärmen för att fokusera"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点击屏幕以聚焦"
           }
         }
       }
@@ -2920,6 +3904,12 @@
             "state" : "translated",
             "value" : "Mall: rtmp://"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "模板：rtmp://"
+          }
         }
       }
     },
@@ -2935,6 +3925,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mall: rtmp://my_public_ip:my_public_port/my_stream_key"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "模板：rtmp://my_public_ip:my_public_port/my_stream_key"
           }
         }
       }
@@ -2952,6 +3948,12 @@
             "state" : "translated",
             "value" : "Mall: srt://my_public_ip:my_public_port"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "模板：srt://my_public_ip:my_public_port"
+          }
         }
       }
     },
@@ -2967,6 +3969,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mall: srt://my_public_ip:my_public_port?streamid=publish/live/my_key"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "模板：srt://my_public_ip:my_public_port?streamid=publish/live/my_key"
           }
         }
       }
@@ -2984,6 +3992,12 @@
             "state" : "translated",
             "value" : "Mall: srtla://my_public_ip:my_public_port"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "模板：srtla://my_public_ip:my_public_port"
+          }
         }
       }
     },
@@ -2999,6 +4013,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Webbläsarwidgets är experimentella och fungerar inte bra ännu."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "浏览器组件作为试验性功能，目前可能运行存在问题"
           }
         }
       }
@@ -3016,6 +4036,12 @@
             "state" : "translated",
             "value" : "Loggen är tom."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日志为空"
+          }
         }
       }
     },
@@ -3031,6 +4057,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Din kanals namn."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的频道名"
           }
         }
       }
@@ -3048,6 +4080,12 @@
             "state" : "translated",
             "value" : "Bild-i-bild-layouten är experimentell och fungerar inte."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画中画布局为试验性功能，目前并未开发完善"
+          }
         }
       }
     },
@@ -3063,6 +4101,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zoomen (i X) som sätts när man byter till given kamera."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "转换到该相机并设置放大X倍（在该相机支持该功能的情况下）"
           }
         }
       }
@@ -3080,6 +4124,12 @@
             "state" : "translated",
             "value" : "Tid"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "时间"
+          }
         }
       }
     },
@@ -3095,6 +4145,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tidsstämpel"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "时间戳"
           }
         }
       }
@@ -3122,6 +4178,12 @@
             "state" : "translated",
             "value" : "Uppe till vänster"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左上方"
+          }
         }
       }
     },
@@ -3137,6 +4199,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Uppe till höger"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右上方"
           }
         }
       }
@@ -3154,6 +4222,12 @@
             "state" : "translated",
             "value" : "Ficklampa"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手电筒"
+          }
         }
       }
     },
@@ -3170,6 +4244,12 @@
             "state" : "translated",
             "value" : "Trippel"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "三重"
+          }
         }
       }
     },
@@ -3182,6 +4262,12 @@
           }
         },
         "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Twitch"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Twitch"
@@ -3202,6 +4288,12 @@
             "state" : "translated",
             "value" : "Typ"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "类型"
+          }
         }
       }
     },
@@ -3217,6 +4309,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Okänd"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未知的"
           }
         }
       }
@@ -3234,6 +4332,12 @@
             "state" : "translated",
             "value" : "Oanvänd"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未使用的"
+          }
         }
       }
     },
@@ -3249,6 +4353,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Upptid"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正常运行时间"
           }
         }
       }
@@ -3266,6 +4376,12 @@
             "state" : "translated",
             "value" : "URL"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL"
+          }
         }
       }
     },
@@ -3276,6 +4392,12 @@
             "state" : "translated",
             "value" : "Utiliza el primer canal para el nivel de audio. Para depurar el nivel desconocido de los micrófonos Røde"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "为了debug Røde麦克风的未知电平，使用第一频道作为音频电平"
+          }
         }
       }
     },
@@ -3285,6 +4407,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Utiliza el audio generado como fuente en lugar del micrófono."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不使用麦克风，使用制作的音频作为输入"
           }
         }
       }
@@ -3302,6 +4430,12 @@
             "state" : "translated",
             "value" : "Användare"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用户名"
+          }
         }
       }
     },
@@ -3317,6 +4451,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Version"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "版本"
           }
         }
       }
@@ -3334,6 +4474,12 @@
             "state" : "translated",
             "value" : "Väldigt experimentell och väldigt hemlig."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "超级前沿秘密特性！"
+          }
         }
       }
     },
@@ -3349,6 +4495,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Video"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "视频"
           }
         }
       }
@@ -3366,6 +4518,12 @@
             "state" : "translated",
             "value" : "Videoeffekt"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "视频特效"
+          }
         }
       }
     },
@@ -3381,6 +4539,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bildstabilisering"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "视频稳定/防抖动"
           }
         }
       }
@@ -3398,6 +4562,12 @@
             "state" : "translated",
             "value" : "Bildstabilisering kan göra att ljud och bild inte blir i synk."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "视频防抖动可能会导致音画不同步问题"
+          }
         }
       }
     },
@@ -3413,6 +4583,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tittare"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "浏览者"
           }
         }
       }
@@ -3430,6 +4606,12 @@
             "state" : "translated",
             "value" : "Widget"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "组件"
+          }
         }
       }
     },
@@ -3445,6 +4627,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Widgetnamn"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "组件名"
           }
         }
       }
@@ -3462,6 +4650,12 @@
             "state" : "translated",
             "value" : "Widgets"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "组件"
+          }
         }
       }
     },
@@ -3478,6 +4672,12 @@
             "state" : "translated",
             "value" : "Widgets visas uppifrån och nedåt."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "组件从后向前堆放"
+          }
         }
       }
     },
@@ -3493,6 +4693,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bredd"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "宽度"
           }
         }
       }
@@ -3526,6 +4732,12 @@
             "state" : "translated",
             "value" : "Du har redan köpt allt!"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这家店的东西已经被你承包了！"
+          }
         }
       }
     },
@@ -3541,6 +4753,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "YouTube"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YouTube/油管"
           }
         }
       }
@@ -3558,6 +4776,12 @@
             "state" : "translated",
             "value" : "Noll eller fler millisekunder."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "零或以上毫秒。任何在URL中输入的延迟参数都将覆盖该数值。"
+          }
         }
       }
     },
@@ -3574,6 +4798,12 @@
             "state" : "translated",
             "value" : "Zoom"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "放大"
+          }
         }
       }
     },
@@ -3589,6 +4819,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Förinställd zoom"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "预设放大"
           }
         }
       }
