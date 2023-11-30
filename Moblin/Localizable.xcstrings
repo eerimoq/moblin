@@ -18,6 +18,18 @@
             "state" : "translated",
             "value" : " "
           }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " "
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " "
+          }
         }
       }
     },
@@ -134,19 +146,19 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@"
+            "value" : "%@ "
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@"
+            "value" : "%@ "
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@"
+            "value" : "%@ "
           }
         }
       }
