@@ -6,7 +6,7 @@ struct StreamButtonText: View {
     var body: some View {
         Text(text)
             .foregroundColor(.white)
-            .frame(width: 60)
+            .frame(minWidth: 60)
             .padding(5)
             .background(.red)
             .cornerRadius(10)

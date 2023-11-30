@@ -53,7 +53,7 @@ struct WidgetsSettingsView: View {
                     model.resetSelectedScene()
                 })
                 CreateButtonView(action: {
-                    database.widgets.append(SettingsWidget(name: "My widget"))
+                    database.widgets.append(SettingsWidget(name: String(localized: "My widget")))
                     model.store()
                     model.resetSelectedScene()
                 })
