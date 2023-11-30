@@ -510,6 +510,7 @@ class SettingsZoom: Codable {
     var front: [SettingsZoomPreset] = []
     var switchToBack: SettingsZoomSwitchTo = .init()
     var switchToFront: SettingsZoomSwitchTo = .init()
+    var speed: Float? = 5.0
 }
 
 class SettingsBitratePreset: Codable, Identifiable {
@@ -994,6 +995,10 @@ final class Settings {
         }
         for scene in realDatabase.scenes where scene.cameraPosition == nil {
             scene.cameraPosition = scene.cameraType
+            store()
+        }
+        if realDatabase.zoom.speed == nil {
+            realDatabase.zoom.speed = 5.0
             store()
         }
     }

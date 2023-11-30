@@ -1776,7 +1776,7 @@ final class Model: ObservableObject {
             videoStabilizationMode: getVideoStabilizationMode(),
             onSuccess: {
                 self.videoView.isMirrored = isMirrored
-                _ = self.media.setCameraZoomLevel(level: self.zoomLevel, ramp: false)
+                _ = self.media.setCameraZoomLevel(level: self.zoomLevel)
                 if let device = self.cameraDevice {
                     self.setMaxAutoExposure(device: device)
                 }
@@ -1856,7 +1856,7 @@ final class Model: ObservableObject {
             break
         }
         if let preset = findZoomPreset(id: id) {
-            if media.setCameraZoomLevel(level: Double(preset.level), ramp: true) != nil {
+            if media.setCameraZoomLevel(level: Double(preset.level), rate: database.zoom.speed!) != nil {
                 setZoomLevel(level: Double(preset.level))
             }
         }
@@ -1879,20 +1879,14 @@ final class Model: ObservableObject {
 
     func changeZoomLevel(amount: Double) {
         clearZoomId()
-        if let level = media.setCameraZoomLevel(
-            level: zoomLevelPinch * amount,
-            ramp: false
-        ) {
+        if let level = media.setCameraZoomLevel(level: zoomLevelPinch * amount) {
             setZoomLevel(level: level, setPinch: false)
         }
     }
 
     func commitZoomLevel(amount: Double) {
         clearZoomId()
-        if let level = media.setCameraZoomLevel(
-            level: zoomLevelPinch * amount,
-            ramp: false
-        ) {
+        if let level = media.setCameraZoomLevel(level: zoomLevelPinch * amount) {
             setZoomLevel(level: level)
         }
     }

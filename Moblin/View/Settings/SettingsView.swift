@@ -134,7 +134,7 @@ struct SettingsView: View {
                         )
                     )
                 }
-                NavigationLink(destination: ZoomSettingsView()) {
+                NavigationLink(destination: ZoomSettingsView(speed: model.database.zoom.speed!)) {
                     Text("Zoom")
                 }
                 VideoStabilizationSettingsView()

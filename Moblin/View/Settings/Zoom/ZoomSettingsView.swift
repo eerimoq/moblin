@@ -2,9 +2,29 @@ import SwiftUI
 
 struct ZoomSettingsView: View {
     @EnvironmentObject var model: Model
+    @State var speed: Float
 
     var body: some View {
         Form {
+            Section {
+                HStack {
+                    Text("Speed")
+                    Slider(
+                        value: $speed,
+                        in: 1 ... 10,
+                        step: 0.1,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            model.database.zoom.speed = speed
+                            model.store()
+                        }
+                    )
+                    Text(String(formatOneDecimal(value: speed)))
+                        .frame(width: 35)
+                }
+            }
             Section("Back camera presets") {
                 List {
                     ForEach(model.database.zoom.back) { preset in

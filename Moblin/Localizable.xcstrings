@@ -3743,6 +3743,9 @@
         }
       }
     },
+    "Speed" : {
+
+    },
     "SRT Live Server (SLS)" : {
       "localizations" : {
         "es" : {
