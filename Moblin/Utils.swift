@@ -167,6 +167,7 @@ var sizeFormatter: ByteCountFormatter {
 func formatBytesPerSecond(speed: Int64) -> String {
     var speed = sizeFormatter.string(fromByteCount: speed)
     speed = speed.replacingOccurrences(of: "bytes", with: "b")
+    speed = speed.replacingOccurrences(of: "byte", with: "b")
     return speed.replacingOccurrences(of: "B", with: "b") + "ps"
 }
 
