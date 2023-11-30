@@ -109,6 +109,26 @@
         }
       }
     },
+    "/sec" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "/s"
+          }
+        }
+      }
+    },
+    "%.1f/min" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.1f/min"
+          }
+        }
+      }
+    },
     "%@ " : {
       "localizations" : {
         "es" : {
@@ -249,6 +269,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "+"
+          }
+        }
+      }
+    },
+    "🎉 You are LIVE at %@ 🎉" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🎉 Du är LIVE på %@ 🎉"
+          }
+        }
+      }
+    },
+    "🤟 Stream ended 🤟" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🤟 Strömmen avslutad 🤟"
+          }
+        }
+      }
+    },
+    "😢 FFFFF 😢" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "😢 FFFFF 😢"
+          }
+        }
+      }
+    },
+    "0.0/min" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "0.0/min"
           }
         }
       }
@@ -1570,7 +1630,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sluta"
+            "value" : "Avsluta"
           }
         },
         "zh-Hans" : {

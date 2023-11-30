@@ -16,6 +16,7 @@ import VideoToolbox
 
 private let noValue = ""
 private let maximumNumberOfChatMessages = 50
+private let secondsSuffix = String(localized: "/sec")
 
 struct Camera {
     var type: SettingsCameraType
@@ -185,7 +186,7 @@ final class Model: ObservableObject {
     private var chatPostsRatePerSecond = 0.0
     private var chatPostsRatePerMinute = 0.0
     private var numberOfChatPostsPerMinute = 0
-    @Published var chatPostsRate = "0.0/min"
+    @Published var chatPostsRate = String(localized: "0.0/min")
     @Published var chatPostsTotal: Int = 0
     private var chatSpeedTicks = 0
     @Published var numberOfViewers = noValue
@@ -1642,11 +1643,11 @@ final class Model: ObservableObject {
         }
         let newChatPostsRate: String
         if chatPostsRatePerSecond > 0.5 ||
-            (chatPostsRatePerSecond > 0.05 && chatPostsRate.hasSuffix("/sec"))
+            (chatPostsRatePerSecond > 0.05 && chatPostsRate.hasSuffix(secondsSuffix))
         {
-            newChatPostsRate = String(format: "%.1f/sec", chatPostsRatePerSecond)
+            newChatPostsRate = String(format: "%.1f", chatPostsRatePerSecond) + secondsSuffix
         } else {
-            newChatPostsRate = String(format: "%.1f/min", chatPostsRatePerMinute)
+            newChatPostsRate = String(format: String(localized: "%.1f/min"), chatPostsRatePerMinute)
         }
         if chatPostsRate != newChatPostsRate {
             chatPostsRate = newChatPostsRate
@@ -1995,16 +1996,16 @@ final class Model: ObservableObject {
     }
 
     private func makeYouAreLiveToast() {
-        makeToast(title: "🎉 You are LIVE at \(stream.name) 🎉")
+        makeToast(title: String(localized: "🎉 You are LIVE at \(stream.name) 🎉"))
     }
 
     private func makeStreamEndedToast() {
-        makeToast(title: "🤟 Stream ended 🤟")
+        makeToast(title: String(localized: "🤟 Stream ended 🤟"))
     }
 
     private func makeFffffToast(reason: String) {
         makeErrorToast(
-            title: "😢 FFFFF 😢",
+            title: String(localized: "😢 FFFFF 😢"),
             font: .system(size: 64).bold(),
             subTitle: reason
         )
