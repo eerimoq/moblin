@@ -644,7 +644,16 @@ final class Model: ObservableObject {
         media.onVideoDeviceInUseByAnotherClient = handleVideoDeviceInUseByAnotherClient
         setupAudioSession()
         setMic()
-        backZoomPresetId = database.zoom.back[0].id
+        if let cameraDevice = preferredCamera(position: .back) {
+            (cameraZoomMinimum, cameraZoomMaximum) = cameraDevice.getUIZoomRange()
+            if let preset = backZoomPresets().first {
+                backZoomPresetId = preset.id
+                backZoomX = preset.x!
+            } else {
+                backZoomX = cameraZoomMinimum
+            }
+            zoomX = backZoomX
+        }
         frontZoomPresetId = database.zoom.front[0].id
         videoView.videoGravity = .resizeAspect
         if database.maximumScreenFpsEnabled {
@@ -2135,15 +2144,6 @@ final class Model: ObservableObject {
             deviceType = .builtInTelephotoCamera
         }
         if let device = AVCaptureDevice.default(deviceType, for: .video, position: position) {
-            if device.isGeometricDistortionCorrectionSupported {
-                logger.info("camera: geometric distorsion: \(device.isGeometricDistortionCorrectionEnabled)")
-            }
-            logger.info("camera: min zoom: \(device.minAvailableVideoZoomFactor)")
-            logger.info("camera: max zoom: \(device.maxAvailableVideoZoomFactor)")
-            logger.info("camera: auto HDR: \(device.automaticallyAdjustsVideoHDREnabled)")
-            logger.info("camera: HDR: \(device.isVideoHDREnabled)")
-            let (minimum, maximum) = device.getUIZoomRange()
-            logger.info("camera: UI zoom range: \(minimum) - \(maximum)")
             return device
         }
         logger.error("No camera")
