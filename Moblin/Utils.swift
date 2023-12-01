@@ -366,3 +366,21 @@ func httpGet(from: URL) async throws -> (Data, HTTPURLResponse) {
 }
 
 let smallFont = Font.system(size: 13)
+
+extension AVCaptureDevice {
+    func getZoomFactorScale() -> Float {
+        switch deviceType {
+        case .builtInTripleCamera, .builtInDualWideCamera, .builtInUltraWideCamera:
+            return 0.5
+        case .builtInTelephotoCamera:
+            return 5.0
+        default:
+            return 1.0
+        }
+    }
+
+    func getUIZoomRange() -> (Float, Float) {
+        let factor = getZoomFactorScale()
+        return (Float(minAvailableVideoZoomFactor) * factor, Float(maxAvailableVideoZoomFactor) * factor)
+    }
+}

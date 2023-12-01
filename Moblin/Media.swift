@@ -327,18 +327,18 @@ final class Media: NSObject {
         netStream.videoSettings.maxKeyFrameIntervalDuration = seconds
     }
 
-    func setCameraZoomLevel(level: Double, rate: Float? = nil) -> Double? {
+    func setCameraZoomLevel(level: Float, rate: Float?) -> Float? {
         guard let device = netStream.videoCapture()?.device else {
             logger.warning("Device not ready to zoom")
             return nil
         }
-        let level = level.clamped(to: 1.0 ... device.activeFormat.videoMaxZoomFactor)
+        let level = level.clamped(to: 1.0 ... Float(device.activeFormat.videoMaxZoomFactor))
         do {
             try device.lockForConfiguration()
             if let rate {
-                device.ramp(toVideoZoomFactor: level, withRate: rate)
+                device.ramp(toVideoZoomFactor: CGFloat(level), withRate: rate)
             } else {
-                device.videoZoomFactor = level
+                device.videoZoomFactor = CGFloat(level)
             }
             device.unlockForConfiguration()
         } catch let error as NSError {

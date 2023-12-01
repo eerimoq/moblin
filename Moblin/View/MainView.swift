@@ -45,10 +45,10 @@ struct MainView: View {
                 .gesture(
                     MagnificationGesture()
                         .onChanged { amount in
-                            model.changeZoomLevel(amount: amount)
+                            model.changeZoomX(amount: Float(amount))
                         }
                         .onEnded { amount in
-                            model.commitZoomLevel(amount: amount)
+                            model.commitZoomX(amount: Float(amount))
                         }
                 )
                 ControlBarView()

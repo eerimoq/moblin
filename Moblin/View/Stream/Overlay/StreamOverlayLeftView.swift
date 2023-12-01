@@ -97,7 +97,7 @@ struct LeftOverlayView: View {
             if database.show.zoom {
                 StreamOverlayIconAndTextView(
                     icon: "magnifyingglass",
-                    text: String(format: "%.1f", model.zoomX())
+                    text: String(format: "%.1f", model.zoomX)
                 )
             }
             if model.database.show.chat {

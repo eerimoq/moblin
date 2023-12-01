@@ -169,7 +169,7 @@ struct RightOverlayView: View {
                     .padding([.bottom], 5)
                 } else {
                     Picker("", selection: $model.backZoomPresetId) {
-                        ForEach(database.zoom.back) { preset in
+                        ForEach(model.backZoomPresets()) { preset in
                             Text(preset.name).tag(preset.id)
                         }
                     }
@@ -179,7 +179,7 @@ struct RightOverlayView: View {
                     .pickerStyle(.segmented)
                     .padding([.bottom], 1)
                     .background(Color(uiColor: .systemBackground).opacity(0.8))
-                    .frame(width: CGFloat(50 * database.zoom.back.count))
+                    .frame(width: CGFloat(50 * model.backZoomPresets().count))
                     .cornerRadius(7)
                     .overlay(
                         RoundedRectangle(cornerRadius: 7)

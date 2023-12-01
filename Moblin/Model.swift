@@ -221,10 +221,10 @@ final class Model: ObservableObject {
     @Published var manualFocusPoint: CGPoint?
     @Published var backZoomPresetId = UUID()
     @Published var frontZoomPresetId = UUID()
-    @Published var zoomLevel = 1.0
-    var zoomLevelPinch = 1.0
-    private var backZoomLevel = 1.0
-    private var frontZoomLevel = 1.0
+    @Published var zoomX: Float = 1.0
+    var zoomXPinch: Float = 1.0
+    private var backZoomX: Float = 0.5
+    private var frontZoomX: Float = 1.0
     var cameraPosition: AVCaptureDevice.Position?
     var secondCameraPosition: AVCaptureDevice.Position?
     private let motionManager = CMMotionManager()
@@ -234,6 +234,9 @@ final class Model: ObservableObject {
     }
 
     var cameraDevice: AVCaptureDevice?
+    var cameraZoomScale: Float = 1.0
+    var cameraZoomMinimum: Float = 1.0
+    var cameraZoomMaximum: Float = 1.0
     var secondCameraDevice: AVCaptureDevice?
     @Published var srtDebugLines: [String] = []
 
@@ -1176,6 +1179,15 @@ final class Model: ObservableObject {
         videoView.attachStream(media.getNetStream())
     }
 
+    private func showPreset(preset: SettingsZoomPreset) -> Bool {
+        let factor = preset.level / 2
+        return factor >= cameraZoomMinimum && factor <= cameraZoomMaximum
+    }
+
+    func backZoomPresets() -> [SettingsZoomPreset] {
+        return database.zoom.back.filter { showPreset(preset: $0) }
+    }
+
     private func getPreset(preset: AVCaptureSession.Preset) -> AVCaptureSession.Preset {
         if logger.debugEnabled && stream.captureSessionPresetEnabled {
             switch stream.captureSessionPreset {
@@ -1743,6 +1755,8 @@ final class Model: ObservableObject {
         }
         setAutoFocus()
         cameraDevice = preferredCamera(position: position)
+        cameraZoomScale = cameraDevice?.getZoomFactorScale() ?? 1.0
+        (cameraZoomMinimum, cameraZoomMaximum) = cameraDevice?.getUIZoomRange() ?? (1.0, 1.0)
         if let secondPosition {
             secondCameraDevice = preferredCamera(position: secondPosition)
         } else {
@@ -1759,16 +1773,16 @@ final class Model: ObservableObject {
         case .back:
             if database.zoom.switchToBack.enabled {
                 clearZoomId()
-                backZoomLevel = Double(database.zoom.switchToBack.level)
+                backZoomX = database.zoom.switchToBack.x!
             }
-            zoomLevel = backZoomLevel
+            zoomX = backZoomX
             isMirrored = false
         case .front:
             if database.zoom.switchToFront.enabled {
                 clearZoomId()
-                frontZoomLevel = Double(database.zoom.switchToFront.level)
+                frontZoomX = database.zoom.switchToFront.x!
             }
-            zoomLevel = frontZoomLevel
+            zoomX = frontZoomX
             isMirrored = true
         default:
             break
@@ -1779,13 +1793,29 @@ final class Model: ObservableObject {
             videoStabilizationMode: getVideoStabilizationMode(),
             onSuccess: {
                 self.videoView.isMirrored = isMirrored
-                _ = self.media.setCameraZoomLevel(level: self.zoomLevel)
+                if let x = self.setCameraZoomX(x: self.zoomX) {
+                    self.zoomX = x
+                }
                 if let device = self.cameraDevice {
                     self.setMaxAutoExposure(device: device)
                 }
             }
         )
-        zoomLevelPinch = zoomLevel
+        zoomXPinch = zoomX
+    }
+
+    private func setCameraZoomX(x: Float, rate: Float? = nil) -> Float? {
+        var level = x
+        if cameraPosition == .back {
+            level = x / cameraZoomScale
+        }
+        var realLevel = media.setCameraZoomLevel(level: level, rate: rate)
+        if cameraPosition == .back {
+            if let realLevel {
+                return realLevel * cameraZoomScale
+            }
+        }
+        return realLevel
     }
 
     private func setMaxAutoExposure(device: AVCaptureDevice) {
@@ -1859,43 +1889,39 @@ final class Model: ObservableObject {
             break
         }
         if let preset = findZoomPreset(id: id) {
-            if media.setCameraZoomLevel(level: Double(preset.level), rate: database.zoom.speed!) != nil {
-                setZoomLevel(level: Double(preset.level))
+            if setCameraZoomX(x: preset.x!, rate: database.zoom.speed!) != nil {
+                setZoomX(x: preset.x!)
             }
         }
     }
 
-    private func setZoomLevel(level: Double, setPinch: Bool = true) {
+    private func setZoomX(x: Float, setPinch: Bool = true) {
         switch cameraPosition {
         case .back:
-            backZoomLevel = level
+            backZoomX = x
         case .front:
-            frontZoomLevel = level
+            frontZoomX = x
         default:
             break
         }
-        zoomLevel = level
+        zoomX = x
         if setPinch {
-            zoomLevelPinch = zoomLevel
+            zoomXPinch = zoomX
         }
     }
 
-    func changeZoomLevel(amount: Double) {
+    func changeZoomX(amount: Float) {
         clearZoomId()
-        if let level = media.setCameraZoomLevel(level: zoomLevelPinch * amount) {
-            setZoomLevel(level: level, setPinch: false)
+        if let x = setCameraZoomX(x: zoomXPinch * amount) {
+            setZoomX(x: x, setPinch: false)
         }
     }
 
-    func commitZoomLevel(amount: Double) {
+    func commitZoomX(amount: Float) {
         clearZoomId()
-        if let level = media.setCameraZoomLevel(level: zoomLevelPinch * amount) {
-            setZoomLevel(level: level)
+        if let x = setCameraZoomX(x: zoomXPinch * amount) {
+            setZoomX(x: x)
         }
-    }
-
-    func zoomX() -> Float {
-        return factorToX(position: cameraPosition ?? .back, factor: Float(zoomLevel))
     }
 
     private func clearZoomId() {
@@ -2109,6 +2135,15 @@ final class Model: ObservableObject {
             deviceType = .builtInTelephotoCamera
         }
         if let device = AVCaptureDevice.default(deviceType, for: .video, position: position) {
+            if device.isGeometricDistortionCorrectionSupported {
+                logger.info("camera: geometric distorsion: \(device.isGeometricDistortionCorrectionEnabled)")
+            }
+            logger.info("camera: min zoom: \(device.minAvailableVideoZoomFactor)")
+            logger.info("camera: max zoom: \(device.maxAvailableVideoZoomFactor)")
+            logger.info("camera: auto HDR: \(device.automaticallyAdjustsVideoHDREnabled)")
+            logger.info("camera: HDR: \(device.isVideoHDREnabled)")
+            let (minimum, maximum) = device.getUIZoomRange()
+            logger.info("camera: UI zoom range: \(minimum) - \(maximum)")
             return device
         }
         logger.error("No camera")

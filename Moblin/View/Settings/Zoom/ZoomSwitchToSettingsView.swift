@@ -8,7 +8,7 @@ struct ZoomSwitchToSettingsView: View {
     let defaultZoom: SettingsZoomSwitchTo
 
     private func x() -> Float {
-        return factorToX(position: position, factor: defaultZoom.level)
+        return defaultZoom.x!
     }
 
     private func formatX(x: Float) -> String {
@@ -28,7 +28,7 @@ struct ZoomSwitchToSettingsView: View {
                     model.makeErrorToast(title: String(localized: "X must be \(minX) - \(maxX)"))
                     return
                 }
-                defaultZoom.level = xToFactor(position: position, x: x)
+                defaultZoom.x = x
                 model.store()
             }
         )) {

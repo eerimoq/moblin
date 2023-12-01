@@ -21,12 +21,8 @@ struct ZoomPresetSettingsView: View {
             model.makeErrorToast(title: "X must be \(minX) - \(maxX)")
             return
         }
-        preset.level = xToFactor(position: position, x: x)
+        preset.x = x
         model.store()
-    }
-
-    private func x() -> Float {
-        return factorToX(position: position, factor: preset.level)
     }
 
     private func formatX(x: Float) -> String {
@@ -43,13 +39,13 @@ struct ZoomPresetSettingsView: View {
             }
             NavigationLink(destination: TextEditView(
                 title: "X",
-                value: String(x()),
+                value: String(preset.x!),
                 onSubmit: submitX,
                 footer: Text(
                     "Allowed range is \(formatX(x: minX)) - \(formatX(x: maxX))."
                 )
             )) {
-                TextItemView(name: "X", value: String(x()))
+                TextItemView(name: "X", value: String(preset.x!))
             }
         }
         .navigationTitle("Zoom preset")

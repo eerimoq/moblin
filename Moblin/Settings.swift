@@ -494,16 +494,19 @@ class SettingsZoomPreset: Codable, Identifiable {
     var id: UUID
     var name: String = ""
     var level: Float = 1.0
+    var x: Float? = 1.0
 
-    init(id: UUID, name: String, level: Float) {
+    init(id: UUID, name: String, level: Float, x: Float) {
         self.id = id
         self.name = name
         self.level = level
+        self.x = x
     }
 }
 
 class SettingsZoomSwitchTo: Codable {
     var level: Float = 1.0
+    var x: Float? = 1.0
     var enabled: Bool = false
 }
 
@@ -747,20 +750,20 @@ func addDefaultZoomPresets(database: Database) {
 
 func addDefaultBackZoomPresets(database: Database) {
     database.zoom.back = [
-        SettingsZoomPreset(id: UUID(), name: "0.5x", level: 1.0),
-        SettingsZoomPreset(id: UUID(), name: "1x", level: 2.0),
-        SettingsZoomPreset(id: UUID(), name: "2x", level: 4.0),
-        SettingsZoomPreset(id: UUID(), name: "4x", level: 8.0),
-        SettingsZoomPreset(id: UUID(), name: "8x", level: 16.0),
+        SettingsZoomPreset(id: UUID(), name: "0.5x", level: 1.0, x: 0.5),
+        SettingsZoomPreset(id: UUID(), name: "1x", level: 2.0, x: 1.0),
+        SettingsZoomPreset(id: UUID(), name: "2x", level: 4.0, x: 2.0),
+        SettingsZoomPreset(id: UUID(), name: "4x", level: 8.0, x: 4.0),
+        SettingsZoomPreset(id: UUID(), name: "8x", level: 16.0, x: 8.0),
     ]
 }
 
 func addDefaultFrontZoomPresets(database: Database) {
     database.zoom.front = [
-        SettingsZoomPreset(id: UUID(), name: "1x", level: 1.0),
-        SettingsZoomPreset(id: UUID(), name: "2x", level: 2.0),
-        SettingsZoomPreset(id: UUID(), name: "4x", level: 4.0),
-        SettingsZoomPreset(id: UUID(), name: "8x", level: 8.0),
+        SettingsZoomPreset(id: UUID(), name: "1x", level: 1.0, x: 1.0),
+        SettingsZoomPreset(id: UUID(), name: "2x", level: 2.0, x: 2.0),
+        SettingsZoomPreset(id: UUID(), name: "4x", level: 4.0, x: 4.0),
+        SettingsZoomPreset(id: UUID(), name: "8x", level: 8.0, x: 8.0),
     ]
 }
 
@@ -1005,6 +1008,22 @@ final class Settings {
         }
         if realDatabase.show.cameras == nil {
             realDatabase.show.cameras = true
+            store()
+        }
+        for preset in realDatabase.zoom.back where preset.x == nil {
+            preset.x = preset.level / 2
+            store()
+        }
+        for preset in realDatabase.zoom.front where preset.x == nil {
+            preset.x = preset.level
+            store()
+        }
+        if realDatabase.zoom.switchToBack.x == nil {
+            realDatabase.zoom.switchToBack.x = realDatabase.zoom.switchToBack.level / 2
+            store()
+        }
+        if realDatabase.zoom.switchToFront.x == nil {
+            realDatabase.zoom.switchToFront.x = realDatabase.zoom.switchToFront.level / 2
             store()
         }
     }

@@ -38,10 +38,7 @@ struct ZoomSettingsView: View {
                                 DraggableItemPrefixView()
                                 TextItemView(
                                     name: preset.name,
-                                    value: String(factorToX(
-                                        position: .back,
-                                        factor: preset.level
-                                    ))
+                                    value: String(preset.x!)
                                 )
                             }
                         }
@@ -60,7 +57,8 @@ struct ZoomSettingsView: View {
                     model.database.zoom.back.append(SettingsZoomPreset(
                         id: UUID(),
                         name: "1x",
-                        level: xToFactor(position: .back, x: 1.0)
+                        level: xToFactor(position: .back, x: 1.0),
+                        x: 1.0
                     ))
                     model.backZoomUpdated()
                 })
@@ -78,7 +76,7 @@ struct ZoomSettingsView: View {
                                 DraggableItemPrefixView()
                                 TextItemView(
                                     name: preset.name,
-                                    value: String(preset.level)
+                                    value: String(preset.x!)
                                 )
                             }
                         }
@@ -97,7 +95,8 @@ struct ZoomSettingsView: View {
                     model.database.zoom.front.append(SettingsZoomPreset(
                         id: UUID(),
                         name: "1x",
-                        level: 1.0
+                        level: 1.0,
+                        x: 1.0
                     ))
                     model.frontZoomUpdated()
                 })
