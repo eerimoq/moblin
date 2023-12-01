@@ -158,6 +158,7 @@ var cameraPositions = SettingsSceneCameraPosition.allCases.map { $0.toString() }
 enum SettingsCameraType: String, Codable, CaseIterable {
     case triple = "Triple"
     case dual = "Dual"
+    case dualWide = "Dual Wide"
     case wide = "Wide"
     case ultraWide = "Ultra Wide"
     case telephoto = "Telephoto"

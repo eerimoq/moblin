@@ -704,6 +704,7 @@ final class Model: ObservableObject {
             deviceTypes: [
                 .builtInTripleCamera,
                 .builtInDualCamera,
+                .builtInDualWideCamera,
                 .builtInUltraWideCamera,
                 .builtInWideAngleCamera,
                 .builtInTelephotoCamera,
@@ -717,6 +718,8 @@ final class Model: ObservableObject {
                 return Camera(type: .triple, name: device.localizedName)
             case .builtInDualCamera:
                 return Camera(type: .dual, name: device.localizedName)
+            case .builtInDualWideCamera:
+                return Camera(type: .dualWide, name: device.localizedName)
             case .builtInUltraWideCamera:
                 return Camera(type: .ultraWide, name: device.localizedName)
             case .builtInWideAngleCamera:
@@ -2096,6 +2099,8 @@ final class Model: ObservableObject {
             deviceType = .builtInTripleCamera
         case .dual:
             deviceType = .builtInDualCamera
+        case .dualWide:
+            deviceType = .builtInDualWideCamera
         case .ultraWide:
             deviceType = .builtInUltraWideCamera
         case .wide:
