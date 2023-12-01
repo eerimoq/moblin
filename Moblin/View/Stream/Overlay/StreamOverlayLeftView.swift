@@ -82,6 +82,12 @@ struct LeftOverlayView: View {
                     text: streamText()
                 )
             }
+            if database.show.cameras! {
+                StreamOverlayIconAndTextView(
+                    icon: "camera",
+                    text: model.cameraDevice?.localizedName ?? ""
+                )
+            }
             if database.show.microphone {
                 StreamOverlayIconAndTextView(
                     icon: "music.mic",

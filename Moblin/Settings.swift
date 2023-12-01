@@ -487,6 +487,7 @@ class SettingsShow: Codable {
     var zoomPresets: Bool = true
     var microphone: Bool = true
     var audioBar: Bool = true
+    var cameras: Bool? = true
 }
 
 class SettingsZoomPreset: Codable, Identifiable {
@@ -1000,6 +1001,10 @@ final class Settings {
         }
         if realDatabase.zoom.speed == nil {
             realDatabase.zoom.speed = 5.0
+            store()
+        }
+        if realDatabase.show.cameras == nil {
+            realDatabase.show.cameras = true
             store()
         }
     }
