@@ -1809,7 +1809,7 @@ final class Model: ObservableObject {
         if cameraPosition == .back {
             level = x / cameraZoomScale
         }
-        var realLevel = media.setCameraZoomLevel(level: level, rate: rate)
+        let realLevel = media.setCameraZoomLevel(level: level, rate: rate)
         if cameraPosition == .back {
             if let realLevel {
                 return realLevel * cameraZoomScale
