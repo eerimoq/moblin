@@ -435,6 +435,16 @@
         }
       }
     },
+    "AfreecaTV" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AfreecaTV"
+          }
+        }
+      }
+    },
     "Allowed range is %@ - %@." : {
       "localizations" : {
         "en" : {
@@ -547,6 +557,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "高性能动画表情，在低耗电模式中禁用"
+          }
+        }
+      }
+    },
+    "API key" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API-nyckel"
           }
         }
       }
@@ -1653,6 +1673,9 @@
         }
       }
     },
+    "Example URL: https://play.afreecatv.com/myChannelName/myVideoId" : {
+
+    },
     "Example:  rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef" : {
       "localizations" : {
         "es" : {
@@ -2048,6 +2071,9 @@
           }
         }
       }
+    },
+    "Find your channel name (myChannelName) and video id (myVideoId) in your stream's URL." : {
+
     },
     "Find your chatroom id at https://kick.com/api/v1/channels/my_user. Replace my_user with your user." : {
       "localizations" : {
@@ -3744,7 +3770,14 @@
       }
     },
     "Speed" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hastighet"
+          }
+        }
+      }
     },
     "SRT Live Server (SLS)" : {
       "localizations" : {
@@ -4478,6 +4511,12 @@
             "value" : "Utiliza el primer canal para el nivel de audio. Para depurar el nivel desconocido de los micrófonos Røde"
           }
         },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Använd alltid första ljudkanalen för att mäta ljudnivå. För felsökning av Okänd ljudnivå när Rødemikrofon används."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4492,6 +4531,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Utiliza el audio generado como fuente en lugar del micrófono."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Generera ljud istället för all använda mikrofonen."
           }
         },
         "zh-Hans" : {
@@ -4557,13 +4602,24 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Väldigt experimentell och väldigt hemlig."
+            "value" : "Väldigt experimentella och väldigt hemliga inställningar."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "超级前沿秘密特性！"
+          }
+        }
+      }
+    },
+    "Very experimental and very secret! Does not work yet!" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Väldigt experimentella och väldigt hemliga inställningar. Fungerar inte än!"
           }
         }
       }
@@ -4608,6 +4664,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "视频特效"
+          }
+        }
+      }
+    },
+    "Video id" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Videoid"
           }
         }
       }

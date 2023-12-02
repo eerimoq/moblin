@@ -118,6 +118,8 @@
 		03E95ADF2ADB7A2E00DAE2DF /* MaximumScreenFpsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95ADE2ADB7A2E00DAE2DF /* MaximumScreenFpsSettingsView.swift */; };
 		03E95AE42ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95AE32ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift */; };
 		03EBEA632ACB4A17000DF427 /* BrowserEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */; };
+		03EF34B42B1AFBB600A19221 /* AfreecaTvChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EF34B32B1AFBB600A19221 /* AfreecaTvChat.swift */; };
+		03EF34BA2B1B028900A19221 /* StreamAfreecaTvSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EF34B92B1B028900A19221 /* StreamAfreecaTvSettingsView.swift */; };
 		03F3BF192ADAAA94009A8D3E /* TextEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F3BF182ADAAA94009A8D3E /* TextEffect.swift */; };
 		03F5A8DF2AD5DACB00F354D2 /* Srt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F5A8DE2AD5DACB00F354D2 /* Srt.swift */; };
 		03F5A8E52AD6FF8E00F354D2 /* StreamOverlayDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F5A8E42AD6FF8E00F354D2 /* StreamOverlayDebugView.swift */; };
@@ -231,6 +233,8 @@
 		03E95ADE2ADB7A2E00DAE2DF /* MaximumScreenFpsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaximumScreenFpsSettingsView.swift; sourceTree = "<group>"; };
 		03E95AE32ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapScreenToFocusSettingsView.swift; sourceTree = "<group>"; };
 		03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserEffect.swift; sourceTree = "<group>"; };
+		03EF34B32B1AFBB600A19221 /* AfreecaTvChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AfreecaTvChat.swift; sourceTree = "<group>"; };
+		03EF34B92B1B028900A19221 /* StreamAfreecaTvSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamAfreecaTvSettingsView.swift; sourceTree = "<group>"; };
 		03F3BF182ADAAA94009A8D3E /* TextEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEffect.swift; sourceTree = "<group>"; };
 		03F5A8DE2AD5DACB00F354D2 /* Srt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Srt.swift; sourceTree = "<group>"; };
 		03F5A8E42AD6FF8E00F354D2 /* StreamOverlayDebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOverlayDebugView.swift; sourceTree = "<group>"; };
@@ -283,6 +287,7 @@
 		0315A3402AA31ADC00295443 /* Stream */ = {
 			isa = PBXGroup;
 			children = (
+				03EF34B72B1B027000A19221 /* AfreecaTv */,
 				0330F2B22AFADD05001262C3 /* YouTube */,
 				032469A72AE1B2D80097B18B /* Srt */,
 				036BE2D02ABD51770048F9C5 /* Kick */,
@@ -434,6 +439,7 @@
 				036BE2CD2ABD4C960048F9C5 /* Kick */,
 				0379BB712AA4BFA500B718B6 /* Twitch */,
 				0330F2AE2AFAD24F001262C3 /* YouTube */,
+				03EF34B22B1AFB7F00A19221 /* AfreecaTv */,
 				03B374052AA0EA370028DDD5 /* VideoEffects */,
 				0315A3392AA2FA0A00295443 /* Srtla */,
 				03A983542A9A0582008FF0DB /* View */,
@@ -735,6 +741,22 @@
 			path = TapScreenToFocus;
 			sourceTree = "<group>";
 		};
+		03EF34B22B1AFB7F00A19221 /* AfreecaTv */ = {
+			isa = PBXGroup;
+			children = (
+				03EF34B32B1AFBB600A19221 /* AfreecaTvChat.swift */,
+			);
+			path = AfreecaTv;
+			sourceTree = "<group>";
+		};
+		03EF34B72B1B027000A19221 /* AfreecaTv */ = {
+			isa = PBXGroup;
+			children = (
+				03EF34B92B1B028900A19221 /* StreamAfreecaTvSettingsView.swift */,
+			);
+			path = AfreecaTv;
+			sourceTree = "<group>";
+		};
 		03FB4B2C2AD8CF6B005AA183 /* BitratePresets */ = {
 			isa = PBXGroup;
 			children = (
@@ -906,6 +928,7 @@
 				0379BBAA2AAD953200B718B6 /* HelpAndSupportSettingsView.swift in Sources */,
 				03403DF62AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift in Sources */,
 				032A49BC2AC5DF3F00ED3916 /* ImportExportSettingsView.swift in Sources */,
+				03EF34BA2B1B028900A19221 /* StreamAfreecaTvSettingsView.swift in Sources */,
 				03A9836E2A9A05F9008FF0DB /* Model.swift in Sources */,
 				03BC11642AE4BEC400C38FC4 /* Emotes.swift in Sources */,
 				03A983722A9A0659008FF0DB /* TwitchChatMoblin.swift in Sources */,
@@ -918,6 +941,7 @@
 				0379BBAD2AAD964000B718B6 /* AboutSettingsView.swift in Sources */,
 				03F5A8DF2AD5DACB00F354D2 /* Srt.swift in Sources */,
 				036BE2CF2ABD4CA60048F9C5 /* KickPusher.swift in Sources */,
+				03EF34B42B1AFBB600A19221 /* AfreecaTvChat.swift in Sources */,
 				03BC11602AE4BD9200C38FC4 /* Ffz.swift in Sources */,
 				0315A37E2AA43DCC00295443 /* TextEditView.swift in Sources */,
 				035E9E372A9A02D6009D4F5A /* MoblinApp.swift in Sources */,

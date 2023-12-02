@@ -178,6 +178,7 @@ final class Model: ObservableObject {
     private var twitchPubSub: TwitchPubSub?
     private var kickPusher: KickPusher?
     private var youTubeLiveChat: YouTubeLiveChat?
+    private var afreecaTvChat: AfreecaTvChat?
     private var chatPostId = 0
     @Published var chatPosts: Deque<ChatPost> = []
     private var pausedChatPosts: Deque<ChatPost> = []
@@ -1171,6 +1172,7 @@ final class Model: ObservableObject {
         reloadTwitchPubSub()
         reloadKickPusher()
         reloadYouTubeLiveChat()
+        reloadAfreecaTvChat()
     }
 
     func storeAndReloadStreamIfEnabled(stream: SettingsStream) {
@@ -1269,7 +1271,7 @@ final class Model: ObservableObject {
 
     func isChatConfigured() -> Bool {
         return isTwitchChatConfigured() || isKickPusherConfigured() ||
-            isYouTubeLiveChatConfigured()
+            isYouTubeLiveChatConfigured() || isAfreecaTvChatConfigured()
     }
 
     func isViewersConfigured() -> Bool {
@@ -1305,7 +1307,7 @@ final class Model: ObservableObject {
     }
 
     func isYouTubeLiveChatConfigured() -> Bool {
-        return stream.youTubeApiKey != "" && stream.youTubeVideoId != ""
+        return stream.youTubeApiKey! != "" && stream.youTubeVideoId! != ""
     }
 
     func isYouTubeLiveChatConnected() -> Bool {
@@ -1314,6 +1316,18 @@ final class Model: ObservableObject {
 
     func hasYouTubeLiveChatEmotes() -> Bool {
         return youTubeLiveChat?.hasEmotes() ?? false
+    }
+
+    func isAfreecaTvChatConfigured() -> Bool {
+        return stream.afreecaTvChannelName! != "" && stream.afreecaTvStreamId! != ""
+    }
+
+    func isAfreecaTvChatConnected() -> Bool {
+        return afreecaTvChat?.isConnected() ?? false
+    }
+
+    func hasAfreecaTvChatEmotes() -> Bool {
+        return afreecaTvChat?.hasEmotes() ?? false
     }
 
     func isChatConnected() -> Bool {
@@ -1326,12 +1340,15 @@ final class Model: ObservableObject {
         if isYouTubeLiveChatConfigured() && !isYouTubeLiveChatConnected() {
             return false
         }
+        if isAfreecaTvChatConfigured() && !isAfreecaTvChatConnected() {
+            return false
+        }
         return true
     }
 
     func hasChatEmotes() -> Bool {
         return hasTwitchChatEmotes() || hasKickPusherEmotes() ||
-            hasYouTubeLiveChatEmotes()
+            hasYouTubeLiveChatEmotes() || hasAfreecaTvChatEmotes()
     }
 
     func isStreamConnceted() -> Bool {
@@ -1404,6 +1421,21 @@ final class Model: ObservableObject {
         }
     }
 
+    private func reloadAfreecaTvChat() {
+        afreecaTvChat?.stop()
+        afreecaTvChat = nil
+        if stream.afreecaTvChannelName! != "" && stream.afreecaTvStreamId! != "" {
+            afreecaTvChat = AfreecaTvChat(
+                model: self,
+                channelName: stream.afreecaTvChannelName!,
+                streamId: stream.afreecaTvStreamId!
+            )
+            afreecaTvChat!.start()
+        } else {
+            logger.info("AfreecaTV chat id not configured. No AfreecaTV chat.")
+        }
+    }
+
     func twitchChannelNameUpdated() {
         reloadTwitchChat()
         resetChat()
@@ -1427,6 +1459,16 @@ final class Model: ObservableObject {
 
     func youTubeVideoIdUpdated() {
         reloadYouTubeLiveChat()
+        resetChat()
+    }
+
+    func afreecaTvChannelNameUpdated() {
+        reloadAfreecaTvChat()
+        resetChat()
+    }
+
+    func afreecaTvStreamIdUpdated() {
+        reloadAfreecaTvChat()
         resetChat()
     }
 
@@ -1814,12 +1856,11 @@ final class Model: ObservableObject {
     }
 
     private func setCameraZoomX(x: Float, rate: Float? = nil) -> Float? {
-        var level = x / cameraZoomLevelToXScale
-        let realLevel = media.setCameraZoomLevel(level: level, rate: rate)
-        if let realLevel {
-            return realLevel * cameraZoomLevelToXScale
+        let level = media.setCameraZoomLevel(level: x / cameraZoomLevelToXScale, rate: rate)
+        if let level {
+            return level * cameraZoomLevelToXScale
         }
-        return realLevel
+        return level
     }
 
     private func setMaxAutoExposure(device: AVCaptureDevice) {

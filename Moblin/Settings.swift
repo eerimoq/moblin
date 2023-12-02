@@ -54,6 +54,8 @@ class SettingsStream: Codable, Identifiable {
     var kickChatroomId: String = ""
     var youTubeApiKey: String? = ""
     var youTubeVideoId: String? = ""
+    var afreecaTvChannelName: String? = ""
+    var afreecaTvStreamId: String? = ""
     var resolution: SettingsStreamResolution = .r1280x720
     var fps: Int = 30
     var bitrate: UInt32 = 3_000_000
@@ -1024,6 +1026,14 @@ final class Settings {
         }
         if realDatabase.zoom.switchToFront.x == nil {
             realDatabase.zoom.switchToFront.x = realDatabase.zoom.switchToFront.level / 2
+            store()
+        }
+        for stream in realDatabase.streams where stream.afreecaTvChannelName == nil {
+            stream.afreecaTvChannelName = ""
+            store()
+        }
+        for stream in realDatabase.streams where stream.afreecaTvStreamId == nil {
+            stream.afreecaTvStreamId = ""
             store()
         }
     }
