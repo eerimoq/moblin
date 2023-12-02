@@ -234,9 +234,9 @@ final class Model: ObservableObject {
     }
 
     var cameraDevice: AVCaptureDevice?
-    var cameraZoomScale: Float = 1.0
-    var cameraZoomMinimum: Float = 1.0
-    var cameraZoomMaximum: Float = 1.0
+    var cameraZoomLevelToXScale: Float = 1.0
+    var cameraZoomXMinimum: Float = 1.0
+    var cameraZoomXMaximum: Float = 1.0
     var secondCameraDevice: AVCaptureDevice?
     @Published var srtDebugLines: [String] = []
 
@@ -645,12 +645,12 @@ final class Model: ObservableObject {
         setupAudioSession()
         setMic()
         if let cameraDevice = preferredCamera(position: .back) {
-            (cameraZoomMinimum, cameraZoomMaximum) = cameraDevice.getUIZoomRange()
+            (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice.getUIZoomRange()
             if let preset = backZoomPresets().first {
                 backZoomPresetId = preset.id
                 backZoomX = preset.x!
             } else {
-                backZoomX = cameraZoomMinimum
+                backZoomX = cameraZoomXMinimum
             }
             zoomX = backZoomX
         }
@@ -1189,8 +1189,8 @@ final class Model: ObservableObject {
     }
 
     private func showPreset(preset: SettingsZoomPreset) -> Bool {
-        let factor = preset.level / 2
-        return factor >= cameraZoomMinimum && factor <= cameraZoomMaximum
+        let x = preset.x!
+        return x >= cameraZoomXMinimum && x <= cameraZoomXMaximum
     }
 
     func backZoomPresets() -> [SettingsZoomPreset] {
@@ -1764,8 +1764,8 @@ final class Model: ObservableObject {
         }
         setAutoFocus()
         cameraDevice = preferredCamera(position: position)
-        cameraZoomScale = cameraDevice?.getZoomFactorScale() ?? 1.0
-        (cameraZoomMinimum, cameraZoomMaximum) = cameraDevice?.getUIZoomRange() ?? (1.0, 1.0)
+        cameraZoomLevelToXScale = cameraDevice?.getZoomFactorScale() ?? 1.0
+        (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice?.getUIZoomRange() ?? (1.0, 1.0)
         if let secondPosition {
             secondCameraDevice = preferredCamera(position: secondPosition)
         } else {
@@ -1814,15 +1814,10 @@ final class Model: ObservableObject {
     }
 
     private func setCameraZoomX(x: Float, rate: Float? = nil) -> Float? {
-        var level = x
-        if cameraPosition == .back {
-            level = x / cameraZoomScale
-        }
+        var level = x / cameraZoomLevelToXScale
         let realLevel = media.setCameraZoomLevel(level: level, rate: rate)
-        if cameraPosition == .back {
-            if let realLevel {
-                return realLevel * cameraZoomScale
-            }
+        if let realLevel {
+            return realLevel * cameraZoomLevelToXScale
         }
         return realLevel
     }
