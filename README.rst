@@ -38,13 +38,17 @@ Features
 
   - Chat.
 
+- Kick integration.
+
+  - Chat.
+
 - YouTube integration.
 
   - Scuffed chat.
 
-- Kick integration.
+- AfreecaTv integration.
 
-  - Chat.
+  - Scuffed chat.
 
 - Basic scenes.
 
@@ -70,6 +74,8 @@ Features
   - Pinch-to-zoom.
 
   - Configurable presets.
+
+- Back camera lens selection.
 
 - Tap screen for manual focus.
 
@@ -129,8 +135,6 @@ ToDo
 Ideas/plan
 ==========
 
-- App localization.
-
 - Show two cameras at the same time.
 
 - Use lossy video format? More effecient?
@@ -140,9 +144,7 @@ Ideas/plan
 - Button to show black screen.
 
 - Reduce brightness when thermal state is critical.
-  
-- Optionally disable wide angle lens (use dual camera).
-  
+
 - A list of usernames whos messages will not get displayed on screen.
 
 - Rework zoom. Fine tune similar to builtin camera app.
