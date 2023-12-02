@@ -74,6 +74,7 @@ struct ControlBarView: View {
                     .font(smallFont)
             }
             .padding([.bottom], 10)
+            .padding([.leading, .trailing], 10)
             HStack(spacing: 0) {
                 Image("\(model.iconImage)NoBackground")
                     .resizable()
@@ -94,6 +95,7 @@ struct ControlBarView: View {
                 }
                 .padding([.leading], 10)
             }
+            .padding([.leading, .trailing], 10)
             GeometryReader { metrics in
                 VStack(spacing: 0) {
                     Spacer()
@@ -101,10 +103,11 @@ struct ControlBarView: View {
                         .frame(width: metrics.size.width)
                 }
             }
+            .padding([.leading, .trailing], 10)
             StreamButton()
                 .padding([.top], 10)
+                .padding([.leading, .trailing], 5)
         }
-        .padding([.leading, .trailing], 10)
         .padding([.top, .bottom], 0)
         .frame(width: controlBarWidth())
         .background(.black)
