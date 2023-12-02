@@ -298,7 +298,9 @@ enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
     }
 }
 
-let videoEffects = SettingsWidgetVideoEffectType.allCases.map { $0.toString() }
+let videoEffects = SettingsWidgetVideoEffectType.allCases.filter { effect in
+    effect != .bloom
+}.map { $0.toString() }
 
 class SettingsWidgetVideoEffect: Codable {
     var type: SettingsWidgetVideoEffectType = .movie
@@ -679,11 +681,6 @@ func addDefaultWidgets(database: Database) {
     widget.videoEffect.type = .sepia
     database.widgets.append(widget)
 
-    widget = SettingsWidget(name: String(localized: "Bloom"))
-    widget.type = .videoEffect
-    widget.videoEffect.type = .bloom
-    database.widgets.append(widget)
-
     widget = SettingsWidget(name: String(localized: "Random"))
     widget.type = .videoEffect
     widget.videoEffect.type = .random
@@ -833,22 +830,13 @@ func addDefaultButtons(database: Database) {
     button.widget.widgetId = database.widgets[2].id
     database.buttons.append(button)
 
-    button = SettingsButton(name: String(localized: "Bloom"))
-    button.id = UUID()
-    button.type = .widget
-    button.imageType = "System name"
-    button.systemImageNameOn = "drop.fill"
-    button.systemImageNameOff = "drop"
-    button.widget.widgetId = database.widgets[3].id
-    database.buttons.append(button)
-
     button = SettingsButton(name: String(localized: "Random"))
     button.id = UUID()
     button.type = .widget
     button.imageType = "System name"
     button.systemImageNameOn = "dice.fill"
     button.systemImageNameOff = "dice"
-    button.widget.widgetId = database.widgets[4].id
+    button.widget.widgetId = database.widgets[3].id
     database.buttons.append(button)
 
     button = SettingsButton(name: String(localized: "Mic"))
@@ -1034,6 +1022,46 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.afreecaTvStreamId == nil {
             stream.afreecaTvStreamId = ""
+            store()
+        }
+        var bloomWidgets: [SettingsWidget] = []
+        for widget in realDatabase.widgets where widget.type == .videoEffect {
+            if widget.videoEffect.type == .bloom {
+                bloomWidgets.append(widget)
+            }
+        }
+        if !bloomWidgets.isEmpty {
+            realDatabase.widgets = realDatabase.widgets.filter { widget in
+                !bloomWidgets.contains(widget)
+            }
+            for scene in realDatabase.scenes {
+                scene.widgets = scene.widgets.filter { widget in
+                    !bloomWidgets.contains { bloomWidget in
+                        bloomWidget.id == widget.widgetId
+                    }
+                }
+            }
+            store()
+        }
+        var bloomButtons: [SettingsButton] = []
+        for button in realDatabase.buttons where button.type == .widget {
+            if bloomWidgets.contains(where: { widget in
+                widget.id == button.widget.widgetId
+            }) {
+                bloomButtons.append(button)
+            }
+        }
+        if !bloomButtons.isEmpty {
+            realDatabase.buttons = realDatabase.buttons.filter { button in
+                !bloomButtons.contains(button)
+            }
+            for scene in realDatabase.scenes {
+                scene.buttons = scene.buttons.filter { button in
+                    !bloomButtons.contains { bloomButton in
+                        bloomButton.id == button.buttonId
+                    }
+                }
+            }
             store()
         }
     }

@@ -1014,7 +1014,7 @@ final class Model: ObservableObject {
         case .sepia:
             videoEffects[widget.id] = SepiaEffect()
         case .bloom:
-            videoEffects[widget.id] = BloomEffect()
+            break
         case .random:
             videoEffects[widget.id] = RandomEffect()
         case .triple:
