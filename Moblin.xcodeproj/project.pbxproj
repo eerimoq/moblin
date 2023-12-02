@@ -226,6 +226,7 @@
 		03C0882F2B0A939F000990DA /* SceneCameraPipSmallCameraSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneCameraPipSmallCameraSettingsView.swift; sourceTree = "<group>"; };
 		03C088362B0AFFA8000990DA /* InlinePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlinePickerView.swift; sourceTree = "<group>"; };
 		03CC5F882AD060DB0019CBA5 /* WidgetBrowserUrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBrowserUrlSettingsView.swift; sourceTree = "<group>"; };
+		03CD342A2B1B9AA6007F15CF /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		03D445E12AE5966B00A0F6E9 /* CacheAsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheAsyncImage.swift; sourceTree = "<group>"; };
 		03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomSwitchToSettingsView.swift; sourceTree = "<group>"; };
 		03E95ADE2ADB7A2E00DAE2DF /* MaximumScreenFpsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaximumScreenFpsSettingsView.swift; sourceTree = "<group>"; };
@@ -995,6 +996,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				034838152B166AD70090CF11 /* es */,
+				03CD342A2B1B9AA6007F15CF /* pl */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";

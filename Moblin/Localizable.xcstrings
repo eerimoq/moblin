@@ -177,6 +177,12 @@
             "value" : "%1$@ (%2$@ total)"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ (%2$@ z całości)"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -287,6 +293,12 @@
     },
     "🎉 You are LIVE at %@ 🎉" : {
       "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jesteś na żywo, profil: %@ 🎉"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -297,6 +309,12 @@
     },
     "🤟 Stream ended 🤟" : {
       "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zakończono stream 🤟"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -333,6 +351,12 @@
             "value" : "Un número largo. Utiliza las herramientas para desarrolladores (F11) de tu navegador. Mira los mensajes del websocket."
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duża liczba. Użyj narzędzi deweloperskich (F11) w twojej przeglądarce. Sprawdź wiadomości websocket."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -353,6 +377,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Acerca de"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O aplikacji"
           }
         },
         "sv" : {
@@ -377,6 +407,12 @@
             "value" : "Bitrate adaptable"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adaptacyjny bitrate"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -399,6 +435,12 @@
             "value" : "El bitrate adaptable es experimental."
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adaptacyjny bitrate jest w wersji testowej."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -419,6 +461,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Añadir"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dodaj"
           }
         },
         "sv" : {
@@ -459,6 +507,12 @@
             "value" : "El rango permitido es %1$@ - %2$@."
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dopuszczalny zakres między %1$@ - %2$@."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -479,6 +533,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Amplitud"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Amplituda"
           }
         },
         "sv" : {
@@ -503,6 +563,12 @@
             "value" : "Una lista incompleta de personas que han contribuido con ideas, programación\npruebas, promoción y más."
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niepełna lista osób, które przyczyniły się do rozwoju aplikacji przez koncepcje, programowanie, testowanie, promocję i więcej."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -525,6 +591,12 @@
             "value" : "Emotes animados"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Animowane emotki"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -545,6 +617,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Los emotes animados consumen bastante CPU. Desactívalos para reducir el uso de energía."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Animowane emotki mogą przyczynić się do obciążenia CPU. Wyłącz, aby zmniejszyć zużycie energii. "
           }
         },
         "sv" : {
@@ -579,6 +657,12 @@
             "value" : "¿Estás seguro?"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Czy jesteś pewny(a)?"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -596,6 +680,12 @@
     "Audio" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Audio"
+          }
+        },
+        "pl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Audio"
@@ -623,6 +713,12 @@
             "value" : "Nivel de audio"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Poziom audio"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -639,6 +735,12 @@
     },
     "back" : {
       "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "powrót"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -653,6 +755,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Trasera"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Powrót"
           }
         },
         "sv" : {
@@ -677,6 +785,12 @@
             "value" : "Cámara trasera"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tylny aparat"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -697,6 +811,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Presets de la cámara trasera"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Presety tylnego aparatu"
           }
         },
         "sv" : {
@@ -721,6 +841,12 @@
             "value" : "Fondo"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tło"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -743,6 +869,12 @@
             "value" : "Barras"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pasek"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -757,6 +889,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Porcentaje de batería"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Procent baterii"
           }
         },
         "sv" : {
@@ -825,6 +963,12 @@
             "value" : "Big packets"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duże pakiety"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -845,6 +989,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Big packets significa 7 paquetes MPEG-TS por paquete SRT, 6 en caso contrario. A veces los hotspots o puntos de acceso de Android no funcionan con big packets."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duże pakiety oznaczają 7 MPEG-TS pakietów na pakiet SRT, 6 w przeciwnym razie. Czasami hotspoty na Androidzie nie działają z dużymi pakietami."
           }
         },
         "sv" : {
@@ -891,6 +1041,12 @@
             "value" : "Presets de Bitrate"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Presety bitrate"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -929,6 +1085,12 @@
             "value" : "Azul"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niebieski"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -949,6 +1111,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mensaje en negrita"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pogrubiona treść wiadomości"
           }
         },
         "sv" : {
@@ -973,6 +1141,12 @@
             "value" : "Nombre de usuario en negrita"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pogrubiona nazwa użytkownika"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -995,6 +1169,12 @@
             "value" : "Borde"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obrys"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1009,6 +1189,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "El borde consume bastante CPU. Desactívalo para consumir menos energía."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obrys może przyczynić się do obciążenia CPU. Wyłącz, aby zmniejszyć zużycie energii"
           }
         },
         "sv" : {
@@ -1033,6 +1219,12 @@
             "value" : "Abajo a la derecha"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prawy dolny"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1053,6 +1245,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Navegador"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Przeglądarka"
           }
         },
         "sv" : {
@@ -1077,6 +1275,12 @@
             "value" : "Botón"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Przycisk"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1097,6 +1301,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nombre del botón"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nazwa przycisku"
           }
         },
         "sv" : {
@@ -1121,6 +1331,12 @@
             "value" : "Botones"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Przyciski"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1141,6 +1357,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Los botones aparecen de abajo a arriba."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Przyciski pojawiają się od dołu do góry."
           }
         },
         "sv" : {
@@ -1165,6 +1387,12 @@
             "value" : "Cámara"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aparat"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1185,6 +1413,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cambio de cámara"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Przełączanie kamery"
           }
         },
         "sv" : {
@@ -1209,6 +1443,12 @@
             "value" : "Cancelar"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anuluj"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1229,6 +1469,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ID del canal"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ID kanału"
           }
         },
         "sv" : {
@@ -1253,6 +1499,12 @@
             "value" : "Nombre del canal"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nazwa kanału"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1273,6 +1525,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Chat"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Czat"
           }
         },
         "sv" : {
@@ -1297,6 +1555,12 @@
             "value" : "Chat ocultado"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Czat jest ukryty"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1317,6 +1581,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Chat pausado"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Czat został wstrzymany"
           }
         },
         "sv" : {
@@ -1341,6 +1611,12 @@
             "value" : "Chatroom ID"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ID pokoju"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1361,6 +1637,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cinemático"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tryb kinowy"
           }
         },
         "sv" : {
@@ -1385,6 +1667,12 @@
             "value" : "Cerrar"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zakończ"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1407,6 +1695,12 @@
             "value" : "Códec"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kodek"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1421,6 +1715,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Colores"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kolory"
           }
         },
         "sv" : {
@@ -1445,6 +1745,12 @@
             "value" : "Cosméticos"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ulepszenia"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1465,6 +1771,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Crear"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utwórz"
           }
         },
         "sv" : {
@@ -1511,6 +1823,12 @@
             "value" : "Decibelios"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Decybele"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1533,6 +1851,12 @@
             "value" : "Diseñado por"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stworzone przez"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1553,6 +1877,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dimensiones"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wymiary"
           }
         },
         "sv" : {
@@ -1593,6 +1923,12 @@
             "value" : "Se muestra en la vista principal y como icono de la aplicación."
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wyświetlana w głównym widoku i jako ikona aplikacji."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1613,6 +1949,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "¡No compartas tu configuración con nadie, ya que podría contener datos sensibles (claves de stream, etc.)!"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nie udostępniaj nikomu swoich ustawień, ponieważ mogą zawierać poufne dane (klucz strumienia itp.)!"
           }
         },
         "sv" : {
@@ -1637,6 +1979,12 @@
             "value" : "¡No compartas tu URL con nadie o podrían apropiarse de tu canal!"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aby twój kanał nie został przejęty, nie udostępniaj nikomu swojego adresu URL!"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1657,6 +2005,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Stop"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Koniec"
           }
         },
         "sv" : {
@@ -1684,6 +2038,12 @@
             "value" : "Ejemplo:  rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Przykład:  rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1704,6 +2064,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ejemplo:  rtmp://foobar.org:3321/5678"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Przykład: rtmp://foobar.org:3321/5678"
           }
         },
         "sv" : {
@@ -1728,6 +2094,12 @@
             "value" : "Ejemplo:  rtmps://fa723fc1b171.global-contribute.live-video.net/sk_us-west-123hu43ui34hrkjh"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Przykład: rtmps://fa723fc1b171.global-contribute.live-video.net/sk_us-west-123hu43ui34hrkjh"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1748,6 +2120,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ejemplo:  srt://120.12.32.12:4000?streamid=publish/live/feed"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Przykład: srt://120.12.32.12:4000?streamid=publish/live/feed"
           }
         },
         "sv" : {
@@ -1772,6 +2150,12 @@
             "value" : "Ejemplo:  srt://134.20.342.12:5000"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Przykład: srt://134.20.342.12:5000"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1792,6 +2176,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ejemplo:  srtla://foobar.org:4432"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Przykład: srtla://foobar.org:4432"
           }
         },
         "sv" : {
@@ -1816,6 +2206,12 @@
             "value" : "Ejemplo: rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Przykład: rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1836,6 +2232,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ejemplo: rtmps://live-api-s.facebook.com:443/rtmp/FB-11152522122511115-0-BctNCp9jzzz-AAA"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Przykład: rtmps://live-api-s.facebook.com:443/rtmp/FB-11152522122511115-0-BctNCp9jzzz-AAA"
           }
         },
         "sv" : {
@@ -1860,6 +2262,12 @@
             "value" : "Ejemplo: srt://uk.srt.belabox.net:4000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Przykład: srt://uk.srt.belabox.net:4000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1880,6 +2288,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ejemplo: srtla://uk.srt.belabox.net:5000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Przykład: srtla://uk.srt.belabox.net:5000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
           }
         },
         "sv" : {
@@ -1904,6 +2318,12 @@
             "value" : "Exportar al portapapeles"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eksportuj do schowka"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1924,6 +2344,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Exposición"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ekspozycja"
           }
         },
         "sv" : {
@@ -1970,6 +2396,12 @@
             "value" : "Fallo al obtener los emotes del canal de 7TV"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Błąd przy ładowaniu - 7TV (emotki kanału)"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1990,6 +2422,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fallo al obtener los emotes globales de 7TV"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Błąd przy ładowaniu - 7TV (emotki globalne)"
           }
         },
         "sv" : {
@@ -2014,6 +2452,12 @@
             "value" : "Fallo al obtener los emotes de BTTV"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Błąd przy ładowaniu - BTTV (emotki globalne)"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2036,6 +2480,12 @@
             "value" : "Fallo al obtener los emotes de FFZ"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Błąd przy ładowaniu - FFZ (emotki globalne)"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2056,6 +2506,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No dudes en unirte al servidor de Discord de Moblin o escribir una incidencia en Github si necesitas ayuda o quieres dar tu opinión."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dołącz do serwera Moblin na Discordzie lub napisz zgłoszenie na Githubie, jeśli potrzebujesz pomocy lub chcesz wyrazić swoją opinię."
           }
         },
         "sv" : {
@@ -2083,6 +2539,12 @@
             "value" : "Encuentra tu chatroom id en https://kick.com/api/v1/channels/my_user. Remplaza my_user por tu usuario."
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Znajdź ID swojego pokoju https://kick.com/api/v1/channels/twoja_nazwa. Zamień twoja_nazwa na swój nick"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2105,6 +2567,12 @@
             "value" : "Tamaño de la fuente"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wielkość czcionki"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2121,6 +2589,12 @@
     },
     "front" : {
       "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "przód"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2135,6 +2609,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Frontal"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Czcionka"
           }
         },
         "sv" : {
@@ -2159,6 +2639,12 @@
             "value" : "Cámara frontal"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Przedni aparat"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2179,6 +2665,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Presets de la cámara frontal"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Presety przedniego aparatu"
           }
         },
         "sv" : {
@@ -2203,6 +2695,12 @@
             "value" : "General"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ustawienia podstawowe"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2225,6 +2723,12 @@
             "value" : "Generador"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Generator"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2239,6 +2743,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Geometría"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geometria"
           }
         },
         "sv" : {
@@ -2285,6 +2795,12 @@
             "value" : "Iniciar"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zacznij live"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2305,6 +2821,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Escala de grises"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skala szarości"
           }
         },
         "sv" : {
@@ -2329,6 +2851,12 @@
             "value" : "Verde"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zielony"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2349,6 +2877,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Altura"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wysokość"
           }
         },
         "sv" : {
@@ -2373,6 +2907,12 @@
             "value" : "Ayuda y soporte"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pomoc & wsparcie"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2393,6 +2933,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ocultar URL sensible"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ukryj poufne adresy URL"
           }
         },
         "sv" : {
@@ -2417,6 +2963,12 @@
             "value" : "Iconos"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ikony"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2437,6 +2989,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Iconos en la tienda"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ikony w sklepie"
           }
         },
         "sv" : {
@@ -2461,6 +3019,12 @@
             "value" : "Icons que no están aún en la tienda"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ikony nie są jeszcze dostępne w sklepie"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2481,6 +3045,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Imagen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obraz"
           }
         },
         "sv" : {
@@ -2505,6 +3075,12 @@
             "value" : "Importar y exportar ajustes"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importuj i eksportuj ustawienia"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2525,6 +3101,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Importar desde el portapapeles"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importuj ze schowka"
           }
         },
         "sv" : {
@@ -2549,6 +3131,12 @@
             "value" : "Intervalo"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Interwał"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2569,6 +3157,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Key frame interval"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Interwał klatek kluczowych"
           }
         },
         "sv" : {
@@ -2593,6 +3187,12 @@
             "value" : "Kick"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kick"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2609,6 +3209,12 @@
             "value" : "Cámara grande"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duży aparat"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2623,6 +3229,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Latencia"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Latencja"
           }
         },
         "sv" : {
@@ -2647,6 +3259,12 @@
             "value" : "Disposición"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Układ"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2667,6 +3285,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Licencias"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Licencje"
           }
         },
         "sv" : {
@@ -2691,6 +3315,12 @@
             "value" : "Overlays locales"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lokalne nakładki"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2711,6 +3341,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Los overlays locales no aparecen en el stream."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lokalne nakładki nie pojawią się na streamie."
           }
         },
         "sv" : {
@@ -2735,6 +3371,12 @@
             "value" : "Log"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Logi"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2755,6 +3397,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nivel de log"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Poziom logów"
           }
         },
         "sv" : {
@@ -2779,6 +3427,12 @@
             "value" : "¡Muchas gracias de parte de los desarrolladores de Moblin!"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wielkie podziękowania od deweloperów Moblin!"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2801,6 +3455,12 @@
             "value" : "Duración máxima"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maksymalny wiek"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2815,6 +3475,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Intervalo máximo de fotogramas clave en segundos (key frame interval). Establecer en 0 para automático."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maksymalny interwał klatek kluczowych na sekundę. Ustaw na 0, aby skorzystać z trybu automatycznego."
           }
         },
         "sv" : {
@@ -2839,6 +3505,12 @@
             "value" : "Duración máxima de cada mensaje en segundos."
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maksymalny czas wyświetlania wiadomości"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2853,6 +3525,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mensaje"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wiadomość"
           }
         },
         "sv" : {
@@ -2877,6 +3555,12 @@
             "value" : "Micrófono"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mikrofon"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2897,6 +3581,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "moblin:// se pueden utilizar enlaces profundos (deep links) para importar algunas configuraciones, a menudo mediante códigos QR o un navegador. Ver https://github.com/eerimoq/moblin para más detalles."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Linki moblin:// mogą być używane do importowania niektórych ustawień, często przy użyciu kodów QR lub przeglądarki. Szczegółowe informacje można znaleźć na stronie https://github.com/eerimoq/moblin."
           }
         },
         "sv" : {
@@ -2921,6 +3611,12 @@
             "value" : "Película"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Film"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2941,6 +3637,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Silenciar"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wycisz"
           }
         },
         "sv" : {
@@ -2965,6 +3667,12 @@
             "value" : "Silenciado"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wyciszono"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2985,6 +3693,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mis iconos"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moje ikony"
           }
         },
         "sv" : {
@@ -3009,6 +3723,12 @@
             "value" : "Mis escenas"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moje sceny"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3031,6 +3751,12 @@
             "value" : "Mis streams"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mój stream"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3047,6 +3773,12 @@
     },
     "My widget" : {
       "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mój widget"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3061,6 +3793,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "my_stream_key"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mój_klucz_streama"
           }
         },
         "sv" : {
@@ -3083,6 +3821,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nombre"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nazwa"
           }
         },
         "sv" : {
@@ -3129,6 +3873,12 @@
             "value" : "Nivel de ruido"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Poziom hałasu"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3151,6 +3901,12 @@
             "value" : "Reducción de ruido"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Redukcja hałasu"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3171,6 +3927,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No configurado"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nie ustawiono"
           }
         },
         "sv" : {
@@ -3217,6 +3979,12 @@
             "value" : "Apagado"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wyłącz"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3237,6 +4005,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Encendido"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Włącz"
           }
         },
         "sv" : {
@@ -3261,6 +4035,12 @@
             "value" : "Sólo se pueden borrar los botones no utilizados."
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tylko nieużywane przyciski mogą być usunięte."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3281,6 +4061,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sólo se pueden borrar los widgets no utilizados."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tylko nieużywane widgety mogą być usunięte."
           }
         },
         "sv" : {
@@ -3305,6 +4091,12 @@
             "value" : "Paquetes al vuelo (Packets in flight)"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pakiety w ruchu"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3325,6 +4117,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Parámetros"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Parametry"
           }
         },
         "sv" : {
@@ -3349,6 +4147,12 @@
             "value" : "Pausar chat"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zatrzymaj czat"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3371,6 +4175,12 @@
             "value" : "Picture in Picture (PiP)"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obraz w obrazie"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3388,6 +4198,12 @@
     "Preset" : {
       "localizations" : {
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preset"
+          }
+        },
+        "pl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Preset"
@@ -3415,6 +4231,12 @@
             "value" : "Aleatorio"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Losowy"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3435,6 +4257,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rojo"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Czerwony"
           }
         },
         "sv" : {
@@ -3459,6 +4287,12 @@
             "value" : "Restablecer ajustes"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zresetuj ustawienia"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3479,6 +4313,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Resolución"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rozdzielczość"
           }
         },
         "sv" : {
@@ -3503,6 +4343,12 @@
             "value" : "Reintentar más tarde"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ponowna próba później"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3523,6 +4369,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nivel de audio de los Røde"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Røde poziomy audio"
           }
         },
         "sv" : {
@@ -3547,6 +4399,12 @@
             "value" : "Servidor RTMP"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serwer RTMP"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3567,6 +4425,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Escena"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scena"
           }
         },
         "sv" : {
@@ -3591,6 +4455,12 @@
             "value" : "Escenas"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sceny"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3611,6 +4481,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Seleccionar imagen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wybierz obraz"
           }
         },
         "sv" : {
@@ -3651,6 +4527,12 @@
             "value" : "Ajustes"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ustawienia"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3671,6 +4553,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Los ajustes que detendrían el stream han sido deshabilitados mientras estás en directo."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ustawienia, który mogłby zatrzymać stream są wyłączone podczas transmisji na żywo."
           }
         },
         "sv" : {
@@ -3695,6 +4583,12 @@
             "value" : "Nitidez"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ostrość"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3715,6 +4609,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mostrar URL sensible"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pokaż poufny adres URL"
           }
         },
         "sv" : {
@@ -3739,6 +4639,12 @@
             "value" : "Una cámara"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pojedynczy"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3753,6 +4659,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cámara pequeña"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mały aparat"
           }
         },
         "sv" : {
@@ -3825,6 +4737,12 @@
             "value" : "Overlay SRT"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nakładka SRT"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3863,6 +4781,12 @@
             "value" : "Servidor SRTLA"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serwer SRTLA"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3883,6 +4807,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Estándar"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standardowy"
           }
         },
         "sv" : {
@@ -3951,6 +4881,12 @@
             "value" : "Streams"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Streamy"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3971,6 +4907,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Apoya a los desarrolladores de Moblin comprando iconos."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wspieraj deweloperów Moblin kupując ikony."
           }
         },
         "sv" : {
@@ -3995,6 +4937,12 @@
             "value" : "Tocar la pantalla para enfocar"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dotknij ekranu, aby ustawić ostrość"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4015,6 +4963,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Plantilla: rtmp://"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Szablon: rtmp://"
           }
         },
         "sv" : {
@@ -4039,6 +4993,12 @@
             "value" : "Plantilla: rtmp://my_public_ip:my_public_port/my_stream_key"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Szablon: rtmp://my_public_ip:my_public_port/my_stream_key"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4059,6 +5019,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Plantilla: srt://my_public_ip:my_public_port"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Szablon: srt://my_public_ip:my_public_port"
           }
         },
         "sv" : {
@@ -4083,6 +5049,12 @@
             "value" : "Plantilla: srt://my_public_ip:my_public_port?streamid=publish/live/my_key"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Szablon: srt://my_public_ip:my_public_port?streamid=publish/live/my_key"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4103,6 +5075,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Plantilla: srtla://my_public_ip:my_public_port"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Szablon: srtla://my_public_ip:my_public_port"
           }
         },
         "sv" : {
@@ -4127,6 +5105,12 @@
             "value" : "El widget del navegador es experimental y no funciona muy bien todavía."
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widget z przeglądarki jest w fazie testów i nie działa jeszcze w pełni."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4147,6 +5131,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "El registro está vacío."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Logi są puste"
           }
         },
         "sv" : {
@@ -4171,6 +5161,12 @@
             "value" : "El nombre de su canal"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nazwa twojego kanału."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4191,6 +5187,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "El diseño Picture in Picture (PiP) es experimental y no funciona."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tryb obraz w obrazie jest w fazie testów i aktualnie nie działa."
           }
         },
         "sv" : {
@@ -4215,6 +5217,12 @@
             "value" : "El zoom (en X) a establecer al cambiar a la cámara seleccionada, si está activado."
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Włączenie spowoduje ustawienie zoomu (na wartość X) podczas przełączania aparatów."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4235,6 +5243,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tiempo"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Czas"
           }
         },
         "sv" : {
@@ -4259,6 +5273,12 @@
             "value" : "Marca de tiempo"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Znacznik czasu"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4275,6 +5295,12 @@
     },
     "To %@ camera" : {
       "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Na %@ aparat"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4289,6 +5315,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Arriba a la izquierda"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lewy górny"
           }
         },
         "sv" : {
@@ -4313,6 +5345,12 @@
             "value" : "Arriba a la derecha"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prawy górny"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4335,6 +5373,12 @@
             "value" : "Linterna"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Latarka"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4355,6 +5399,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Triple"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Potrójny"
           }
         },
         "sv" : {
@@ -4401,6 +5451,12 @@
             "value" : "Tipo"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Typ"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4421,6 +5477,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Desconocido"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nieznany"
           }
         },
         "sv" : {
@@ -4445,6 +5507,12 @@
             "value" : "Sin usar"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nieużywany"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4465,6 +5533,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tiempo de actividad"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Czas aktywności"
           }
         },
         "sv" : {
@@ -4511,6 +5585,12 @@
             "value" : "Utiliza el primer canal para el nivel de audio. Para depurar el nivel desconocido de los micrófonos Røde"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Użyj pierwszego kanału dla poziomów audio. Do debugowania nieznanego poziomu mikofonów Røde."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4531,6 +5611,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Utiliza el audio generado como fuente en lugar del micrófono."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Użyj wygenerowanego dźwięku jako źródło zamiast mikrofonu."
           }
         },
         "sv" : {
@@ -4555,6 +5641,12 @@
             "value" : "Nombre de usuario"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nazwa użytkownika"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4577,6 +5669,12 @@
             "value" : "Versión"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wersja"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4597,6 +5695,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "¡Muy experimental y muy secreto!"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "W fazie testów i poufne!"
           }
         },
         "sv" : {
@@ -4632,6 +5736,12 @@
             "value" : "Vídeo"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wideo"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4652,6 +5762,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Efecto de vídeo"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Efekty wideo"
           }
         },
         "sv" : {
@@ -4686,6 +5802,12 @@
             "value" : "Estabilización de vídeo"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stabilizacja wideo"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4708,6 +5830,12 @@
             "value" : "La estabilización de vídeo a veces da problemas de sincronización audio-vídeo."
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stabilizacja wideo czasami powoduje problemy z synchronizacją (dzięk-obraz)."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4728,6 +5856,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Espectadores"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oglądający"
           }
         },
         "sv" : {
@@ -4774,6 +5908,12 @@
             "value" : "Nombre del widget"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nazwa widgetu"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4794,6 +5934,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Widgets"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widgety"
           }
         },
         "sv" : {
@@ -4818,6 +5964,12 @@
             "value" : "Los widgets se ordenan de atrás hacia delante."
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widgety układają się od tyłu do przodu."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4838,6 +5990,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ancho"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Szerokość"
           }
         },
         "sv" : {
@@ -4862,6 +6020,12 @@
             "value" : "X must be %1$f - %2$f"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "X musi być między %1$f - %2$f"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4876,6 +6040,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "¡Ya lo has comprado todo!"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Już kupiłeś wszystko!"
           }
         },
         "sv" : {
@@ -4922,6 +6092,12 @@
             "value" : "Cero o más milisegundos. Cualquier parámetro de latencia dado en la URL anula este valor"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zero lub więcej milisekund. Każdy parametr latancji dodany do adresu URL nadpisuje tę wartość."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4966,6 +6142,12 @@
             "value" : "Preset de Zoom"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preset zoomu"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4986,6 +6168,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Presets de Zoom"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Presety zoomu"
           }
         },
         "sv" : {

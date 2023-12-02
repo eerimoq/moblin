@@ -1,0 +1,15 @@
+/* Privacy - Camera Usage Description */
+"NSCameraUsageDescription" = "Tak";
+
+/* Privacy - Microphone Usage Description */
+"NSMicrophoneUsageDescription" = "Tak";
+
+/* Privacy - Network Volumes Usage Description */
+"NSNetworkVolumesUsageDescription" = "Tak";
+
+/* Privacy - Photo Library Additions Usage Description */
+"NSPhotoLibraryAddUsageDescription" = "Tak";
+
+/* Privacy - Photo Library Usage Description */
+"NSPhotoLibraryUsageDescription" = "Tak";
+
