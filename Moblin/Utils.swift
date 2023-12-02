@@ -276,14 +276,6 @@ func factorToX(position: AVCaptureDevice.Position, factor: Float) -> Float {
     }
 }
 
-func xToFactor(position: AVCaptureDevice.Position, x: Float) -> Float {
-    if position == .back {
-        return x * 2
-    } else {
-        return x
-    }
-}
-
 extension Comparable {
     func clamped(to limits: ClosedRange<Self>) -> Self {
         return min(max(self, limits.lowerBound), limits.upperBound)
