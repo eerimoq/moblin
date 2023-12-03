@@ -706,6 +706,7 @@ final class Model: ObservableObject {
                                                name: UIApplication
                                                    .willEnterForegroundNotification,
                                                object: nil)
+        updateOrientation()
     }
 
     @objc func handleWillEnterForegroundNotification() {
@@ -754,7 +755,7 @@ final class Model: ObservableObject {
             .debug("Network: \(path.debugDescription), All: \(path.availableInterfaces)")
     }
 
-    @objc private func orientationDidChange(animated _: Bool) {
+    private func updateOrientation() {
         switch UIDevice.current.orientation {
         case .landscapeLeft:
             if videoView.videoOrientation != .landscapeRight {
@@ -767,6 +768,10 @@ final class Model: ObservableObject {
         default:
             break
         }
+    }
+
+    @objc private func orientationDidChange(animated _: Bool) {
+        updateOrientation()
     }
 
     private func isInMyIcons(id: String) -> Bool {
