@@ -3,6 +3,12 @@
   "strings" : {
     "" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leeres Wort"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -13,6 +19,12 @@
     },
     " " : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " "
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -41,6 +53,12 @@
     },
     "-" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "-"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -69,6 +87,12 @@
     },
     ": " : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ": "
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -97,6 +121,12 @@
     },
     "/" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "/"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -125,6 +155,12 @@
     },
     "/app/" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "/app/"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -153,6 +189,12 @@
     },
     "/sec" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "/sec"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -169,6 +211,12 @@
     },
     "%.1f/min" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.1f/min"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -185,6 +233,12 @@
     },
     "%@ " : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ "
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -213,6 +267,12 @@
     },
     "%@ (%@ total)" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ (%2$@ total)"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "new",
@@ -253,6 +313,12 @@
     },
     "%@ (%@)" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ (%2$@)"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "new",
@@ -287,6 +353,12 @@
     },
     "%lld %%" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld %%"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -315,6 +387,12 @@
     },
     "%lld dB" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld dB"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -343,6 +421,12 @@
     },
     "+" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -371,6 +455,12 @@
     },
     "🎉 You are LIVE at %@ 🎉" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🎉 Du bist LIVE bei %@ 🎉"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -393,6 +483,12 @@
     },
     "🤟 Stream ended 🤟" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🤟 Stream beendet 🤟"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -415,6 +511,12 @@
     },
     "😢 FFFFF 😢" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "😢 FFFFF 😢"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -431,6 +533,12 @@
     },
     "0.0/min" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "0.0/min"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -447,6 +555,12 @@
     },
     "A large number. Use developer tools (F11) in your browser. Look at websocket messages." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eine große Zahl. Verwende die Entwicklerwerkzeuge (F11) in deinem Browser. Sehe dir die Websocket-Nachrichten an."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -481,6 +595,12 @@
     },
     "About" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Über"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -515,6 +635,12 @@
     },
     "Adaptive bitrate" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adaptive Bitrate"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -549,6 +675,12 @@
     },
     "Adaptive bitrate is experimental." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adaptive Bitrate ist experimentell."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -583,6 +715,12 @@
     },
     "Add" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hinzufügen"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -617,6 +755,12 @@
     },
     "AfreecaTV" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AfreecaTV"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -633,6 +777,12 @@
     },
     "Allowed range is %@ - %@." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erlaubter Bereich ist %1$@ - %2$@."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "new",
@@ -673,6 +823,12 @@
     },
     "Amplitude" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Amplitude"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -707,6 +863,12 @@
     },
     "An incomplete list of people who has contributed ideas, programming,\ntesting, promotion and more." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eine unvollständige Liste von Personen, die Ideen, Programmierung, Tests, Werbung und mehr beigetragen haben."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -741,6 +903,12 @@
     },
     "Animated emotes" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Animierte Emotes"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -775,6 +943,12 @@
     },
     "Animated emotes are fairly CPU intensive. Disable for less power usage." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Animierte Emotes sind ziemlich CPU-intensiv. Deaktivieren für weniger Stromverbrauch."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -809,6 +983,12 @@
     },
     "API key" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API Schlüssel"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -825,6 +1005,12 @@
     },
     "Are you sure?" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bist du sicher?"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -859,6 +1045,12 @@
     },
     "Audio" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Audio"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -893,6 +1085,12 @@
     },
     "Audio level" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Audiopegel"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -927,6 +1125,12 @@
     },
     "back" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "zurück"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -949,6 +1153,12 @@
     },
     "Back" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zurück"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -983,6 +1193,12 @@
     },
     "Back camera" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haupt Kamera"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1017,6 +1233,12 @@
     },
     "Back camera presets" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haupt Kamera Voreinstellungen"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1051,6 +1273,12 @@
     },
     "Background" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hintergrund"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1085,6 +1313,12 @@
     },
     "Bar" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Balken"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1113,6 +1347,12 @@
     },
     "Battery percentage" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Batterie Prozent"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1147,6 +1387,12 @@
     },
     "BELABOX cloud SRT" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "BELABOX cloud SRT"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1175,6 +1421,12 @@
     },
     "BELABOX cloud SRTLA" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "BELABOX cloud SRTLA"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1203,6 +1455,12 @@
     },
     "Big packets" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Große Pakete"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1237,6 +1495,12 @@
     },
     "Big packets means 7 MPEG-TS packets per SRT packet, 6 otherwise. Sometimes Android hotspots does not work with big packets." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Große Pakete bedeutet 7 MPEG-TS Pakete pro SRT-Paket, sonst 6. Manchmal funktionieren Android-Hotspots nicht mit großen Paketen."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1271,6 +1535,12 @@
     },
     "Bitrate" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bitrate"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1299,6 +1569,12 @@
     },
     "Bitrate presets" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bitrate Voreinstellungen"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1333,6 +1609,12 @@
     },
     "Bloom" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bloom"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1355,6 +1637,12 @@
     },
     "Blue" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blau"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1389,6 +1677,12 @@
     },
     "Bold message" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fettgedruckte Nachricht"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1423,6 +1717,12 @@
     },
     "Bold username" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fettgedruckter Nutzername"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1457,6 +1757,12 @@
     },
     "Border" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trennung"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1485,6 +1791,12 @@
     },
     "Border is fairly CPU intensive. Disable for less power usage." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Trennung ist ziemlich CPU-intensiv. Deaktivieren für weniger Stromverbrauch."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1519,6 +1831,12 @@
     },
     "Bottom right" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unten rechts"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1553,6 +1871,12 @@
     },
     "Browser" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Browser"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1587,6 +1911,12 @@
     },
     "Button" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Button"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1621,6 +1951,12 @@
     },
     "Button name" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Button Name"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1655,6 +1991,12 @@
     },
     "Buttons" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buttons"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1689,6 +2031,12 @@
     },
     "Buttons appear from bottom to top." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buttons erscheinen von unten nach oben."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1723,6 +2071,12 @@
     },
     "Camera" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kamera"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1757,6 +2111,12 @@
     },
     "Camera switching" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kamerawechsel"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1791,6 +2151,12 @@
     },
     "Cancel" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verwerfen"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1825,6 +2191,12 @@
     },
     "Channel id" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kanal ID"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1859,6 +2231,12 @@
     },
     "Channel name" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kanalname"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1893,6 +2271,12 @@
     },
     "Chat" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chat"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1927,6 +2311,12 @@
     },
     "Chat is hidden" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chat ist ausgeblendet"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1961,6 +2351,12 @@
     },
     "Chat is paused" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chat ist pausiert"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1995,6 +2391,12 @@
     },
     "Chatroom id" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chatroom ID"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2029,6 +2431,12 @@
     },
     "Cinematic" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cinematic"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2063,6 +2471,12 @@
     },
     "Close" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schließen"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2097,6 +2511,12 @@
     },
     "Codec" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Codec"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2125,6 +2545,12 @@
     },
     "Colors" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farben"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2159,6 +2585,12 @@
     },
     "Cosmetics" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kosmetisches"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2193,6 +2625,12 @@
     },
     "Create" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erstellen"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2227,6 +2665,12 @@
     },
     "Debug" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Debug"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2255,6 +2699,12 @@
     },
     "Decibel" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dezibel"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2289,6 +2739,12 @@
     },
     "Designed by" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entworfen von "
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2323,6 +2779,12 @@
     },
     "Dimensions" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dimensionen"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2351,6 +2813,12 @@
     },
     "Discord" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Discord"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2379,6 +2847,12 @@
     },
     "Displayed in main view and as app icon." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wird in der Hauptansicht und als App-Symbol angezeigt."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2413,6 +2887,12 @@
     },
     "Do not share your settings with anyone as they may contain sensitive data (stream keys, etc.)!" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gebe deine Einstellungen nicht an Dritte weiter, da sie sensible Daten (Stream-Schlüssel usw.) enthalten können!"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2447,6 +2927,12 @@
     },
     "Do not share your URL with anyone or they can hijack your channel!" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gebe deine URL nicht weiter, sonst kann dein Kanal gestohlen werden!"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2481,6 +2967,12 @@
     },
     "End" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ende"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2515,6 +3007,12 @@
     },
     "Example URL: https://play.afreecatv.com/myChannelName/myVideoId" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beispiel-URL: https://play.afreecatv.com/myChannelName/myVideoId"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2525,6 +3023,12 @@
     },
     "Example:  rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beispiel:  rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2559,6 +3063,12 @@
     },
     "Example:  rtmp://foobar.org:3321/5678" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beispiel:  rtmp://foobar.org:3321/5678"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2593,6 +3103,12 @@
     },
     "Example:  rtmps://fa723fc1b171.global-contribute.live-video.net/sk_us-west-123hu43ui34hrkjh" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beispiel:  rtmps://fa723fc1b171.global-contribute.live-video.net/sk_us-west-123hu43ui34hrkjh"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2627,6 +3143,12 @@
     },
     "Example:  srt://120.12.32.12:4000?streamid=publish/live/feed" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beispiel:  srt://120.12.32.12:4000?streamid=publish/live/feed"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2661,6 +3183,12 @@
     },
     "Example:  srt://134.20.342.12:5000" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beispiel:  srt://134.20.342.12:5000"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2695,6 +3223,12 @@
     },
     "Example:  srtla://foobar.org:4432" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beispiel:  srtla://foobar.org:4432"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2729,6 +3263,12 @@
     },
     "Example: rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beispiel: rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2763,6 +3303,12 @@
     },
     "Example: rtmps://live-api-s.facebook.com:443/rtmp/FB-11152522122511115-0-BctNCp9jzzz-AAA" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beispiel: rtmps://live-api-s.facebook.com:443/rtmp/FB-11152522122511115-0-BctNCp9jzzz-AAA"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2797,6 +3343,12 @@
     },
     "Example: srt://uk.srt.belabox.net:4000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beispiel: srt://uk.srt.belabox.net:4000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2831,6 +3383,12 @@
     },
     "Example: srtla://uk.srt.belabox.net:5000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beispiel: srtla://uk.srt.belabox.net:5000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2865,6 +3423,12 @@
     },
     "Export to clipboard" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In die Zwischenablage exportieren"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2899,6 +3463,12 @@
     },
     "Exposure" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Belichtung"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2933,6 +3503,12 @@
     },
     "Facebook" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Facebook"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2961,6 +3537,12 @@
     },
     "Failed to get 7TV channel emotes" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "7TV-Kanal-Emotes konnten nicht abgerufen werden"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2995,6 +3577,12 @@
     },
     "Failed to get 7TV global emotes" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "7TV-Global-Emotes konnten nicht abgerufen werden"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3029,6 +3617,12 @@
     },
     "Failed to get BTTV emotes" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "BTTV-Emotes konnten nicht abgerufen werden"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3063,6 +3657,12 @@
     },
     "Failed to get FFZ emotes" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FFZ-Emotes konnten nicht abgerufen werden"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3097,6 +3697,12 @@
     },
     "Feel free to join Moblin Discord server or write an issue on Github if you need help or want to give feedback." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du kannst dem Moblin Discord Server beitreten oder eine Nachricht auf Github schreiben, wenn du Hilfe benötigst oder Feedback geben möchtest."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3131,6 +3737,12 @@
     },
     "Find your channel name (myChannelName) and video id (myVideoId) in your stream's URL." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suche deinen Kanalnamen (myChannelName) und deine Video-ID (myVideoId) in der URL Ihres Streams."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3141,6 +3753,12 @@
     },
     "Find your chatroom id at https://kick.com/api/v1/channels/my_user. Replace my_user with your user." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Finde deine Chatroom-ID unter https://kick.com/api/v1/channels/my_user. Ersetze my_user durch deinen User."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3175,6 +3793,12 @@
     },
     "Font size" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schriftgröße"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3209,6 +3833,12 @@
     },
     "front" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Front"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3231,6 +3861,12 @@
     },
     "Front" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Front"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3265,6 +3901,12 @@
     },
     "Front camera" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frontkamera"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3299,6 +3941,12 @@
     },
     "Front camera presets" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frontkamera Voreinstellungen"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3333,6 +3981,12 @@
     },
     "General" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allgemein"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3367,6 +4021,12 @@
     },
     "Generator" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Generator"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3395,6 +4055,12 @@
     },
     "Geometry" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geometrie"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3429,6 +4095,12 @@
     },
     "Github" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Github"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3457,6 +4129,12 @@
     },
     "Go Live" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Live gehen"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3491,6 +4169,12 @@
     },
     "Gray scale" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Graustufen"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3525,6 +4209,12 @@
     },
     "Green" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grün"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3559,6 +4249,12 @@
     },
     "Height" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Höhe"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3593,6 +4289,12 @@
     },
     "Help & support" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hilfe und Unterstützung"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3627,6 +4329,12 @@
     },
     "Hide sensitive URL" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sensible URL ausblenden"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3661,6 +4369,12 @@
     },
     "Icons" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Icons"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3695,6 +4409,12 @@
     },
     "Icons in store" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Icons verfügbar"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3729,6 +4449,12 @@
     },
     "Icons not yet in store" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Icons gerade nicht verfügbar"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3763,6 +4489,12 @@
     },
     "Image" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bild"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3797,6 +4529,12 @@
     },
     "Import and export settings" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import- und Exporteinstellungen"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3831,6 +4569,12 @@
     },
     "Import from clipboard" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importieren aus der Zwischenablage"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3865,6 +4609,12 @@
     },
     "Interval" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Intervall"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3899,6 +4649,12 @@
     },
     "Key frame interval" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keyframe-Intervall"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3933,6 +4689,12 @@
     },
     "Kick" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kick"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3961,6 +4723,12 @@
     },
     "Large camera" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Große Kamera"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3989,6 +4757,12 @@
     },
     "Latency" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Latenz"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4023,6 +4797,12 @@
     },
     "Layout" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Layout"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4057,6 +4837,12 @@
     },
     "Licenses" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lizenzen"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4091,6 +4877,12 @@
     },
     "Local overlays" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lokale Overlays"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4125,6 +4917,12 @@
     },
     "Local overlays do not appear on stream." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lokale Overlays erscheinen nicht im Stream"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4159,6 +4957,12 @@
     },
     "Log" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4193,6 +4997,12 @@
     },
     "Log level" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log Ebene"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4227,6 +5037,12 @@
     },
     "Many thanks from the Moblin developers!" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vielen Dank von den Moblin-Entwicklern!"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4261,6 +5077,12 @@
     },
     "Maximum age" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maximales Alter"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4289,6 +5111,12 @@
     },
     "Maximum key frame interval in seconds. Set to 0 for automatic." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maximales Keyframe-Intervall in Sekunden. Für Automatisch auf 0 setzen."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4323,6 +5151,12 @@
     },
     "Maximum message age in seconds." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maximales Alter der Nachricht in Sekunden."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4351,6 +5185,12 @@
     },
     "Message" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nachricht"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4385,6 +5225,12 @@
     },
     "Mic" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mikrofon"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4419,6 +5265,12 @@
     },
     "moblin:// deep links can be used to import some settings, often using QR codes or a browser. See https://github.com/eerimoq/moblin for details." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "moblin:// Deep Links können verwendet werden, um einige Einstellungen zu importieren, oft unter Verwendung von QR-Codes oder eines Browsers. Siehe https://github.com/eerimoq/moblin für Details."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4453,6 +5305,12 @@
     },
     "Movie" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Film"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4487,6 +5345,12 @@
     },
     "Mute" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stumm"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4521,6 +5385,12 @@
     },
     "Muted" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stummgeschaltet"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4555,6 +5425,12 @@
     },
     "My icons" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meine Icons"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4589,6 +5465,12 @@
     },
     "My scene" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meine Szene"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4623,6 +5505,12 @@
     },
     "My stream" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mein Stream"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4657,6 +5545,12 @@
     },
     "My widget" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mein Widget"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4679,6 +5573,12 @@
     },
     "my_stream_key" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mein_stream_schlüssel"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4713,6 +5613,12 @@
     },
     "Name" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4747,6 +5653,12 @@
     },
     "nearby_ingest_endpoint" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "nearby_ingest_endpoint"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4775,6 +5687,12 @@
     },
     "Noise level" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lautstärke"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4809,6 +5727,12 @@
     },
     "Noise reduction" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geräuschreduzierung"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4843,6 +5767,12 @@
     },
     "Not configured" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nicht konfiguriert"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4877,6 +5807,12 @@
     },
     "OBS Media Source (SRT)" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OBS Medienquelle (SRT)"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4905,6 +5841,12 @@
     },
     "Off" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aus"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4939,6 +5881,12 @@
     },
     "On" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4973,6 +5921,12 @@
     },
     "Only unused buttons can be deleted." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nur nicht verwendete Buttons können gelöscht werden."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5007,6 +5961,12 @@
     },
     "Only unused widgets can be deleted." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nur nicht verwendete Widgets können gelöscht werden."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5041,6 +6001,12 @@
     },
     "Packets in flight" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Packets in flight"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5075,6 +6041,12 @@
     },
     "Parameters" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Parameter"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5109,6 +6081,12 @@
     },
     "Pause chat" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chat pausieren"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5143,6 +6121,12 @@
     },
     "Picture in Picture" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bild in Bild"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5177,6 +6161,12 @@
     },
     "Preset" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voreinstellung"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5211,6 +6201,12 @@
     },
     "Random" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zufällig"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5245,6 +6241,12 @@
     },
     "Red" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rot"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5279,6 +6281,12 @@
     },
     "Reset settings" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einstellungen zurücksetzen"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5313,6 +6321,12 @@
     },
     "Resolution" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auflösung"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5347,6 +6361,12 @@
     },
     "Retrying later" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Später erneut versuchen"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5381,6 +6401,12 @@
     },
     "Røde audio level" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Røde Audio Level"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5415,6 +6441,12 @@
     },
     "RTMP server" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RTMP Server"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5449,6 +6481,12 @@
     },
     "Scene" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Szene"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5483,6 +6521,12 @@
     },
     "Scenes" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Szenen"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5517,6 +6561,12 @@
     },
     "Select image" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bild auswählen"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5551,6 +6601,12 @@
     },
     "Sepia" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sepia"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5573,6 +6629,12 @@
     },
     "Settings" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einstellungen"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5607,6 +6669,12 @@
     },
     "Settings that would stop the stream are disabled when live." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einstellungen, die den Stream anhalten würden, sind während der Live-Übertragung deaktiviert."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5641,6 +6709,12 @@
     },
     "Sharpness" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schärfe"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5675,6 +6749,12 @@
     },
     "Show sensitive URL" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sensible URL anzeigen"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5709,6 +6789,12 @@
     },
     "Single" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einzeln"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5737,6 +6823,12 @@
     },
     "Small camera" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kleine Kamera"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5771,6 +6863,12 @@
     },
     "Speed" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geschwindigkeit"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5787,6 +6885,12 @@
     },
     "SRT Live Server (SLS)" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT Live Server (SLS)"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5815,6 +6919,12 @@
     },
     "SRT oheadbw" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT oheadbw"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5837,6 +6947,12 @@
     },
     "SRT overlay" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT Overlay"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5865,6 +6981,12 @@
     },
     "SRT(LA)" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT(LA)"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5893,6 +7015,12 @@
     },
     "SRTLA server" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRTLA Server"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5927,6 +7055,12 @@
     },
     "Standard" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5961,6 +7095,12 @@
     },
     "Stream" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stream"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5989,6 +7129,12 @@
     },
     "stream_url" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "stream_url"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6017,6 +7163,12 @@
     },
     "Streams" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Streams"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6051,6 +7203,12 @@
     },
     "Support Moblin developers by buying icons." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unterstütze die Moblin-Entwickler durch den Kauf von Icons."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6085,6 +7243,12 @@
     },
     "Tap screen to focus" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bildschirm zum Fokussieren antippen"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6119,6 +7283,12 @@
     },
     "Template: rtmp://" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vorlage: rtmp://"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6153,6 +7323,12 @@
     },
     "Template: rtmp://my_public_ip:my_public_port/my_stream_key" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vorlage: rtmp://meine_öffentliche_IP:mein_öffentlicher_Port/mein_stream_schlüssel"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6187,6 +7363,12 @@
     },
     "Template: srt://my_public_ip:my_public_port" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vorlage: srt://meine_öffentliche_IP:mein_öffentlicher_Port"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6221,6 +7403,12 @@
     },
     "Template: srt://my_public_ip:my_public_port?streamid=publish/live/my_key" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vorlage: srt://meine_öffentliche_IP:mein_öffentlicher_Port?streamid=publish/live/mein_schlüssel"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6255,6 +7443,12 @@
     },
     "Template: srtla://my_public_ip:my_public_port" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vorlage: srtla://meine_öffentliche_IP:mein_öffentlicher_Port"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6289,6 +7483,12 @@
     },
     "The browser widget is experimental does not work very well yet." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Browser-Widget ist experimentell und funktioniert noch nicht sehr gut."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6323,6 +7523,12 @@
     },
     "The log is empty." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Protokoll ist leer."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6357,6 +7563,12 @@
     },
     "The name of your channel." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Name deines Kanals."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6391,6 +7603,12 @@
     },
     "The Picture in Picture layout is experimental and does not work." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Bild-in-Bild-Layout ist experimentell und funktioniert nicht."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6425,6 +7643,12 @@
     },
     "The zoom (in X) to set when switching to given camera, if enabled." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Zoom (in X), der beim Umschalten auf eine bestimmte Kamera eingestellt wird, falls aktiviert."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6459,6 +7683,12 @@
     },
     "Time" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeit "
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6493,6 +7723,12 @@
     },
     "Timestamp" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeitstempel"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6527,6 +7763,12 @@
     },
     "To %@ camera" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zu %@ Kamera"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6549,6 +7791,12 @@
     },
     "Top left" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oben links"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6583,6 +7831,12 @@
     },
     "Top right" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oben rechts"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6617,6 +7871,12 @@
     },
     "Torch" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6651,6 +7911,12 @@
     },
     "Triple" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dreifach"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6685,6 +7951,12 @@
     },
     "Twitch" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Twitch"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6713,6 +7985,12 @@
     },
     "Type" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Typ"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6747,6 +8025,12 @@
     },
     "Unknown" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unbekannt"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6781,6 +8065,12 @@
     },
     "Unused" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ungenutzt"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6815,6 +8105,12 @@
     },
     "Uptime" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uptime"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6849,6 +8145,12 @@
     },
     "URL" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6877,6 +8179,12 @@
     },
     "Use first channel for audio level. To debug Røde mic Unknown level." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verwende den ersten Kanal für den Audiopegel. Zum Debuggen von Røde Mic unbekannter Pegel."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6911,6 +8219,12 @@
     },
     "Use generated audio as source instead of mic." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verwende das generierte Audio als Quelle anstelle des Mikrofons."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6945,6 +8259,12 @@
     },
     "Username" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nutzername"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6979,6 +8299,12 @@
     },
     "Version" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7013,6 +8339,12 @@
     },
     "Very experimental and very secret!" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sehr experimentell und sehr geheim!"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7048,6 +8380,12 @@
     "Very experimental and very secret! Does not work yet!" : {
       "extractionState" : "stale",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sehr experimentell und sehr geheim! Funktioniert noch nicht!"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7064,6 +8402,12 @@
     },
     "Video" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Video"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7098,6 +8442,12 @@
     },
     "Video effect" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Video Effekt"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7132,6 +8482,12 @@
     },
     "Video id" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Video ID"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7148,6 +8504,12 @@
     },
     "Video stabilization" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Videostabilisierung"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7182,6 +8544,12 @@
     },
     "Video stabilization sometimes gives audio-video sync issues." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bei der Videostabilisierung kommt es manchmal zu Problemen bei der Synchronisierung von Audio und Video."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7216,6 +8584,12 @@
     },
     "Viewers" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zuschauer"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7250,6 +8624,12 @@
     },
     "Widget" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widget"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7278,6 +8658,12 @@
     },
     "Widget name" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widget Name"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7312,6 +8698,12 @@
     },
     "Widgets" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widgets"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7346,6 +8738,12 @@
     },
     "Widgets are stacked from back to front." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widgets werden von hinten nach vorne angeordnet."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7380,6 +8778,12 @@
     },
     "Width" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Breite"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7414,6 +8818,12 @@
     },
     "X must be %f - %f" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "X muss %1$f - %2$f sein"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "new",
@@ -7442,6 +8852,12 @@
     },
     "You already bought everything!" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du hast bereits alles gekauft!"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7476,6 +8892,12 @@
     },
     "YouTube" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Youtube"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7504,6 +8926,12 @@
     },
     "Zero or more milliseconds. Any latency parameter given in the URL overrides this value." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Null oder mehr Millisekunden. Jeder in der URL angegebene Latenzparameter setzt diesen Wert außer Kraft."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7538,6 +8966,12 @@
     },
     "Zoom" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoom"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7566,6 +9000,12 @@
     },
     "Zoom preset" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoom Voreinstellung"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7600,6 +9040,12 @@
     },
     "Zoom presets" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoom Voreinstellungen"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
