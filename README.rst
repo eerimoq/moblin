@@ -77,6 +77,9 @@ Features
 
 - Back camera lens selection.
 
+- Localization. Supports many languages, for example English, French,
+  German, Spanish, Polish, Chinese (Simplified) and Swedish.
+
 - Tap screen for manual focus.
 
   - Return to auto focus with long press.
