@@ -649,7 +649,8 @@ final class Model: ObservableObject {
         setupAudioSession()
         setMic()
         if let cameraDevice = preferredCamera(position: .back) {
-            (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice.getUIZoomRange()
+            (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice
+                .getUIZoomRange(hasUltraWideCamera: hasUltraWideCamera())
             if let preset = backZoomPresets().first {
                 backZoomPresetId = preset.id
                 backZoomX = preset.x!
@@ -1814,8 +1815,13 @@ final class Model: ObservableObject {
         }
         setAutoFocus()
         cameraDevice = preferredCamera(position: position)
-        cameraZoomLevelToXScale = cameraDevice?.getZoomFactorScale() ?? 1.0
-        (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice?.getUIZoomRange() ?? (1.0, 1.0)
+        cameraZoomLevelToXScale = cameraDevice?
+            .getZoomFactorScale(hasUltraWideCamera: hasUltraWideCamera()) ?? 1.0
+        (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice?
+            .getUIZoomRange(hasUltraWideCamera: hasUltraWideCamera()) ?? (
+                1.0,
+                1.0
+            )
         if let secondPosition {
             secondCameraDevice = preferredCamera(position: secondPosition)
         } else {
@@ -2192,6 +2198,17 @@ final class Model: ObservableObject {
         }
         logger.error("No camera")
         return nil
+    }
+
+    private func hasUltraWideCamera() -> Bool {
+        return AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .back) != nil
+    }
+
+    private func factorToX(position: AVCaptureDevice.Position, factor: Float) -> Float {
+        if position == .back && hasUltraWideCamera() {
+            return factor / 2
+        }
+        return factor
     }
 
     func getMinMaxZoomX(position: AVCaptureDevice.Position) -> (Float, Float) {

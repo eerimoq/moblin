@@ -268,14 +268,6 @@ func formatOneDecimal(value: Float) -> String {
     return String(format: "%.01f", value)
 }
 
-func factorToX(position: AVCaptureDevice.Position, factor: Float) -> Float {
-    if position == .back {
-        return factor / 2
-    } else {
-        return factor
-    }
-}
-
 extension Comparable {
     func clamped(to limits: ClosedRange<Self>) -> Self {
         return min(max(self, limits.lowerBound), limits.upperBound)
@@ -360,19 +352,28 @@ func httpGet(from: URL) async throws -> (Data, HTTPURLResponse) {
 let smallFont = Font.system(size: 13)
 
 extension AVCaptureDevice {
-    func getZoomFactorScale() -> Float {
-        switch deviceType {
-        case .builtInTripleCamera, .builtInDualWideCamera, .builtInUltraWideCamera:
-            return 0.5
-        case .builtInTelephotoCamera:
-            return 5.0
-        default:
-            return 1.0
+    func getZoomFactorScale(hasUltraWideCamera: Bool) -> Float {
+        if hasUltraWideCamera {
+            switch deviceType {
+            case .builtInTripleCamera, .builtInDualWideCamera, .builtInUltraWideCamera:
+                return 0.5
+            case .builtInTelephotoCamera:
+                return (virtualDeviceSwitchOverVideoZoomFactors.last?.floatValue ?? 10.0) / 2
+            default:
+                return 1.0
+            }
+        } else {
+            switch deviceType {
+            case .builtInTelephotoCamera:
+                return virtualDeviceSwitchOverVideoZoomFactors.last?.floatValue ?? 3.0
+            default:
+                return 1.0
+            }
         }
     }
 
-    func getUIZoomRange() -> (Float, Float) {
-        let factor = getZoomFactorScale()
+    func getUIZoomRange(hasUltraWideCamera: Bool) -> (Float, Float) {
+        let factor = getZoomFactorScale(hasUltraWideCamera: hasUltraWideCamera)
         return (Float(minAvailableVideoZoomFactor) * factor, Float(maxAvailableVideoZoomFactor) * factor)
     }
 }
