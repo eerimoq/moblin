@@ -12,6 +12,7 @@ private let designers = [
     Designer(name: "megahallon"),
     Designer(name: "TicanUK"),
     Designer(name: "CoffeeFan"),
+    Designer(name: "Seebuch"),
 ]
 
 struct AboutDesignedBySettingsView: View {
