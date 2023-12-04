@@ -464,7 +464,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎉 Vous êtes en LIVE sur %@ 🎉"
+            "value" : "🎉 Vous êtes en DIRECT sur %@ 🎉"
           }
         },
         "pl" : {
@@ -798,7 +798,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Intervalle alloué %1$@ - %2$@."
+            "value" : "Intervalle possible %1$@ - %2$@."
           }
         },
         "pl" : {
@@ -918,7 +918,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Emotes animées"
+            "value" : "Émotes animées"
           }
         },
         "pl" : {
@@ -958,7 +958,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les émotes animées utilisent les ressources CPU de façon intensive. Désactiver pour réduire la consommation d'énergie."
+            "value" : "Les émotes animées utilisent les ressources CPU de façon intensive. Désactiver pour réduire l'utilisation de la batterie."
           }
         },
         "pl" : {
@@ -1362,7 +1362,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pourcentage batterie"
+            "value" : "Niveau de batterie visible"
           }
         },
         "pl" : {
@@ -1470,7 +1470,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Taille de paquets plus grande"
+            "value" : "Taille des paquets plus grande"
           }
         },
         "pl" : {
@@ -1510,7 +1510,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La taille des paquets SRT est de 6 paquets MPEG-TS par défaut. Activer l'option l'augmenter à 7 paquets MPEG-TS. Les hotspots ANdroid ne fonctionnent parfois pas avec des paquets de grande taille."
+            "value" : "La taille des paquets SRT est de 6 paquets MPEG-TS par défaut. Activer l'option l'augmente à 7 paquets MPEG-TS. Les hotspots Android ne fonctionnent parfois pas avec des paquets de grande taille."
           }
         },
         "pl" : {
@@ -1806,7 +1806,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les bordures utilisent les ressources CPU de façon intensive. Désactiver pour réduire la consommation d'énergie."
+            "value" : "Les bordures utilisent les ressources CPU de façon intensive. Désactiver pour réduire l'utilisation de la batterie."
           }
         },
         "pl" : {
@@ -2714,7 +2714,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Décibel"
+            "value" : "Décibels"
           }
         },
         "pl" : {
@@ -2862,7 +2862,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Affiché sur la vue principale et en icône d'application."
+            "value" : "Utilisée pour l'affichage sur la vue principale et en icône d'application."
           }
         },
         "pl" : {
@@ -3552,7 +3552,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Échec dans la récupération des émotes 7TV de la chaîne"
+            "value" : "Échec de récupération des émotes 7TV de la chaîne"
           }
         },
         "pl" : {
@@ -3592,7 +3592,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Échec dans la récupération des émotes 7TV globales"
+            "value" : "Échec de récupération des émotes 7TV globales"
           }
         },
         "pl" : {
@@ -3632,7 +3632,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Échec dans la récupération des émotes BTTV"
+            "value" : "Échec de récupération des émotes BTTV"
           }
         },
         "pl" : {
@@ -3672,7 +3672,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Échec dans la récupération des émotes FFZ"
+            "value" : "Échec de récupération des émotes FFZ"
           }
         },
         "pl" : {
@@ -3712,7 +3712,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "N'hasitez pas à rejoindre le serveur Discord Moblin ou à déclarer un problème sur Github si vous avez besoin d'aide ou souhaitez soumettre un retour d'expérience."
+            "value" : "N'hésitez pas à rejoindre le serveur Discord Moblin ou à déclarer un problème sur Github si vous avez besoin d'aide ou souhaitez soumettre un retour d'expérience."
           }
         },
         "pl" : {
@@ -4464,7 +4464,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Icônes pas encore dispobles"
+            "value" : "Icônes bientôt disponibles"
           }
         },
         "pl" : {
@@ -4892,7 +4892,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vues spuperposées locales"
+            "value" : "Vues superposées locales"
           }
         },
         "pl" : {
@@ -4932,7 +4932,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les vues superposées locales n'apparaissent pas dans le stream."
+            "value" : "Les vues superposées locales (overlays) n'apparaissent pas dans le stream."
           }
         },
         "pl" : {
@@ -6016,7 +6016,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Paquets en vols"
+            "value" : "Paquets en vol"
           }
         },
         "pl" : {
@@ -6576,7 +6576,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sélectionner image"
+            "value" : "Sélection image"
           }
         },
         "pl" : {
@@ -6684,7 +6684,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les réglages qui imterrompraient le stream sont désactiver pendant une diffusion."
+            "value" : "Les réglages qui imterrompraient le stream sont désactivés pendant une diffusion."
           }
         },
         "pl" : {
@@ -7218,7 +7218,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Soutenir les développeurs Moblin en achetant des icônes."
+            "value" : "Soutenez les développeurs Moblin en achetant des icônes."
           }
         },
         "pl" : {
@@ -7658,7 +7658,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Le zoom (exprimé en X) à utiliser quand une caméra déterminée est activée."
+            "value" : "Le zoom à utiliser (exprimé en ×) quand vous basculez vers une caméra determinée, si l'option est activée."
           }
         },
         "pl" : {
@@ -8194,7 +8194,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Utiliser le premier canal pour le niveau audio. Pour débugger sur microphone Røde l'erreur Unknown level."
+            "value" : "Utiliser le premier canal pour le niveau audio. Pour débugger l'erreur \"Unknown level\" sur microphone Røde."
           }
         },
         "pl" : {
@@ -8234,7 +8234,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Utiliser l'audio généré comme source au lieu du micro."
+            "value" : "Utiliser l'audio généré comme source au lieu du microphone."
           }
         },
         "pl" : {
@@ -8389,7 +8389,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Très expérimental et très secret ! Ne fonctionne pas encore !"
+            "value" : "Très expérimental et très secret ! Ne fonctionne pas encore…"
           }
         },
         "sv" : {
@@ -8559,7 +8559,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La stabilisation vidéo peut parfois donner des erreurs de synchro audio-vidéo."
+            "value" : "La stabilisation vidéo peut parfois donner des erreurs de synchronisation audio-vidéo."
           }
         },
         "pl" : {
@@ -8941,7 +8941,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zéro millisecondes ou plus. Tout paramètre de latence pécisé dans l'URL prévaudra sur cette valeur."
+            "value" : "Zéro milliseconde ou plus. Tout paramètre de latence précisé dans l'URL prévaudra sur cette valeur."
           }
         },
         "pl" : {
