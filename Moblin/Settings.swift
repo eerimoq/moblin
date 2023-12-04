@@ -666,21 +666,25 @@ class Database: Codable {
 }
 
 func addDefaultWidgets(database: Database) {
+    // 0
     var widget = SettingsWidget(name: String(localized: "Movie"))
     widget.type = .videoEffect
     widget.videoEffect.type = .movie
     database.widgets.append(widget)
 
+    // 1
     widget = SettingsWidget(name: String(localized: "Gray scale"))
     widget.type = .videoEffect
     widget.videoEffect.type = .grayScale
     database.widgets.append(widget)
 
+    // 2
     widget = SettingsWidget(name: String(localized: "Sepia"))
     widget.type = .videoEffect
     widget.videoEffect.type = .sepia
     database.widgets.append(widget)
 
+    // 3
     widget = SettingsWidget(name: String(localized: "Random"))
     widget.type = .videoEffect
     widget.videoEffect.type = .random
@@ -700,7 +704,7 @@ func createSceneWidgetVideoEffectSepia(database: Database) -> SettingsSceneWidge
 }
 
 func createSceneWidgetVideoEffectRandom(database: Database) -> SettingsSceneWidget {
-    return SettingsSceneWidget(widgetId: database.widgets[4].id)
+    return SettingsSceneWidget(widgetId: database.widgets[3].id)
 }
 
 func addDefaultScenes(database: Database) {
@@ -713,13 +717,13 @@ func addDefaultScenes(database: Database) {
     scene.addButton(id: database.buttons[0].id)
     scene.addButton(id: database.buttons[1].id)
     scene.addButton(id: database.buttons[2].id)
+    scene.addButton(id: database.buttons[7].id)
     scene.addButton(id: database.buttons[8].id)
     scene.addButton(id: database.buttons[9].id)
-    scene.addButton(id: database.buttons[10].id)
     scene.addButton(id: database.buttons[3].id)
     scene.addButton(id: database.buttons[4].id)
     scene.addButton(id: database.buttons[5].id)
-    scene.addButton(id: database.buttons[7].id)
+    scene.addButton(id: database.buttons[6].id)
     database.scenes.append(scene)
 
     scene = SettingsScene(name: String(localized: "Front"))
@@ -727,9 +731,9 @@ func addDefaultScenes(database: Database) {
     scene.widgets.append(createSceneWidgetVideoEffectMovie(database: database))
     scene.addButton(id: database.buttons[1].id)
     scene.addButton(id: database.buttons[2].id)
+    scene.addButton(id: database.buttons[7].id)
     scene.addButton(id: database.buttons[8].id)
     scene.addButton(id: database.buttons[9].id)
-    scene.addButton(id: database.buttons[10].id)
     scene.addButton(id: database.buttons[3].id)
     database.scenes.append(scene)
 }
@@ -779,6 +783,7 @@ func addDefaultBitratePresets(database: Database) {
 }
 
 func addDefaultButtons(database: Database) {
+    // 0
     var button = SettingsButton(name: String(localized: "Torch"))
     button.id = UUID()
     button.type = .torch
@@ -787,6 +792,7 @@ func addDefaultButtons(database: Database) {
     button.systemImageNameOff = "lightbulb"
     database.buttons.append(button)
 
+    // 1
     button = SettingsButton(name: String(localized: "Mute"))
     button.id = UUID()
     button.type = .mute
@@ -795,6 +801,7 @@ func addDefaultButtons(database: Database) {
     button.systemImageNameOff = "mic"
     database.buttons.append(button)
 
+    // 2
     button = SettingsButton(name: String(localized: "Bitrate"))
     button.id = UUID()
     button.type = .bitrate
@@ -803,6 +810,7 @@ func addDefaultButtons(database: Database) {
     button.systemImageNameOff = "speedometer"
     database.buttons.append(button)
 
+    // 3
     button = SettingsButton(name: String(localized: "Movie"))
     button.id = UUID()
     button.type = .widget
@@ -812,6 +820,7 @@ func addDefaultButtons(database: Database) {
     button.widget.widgetId = database.widgets[0].id
     database.buttons.append(button)
 
+    // 4
     button = SettingsButton(name: String(localized: "Gray scale"))
     button.id = UUID()
     button.type = .widget
@@ -821,6 +830,7 @@ func addDefaultButtons(database: Database) {
     button.widget.widgetId = database.widgets[1].id
     database.buttons.append(button)
 
+    // 5
     button = SettingsButton(name: String(localized: "Sepia"))
     button.id = UUID()
     button.type = .widget
@@ -830,6 +840,7 @@ func addDefaultButtons(database: Database) {
     button.widget.widgetId = database.widgets[2].id
     database.buttons.append(button)
 
+    // 6
     button = SettingsButton(name: String(localized: "Random"))
     button.id = UUID()
     button.type = .widget
@@ -839,6 +850,7 @@ func addDefaultButtons(database: Database) {
     button.widget.widgetId = database.widgets[3].id
     database.buttons.append(button)
 
+    // 7
     button = SettingsButton(name: String(localized: "Mic"))
     button.id = UUID()
     button.type = .mic
@@ -847,6 +859,7 @@ func addDefaultButtons(database: Database) {
     button.systemImageNameOff = "music.mic"
     database.buttons.append(button)
 
+    // 8
     button = SettingsButton(name: String(localized: "Chat"))
     button.id = UUID()
     button.type = .chat
@@ -855,6 +868,7 @@ func addDefaultButtons(database: Database) {
     button.systemImageNameOff = "message"
     database.buttons.append(button)
 
+    // 9
     button = SettingsButton(name: String(localized: "Pause chat"))
     button.id = UUID()
     button.type = .pauseChat
