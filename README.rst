@@ -7,7 +7,7 @@ stream to `YouTube`_, `Kick`_, `Facebook`_ and `OBS Studio`_ as well
 
 Not yet in App Store, but on `TestFlight`_!
 
-.. image:: https://github.com/eerimoq/moblin/raw/main/Docs/main.jpg
+.. image:: https://github.com/eerimoq/moblin/raw/main/docs/main.jpg
 
 Discord: https://discord.gg/nt3UwHqbMM
 
