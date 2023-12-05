@@ -631,12 +631,12 @@ final class Model: ObservableObject {
         UIDevice.current.isBatteryMonitoringEnabled = true
         backCameras = listCameras(position: .back)
         if !backCameras.contains(where: { $0.type == database.backCameraType! }) {
-            database.backCameraType = backCameras.first!.type
+            database.backCameraType = backCameras.first?.type ?? .dual
             store()
         }
         frontCameras = listCameras(position: .front)
         if !frontCameras.contains(where: { $0.type == database.frontCameraType! }) {
-            database.frontCameraType = frontCameras.first!.type
+            database.frontCameraType = frontCameras.first?.type ?? .dual
             store()
         }
         updateBatteryLevel()

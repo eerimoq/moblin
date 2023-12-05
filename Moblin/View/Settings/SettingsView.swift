@@ -78,7 +78,7 @@ struct SettingsView: View {
     }
 
     private func toCameraName(value: SettingsCameraType, cameras: [Camera]) -> String {
-        return cameras.first(where: { $0.type == value })!.name
+        return cameras.first(where: { $0.type == value })?.name ?? ""
     }
 
     var body: some View {
