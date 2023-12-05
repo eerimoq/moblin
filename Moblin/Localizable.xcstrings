@@ -576,7 +576,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Duża liczba. Użyj narzędzi deweloperskich (F11) w twojej przeglądarce. Sprawdź wiadomości websocket."
+            "value" : "Ciąg liczb, użyj narzędzi deweloperskich (F11) w twojej przeglądarce. Sprawdź wiadomości websocket."
           }
         },
         "sv" : {
@@ -995,6 +995,12 @@
             "value" : "Clé API"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Klucz API"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1128,7 +1134,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "zurück"
+            "value" : "Haupt"
           }
         },
         "fr" : {
@@ -1140,7 +1146,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "powrót"
+            "value" : "tylny"
           }
         },
         "sv" : {
@@ -1156,7 +1162,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zurück"
+            "value" : "Rückseite"
           }
         },
         "es" : {
@@ -1174,7 +1180,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Powrót"
+            "value" : "Tylny"
           }
         },
         "sv" : {
@@ -1196,7 +1202,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Haupt Kamera"
+            "value" : "Rückseitige Kamera"
           }
         },
         "es" : {
@@ -1236,7 +1242,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Haupt Kamera Voreinstellungen"
+            "value" : "Hauptkamera Voreinstellungen"
           }
         },
         "es" : {
@@ -1350,7 +1356,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Batterie Prozent"
+            "value" : "Batterieladung in Prozent"
           }
         },
         "es" : {
@@ -1368,7 +1374,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Procent baterii"
+            "value" : "Procent naładowania baterii"
           }
         },
         "sv" : {
@@ -2052,7 +2058,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Przyciski pojawiają się od dołu do góry."
+            "value" : "Przyciski pojawią się od dołu w górę."
           }
         },
         "sv" : {
@@ -2492,7 +2498,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zakończ"
+            "value" : "Zamknij"
           }
         },
         "sv" : {
@@ -2868,7 +2874,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wyświetlana w głównym widoku i jako ikona aplikacji."
+            "value" : "Wyświetlane w widoku głównym i jako ikona aplikacji."
           }
         },
         "sv" : {
@@ -2988,7 +2994,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Koniec"
+            "value" : "Zakończ"
           }
         },
         "sv" : {
@@ -3017,6 +3023,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Exemple d'URL : https://play.afreecatv.com/nomDeMaChaine/monIdVideo"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Przykład: https://play.afreecatv.com/myChannelName/twójWideoId"
           }
         }
       }
@@ -3718,7 +3730,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dołącz do serwera Moblin na Discordzie lub napisz zgłoszenie na Githubie, jeśli potrzebujesz pomocy lub chcesz wyrazić swoją opinię."
+            "value" : "Potrzebujesz pomocy lub chcesz wyrazić swoją opinię? Dołącz do serwera Moblin na Discordzie, bądź napisz zgłoszenie na Githubie."
           }
         },
         "sv" : {
@@ -3748,6 +3760,12 @@
             "state" : "translated",
             "value" : "Retrouvez votre nom de chaîne (nomDeMaChaine) et votre identifiant vidéo (monIdVideo) dans l'adresse URL de votre stream."
           }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Znajdź swoją nazwę kanału (twojaNazwaKanału) lub ID wideo (twójWideoId) w Twoim adresie URL streama."
+          }
         }
       }
     },
@@ -3774,7 +3792,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Znajdź ID swojego pokoju https://kick.com/api/v1/channels/twoja_nazwa. Zamień twoja_nazwa na swój nick"
+            "value" : "Znajdź ID swojego pokoju https://kick.com/api/v1/channels/twoja_nazwa i zamień twoja_nazwa na swój nick."
           }
         },
         "sv" : {
@@ -3848,7 +3866,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "przód"
+            "value" : "przedni"
           }
         },
         "sv" : {
@@ -3882,7 +3900,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Czcionka"
+            "value" : "Przedni"
           }
         },
         "sv" : {
@@ -4058,7 +4076,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Geometrie"
+            "value" : "Größe"
           }
         },
         "es" : {
@@ -4310,7 +4328,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pomoc & wsparcie"
+            "value" : "Pomoc i wsparcie"
           }
         },
         "sv" : {
@@ -4350,7 +4368,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ukryj poufne adresy URL"
+            "value" : "Ukryj poufne informacje"
           }
         },
         "sv" : {
@@ -4470,7 +4488,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ikony nie są jeszcze dostępne w sklepie"
+            "value" : "Ikony jeszcze niedostępne"
           }
         },
         "sv" : {
@@ -4898,7 +4916,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lokalne nakładki"
+            "value" : "Nakładki ekranowe"
           }
         },
         "sv" : {
@@ -4938,7 +4956,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lokalne nakładki nie pojawią się na streamie."
+            "value" : "Nakładki ekranowe nie pojawią się na streamie."
           }
         },
         "sv" : {
@@ -5098,7 +5116,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maksymalny wiek"
+            "value" : "Czas wyświetlania"
           }
         },
         "sv" : {
@@ -5366,7 +5384,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wycisz"
+            "value" : "Włącz/wyłącz mikrofon"
           }
         },
         "sv" : {
@@ -6382,7 +6400,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ponowna próba później"
+            "value" : "Ponowna próba za chwilę"
           }
         },
         "sv" : {
@@ -6690,7 +6708,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ustawienia, który mogłby zatrzymać stream są wyłączone podczas transmisji na żywo."
+            "value" : "Ustawienia, które mogłyby zatrzymać stream są wyłączone podczas transmisji na żywo."
           }
         },
         "sv" : {
@@ -6873,6 +6891,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Vitesse"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Szybkość"
           }
         },
         "sv" : {
@@ -7076,7 +7100,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Standardowy"
+            "value" : "Podstawowa"
           }
         },
         "sv" : {
@@ -7184,7 +7208,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Streamy"
+            "value" : "Połączenia"
           }
         },
         "sv" : {
@@ -7932,7 +7956,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Potrójny"
+            "value" : "Potrójny ekran"
           }
         },
         "sv" : {
@@ -8126,7 +8150,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Czas aktywności"
+            "value" : "Czas online"
           }
         },
         "sv" : {
@@ -8360,7 +8384,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "W fazie testów i poufne!"
+            "value" : "W fazie testów i bardzo poufne!"
           }
         },
         "sv" : {
@@ -8390,6 +8414,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Très expérimental et très secret ! Ne fonctionne pas encore…"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "W fazie testów i bardzo poufne! Nie działa w tym momencie!"
           }
         },
         "sv" : {
@@ -8494,6 +8524,12 @@
             "value" : "Identifiant vidéo"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ID wideo"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8565,7 +8601,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stabilizacja wideo czasami powoduje problemy z synchronizacją (dzięk-obraz)."
+            "value" : "Stabilizacja wideo czasami powoduje problemy z synchronizacją (dźwięk-obraz)."
           }
         },
         "sv" : {
@@ -8605,7 +8641,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Oglądający"
+            "value" : "Liczba widzów"
           }
         },
         "sv" : {
@@ -8759,7 +8795,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Widgety układają się od tyłu do przodu."
+            "value" : "Widgety układają się od spodu w górę."
           }
         },
         "sv" : {
@@ -8947,7 +8983,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zero lub więcej milisekund. Każdy parametr latancji dodany do adresu URL nadpisuje tę wartość."
+            "value" : "Zero lub więcej milisekund. Każdy parametr latencji dodany do adresu URL nadpisuje tę wartość."
           }
         },
         "sv" : {
