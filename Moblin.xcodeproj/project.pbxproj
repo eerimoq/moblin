@@ -1130,9 +1130,9 @@
 				INFOPLIST_FILE = Moblin/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Moblin;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
-				INFOPLIST_KEY_NSCameraUsageDescription = Yes;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Moblin live streams video from the camera.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = Yes;
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = Yes;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Moblin live streams audio from the microphone.";
 				INFOPLIST_KEY_NSNetworkVolumesUsageDescription = Yes;
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = Yes;
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = Yes;
@@ -1146,7 +1146,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.89.0;
+				MARKETING_VERSION = 0.90.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1175,9 +1175,9 @@
 				INFOPLIST_FILE = Moblin/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Moblin;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
-				INFOPLIST_KEY_NSCameraUsageDescription = Yes;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Moblin live streams video from the camera.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = Yes;
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = Yes;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Moblin live streams audio from the microphone.";
 				INFOPLIST_KEY_NSNetworkVolumesUsageDescription = Yes;
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = Yes;
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = Yes;
@@ -1191,7 +1191,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.89.0;
+				MARKETING_VERSION = 0.90.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
