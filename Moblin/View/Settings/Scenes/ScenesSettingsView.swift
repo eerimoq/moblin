@@ -10,22 +10,32 @@ struct ScenesSettingsView: View {
     var body: some View {
         Form {
             Section {
-                ForEach(database.scenes) { scene in
-                    NavigationLink(destination: SceneSettingsView(scene: scene)) {
-                        Toggle(scene.name, isOn: Binding(get: {
-                            scene.enabled
-                        }, set: { value in
-                            scene.enabled = value
-                            model.store()
-                            model.resetSelectedScene()
-                        }))
+                List {
+                    ForEach(database.scenes) { scene in
+                        NavigationLink(destination: SceneSettingsView(scene: scene)) {
+                            HStack {
+                                DraggableItemPrefixView()
+                                Toggle(scene.name, isOn: Binding(get: {
+                                    scene.enabled
+                                }, set: { value in
+                                    scene.enabled = value
+                                    model.store()
+                                    model.resetSelectedScene()
+                                }))
+                            }
+                        }
                     }
+                    .onMove(perform: { froms, to in
+                        database.scenes.move(fromOffsets: froms, toOffset: to)
+                        model.store()
+                        model.resetSelectedScene()
+                    })
+                    .onDelete(perform: { offsets in
+                        database.scenes.remove(atOffsets: offsets)
+                        model.store()
+                        model.resetSelectedScene()
+                    })
                 }
-                .onDelete(perform: { offsets in
-                    database.scenes.remove(atOffsets: offsets)
-                    model.store()
-                    model.resetSelectedScene()
-                })
                 CreateButtonView(action: {
                     database.scenes.append(SettingsScene(name: String(localized: "My scene")))
                     model.store()
