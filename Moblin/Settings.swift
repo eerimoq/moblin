@@ -114,6 +114,16 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable {
     init(widgetId: UUID) {
         self.widgetId = widgetId
     }
+
+    func clone() -> SettingsSceneWidget {
+        let widget = SettingsSceneWidget(widgetId: widgetId)
+        widget.enabled = enabled
+        widget.x = x
+        widget.y = y
+        widget.width = width
+        widget.height = height
+        return widget
+    }
 }
 
 class SettingsSceneButton: Codable, Identifiable, Equatable {
@@ -127,6 +137,12 @@ class SettingsSceneButton: Codable, Identifiable, Equatable {
 
     init(buttonId: UUID) {
         self.buttonId = buttonId
+    }
+
+    func clone() -> SettingsSceneButton {
+        let button = SettingsSceneButton(buttonId: buttonId)
+        button.enabled = enabled
+        return button
     }
 }
 
@@ -198,6 +214,15 @@ class SettingsSceneCameraLayoutPip: Codable {
     var y: Double = 0.0
     var width: Double = 35.0
     var height: Double = 35.0
+
+    func clone() -> SettingsSceneCameraLayoutPip {
+        let layout = SettingsSceneCameraLayoutPip()
+        layout.x = x
+        layout.y = y
+        layout.width = width
+        layout.height = height
+        return layout
+    }
 }
 
 class SettingsScene: Codable, Identifiable, Equatable {
@@ -221,6 +246,22 @@ class SettingsScene: Codable, Identifiable, Equatable {
 
     func addButton(id: UUID) {
         buttons.append(SettingsSceneButton(buttonId: id))
+    }
+
+    func clone() -> SettingsScene {
+        let scene = SettingsScene(name: name)
+        scene.enabled = enabled
+        scene.cameraLayout = cameraLayout
+        scene.cameraType = cameraType
+        scene.cameraPosition = cameraPosition
+        scene.cameraLayoutPip = cameraLayoutPip!.clone()
+        for widget in widgets {
+            scene.widgets.append(widget.clone())
+        }
+        for button in buttons {
+            scene.buttons.append(button.clone())
+        }
+        return scene
     }
 }
 

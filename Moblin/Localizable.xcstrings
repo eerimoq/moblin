@@ -2743,6 +2743,9 @@
         }
       }
     },
+    "Delete" : {
+
+    },
     "Designed by" : {
       "localizations" : {
         "de" : {
@@ -2970,6 +2973,9 @@
           }
         }
       }
+    },
+    "Duplicate" : {
+
     },
     "End" : {
       "localizations" : {

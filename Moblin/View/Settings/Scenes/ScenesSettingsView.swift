@@ -24,14 +24,29 @@ struct ScenesSettingsView: View {
                                 }))
                             }
                         }
+                        .swipeActions(edge: .trailing) {
+                            Button(action: {
+                                database.scenes.removeAll { $0 == scene }
+                                model.store()
+                                model.resetSelectedScene()
+                            }, label: {
+                                Text("Delete")
+                            })
+                            .tint(.red)
+                        }
+                        .swipeActions(edge: .trailing) {
+                            Button(action: {
+                                database.scenes.append(scene.clone())
+                                model.store()
+                                model.resetSelectedScene()
+                            }, label: {
+                                Text("Duplicate")
+                            })
+                            .tint(.blue)
+                        }
                     }
                     .onMove(perform: { froms, to in
                         database.scenes.move(fromOffsets: froms, toOffset: to)
-                        model.store()
-                        model.resetSelectedScene()
-                    })
-                    .onDelete(perform: { offsets in
-                        database.scenes.remove(atOffsets: offsets)
                         model.store()
                         model.resetSelectedScene()
                     })
