@@ -201,6 +201,12 @@
             "value" : "/sec"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "/초"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -221,6 +227,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%.1f/min"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.1f/분"
           }
         },
         "sv" : {
@@ -495,6 +507,12 @@
             "value" : "🤟 Stream arrêté 🤟"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "스트림이 종료되었습니다."
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -523,6 +541,12 @@
             "value" : "😢 FFFFF 😢"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "😢 FFFFF 😢"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -543,6 +567,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "0.0/min"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "0.0/분"
           }
         },
         "sv" : {
@@ -571,6 +601,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Une suite de chiffres. Utiliser les outils de développement (F11) dans un navigateur pour consulter les messages Websocket."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "컴퓨터 브라우저의 개발툴(F11) 버튼을 눌러서 보이는 웹소켓 메시지를 살펴보세요."
           }
         },
         "pl" : {
@@ -653,6 +689,12 @@
             "value" : "Bitrate adaptatif"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "적응형 비트레이트"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -691,6 +733,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Le bitrate adaptatif est une fonctionnalité expérimentale."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "적응형 비트레이트는 시험중입니다."
           }
         },
         "pl" : {
@@ -733,6 +781,12 @@
             "value" : "Ajouter"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "추가"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -767,6 +821,12 @@
             "value" : "AfreecaTV"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "아프리카TV"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -799,6 +859,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Intervalle possible %1$@ - %2$@."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "허용범위는 %1$@ - %2$@입니다."
           }
         },
         "pl" : {
@@ -839,6 +905,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Amplitude"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "진폭"
           }
         },
         "pl" : {
@@ -921,6 +993,12 @@
             "value" : "Émotes animées"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "애니메이션 감정 표현"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -959,6 +1037,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Les émotes animées utilisent les ressources CPU de façon intensive. Désactiver pour réduire l'utilisation de la batterie."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "애니메이션 감정 표현은 CPU를 상당히 많이 사용합니다. 사용율을 줄이려면 비활성화하세요."
           }
         },
         "pl" : {
@@ -1029,6 +1113,12 @@
             "value" : "Confirmez-vous ce choix ?"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "확실합니까?"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1067,6 +1157,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Audio"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오디오"
           }
         },
         "pl" : {
@@ -1109,6 +1205,12 @@
             "value" : "Niveau audio"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오디오 레벨"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1143,6 +1245,12 @@
             "value" : "arrière"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "뒤로"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1175,6 +1283,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Arrière"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "뒤로"
           }
         },
         "pl" : {
@@ -1217,6 +1331,12 @@
             "value" : "Caméra arrière"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "후면 카메라"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1255,6 +1375,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Réglages caméra arrière"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "후면 카메라 프리셋"
           }
         },
         "pl" : {
@@ -1297,6 +1423,12 @@
             "value" : "Arrière-plan"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "배경"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1337,6 +1469,12 @@
             "value" : "Barre"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "바"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1369,6 +1507,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Niveau de batterie visible"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "배터리 퍼센트"
           }
         },
         "pl" : {
@@ -1445,6 +1589,12 @@
             "value" : "SRTLA BELABOX cloud"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "벨라박스 클라우드 SRTLA"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1477,6 +1627,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Taille des paquets plus grande"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "빅패킷"
           }
         },
         "pl" : {
@@ -1559,6 +1715,12 @@
             "value" : "Bitrate"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "비트레이트"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1591,6 +1753,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Réglages bitrate"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "비트레이트 프리셋"
           }
         },
         "pl" : {
@@ -1633,6 +1801,12 @@
             "value" : "Bloom"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "꽃"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1659,6 +1833,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bleu"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "파랑"
           }
         },
         "pl" : {
@@ -1701,6 +1881,12 @@
             "value" : "Message en gras"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "굵은메시지"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1739,6 +1925,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nom d'utilisateur en gras"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이름 굵게표시"
           }
         },
         "pl" : {
@@ -1781,6 +1973,12 @@
             "value" : "Bordures"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "테두리"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1813,6 +2011,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Les bordures utilisent les ressources CPU de façon intensive. Désactiver pour réduire l'utilisation de la batterie."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "테두리 기능은 CPU를 상당히 많이 사용합니다. 사용율을 줄이려면 비활성화하세요."
           }
         },
         "pl" : {
@@ -1855,6 +2059,12 @@
             "value" : "Bas droite"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "하단 오른쪽"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1893,6 +2103,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Navigateur"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "브라우저"
           }
         },
         "pl" : {
@@ -1935,6 +2151,12 @@
             "value" : "Bouton"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "버튼"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1973,6 +2195,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nom du bouton"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "버튼 이름"
           }
         },
         "pl" : {
@@ -2015,6 +2243,12 @@
             "value" : "Boutons"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "버튼"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2053,6 +2287,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Les boutons apparaissent de bas en haut."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "버튼은 아래에서 위로 나타납니다."
           }
         },
         "pl" : {
@@ -2095,6 +2335,12 @@
             "value" : "Caméra"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "카메라"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2133,6 +2379,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Changement de caméra"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "카메라 전환"
           }
         },
         "pl" : {
@@ -2175,6 +2427,12 @@
             "value" : "Annuler"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "취소"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2213,6 +2471,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ID de chaîne"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "채널ID"
           }
         },
         "pl" : {
@@ -2255,6 +2519,12 @@
             "value" : "Nom de chaîne"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "채널이름"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2293,6 +2563,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Chat"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "채팅"
           }
         },
         "pl" : {
@@ -2335,6 +2611,12 @@
             "value" : "Le chat est caché"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "채팅창 숨기기"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2373,6 +2655,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Le chat est en pause"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "채팅창 일시정지"
           }
         },
         "pl" : {
@@ -2415,6 +2703,12 @@
             "value" : "ID de chatroom"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "채팅창ID"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2453,6 +2747,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cinématique"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "씨네메틱"
           }
         },
         "pl" : {
@@ -2495,6 +2795,12 @@
             "value" : "Fermer"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "닫기"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2535,6 +2841,12 @@
             "value" : "Codec"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "코덱"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2567,6 +2879,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Couleurs"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "컬러"
           }
         },
         "pl" : {
@@ -2609,6 +2927,12 @@
             "value" : "Apparence"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "화장하기"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2647,6 +2971,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Créer"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "생성"
           }
         },
         "pl" : {
@@ -2689,6 +3019,12 @@
             "value" : "Debug"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "디버깅"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2721,6 +3057,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Décibels"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "데시벨"
           }
         },
         "pl" : {
@@ -2766,6 +3108,12 @@
             "value" : "Conçu par"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Designed by"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2806,6 +3154,12 @@
             "value" : "Dimensions"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "치수"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2840,6 +3194,12 @@
             "value" : "Discord"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "디스코드"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2872,6 +3232,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Utilisée pour l'affichage sur la vue principale et en icône d'application."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "바탕화면에 앱 아이콘으로 표시됩니다."
           }
         },
         "pl" : {
@@ -2914,6 +3280,12 @@
             "value" : "Ne partagez vos réglages avec personne car ils pourraient contenir des données sensibles (clés de stream et autres) !"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "중요한 정보(스트림키와 같은)가 포함될 수 있으니, 설정을 다른 사람과 공유하지 마세요."
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2952,6 +3324,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ne partagez votre URL avec personne, ou votre chaîne pourrait être piratée !"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다른 사람과 URL을 공유하지 마세요. 다른 사람이 귀하의 채널을 탈취할 수 있습니다!"
           }
         },
         "pl" : {
@@ -2997,6 +3375,12 @@
             "value" : "Fin"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "끝"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3031,6 +3415,12 @@
             "value" : "Exemple d'URL : https://play.afreecatv.com/nomDeMaChaine/monIdVideo"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "예시 URL: https://play.afreecatv.com/myChannelName/myVideoId"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3057,6 +3447,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Exemple : rtmp://fra99.contribute.live-video.net/app/live_123456_aNeSurtoutPasPartagerAilleurs"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "예시:  rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef"
           }
         },
         "pl" : {
@@ -3099,6 +3495,12 @@
             "value" : "Exemple : rtmp://foobar.org:1234/5678"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "예시:  rtmp://foobar.org:3321/5678"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3137,6 +3539,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Example : rtmps://fa123fb456fc.global-contribute.live-video.net/sk_fr-paca-123ab456cd789ef0"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "예시:  rtmps://fa723fc1b171.global-contribute.live-video.net/sk_us-west-123hu43ui34hrkjh"
           }
         },
         "pl" : {
@@ -3179,6 +3587,12 @@
             "value" : "Exemple : srt://120.12.32.12:4000?streamid=publish/live/feed"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "예시:  srt://120.12.32.12:4000?streamid=publish/live/feed"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3217,6 +3631,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Exemple : srt://134.20.342.12:5000"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "예시:  srt://134.20.342.12:5000"
           }
         },
         "pl" : {
@@ -3259,6 +3679,12 @@
             "value" : "Exemple : srtla://foobar.org:4432"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "예시:  srtla://foobar.org:4432"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3297,6 +3723,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Exemple : rtmp://a.rtmp.youtube.com/live2/1a2b-3c4d-5e6f-7g8h-9i0j"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "예시: rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3"
           }
         },
         "pl" : {
@@ -3339,6 +3771,12 @@
             "value" : "Exemple : rtmps://live-api-s.facebook.com:443/rtmp/FB-12345678901234567-0-1d3NtiFian7-AAA"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "예시: rtmps://live-api-s.facebook.com:443/rtmp/FB-11152522122511115-0-BctNCp9jzzz-AAA"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3377,6 +3815,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Exemple : srt://uk.srt.belabox.net:4000?streamid=j4Ma15P4r7a63RV07r3iD3nt1fiAn7"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "예시: srt://uk.srt.belabox.net:4000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
           }
         },
         "pl" : {
@@ -3419,6 +3863,12 @@
             "value" : "Exemple : srtla://uk.srt.belabox.net:5000?streamid=j4Ma15P4r7a63RV07r3iD3nt1fiAn7"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "예시: srtla://uk.srt.belabox.net:5000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3457,6 +3907,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Copier dans le presse-papier"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "클립보드로 내보내기"
           }
         },
         "pl" : {
@@ -3499,6 +3955,12 @@
             "value" : "Exposition"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "노출"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3539,6 +4001,12 @@
             "value" : "Facebook"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "페이스북"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3571,6 +4039,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Échec de récupération des émotes 7TV de la chaîne"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "7TV 채널 이모티콘을 받지 못했습니다."
           }
         },
         "pl" : {
@@ -3613,6 +4087,12 @@
             "value" : "Échec de récupération des émotes 7TV globales"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "7TV 글로벌 이모티콘 획득 실패 했습니다"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3651,6 +4131,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Échec de récupération des émotes BTTV"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "BTTV 이모티콘을 받지 못했습니다."
           }
         },
         "pl" : {
@@ -3693,6 +4179,12 @@
             "value" : "Échec de récupération des émotes FFZ"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FFZ 이모티콘을 받지 못했습니다."
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3733,6 +4225,12 @@
             "value" : "N'hésitez pas à rejoindre le serveur Discord Moblin ou à déclarer un problème sur Github si vous avez besoin d'aide ou souhaitez soumettre un retour d'expérience."
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "도움이 필요하거나 피드백을 제공하고 싶다면 언제든지 Moblin 디스코드 서버에 가입하거나 Github에 문제를 작성하세요."
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3767,6 +4265,12 @@
             "value" : "Retrouvez votre nom de chaîne (nomDeMaChaine) et votre identifiant vidéo (monIdVideo) dans l'adresse URL de votre stream."
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "스트림 URL에서 채널 이름(myChannelName)과 동영상 ID(myVideoId)를 찾으세요."
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3793,6 +4297,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Retrouvez votre identifiant de chatroom sur https://kick.com/api/v1/channels/my_user. Remplacez my_user avec votre nom d'utilisateur."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://kick.com/api/v1/channels/my_user 주소의 my_user 부분을 당신의 아이디로 바꾸세요."
           }
         },
         "pl" : {
@@ -3835,6 +4345,12 @@
             "value" : "Taille de caractères"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "폰트 사이즈"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3869,6 +4385,12 @@
             "value" : "avant"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "폰트"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3901,6 +4423,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Avant"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "폰트"
           }
         },
         "pl" : {
@@ -3943,6 +4471,12 @@
             "value" : "Caméra avant"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "전면 카메라"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3983,6 +4517,12 @@
             "value" : "Réglages caméra avant"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "전면 카메라 프리셋"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4021,6 +4561,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Général"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "일반"
           }
         },
         "pl" : {
@@ -4171,6 +4717,12 @@
             "value" : "Démarrer"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "송출 시작"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4251,6 +4803,12 @@
             "value" : "Vert"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "녹색"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4291,6 +4849,12 @@
             "value" : "Hauteur"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "높이"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4329,6 +4893,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aide & support"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "도움과 지원"
           }
         },
         "pl" : {
@@ -4531,6 +5101,12 @@
             "value" : "Image"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이미지"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4569,6 +5145,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Importer et exporter les réglages"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "불러오기와 내보내기 설정"
           }
         },
         "pl" : {
@@ -4611,6 +5193,12 @@
             "value" : "Importer depuis le presse-papier"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "클립보드에서 불러오기"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4651,6 +5239,12 @@
             "value" : "Intervalle"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "간격"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4689,6 +5283,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Intervalle entre images-clés"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "키프레임 간격"
           }
         },
         "pl" : {
@@ -4799,6 +5399,12 @@
             "value" : "Latence"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지연 시간"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4839,6 +5445,12 @@
             "value" : "Disposition"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "레이아웃"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4877,6 +5489,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Licences"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "라이센스"
           }
         },
         "pl" : {
@@ -5655,6 +6273,12 @@
             "value" : "Nom"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이름"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5729,6 +6353,12 @@
             "value" : "Niveau de bruit"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "잡음 수준"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5769,6 +6399,12 @@
             "value" : "Réduction de bruit"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "잡음 제거"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5807,6 +6443,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Non configuré"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "설정되지 않음"
           }
         },
         "pl" : {
@@ -5883,6 +6525,12 @@
             "value" : "Off"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "끄기"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5921,6 +6569,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "On"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "켜기"
           }
         },
         "pl" : {
@@ -5963,6 +6617,12 @@
             "value" : "Seuls les boutons inutilisés peuvent être supprimés."
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사용하지 않는 버튼만 지울 수 있습니다."
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6001,6 +6661,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Seuls les widgets inutilisés peuvent être supprimés."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사용하지 않는 위젯만 지울 수 있습니다."
           }
         },
         "pl" : {
@@ -6123,6 +6789,12 @@
             "value" : "Mettre le chat en pause"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "채팅 일시정지"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6161,6 +6833,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Image dans l'image"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PIP"
           }
         },
         "pl" : {
@@ -6203,6 +6881,12 @@
             "value" : "Préréglage"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "프리셋"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6241,6 +6925,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aléatoire"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "랜덤"
           }
         },
         "pl" : {
@@ -6283,6 +6973,12 @@
             "value" : "Rouge"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "빨강"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6321,6 +7017,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Réinitialiser les paramètres"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "설정 초기화"
           }
         },
         "pl" : {
@@ -6363,6 +7065,12 @@
             "value" : "Résolution"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "해상도"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6401,6 +7109,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nouvel essai plus tard"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다음에 다시 시도하세요."
           }
         },
         "pl" : {
@@ -6523,6 +7237,12 @@
             "value" : "Scène"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "장면"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6561,6 +7281,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Scènes"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "장면"
           }
         },
         "pl" : {
@@ -6603,6 +7329,12 @@
             "value" : "Sélection image"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이미지 선택"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6643,6 +7375,12 @@
             "value" : "Sépia"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "세피아톤"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6669,6 +7407,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Réglages"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "설정"
           }
         },
         "pl" : {
@@ -6751,6 +7495,12 @@
             "value" : "Netteté"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "선명도"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6831,6 +7581,12 @@
             "value" : "Simple"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "단일"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6865,6 +7621,12 @@
             "value" : "Petite caméra"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "작은 카메라"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6897,6 +7659,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Vitesse"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "속도"
           }
         },
         "pl" : {
@@ -7101,6 +7869,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Standard"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "표준"
           }
         },
         "pl" : {
@@ -7731,6 +8505,12 @@
             "value" : "Temps"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "시간"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7769,6 +8549,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Timestamp"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "시간표시"
           }
         },
         "pl" : {
@@ -7919,6 +8705,12 @@
             "value" : "Torche"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "플래시"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7999,6 +8791,12 @@
             "value" : "Twitch"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "트위치"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8073,6 +8871,12 @@
             "value" : "Inconnu"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "알 수 없음."
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8113,6 +8917,12 @@
             "value" : "Inutilisé"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사용안함"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8151,6 +8961,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Durée"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "가동시간"
           }
         },
         "pl" : {
@@ -8307,6 +9123,12 @@
             "value" : "Nom d'utilisateur"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사용자 이름"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8345,6 +9167,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Version"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "버전"
           }
         },
         "pl" : {
@@ -8456,6 +9284,12 @@
             "value" : "Vidéo"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "비디오"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8494,6 +9328,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Effets vidéo"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "영상 효과"
           }
         },
         "pl" : {
@@ -8564,6 +9404,12 @@
             "value" : "Stabilisation vidéo"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "손떨방 기능"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8602,6 +9448,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La stabilisation vidéo peut parfois donner des erreurs de synchronisation audio-vidéo."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "손떨방 기능은 가끔 싱크 문제를 일으킬 수 있습니다."
           }
         },
         "pl" : {
@@ -8644,6 +9496,12 @@
             "value" : "Spectateurs"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "시청자수"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8684,6 +9542,12 @@
             "value" : "Widget"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "위젯"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8716,6 +9580,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nom de widget"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "위젯 이름"
           }
         },
         "pl" : {
@@ -8756,6 +9626,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Widgets"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "위젯"
           }
         },
         "pl" : {
@@ -8838,6 +9714,12 @@
             "value" : "Largeur"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "좌우폭"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8912,6 +9794,12 @@
             "value" : "Vous avez déjà tout acheté !"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "당신은 모두 구매했습니다!"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8950,6 +9838,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "YouTube"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "유튜브"
           }
         },
         "sv" : {
@@ -9026,6 +9920,12 @@
             "value" : "Zoom"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "줌"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9058,6 +9958,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Préréglage zoom"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "줌 프리셋"
           }
         },
         "pl" : {
@@ -9098,6 +10004,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Préréglages zoom"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "줌 프리셋"
           }
         },
         "pl" : {
