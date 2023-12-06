@@ -591,7 +591,7 @@ final class Model: ObservableObject {
     func selectMicById(id: String) {
         guard let mic = listMics().first(where: { mic in mic.id == id }) else {
             logger.info("Mic with id \(id) not found")
-            makeErrorToast(title: "Mic not found", subTitle: "Mic id \(id)")
+            makeErrorToast(title: String(localized: "Mic not found"), subTitle: String(localized: "Mic id \(id)"))
             return
         }
         if let builtInOrientation = mic.builtInOrientation {
@@ -621,7 +621,7 @@ final class Model: ObservableObject {
             self.mic = mic
         } catch {
             logger.error("Failed to select mic: \(error)")
-            makeErrorToast(title: "Failed to select mic", subTitle: "\(error)")
+            makeErrorToast(title: String(localized: "Failed to select mic"), subTitle: error.localizedDescription)
         }
     }
 
@@ -825,7 +825,7 @@ final class Model: ObservableObject {
                 )
             } catch {
                 logger.error("Failed to import URL with error: \(error)")
-                makeErrorToast(title: "URL import failed", subTitle: "\(error)")
+                makeErrorToast(title: String(localized: "URL import failed"), subTitle: error.localizedDescription)
             }
         }
     }
@@ -2074,7 +2074,7 @@ final class Model: ObservableObject {
     }
 
     private func makeGoingLiveToast() {
-        makeToast(title: "😎 Going live at \(stream.name) 😎")
+        makeToast(title: String(localized: "😎 Going live at \(stream.name) 😎"))
     }
 
     private func makeYouAreLiveToast() {
@@ -2098,7 +2098,7 @@ final class Model: ObservableObject {
             let device = cameraDevice, device.isFocusPointOfInterestSupported
         else {
             logger.warning("Tap to focus not supported for this camera")
-            makeErrorToast(title: "Tap to focus not supported for this camera")
+            makeErrorToast(title: String(localized: "Tap to focus not supported for this camera"))
             return
         }
         var focusPointOfInterest = focusPoint
@@ -2129,7 +2129,7 @@ final class Model: ObservableObject {
             let device = cameraDevice, device.isFocusPointOfInterestSupported
         else {
             logger.warning("Tap to focus not supported for this camera")
-            makeErrorToast(title: "Tap to focus not supported for this camera")
+            makeErrorToast(title: String(localized: "Tap to focus not supported for this camera"))
             return
         }
         do {

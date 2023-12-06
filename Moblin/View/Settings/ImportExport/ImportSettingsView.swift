@@ -9,11 +9,11 @@ struct ImportSettingsView: View {
             Button("Import from clipboard") {
                 if let message = model.settings.importFromClipboard() {
                     model.makeErrorToast(
-                        title: "Import settings failed",
+                        title: String(localized: "Import settings failed"),
                         subTitle: message
                     )
                 } else {
-                    model.makeToast(title: "Settings imported")
+                    model.makeToast(title: String(localized: "Settings imported"))
                     model.updateIconImageFromDatabase()
                 }
             }

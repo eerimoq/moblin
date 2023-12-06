@@ -198,7 +198,7 @@ final class Media: NSObject {
                 if connected.newValue! {
                     self.onSrtConnected()
                 } else {
-                    self.onSrtDisconnected("SRT disconnected")
+                    self.onSrtDisconnected(String(localized: "SRT disconnected"))
                 }
             }
         }
@@ -484,7 +484,7 @@ extension Media: SrtlaDelegate {
                     self.srtStream?.publish()
                 } catch {
                     DispatchQueue.main.async {
-                        self.onSrtDisconnected("SRT connect failed with \(error)")
+                        self.onSrtDisconnected(String(localized: "SRT connect failed with \(error.localizedDescription)"))
                     }
                 }
             }
@@ -494,7 +494,7 @@ extension Media: SrtlaDelegate {
     func srtlaError(message: String) {
         DispatchQueue.main.async {
             logger.info("stream: SRT error: \(message)")
-            self.onSrtDisconnected("SRT error: \(message)")
+            self.onSrtDisconnected(String(localized: "SRT error: \(message)"))
         }
     }
 }

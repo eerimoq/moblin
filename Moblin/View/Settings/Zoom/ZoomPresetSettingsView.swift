@@ -18,7 +18,7 @@ struct ZoomPresetSettingsView: View {
             return
         }
         guard x >= minX && x <= maxX else {
-            model.makeErrorToast(title: "X must be \(minX) - \(maxX)")
+            model.makeErrorToast(title: String(localized: "X must be \(minX) - \(maxX)"))
             return
         }
         preset.x = x

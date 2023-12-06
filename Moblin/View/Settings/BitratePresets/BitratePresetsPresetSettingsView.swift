@@ -10,7 +10,7 @@ struct BitratePresetsPresetSettingsView: View {
             return
         }
         guard bitrate > 0 else {
-            model.makeErrorToast(title: "Bitrate must be greater than zero")
+            model.makeErrorToast(title: String(localized: "Bitrate must be greater than zero"))
             return
         }
         preset.bitrate = max(bitrateFromMbps(bitrate: bitrate), 100_000)
@@ -19,7 +19,7 @@ struct BitratePresetsPresetSettingsView: View {
 
     var body: some View {
         TextEditView(
-            title: "Bitrate",
+            title: String(localized: "Bitrate"),
             value: String(bitrateToMbps(bitrate: preset.bitrate)),
             onSubmit: submit
         )

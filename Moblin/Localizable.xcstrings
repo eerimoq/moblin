@@ -3,12 +3,6 @@
   "strings" : {
     "" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Leeres Wort"
-          }
-        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -523,6 +517,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "🤟 Strömmen avslutad 🤟"
+          }
+        }
+      }
+    },
+    "😎 Going live at %@ 😎" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "😎 Går LIVE på %@ 😎"
           }
         }
       }
@@ -1731,6 +1735,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "比特率"
+          }
+        }
+      }
+    },
+    "Bitrate must be greater than zero" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bitraten måste vara större än noll"
           }
         }
       }
@@ -3086,7 +3100,14 @@
       }
     },
     "Delete" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Radera"
+          }
+        }
+      }
     },
     "Designed by" : {
       "localizations" : {
@@ -3353,6 +3374,16 @@
       }
     },
     "Duplicate" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplicera"
+          }
+        }
+      }
+    },
+    "Empty clipboard" : {
 
     },
     "End" : {
@@ -4201,6 +4232,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "获取FFZ表情失败"
+          }
+        }
+      }
+    },
+    "Failed to select mic" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Misslyckades med att välja mikrofon"
           }
         }
       }
@@ -5219,6 +5260,16 @@
         }
       }
     },
+    "Import settings failed" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Misslyckades med att importera inställningarna"
+          }
+        }
+      }
+    },
     "Interval" : {
       "localizations" : {
         "de" : {
@@ -5677,6 +5728,9 @@
         }
       }
     },
+    "Malformed settings" : {
+
+    },
     "Many thanks from the Moblin developers!" : {
       "localizations" : {
         "de" : {
@@ -5901,6 +5955,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "麦克风"
+          }
+        }
+      }
+    },
+    "Mic id %@" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mikrofonid %@"
+          }
+        }
+      }
+    },
+    "Mic not found" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mikrofonen hittades inte"
           }
         }
       }
@@ -7435,6 +7509,16 @@
         }
       }
     },
+    "Settings imported" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inställningarna importerades"
+          }
+        }
+      }
+    },
     "Settings that would stop the stream are disabled when live." : {
       "localizations" : {
         "de" : {
@@ -7677,6 +7761,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hastighet"
+          }
+        }
+      }
+    },
+    "SRT connect failed with %@" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT anlutningen misslyckades med %@"
+          }
+        }
+      }
+    },
+    "SRT disconnected" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT nedkopplat"
+          }
+        }
+      }
+    },
+    "SRT error: %@" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT fel: %@"
           }
         }
       }
@@ -8084,6 +8198,9 @@
           }
         }
       }
+    },
+    "Tap to focus not supported for this camera" : {
+
     },
     "Template: rtmp://" : {
       "localizations" : {
@@ -9019,6 +9136,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "URL"
+          }
+        }
+      }
+    },
+    "URL import failed" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Misslyckades med att importera URL:en"
           }
         }
       }

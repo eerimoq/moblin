@@ -12,7 +12,7 @@ struct StreamsSettingsView: View {
             Section {
                 List {
                     ForEach(database.streams) { stream in
-                        var item = NavigationLink(destination: StreamSettingsView(
+                        let item = NavigationLink(destination: StreamSettingsView(
                             stream: stream
                         )) {
                             HStack {

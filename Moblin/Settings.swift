@@ -1000,12 +1000,12 @@ final class Settings {
 
     func importFromClipboard() -> String? {
         guard let settings = UIPasteboard.general.string else {
-            return "Empty clipboard"
+            return String(localized: "Empty clipboard")
         }
         do {
             try tryLoadAndMigrate(settings: settings)
         } catch {
-            return "Malformed settings"
+            return String(localized: "Malformed settings")
         }
         store()
         return nil
