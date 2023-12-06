@@ -591,7 +591,10 @@ final class Model: ObservableObject {
     func selectMicById(id: String) {
         guard let mic = listMics().first(where: { mic in mic.id == id }) else {
             logger.info("Mic with id \(id) not found")
-            makeErrorToast(title: String(localized: "Mic not found"), subTitle: String(localized: "Mic id \(id)"))
+            makeErrorToast(
+                title: String(localized: "Mic not found"),
+                subTitle: String(localized: "Mic id \(id)")
+            )
             return
         }
         if let builtInOrientation = mic.builtInOrientation {
@@ -621,7 +624,10 @@ final class Model: ObservableObject {
             self.mic = mic
         } catch {
             logger.error("Failed to select mic: \(error)")
-            makeErrorToast(title: String(localized: "Failed to select mic"), subTitle: error.localizedDescription)
+            makeErrorToast(
+                title: String(localized: "Failed to select mic"),
+                subTitle: error.localizedDescription
+            )
         }
     }
 
@@ -825,7 +831,10 @@ final class Model: ObservableObject {
                 )
             } catch {
                 logger.error("Failed to import URL with error: \(error)")
-                makeErrorToast(title: String(localized: "URL import failed"), subTitle: error.localizedDescription)
+                makeErrorToast(
+                    title: String(localized: "URL import failed"),
+                    subTitle: error.localizedDescription
+                )
             }
         }
     }

@@ -484,7 +484,10 @@ extension Media: SrtlaDelegate {
                     self.srtStream?.publish()
                 } catch {
                     DispatchQueue.main.async {
-                        self.onSrtDisconnected(String(localized: "SRT connect failed with \(error.localizedDescription)"))
+                        self
+                            .onSrtDisconnected(
+                                String(localized: "SRT connect failed with \(error.localizedDescription)")
+                            )
                     }
                 }
             }
