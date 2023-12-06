@@ -523,6 +523,12 @@
     },
     "😎 Going live at %@ 😎" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "😎 Live gegangen bei %@ 😎"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1741,6 +1747,12 @@
     },
     "Bitrate must be greater than zero" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bitrate muss größer als Null sein"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3101,6 +3113,12 @@
     },
     "Delete" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Löschen"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3375,6 +3393,12 @@
     },
     "Duplicate" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplizieren"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3384,7 +3408,14 @@
       }
     },
     "Empty clipboard" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leere Zwischenablage "
+          }
+        }
+      }
     },
     "End" : {
       "localizations" : {
@@ -4238,6 +4269,12 @@
     },
     "Failed to select mic" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mikrofon konnte nicht ausgewählt werden"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5262,6 +5299,12 @@
     },
     "Import settings failed" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importieren der Einstellungen fehlgeschlagen"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5729,7 +5772,14 @@
       }
     },
     "Malformed settings" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fehlerhafte Einstellungen"
+          }
+        }
+      }
     },
     "Many thanks from the Moblin developers!" : {
       "localizations" : {
@@ -5961,6 +6011,12 @@
     },
     "Mic id %@" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mikrofon ID %@"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5971,6 +6027,12 @@
     },
     "Mic not found" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mikrofon nicht gefunden"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7511,6 +7573,12 @@
     },
     "Settings imported" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einstellungen importiert"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7767,6 +7835,12 @@
     },
     "SRT connect failed with %@" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT Verbindung fehlgeschlagen bei %@"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7777,6 +7851,12 @@
     },
     "SRT disconnected" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT getrennt"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7787,6 +7867,12 @@
     },
     "SRT error: %@" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT Fehler: %@"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8200,7 +8286,14 @@
       }
     },
     "Tap to focus not supported for this camera" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tippen zum Fokussieren wird von dieser Kamera nicht unterstützt"
+          }
+        }
+      }
     },
     "Template: rtmp://" : {
       "localizations" : {
@@ -9142,6 +9235,12 @@
     },
     "URL import failed" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL Import fehlgeschlagen"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
