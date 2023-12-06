@@ -10,37 +10,64 @@ struct StreamsSettingsView: View {
     var body: some View {
         Form {
             Section {
-                ForEach(database.streams) { stream in
-                    NavigationLink(destination: StreamSettingsView(
-                        stream: stream
-                    )) {
-                        HStack {
-                            DraggableItemPrefixView()
-                            Toggle(stream.name, isOn: Binding(get: {
-                                stream.enabled
-                            }, set: { value in
-                                stream.enabled = value
-                                for ostream in database.streams
-                                    where ostream.id != stream.id
-                                {
-                                    ostream.enabled = false
-                                }
-                                model.reloadStream()
-                                model.sceneUpdated()
-                            }))
-                            .disabled(stream.enabled || model.isLive)
+                List {
+                    ForEach(database.streams) { stream in
+                        var item = NavigationLink(destination: StreamSettingsView(
+                            stream: stream
+                        )) {
+                            HStack {
+                                DraggableItemPrefixView()
+                                Toggle(stream.name, isOn: Binding(get: {
+                                    stream.enabled
+                                }, set: { value in
+                                    stream.enabled = value
+                                    for ostream in database.streams
+                                        where ostream.id != stream.id
+                                    {
+                                        ostream.enabled = false
+                                    }
+                                    model.reloadStream()
+                                    model.sceneUpdated()
+                                }))
+                                .disabled(stream.enabled || model.isLive)
+                            }
+                        }
+                        if stream.enabled {
+                            item.swipeActions(edge: .trailing) {
+                                Button(action: {
+                                    database.streams.append(stream.clone())
+                                    model.store()
+                                }, label: {
+                                    Text("Duplicate")
+                                })
+                                .tint(.blue)
+                            }
+                        } else {
+                            item.swipeActions(edge: .trailing) {
+                                Button(action: {
+                                    database.streams.removeAll { $0 == stream }
+                                    model.store()
+                                }, label: {
+                                    Text("Delete")
+                                })
+                                .tint(.red)
+                            }
+                            .swipeActions(edge: .trailing) {
+                                Button(action: {
+                                    database.streams.append(stream.clone())
+                                    model.store()
+                                }, label: {
+                                    Text("Duplicate")
+                                })
+                                .tint(.blue)
+                            }
                         }
                     }
-                    .deleteDisabled(stream.enabled)
+                    .onMove(perform: { froms, to in
+                        database.streams.move(fromOffsets: froms, toOffset: to)
+                        model.store()
+                    })
                 }
-                .onMove(perform: { froms, to in
-                    database.streams.move(fromOffsets: froms, toOffset: to)
-                    model.store()
-                })
-                .onDelete(perform: { offsets in
-                    database.streams.remove(atOffsets: offsets)
-                    model.store()
-                })
                 CreateButtonView(action: {
                     database.streams.append(SettingsStream(name: String(localized: "My stream")))
                     model.store()

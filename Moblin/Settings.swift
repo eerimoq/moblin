@@ -27,6 +27,13 @@ enum SettingsStreamProtocol: String, Codable {
 class SettingsStreamSrt: Codable {
     var latency: Int32 = 2000
     var mpegtsPacketsPerPacket: Int = 7
+
+    func clone() -> SettingsStreamSrt {
+        let srt = SettingsStreamSrt()
+        srt.latency = latency
+        srt.mpegtsPacketsPerPacket = mpegtsPacketsPerPacket
+        return srt
+    }
 }
 
 enum SettingsCaptureSessionPreset: String, Codable, CaseIterable {
@@ -44,7 +51,11 @@ enum SettingsCaptureSessionPreset: String, Codable, CaseIterable {
 
 let captureSessionPresets = SettingsCaptureSessionPreset.allCases.map { $0.rawValue }
 
-class SettingsStream: Codable, Identifiable {
+class SettingsStream: Codable, Identifiable, Equatable {
+    static func == (lhs: SettingsStream, rhs: SettingsStream) -> Bool {
+        lhs.id == rhs.id
+    }
+
     var name: String
     var id: UUID = .init()
     var enabled: Bool = false
@@ -68,6 +79,28 @@ class SettingsStream: Codable, Identifiable {
 
     init(name: String) {
         self.name = name
+    }
+
+    func clone() -> SettingsStream {
+        let scene = SettingsStream(name: name)
+        scene.url = url
+        scene.twitchChannelName = twitchChannelName
+        scene.twitchChannelId = twitchChannelId
+        scene.kickChatroomId = kickChatroomId
+        scene.youTubeApiKey = youTubeApiKey
+        scene.youTubeVideoId = youTubeVideoId
+        scene.afreecaTvChannelName = afreecaTvChannelName
+        scene.afreecaTvStreamId = afreecaTvStreamId
+        scene.resolution = resolution
+        scene.fps = fps
+        scene.bitrate = bitrate
+        scene.codec = codec
+        scene.adaptiveBitrate = adaptiveBitrate
+        scene.srt = srt.clone()
+        scene.captureSessionPresetEnabled = captureSessionPresetEnabled
+        scene.captureSessionPreset = captureSessionPreset
+        scene.maxKeyFrameInterval = maxKeyFrameInterval
+        return scene
     }
 
     private func getScheme() -> String? {
