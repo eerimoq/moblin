@@ -6,7 +6,20 @@ private enum MessageKind: Int {
     case two = 2
     case join = 4
     case post = 5
+    case a = 54
+    case b = 90
+    case c = 94
+    case image = 109
+    case d = 87 // club member?
+    case e = 12 // club member?
 }
+
+// image
+// https://ogq-sticker-global-cdn-z01.afreecatv.com/sticker/16f23d102576058/5_80.png?ver=1
+// parts[2] = 16f23d102576058
+// parts[3] = 5
+// parts[11] = png
+// patts[12] = 1
 
 private func packMessage(kind: MessageKind, parts: [String]) -> Data {
     var payload = "\u{0c}"
@@ -32,6 +45,7 @@ private func unpackMessage(message: Data) throws -> (MessageKind?, [String]) {
         throw "Bad kind"
     }
     guard let kind = MessageKind(rawValue: value) else {
+        logger.debug("afreecatv: Unknown kind \(value)")
         return (nil, [])
     }
     startIndex = message.index(message.startIndex, offsetBy: 14)
@@ -206,27 +220,20 @@ final class AfreecaTvChat: NSObject {
             switch message {
             case let .data(message):
                 let (kind, parts) = try unpackMessage(message: message)
+                if let kind {
+                    if kind != .join {
+                        logger.debug("afreecatv: Got \(kind) \(parts)")
+                    }
+                } else {
+                    logger.debug("afreecatv: Got \(parts)")
+                }
                 switch kind {
                 case .one:
                     logger.info("afreecatv: Connected?")
                     connected = true
                     try await sendTwo(chatno: info.chatno, ftk: info.ftk)
                 case .post:
-                    if parts.count > 5 {
-                        let user = parts[5]
-                        let segments = createSegments(message: parts[0])
-                        await MainActor.run {
-                            self.model.appendChatMessage(
-                                user: user,
-                                userColor: nil,
-                                segments: segments,
-                                timestamp: model.digitalClock,
-                                timestampDate: Date()
-                            )
-                        }
-                    } else {
-                        logger.error("afreecatv: Bad post length")
-                    }
+                    await handlePostMessage(parts: parts)
                 default:
                     break
                 }
@@ -235,6 +242,24 @@ final class AfreecaTvChat: NSObject {
             default:
                 logger.info("afreecatv: ???")
             }
+        }
+    }
+
+    private func handlePostMessage(parts: [String]) async {
+        guard parts.count > 5 else {
+            logger.error("afreecatv: Bad post length")
+            return
+        }
+        let user = parts[5]
+        let segments = createSegments(message: parts[0])
+        await MainActor.run {
+            self.model.appendChatMessage(
+                user: user,
+                userColor: nil,
+                segments: segments,
+                timestamp: model.digitalClock,
+                timestampDate: Date()
+            )
         }
     }
 
