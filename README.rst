@@ -1,3 +1,5 @@
+|app-store|_
+
 Moblin - IRL Streaming
 ======================
 
@@ -6,8 +8,6 @@ stream to `YouTube`_, `Kick`_, `Facebook`_ and `OBS Studio`_ as well
 (and probably more).
 
 .. image:: https://github.com/eerimoq/moblin/raw/main/docs/main.jpg
-
-|app-store|_
            
 Discord: https://discord.gg/nt3UwHqbMM
 
@@ -330,5 +330,5 @@ Similar software
 .. _Settings.swift: https://github.com/eerimoq/moblin/blob/main/Moblin/Settings.swift
 
 .. |app-store| image:: https://github.com/eerimoq/moblin/raw/main/docs/app-store.svg
-  :width: 200
+  :width: 100
 .. _app-store: https://apps.apple.com/us/app/moblin/id6466745933
