@@ -330,5 +330,5 @@ Similar software
 .. _Settings.swift: https://github.com/eerimoq/moblin/blob/main/Moblin/Settings.swift
 
 .. |app-store| image:: https://github.com/eerimoq/moblin/raw/main/docs/app-store.svg
-  :width: 100
+  :width: 150
 .. _app-store: https://apps.apple.com/us/app/moblin/id6466745933
