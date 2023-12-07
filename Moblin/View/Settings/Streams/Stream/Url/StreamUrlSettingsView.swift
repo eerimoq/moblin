@@ -10,7 +10,7 @@ struct StreamUrlSettingsView: View {
     @State var submitted: Bool = false
 
     func submitUrl() {
-        value = value.trim()
+        value = cleanUrl(url: value)
         if let message = isValidUrl(url: value) {
             model.makeErrorToast(title: message)
             return

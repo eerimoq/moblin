@@ -19,7 +19,7 @@ class MoblinSettingsUrl: Codable {
             from: query.data(using: .utf8)!
         )
         for stream in query.streams ?? [] {
-            if let message = isValidUrl(url: stream.url) {
+            if let message = isValidUrl(url: cleanUrl(url: stream.url)) {
                 throw message
             }
         }

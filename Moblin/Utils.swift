@@ -83,6 +83,15 @@ func isValidSrtUrl(url: String) -> String? {
     return nil
 }
 
+func cleanUrl(url value: String) -> String {
+    let stripped = value.replacingOccurrences(of: " ", with: "")
+    guard var components = URLComponents(string: stripped) else {
+        return stripped
+    }
+    components.scheme = components.scheme?.lowercased()
+    return components.string!
+}
+
 func isValidUrl(url value: String) -> String? {
     guard let url = URL(string: value) else {
         return String(localized: "Malformed URL")
