@@ -25,13 +25,17 @@ struct StreamUrlSettingsView: View {
         Form {
             Section {
                 ZStack(alignment: .leading) {
-                    TextField("", text: $value)
+                    TextField("", text: $value, axis: .vertical)
                         .onSubmit {
                             submitUrl()
                         }
                         .submitLabel(.done)
                         .onChange(of: value) { _ in
                             changed = true
+                            if value.contains("\n") {
+                                value = value.replacingOccurrences(of: "\n", with: "")
+                                submitUrl()
+                            }
                         }
                         .disableAutocorrection(true)
                         .opacity(show ? 1 : 0)
