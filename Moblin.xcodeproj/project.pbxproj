@@ -20,6 +20,7 @@
 		0315A37E2AA43DCC00295443 /* TextEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A37D2AA43DCC00295443 /* TextEditView.swift */; };
 		031839172AF6A03100320FB2 /* DebugAudioSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031839162AF6A03100320FB2 /* DebugAudioSettingsView.swift */; };
 		0318391B2AF79DDF00320FB2 /* DebugAdaptiveBitrateSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0318391A2AF79DDF00320FB2 /* DebugAdaptiveBitrateSettingsView.swift */; };
+		031852A62B21890A00AEAD0D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 031852A42B21890A00AEAD0D /* InfoPlist.strings */; };
 		031A2E002ADBE34F005CE350 /* DraggableItemPrefixView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031A2DFF2ADBE34F005CE350 /* DraggableItemPrefixView.swift */; };
 		031A2E112ADDDD7E005CE350 /* VideoStabilizationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031A2E102ADDDD7E005CE350 /* VideoStabilizationSettingsView.swift */; };
 		031CCE2D2ACA76CF00CB5D46 /* NoiseReductionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031CCE2C2ACA76CF00CB5D46 /* NoiseReductionEffect.swift */; };
@@ -140,6 +141,7 @@
 		0315A37D2AA43DCC00295443 /* TextEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditView.swift; sourceTree = "<group>"; };
 		031839162AF6A03100320FB2 /* DebugAudioSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugAudioSettingsView.swift; sourceTree = "<group>"; };
 		0318391A2AF79DDF00320FB2 /* DebugAdaptiveBitrateSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugAdaptiveBitrateSettingsView.swift; sourceTree = "<group>"; };
+		031852A52B21890A00AEAD0D /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		031A2DFF2ADBE34F005CE350 /* DraggableItemPrefixView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraggableItemPrefixView.swift; sourceTree = "<group>"; };
 		031A2E102ADDDD7E005CE350 /* VideoStabilizationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoStabilizationSettingsView.swift; sourceTree = "<group>"; };
 		031CCE2C2ACA76CF00CB5D46 /* NoiseReductionEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoiseReductionEffect.swift; sourceTree = "<group>"; };
@@ -430,6 +432,7 @@
 			isa = PBXGroup;
 			children = (
 				032BC5B22AD8E18000DEC883 /* Info.plist */,
+				031852A42B21890A00AEAD0D /* InfoPlist.strings */,
 				03BC115B2AE4BD6200C38FC4 /* Emotes */,
 				036BE2CD2ABD4C960048F9C5 /* Kick */,
 				0379BB712AA4BFA500B718B6 /* Twitch */,
@@ -859,6 +862,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				035E9E3E2A9A02D7009D4F5A /* Preview Assets.xcassets in Resources */,
+				031852A62B21890A00AEAD0D /* InfoPlist.strings in Resources */,
 				035E9E3B2A9A02D7009D4F5A /* Assets.xcassets in Resources */,
 				03F853B32B151FA700719B89 /* Localizable.xcstrings in Resources */,
 			);
@@ -986,6 +990,17 @@
 			productRef = 032815D62AC855B1001F8A85 /* PrepareLicenseList */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		031852A42B21890A00AEAD0D /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				031852A52B21890A00AEAD0D /* fr */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		035E9E3F2A9A02D7009D4F5A /* Debug */ = {

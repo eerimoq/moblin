@@ -1,0 +1,18 @@
+/* Bundle display name */
+"CFBundleDisplayName" = "Moblin";
+
+/* Bundle name */
+"CFBundleName" = "Moblin";
+
+/* Privacy - Local Network Usage Description */
+"NSLocalNetworkUsageDescription" = "OK";
+
+/* Privacy - Network Volumes Usage Description */
+"NSNetworkVolumesUsageDescription" = "OK";
+
+/* Privacy - Photo Library Additions Usage Description */
+"NSPhotoLibraryAddUsageDescription" = "OK";
+
+/* Privacy - Photo Library Usage Description */
+"NSPhotoLibraryUsageDescription" = "OK";
+
