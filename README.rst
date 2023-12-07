@@ -135,8 +135,6 @@ ToDo
 
 - Improve the browser widget.
 
-- Fix start app "upside down".
-
 Ideas/plan
 ==========
 
