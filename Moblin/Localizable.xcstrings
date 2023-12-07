@@ -3,7 +3,109 @@
   "strings" : {
     "" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
+          }
+        },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : ""
@@ -29,6 +131,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : " "
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
           }
         },
         "sv" : {
@@ -60,6 +168,12 @@
           }
         },
         "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "-"
+          }
+        },
+        "pl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "-"
@@ -99,6 +213,12 @@
             "value" : ": "
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ": "
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -128,6 +248,12 @@
           }
         },
         "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "/"
+          }
+        },
+        "pl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "/"
@@ -167,6 +293,12 @@
             "value" : "/app/"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "/app/"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -201,6 +333,12 @@
             "value" : "/초"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "/sek"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -229,6 +367,12 @@
             "value" : "%.1f/분"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.1f/min"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -252,6 +396,12 @@
           }
         },
         "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ "
+          }
+        },
+        "pl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ "
@@ -300,7 +450,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ (%2$@ z całości)"
+            "value" : "%1$@ (Wszystkich: %2$@)"
           }
         },
         "sv" : {
@@ -343,6 +493,12 @@
             "value" : "%1$@ (%2$@)"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ (%2$@)"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -372,6 +528,12 @@
           }
         },
         "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld %%"
+          }
+        },
+        "pl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld %%"
@@ -411,6 +573,12 @@
             "value" : "%lld dB"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld dB"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -440,6 +608,12 @@
           }
         },
         "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+"
+          }
+        },
+        "pl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "+"
@@ -529,6 +703,12 @@
             "value" : "😎 Live gegangen bei %@ 😎"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zaczynasz live, profil: %@ 😎"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -552,6 +732,12 @@
           }
         },
         "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "😢 FFFFF 😢"
+          }
+        },
+        "pl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "😢 FFFFF 😢"
@@ -583,6 +769,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "0.0/분"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "0.0/min"
           }
         },
         "sv" : {
@@ -622,7 +814,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ciąg liczb, użyj narzędzi deweloperskich (F11) w twojej przeglądarce. Sprawdź wiadomości websocket."
+            "value" : "Ciąg cyfr, użyj narzędzi deweloperskich (F11) w twojej przeglądarce. Sprawdź wiadomości websocket."
           }
         },
         "sv" : {
@@ -835,6 +1027,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "아프리카TV"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AfreecaTV"
           }
         },
         "sv" : {
@@ -1565,6 +1763,12 @@
             "value" : "SRT BELABOX cloud"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "BELABOX cloud SRT"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1603,6 +1807,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "벨라박스 클라우드 SRTLA"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "BELABOX cloud SRTLA"
           }
         },
         "sv" : {
@@ -1731,6 +1941,12 @@
             "value" : "비트레이트"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bitrate"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1751,6 +1967,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bitrate muss größer als Null sein"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bitrate musi być większy od zera"
           }
         },
         "sv" : {
@@ -1831,6 +2053,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "꽃"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bloom"
           }
         },
         "sv" : {
@@ -3051,6 +3279,12 @@
             "value" : "디버깅"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Debugowanie"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3117,6 +3351,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Löschen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usuń"
           }
         },
         "sv" : {
@@ -3237,6 +3477,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "디스코드"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Discord"
           }
         },
         "sv" : {
@@ -3399,6 +3645,12 @@
             "value" : "Duplizieren"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplikuj"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3413,6 +3665,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Leere Zwischenablage "
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schowek jest pusty"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utklipp tomt"
           }
         }
       }
@@ -3487,6 +3751,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Przykład: https://play.afreecatv.com/myChannelName/twójWideoId"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exempel-URL: https://play.afreecatv.com/myChannelName/myVideoId"
           }
         }
       }
@@ -4069,6 +4339,12 @@
             "value" : "페이스북"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Facebook"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4275,6 +4551,12 @@
             "value" : "Mikrofon konnte nicht ausgewählt werden"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wybór mikrofonu nie powiódł się"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4353,6 +4635,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Znajdź swoją nazwę kanału (twojaNazwaKanału) lub ID wideo (twójWideoId) w Twoim adresie URL streama."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hitta ditt kanalnamn (myChannelName) och videoid (myVideoId) i din ströms URL."
           }
         }
       }
@@ -4756,6 +5044,12 @@
           }
         },
         "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Github"
+          }
+        },
+        "pl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Github"
@@ -5305,6 +5599,12 @@
             "value" : "Importieren der Einstellungen fehlgeschlagen"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importowanie ustawień nie powiodło się"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5634,7 +5934,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nakładki ekranowe"
+            "value" : "Personalizacja ekranu"
           }
         },
         "sv" : {
@@ -5674,7 +5974,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nakładki ekranowe nie pojawią się na streamie."
+            "value" : "Spersonalizowany układ ekranu nie pojawia się na streamie."
           }
         },
         "sv" : {
@@ -5777,6 +6077,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fehlerhafte Einstellungen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nieprawidłowe ustawienia"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Felaktiga inställningar"
           }
         }
       }
@@ -6017,6 +6329,12 @@
             "value" : "Mikrofon ID %@"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ID mikrofonu: %@"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6031,6 +6349,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mikrofon nicht gefunden"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nie wykryto mikrofonu"
           }
         },
         "sv" : {
@@ -6455,6 +6779,12 @@
             "value" : "point_ingestion_proche"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "nearby_ingest_endpoint"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6625,6 +6955,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Source Media OBS (SRT)"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OBS Media Source (SRT)"
           }
         },
         "sv" : {
@@ -7517,6 +7853,12 @@
             "value" : "세피아톤"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sepia"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7577,6 +7919,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Einstellungen importiert"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zaimportowano ustawienia"
           }
         },
         "sv" : {
@@ -7696,7 +8044,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pokaż poufny adres URL"
+            "value" : "Pokaż poufne informacje"
           }
         },
         "sv" : {
@@ -7841,6 +8189,12 @@
             "value" : "SRT Verbindung fehlgeschlagen bei %@"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Połączenie SRT nie powiodło się z powodu %@"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7857,6 +8211,12 @@
             "value" : "SRT getrennt"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Połączenie SRT rozłączone"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7871,6 +8231,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "SRT Fehler: %@"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Błąd połączenia SRT: %@"
           }
         },
         "sv" : {
@@ -7899,6 +8265,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Serveur de diffusion SRT (SRT Live Server ou SLS)"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT Live Server (SLS)"
           }
         },
         "sv" : {
@@ -7933,6 +8305,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bande passante aérienne SRT (SRT oheadbw)"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT oheadbw"
           }
         },
         "sv" : {
@@ -7992,6 +8370,12 @@
           }
         },
         "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT(LA)"
+          }
+        },
+        "pl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "SRT(LA)"
@@ -8117,6 +8501,12 @@
             "value" : "Stream"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stream"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8149,6 +8539,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "url_stream"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "stream_url"
           }
         },
         "sv" : {
@@ -8291,6 +8687,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tippen zum Fokussieren wird von dieser Kamera nicht unterstützt"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dotknięcie ekranu, aby ustawić ostrości nie jest obsługiwane przez tę kamerę"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktuell kamera kan inte ändra fokus genom att trycka på skärmen"
           }
         }
       }
@@ -9007,6 +9415,12 @@
             "value" : "트위치"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Twitch"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9219,6 +9633,12 @@
             "value" : "URL"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9239,6 +9659,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "URL Import fehlgeschlagen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import adresu URL nie powiódł się"
           }
         },
         "sv" : {
@@ -9774,6 +10200,12 @@
             "value" : "위젯"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widget"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10072,6 +10504,12 @@
             "value" : "유튜브"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YouTube"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10150,6 +10588,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "줌"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoom"
           }
         },
         "sv" : {
