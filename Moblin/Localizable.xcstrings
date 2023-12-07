@@ -5333,6 +5333,9 @@
         }
       }
     },
+    "Host missing" : {
+
+    },
     "Icons" : {
       "localizations" : {
         "de" : {
@@ -6071,6 +6074,9 @@
         }
       }
     },
+    "Malformed RTMP URL" : {
+
+    },
     "Malformed settings" : {
       "localizations" : {
         "de" : {
@@ -6092,6 +6098,12 @@
           }
         }
       }
+    },
+    "Malformed SRT(LA) URL" : {
+
+    },
+    "Malformed URL" : {
+
     },
     "Many thanks from the Moblin developers!" : {
       "localizations" : {
@@ -7689,6 +7701,9 @@
         }
       }
     },
+    "RTMP stream name missing" : {
+
+    },
     "Scene" : {
       "localizations" : {
         "de" : {
@@ -7780,6 +7795,9 @@
           }
         }
       }
+    },
+    "Scheme missing" : {
+
     },
     "Select image" : {
       "localizations" : {
@@ -8394,6 +8412,9 @@
           }
         }
       }
+    },
+    "SRT(LA) port number missing" : {
+
     },
     "SRTLA server" : {
       "localizations" : {
@@ -9520,6 +9541,9 @@
           }
         }
       }
+    },
+    "Unsupported scheme %@" : {
+
     },
     "Unused" : {
       "localizations" : {

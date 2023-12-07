@@ -65,33 +65,33 @@ func makeRtmpStreamName(url: String) -> String {
 
 func isValidRtmpUrl(url: String) -> String? {
     if makeRtmpUri(url: url) == "" {
-        return "Malformed RTMP URL"
+        return String(localized: "Malformed RTMP URL")
     }
     if makeRtmpStreamName(url: url) == "" {
-        return "RTMP stream name missing"
+        return String(localized: "RTMP stream name missing")
     }
     return nil
 }
 
 func isValidSrtUrl(url: String) -> String? {
     guard let url = URL(string: url) else {
-        return "Malformed SRT(LA) URL"
+        return String(localized: "Malformed SRT(LA) URL")
     }
     if url.port == nil {
-        return "SRT(LA) port number missing"
+        return String(localized: "SRT(LA) port number missing")
     }
     return nil
 }
 
 func isValidUrl(url value: String) -> String? {
     guard let url = URL(string: value) else {
-        return "Malformed URL"
+        return String(localized: "Malformed URL")
     }
     if url.host() == nil {
-        return "Host missing"
+        return String(localized: "Host missing")
     }
     guard URLComponents(url: url, resolvingAgainstBaseURL: false) != nil else {
-        return "Malformed URL"
+        return String(localized: "Malformed URL")
     }
     switch url.scheme {
     case "rtmp":
@@ -111,9 +111,9 @@ func isValidUrl(url value: String) -> String? {
             return message
         }
     case nil:
-        return "Scheme missing"
+        return String(localized: "Scheme missing")
     default:
-        return "Unsupported scheme \(url.scheme!)"
+        return String(localized: "Unsupported scheme \(url.scheme!)")
     }
     return nil
 }
