@@ -832,7 +832,14 @@
       }
     },
     "A low maximum screen FPS reduces power usage." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eine niedrige maximale Bildwiederholrate verringert den Stromverbrauch."
+          }
+        }
+      }
     },
     "About" : {
       "localizations" : {
@@ -5337,7 +5344,14 @@
       }
     },
     "Host missing" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Host fehlt"
+          }
+        }
+      }
     },
     "Icons" : {
       "localizations" : {
@@ -6078,7 +6092,14 @@
       }
     },
     "Malformed RTMP URL" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fehlerhafte RTMP-URL"
+          }
+        }
+      }
     },
     "Malformed settings" : {
       "localizations" : {
@@ -6103,10 +6124,24 @@
       }
     },
     "Malformed SRT(LA) URL" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fehlerhafte SRT(LA)-URL"
+          }
+        }
+      }
     },
     "Malformed URL" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fehlerhafte URL"
+          }
+        }
+      }
     },
     "Many thanks from the Moblin developers!" : {
       "localizations" : {
@@ -6257,7 +6292,14 @@
       }
     },
     "Maximum screen FPS" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maximale Bildwiederholrate"
+          }
+        }
+      }
     },
     "Message" : {
       "localizations" : {
@@ -7708,7 +7750,14 @@
       }
     },
     "RTMP stream name missing" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RTMP Stream Name fehlt"
+          }
+        }
+      }
     },
     "Scene" : {
       "localizations" : {
@@ -7803,7 +7852,14 @@
       }
     },
     "Scheme missing" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schema fehlt"
+          }
+        }
+      }
     },
     "Select image" : {
       "localizations" : {
@@ -8420,7 +8476,14 @@
       }
     },
     "SRT(LA) port number missing" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT(LA) Port Nummer fehlt"
+          }
+        }
+      }
     },
     "SRTLA server" : {
       "localizations" : {
@@ -9549,7 +9612,14 @@
       }
     },
     "Unsupported scheme %@" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nicht unterstütztes  Schema %@"
+          }
+        }
+      }
     },
     "Unused" : {
       "localizations" : {
