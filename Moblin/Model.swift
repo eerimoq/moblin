@@ -61,15 +61,19 @@ private let globalMyIcons = [
     ),
 ]
 
+private let productsIds = [
+    "AppIconKing",
+    "AppIconQueen",
+    "AppIconGoblin",
+    "AppIconGoblina",
+    "AppIconMillionaire",
+    "AppIconBillionaire",
+    "AppIconTrillionaire",
+]
+
 private let globalIconsNotYetInStore = [
-    Icon(name: "Queen", id: "AppIconQueen", price: ""),
-    Icon(name: "Goblin", id: "AppIconGoblin", price: ""),
-    Icon(name: "Goblina", id: "AppIconGoblina", price: ""),
     Icon(name: "Looking", id: "AppIconLooking", price: ""),
     Icon(name: "Heart", id: "AppIconHeart", price: ""),
-    Icon(name: "Millionaire", id: "AppIconMillionaire", price: ""),
-    Icon(name: "Billionaire", id: "AppIconBillionaire", price: ""),
-    Icon(name: "Trillionaire", id: "AppIconTrillionaire", price: ""),
     Icon(name: "Basque", id: "AppIconBasque", price: ""),
     Icon(name: "Tetris", id: "AppIconTetris", price: ""),
     Icon(name: "China", id: "AppIconChina", price: ""),
@@ -282,18 +286,11 @@ final class Model: ObservableObject {
     @MainActor
     private func getProductsFromAppStore() async {
         do {
-            var icons: [Icon] = []
-            let products = try await Product.products(for: ["AppIconKing"])
+            let products = try await Product.products(for: productsIds)
             for product in products {
-                icons.append(Icon(
-                    name: product.displayName,
-                    id: product.id,
-                    price: product.displayPrice
-                ))
                 self.products[product.id] = product
             }
-            logger.info("cosmetics: Got \(icons.count) product(s) from App Store")
-            iconsInStore = globalMyIcons + icons
+            logger.info("cosmetics: Got \(products.count) product(s) from App Store")
         } catch {
             logger.error("cosmetics: Failed to get products from App Store: \(error)")
         }
@@ -326,36 +323,36 @@ final class Model: ObservableObject {
     @MainActor
     func updateProductFromAppStore() async {
         logger.info("cosmetics: Update my products from App Store")
-        var myIcons = globalMyIcons
+        var myIconsIds: [String] = []
         for await result in Transaction.currentEntitlements {
             guard let transaction = checkVerified(result: result) else {
                 logger.info("cosmetics: Verification failed for my product")
                 continue
             }
-            guard let product = products[transaction.productID] else {
-                logger.info("cosmetics: My product \(transaction.productID) not found")
+            myIconsIds.append(transaction.productID)
+        }
+        var myIcons = globalMyIcons
+        var iconsInStore: [Icon] = []
+        for productId in productsIds {
+            guard let product = products[productId] else {
+                logger.info("cosmetics: Product \(productId) not found")
                 continue
             }
-            myIcons.append(Icon(
-                name: product.displayName,
-                id: product.id,
-                price: product.displayPrice
-            ))
+            if myIconsIds.contains(productId) {
+                myIcons.append(Icon(
+                    name: product.displayName,
+                    id: product.id,
+                    price: product.displayPrice
+                ))
+            } else {
+                iconsInStore.append(Icon(
+                    name: product.displayName,
+                    id: product.id,
+                    price: product.displayPrice
+                ))
+            }
         }
         self.myIcons = myIcons
-        var iconsInStore: [Icon] = []
-        for product in products.values {
-            if myIcons.contains(where: { icon in
-                product.id == icon.id
-            }) {
-                continue
-            }
-            iconsInStore.append(Icon(
-                name: product.displayName,
-                id: product.id,
-                price: product.displayPrice
-            ))
-        }
         self.iconsInStore = iconsInStore
     }
 
