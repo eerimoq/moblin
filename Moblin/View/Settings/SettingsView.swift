@@ -150,6 +150,22 @@ struct SettingsView: View {
                     model.database.batteryPercentage = value
                     model.store()
                 }))
+                NavigationLink(
+                    destination: MaximumScreenFpsSettingsView()
+                ) {
+                    Toggle(isOn: Binding(get: {
+                        model.database.maximumScreenFpsEnabled
+                    }, set: { value in
+                        model.setMaximumScreenFpsEnabled(value: value)
+                    })) {
+                        TextItemView(
+                            name: String(localized: "Maximum screen FPS"),
+                            value: String(model.database.maximumScreenFps)
+                        )
+                    }
+                }
+            } footer: {
+                Text("A low maximum screen FPS reduces power usage.")
             }
             Section {
                 NavigationLink(destination: CosmeticsSettingsView(

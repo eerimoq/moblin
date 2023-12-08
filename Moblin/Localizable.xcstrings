@@ -831,6 +831,9 @@
         }
       }
     },
+    "A low maximum screen FPS reduces power usage." : {
+
+    },
     "About" : {
       "localizations" : {
         "de" : {
@@ -6252,6 +6255,9 @@
           }
         }
       }
+    },
+    "Maximum screen FPS" : {
+
     },
     "Message" : {
       "localizations" : {
