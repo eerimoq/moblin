@@ -838,6 +838,7 @@
       }
     },
     "A low maximum screen FPS reduces power usage." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -6376,6 +6377,7 @@
       }
     },
     "Maximum screen FPS" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

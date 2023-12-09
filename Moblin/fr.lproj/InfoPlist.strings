@@ -5,14 +5,20 @@
 "CFBundleName" = "Moblin";
 
 /* Privacy - Camera Usage Description */
-"NSCameraUsageDescription" = "Vie privée - Description de l'utilisation de la caméra";
+"NSCameraUsageDescription" = "Moblin diffuse de la vidéo en direct à partir de la caméra.";
+
+/* Privacy - Local Network Usage Description */
+"NSLocalNetworkUsageDescription" = "Moblin agit en serveur local pour la réception et l'envoi à la bibliothèque SRT.";
 
 /* Privacy - Microphone Usage Description */
-"NSMicrophoneUsageDescription" = "Vie privée - Description de l'utilisation du microphone";
+"NSMicrophoneUsageDescription" = "Moblin diffuse de l'audio en direct à partir du microphone.";
+
+/* Privacy - Network Volumes Usage Description */
+"NSNetworkVolumesUsageDescription" = "Moblin utilise les données de la connexion réseau pour émettre en direct.";
 
 /* Privacy - Photo Library Additions Usage Description */
-"NSPhotoLibraryAddUsageDescription" = "Vie privée - Description de l'accès en écriture de la bibliothèque photo";
+"NSPhotoLibraryAddUsageDescription" = "Moblin accède à la bibliothèque pour afficher des images stockées localement.";
 
 /* Privacy - Photo Library Usage Description */
-"NSPhotoLibraryUsageDescription" = "Vie privée - Description de l'utilisation de la bibliothèque photo";
+"NSPhotoLibraryUsageDescription" = "Moblin affiche les images sélectionnés en calques dans la vue.";
 
