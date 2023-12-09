@@ -644,7 +644,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎉 Vous êtes en LIVE sur %@ 🎉"
+            "value" : "🎉 Vous êtes en DIRECT sur %@ 🎉"
           }
         },
         "pl" : {
@@ -701,6 +701,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "😎 Live gegangen bei %@ 😎"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "😎 Début du direct sur %@ 😎"
           }
         },
         "pl" : {
@@ -837,6 +843,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Eine niedrige maximale Bildwiederholrate verringert den Stromverbrauch."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une fréquence de rafraichissement d'écran plus faible réduit l'utilisation de la batterie."
           }
         }
       }
@@ -1076,7 +1088,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Intervalle alloué %1$@ - %2$@."
+            "value" : "Intervalle possible %1$@ - %2$@."
           }
         },
         "ko" : {
@@ -1208,7 +1220,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Emotes animées"
+            "value" : "Émotes animées"
           }
         },
         "ko" : {
@@ -1254,7 +1266,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les émotes animées utilisent les ressources CPU de façon intensive. Désactiver pour réduire la consommation d'énergie."
+            "value" : "Les émotes animées utilisent les ressources CPU de façon intensive. Désactiver pour réduire l'utilisation de la batterie."
           }
         },
         "ko" : {
@@ -1724,7 +1736,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pourcentage batterie"
+            "value" : "Niveau de batterie affiché"
           }
         },
         "ko" : {
@@ -1856,7 +1868,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Taille de paquets plus grande"
+            "value" : "Taille des paquets plus grande"
           }
         },
         "ko" : {
@@ -1902,7 +1914,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La taille des paquets SRT est de 6 paquets MPEG-TS par défaut. Activer l'option l'augmenter à 7 paquets MPEG-TS. Les hotspots ANdroid ne fonctionnent parfois pas avec des paquets de grande taille."
+            "value" : "La taille des paquets SRT est de 6 paquets MPEG-TS par défaut. Activer l'option l'augmente à 7 paquets MPEG-TS. Les hotspots Android ne fonctionnent parfois pas avec des paquets de grande taille."
           }
         },
         "pl" : {
@@ -1977,6 +1989,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bitrate muss größer als Null sein"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le bitrate doit être supérieur à zéro."
           }
         },
         "pl" : {
@@ -2277,7 +2295,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les bordures utilisent les ressources CPU de façon intensive. Désactiver pour réduire la consommation d'énergie."
+            "value" : "Les bordures utilisent les ressources CPU de façon intensive. Désactiver pour réduire l'utilisation de la batterie."
           }
         },
         "ko" : {
@@ -3329,7 +3347,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Décibel"
+            "value" : "Décibels"
           }
         },
         "ko" : {
@@ -3364,6 +3382,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Löschen"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer"
           }
         },
         "pl" : {
@@ -3529,7 +3553,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Affiché sur la vue principale et en icône d'application."
+            "value" : "Utilisée pour l'affichage sur la vue principale et en icône d'application."
           }
         },
         "ko" : {
@@ -3650,12 +3674,21 @@
         }
       }
     },
+    "Double tap to return to main view" : {
+
+    },
     "Duplicate" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Duplizieren"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dupliquer"
           }
         },
         "pl" : {
@@ -3678,6 +3711,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Leere Zwischenablage "
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vider le presse-papier"
           }
         },
         "pl" : {
@@ -4389,7 +4428,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Échec dans la récupération des émotes 7TV de la chaîne"
+            "value" : "Échec de récupération des émotes 7TV de la chaîne"
           }
         },
         "ko" : {
@@ -4435,7 +4474,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Échec dans la récupération des émotes 7TV globales"
+            "value" : "Échec de récupération des émotes 7TV globales"
           }
         },
         "ko" : {
@@ -4481,7 +4520,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Échec dans la récupération des émotes BTTV"
+            "value" : "Échec de récupération des émotes BTTV"
           }
         },
         "ko" : {
@@ -4527,7 +4566,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Échec dans la récupération des émotes FFZ"
+            "value" : "Échec de récupération des émotes FFZ"
           }
         },
         "ko" : {
@@ -4564,6 +4603,12 @@
             "value" : "Mikrofon konnte nicht ausgewählt werden"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échec de sélection du microphone"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4595,7 +4640,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "N'hasitez pas à rejoindre le serveur Discord Moblin ou à déclarer un problème sur Github si vous avez besoin d'aide ou souhaitez soumettre un retour d'expérience."
+            "value" : "N'hésitez pas à rejoindre le serveur Discord Moblin ou à déclarer un problème sur Github si vous avez besoin d'aide ou souhaitez soumettre un retour d'expérience."
           }
         },
         "ko" : {
@@ -5353,6 +5398,12 @@
             "state" : "translated",
             "value" : "Host fehlt"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hôte manquant"
+          }
         }
       }
     },
@@ -5453,7 +5504,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Icônes pas encore dispobles"
+            "value" : "Icônes bientôt disponibles"
           }
         },
         "pl" : {
@@ -5620,6 +5671,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Importieren der Einstellungen fehlgeschlagen"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échec de l'importation des réglages"
           }
         },
         "pl" : {
@@ -5951,7 +6008,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vues spuperposées locales"
+            "value" : "Vues superposées locales"
           }
         },
         "pl" : {
@@ -5991,7 +6048,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les vues superposées locales n'apparaissent pas dans le stream."
+            "value" : "Les vues superposées locales (overlays) n'apparaissent pas dans le stream."
           }
         },
         "pl" : {
@@ -6101,6 +6158,12 @@
             "state" : "translated",
             "value" : "Fehlerhafte RTMP-URL"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Syntaxe incorrecte de l'URL RTMP"
+          }
         }
       }
     },
@@ -6110,6 +6173,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fehlerhafte Einstellungen"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Syntaxe incorrecte des réglages"
           }
         },
         "pl" : {
@@ -6133,6 +6202,12 @@
             "state" : "translated",
             "value" : "Fehlerhafte SRT(LA)-URL"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Syntaxe incorrecte de l'URL SRT(LA)"
+          }
         }
       }
     },
@@ -6142,6 +6217,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fehlerhafte URL"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Syntaxe incorrecte de l'URL"
           }
         }
       }
@@ -6203,7 +6284,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Age maximum"
+            "value" : "Âge maximum"
           }
         },
         "pl" : {
@@ -6277,7 +6358,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Age maximum des messages en secondes."
+            "value" : "Âge maximum des messages en secondes."
           }
         },
         "pl" : {
@@ -6300,6 +6381,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Maximale Bildwiederholrate"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fréquence maximale de rafraichissement d'écran"
           }
         }
       }
@@ -6392,6 +6479,12 @@
             "value" : "Mikrofon ID %@"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Identifiant micro"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6412,6 +6505,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mikrofon nicht gefunden"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Micro non trouvé"
           }
         },
         "pl" : {
@@ -7241,7 +7340,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Paquets en vols"
+            "value" : "Paquets en vol"
           }
         },
         "pl" : {
@@ -7759,6 +7858,12 @@
             "state" : "translated",
             "value" : "RTMP Stream Name fehlt"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nom de stream RTMP manquant"
+          }
         }
       }
     },
@@ -7861,6 +7966,12 @@
             "state" : "translated",
             "value" : "Schema fehlt"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schéma manquant"
+          }
         }
       }
     },
@@ -7881,7 +7992,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sélectionner image"
+            "value" : "Sélection image"
           }
         },
         "ko" : {
@@ -8004,6 +8115,12 @@
             "value" : "Einstellungen importiert"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réglages importés"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8035,7 +8152,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les réglages qui imterrompraient le stream sont désactiver pendant une diffusion."
+            "value" : "Les réglages qui interrompraient le stream sont désactivés pendant une diffusion."
           }
         },
         "pl" : {
@@ -8272,6 +8389,12 @@
             "value" : "SRT Verbindung fehlgeschlagen bei %@"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échec de la connexion SRT à %@"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8294,6 +8417,12 @@
             "value" : "SRT getrennt"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT déconnecté"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8314,6 +8443,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "SRT Fehler: %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur SRT : %@"
           }
         },
         "pl" : {
@@ -8484,6 +8619,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "SRT(LA) Port Nummer fehlt"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Numéro de port SRT(LA) manquant"
           }
         }
       }
@@ -8711,7 +8852,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Soutenir les développeurs Moblin en achetant des icônes."
+            "value" : "Soutenez les développeurs Moblin en achetant des icônes."
           }
         },
         "pl" : {
@@ -8780,6 +8921,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tippen zum Fokussieren wird von dieser Kamera nicht unterstützt"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cette caméra ne permet pas la mise au point manuelle"
           }
         },
         "pl" : {
@@ -9173,7 +9320,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Le zoom (exprimé en X) à utiliser quand une caméra déterminée est activée."
+            "value" : "Le zoom à utiliser (exprimé en ×) quand vous basculez vers une caméra determinée, si l'option est activée."
           }
         },
         "pl" : {
@@ -9621,6 +9768,12 @@
             "state" : "translated",
             "value" : "Nicht unterstütztes  Schema %@"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schéma non supporté %@"
+          }
         }
       }
     },
@@ -9764,6 +9917,12 @@
             "value" : "URL Import fehlgeschlagen"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échec de l'importation d'URL"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9795,7 +9954,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Utiliser le premier canal pour le niveau audio. Pour débugger sur microphone Røde l'erreur Unknown level."
+            "value" : "Utiliser le premier canal pour le niveau audio. Pour débugger l'erreur \"Unknown level\" sur microphone Røde."
           }
         },
         "pl" : {
@@ -9835,7 +9994,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Utiliser l'audio généré comme source au lieu du micro."
+            "value" : "Utiliser l'audio généré comme source au lieu du microphone."
           }
         },
         "pl" : {
@@ -10002,7 +10161,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Très expérimental et très secret ! Ne fonctionne pas encore !"
+            "value" : "Très expérimental et très secret ! Ne fonctionne pas encore…"
           }
         },
         "pl" : {
@@ -10202,7 +10361,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La stabilisation vidéo peut parfois donner des erreurs de synchro audio-vidéo."
+            "value" : "La stabilisation vidéo peut parfois donner des erreurs de synchronisation audio-vidéo."
           }
         },
         "ko" : {
@@ -10644,7 +10803,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zéro millisecondes ou plus. Tout paramètre de latence pécisé dans l'URL prévaudra sur cette valeur."
+            "value" : "Zéro milliseconde ou plus. Tout paramètre de latence précisé dans l'URL prévaudra sur cette valeur."
           }
         },
         "pl" : {

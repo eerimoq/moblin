@@ -4,15 +4,15 @@
 /* Bundle name */
 "CFBundleName" = "Moblin";
 
-/* Privacy - Local Network Usage Description */
-"NSLocalNetworkUsageDescription" = "OK";
+/* Privacy - Camera Usage Description */
+"NSCameraUsageDescription" = "Vie privée - Description de l'utilisation de la caméra";
 
-/* Privacy - Network Volumes Usage Description */
-"NSNetworkVolumesUsageDescription" = "OK";
+/* Privacy - Microphone Usage Description */
+"NSMicrophoneUsageDescription" = "Vie privée - Description de l'utilisation du microphone";
 
 /* Privacy - Photo Library Additions Usage Description */
-"NSPhotoLibraryAddUsageDescription" = "OK";
+"NSPhotoLibraryAddUsageDescription" = "Vie privée - Description de l'accès en écriture de la bibliothèque photo";
 
 /* Privacy - Photo Library Usage Description */
-"NSPhotoLibraryUsageDescription" = "OK";
+"NSPhotoLibraryUsageDescription" = "Vie privée - Description de l'utilisation de la bibliothèque photo";
 

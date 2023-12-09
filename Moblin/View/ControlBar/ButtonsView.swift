@@ -148,7 +148,10 @@ struct ButtonsView: View {
 
     private func blackScreenAction(state _: ButtonState) {
         model.toggleBlackScreen()
-        model.makeToast(title: "Black screen", subTitle: "Double tap to return to main view")
+        model.makeToast(
+            title: String(localized: "Black screen"),
+            subTitle: String(localized: "Double tap to return to main view")
+        )
         model.updateButtonStates()
     }
 
