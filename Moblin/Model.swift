@@ -202,7 +202,7 @@ final class Model: ObservableObject {
     @Published var batteryLevel = Double(UIDevice.current.batteryLevel)
     @Published var speedAndTotal = noValue
     @Published var thermalState = ProcessInfo.processInfo.thermalState
-    var videoView = MTHKView(frame: .zero)
+    var videoView = PiPHKView(frame: .zero)
     private var textEffects: [UUID: TextEffect] = [:]
     private var imageEffects: [UUID: ImageEffect] = [:]
     private var videoEffects: [UUID: VideoEffect] = [:]

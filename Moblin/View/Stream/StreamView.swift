@@ -4,9 +4,9 @@ import SwiftUI
 struct StreamView: UIViewRepresentable {
     @EnvironmentObject var model: Model
 
-    func makeUIView(context _: Context) -> MTHKView {
+    func makeUIView(context _: Context) -> PiPHKView {
         return model.videoView
     }
 
-    func updateUIView(_: HaishinKit.MTHKView, context _: Context) {}
+    func updateUIView(_: HaishinKit.PiPHKView, context _: Context) {}
 }
