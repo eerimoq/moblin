@@ -274,9 +274,9 @@ class ObsWebSocket {
                     scenes: decoded.scenes.map { $0.sceneName }
                 ))
             } catch {}
-        }) {
+        }, onError: {
             onError()
-        }
+        })
     }
 
     func setCurrentProgramScene(name: String, onSuccess: @escaping () -> Void,
