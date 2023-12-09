@@ -108,6 +108,14 @@ var imageSystemNames = [
     "message",
     "message.fill",
     "sunset",
+    "record.circle",
+    "play",
+    "play.circle",
+    "play.tv",
+    "antenna.radiowaves.left.and.right",
+    "person.wave.2",
+    "dot.radiowaves.left.and.right",
+    "waveform"
 ]
 
 private let columns = [
