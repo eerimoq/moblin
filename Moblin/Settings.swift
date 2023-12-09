@@ -482,6 +482,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case mic = "Mic"
     case chat = "Chat"
     case pauseChat = "Pause chat"
+    case blackScreen = "Black screen"
 
     static func fromString(value: String) -> SettingsButtonType {
         switch value {
@@ -499,6 +500,8 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return .chat
         case String(localized: "Pause chat"):
             return .pauseChat
+        case String(localized: "Black screen"):
+            return .blackScreen
         default:
             return .torch
         }
@@ -520,6 +523,8 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return String(localized: "Chat")
         case .pauseChat:
             return String(localized: "Pause chat")
+        case .blackScreen:
+            return String(localized: "Black screen")
         }
     }
 }
@@ -794,6 +799,7 @@ func addDefaultScenes(database: Database) {
     scene.addButton(id: database.buttons[7].id)
     scene.addButton(id: database.buttons[8].id)
     scene.addButton(id: database.buttons[9].id)
+    scene.addButton(id: database.buttons[10].id)
     scene.addButton(id: database.buttons[3].id)
     scene.addButton(id: database.buttons[4].id)
     scene.addButton(id: database.buttons[5].id)
@@ -808,6 +814,7 @@ func addDefaultScenes(database: Database) {
     scene.addButton(id: database.buttons[7].id)
     scene.addButton(id: database.buttons[8].id)
     scene.addButton(id: database.buttons[9].id)
+    scene.addButton(id: database.buttons[10].id)
     scene.addButton(id: database.buttons[3].id)
     database.scenes.append(scene)
 }
@@ -949,6 +956,15 @@ func addDefaultButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "message.fill"
     button.systemImageNameOff = "message"
+    database.buttons.append(button)
+
+    // 10
+    button = SettingsButton(name: String(localized: "Black screen"))
+    button.id = UUID()
+    button.type = .blackScreen
+    button.imageType = "System name"
+    button.systemImageNameOn = "sunset"
+    button.systemImageNameOff = "sunset"
     database.buttons.append(button)
 }
 

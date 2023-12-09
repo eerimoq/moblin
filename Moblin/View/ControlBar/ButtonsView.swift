@@ -146,6 +146,12 @@ struct ButtonsView: View {
         }
     }
 
+    private func blackScreenAction(state _: ButtonState) {
+        model.toggleBlackScreen()
+        model.makeToast(title: "Black screen", subTitle: "Double tap to return to main view")
+        model.updateButtonStates()
+    }
+
     private func buttonHeight() -> CGFloat {
         if accessibilityShowButtonShapes {
             return 60
@@ -226,6 +232,15 @@ struct ButtonsView: View {
                                     overlayColor: pauseChatOverlayColor()
                                 )
                             })
+                        case .blackScreen:
+                            Button(action: {
+                                blackScreenAction(state: second)
+                            }, label: {
+                                ButtonImage(
+                                    image: getImage(state: second),
+                                    on: second.isOn
+                                )
+                            })
                         }
                     } else {
                         ButtonPlaceholderImage()
@@ -295,6 +310,15 @@ struct ButtonsView: View {
                                 on: pair.first.isOn,
                                 pause: true,
                                 overlayColor: pauseChatOverlayColor()
+                            )
+                        })
+                    case .blackScreen:
+                        Button(action: {
+                            blackScreenAction(state: pair.first)
+                        }, label: {
+                            ButtonImage(
+                                image: getImage(state: pair.first),
+                                on: pair.first.isOn
                             )
                         })
                     }

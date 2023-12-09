@@ -169,6 +169,7 @@ final class Model: ObservableObject {
     @Published var audioGenerator = "Off"
     @Published var squareWaveGeneratorAmplitude = 200.0
     @Published var squareWaveGeneratorInterval = 60.0
+    @Published var blackScreen = false
     private var streaming = false
     @Published var mic = noMic
     private var micChange = noMic
@@ -252,7 +253,6 @@ final class Model: ObservableObject {
     var frontCameras: [Camera] = []
 
     init() {
-        print("Init model")
         settings.load()
     }
 
@@ -1530,6 +1530,10 @@ final class Model: ObservableObject {
         for post in posts {
             appendChatPost(post: post)
         }
+    }
+
+    func toggleBlackScreen() {
+        blackScreen.toggle()
     }
 
     func toggleChatPaused() {

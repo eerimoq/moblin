@@ -107,6 +107,7 @@ var imageSystemNames = [
     "pawprint.fill",
     "message",
     "message.fill",
+    "sunset",
 ]
 
 private let columns = [
@@ -114,6 +115,7 @@ private let columns = [
 ]
 
 struct ButtonImagePickerSettingsView: View {
+    @Environment(\.dismiss) var dismiss
     var title: String
     @State var selectedImageSystemName: String
     @State var filter: String = ""
@@ -135,6 +137,7 @@ struct ButtonImagePickerSettingsView: View {
                                 filter.isEmpty || name.contains(filter.lowercased())
                             }, id: \.self) { imageSystemName in
                                 Button {
+                                    dismiss()
                                     onChange(imageSystemName)
                                     selectedImageSystemName = imageSystemName
                                 } label: {

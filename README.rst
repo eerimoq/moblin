@@ -144,8 +144,6 @@ Ideas/plan
 
 - Always receive sampels from all mics for smoother transition between mics?
 
-- Button to show black screen.
-
 - Reduce brightness when thermal state is critical.
 
 - A list of usernames whos messages will not get displayed on screen.

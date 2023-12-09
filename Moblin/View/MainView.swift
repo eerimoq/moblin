@@ -94,6 +94,14 @@ struct MainView: View {
                     .frame(width: settingsHalfWidth)
                 }
             }
+            if model.blackScreen {
+                Text("")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(.black)
+                    .onTapGesture(count: 2) { _ in
+                        model.toggleBlackScreen()
+                    }
+            }
         }
         .onAppear {
             model.setup()
