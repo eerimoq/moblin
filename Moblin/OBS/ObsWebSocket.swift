@@ -210,6 +210,7 @@ private func unpackRequestResponse(data: Data) throws -> (String, ResponseReques
 
 struct Request {
     let onSuccess: (Data?) -> Void
+    let onError: () -> Void
 }
 
 class ObsWebSocket {
@@ -261,7 +262,7 @@ class ObsWebSocket {
         return connected
     }
 
-    func getSceneList(onSuccess: @escaping (ObsSceneList) -> Void) {
+    func getSceneList(onSuccess: @escaping (ObsSceneList) -> Void, onError: @escaping () -> Void) {
         performRequest(type: .getSceneList, data: nil, onSuccess: { data in
             guard let data else {
                 return
@@ -273,44 +274,67 @@ class ObsWebSocket {
                     scenes: decoded.scenes.map { $0.sceneName }
                 ))
             } catch {}
-        })
+        }) {
+            onError()
+        }
     }
 
-    func setCurrentProgramScene(name: String, onSuccess _: () -> Void) {
+    func setCurrentProgramScene(name: String, onSuccess: @escaping () -> Void,
+                                onError: @escaping () -> Void)
+    {
         let data = SetCurrentProgramSceneRequest(sceneName: name)
         do {
             let data = try JSONEncoder().encode(data)
-            performRequest(type: .setCurrentProgramScene, data: data, onSuccess: { _ in })
-        } catch {}
+            performRequest(type: .setCurrentProgramScene, data: data, onSuccess: { _ in
+                onSuccess()
+            }, onError: {
+                onError()
+            })
+        } catch {
+            onError()
+        }
     }
 
-    func startStream() {
+    func startStream(onSuccess: @escaping () -> Void, onError: @escaping () -> Void) {
         performRequest(type: .startStream, data: nil, onSuccess: { _ in
-            logger.info("obs-websocket-control: stream started")
+            onSuccess()
+        }, onError: {
+            onError()
         })
     }
 
-    func stopStream() {
+    func stopStream(onSuccess: @escaping () -> Void, onError: @escaping () -> Void) {
         performRequest(type: .stopStream, data: nil, onSuccess: { _ in
-            logger.info("obs-websocket-control: stream stopped")
+            onSuccess()
+        }, onError: {
+            onError()
         })
     }
 
-    func startRecord() {
+    func startRecord(onSuccess: @escaping () -> Void, onError: @escaping () -> Void) {
         performRequest(type: .startRecord, data: nil, onSuccess: { _ in
-            logger.info("obs-websocket-control: recording started")
+            onSuccess()
+        }, onError: {
+            onError()
         })
     }
 
-    func stopRecord() {
+    func stopRecord(onSuccess: @escaping () -> Void, onError: @escaping () -> Void) {
         performRequest(type: .stopRecord, data: nil, onSuccess: { _ in
-            logger.info("obs-websocket-control: recording stopped")
+            onSuccess()
+        }, onError: {
+            onError()
         })
     }
 
-    private func performRequest(type: RequestType, data: Data?, onSuccess: @escaping (Data?) -> Void) {
+    private func performRequest(
+        type: RequestType,
+        data: Data?,
+        onSuccess: @escaping (Data?) -> Void,
+        onError: @escaping () -> Void
+    ) {
         let requestId = getNextId()
-        requests[requestId] = Request(onSuccess: onSuccess)
+        requests[requestId] = Request(onSuccess: onSuccess, onError: onError)
         var request: Data
         if let data {
             let data = String(bytes: data, encoding: .utf8)!
@@ -335,6 +359,7 @@ class ObsWebSocket {
     }
 
     private func setupConnection() {
+        print(url)
         webSocket = URLSession.shared.webSocketTask(with: url)
         webSocket.resume()
     }
@@ -360,9 +385,9 @@ class ObsWebSocket {
                 case .requestResponse:
                     try handleRequestResponse(data: data)
                 case nil:
-                    logger.info("obs-websocket-control: Ignoring message nil")
+                    logger.debug("obs-websocket-control: Ignoring message nil")
                 default:
-                    logger.info("obs-websocket-control: Ignoring message \(op!)")
+                    logger.debug("obs-websocket-control: Ignoring message \(op!)")
                 }
             default:
                 logger.info("obs-websocket-control: ???")
@@ -410,7 +435,7 @@ class ObsWebSocket {
         if status.result {
             request.onSuccess(data)
         } else {
-            logger.error("obs-websocket-control: Request failed.")
+            request.onError()
         }
     }
 

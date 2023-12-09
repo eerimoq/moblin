@@ -635,13 +635,16 @@ final class Model: ObservableObject {
     func listObsScenes() {
         obsCurrentScene = ""
         obsScenes = []
-        obsWebSocket?.getSceneList { list in
+        obsWebSocket?.getSceneList(onSuccess: { list in
             DispatchQueue.main.async {
-                logger.info("Fetched \(list.scenes.count) OBS scenes")
                 self.obsCurrentScene = list.currnet
                 self.obsScenes = list.scenes
             }
-        }
+        }, onError: {
+            DispatchQueue.main.async {
+                self.makeErrorToast(title: String(localized: "Failed to fetch OBS scenes"))
+            }
+        })
     }
 
     func isObsConfigured() -> Bool {
@@ -653,9 +656,15 @@ final class Model: ObservableObject {
     }
 
     func setObsScene(name: String) {
-        obsWebSocket?.setCurrentProgramScene(name: name) {
-            logger.info("OBS scene set")
-        }
+        obsWebSocket?.setCurrentProgramScene(name: name, onSuccess: {
+            DispatchQueue.main.async {
+                self.makeToast(title: String(localized: "OBS scene set to \(name)"))
+            }
+        }, onError: {
+            DispatchQueue.main.async {
+                self.makeErrorToast(title: String(localized: "Failed to set OBS scene to \(name)"))
+            }
+        })
     }
 
     func setup() {

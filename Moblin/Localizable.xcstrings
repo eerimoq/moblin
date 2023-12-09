@@ -4460,6 +4460,9 @@
         }
       }
     },
+    "Failed to fetch OBS scenes" : {
+
+    },
     "Failed to get 7TV channel emotes" : {
       "localizations" : {
         "de" : {
@@ -4677,6 +4680,9 @@
           }
         }
       }
+    },
+    "Failed to set OBS scene to %@" : {
+
     },
     "Feel free to join Moblin Discord server or write an issue on Github if you need help or want to give feedback." : {
       "localizations" : {
@@ -7400,6 +7406,9 @@
 
     },
     "OBS Scene" : {
+
+    },
+    "OBS scene set to %@" : {
 
     },
     "OBS WebSocket is not configured. Configure it in Settings -> Streams -> %@ -> OBS." : {
