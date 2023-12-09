@@ -74,6 +74,10 @@ private struct ResponseRequestStatus: Codable {
 private enum RequestType: String, Codable {
     case getSceneList = "GetSceneList"
     case setCurrentProgramScene = "SetCurrentProgramScene"
+    case startStream = "StartStream"
+    case stopStream = "StopStream"
+    case startRecord = "StartRecord"
+    case stopRecord = "StopRecord"
 }
 
 private enum EventType: String, Codable {
@@ -278,6 +282,30 @@ class ObsWebSocket {
             let data = try JSONEncoder().encode(data)
             performRequest(type: .setCurrentProgramScene, data: data, onSuccess: { _ in })
         } catch {}
+    }
+
+    func startStream() {
+        performRequest(type: .startStream, data: nil, onSuccess: { _ in
+            logger.info("obs-websocket-control: stream started")
+        })
+    }
+
+    func stopStream() {
+        performRequest(type: .stopStream, data: nil, onSuccess: { _ in
+            logger.info("obs-websocket-control: stream stopped")
+        })
+    }
+
+    func startRecord() {
+        performRequest(type: .startRecord, data: nil, onSuccess: { _ in
+            logger.info("obs-websocket-control: recording started")
+        })
+    }
+
+    func stopRecord() {
+        performRequest(type: .stopRecord, data: nil, onSuccess: { _ in
+            logger.info("obs-websocket-control: recording stopped")
+        })
     }
 
     private func performRequest(type: RequestType, data: Data?, onSuccess: @escaping (Data?) -> Void) {
