@@ -447,6 +447,12 @@
             "value" : "%1$@ (%2$@ total)"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ (%2$@ 합계)"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -850,6 +856,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Une fréquence de rafraichissement d'écran plus faible réduit l'utilisation de la batterie."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "화면의 최대 프레임(FPS)가 낮으면 전력 사용량이 줄어듭니다."
           }
         }
       }
@@ -1479,7 +1491,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "뒤로"
+            "value" : "뒷면"
           }
         },
         "pl" : {
@@ -1786,6 +1798,12 @@
             "value" : "SRT BELABOX cloud"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "벨라박스 클라우드 SRT"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1875,7 +1893,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "빅패킷"
+            "value" : "빅 패킷"
           }
         },
         "pl" : {
@@ -1916,6 +1934,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La taille des paquets SRT est de 6 paquets MPEG-TS par défaut. Activer l'option l'augmente à 7 paquets MPEG-TS. Les hotspots Android ne fonctionnent parfois pas avec des paquets de grande taille."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "빅 패킷은 SRT 패킷당 MPEG-TS 패킷 7개 또는 6개을 의미하고, Android 핫스팟에서는 빅 패킷에서 작동하지 않는 경우가 있습니다."
           }
         },
         "pl" : {
@@ -1996,6 +2020,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Le bitrate doit être supérieur à zéro."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "비트레이트 값은 0보다 커야 합니다."
           }
         },
         "pl" : {
@@ -3391,6 +3421,12 @@
             "value" : "Supprimer"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "삭제"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3692,6 +3728,12 @@
             "value" : "Dupliquer"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복제"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3718,6 +3760,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Vider le presse-papier"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "클립보드가 비어 있습니다."
           }
         },
         "pl" : {
@@ -4343,7 +4391,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "노출"
+            "value" : "노출도"
           }
         },
         "pl" : {
@@ -4610,6 +4658,12 @@
             "value" : "Échec de sélection du microphone"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "마이크 선택에 실패했습니다."
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4819,7 +4873,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "폰트"
+            "value" : "전면"
           }
         },
         "pl" : {
@@ -4859,7 +4913,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "폰트"
+            "value" : "전면"
           }
         },
         "pl" : {
@@ -5200,6 +5254,12 @@
             "value" : "Niveaux de gris"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "회색"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5378,6 +5438,12 @@
             "value" : "Cacher URL sensible"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "민감한 URL 숨김"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5411,6 +5477,12 @@
             "state" : "translated",
             "value" : "Hôte manquant"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "호스트가 누락되었습니다."
+          }
         }
       }
     },
@@ -5432,6 +5504,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Icônes"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "아이콘"
           }
         },
         "pl" : {
@@ -5474,6 +5552,12 @@
             "value" : "Icônes disponibles à l'achat"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "판매 중인 아이콘"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5512,6 +5596,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Icônes bientôt disponibles"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "아직 판매하지 않는 아이콘"
           }
         },
         "pl" : {
@@ -5846,6 +5936,12 @@
             "value" : "Grande caméra"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "큰 카메라"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6018,6 +6114,12 @@
             "value" : "Vues superposées locales"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "로컬 오버레이"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6056,6 +6158,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Les vues superposées locales (overlays) n'apparaissent pas dans le stream."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "로컬 오버레이는 방송 화면에 보이지 않습니다."
           }
         },
         "pl" : {
@@ -6138,6 +6246,12 @@
             "value" : "Niveau de détails du log"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log 레벨"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6171,6 +6285,12 @@
             "state" : "translated",
             "value" : "Syntaxe incorrecte de l'URL RTMP"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "잘못된 RTMP URL"
+          }
         }
       }
     },
@@ -6186,6 +6306,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Syntaxe incorrecte des réglages"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "잘못된 설정"
           }
         },
         "pl" : {
@@ -6215,6 +6341,12 @@
             "state" : "translated",
             "value" : "Syntaxe incorrecte de l'URL SRT(LA)"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "잘못된 SRT(LA) URL"
+          }
         }
       }
     },
@@ -6230,6 +6362,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Syntaxe incorrecte de l'URL"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "잘못된 URL"
           }
         }
       }
@@ -6252,6 +6390,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Merci aux développeurs de Moblin !"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin 개발자 여러분께 진심으로 감사드립니다!"
           }
         },
         "pl" : {
@@ -6294,6 +6438,12 @@
             "value" : "Âge maximum"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최대 표시 시간"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6326,6 +6476,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Intervalle maximum entre images-clés en secondes."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최대 키 프레임 간격(초)입니다. 자동으로 설정하려면 0으로 설정하세요."
           }
         },
         "pl" : {
@@ -6368,6 +6524,12 @@
             "value" : "Âge maximum des messages en secondes."
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "메시지 최대 표시 시간(초)입니다."
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6396,6 +6558,12 @@
             "state" : "translated",
             "value" : "Fréquence maximale de rafraichissement d'écran"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "화면 최대 프레임(FPS)"
+          }
         }
       }
     },
@@ -6417,6 +6585,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Message"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "메시지"
           }
         },
         "pl" : {
@@ -6459,6 +6633,12 @@
             "value" : "Micro"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "마이크"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6493,6 +6673,12 @@
             "value" : "Identifiant micro"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "마이크ID %@"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6519,6 +6705,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Micro non trouvé"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "마이크가 없습니다."
           }
         },
         "pl" : {
@@ -6553,6 +6745,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Les liens profonds moblin:// peuvent être utilisés pour importer certains réglages, souvent par l'intermédiaire d'un QR code ou d'un navigateur. Consulter les détails sur https://github.com/eerimoq/moblin"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "moblin:// 딥링크는 종종 QR 코드나 브라우저를 사용하여 일부 설정을 가져오는 데 사용될 수 있습니다. 자세한 사항은 다음 주소를 참고하세요. https://github.com/eerimoq/moblin"
           }
         },
         "pl" : {
@@ -6595,6 +6793,12 @@
             "value" : "Film"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "비디오"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6633,6 +6837,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Couper le son"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "음소거"
           }
         },
         "pl" : {
@@ -6675,6 +6885,12 @@
             "value" : "Son coupé"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "음소거 됨"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6713,6 +6929,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mes icônes"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "내 아이콘"
           }
         },
         "pl" : {
@@ -6755,6 +6977,12 @@
             "value" : "Ma scène"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "내 장면"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6795,6 +7023,12 @@
             "value" : "Mon stream"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "내 스트림"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6827,6 +7061,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mon widget"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "내 위젯"
           }
         },
         "pl" : {
@@ -7130,6 +7370,12 @@
             "value" : "Source Media OBS (SRT)"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OBS 미디어 소스 (SRT)"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7404,6 +7650,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Paramètres"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "매개변수"
           }
         },
         "pl" : {
@@ -7814,6 +8066,12 @@
             "value" : "Niveau audio Røde"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Røde 오디오 레벨"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7854,6 +8112,12 @@
             "value" : "Serveur RTMP"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RTMP 서버"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7886,6 +8150,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nom de stream RTMP manquant"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RTMP 스트림 이름이 누락 되었습니다."
           }
         }
       }
@@ -7994,6 +8264,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Schéma manquant"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "구성표 누락"
           }
         }
       }
@@ -8144,6 +8420,12 @@
             "value" : "Réglages importés"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "설정 불러오기 완료"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8176,6 +8458,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Les réglages qui interrompraient le stream sont désactivés pendant une diffusion."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "라이브 중에는 스트리밍을 중지하는 설정이 비활성화됩니다."
           }
         },
         "pl" : {
@@ -8262,6 +8550,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Afficher URL sensible"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "민감한 URL이 보입니다."
           }
         },
         "pl" : {
@@ -8418,6 +8712,12 @@
             "value" : "Échec de la connexion SRT à %@"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT 연결이 %@ 실패했습니다."
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8446,6 +8746,12 @@
             "value" : "SRT déconnecté"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT 연결이 끊겼습니다."
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8472,6 +8778,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Erreur SRT : %@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT 에러: %@"
           }
         },
         "pl" : {
@@ -8582,6 +8894,12 @@
             "value" : "Overlay SRT"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT 오버레이"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8649,6 +8967,12 @@
             "state" : "translated",
             "value" : "Numéro de port SRT(LA) manquant"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT(LA) 포트 번호가 누락 되었습니다."
+          }
         }
       }
     },
@@ -8670,6 +8994,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Serveur SRTLA"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRTLA 서버"
           }
         },
         "pl" : {
@@ -8758,6 +9088,12 @@
             "value" : "Stream"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "송출"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8838,6 +9174,12 @@
             "value" : "Streams"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "송출"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8876,6 +9218,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Soutenez les développeurs Moblin en achetant des icônes."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "아이콘을 구매하여 Moblin 개발자를 지원하세요."
           }
         },
         "pl" : {
@@ -8918,6 +9266,12 @@
             "value" : "Taper l'écran pour mettre au point"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "초점을 맞추려면 화면을 터치하세요."
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8952,6 +9306,12 @@
             "value" : "Cette caméra ne permet pas la mise au point manuelle"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 카메라에서는 터치하여 초점을 맞출 수 없습니다."
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8984,6 +9344,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Modèle : rtmp://"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "예시: rtmp://"
           }
         },
         "pl" : {
@@ -9026,6 +9392,12 @@
             "value" : "Modèle : rtmp://mon_ip_public:mon_port_public/ma_cle_stream"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "예시: rtmp://my_public_ip:my_public_port/my_stream_key"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9064,6 +9436,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Modèle : srt://mon_ip_public:mon_port_public"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "예시: srt://my_public_ip:my_public_por"
           }
         },
         "pl" : {
@@ -9106,6 +9484,12 @@
             "value" : "Modèle : srt://mon_ip_public:mon_port_public?streamid=publish/live/ma_cle"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "예시: srt://my_public_ip:my_public_port?streamid=publish/live/my_key"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9144,6 +9528,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Modèle : srtla://mon_ip_public:mon_port_public"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "예시 srtla://my_public_ip:my_public_port"
           }
         },
         "pl" : {
@@ -9186,6 +9576,12 @@
             "value" : "Le widget navigateur est expérimental et peut fonctionner de façon aléatoire."
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "브라우저 위젯은 실험적이므로 아직 잘 작동하지 않습니다."
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9224,6 +9620,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Le log est vide."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log가 비어있습니다."
           }
         },
         "pl" : {
@@ -9266,6 +9668,12 @@
             "value" : "Le nom de votre chaîne."
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "당신의 채널 이름입니다."
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9306,6 +9714,12 @@
             "value" : "L'affichage image dans l'image est expérimental et ne fonctionne pas."
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log가 비어있습니다."
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9344,6 +9758,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Le zoom à utiliser (exprimé en ×) quand vous basculez vers une caméra determinée, si l'option est activée."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "활성화된 경우 특정 카메라로 전환할 때 기본이 될 줌 배율입니다."
           }
         },
         "pl" : {
@@ -9472,6 +9892,12 @@
             "value" : "Vers camera %@"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 카메라로 전환 시"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9504,6 +9930,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Haut gauche"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "좌상단"
           }
         },
         "pl" : {
@@ -9544,6 +9976,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Haut droite"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "우상단"
           }
         },
         "pl" : {
@@ -9630,6 +10068,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Triple"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "삼중"
           }
         },
         "pl" : {
@@ -9797,6 +10241,12 @@
             "state" : "translated",
             "value" : "Schéma non supporté %@"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지원되지 않는 구성표 %@"
+          }
         }
       }
     },
@@ -9946,6 +10396,12 @@
             "value" : "Échec de l'importation d'URL"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL 불러오기 실패"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9978,6 +10434,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Utiliser le premier canal pour le niveau audio. Pour débugger l'erreur \"Unknown level\" sur microphone Røde."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오디오 레벨의 첫 번째 채널을 사용합니다. Røde mic의 Unknown 레벨을 디버깅합니다."
           }
         },
         "pl" : {
@@ -10018,6 +10480,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Utiliser l'audio généré comme source au lieu du microphone."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "마이크 대신 소스에서 만들어진 오디오를 사용합니다."
           }
         },
         "pl" : {
@@ -10152,6 +10620,12 @@
             "value" : "Très expérimental et très secret !"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "매우 실험적이고 매우 비밀스럽습니다!"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10185,6 +10659,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Très expérimental et très secret ! Ne fonctionne pas encore…"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "매우 실험적이고 매우 비밀스럽습니다! 아직 작동하지 않습니다!"
           }
         },
         "pl" : {
@@ -10623,6 +11103,12 @@
             "value" : "Les widgets sont empilés de l'arrière vers l'avant."
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "위젯은 뒤에서부터 앞으로 쌓입니다."
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10746,7 +11232,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "당신은 모두 구매했습니다!"
+            "value" : "당신은 이미 모두 구매했습니다!"
           }
         },
         "pl" : {
