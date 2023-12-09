@@ -187,6 +187,7 @@ final class Model: ObservableObject {
     private var kickPusher: KickPusher?
     private var youTubeLiveChat: YouTubeLiveChat?
     private var afreecaTvChat: AfreecaTvChat?
+    private var obsWebSocket: ObsWebSocket?
     private var chatPostId = 0
     @Published var chatPosts: Deque<ChatPost> = []
     private var pausedChatPosts: Deque<ChatPost> = []
@@ -226,6 +227,9 @@ final class Model: ObservableObject {
 
     @Published var showingBitrate = false
     @Published var showingMic = false
+    @Published var showingObsScene = false
+    @Published var obsScenes: [String] = []
+    @Published var obsCurrentScene: String = ""
     @Published var iconImage: String = plainIcon.id
     @Published var manualFocusPoint: CGPoint?
     @Published var backZoomPresetId = UUID()
@@ -625,6 +629,32 @@ final class Model: ObservableObject {
                 title: String(localized: "Failed to select mic"),
                 subTitle: error.localizedDescription
             )
+        }
+    }
+
+    func listObsScenes() {
+        obsCurrentScene = ""
+        obsScenes = []
+        obsWebSocket?.getSceneList { list in
+            DispatchQueue.main.async {
+                logger.info("Fetched \(list.scenes.count) OBS scenes")
+                self.obsCurrentScene = list.currnet
+                self.obsScenes = list.scenes
+            }
+        }
+    }
+
+    func isObsConfigured() -> Bool {
+        return stream.obsWebSocketUrl != "" && stream.obsWebSocketPassword != ""
+    }
+
+    func isObsConnected() -> Bool {
+        return obsWebSocket?.isConnected() ?? false
+    }
+
+    func setObsScene(name: String) {
+        obsWebSocket?.setCurrentProgramScene(name: name) {
+            logger.info("OBS scene set")
         }
     }
 
@@ -1188,6 +1218,7 @@ final class Model: ObservableObject {
         reloadKickPusher()
         reloadYouTubeLiveChat()
         reloadAfreecaTvChat()
+        reloadObsWebSocket()
     }
 
     func storeAndReloadStreamIfEnabled(stream: SettingsStream) {
@@ -1389,7 +1420,7 @@ final class Model: ObservableObject {
 
     private func reloadTwitchChat() {
         twitchChat.stop()
-        if stream.twitchChannelName != "" {
+        if isTwitchChatConfigured() {
             twitchChat.start(
                 channelName: stream.twitchChannelName,
                 channelId: stream.twitchChannelId
@@ -1413,7 +1444,7 @@ final class Model: ObservableObject {
     private func reloadKickPusher() {
         kickPusher?.stop()
         kickPusher = nil
-        if stream.kickChatroomId != "" {
+        if isKickPusherConfigured() {
             kickPusher = KickPusher(model: self, channelId: stream.kickChatroomId)
             kickPusher!.start()
         } else {
@@ -1424,7 +1455,7 @@ final class Model: ObservableObject {
     private func reloadYouTubeLiveChat() {
         youTubeLiveChat?.stop()
         youTubeLiveChat = nil
-        if stream.youTubeApiKey! != "" && stream.youTubeVideoId! != "" {
+        if isYouTubeLiveChatConfigured() {
             youTubeLiveChat = YouTubeLiveChat(
                 model: self,
                 apiKey: stream.youTubeApiKey!,
@@ -1439,7 +1470,7 @@ final class Model: ObservableObject {
     private func reloadAfreecaTvChat() {
         afreecaTvChat?.stop()
         afreecaTvChat = nil
-        if stream.afreecaTvChannelName! != "" && stream.afreecaTvStreamId! != "" {
+        if isAfreecaTvChatConfigured() {
             afreecaTvChat = AfreecaTvChat(
                 model: self,
                 channelName: stream.afreecaTvChannelName!,
@@ -1449,6 +1480,22 @@ final class Model: ObservableObject {
         } else {
             logger.info("AfreecaTV chat id not configured. No AfreecaTV chat.")
         }
+    }
+
+    private func reloadObsWebSocket() {
+        obsWebSocket?.stop()
+        obsWebSocket = nil
+        guard isObsConfigured() else {
+            return
+        }
+        guard let url = URL(string: stream.obsWebSocketUrl!) else {
+            return
+        }
+        obsWebSocket = ObsWebSocket(
+            url: url,
+            password: stream.obsWebSocketPassword!
+        )
+        obsWebSocket!.start()
     }
 
     func twitchChannelNameUpdated() {
@@ -1485,6 +1532,14 @@ final class Model: ObservableObject {
     func afreecaTvStreamIdUpdated() {
         reloadAfreecaTvChat()
         resetChat()
+    }
+
+    func obsWebSocketUrlUpdated() {
+        reloadObsWebSocket()
+    }
+
+    func obsWebSocketPasswordUpdated() {
+        reloadObsWebSocket()
     }
 
     private func appendChatPost(post: ChatPost) {

@@ -4670,6 +4670,9 @@
         }
       }
     },
+    "Fetching OBS scenes from server..." : {
+
+    },
     "Find your channel name (myChannelName) and video id (myVideoId) in your stream's URL." : {
       "localizations" : {
         "de" : {
@@ -4795,6 +4798,9 @@
           }
         }
       }
+    },
+    "For example wss://232.32.45.332:4567." : {
+
     },
     "front" : {
       "localizations" : {
@@ -7101,6 +7107,9 @@
         }
       }
     },
+    "OBS" : {
+
+    },
     "OBS Media Source (SRT)" : {
       "localizations" : {
         "de" : {
@@ -7140,6 +7149,18 @@
           }
         }
       }
+    },
+    "OBS scene" : {
+
+    },
+    "OBS Scene" : {
+
+    },
+    "OBS WebSocket is not configured. Configure it in Settings -> Streams -> %@ -> OBS." : {
+
+    },
+    "OBS WebSocket is not connected to the server" : {
+
     },
     "Off" : {
       "localizations" : {
@@ -10437,6 +10458,12 @@
           }
         }
       }
+    },
+    "WebSocket password" : {
+
+    },
+    "WebSocket URL" : {
+
     },
     "Widget" : {
       "localizations" : {

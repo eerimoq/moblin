@@ -92,6 +92,43 @@ struct MicButtonView: View {
     }
 }
 
+struct ObsSceneView: View {
+    @EnvironmentObject var model: Model
+    var done: () -> Void
+
+    var body: some View {
+        Form {
+            Section("OBS Scene") {
+                if !model.isObsConfigured() {
+                    Text("""
+                    OBS WebSocket is not configured. Configure it in \
+                    Settings -> Streams -> \(model.stream.name) -> OBS.
+                    """)
+                } else if !model.isObsConnected() {
+                    Text("OBS WebSocket is not connected to the server")
+                } else if model.obsScenes.isEmpty {
+                    Text("Fetching OBS scenes from server...")
+                } else {
+                    Picker("", selection: $model.obsCurrentScene) {
+                        ForEach(model.obsScenes, id: \.self) { scene in
+                            Text(scene)
+                        }
+                    }
+                    .onChange(of: model.obsCurrentScene) { _ in
+                        model.setObsScene(name: model.obsCurrentScene)
+                        done()
+                    }
+                    .pickerStyle(.inline)
+                    .labelsHidden()
+                }
+            }
+        }
+        .toolbar {
+            QuickSettingsToolbar(done: done)
+        }
+    }
+}
+
 struct ButtonsView: View {
     @EnvironmentObject var model: Model
     var height: CGFloat
@@ -153,6 +190,11 @@ struct ButtonsView: View {
             subTitle: String(localized: "Double tap to return to main view")
         )
         model.updateButtonStates()
+    }
+
+    private func obsSceneAction(state _: ButtonState) {
+        model.listObsScenes()
+        model.showingObsScene = true
     }
 
     private func buttonHeight() -> CGFloat {
@@ -244,6 +286,15 @@ struct ButtonsView: View {
                                     on: second.isOn
                                 )
                             })
+                        case .obsScene:
+                            Button(action: {
+                                obsSceneAction(state: second)
+                            }, label: {
+                                ButtonImage(
+                                    image: getImage(state: second),
+                                    on: second.isOn
+                                )
+                            })
                         }
                     } else {
                         ButtonPlaceholderImage()
@@ -318,6 +369,15 @@ struct ButtonsView: View {
                     case .blackScreen:
                         Button(action: {
                             blackScreenAction(state: pair.first)
+                        }, label: {
+                            ButtonImage(
+                                image: getImage(state: pair.first),
+                                on: pair.first.isOn
+                            )
+                        })
+                    case .obsScene:
+                        Button(action: {
+                            obsSceneAction(state: pair.first)
                         }, label: {
                             ButtonImage(
                                 image: getImage(state: pair.first),

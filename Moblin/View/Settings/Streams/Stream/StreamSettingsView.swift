@@ -39,6 +39,9 @@ struct StreamSettingsView: View {
             NavigationLink(destination: StreamAfreecaTvSettingsView(stream: stream)) {
                 Text("AfreecaTV")
             }
+            NavigationLink(destination: StreamObsSettingsView(stream: stream)) {
+                Text("OBS")
+            }
             NavigationLink(destination: StreamSrtSettingsView(stream: stream)) {
                 Text("SRT(LA)")
             }

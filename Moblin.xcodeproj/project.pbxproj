@@ -109,6 +109,8 @@
 		03BC11642AE4BEC400C38FC4 /* Emotes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC11632AE4BEC400C38FC4 /* Emotes.swift */; };
 		03BC11672AE5654700C38FC4 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 03BC11662AE5654700C38FC4 /* SDWebImageSwiftUI */; };
 		03BC116B2AE56C2200C38FC4 /* SDWebImageWebPCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 03BC116A2AE56C2200C38FC4 /* SDWebImageWebPCoder */; };
+		03BDE2222B24367D00DF193A /* ObsWebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BDE2212B24367D00DF193A /* ObsWebSocket.swift */; };
+		03BDE2262B24656400DF193A /* StreamObsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BDE2252B24656400DF193A /* StreamObsSettingsView.swift */; };
 		03C088302B0A939F000990DA /* SceneCameraPipSmallCameraSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C0882F2B0A939F000990DA /* SceneCameraPipSmallCameraSettingsView.swift */; };
 		03C088372B0AFFA8000990DA /* InlinePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C088362B0AFFA8000990DA /* InlinePickerView.swift */; };
 		03CC5F892AD060DB0019CBA5 /* WidgetBrowserUrlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CC5F882AD060DB0019CBA5 /* WidgetBrowserUrlSettingsView.swift */; };
@@ -223,6 +225,8 @@
 		03BC115F2AE4BD9200C38FC4 /* Ffz.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ffz.swift; sourceTree = "<group>"; };
 		03BC11612AE4BDA200C38FC4 /* Seventv.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Seventv.swift; sourceTree = "<group>"; };
 		03BC11632AE4BEC400C38FC4 /* Emotes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Emotes.swift; sourceTree = "<group>"; };
+		03BDE2212B24367D00DF193A /* ObsWebSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObsWebSocket.swift; sourceTree = "<group>"; };
+		03BDE2252B24656400DF193A /* StreamObsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamObsSettingsView.swift; sourceTree = "<group>"; };
 		03C0882F2B0A939F000990DA /* SceneCameraPipSmallCameraSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneCameraPipSmallCameraSettingsView.swift; sourceTree = "<group>"; };
 		03C088362B0AFFA8000990DA /* InlinePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlinePickerView.swift; sourceTree = "<group>"; };
 		03CC5F882AD060DB0019CBA5 /* WidgetBrowserUrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBrowserUrlSettingsView.swift; sourceTree = "<group>"; };
@@ -285,6 +289,7 @@
 		0315A3402AA31ADC00295443 /* Stream */ = {
 			isa = PBXGroup;
 			children = (
+				03BDE2242B24654E00DF193A /* OBS */,
 				03EF34B72B1B027000A19221 /* AfreecaTv */,
 				0330F2B22AFADD05001262C3 /* YouTube */,
 				032469A72AE1B2D80097B18B /* Srt */,
@@ -431,6 +436,7 @@
 		035E9E352A9A02D6009D4F5A /* Moblin */ = {
 			isa = PBXGroup;
 			children = (
+				03BDE2202B24364700DF193A /* OBS */,
 				032BC5B22AD8E18000DEC883 /* Info.plist */,
 				031852A42B21890A00AEAD0D /* InfoPlist.strings */,
 				03BC115B2AE4BD6200C38FC4 /* Emotes */,
@@ -722,6 +728,22 @@
 			path = Emotes;
 			sourceTree = "<group>";
 		};
+		03BDE2202B24364700DF193A /* OBS */ = {
+			isa = PBXGroup;
+			children = (
+				03BDE2212B24367D00DF193A /* ObsWebSocket.swift */,
+			);
+			path = OBS;
+			sourceTree = "<group>";
+		};
+		03BDE2242B24654E00DF193A /* OBS */ = {
+			isa = PBXGroup;
+			children = (
+				03BDE2252B24656400DF193A /* StreamObsSettingsView.swift */,
+			);
+			path = OBS;
+			sourceTree = "<group>";
+		};
 		03E95ADD2ADB7A0D00DAE2DF /* MaxScreenVideoFps */ = {
 			isa = PBXGroup;
 			children = (
@@ -891,6 +913,7 @@
 				0315A3672AA33C6A00295443 /* WidgetImageSettingsView.swift in Sources */,
 				0344AFE72B00023E00C177DB /* AboutDesignedBySettingsView.swift in Sources */,
 				030947C32A9C0496003FC387 /* StreamOverlayChatView.swift in Sources */,
+				03BDE2222B24367D00DF193A /* ObsWebSocket.swift in Sources */,
 				03CC5F892AD060DB0019CBA5 /* WidgetBrowserUrlSettingsView.swift in Sources */,
 				03A983622A9A05D7008FF0DB /* MainView.swift in Sources */,
 				03B374042AA036D10028DDD5 /* ButtonsView.swift in Sources */,
@@ -970,6 +993,7 @@
 				03BC115D2AE4BD7B00C38FC4 /* Bttv.swift in Sources */,
 				0315A3702AA3771F00295443 /* SceneWidgetSettingsView.swift in Sources */,
 				0379BB9E2AAD81AA00B718B6 /* StreamOverlayRightView.swift in Sources */,
+				03BDE2262B24656400DF193A /* StreamObsSettingsView.swift in Sources */,
 				0330F2B52AFADD18001262C3 /* StreamYouTubeSettingsView.swift in Sources */,
 				031A2E002ADBE34F005CE350 /* DraggableItemPrefixView.swift in Sources */,
 				0379BB792AA64C9500B718B6 /* WidgetVideoEffectSettingsView.swift in Sources */,

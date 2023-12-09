@@ -67,6 +67,8 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var youTubeVideoId: String? = ""
     var afreecaTvChannelName: String? = ""
     var afreecaTvStreamId: String? = ""
+    var obsWebSocketUrl: String? = ""
+    var obsWebSocketPassword: String? = ""
     var resolution: SettingsStreamResolution = .r1280x720
     var fps: Int = 30
     var bitrate: UInt32 = 3_000_000
@@ -91,6 +93,8 @@ class SettingsStream: Codable, Identifiable, Equatable {
         scene.youTubeVideoId = youTubeVideoId
         scene.afreecaTvChannelName = afreecaTvChannelName
         scene.afreecaTvStreamId = afreecaTvStreamId
+        scene.obsWebSocketUrl = obsWebSocketUrl
+        scene.obsWebSocketPassword = obsWebSocketPassword
         scene.resolution = resolution
         scene.fps = fps
         scene.bitrate = bitrate
@@ -483,6 +487,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case chat = "Chat"
     case pauseChat = "Pause chat"
     case blackScreen = "Black screen"
+    case obsScene = "OBS scene"
 
     static func fromString(value: String) -> SettingsButtonType {
         switch value {
@@ -502,6 +507,8 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return .pauseChat
         case String(localized: "Black screen"):
             return .blackScreen
+        case String(localized: "OBS scene"):
+            return .obsScene
         default:
             return .torch
         }
@@ -525,6 +532,8 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return String(localized: "Pause chat")
         case .blackScreen:
             return String(localized: "Black screen")
+        case .obsScene:
+            return String(localized: "OBS scene")
         }
     }
 }
@@ -1166,6 +1175,14 @@ final class Settings {
                     }
                 }
             }
+            store()
+        }
+        for stream in realDatabase.streams where stream.obsWebSocketUrl == nil {
+            stream.obsWebSocketUrl = ""
+            store()
+        }
+        for stream in realDatabase.streams where stream.obsWebSocketPassword == nil {
+            stream.obsWebSocketPassword = ""
             store()
         }
     }

@@ -94,6 +94,17 @@ struct MainView: View {
                     .frame(width: settingsHalfWidth)
                 }
             }
+            if model.showingObsScene {
+                HStack {
+                    Spacer()
+                    NavigationStack {
+                        ObsSceneView {
+                            model.showingObsScene = false
+                        }
+                    }
+                    .frame(width: settingsHalfWidth)
+                }
+            }
             if model.blackScreen {
                 Text("")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
