@@ -8,7 +8,7 @@ stream to `YouTube`_, `Kick`_, `Facebook`_ and `OBS Studio`_ as well
 (and probably more).
 
 .. image:: https://github.com/eerimoq/moblin/raw/main/docs/main.jpg
-           
+
 Discord: https://discord.gg/nt3UwHqbMM
 
 Github: https://github.com/eerimoq/moblin
@@ -211,7 +211,7 @@ An example creating a new stream is
 
 .. code-block::
 
-   moblin://?{"streams":[{"name":"BELABOX%20UK","url":"srtla://uk.srt.belabox.net:5000?streamid=9812098rh9hf8942hid","video":{"codec":"H.265/HEVC"}}]}
+   moblin://?{"streams":[{"name":"BELABOX%20UK","url":"srtla://uk.srt.belabox.net:5000?streamid=9812098rh9hf8942hid","video":{"codec":"H.265/HEVC"},"obs":{"webSocketUrl":"ws://123.22.32.112:5465","webSocketPassword":"foobar"}}]}
 
 where the URL decoded pretty printed JSON blob is
 
@@ -224,6 +224,10 @@ where the URL decoded pretty printed JSON blob is
          "url": "srtla://uk.srt.belabox.net:5000?streamid=9812098rh9hf8942hid",
          "video": {
            "codec": "H.265/HEVC"
+         },
+         "obs": {
+           "webSocketUrl": "ws://123.22.32.112:5465",
+           "webSocketPassword": "foobar"
          }
        }
      ]

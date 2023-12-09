@@ -847,6 +847,10 @@ final class Model: ObservableObject {
                             newStream.codec = codec
                         }
                     }
+                    if let obs = stream.obs {
+                        newStream.obsWebSocketUrl = obs.webSocketUrl
+                        newStream.obsWebSocketPassword = obs.webSocketPassword
+                    }
                     database.streams.append(newStream)
                     logger.info("Created stream \(newStream.name)")
                     streamCount += 1
