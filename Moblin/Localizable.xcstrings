@@ -2631,6 +2631,9 @@
         }
       }
     },
+    "Buy individual icons from the icons store. They are yours forever." : {
+
+    },
     "Camera" : {
       "localizations" : {
         "de" : {
@@ -5795,9 +5798,6 @@
           }
         }
       }
-    },
-    "Including all icons added in the future." : {
-
     },
     "Interval" : {
       "localizations" : {
@@ -9579,6 +9579,9 @@
           }
         }
       }
+    },
+    "The \"All icons\" subscription gives you access to all icons in store for as long as the subscription lasts. This includes all icons added in the future." : {
+
     },
     "The browser widget is experimental does not work very well yet." : {
       "localizations" : {

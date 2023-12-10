@@ -19,6 +19,13 @@ struct CosmeticsSettingsView: View {
     var body: some View {
         Form {
             Section {
+                HStack {
+                    Text("Support Moblin developers by buying icons.")
+                    Image(systemName: "heart.fill")
+                        .foregroundColor(.red)
+                }
+            }
+            Section {
                 Picker("", selection: $model.iconImage) {
                     ForEach(model.myIcons) { icon in
                         HStack {
@@ -88,9 +95,12 @@ struct CosmeticsSettingsView: View {
             } header: {
                 Text("Subscriptions")
             } footer: {
-                Text("Including all icons added in the future.")
+                Text("""
+                The "All icons" subscription gives you access to all icons in store for as long as the \
+                subscription lasts. This includes all icons added in the future.
+                """)
             }
-            if model.iconsInStore.count > 0 {
+            if !model.iconsInStore.isEmpty {
                 Section {
                     List {
                         ForEach(model.iconsInStore) { icon in
@@ -135,7 +145,7 @@ struct CosmeticsSettingsView: View {
                 } header: {
                     Text("Icons in store")
                 } footer: {
-                    Text("Support Moblin developers by buying icons.")
+                    Text("Buy individual icons from the icons store. They are yours forever.")
                 }
             } else {
                 Section {
