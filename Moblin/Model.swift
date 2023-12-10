@@ -231,6 +231,8 @@ final class Model: ObservableObject {
     @Published var obsScenes: [String] = []
     @Published var obsCurrentScene: String = ""
     @Published var obsCurrentSceneStatus: String = ""
+    var obsStreaming = false
+    var obsRecording = false
     @Published var iconImage: String = plainIcon.id
     @Published var manualFocusPoint: CGPoint?
     @Published var backZoomPresetId = UUID()
@@ -669,7 +671,7 @@ final class Model: ObservableObject {
         })
     }
 
-    private func updateCurrentObsScene() {
+    private func updateObsStatus() {
         guard isObsConnected() else {
             return
         }
@@ -680,6 +682,24 @@ final class Model: ObservableObject {
         }, onError: {
             DispatchQueue.main.async {
                 self.obsCurrentSceneStatus = "Unknown"
+            }
+        })
+        obsWebSocket?.getStreamStatus(onSuccess: { status in
+            DispatchQueue.main.async {
+                self.obsStreaming = status.active
+            }
+        }, onError: {
+            DispatchQueue.main.async {
+                self.obsStreaming = false
+            }
+        })
+        obsWebSocket?.getRecordStatus(onSuccess: { status in
+            DispatchQueue.main.async {
+                self.obsRecording = status.active
+            }
+        }, onError: {
+            DispatchQueue.main.async {
+                self.obsRecording = false
             }
         })
     }
@@ -915,7 +935,7 @@ final class Model: ObservableObject {
             self.updateBatteryLevel()
             self.media.logStatistics()
             self.media.logAudioStatistics()
-            self.updateCurrentObsScene()
+            self.updateObsStatus()
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
             self.updateSrtDebugLines()
@@ -1515,6 +1535,9 @@ final class Model: ObservableObject {
 
     private func reloadObsWebSocket() {
         obsWebSocket?.stop()
+        obsWebSocket?.onSceneChanged = nil
+        obsWebSocket?.onStreamStatusChanged = nil
+        obsWebSocket?.onRecordStatusChanged = nil
         obsWebSocket = nil
         guard isObsConfigured() else {
             return
@@ -1526,9 +1549,24 @@ final class Model: ObservableObject {
             url: url,
             password: stream.obsWebSocketPassword!,
             onConnected: {
-                self.updateCurrentObsScene()
+                self.updateObsStatus()
             }
         )
+        obsWebSocket!.onSceneChanged = { name in
+            DispatchQueue.main.async {
+                self.obsCurrentSceneStatus = name
+            }
+        }
+        obsWebSocket!.onStreamStatusChanged = { active in
+            DispatchQueue.main.async {
+                self.obsStreaming = active
+            }
+        }
+        obsWebSocket!.onRecordStatusChanged = { active in
+            DispatchQueue.main.async {
+                self.obsRecording = active
+            }
+        }
         obsWebSocket!.start()
     }
 

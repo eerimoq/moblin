@@ -74,17 +74,25 @@ struct LeftOverlayView: View {
         }
     }
 
-    func obsWebSocketText() -> String {
+    func obsStatusText() -> String {
         if !model.isObsConfigured() {
             return String(localized: "Not configured")
         } else if model.isObsConnected() {
-            return model.obsCurrentSceneStatus
+            if model.obsStreaming && model.obsRecording {
+                return "\(model.obsCurrentSceneStatus) (Streaming, Recording)"
+            } else if model.obsStreaming {
+                return "\(model.obsCurrentSceneStatus) (Streaming)"
+            } else if model.obsRecording {
+                return "\(model.obsCurrentSceneStatus) (Recording)"
+            } else {
+                return model.obsCurrentSceneStatus
+            }
         } else {
             return ""
         }
     }
 
-    func obsWebSocketColor() -> Color {
+    func obsStatusColor() -> Color {
         if !model.isObsConfigured() {
             return .white
         } else if model.isObsConnected() {
@@ -120,11 +128,11 @@ struct LeftOverlayView: View {
                     text: String(format: "%.1f", model.zoomX)
                 )
             }
-            if model.database.show.obsScene! {
+            if model.database.show.obsStatus! {
                 StreamOverlayIconAndTextView(
                     icon: "photo",
-                    text: obsWebSocketText(),
-                    color: obsWebSocketColor()
+                    text: obsStatusText(),
+                    color: obsStatusColor()
                 )
             }
             if model.database.show.chat {

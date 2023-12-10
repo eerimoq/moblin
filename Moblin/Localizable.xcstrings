@@ -7353,9 +7353,6 @@
         }
       }
     },
-    "OBS" : {
-
-    },
     "OBS Media Source (SRT)" : {
       "localizations" : {
         "de" : {
@@ -7402,6 +7399,9 @@
         }
       }
     },
+    "OBS remote control" : {
+
+    },
     "OBS scene" : {
 
     },
@@ -7409,6 +7409,9 @@
 
     },
     "OBS scene set to %@" : {
+
+    },
+    "OBS status" : {
 
     },
     "OBS WebSocket is not configured. Configure it in Settings -> Streams -> %@ -> OBS." : {
@@ -7686,6 +7689,9 @@
           }
         }
       }
+    },
+    "Password" : {
+
     },
     "Pause chat" : {
       "localizations" : {
@@ -10948,10 +10954,7 @@
         }
       }
     },
-    "WebSocket password" : {
-
-    },
-    "WebSocket URL" : {
+    "WebSocket" : {
 
     },
     "Widget" : {

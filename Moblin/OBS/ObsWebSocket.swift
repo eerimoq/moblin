@@ -74,8 +74,10 @@ private struct ResponseRequestStatus: Codable {
 private enum RequestType: String, Codable {
     case getSceneList = "GetSceneList"
     case setCurrentProgramScene = "SetCurrentProgramScene"
+    case getStreamStatus = "GetStreamStatus"
     case startStream = "StartStream"
     case stopStream = "StopStream"
+    case getRecordStatus = "GetRecordStatus"
     case startRecord = "StartRecord"
     case stopRecord = "StopRecord"
 }
@@ -83,6 +85,9 @@ private enum RequestType: String, Codable {
 private enum EventType: String, Codable {
     case mediaInputPlaybackStarted = "MediaInputPlaybackStarted"
     case mediaInputPlaybackEnded = "MediaInputPlaybackEnded"
+    case currentProgramSceneChanged = "CurrentProgramSceneChanged"
+    case streamStateChanged = "StreamStateChanged"
+    case recordStateChanged = "RecordStateChanged"
 }
 
 private struct Identify: Codable {
@@ -105,11 +110,6 @@ private struct Hello: Decodable {
     let authentication: HelloAuthentication?
 }
 
-struct ObsSceneList {
-    let current: String
-    let scenes: [String]
-}
-
 struct GetSceneListResponseScene: Decodable {
     let sceneName: String
 }
@@ -121,6 +121,26 @@ struct GetSceneListResponse: Decodable {
 
 struct SetCurrentProgramSceneRequest: Codable {
     let sceneName: String
+}
+
+struct GetStreamStatusResponse: Codable {
+    let outputActive: Bool
+}
+
+struct GetRecordStatusResponse: Codable {
+    let outputActive: Bool
+}
+
+struct SceneChangedEvent: Decodable {
+    let sceneName: String
+}
+
+struct StreamStateChangedEvent: Decodable {
+    let outputActive: Bool
+}
+
+struct RecordStateChangedEvent: Decodable {
+    let outputActive: Bool
 }
 
 private let rpcVersion = 1
@@ -165,6 +185,7 @@ private func unpackEvent(data: Data) throws -> (EventType?, Int, Data?) {
         throw "Event type not a string"
     }
     guard let type = EventType(rawValue: type) else {
+        logger.debug("obs-websocket: Unsupported event \(type)")
         return (nil, 0, nil)
     }
     guard let intent = jsonResult["eventIntent"] as? Int else {
@@ -213,6 +234,19 @@ struct Request {
     let onError: () -> Void
 }
 
+struct ObsSceneList {
+    let current: String
+    let scenes: [String]
+}
+
+struct ObsStreamStatus {
+    let active: Bool
+}
+
+struct ObsRecordStatus {
+    let active: Bool
+}
+
 class ObsWebSocket {
     private let url: URL
     private let password: String
@@ -222,6 +256,9 @@ class ObsWebSocket {
     private var nextId: Int = 0
     private var requests: [String: Request] = [:]
     private var onConnected: () -> Void
+    var onSceneChanged: ((String) -> Void)?
+    var onStreamStatusChanged: ((Bool) -> Void)?
+    var onRecordStatusChanged: ((Bool) -> Void)?
 
     init(url: URL, password: String, onConnected: @escaping () -> Void) {
         self.url = url
@@ -232,30 +269,30 @@ class ObsWebSocket {
 
     func start() {
         stop()
-        logger.info("obs-websocket-control: start")
+        logger.info("obs-websocket: start")
         task = Task.init {
             while true {
                 setupConnection()
                 do {
                     try await receiveMessages()
                 } catch {
-                    logger.error("obs-websocket-control: error: \(error)")
+                    logger.error("obs-websocket: error: \(error)")
                 }
                 if Task.isCancelled {
-                    logger.info("obs-websocket-control: Cancelled")
+                    logger.info("obs-websocket: Cancelled")
                     connected = false
                     break
                 }
-                logger.info("obs-websocket-control: Disconencted")
+                logger.info("obs-websocket: Disconencted")
                 connected = false
                 try await Task.sleep(nanoseconds: 5_000_000_000)
-                logger.info("obs-websocket-control: Reconnecting")
+                logger.info("obs-websocket: Reconnecting")
             }
         }
     }
 
     func stop() {
-        logger.info("obs-websocket-control: stop")
+        logger.info("obs-websocket: stop")
         task?.cancel()
         task = nil
     }
@@ -267,6 +304,7 @@ class ObsWebSocket {
     func getSceneList(onSuccess: @escaping (ObsSceneList) -> Void, onError: @escaping () -> Void) {
         performRequest(type: .getSceneList, data: nil, onSuccess: { data in
             guard let data else {
+                onError()
                 return
             }
             do {
@@ -275,7 +313,9 @@ class ObsWebSocket {
                     current: decoded.currentProgramSceneName,
                     scenes: decoded.scenes.map { $0.sceneName }
                 ))
-            } catch {}
+            } catch {
+                onError()
+            }
         }, onError: {
             onError()
         })
@@ -295,6 +335,40 @@ class ObsWebSocket {
         } catch {
             onError()
         }
+    }
+
+    func getStreamStatus(onSuccess: @escaping (ObsStreamStatus) -> Void, onError: @escaping () -> Void) {
+        performRequest(type: .getStreamStatus, data: nil, onSuccess: { data in
+            guard let data else {
+                onError()
+                return
+            }
+            do {
+                let decoded = try JSONDecoder().decode(GetStreamStatusResponse.self, from: data)
+                onSuccess(ObsStreamStatus(active: decoded.outputActive))
+            } catch {
+                onError()
+            }
+        }, onError: {
+            onError()
+        })
+    }
+
+    func getRecordStatus(onSuccess: @escaping (ObsRecordStatus) -> Void, onError: @escaping () -> Void) {
+        performRequest(type: .getRecordStatus, data: nil, onSuccess: { data in
+            guard let data else {
+                onError()
+                return
+            }
+            do {
+                let decoded = try JSONDecoder().decode(GetRecordStatusResponse.self, from: data)
+                onSuccess(ObsRecordStatus(active: decoded.outputActive))
+            } catch {
+                onError()
+            }
+        }, onError: {
+            onError()
+        })
     }
 
     func startStream(onSuccess: @escaping () -> Void, onError: @escaping () -> Void) {
@@ -361,7 +435,6 @@ class ObsWebSocket {
     }
 
     private func setupConnection() {
-        print(url)
         webSocket = URLSession.shared.webSocketTask(with: url)
         webSocket.resume()
     }
@@ -374,7 +447,7 @@ class ObsWebSocket {
             }
             switch message {
             case let .data(message):
-                logger.info("obs-websocket-control: Got data \(message)")
+                logger.info("obs-websocket: Got data \(message)")
             case let .string(message):
                 let (op, data) = try unpackMessage(message: message)
                 switch op {
@@ -387,12 +460,12 @@ class ObsWebSocket {
                 case .requestResponse:
                     try handleRequestResponse(data: data)
                 case nil:
-                    logger.debug("obs-websocket-control: Ignoring message nil")
+                    logger.debug("obs-websocket: Ignoring message nil")
                 default:
-                    logger.debug("obs-websocket-control: Ignoring message \(op!)")
+                    logger.debug("obs-websocket: Ignoring message \(op!)")
                 }
             default:
-                logger.info("obs-websocket-control: ???")
+                logger.info("obs-websocket: ???")
             }
         }
     }
@@ -412,21 +485,57 @@ class ObsWebSocket {
 
     private func handleIdentified(data: Data) throws {
         let identified = try JSONDecoder().decode(Identified.self, from: data)
-        logger.info("obs-websocket-control: \(identified)")
+        logger.info("obs-websocket: \(identified)")
         connected = true
         onConnected()
     }
 
     private func handleEvent(data: Data) throws {
-        let (type, _, _) = try unpackEvent(data: data)
+        let (type, _, data) = try unpackEvent(data: data)
         switch type {
         case .mediaInputPlaybackStarted:
             break
         case .mediaInputPlaybackEnded:
             break
+        case .currentProgramSceneChanged:
+            handleSceneChanged(data: data)
+        case .streamStateChanged:
+            handleStreamChanged(data: data)
+        case .recordStateChanged:
+            handleRecordChanged(data: data)
         case nil:
             break
         }
+    }
+
+    private func handleSceneChanged(data: Data?) {
+        guard let data else {
+            return
+        }
+        do {
+            let decoded = try JSONDecoder().decode(SceneChangedEvent.self, from: data)
+            onSceneChanged?(decoded.sceneName)
+        } catch {}
+    }
+
+    private func handleStreamChanged(data: Data?) {
+        guard let data else {
+            return
+        }
+        do {
+            let decoded = try JSONDecoder().decode(StreamStateChangedEvent.self, from: data)
+            onStreamStatusChanged?(decoded.outputActive)
+        } catch {}
+    }
+
+    private func handleRecordChanged(data: Data?) {
+        guard let data else {
+            return
+        }
+        do {
+            let decoded = try JSONDecoder().decode(RecordStateChangedEvent.self, from: data)
+            onRecordStatusChanged?(decoded.outputActive)
+        } catch {}
     }
 
     private func handleRequestResponse(data: Data) throws {

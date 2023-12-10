@@ -24,26 +24,28 @@ struct StreamObsSettingsView: View {
         Form {
             Section {
                 NavigationLink(destination: TextEditView(
-                    title: String(localized: "WebSocket URL"),
+                    title: String(localized: "URL"),
                     value: stream.obsWebSocketUrl!,
                     onSubmit: submitWebSocketUrl,
                     footer: Text("For example wss://232.32.45.332:4567.")
                 )) {
-                    TextItemView(name: String(localized: "WebSocket URL"), value: stream.obsWebSocketUrl!)
+                    TextItemView(name: String(localized: "URL"), value: stream.obsWebSocketUrl!)
                 }
                 NavigationLink(destination: TextEditView(
-                    title: String(localized: "WebSocket password"),
+                    title: String(localized: "Password"),
                     value: stream.obsWebSocketPassword!,
                     onSubmit: submitWebSocketPassword
                 )) {
                     TextItemView(
-                        name: String(localized: "WebSocket password"),
+                        name: String(localized: "Password"),
                         value: stream.obsWebSocketPassword!
                     )
                 }
+            } header: {
+                Text("WebSocket")
             }
         }
-        .navigationTitle("OBS")
+        .navigationTitle("OBS remote control")
         .toolbar {
             SettingsToolbar()
         }

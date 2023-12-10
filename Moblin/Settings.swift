@@ -580,7 +580,7 @@ class SettingsShow: Codable {
     var microphone: Bool = true
     var audioBar: Bool = true
     var cameras: Bool? = true
-    var obsScene: Bool? = true
+    var obsStatus: Bool? = true
 }
 
 class SettingsZoomPreset: Codable, Identifiable {
@@ -1196,8 +1196,8 @@ final class Settings {
             stream.obsWebSocketPassword = ""
             store()
         }
-        if realDatabase.show.obsScene == nil {
-            realDatabase.show.obsScene = true
+        if realDatabase.show.obsStatus == nil {
+            realDatabase.show.obsStatus = true
             store()
         }
     }
