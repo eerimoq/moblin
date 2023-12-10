@@ -48,6 +48,13 @@ struct Icon: Identifiable {
     }
 }
 
+struct Subscription: Identifiable {
+    var name: String
+    var id: String
+    var price: String
+    var subscribed: Bool
+}
+
 let plainIcon = Icon(name: "Plain", id: "AppIcon", price: "")
 private let noMic = Mic(name: "", inputUid: "")
 
@@ -61,7 +68,7 @@ private let globalMyIcons = [
     ),
 ]
 
-private let productsIds = [
+private let iconsProductIds = [
     "AppIconKing",
     "AppIconQueen",
     "AppIconGoblin",
@@ -85,6 +92,11 @@ private let globalIconsNotYetInStore = [
     Icon(name: "United Kingdom", id: "AppIconUnitedKingdom", price: ""),
     Icon(name: "United States", id: "AppIconUnitedStates", price: ""),
     Icon(name: "Eyebrows", id: "AppIconEyebrows", price: ""),
+]
+
+private let iconsSubscriptionsProductIds = [
+    "AllIconsMonthly",
+    "AllIconsYearly",
 ]
 
 struct ChatMessageEmote: Identifiable {
@@ -279,6 +291,7 @@ final class Model: ObservableObject {
     @Published var myIcons: [Icon] = []
     @Published var iconsInStore: [Icon] = []
     @Published var iconsNotYetInStore = globalIconsNotYetInStore
+    @Published var iconsSubscriptions: [Subscription] = []
     private var appStoreUpdateListenerTask: Task<Void, Error>?
     private var products: [String: Product] = [:]
 
@@ -293,7 +306,8 @@ final class Model: ObservableObject {
     @MainActor
     private func getProductsFromAppStore() async {
         do {
-            let products = try await Product.products(for: productsIds)
+            let allProductIds = iconsProductIds + iconsSubscriptionsProductIds
+            let products = try await Product.products(for: allProductIds)
             for product in products {
                 self.products[product.id] = product
             }
@@ -330,22 +344,32 @@ final class Model: ObservableObject {
     @MainActor
     func updateProductFromAppStore() async {
         logger.info("cosmetics: Update my products from App Store")
-        var myIconsIds: [String] = []
+        let myProductIds = await getMyProductIds()
+        let isSubscribed = updateSubscriptions(myProductIds: myProductIds)
+        updateIcons(myProductIds: myProductIds, isSubscribed: isSubscribed)
+    }
+
+    private func getMyProductIds() async -> [String] {
+        var myProductIds: [String] = []
         for await result in Transaction.currentEntitlements {
             guard let transaction = checkVerified(result: result) else {
                 logger.info("cosmetics: Verification failed for my product")
                 continue
             }
-            myIconsIds.append(transaction.productID)
+            myProductIds.append(transaction.productID)
         }
+        return myProductIds
+    }
+
+    private func updateIcons(myProductIds: [String], isSubscribed: Bool) {
         var myIcons = globalMyIcons
         var iconsInStore: [Icon] = []
-        for productId in productsIds {
+        for productId in iconsProductIds {
             guard let product = products[productId] else {
-                logger.info("cosmetics: Product \(productId) not found")
+                logger.info("cosmetics: Icon product \(productId) not found")
                 continue
             }
-            if myIconsIds.contains(productId) {
+            if myProductIds.contains(productId) || isSubscribed {
                 myIcons.append(Icon(
                     name: product.displayName,
                     id: product.id,
@@ -363,11 +387,34 @@ final class Model: ObservableObject {
         self.iconsInStore = iconsInStore
     }
 
+    private func updateSubscriptions(myProductIds: [String]) -> Bool {
+        var isSubscribed = false
+        var subscriptions: [Subscription] = []
+        for productId in iconsSubscriptionsProductIds {
+            guard let product = products[productId] else {
+                logger.info("cosmetics: Subscription product \(productId) not found")
+                continue
+            }
+            let subscribed = myProductIds.contains(productId)
+            subscriptions.append(Subscription(
+                name: product.displayName,
+                id: product.id,
+                price: product.displayPrice,
+                subscribed: subscribed
+            ))
+            if subscribed {
+                isSubscribed = true
+            }
+        }
+        iconsSubscriptions = subscriptions
+        return isSubscribed
+    }
+
     private func findProduct(id: String) -> Product? {
         return products[id]
     }
 
-    func purchaseIcon(id: String) async throws {
+    func purchaseProduct(id: String) async throws {
         guard let product = findProduct(id: id) else {
             throw "Product not found"
         }

@@ -5796,6 +5796,9 @@
         }
       }
     },
+    "Including all icons added in the future." : {
+
+    },
     "Interval" : {
       "localizations" : {
         "de" : {
@@ -9214,6 +9217,12 @@
           }
         }
       }
+    },
+    "Subscribed" : {
+
+    },
+    "Subscriptions" : {
+
     },
     "Support Moblin developers by buying icons." : {
       "localizations" : {

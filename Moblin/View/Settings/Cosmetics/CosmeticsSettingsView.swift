@@ -45,6 +45,51 @@ struct CosmeticsSettingsView: View {
             } footer: {
                 Text("Displayed in main view and as app icon.")
             }
+            Section {
+                List {
+                    ForEach(model.iconsSubscriptions) { subscription in
+                        HStack {
+                            Text(subscription.name)
+                            Spacer()
+                            if subscription.subscribed {
+                                Text("Subscribed")
+                            } else {
+                                ZStack {
+                                    Button(action: {
+                                        disabledPurchaseButtons.insert(subscription.id)
+                                        disabledPurchaseButtons = disabledPurchaseButtons
+                                        Task {
+                                            do {
+                                                try await model.purchaseProduct(id: subscription.id)
+                                            } catch {
+                                                logger
+                                                    .info(
+                                                        "cosmetics: Purchase failed with error \(error)"
+                                                    )
+                                            }
+                                            disabledPurchaseButtons.remove(subscription.id)
+                                            disabledPurchaseButtons = disabledPurchaseButtons
+                                        }
+                                    }, label: {
+                                        Text(subscription.price)
+                                    })
+                                    .padding([.leading], 10)
+                                    .disabled(disabledPurchaseButtons.contains(subscription.id))
+                                    .opacity(disabledPurchaseButtons.contains(subscription.id) ? 0.0 : 1.0)
+                                    if disabledPurchaseButtons.contains(subscription.id) {
+                                        ProgressView().padding([.leading], 10)
+                                    }
+                                }
+                            }
+                        }
+                        .tag(subscription.id)
+                    }
+                }
+            } header: {
+                Text("Subscriptions")
+            } footer: {
+                Text("Including all icons added in the future.")
+            }
             if model.iconsInStore.count > 0 {
                 Section {
                     List {
@@ -59,34 +104,28 @@ struct CosmeticsSettingsView: View {
                                 Text(icon.name)
                                 ZStack {
                                     Button(action: {
-                                        disabledPurchaseButtons.insert(icon.name)
-                                        disabledPurchaseButtons =
-                                            disabledPurchaseButtons
+                                        disabledPurchaseButtons.insert(icon.id)
+                                        disabledPurchaseButtons = disabledPurchaseButtons
                                         Task {
                                             do {
-                                                try await model
-                                                    .purchaseIcon(id: icon.id)
+                                                try await model.purchaseProduct(id: icon.id)
                                             } catch {
                                                 logger
                                                     .info(
                                                         "cosmetics: Purchase failed with error \(error)"
                                                     )
                                             }
-                                            disabledPurchaseButtons.remove(icon.name)
-                                            disabledPurchaseButtons =
-                                                disabledPurchaseButtons
+                                            disabledPurchaseButtons.remove(icon.id)
+                                            disabledPurchaseButtons = disabledPurchaseButtons
                                         }
                                     }, label: {
                                         Text(icon.price)
                                     })
                                     .padding([.leading], 10)
-                                    .disabled(disabledPurchaseButtons
-                                        .contains(icon.name))
-                                    .opacity(disabledPurchaseButtons
-                                        .contains(icon.name) ? 0.0 : 1.0)
-                                    if disabledPurchaseButtons.contains(icon.name) {
-                                        ProgressView()
-                                            .padding([.leading], 10)
+                                    .disabled(disabledPurchaseButtons.contains(icon.id))
+                                    .opacity(disabledPurchaseButtons.contains(icon.id) ? 0.0 : 1.0)
+                                    if disabledPurchaseButtons.contains(icon.id) {
+                                        ProgressView().padding([.leading], 10)
                                     }
                                 }
                             }
