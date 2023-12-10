@@ -115,7 +115,7 @@ var imageSystemNames = [
     "antenna.radiowaves.left.and.right",
     "person.wave.2",
     "dot.radiowaves.left.and.right",
-    "waveform"
+    "waveform",
 ]
 
 private let columns = [

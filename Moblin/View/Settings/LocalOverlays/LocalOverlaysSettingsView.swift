@@ -49,6 +49,12 @@ struct LocalOverlaysSettingsView: View {
                     show.zoom = value
                     model.store()
                 }))
+                Toggle("OBS scene", isOn: Binding(get: {
+                    show.obsScene!
+                }, set: { value in
+                    show.obsScene = value
+                    model.store()
+                }))
                 NavigationLink(destination: LocalOverlaysChatSettingsView(
                     timestampColor: chat.timestampColor.color(),
                     usernameColor: chat.usernameColor.color(),

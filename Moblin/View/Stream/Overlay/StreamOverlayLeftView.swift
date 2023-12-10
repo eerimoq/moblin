@@ -74,6 +74,26 @@ struct LeftOverlayView: View {
         }
     }
 
+    func obsWebSocketText() -> String {
+        if !model.isObsConfigured() {
+            return String(localized: "Not configured")
+        } else if model.isObsConnected() {
+            return model.obsCurrentSceneStatus
+        } else {
+            return ""
+        }
+    }
+
+    func obsWebSocketColor() -> Color {
+        if !model.isObsConfigured() {
+            return .white
+        } else if model.isObsConnected() {
+            return .white
+        } else {
+            return .red
+        }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 1) {
             if database.show.stream {
@@ -98,6 +118,13 @@ struct LeftOverlayView: View {
                 StreamOverlayIconAndTextView(
                     icon: "magnifyingglass",
                     text: String(format: "%.1f", model.zoomX)
+                )
+            }
+            if model.database.show.obsScene! {
+                StreamOverlayIconAndTextView(
+                    icon: "photo",
+                    text: obsWebSocketText(),
+                    color: obsWebSocketColor()
                 )
             }
             if model.database.show.chat {

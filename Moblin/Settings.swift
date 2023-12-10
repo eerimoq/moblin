@@ -580,6 +580,7 @@ class SettingsShow: Codable {
     var microphone: Bool = true
     var audioBar: Bool = true
     var cameras: Bool? = true
+    var obsScene: Bool? = true
 }
 
 class SettingsZoomPreset: Codable, Identifiable {
@@ -809,6 +810,7 @@ func addDefaultScenes(database: Database) {
     scene.addButton(id: database.buttons[8].id)
     scene.addButton(id: database.buttons[9].id)
     scene.addButton(id: database.buttons[10].id)
+    scene.addButton(id: database.buttons[11].id)
     scene.addButton(id: database.buttons[3].id)
     scene.addButton(id: database.buttons[4].id)
     scene.addButton(id: database.buttons[5].id)
@@ -974,6 +976,15 @@ func addDefaultButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "sunset"
     button.systemImageNameOff = "sunset"
+    database.buttons.append(button)
+
+    // 11
+    button = SettingsButton(name: String(localized: "OBS scene"))
+    button.id = UUID()
+    button.type = .obsScene
+    button.imageType = "System name"
+    button.systemImageNameOn = "photo"
+    button.systemImageNameOff = "photo"
     database.buttons.append(button)
 }
 
@@ -1183,6 +1194,10 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.obsWebSocketPassword == nil {
             stream.obsWebSocketPassword = ""
+            store()
+        }
+        if realDatabase.show.obsScene == nil {
+            realDatabase.show.obsScene = true
             store()
         }
     }

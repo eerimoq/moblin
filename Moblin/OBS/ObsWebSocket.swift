@@ -106,7 +106,7 @@ private struct Hello: Decodable {
 }
 
 struct ObsSceneList {
-    let currnet: String
+    let current: String
     let scenes: [String]
 }
 
@@ -221,10 +221,12 @@ class ObsWebSocket {
     private var webSocket: URLSessionWebSocketTask
     private var nextId: Int = 0
     private var requests: [String: Request] = [:]
+    private var onConnected: () -> Void
 
-    init(url: URL, password: String) {
+    init(url: URL, password: String, onConnected: @escaping () -> Void) {
         self.url = url
         self.password = password
+        self.onConnected = onConnected
         webSocket = URLSession(configuration: .default).webSocketTask(with: url)
     }
 
@@ -270,7 +272,7 @@ class ObsWebSocket {
             do {
                 let decoded = try JSONDecoder().decode(GetSceneListResponse.self, from: data)
                 onSuccess(ObsSceneList(
-                    currnet: decoded.currentProgramSceneName,
+                    current: decoded.currentProgramSceneName,
                     scenes: decoded.scenes.map { $0.sceneName }
                 ))
             } catch {}
@@ -412,6 +414,7 @@ class ObsWebSocket {
         let identified = try JSONDecoder().decode(Identified.self, from: data)
         logger.info("obs-websocket-control: \(identified)")
         connected = true
+        onConnected()
     }
 
     private func handleEvent(data: Data) throws {

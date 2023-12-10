@@ -230,6 +230,7 @@ final class Model: ObservableObject {
     @Published var showingObsScene = false
     @Published var obsScenes: [String] = []
     @Published var obsCurrentScene: String = ""
+    @Published var obsCurrentSceneStatus: String = ""
     @Published var iconImage: String = plainIcon.id
     @Published var manualFocusPoint: CGPoint?
     @Published var backZoomPresetId = UUID()
@@ -632,12 +633,20 @@ final class Model: ObservableObject {
         }
     }
 
+    func isObsConfigured() -> Bool {
+        return stream.obsWebSocketUrl != "" && stream.obsWebSocketPassword != ""
+    }
+
+    func isObsConnected() -> Bool {
+        return obsWebSocket?.isConnected() ?? false
+    }
+
     func listObsScenes() {
         obsCurrentScene = ""
         obsScenes = []
         obsWebSocket?.getSceneList(onSuccess: { list in
             DispatchQueue.main.async {
-                self.obsCurrentScene = list.currnet
+                self.obsCurrentScene = list.current
                 self.obsScenes = list.scenes
             }
         }, onError: {
@@ -647,22 +656,30 @@ final class Model: ObservableObject {
         })
     }
 
-    func isObsConfigured() -> Bool {
-        return stream.obsWebSocketUrl != "" && stream.obsWebSocketPassword != ""
-    }
-
-    func isObsConnected() -> Bool {
-        return obsWebSocket?.isConnected() ?? false
-    }
-
     func setObsScene(name: String) {
         obsWebSocket?.setCurrentProgramScene(name: name, onSuccess: {
             DispatchQueue.main.async {
                 self.makeToast(title: String(localized: "OBS scene set to \(name)"))
+                self.obsCurrentSceneStatus = name
             }
         }, onError: {
             DispatchQueue.main.async {
                 self.makeErrorToast(title: String(localized: "Failed to set OBS scene to \(name)"))
+            }
+        })
+    }
+
+    private func updateCurrentObsScene() {
+        guard isObsConnected() else {
+            return
+        }
+        obsWebSocket?.getSceneList(onSuccess: { list in
+            DispatchQueue.main.async {
+                self.obsCurrentSceneStatus = list.current
+            }
+        }, onError: {
+            DispatchQueue.main.async {
+                self.obsCurrentSceneStatus = "Unknown"
             }
         })
     }
@@ -898,6 +915,7 @@ final class Model: ObservableObject {
             self.updateBatteryLevel()
             self.media.logStatistics()
             self.media.logAudioStatistics()
+            self.updateCurrentObsScene()
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
             self.updateSrtDebugLines()
@@ -1506,7 +1524,10 @@ final class Model: ObservableObject {
         }
         obsWebSocket = ObsWebSocket(
             url: url,
-            password: stream.obsWebSocketPassword!
+            password: stream.obsWebSocketPassword!,
+            onConnected: {
+                self.updateCurrentObsScene()
+            }
         )
         obsWebSocket!.start()
     }
