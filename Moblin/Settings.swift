@@ -59,7 +59,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var name: String
     var id: UUID = .init()
     var enabled: Bool = false
-    var url: String = "rtmp://arn03.contribute.live-video.net/app/your_stream_key"
+    var url: String = "srt://my_public_ip:4000"
     var twitchChannelName: String = ""
     var twitchChannelId: String = ""
     var kickChatroomId: String = ""
@@ -69,10 +69,10 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var afreecaTvStreamId: String? = ""
     var obsWebSocketUrl: String? = ""
     var obsWebSocketPassword: String? = ""
-    var resolution: SettingsStreamResolution = .r1280x720
+    var resolution: SettingsStreamResolution = .r1920x1080
     var fps: Int = 30
     var bitrate: UInt32 = 3_000_000
-    var codec: SettingsStreamCodec = .h264avc
+    var codec: SettingsStreamCodec = .h265hevc
     var adaptiveBitrate: Bool = false
     var srt: SettingsStreamSrt = .init()
     var captureSessionPresetEnabled: Bool = false
