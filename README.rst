@@ -86,6 +86,16 @@ Features
 
 - Stream connection status and uptime.
 
+- OBS WebSocket (remote control)
+
+  - See current scene, streaming state and recoring state.
+
+  - Change scene.
+
+  - Start and stop the stream.
+
+- Make phone screen black by pressing a button.
+
 - Video effects.
 
   - Grayscale.
