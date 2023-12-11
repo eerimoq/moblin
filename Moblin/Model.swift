@@ -1599,21 +1599,9 @@ final class Model: ObservableObject {
                 self.updateObsStatus()
             }
         )
-        obsWebSocket!.onSceneChanged = { name in
-            DispatchQueue.main.async {
-                self.obsCurrentSceneStatus = name
-            }
-        }
-        obsWebSocket!.onStreamStatusChanged = { active in
-            DispatchQueue.main.async {
-                self.obsStreaming = active
-            }
-        }
-        obsWebSocket!.onRecordStatusChanged = { active in
-            DispatchQueue.main.async {
-                self.obsRecording = active
-            }
-        }
+        obsWebSocket!.onSceneChanged = handleObsSceneChanged
+        obsWebSocket!.onStreamStatusChanged = handleObsStreamStatusChanged
+        obsWebSocket!.onRecordStatusChanged = handleObsRecordStatusChanged
         obsWebSocket!.start()
     }
 
@@ -1659,6 +1647,61 @@ final class Model: ObservableObject {
 
     func obsWebSocketPasswordUpdated() {
         reloadObsWebSocket()
+    }
+
+    func obsStartStream() {
+        obsWebSocket?.startStream(onSuccess: {
+            DispatchQueue.main.async {
+                self.makeToast(title: String(localized: "OBS stream started"))
+            }
+        }, onError: {
+            DispatchQueue.main.async {
+                self.makeErrorToast(title: String(localized: "Failed to start OBS stream"))
+            }
+        })
+    }
+
+    func obsStopStream() {
+        obsWebSocket?.stopStream(onSuccess: {
+            DispatchQueue.main.async {
+                self.makeToast(title: String(localized: "OBS stream stopped"))
+            }
+        }, onError: {
+            DispatchQueue.main.async {
+                self.makeErrorToast(title: String(localized: "Failed to stop OBS stream"))
+            }
+        })
+    }
+
+    private func handleObsSceneChanged(name: String) {
+        DispatchQueue.main.async {
+            self.obsCurrentSceneStatus = name
+        }
+    }
+
+    private func handleObsStreamStatusChanged(active: Bool) {
+        DispatchQueue.main.async {
+            self.obsStreaming = active
+            for button in self.database.buttons where button.type == .obsStartStopStream {
+                button.isOn = active
+            }
+            for pair in self.buttonPairs {
+                if pair.first.button.type == .obsStartStopStream {
+                    pair.first.isOn = active
+                }
+                if let state = pair.second {
+                    if state.button.type == .obsStartStopStream {
+                        state.isOn = active
+                    }
+                }
+            }
+        }
+    }
+
+    private func handleObsRecordStatusChanged(active: Bool) {
+        DispatchQueue.main.async {
+            self.obsRecording = active
+        }
     }
 
     private func appendChatPost(post: ChatPost) {

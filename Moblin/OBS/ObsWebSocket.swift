@@ -409,6 +409,10 @@ class ObsWebSocket {
         onSuccess: @escaping (Data?) -> Void,
         onError: @escaping () -> Void
     ) {
+        guard connected else {
+            onError()
+            return
+        }
         let requestId = getNextId()
         requests[requestId] = Request(onSuccess: onSuccess, onError: onError)
         var request: Data

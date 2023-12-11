@@ -197,6 +197,16 @@ struct ButtonsView: View {
         model.showingObsScene = true
     }
 
+    private func obsStartStopStreamAction(state: ButtonState) {
+        state.button.isOn.toggle()
+        if state.button.isOn {
+            model.obsStartStream()
+        } else {
+            model.obsStopStream()
+        }
+        model.updateButtonStates()
+    }
+
     private func buttonHeight() -> CGFloat {
         if accessibilityShowButtonShapes {
             return 60
@@ -295,6 +305,15 @@ struct ButtonsView: View {
                                     on: second.isOn
                                 )
                             })
+                        case .obsStartStopStream:
+                            Button(action: {
+                                obsStartStopStreamAction(state: second)
+                            }, label: {
+                                ButtonImage(
+                                    image: getImage(state: second),
+                                    on: second.isOn
+                                )
+                            })
                         }
                     } else {
                         ButtonPlaceholderImage()
@@ -378,6 +397,15 @@ struct ButtonsView: View {
                     case .obsScene:
                         Button(action: {
                             obsSceneAction(state: pair.first)
+                        }, label: {
+                            ButtonImage(
+                                image: getImage(state: pair.first),
+                                on: pair.first.isOn
+                            )
+                        })
+                    case .obsStartStopStream:
+                        Button(action: {
+                            obsStartStopStreamAction(state: pair.first)
                         }, label: {
                             ButtonImage(
                                 image: getImage(state: pair.first),

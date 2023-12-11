@@ -488,6 +488,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case pauseChat = "Pause chat"
     case blackScreen = "Black screen"
     case obsScene = "OBS scene"
+    case obsStartStopStream = "OBS start/stop stream"
 
     static func fromString(value: String) -> SettingsButtonType {
         switch value {
@@ -509,6 +510,8 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return .blackScreen
         case String(localized: "OBS scene"):
             return .obsScene
+        case String(localized: "OBS start/stop stream"):
+            return .obsStartStopStream
         default:
             return .torch
         }
@@ -534,6 +537,8 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return String(localized: "Black screen")
         case .obsScene:
             return String(localized: "OBS scene")
+        case .obsStartStopStream:
+            return String(localized: "OBS start/stop stream")
         }
     }
 }
@@ -811,6 +816,7 @@ func addDefaultScenes(database: Database) {
     scene.addButton(id: database.buttons[9].id)
     scene.addButton(id: database.buttons[10].id)
     scene.addButton(id: database.buttons[11].id)
+    scene.addButton(id: database.buttons[12].id)
     scene.addButton(id: database.buttons[3].id)
     scene.addButton(id: database.buttons[4].id)
     scene.addButton(id: database.buttons[5].id)
@@ -826,6 +832,8 @@ func addDefaultScenes(database: Database) {
     scene.addButton(id: database.buttons[8].id)
     scene.addButton(id: database.buttons[9].id)
     scene.addButton(id: database.buttons[10].id)
+    scene.addButton(id: database.buttons[11].id)
+    scene.addButton(id: database.buttons[12].id)
     scene.addButton(id: database.buttons[3].id)
     database.scenes.append(scene)
 }
@@ -985,6 +993,15 @@ func addDefaultButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "photo"
     button.systemImageNameOff = "photo"
+    database.buttons.append(button)
+
+    // 12
+    button = SettingsButton(name: String(localized: "OBS start/stop stream"))
+    button.id = UUID()
+    button.type = .obsStartStopStream
+    button.imageType = "System name"
+    button.systemImageNameOn = "dot.radiowaves.left.and.right"
+    button.systemImageNameOff = "dot.radiowaves.left.and.right"
     database.buttons.append(button)
 }
 

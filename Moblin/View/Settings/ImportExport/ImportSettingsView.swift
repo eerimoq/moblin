@@ -15,6 +15,8 @@ struct ImportSettingsView: View {
                 } else {
                     model.makeToast(title: String(localized: "Settings imported"))
                     model.updateIconImageFromDatabase()
+                    model.reloadStream()
+                    model.resetSelectedScene()
                 }
             }
             .disabled(model.isLive)
