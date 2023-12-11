@@ -27,7 +27,7 @@ struct StreamObsSettingsView: View {
                     title: String(localized: "URL"),
                     value: stream.obsWebSocketUrl!,
                     onSubmit: submitWebSocketUrl,
-                    footer: Text("For example wss://232.32.45.332:4567.")
+                    footer: Text("For example ws://232.32.45.332:4567.")
                 )) {
                     TextItemView(name: String(localized: "URL"), value: stream.obsWebSocketUrl!)
                 }
