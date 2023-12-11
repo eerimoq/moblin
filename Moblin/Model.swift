@@ -690,6 +690,10 @@ final class Model: ObservableObject {
         return obsWebSocket?.isConnected() ?? false
     }
 
+    func obsConnectionErrorMessage() -> String {
+        return obsWebSocket?.connectionErrorMessage ?? ""
+    }
+
     func listObsScenes() {
         obsCurrentScene = ""
         obsScenes = []

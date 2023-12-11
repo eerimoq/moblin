@@ -259,6 +259,7 @@ class ObsWebSocket {
     var onSceneChanged: ((String) -> Void)?
     var onStreamStatusChanged: ((Bool) -> Void)?
     var onRecordStatusChanged: ((Bool) -> Void)?
+    var connectionErrorMessage: String = ""
 
     init(url: URL, password: String, onConnected: @escaping () -> Void) {
         self.url = url
@@ -276,17 +277,19 @@ class ObsWebSocket {
                 do {
                     try await receiveMessages()
                 } catch {
-                    logger.error("obs-websocket: error: \(error)")
+                    logger.debug("obs-websocket: error: \(error.localizedDescription)")
+                    connectionErrorMessage = error.localizedDescription
                 }
                 if Task.isCancelled {
-                    logger.info("obs-websocket: Cancelled")
+                    logger.debug("obs-websocket: Cancelled")
                     connected = false
+                    connectionErrorMessage = ""
                     break
                 }
-                logger.info("obs-websocket: Disconencted")
+                logger.debug("obs-websocket: Disconencted")
                 connected = false
                 try await Task.sleep(nanoseconds: 5_000_000_000)
-                logger.info("obs-websocket: Reconnecting")
+                logger.debug("obs-websocket: Reconnecting")
             }
         }
     }
@@ -451,7 +454,7 @@ class ObsWebSocket {
             }
             switch message {
             case let .data(message):
-                logger.info("obs-websocket: Got data \(message)")
+                logger.debug("obs-websocket: Got data \(message)")
             case let .string(message):
                 let (op, data) = try unpackMessage(message: message)
                 switch op {
@@ -469,7 +472,7 @@ class ObsWebSocket {
                     logger.debug("obs-websocket: Ignoring message \(op!)")
                 }
             default:
-                logger.info("obs-websocket: ???")
+                logger.debug("obs-websocket: ???")
             }
         }
     }
@@ -489,7 +492,7 @@ class ObsWebSocket {
 
     private func handleIdentified(data: Data) throws {
         let identified = try JSONDecoder().decode(Identified.self, from: data)
-        logger.info("obs-websocket: \(identified)")
+        logger.debug("obs-websocket: \(identified)")
         connected = true
         onConnected()
     }
@@ -545,7 +548,7 @@ class ObsWebSocket {
     private func handleRequestResponse(data: Data) throws {
         let (requestId, status, data) = try unpackRequestResponse(data: data)
         guard let request = requests[requestId] else {
-            logger.info("Unexpected request id in response")
+            logger.debug("Unexpected request id in response")
             return
         }
         if status.result {

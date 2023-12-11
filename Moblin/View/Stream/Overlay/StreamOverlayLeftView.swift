@@ -88,7 +88,7 @@ struct LeftOverlayView: View {
                 return model.obsCurrentSceneStatus
             }
         } else {
-            return ""
+            return model.obsConnectionErrorMessage()
         }
     }
 
