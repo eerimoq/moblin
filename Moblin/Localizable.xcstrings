@@ -7803,6 +7803,9 @@
         }
       }
     },
+    "Please enter your stream URL in stream settings before going live." : {
+
+    },
     "Preset" : {
       "localizations" : {
         "de" : {

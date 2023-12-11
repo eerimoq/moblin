@@ -1,5 +1,7 @@
 import SwiftUI
 
+let defaultStreamUrl = "srt://my_public_ip:4000"
+
 enum SettingsStreamCodec: String, Codable, CaseIterable {
     case h265hevc = "H.265/HEVC"
     case h264avc = "H.264/AVC"
@@ -59,7 +61,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var name: String
     var id: UUID = .init()
     var enabled: Bool = false
-    var url: String = "srt://my_public_ip:4000"
+    var url: String = defaultStreamUrl
     var twitchChannelName: String = ""
     var twitchChannelId: String = ""
     var kickChatroomId: String = ""
@@ -839,9 +841,9 @@ func addDefaultScenes(database: Database) {
 }
 
 func addDefaultStreams(database: Database) {
-    let stream = SettingsStream(name: "Twitch")
+    let stream = SettingsStream(name: "Main")
     stream.enabled = true
-    stream.url = "rtmp://arn03.contribute.live-video.net/app/your_stream_key"
+    stream.url = defaultStreamUrl
     database.streams.append(stream)
 }
 

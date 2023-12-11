@@ -1244,6 +1244,12 @@ final class Model: ObservableObject {
 
     func startStream() {
         logger.info("stream: Start")
+        guard stream.url != defaultStreamUrl else {
+            makeToast(
+                title: String(localized: "Please enter your stream URL in stream settings before going live.")
+            )
+            return
+        }
         isLive = true
         streaming = true
         reconnectTime = firstReconnectTime
