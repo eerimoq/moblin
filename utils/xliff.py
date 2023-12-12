@@ -18,7 +18,7 @@ def main():
         sorted_trans_units = []
 
         for trans_unit in body.findall('./trans-unit', namespaces=NS):
-            if trans_unit.find("./target[@state='translated']", namespaces=NS) is not None:
+            if trans_unit.find("./target", namespaces=NS) is not None:
                 sorted_trans_units.append(trans_unit)
             else:
                 sorted_trans_units.insert(0, trans_unit)
