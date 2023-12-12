@@ -43,7 +43,8 @@ struct StreamObsSettingsView: View {
                 )) {
                     TextItemView(
                         name: String(localized: "Password"),
-                        value: stream.obsWebSocketPassword!
+                        value: stream.obsWebSocketPassword!,
+                        sensitive: true
                     )
                 }
             } header: {
