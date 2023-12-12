@@ -91,9 +91,9 @@ struct SceneSettingsView: View {
                 NavigationLink(destination: InlinePickerView(
                     title: String(localized: "Layout"),
                     onChange: onLayoutChange,
-                    footer: Text(
-                        "The Picture in Picture layout is experimental and does not work."
-                    ),
+                    footers: [
+                        "The Picture in Picture layout is experimental and does not work.",
+                    ],
                     items: cameraLayouts,
                     selected: scene.cameraLayout!.toString()
                 )) {

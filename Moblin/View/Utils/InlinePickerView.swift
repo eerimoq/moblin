@@ -4,7 +4,7 @@ struct InlinePickerView: View {
     @Environment(\.dismiss) var dismiss
     var title: String
     var onChange: (String) -> Void
-    var footer: Text = .init("")
+    var footers: [String] = []
     var items: [String]
     @State var selected: String
 
@@ -23,7 +23,11 @@ struct InlinePickerView: View {
                 .pickerStyle(.inline)
                 .labelsHidden()
             } footer: {
-                footer
+                VStack {
+                    ForEach(footers, id: \.self) {footer in
+                        Text(footer)
+                    }
+                }
             }
         }
         .navigationTitle(title)

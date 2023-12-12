@@ -109,6 +109,17 @@ struct SettingsView: View {
                 NavigationLink(destination: InlinePickerView(
                     title: String(localized: "Back camera"),
                     onChange: onChangeBackCamera,
+                    footers: [
+                        """
+                        The ultra wide camera is bad when it is dark. The same applies to auto cameras \
+                        when at 0.5-1.0x zoom (i.e. the ultra wide camera is used).
+                        """,
+                        "",
+                        """
+                        Auto cameras use more energy as multiple cameras are powered on, even if only \
+                        one is used at a time. This allows the phone to quickly change camera when zooming.
+                        """,
+                    ],
                     items: model.backCameras.map { $0.name },
                     selected: toCameraName(value: model.database.backCameraType!, cameras: model.backCameras)
                 )) {

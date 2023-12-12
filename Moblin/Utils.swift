@@ -409,3 +409,25 @@ extension AVCaptureDevice {
         return (Float(minAvailableVideoZoomFactor) * factor, Float(maxAvailableVideoZoomFactor) * factor)
     }
 }
+
+func cameraName(device: AVCaptureDevice?) -> String {
+    guard let device else {
+        return ""
+    }
+    switch device.deviceType {
+    case .builtInTripleCamera:
+        return String(localized: "Triple (auto)")
+    case .builtInDualCamera:
+        return String(localized: "Dual (auto)")
+    case .builtInDualWideCamera:
+        return String(localized: "Wide dual (auto)")
+    case .builtInUltraWideCamera:
+        return String(localized: "Ultra wide")
+    case .builtInWideAngleCamera:
+        return String(localized: "Wide")
+    case .builtInTelephotoCamera:
+        return String(localized: "Telephoto")
+    default:
+        return ""
+    }
+}

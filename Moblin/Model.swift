@@ -863,17 +863,17 @@ final class Model: ObservableObject {
         return deviceDiscovery.devices.map { device in
             switch device.deviceType {
             case .builtInTripleCamera:
-                return Camera(type: .triple, name: device.localizedName)
+                return Camera(type: .triple, name: cameraName(device: device))
             case .builtInDualCamera:
-                return Camera(type: .dual, name: device.localizedName)
+                return Camera(type: .dual, name: cameraName(device: device))
             case .builtInDualWideCamera:
-                return Camera(type: .dualWide, name: device.localizedName)
+                return Camera(type: .dualWide, name: cameraName(device: device))
             case .builtInUltraWideCamera:
-                return Camera(type: .ultraWide, name: device.localizedName)
+                return Camera(type: .ultraWide, name: cameraName(device: device))
             case .builtInWideAngleCamera:
-                return Camera(type: .wide, name: device.localizedName)
+                return Camera(type: .wide, name: cameraName(device: device))
             case .builtInTelephotoCamera:
-                return Camera(type: .telephoto, name: device.localizedName)
+                return Camera(type: .telephoto, name: cameraName(device: device))
             default:
                 fatalError("Bad camera")
             }

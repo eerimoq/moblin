@@ -3756,6 +3756,9 @@
         }
       }
     },
+    "Dual (auto)" : {
+
+    },
     "Duplicate" : {
       "localizations" : {
         "de" : {
@@ -9667,6 +9670,9 @@
         }
       }
     },
+    "Telephoto" : {
+
+    },
     "Template: rtmp://" : {
       "localizations" : {
         "de" : {
@@ -10052,6 +10058,7 @@
       }
     },
     "The Picture in Picture layout is experimental and does not work." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -10453,6 +10460,9 @@
         }
       }
     },
+    "Triple (auto)" : {
+
+    },
     "Twitch" : {
       "localizations" : {
         "de" : {
@@ -10538,6 +10548,9 @@
           }
         }
       }
+    },
+    "Ultra wide" : {
+
     },
     "Unknown" : {
       "localizations" : {
@@ -11205,6 +11218,7 @@
       }
     },
     "Video stabilization sometimes gives audio-video sync issues." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -11305,6 +11319,12 @@
           }
         }
       }
+    },
+    "Wide" : {
+
+    },
+    "Wide dual (auto)" : {
+
     },
     "Widget" : {
       "localizations" : {
