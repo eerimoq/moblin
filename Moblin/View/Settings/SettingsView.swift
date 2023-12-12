@@ -111,8 +111,9 @@ struct SettingsView: View {
                     onChange: onChangeBackCamera,
                     footers: [
                         """
-                        The ultra wide camera is bad when it is dark. The same applies to auto cameras \
-                        when at 0.5-1.0x zoom (i.e. the ultra wide camera is used).
+                        The ultra wide camera does not perform well in low light conditions. Likewise, the \
+                        auto cameras do not perform well when zoom is 0.5-1.0x since the ultra wide camera \
+                        will be used.
                         """,
                         "",
                         """
