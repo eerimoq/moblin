@@ -2089,7 +2089,14 @@
       }
     },
     "Black screen" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bildschirm schwarz"
+          }
+        }
+      }
     },
     "Bloom" : {
       "localizations" : {
@@ -2632,7 +2639,14 @@
       }
     },
     "Buy individual icons from the icons store. They are yours forever." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kaufe individuelle Icons aus dem Icons Store. Sie gehören dir für immer."
+          }
+        }
+      }
     },
     "Camera" : {
       "localizations" : {
@@ -3715,7 +3729,14 @@
       }
     },
     "Double tap to return to main view" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doppeltippen, um zur Hauptansicht zurückzukehren"
+          }
+        }
+      }
     },
     "Duplicate" : {
       "localizations" : {
@@ -4464,7 +4485,14 @@
       }
     },
     "Failed to fetch OBS scenes" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OBS-Szenen konnten nicht abgerufen werden"
+          }
+        }
+      }
     },
     "Failed to get 7TV channel emotes" : {
       "localizations" : {
@@ -4685,13 +4713,34 @@
       }
     },
     "Failed to set OBS scene to %@" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OBS-Szene konnte nicht auf %@ gesetzt werden"
+          }
+        }
+      }
     },
     "Failed to start OBS stream" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OBS-Stream konnte nicht gestartet werden"
+          }
+        }
+      }
     },
     "Failed to stop OBS stream" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OBS-Stream konnte nicht gestoppt werden"
+          }
+        }
+      }
     },
     "Feel free to join Moblin Discord server or write an issue on Github if you need help or want to give feedback." : {
       "localizations" : {
@@ -4740,7 +4789,14 @@
       }
     },
     "Fetching OBS scenes from server..." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abruf von OBS-Szenen vom Server..."
+          }
+        }
+      }
     },
     "Find your channel name (myChannelName) and video id (myVideoId) in your stream's URL." : {
       "localizations" : {
@@ -4869,7 +4925,14 @@
       }
     },
     "For example ws://232.32.45.332:4567." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zum Beispiel ws://232.32.45.332:4567"
+          }
+        }
+      }
     },
     "front" : {
       "localizations" : {
@@ -7409,34 +7472,104 @@
       }
     },
     "OBS remote control" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OBS Fernsteuerung"
+          }
+        }
+      }
     },
     "OBS scene" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OBS Szene"
+          }
+        }
+      }
     },
     "OBS Scene" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OBS Szene"
+          }
+        }
+      }
     },
     "OBS scene set to %@" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OBS Szene auf %@ eingestellt"
+          }
+        }
+      }
     },
     "OBS start/stop stream" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OBS Start/Stop Stream"
+          }
+        }
+      }
     },
     "OBS status" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OBS Status"
+          }
+        }
+      }
     },
     "OBS stream started" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OBS Stream gestartet"
+          }
+        }
+      }
     },
     "OBS stream stopped" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OBS Stream gestoppt"
+          }
+        }
+      }
     },
     "OBS WebSocket is not configured. Configure it in Settings -> Streams -> %@ -> OBS." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OBS WebSocket ist nicht konfiguriert. Konfiguriere ihn unter Einstellungen -> Streams -> %@ -> OBS."
+          }
+        }
+      }
     },
     "OBS WebSocket is not connected to the server" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OBS WebSocket ist nicht mit dem Server verbunden"
+          }
+        }
+      }
     },
     "Off" : {
       "localizations" : {
@@ -7709,7 +7842,14 @@
       }
     },
     "Password" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passwort"
+          }
+        }
+      }
     },
     "Pause chat" : {
       "localizations" : {
@@ -7804,7 +7944,14 @@
       }
     },
     "Please enter your stream URL in stream settings before going live." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bitte gebe deine Stream-URL in den Stream-Einstellungen ein, bevor du live gehst."
+          }
+        }
+      }
     },
     "Preset" : {
       "localizations" : {
@@ -9237,10 +9384,24 @@
       }
     },
     "Subscribed" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abonniert"
+          }
+        }
+      }
     },
     "Subscriptions" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abonnements"
+          }
+        }
+      }
     },
     "Support Moblin developers by buying icons." : {
       "localizations" : {
@@ -9599,7 +9760,14 @@
       }
     },
     "The \"All icons\" subscription gives you access to all icons in store for as long as the subscription lasts. This includes all icons added in the future." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mit dem Abonnement \"Alle Icons\" hast du Zugriff auf alle Icons im Shop, solange das Abonnement läuft. Dies schließt alle Icons ein, die in Zukunft hinzugefügt werden."
+          }
+        }
+      }
     },
     "The browser widget is experimental does not work very well yet." : {
       "localizations" : {
@@ -10985,7 +11153,14 @@
       }
     },
     "WebSocket" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "WebSocket"
+          }
+        }
+      }
     },
     "Widget" : {
       "localizations" : {
