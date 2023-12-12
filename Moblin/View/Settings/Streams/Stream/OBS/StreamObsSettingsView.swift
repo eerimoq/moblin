@@ -5,7 +5,12 @@ struct StreamObsSettingsView: View {
     var stream: SettingsStream
 
     func submitWebSocketUrl(value: String) {
-        stream.obsWebSocketUrl = value
+        let url = cleanUrl(url: value)
+        if let message = isValidWebSocketUrl(url: url) {
+            model.makeErrorToast(title: message)
+            return
+        }
+        stream.obsWebSocketUrl = url
         model.store()
         if stream.enabled {
             model.obsWebSocketUrlUpdated()

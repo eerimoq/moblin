@@ -127,6 +127,29 @@ func isValidUrl(url value: String) -> String? {
     return nil
 }
 
+func isValidWebSocketUrl(url value: String) -> String? {
+    guard let url = URL(string: value) else {
+        return String(localized: "Malformed URL")
+    }
+    if url.host() == nil {
+        return String(localized: "Host missing")
+    }
+    guard URLComponents(url: url, resolvingAgainstBaseURL: false) != nil else {
+        return String(localized: "Malformed URL")
+    }
+    switch url.scheme {
+    case "ws":
+        break
+    case "wss":
+        break
+    case nil:
+        return String(localized: "Scheme missing")
+    default:
+        return String(localized: "Unsupported scheme \(url.scheme!)")
+    }
+    return nil
+}
+
 func schemeAndAddress(url: String) -> String {
     guard var url = URL(string: url) else {
         return ""
