@@ -24,7 +24,7 @@ struct InlinePickerView: View {
                 .labelsHidden()
             } footer: {
                 VStack {
-                    ForEach(footers, id: \.self) {footer in
+                    ForEach(footers, id: \.self) { footer in
                         Text(footer)
                     }
                 }
