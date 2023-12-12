@@ -150,11 +150,7 @@ Ideas/plan
 
 - Show two cameras at the same time.
 
-- Use lossy video format? More effecient?
-
 - Always receive sampels from all mics for smoother transition between mics?
-
-- Reduce brightness when thermal state is critical.
 
 - A list of usernames whos messages will not get displayed on screen.
 
@@ -167,16 +163,13 @@ Ideas/plan
     filters when you have the time. I think that would be the same
     order in terms of complexity to implement as well.
 
-- Button to turn maximum screen FPS on and off. Or possibly "low
-  power" mode?
-
 - Use external UVC camera. Looks like iOS 17 supports them.
-
-- Use multiple mics at the same time?
 
 - Reintroduce settings in portrait.
 
 - Take picture.
+
+- Reduce brightness when thermal state is critical.
 
 - OPUS audio codec? https://github.com/alta/swift-opus
 
@@ -185,21 +178,10 @@ Ideas/plan
 
 - Advanced settings toggle.
 
-- Non-mirrored widgets locally when using front camera.
-
 - Add Twitch/Kick Icons next to chat messages depending on which
   platform the message came from.
 
-- Toggles to enable/disable "Go live" and "Stop" confirmations. Per
-  stream?
-
 - RTMP server for external video and audio?
-
-- Multiple Ethernet connections simultaneously?
-
-- Automatically go live when starting app, if configured for selected
-  stream setting. Probably a good idea to go live again when entering
-  foregound if was live when entering background
 
 - Lookup Twitch channel id from channel name. Possibly login to
   Twitch.
