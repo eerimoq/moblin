@@ -314,7 +314,7 @@ class ObsWebSocket {
                 let decoded = try JSONDecoder().decode(GetSceneListResponse.self, from: data)
                 onSuccess(ObsSceneList(
                     current: decoded.currentProgramSceneName,
-                    scenes: decoded.scenes.map { $0.sceneName }
+                    scenes: decoded.scenes.reversed().map { $0.sceneName }
                 ))
             } catch {
                 onError()
