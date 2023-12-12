@@ -1193,7 +1193,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Une liste non exhaustive de personnes qui ont contribué par leurs idées, codage, tests, promotion et autres…"
+            "value" : "Une liste non exhaustive de personnes qui ont contribué par leurs idées, codes, tests, promotion et autres…"
           }
         },
         "pl" : {
@@ -2095,6 +2095,12 @@
             "state" : "translated",
             "value" : "Bildschirm schwarz"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Écran noir"
+          }
         }
       }
     },
@@ -2644,6 +2650,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kaufe individuelle Icons aus dem Icons Store. Sie gehören dir für immer."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En achetant des icônes sur le store, elles resteront à vous."
           }
         }
       }
@@ -3735,6 +3747,12 @@
             "state" : "translated",
             "value" : "Doppeltippen, um zur Hauptansicht zurückzukehren"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Taper 2 fois pour retourner à la vue principale"
+          }
         }
       }
     },
@@ -4491,6 +4509,12 @@
             "state" : "translated",
             "value" : "OBS-Szenen konnten nicht abgerufen werden"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échec de récupération des scènes OBS"
+          }
         }
       }
     },
@@ -4719,6 +4743,12 @@
             "state" : "translated",
             "value" : "OBS-Szene konnte nicht auf %@ gesetzt werden"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échec de sélection de la scène OBS ‰@"
+          }
         }
       }
     },
@@ -4729,6 +4759,12 @@
             "state" : "translated",
             "value" : "OBS-Stream konnte nicht gestartet werden"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échec du démarrage du stream OBS"
+          }
         }
       }
     },
@@ -4738,6 +4774,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "OBS-Stream konnte nicht gestoppt werden"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échec de l'arrêt du stream OBS"
           }
         }
       }
@@ -4794,6 +4836,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Abruf von OBS-Szenen vom Server..."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Récupération des scènes OBS depuis le serveur…"
           }
         }
       }
@@ -4930,6 +4978,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zum Beispiel ws://232.32.45.332:4567"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Par exemple ws://123.45.67.89:4567"
           }
         }
       }
@@ -7478,6 +7532,12 @@
             "state" : "translated",
             "value" : "OBS Fernsteuerung"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Télécommande OBS"
+          }
         }
       }
     },
@@ -7487,6 +7547,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "OBS Szene"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scène OBS"
           }
         }
       }
@@ -7498,6 +7564,12 @@
             "state" : "translated",
             "value" : "OBS Szene"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scène OBS"
+          }
         }
       }
     },
@@ -7507,6 +7579,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "OBS Szene auf %@ eingestellt"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scène OBS sélectionnée : %@"
           }
         }
       }
@@ -7518,6 +7596,12 @@
             "state" : "translated",
             "value" : "OBS Start/Stop Stream"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Démarrage/Arrêt du stream OBS"
+          }
         }
       }
     },
@@ -7527,6 +7611,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "OBS Status"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Statut du stream OBS"
           }
         }
       }
@@ -7538,6 +7628,12 @@
             "state" : "translated",
             "value" : "OBS Stream gestartet"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stream OBS démarré"
+          }
         }
       }
     },
@@ -7547,6 +7643,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "OBS Stream gestoppt"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stream OBS arrêté"
           }
         }
       }
@@ -7558,6 +7660,12 @@
             "state" : "translated",
             "value" : "OBS WebSocket ist nicht konfiguriert. Konfiguriere ihn unter Einstellungen -> Streams -> %@ -> OBS."
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le WebSocket OBS n'est pas configuré. Configurez-le dans Réglages -> Streams -> %@ -> OBS."
+          }
         }
       }
     },
@@ -7567,6 +7675,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "OBS WebSocket ist nicht mit dem Server verbunden"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "WebSocket OBS non connecté au serveur"
           }
         }
       }
@@ -7848,6 +7962,12 @@
             "state" : "translated",
             "value" : "Passwort"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mot de passe"
+          }
         }
       }
     },
@@ -7949,6 +8069,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bitte gebe deine Stream-URL in den Stream-Einstellungen ein, bevor du live gehst."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Veuillez saisir votre URL de stream dans les paramètres avant de démarrer le direct."
           }
         }
       }
@@ -9390,12 +9516,24 @@
             "state" : "translated",
             "value" : "Abonniert"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abonné"
+          }
         }
       }
     },
     "Subscriptions" : {
       "localizations" : {
         "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abonnements"
+          }
+        },
+        "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Abonnements"
@@ -9765,6 +9903,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mit dem Abonnement \"Alle Icons\" hast du Zugriff auf alle Icons im Shop, solange das Abonnement läuft. Dies schließt alle Icons ein, die in Zukunft hinzugefügt werden."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'abonnement \"All icons\" vous donne accès à toutes les icônes du store pendant la durée d'abonnement. Vous aurez aussi accès aux icônes ajoutées en cours d'abonnement."
           }
         }
       }

@@ -5,13 +5,13 @@
 "CFBundleName" = "Moblin";
 
 /* Privacy - Camera Usage Description */
-"NSCameraUsageDescription" = "Moblin diffuse de la vidéo en direct à partir de la caméra.";
+"NSCameraUsageDescription" = "Moblin utilise la caméra pour capter et diffuser de la vidéo.";
 
 /* Privacy - Local Network Usage Description */
-"NSLocalNetworkUsageDescription" = "Moblin agit en serveur local pour la réception et l'envoi à la bibliothèque SRT.";
+"NSLocalNetworkUsageDescription" = "Moblin doit devenir un serveur local pour la réception et l'envoi SRT.";
 
 /* Privacy - Microphone Usage Description */
-"NSMicrophoneUsageDescription" = "Moblin diffuse de l'audio en direct à partir du microphone.";
+"NSMicrophoneUsageDescription" = "Moblin utilise le microphone pour capter l'audio à diffuser.";
 
 /* Privacy - Network Volumes Usage Description */
 "NSNetworkVolumesUsageDescription" = "Moblin utilise les données de la connexion réseau pour émettre en direct.";
