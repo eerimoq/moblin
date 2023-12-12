@@ -28,6 +28,11 @@ class MoblinSettingsUrl: Codable {
             if let message = isValidUrl(url: cleanUrl(url: stream.url)) {
                 throw message
             }
+            if let obs = stream.obs {
+                if let message = isValidWebSocketUrl(url: cleanUrl(url: obs.webSocketUrl)) {
+                    throw message
+                }
+            }
         }
         return query
     }
