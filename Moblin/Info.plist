@@ -21,8 +21,6 @@
 	<string>Moblin live streams video from the camera.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Moblin live streams audio from the microphone.</string>
-	<key>NSNetworkVolumesUsageDescription</key>
-	<string>Moblin shows selected images as overlays.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Moblin shows selected images as overlays.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

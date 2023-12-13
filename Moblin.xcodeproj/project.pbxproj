@@ -1174,7 +1174,6 @@
 				INFOPLIST_KEY_NSCameraUsageDescription = "Moblin live streams video from the camera.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Moblin uses localhost as input and output to SRT library.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Moblin live streams audio from the microphone.";
-				INFOPLIST_KEY_NSNetworkVolumesUsageDescription = "Moblin shows selected images as overlays.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Moblin shows selected images as overlays.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Moblin shows selected images as overlays.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -1219,7 +1218,6 @@
 				INFOPLIST_KEY_NSCameraUsageDescription = "Moblin live streams video from the camera.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Moblin uses localhost as input and output to SRT library.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Moblin live streams audio from the microphone.";
-				INFOPLIST_KEY_NSNetworkVolumesUsageDescription = "Moblin shows selected images as overlays.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Moblin shows selected images as overlays.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Moblin shows selected images as overlays.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

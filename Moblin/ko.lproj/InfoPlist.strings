@@ -7,9 +7,6 @@
 /* Privacy - Microphone Usage Description */
 "NSMicrophoneUsageDescription" = "Moblin은 마이크에서 오디오를 실시간 스트리밍합니다.";
 
-/* Privacy - Network Volumes Usage Description */
-"NSNetworkVolumesUsageDescription" = "Moblin은 선택한 이미지를 오버레이로 표시합니다.";
-
 /* Privacy - Photo Library Additions Usage Description */
 "NSPhotoLibraryAddUsageDescription" = "Moblin은 선택한 이미지를 오버레이로 표시합니다.";
 

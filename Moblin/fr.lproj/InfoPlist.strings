@@ -13,9 +13,6 @@
 /* Privacy - Microphone Usage Description */
 "NSMicrophoneUsageDescription" = "Moblin utilise le microphone pour capter l'audio à diffuser.";
 
-/* Privacy - Network Volumes Usage Description */
-"NSNetworkVolumesUsageDescription" = "Moblin utilise les données de la connexion réseau pour émettre en direct.";
-
 /* Privacy - Photo Library Additions Usage Description */
 "NSPhotoLibraryAddUsageDescription" = "Moblin accède à la bibliothèque pour afficher des images stockées localement.";
 
