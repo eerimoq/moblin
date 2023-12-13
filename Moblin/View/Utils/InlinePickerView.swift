@@ -23,7 +23,7 @@ struct InlinePickerView: View {
                 .pickerStyle(.inline)
                 .labelsHidden()
             } footer: {
-                VStack {
+                VStack(alignment: .leading) {
                     ForEach(footers, id: \.self) { footer in
                         Text(footer)
                     }
