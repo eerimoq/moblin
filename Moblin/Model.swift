@@ -2437,10 +2437,6 @@ final class Model: ObservableObject {
         return nil
     }
 
-    private func hasUltraWideCamera() -> Bool {
-        return AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .back) != nil
-    }
-
     private func factorToX(position: AVCaptureDevice.Position, factor: Float) -> Float {
         if position == .back && hasUltraWideCamera() {
             return factor / 2

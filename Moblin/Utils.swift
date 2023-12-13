@@ -397,7 +397,7 @@ extension AVCaptureDevice {
         } else {
             switch deviceType {
             case .builtInTelephotoCamera:
-                return virtualDeviceSwitchOverVideoZoomFactors.last?.floatValue ?? 3.0
+                return virtualDeviceSwitchOverVideoZoomFactors.last?.floatValue ?? 2.0
             default:
                 return 1.0
             }
@@ -429,5 +429,31 @@ func cameraName(device: AVCaptureDevice?) -> String {
         return String(localized: "Telephoto")
     default:
         return ""
+    }
+}
+
+func hasUltraWideCamera() -> Bool {
+    return AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .back) != nil
+}
+
+func getBestBackCameraDevice() -> AVCaptureDevice? {
+    var device = AVCaptureDevice.default(.builtInTripleCamera, for: .video, position: .back)
+    if device == nil {
+        device = AVCaptureDevice.default(.builtInDualCamera, for: .video, position: .back)
+    }
+    return device
+}
+
+func getBestBackCameraType() -> SettingsCameraType {
+    guard let device = getBestBackCameraDevice() else {
+        return .dual
+    }
+    switch device.deviceType {
+    case .builtInTripleCamera:
+        return .triple
+    case .builtInDualCamera:
+        return .dual
+    default:
+        return .dual
     }
 }

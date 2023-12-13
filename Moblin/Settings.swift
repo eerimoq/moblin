@@ -1,3 +1,4 @@
+import AVFoundation
 import SwiftUI
 
 let defaultStreamUrl = "srt://my_public_ip:4000"
@@ -725,7 +726,7 @@ class Database: Codable {
     var iconImage: String = plainIcon.image()
     var maximumScreenFpsEnabled: Bool = false
     var maximumScreenFps: Int = 15
-    var backCameraType: SettingsCameraType? = .triple
+    var backCameraType: SettingsCameraType? = .dual
     var frontCameraType: SettingsCameraType? = .wide
     var videoStabilizationMode: SettingsVideoStabilizationMode = .off
     var chat: SettingsChat = .init()
@@ -854,13 +855,44 @@ func addDefaultZoomPresets(database: Database) {
 }
 
 func addDefaultBackZoomPresets(database: Database) {
-    database.zoom.back = [
-        SettingsZoomPreset(id: UUID(), name: "0.5x", level: 1.0, x: 0.5),
-        SettingsZoomPreset(id: UUID(), name: "1x", level: 2.0, x: 1.0),
-        SettingsZoomPreset(id: UUID(), name: "2x", level: 4.0, x: 2.0),
-        SettingsZoomPreset(id: UUID(), name: "4x", level: 8.0, x: 4.0),
-        SettingsZoomPreset(id: UUID(), name: "8x", level: 16.0, x: 8.0),
-    ]
+    if let device = getBestBackCameraDevice() {
+        let hasUltraWideCamera = hasUltraWideCamera()
+        let scale = device.getZoomFactorScale(hasUltraWideCamera: hasUltraWideCamera)
+        var xs: [Float] = []
+        if hasUltraWideCamera {
+            xs.append(0.5)
+        } else {
+            xs.append(1.0)
+        }
+        for factor in device.virtualDeviceSwitchOverVideoZoomFactors {
+            let x = (Float(truncating: factor) * scale).rounded()
+            if let prevX = xs.last {
+                if (x / prevX) >= 4 {
+                    xs.append(2 * prevX)
+                }
+            }
+            xs.append(x)
+        }
+        xs.append(2 * xs.last!)
+        database.zoom.back = []
+        for x in xs {
+            let nameX = x < 1 ? formatOneDecimal(value: x) : String(Int(x))
+            database.zoom.back.append(SettingsZoomPreset(
+                id: UUID(),
+                name: "\(nameX)x",
+                level: 2.0 * x,
+                x: x
+            ))
+        }
+    } else {
+        database.zoom.back = [
+            SettingsZoomPreset(id: UUID(), name: "0.5x", level: 1.0, x: 0.5),
+            SettingsZoomPreset(id: UUID(), name: "1x", level: 2.0, x: 1.0),
+            SettingsZoomPreset(id: UUID(), name: "2x", level: 4.0, x: 2.0),
+            SettingsZoomPreset(id: UUID(), name: "4x", level: 8.0, x: 4.0),
+            SettingsZoomPreset(id: UUID(), name: "8x", level: 16.0, x: 8.0),
+        ]
+    }
 }
 
 func addDefaultFrontZoomPresets(database: Database) {
@@ -1006,6 +1038,7 @@ func addDefaultButtons(database: Database) {
 
 func createDefault() -> Database {
     let database = Database()
+    database.backCameraType = getBestBackCameraType()
     addDefaultWidgets(database: database)
     addDefaultButtons(database: database)
     addDefaultScenes(database: database)
@@ -1121,7 +1154,7 @@ final class Settings {
             store()
         }
         if realDatabase.backCameraType == nil {
-            realDatabase.backCameraType = .triple
+            realDatabase.backCameraType = getBestBackCameraType()
             store()
         }
         if realDatabase.frontCameraType == nil {
