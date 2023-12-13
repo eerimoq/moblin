@@ -29,6 +29,11 @@
 	<string>Moblin shows selected images as overlays.</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Moblin uses localhost as input and output to SRT library.</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 </dict>
