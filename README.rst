@@ -196,6 +196,8 @@ Ideas/plan
 
   - https://dev.twitch.tv/docs/api/reference/#get-ad-schedule
 
+- Power off unused cameras?
+
 Import settings using moblin:// (custom URL)
 ============================================
 
