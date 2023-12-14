@@ -2182,6 +2182,12 @@
             "state" : "translated",
             "value" : "Écran noir"
           }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Svart skärm"
+          }
         }
       }
     },
@@ -2743,6 +2749,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "En achetant des icônes sur le store, elles resteront à vous."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Köp enskilda ikoner från affären. Dom blir dina för evigt!"
           }
         }
       }
@@ -3856,7 +3868,14 @@
       }
     },
     "Dual (auto)" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dubbel (auto)"
+          }
+        }
+      }
     },
     "Duplicate" : {
       "localizations" : {
@@ -4641,6 +4660,12 @@
             "state" : "translated",
             "value" : "Échec de récupération des scènes OBS"
           }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Misslyckades med att hämta OBS-scener"
+          }
         }
       }
     },
@@ -4887,6 +4912,12 @@
             "state" : "translated",
             "value" : "Échec de sélection de la scène OBS ‰@"
           }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Misslyckades med att sätta OBS-scenen %@"
+          }
         }
       }
     },
@@ -4909,6 +4940,12 @@
             "state" : "translated",
             "value" : "Échec du démarrage du stream OBS"
           }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Misslyckades med att starta OBS-strömmen"
+          }
         }
       }
     },
@@ -4930,6 +4967,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Échec de l'arrêt du stream OBS"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Misslyckades med att stoppa OBS-strömmen"
           }
         }
       }
@@ -4998,6 +5041,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Récupération des scènes OBS depuis le serveur…"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hämtar OBS-scener från servern..."
           }
         }
       }
@@ -5152,6 +5201,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Par exemple ws://123.45.67.89:4567"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Till exempel ws://232.32.45.332:4567."
           }
         }
       }
@@ -5794,6 +5849,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "호스트가 누락되었습니다."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Värd saknas"
           }
         }
       }
@@ -6615,6 +6676,12 @@
             "state" : "translated",
             "value" : "잘못된 RTMP URL"
           }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Felaktig RTMP URL"
+          }
         }
       }
     },
@@ -6683,6 +6750,12 @@
             "state" : "translated",
             "value" : "잘못된 SRT(LA) URL"
           }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Felaktig SRT(LA) URL"
+          }
         }
       }
     },
@@ -6710,6 +6783,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "잘못된 URL"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Felaktig URL"
           }
         }
       }
@@ -7778,6 +7857,12 @@
             "state" : "translated",
             "value" : "Télécommande OBS"
           }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OBS fjärrkontroll"
+          }
         }
       }
     },
@@ -7799,6 +7884,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Scène OBS"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OBS-scen"
           }
         }
       }
@@ -7822,6 +7913,12 @@
             "state" : "translated",
             "value" : "Scène OBS"
           }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OBS-scen"
+          }
         }
       }
     },
@@ -7843,6 +7940,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Scène OBS sélectionnée : %@"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OBS-scen satt till %@"
           }
         }
       }
@@ -7866,6 +7969,12 @@
             "state" : "translated",
             "value" : "Démarrage/Arrêt du stream OBS"
           }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OBS start/stop ström"
+          }
         }
       }
     },
@@ -7887,6 +7996,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Statut du stream OBS"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OBS status"
           }
         }
       }
@@ -7910,6 +8025,12 @@
             "state" : "translated",
             "value" : "Stream OBS démarré"
           }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OBS-ström startad"
+          }
         }
       }
     },
@@ -7931,6 +8052,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Stream OBS arrêté"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OBS-ström stoppad"
           }
         }
       }
@@ -8267,6 +8394,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mot de passe"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lösenord"
           }
         }
       }
@@ -8778,6 +8911,12 @@
             "state" : "translated",
             "value" : "RTMP 스트림 이름이 누락 되었습니다."
           }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RTMP-strömnamn saknas"
+          }
         }
       }
     },
@@ -8897,6 +9036,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "구성표 누락"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schema saknas"
           }
         }
       }
@@ -9636,6 +9781,12 @@
             "state" : "translated",
             "value" : "SRT(LA) 포트 번호가 누락 되었습니다."
           }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT(LA)-portnummer saknas"
+          }
         }
       }
     },
@@ -9882,6 +10033,12 @@
             "state" : "translated",
             "value" : "Abonné"
           }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prenumerant"
+          }
         }
       }
     },
@@ -9903,6 +10060,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Abonnements"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prenumereringar"
           }
         }
       }
@@ -10040,7 +10203,14 @@
       }
     },
     "Telephoto" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Telefoto"
+          }
+        }
+      }
     },
     "Template: rtmp://" : {
       "localizations" : {
@@ -10844,7 +11014,14 @@
       }
     },
     "Triple (auto)" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trippel (auto)"
+          }
+        }
+      }
     },
     "Twitch" : {
       "localizations" : {
@@ -10933,7 +11110,14 @@
       }
     },
     "Ultra wide" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ultravidvinkel"
+          }
+        }
+      }
     },
     "Unknown" : {
       "localizations" : {
@@ -11729,14 +11913,34 @@
             "state" : "translated",
             "value" : "WebSocket"
           }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "WebSocket"
+          }
         }
       }
     },
     "Wide" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vidvinkel"
+          }
+        }
+      }
     },
     "Wide dual (auto)" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vidvinkel dubbel (auto)"
+          }
+        }
+      }
     },
     "Widget" : {
       "localizations" : {
