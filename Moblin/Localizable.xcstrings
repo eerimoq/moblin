@@ -1541,6 +1541,12 @@
             "state" : "translated",
             "value" : "Automatische Kameras verbrauchen mehr Energie, da mehrere Kameras eingeschaltet sind, auch wenn jeweils nur eine verwendet wird. So kann das Telefon beim Zoomen schnell die Kamera wechseln."
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dans les modes auto, plusieurs caméras sont actives en même temps, même si une seule est affichée à la fois. Ces modes consomment donc plus d'énergie sur votre batterie, mais ils permettent d'avoir des transitions quasi-invisibles entre les caméras quand vous zoomez."
+          }
         }
       }
     },
@@ -3886,6 +3892,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dual (auto)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Double (auto)"
           }
         },
         "sv" : {
@@ -10235,6 +10247,12 @@
             "value" : "Teleobjetivo"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Téléobjectif"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10692,6 +10710,12 @@
             "state" : "translated",
             "value" : "La cámara ultra gran angular no funciona bien en condiciones de poca luz. Del mismo modo, las cámaras automáticas no funcionan bien cuando el zoom es de 0,5-1,0x, ya que se utilizará la cámara ultra gran angular."
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le capteur ultra grand angle a de faibles performances dans les environnements peu éclairés. Ainsi, les modes auto seront moins qualitatifs en zoom 0.5-1.0x, quand ce capteur est sollicité."
+          }
         }
       }
     },
@@ -11071,6 +11095,12 @@
             "value" : "Triple (auto)"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Triple (auto)"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11177,6 +11207,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ultra gran angular"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ultra grand angle"
           }
         },
         "sv" : {
@@ -11982,6 +12018,12 @@
             "value" : "WebSocket"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "WebSocket"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -12004,6 +12046,12 @@
             "value" : "Wide"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grand angle"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -12024,6 +12072,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Wide dual (auto)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Double grand angle (auto)"
           }
         },
         "sv" : {
