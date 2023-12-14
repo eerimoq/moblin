@@ -321,6 +321,12 @@
             "value" : "/sec"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "/sec"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -350,6 +356,12 @@
     "%.1f/min" : {
       "localizations" : {
         "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.1f/min"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%.1f/min"
@@ -647,6 +659,12 @@
             "value" : "🎉 Du bist LIVE bei %@ 🎉"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🎉 Conectado a %@ 🎉"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -673,6 +691,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "🤟 Stream beendet 🤟"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🤟 Stream finalizado 🤟"
           }
         },
         "fr" : {
@@ -709,6 +733,12 @@
             "value" : "😎 Live gegangen bei %@ 😎"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "😎 Iniciando %@ 😎"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -732,6 +762,12 @@
     "😢 FFFFF 😢" : {
       "localizations" : {
         "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "😢 FFFFF 😢"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "😢 FFFFF 😢"
@@ -766,6 +802,12 @@
     "0.0/min" : {
       "localizations" : {
         "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "0.0/min"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "0.0/min"
@@ -850,6 +892,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Eine niedrige maximale Bildwiederholrate verringert den Stromverbrauch."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un valor bajo de los FPS máximos en pantalla reduce el consumo de energía"
           }
         },
         "fr" : {
@@ -1047,6 +1095,12 @@
     "AfreecaTV" : {
       "localizations" : {
         "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AfreecaTV"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "AfreecaTV"
@@ -1316,6 +1370,12 @@
             "value" : "API Schlüssel"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API key"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1483,6 +1543,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Haupt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "trasera"
           }
         },
         "fr" : {
@@ -2019,6 +2085,12 @@
             "value" : "Bitrate muss größer als Null sein"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El bitrate debe ser mayor que 0"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2097,6 +2169,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bildschirm schwarz"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pantalla negra"
           }
         },
         "fr" : {
@@ -2653,6 +2731,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kaufe individuelle Icons aus dem Icons Store. Sie gehören dir für immer."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compra iconos individuales en la tienda de iconos. Serán tuyos para siempre"
           }
         },
         "fr" : {
@@ -3447,6 +3531,12 @@
             "value" : "Löschen"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminar"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3751,6 +3841,12 @@
             "value" : "Doppeltippen, um zur Hauptansicht zurückzukehren"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toca dos veces para volver a la vista principal"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3768,6 +3864,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Duplizieren"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplicar"
           }
         },
         "fr" : {
@@ -3802,6 +3904,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Leere Zwischenablage "
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Portapapeles vacío"
           }
         },
         "fr" : {
@@ -3882,6 +3990,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Beispiel-URL: https://play.afreecatv.com/myChannelName/myVideoId"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ejemplo de URL: https://play.afreecatv.com/myChannelName/myVideoId"
           }
         },
         "fr" : {
@@ -4516,6 +4630,12 @@
             "value" : "OBS-Szenen konnten nicht abgerufen werden"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al obtener las escenas de OBS"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4716,6 +4836,12 @@
             "value" : "Mikrofon konnte nicht ausgewählt werden"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al seleccionar el micrófono"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4750,6 +4876,12 @@
             "value" : "OBS-Szene konnte nicht auf %@ gesetzt werden"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al configurar la escena %@ en OBS"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4766,6 +4898,12 @@
             "value" : "OBS-Stream konnte nicht gestartet werden"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al iniciar el stream OBS"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4780,6 +4918,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "OBS-Stream konnte nicht gestoppt werden"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al detener el stream OBS"
           }
         },
         "fr" : {
@@ -4844,6 +4988,12 @@
             "value" : "Abruf von OBS-Szenen vom Server..."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obteniendo las escenas OBS del servidor..."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4858,6 +5008,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Suche deinen Kanalnamen (myChannelName) und deine Video-ID (myVideoId) in der URL Ihres Streams."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Busca el nombre de tu canal (myChannelName) y el ID de tu vídeo (myVideoId) en la URL de tu stream."
           }
         },
         "fr" : {
@@ -4986,6 +5142,12 @@
             "value" : "Zum Beispiel ws://232.32.45.332:4567"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por ejemplo ws://232.32.45.332:4567"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5000,6 +5162,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Front"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "frontal"
           }
         },
         "fr" : {
@@ -5610,6 +5778,12 @@
             "value" : "Host fehlt"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falta el host"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5727,7 +5901,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Icons que no están aún en la tienda"
+            "value" : "Iconos que no están aún en la tienda"
           }
         },
         "fr" : {
@@ -5906,6 +6080,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Importieren der Einstellungen fehlgeschlagen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al importar la configuración"
           }
         },
         "fr" : {
@@ -6418,6 +6598,12 @@
             "value" : "Fehlerhafte RTMP-URL"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dirección RTMP errónea"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6438,6 +6624,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fehlerhafte Einstellungen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajustes erróneos"
           }
         },
         "fr" : {
@@ -6474,6 +6666,12 @@
             "value" : "Fehlerhafte SRT(LA)-URL"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dirección SRT(LA) errónea"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6494,6 +6692,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fehlerhafte URL"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dirección URL errónea"
           }
         },
         "fr" : {
@@ -6691,6 +6895,12 @@
             "value" : "Maximale Bildwiederholrate"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FPS máximos en pantalla"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6805,6 +7015,12 @@
             "value" : "Mikrofon ID %@"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ID del micrófono %@"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6837,6 +7053,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mikrofon nicht gefunden"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Micrófono no encontrado"
           }
         },
         "fr" : {
@@ -7195,6 +7417,12 @@
             "value" : "Mein Widget"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mis widgets"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7539,6 +7767,12 @@
             "value" : "OBS Fernsteuerung"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Control remoto de OBS"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7553,6 +7787,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "OBS Szene"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escena de OBS"
           }
         },
         "fr" : {
@@ -7571,6 +7811,12 @@
             "value" : "OBS Szene"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escena de OBS"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7585,6 +7831,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "OBS Szene auf %@ eingestellt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escena %@ configurada en OBS"
           }
         },
         "fr" : {
@@ -7603,6 +7855,12 @@
             "value" : "OBS Start/Stop Stream"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar/detener stream OBS"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7617,6 +7875,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "OBS Status"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estado de OBS"
           }
         },
         "fr" : {
@@ -7635,6 +7899,12 @@
             "value" : "OBS Stream gestartet"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stream OBS iniciado"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7649,6 +7919,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "OBS Stream gestoppt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stream OBS detenido"
           }
         },
         "fr" : {
@@ -7667,6 +7943,12 @@
             "value" : "OBS WebSocket ist nicht konfiguriert. Konfiguriere ihn unter Einstellungen -> Streams -> %@ -> OBS."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El OBS WebSocket no está configurado. Configúralo en Ajustes -> Streams -> %@ -> OBS."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7681,6 +7963,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "OBS WebSocket ist nicht mit dem Server verbunden"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El OBS WebSocket no está conectado al servidor"
           }
         },
         "fr" : {
@@ -7794,7 +8082,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sólo se pueden borrar los botones no utilizados."
+            "value" : "Sólo se pueden borrar los botones que no se utilizan."
           }
         },
         "fr" : {
@@ -7840,7 +8128,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sólo se pueden borrar los widgets no utilizados."
+            "value" : "Sólo se pueden borrar los widgets que no se utilizan."
           }
         },
         "fr" : {
@@ -7969,6 +8257,12 @@
             "value" : "Passwort"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contraseña"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8075,6 +8369,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bitte gebe deine Stream-URL in den Stream-Einstellungen ein, bevor du live gehst."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por favor, introduce la dirección URL de tu stream en los ajustes de stream antes de iniciar la transmisión"
           }
         },
         "fr" : {
@@ -8461,6 +8761,12 @@
             "value" : "RTMP Stream Name fehlt"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falta el nombre del stream RTMP"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8573,6 +8879,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Schema fehlt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falta el esquema"
           }
         },
         "fr" : {
@@ -8727,6 +9039,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Einstellungen importiert"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configuración importada"
           }
         },
         "fr" : {
@@ -8987,6 +9305,12 @@
             "value" : "Geschwindigkeit"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Velocidad"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9019,6 +9343,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "SRT Verbindung fehlgeschlagen bei %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La conexión SRT con %@ ha fallado"
           }
         },
         "fr" : {
@@ -9055,6 +9385,12 @@
             "value" : "SRT getrennt"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT desconectado"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9087,6 +9423,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "SRT Fehler: %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error SRT: %@"
           }
         },
         "fr" : {
@@ -9275,6 +9617,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "SRT(LA) Port Nummer fehlt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falta el puerto SRT(LA)"
           }
         },
         "fr" : {
@@ -9523,6 +9871,12 @@
             "value" : "Abonniert"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suscrito"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9537,6 +9891,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Abonnements"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suscripciones"
           }
         },
         "fr" : {
@@ -9645,6 +10005,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tippen zum Fokussieren wird von dieser Kamera nicht unterstützt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tocar para enfocar no es compatible con esta cámara"
           }
         },
         "fr" : {
@@ -9912,6 +10278,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mit dem Abonnement \"Alle Icons\" hast du Zugriff auf alle Icons im Shop, solange das Abonnement läuft. Dies schließt alle Icons ein, die in Zukunft hinzugefügt werden."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La suscripción \"Todos los iconos\" le da acceso a todos los iconos de la tienda mientras dure la suscripción. Esto incluye todos los iconos que se añadan en el futuro."
           }
         },
         "fr" : {
@@ -10253,6 +10625,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zu %@ Kamera"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A la cámara %@"
           }
         },
         "fr" : {
@@ -10611,6 +10989,12 @@
             "value" : "Nicht unterstütztes  Schema %@"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El esquema %@ no es compatible"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10763,6 +11147,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "URL Import fehlgeschlagen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al importar la URL"
           }
         },
         "fr" : {
@@ -11030,6 +11420,12 @@
             "value" : "Sehr experimentell und sehr geheim! Funktioniert noch nicht!"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Muy experimental y muy secreto! ¡No funciona todavía!"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11154,6 +11550,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Video ID"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vídeo ID"
           }
         },
         "fr" : {
@@ -11317,6 +11719,12 @@
     "WebSocket" : {
       "localizations" : {
         "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "WebSocket"
+          }
+        },
+        "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "WebSocket"
@@ -11572,6 +11980,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "X must be %1$f - %2$f"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "X debe ser %1$f - %2$f"
           }
         },
         "fr" : {

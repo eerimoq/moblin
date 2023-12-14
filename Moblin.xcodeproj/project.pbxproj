@@ -161,6 +161,7 @@
 		0330F2B42AFADD18001262C3 /* StreamYouTubeSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamYouTubeSettingsView.swift; sourceTree = "<group>"; };
 		03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBrowserSettingsView.swift; sourceTree = "<group>"; };
 		0344AFE62B00023E00C177DB /* AboutDesignedBySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutDesignedBySettingsView.swift; sourceTree = "<group>"; };
+		034FC8512B2B6D4A00EF0C62 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		035D37272AB0EBB500045B92 /* IconAndTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconAndTextView.swift; sourceTree = "<group>"; };
 		035D37362AB230E700045B92 /* StreamVideoBitrateSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoBitrateSettingsView.swift; sourceTree = "<group>"; };
 		035E775B2ACC969D00738DCE /* ZoomPresetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomPresetSettingsView.swift; sourceTree = "<group>"; };
@@ -1022,6 +1023,7 @@
 			children = (
 				031852A52B21890A00AEAD0D /* fr */,
 				03E92AD42B248D3C00EBAC77 /* ko */,
+				034FC8512B2B6D4A00EF0C62 /* es */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
