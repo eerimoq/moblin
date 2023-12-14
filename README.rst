@@ -148,6 +148,8 @@ ToDo
 Ideas/plan
 ==========
 
+- Twitch chat user badges.
+
 - Show two cameras at the same time.
 
 - Always receive sampels from all mics for smoother transition between mics?
