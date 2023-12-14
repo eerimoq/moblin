@@ -1535,7 +1535,14 @@
       }
     },
     "Auto cameras use more energy as multiple cameras are powered on, even if only one is used at a time. This allows the phone to quickly change camera when zooming." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatische Kameras verbrauchen mehr Energie, da mehrere Kameras eingeschaltet sind, auch wenn jeweils nur eine verwendet wird. So kann das Telefon beim Zoomen schnell die Kamera wechseln."
+          }
+        }
+      }
     },
     "back" : {
       "localizations" : {
@@ -3869,6 +3876,12 @@
     },
     "Dual (auto)" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dual (auto)"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10204,6 +10217,12 @@
     },
     "Telephoto" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Telefoto"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10649,7 +10668,14 @@
       }
     },
     "The ultra wide camera does not perform well in low light conditions. Likewise, the auto cameras do not perform well when zoom is 0.5-1.0x since the ultra wide camera will be used." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Ultraweitwinkel-Kamera ist bei schlechten Lichtverhältnissen nicht gut geeignet. Auch die Autokameras sind bei einem Zoom von 0,5-1,0x nicht sehr leistungsfähig, da die Ultraweitwinkel-Kamera verwendet wird."
+          }
+        }
+      }
     },
     "The zoom (in X) to set when switching to given camera, if enabled." : {
       "localizations" : {
@@ -11015,6 +11041,12 @@
     },
     "Triple (auto)" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dreifach (auto)"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11111,6 +11143,12 @@
     },
     "Ultra wide" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ultraweitwinkel"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11924,6 +11962,12 @@
     },
     "Wide" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weitwinkel"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11934,6 +11978,12 @@
     },
     "Wide dual (auto)" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weit Dual (auto)"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
