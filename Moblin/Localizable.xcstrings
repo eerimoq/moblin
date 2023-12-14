@@ -3882,6 +3882,12 @@
             "value" : "Dual (auto)"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dual (auto)"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10223,6 +10229,12 @@
             "value" : "Telefoto"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teleobjetivo"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10674,6 +10686,12 @@
             "state" : "translated",
             "value" : "Die Ultraweitwinkel-Kamera ist bei schlechten Lichtverhältnissen nicht gut geeignet. Auch die Autokameras sind bei einem Zoom von 0,5-1,0x nicht sehr leistungsfähig, da die Ultraweitwinkel-Kamera verwendet wird."
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La cámara ultra gran angular no funciona bien en condiciones de poca luz. Del mismo modo, las cámaras automáticas no funcionan bien cuando el zoom es de 0,5-1,0x, ya que se utilizará la cámara ultra gran angular."
+          }
         }
       }
     },
@@ -11047,6 +11065,12 @@
             "value" : "Dreifach (auto)"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Triple (auto)"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11147,6 +11171,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ultraweitwinkel"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ultra gran angular"
           }
         },
         "sv" : {
@@ -11968,6 +11998,12 @@
             "value" : "Weitwinkel"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wide"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11982,6 +12018,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Weit Dual (auto)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wide dual (auto)"
           }
         },
         "sv" : {
