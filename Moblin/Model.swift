@@ -683,7 +683,8 @@ final class Model: ObservableObject {
     }
 
     func isObsConfigured() -> Bool {
-        return stream.obsWebSocketEnabled! && stream.obsWebSocketUrl != "" && stream.obsWebSocketPassword != ""
+        return stream.obsWebSocketEnabled! && stream.obsWebSocketUrl != "" && stream
+            .obsWebSocketPassword != ""
     }
 
     func isObsConnected() -> Bool {
@@ -1473,7 +1474,8 @@ final class Model: ObservableObject {
     }
 
     func isAfreecaTvChatConfigured() -> Bool {
-        return stream.afreecaTvEnabled! && stream.afreecaTvChannelName! != "" && stream.afreecaTvStreamId! != ""
+        return stream.afreecaTvEnabled! && stream.afreecaTvChannelName! != "" && stream
+            .afreecaTvStreamId! != ""
     }
 
     func isAfreecaTvChatConnected() -> Bool {
