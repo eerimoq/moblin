@@ -683,7 +683,7 @@ final class Model: ObservableObject {
     }
 
     func isObsConfigured() -> Bool {
-        return stream.obsWebSocketUrl != "" && stream.obsWebSocketPassword != ""
+        return stream.obsWebSocketEnabled! && stream.obsWebSocketUrl != "" && stream.obsWebSocketPassword != ""
     }
 
     func isObsConnected() -> Bool {
@@ -1433,7 +1433,7 @@ final class Model: ObservableObject {
     }
 
     func isTwitchChatConfigured() -> Bool {
-        return stream.twitchChannelName != ""
+        return stream.twitchEnabled! && stream.twitchChannelName != ""
     }
 
     func isTwitchChatConnected() -> Bool {
@@ -1449,7 +1449,7 @@ final class Model: ObservableObject {
     }
 
     func isKickPusherConfigured() -> Bool {
-        return stream.kickChatroomId != ""
+        return stream.kickEnabled! && stream.kickChatroomId != ""
     }
 
     func isKickPusherConnected() -> Bool {
@@ -1461,7 +1461,7 @@ final class Model: ObservableObject {
     }
 
     func isYouTubeLiveChatConfigured() -> Bool {
-        return stream.youTubeApiKey! != "" && stream.youTubeVideoId! != ""
+        return stream.youTubeEnabled! && stream.youTubeApiKey! != "" && stream.youTubeVideoId! != ""
     }
 
     func isYouTubeLiveChatConnected() -> Bool {
@@ -1473,7 +1473,7 @@ final class Model: ObservableObject {
     }
 
     func isAfreecaTvChatConfigured() -> Bool {
-        return stream.afreecaTvChannelName! != "" && stream.afreecaTvStreamId! != ""
+        return stream.afreecaTvEnabled! && stream.afreecaTvChannelName! != "" && stream.afreecaTvStreamId! != ""
     }
 
     func isAfreecaTvChatConnected() -> Bool {
@@ -1615,6 +1615,12 @@ final class Model: ObservableObject {
         obsWebSocket!.start()
     }
 
+    func twitchEnabledUpdated() {
+        reloadTwitchPubSub()
+        reloadTwitchChat()
+        resetChat()
+    }
+
     func twitchChannelNameUpdated() {
         reloadTwitchChat()
         resetChat()
@@ -1626,8 +1632,18 @@ final class Model: ObservableObject {
         resetChat()
     }
 
+    func kickEnabledUpdated() {
+        reloadKickPusher()
+        resetChat()
+    }
+
     func kickChatroomIdUpdated() {
         reloadKickPusher()
+        resetChat()
+    }
+
+    func youTubeEnabledUpdated() {
+        reloadYouTubeLiveChat()
         resetChat()
     }
 
@@ -1641,6 +1657,11 @@ final class Model: ObservableObject {
         resetChat()
     }
 
+    func afreecaTvEnabledUpdated() {
+        reloadAfreecaTvChat()
+        resetChat()
+    }
+
     func afreecaTvChannelNameUpdated() {
         reloadAfreecaTvChat()
         resetChat()
@@ -1649,6 +1670,10 @@ final class Model: ObservableObject {
     func afreecaTvStreamIdUpdated() {
         reloadAfreecaTvChat()
         resetChat()
+    }
+
+    func obsWebSocketEnabledUpdated() {
+        reloadObsWebSocket()
     }
 
     func obsWebSocketUrlUpdated() {

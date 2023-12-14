@@ -28,19 +28,59 @@ struct StreamSettingsView: View {
                 Text("Video")
             }
             NavigationLink(destination: StreamTwitchSettingsView(stream: stream)) {
-                TextItemView(name: "Twitch", value: stream.twitchChannelName)
+                Toggle("Twitch", isOn: Binding(get: {
+                    stream.twitchEnabled!
+                }, set: { value in
+                    stream.twitchEnabled = value
+                    model.store()
+                    if stream.enabled {
+                        model.twitchEnabledUpdated()
+                    }
+                }))
             }
             NavigationLink(destination: StreamKickSettingsView(stream: stream)) {
-                Text("Kick")
+                Toggle("Kick", isOn: Binding(get: {
+                    stream.kickEnabled!
+                }, set: { value in
+                    stream.kickEnabled = value
+                    model.store()
+                    if stream.enabled {
+                        model.kickEnabledUpdated()
+                    }
+                }))
             }
             NavigationLink(destination: StreamYouTubeSettingsView(stream: stream)) {
-                Text("YouTube")
+                Toggle("YouTube", isOn: Binding(get: {
+                    stream.youTubeEnabled!
+                }, set: { value in
+                    stream.youTubeEnabled = value
+                    model.store()
+                    if stream.enabled {
+                        model.youTubeEnabledUpdated()
+                    }
+                }))
             }
             NavigationLink(destination: StreamAfreecaTvSettingsView(stream: stream)) {
-                Text("AfreecaTV")
+                Toggle("AfreecaTV", isOn: Binding(get: {
+                    stream.afreecaTvEnabled!
+                }, set: { value in
+                    stream.afreecaTvEnabled = value
+                    model.store()
+                    if stream.enabled {
+                        model.afreecaTvEnabledUpdated()
+                    }
+                }))
             }
             NavigationLink(destination: StreamObsSettingsView(stream: stream)) {
-                Text("OBS remote control")
+                Toggle("OBS remote control", isOn: Binding(get: {
+                    stream.obsWebSocketEnabled!
+                }, set: { value in
+                    stream.obsWebSocketEnabled = value
+                    model.store()
+                    if stream.enabled {
+                        model.obsWebSocketEnabledUpdated()
+                    }
+                }))
             }
             NavigationLink(destination: StreamSrtSettingsView(stream: stream)) {
                 Text("SRT(LA)")

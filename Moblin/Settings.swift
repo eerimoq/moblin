@@ -63,13 +63,18 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var id: UUID = .init()
     var enabled: Bool = false
     var url: String = defaultStreamUrl
+    var twitchEnabled: Bool? = true
     var twitchChannelName: String = ""
     var twitchChannelId: String = ""
+    var kickEnabled: Bool? = true
     var kickChatroomId: String = ""
+    var youTubeEnabled: Bool? = true
     var youTubeApiKey: String? = ""
     var youTubeVideoId: String? = ""
+    var afreecaTvEnabled: Bool? = true
     var afreecaTvChannelName: String? = ""
     var afreecaTvStreamId: String? = ""
+    var obsWebSocketEnabled: Bool? = true
     var obsWebSocketUrl: String? = ""
     var obsWebSocketPassword: String? = ""
     var resolution: SettingsStreamResolution = .r1920x1080
@@ -1247,6 +1252,26 @@ final class Settings {
         }
         if realDatabase.show.obsStatus == nil {
             realDatabase.show.obsStatus = true
+            store()
+        }
+        for stream in realDatabase.streams where stream.twitchEnabled == nil {
+            stream.twitchEnabled = true
+            store()
+        }
+        for stream in realDatabase.streams where stream.kickEnabled == nil {
+            stream.kickEnabled = true
+            store()
+        }
+        for stream in realDatabase.streams where stream.youTubeEnabled == nil {
+            stream.youTubeEnabled = true
+            store()
+        }
+        for stream in realDatabase.streams where stream.afreecaTvEnabled == nil {
+            stream.afreecaTvEnabled = true
+            store()
+        }
+        for stream in realDatabase.streams where stream.obsWebSocketEnabled == nil {
+            stream.obsWebSocketEnabled = true
             store()
         }
     }
