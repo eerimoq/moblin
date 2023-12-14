@@ -110,16 +110,16 @@ struct SettingsView: View {
                     title: String(localized: "Back camera"),
                     onChange: onChangeBackCamera,
                     footers: [
-                        """
+                        String(localized: """
                         The ultra wide camera does not perform well in low light conditions. Likewise, the \
                         auto cameras do not perform well when zoom is 0.5-1.0x since the ultra wide camera \
                         will be used.
-                        """,
+                        """),
                         "",
-                        """
+                        String(localized: """
                         Auto cameras use more energy as multiple cameras are powered on, even if only \
                         one is used at a time. This allows the phone to quickly change camera when zooming.
-                        """,
+                        """),
                     ],
                     items: model.backCameras.map { $0.name },
                     selected: toCameraName(value: model.database.backCameraType!, cameras: model.backCameras)

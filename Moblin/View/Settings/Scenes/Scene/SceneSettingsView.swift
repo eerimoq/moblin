@@ -92,7 +92,7 @@ struct SceneSettingsView: View {
                     title: String(localized: "Layout"),
                     onChange: onLayoutChange,
                     footers: [
-                        "The Picture in Picture layout is experimental and does not work.",
+                        String(localized: "The Picture in Picture layout is experimental and does not work."),
                     ],
                     items: cameraLayouts,
                     selected: scene.cameraLayout!.toString()
