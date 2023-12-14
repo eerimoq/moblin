@@ -128,6 +128,9 @@ func isValidUrl(url value: String) -> String? {
 }
 
 func isValidWebSocketUrl(url value: String) -> String? {
+    if value.isEmpty {
+        return nil
+    }
     guard let url = URL(string: value) else {
         return String(localized: "Malformed URL")
     }
