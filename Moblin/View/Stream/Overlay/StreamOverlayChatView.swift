@@ -23,6 +23,14 @@ struct LineView: View {
         }
     }
 
+    private func messageColor(usernameColor: Color) -> Color {
+        if post.isAction && chat.meInUsernameColor! {
+            return usernameColor
+        } else {
+            return chat.messageColor.color()
+        }
+    }
+
     private func backgroundColor() -> Color {
         if chat.backgroundColorEnabled {
             return chat.backgroundColor.color().opacity(0.6)
@@ -42,7 +50,7 @@ struct LineView: View {
     var body: some View {
         let timestampColor = chat.timestampColor.color()
         let usernameColor = usernameColor()
-        let messageColor = chat.messageColor.color()
+        let messageColor = messageColor(usernameColor: usernameColor)
         let shadowColor = shadowColor()
         WrappingHStack(
             alignment: .leading,
@@ -65,6 +73,7 @@ struct LineView: View {
                     Text(text)
                         .foregroundColor(messageColor)
                         .bold(chat.boldMessage)
+                        .italic(post.isAction)
                 }
                 if let url = segment.url {
                     if chat.animatedEmotes {

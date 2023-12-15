@@ -48,8 +48,15 @@ final class TwitchChatMoblin {
                         for try await message in self.twitchChat.messages {
                             let emotes = getEmotes(from: message)
                             reconnectTime = firstReconnectTime
+                            let text: String
+                            let isAction = message.isAction()
+                            if isAction {
+                                text = String(message.text.dropFirst(7))
+                            } else {
+                                text = message.text
+                            }
                             let segments = createSegments(
-                                message: message,
+                                text: text,
                                 emotes: emotes,
                                 emotesManager: self.emotes
                             )
@@ -59,7 +66,8 @@ final class TwitchChatMoblin {
                                     userColor: message.senderColor,
                                     segments: segments,
                                     timestamp: model.digitalClock,
-                                    timestampDate: Date()
+                                    timestampDate: Date(),
+                                    isAction: isAction
                                 )
                             }
                         }
@@ -109,11 +117,11 @@ final class TwitchChatMoblin {
         }
     }
 
-    private func createTwitchSegments(message: ChatMessage,
+    private func createTwitchSegments(text: String,
                                       emotes: [ChatMessageEmote]) -> [ChatPostSegment]
     {
         var segments: [ChatPostSegment] = []
-        let unicodeText = message.text.unicodeScalars
+        let unicodeText = text.unicodeScalars
         var startIndex = unicodeText.startIndex
         for emote in emotes.sorted(by: { lhs, rhs in
             lhs.range.lowerBound < rhs.range.lowerBound
@@ -166,12 +174,12 @@ final class TwitchChatMoblin {
         return segments
     }
 
-    private func createSegments(message: ChatMessage,
+    private func createSegments(text: String,
                                 emotes: [ChatMessageEmote],
                                 emotesManager: Emotes) -> [ChatPostSegment]
     {
         var segments: [ChatPostSegment] = []
-        for var segment in createTwitchSegments(message: message, emotes: emotes) {
+        for var segment in createTwitchSegments(text: text, emotes: emotes) {
             if let text = segment.text {
                 segments += emotesManager.createSegments(text: text)
                 segment.text = nil
@@ -179,5 +187,11 @@ final class TwitchChatMoblin {
             segments.append(segment)
         }
         return segments
+    }
+}
+
+extension ChatMessage {
+    func isAction() -> Bool {
+        return text.starts(with: "\u{01}ACTION")
     }
 }

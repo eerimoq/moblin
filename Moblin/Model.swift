@@ -137,6 +137,7 @@ struct ChatPost: Identifiable, Hashable {
     var segments: [ChatPostSegment]
     var timestamp: String
     var timestampDate: Date
+    var isAction: Bool
 }
 
 class ButtonState {
@@ -1747,7 +1748,8 @@ final class Model: ObservableObject {
                           userColor: post.userColor,
                           segments: post.segments,
                           timestamp: post.timestamp,
-                          timestampDate: post.timestampDate)
+                          timestampDate: post.timestampDate,
+                          isAction: post.isAction)
     }
 
     func appendChatMessage(
@@ -1755,7 +1757,8 @@ final class Model: ObservableObject {
         userColor: String?,
         segments: [ChatPostSegment],
         timestamp: String,
-        timestampDate: Date
+        timestampDate: Date,
+        isAction: Bool
     ) {
         let post = ChatPost(
             id: chatPostId,
@@ -1763,7 +1766,8 @@ final class Model: ObservableObject {
             userColor: userColor,
             segments: segments,
             timestamp: timestamp,
-            timestampDate: timestampDate
+            timestampDate: timestampDate,
+            isAction: isAction
         )
         chatPostId += 1
         if chatPaused {
@@ -1808,7 +1812,8 @@ final class Model: ObservableObject {
                 userColor: nil,
                 segments: [],
                 timestamp: "",
-                timestampDate: Date()
+                timestampDate: Date(),
+                isAction: false
             )
         }
         for post in pausedChatPosts {

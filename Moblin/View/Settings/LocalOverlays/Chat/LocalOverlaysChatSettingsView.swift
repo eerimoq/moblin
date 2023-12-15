@@ -376,6 +376,14 @@ struct LocalOverlaysChatSettingsView: View {
                         shadowColor = model.database.chat.shadowColor.color()
                     }
                 }
+                Toggle(isOn: Binding(get: {
+                    model.database.chat.meInUsernameColor!
+                }, set: { value in
+                    model.database.chat.meInUsernameColor = value
+                    model.store()
+                })) {
+                    Text("Me in username color")
+                }
             } header: {
                 Text("Colors")
             } footer: {

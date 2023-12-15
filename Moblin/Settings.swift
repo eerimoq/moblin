@@ -696,6 +696,7 @@ class SettingsChat: Codable {
     var width: Double? = 1.0
     var maximumAge: Int? = 30
     var maximumAgeEnabled: Bool? = false
+    var meInUsernameColor: Bool? = true
 }
 
 enum SettingsMic: String, Codable, CaseIterable {
@@ -1272,6 +1273,10 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.obsWebSocketEnabled == nil {
             stream.obsWebSocketEnabled = true
+            store()
+        }
+        if realDatabase.chat.meInUsernameColor == nil {
+            realDatabase.chat.meInUsernameColor = true
             store()
         }
     }
