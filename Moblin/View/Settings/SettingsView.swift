@@ -68,12 +68,12 @@ struct SettingsView: View {
     @EnvironmentObject var model: Model
 
     private func onChangeBackCamera(camera: String) {
-        model.database.backCameraType = model.backCameras.first { $0.name == camera }!.type
+        model.database.backCameraType = model.backCameras.first { $0.id == camera }!.type
         model.sceneUpdated()
     }
 
     private func onChangeFrontCamera(camera: String) {
-        model.database.frontCameraType = model.frontCameras.first { $0.name == camera }!.type
+        model.database.frontCameraType = model.frontCameras.first { $0.id == camera }!.type
         model.sceneUpdated()
     }
 
