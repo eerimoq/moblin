@@ -27,7 +27,7 @@ struct LeftOverlayView: View {
         if stream.getProtocol() == .srt && stream.adaptiveBitrate {
             bitrate = "<\(bitrate)"
         }
-        var audioBitrate = formatBytesPerSecond(speed: Int64(stream.audioBitrate!))
+        let audioBitrate = formatBytesPerSecond(speed: Int64(stream.audioBitrate!))
         return "\(stream.name) (\(resolution), \(stream.fps), \(proto), \(codec), \(bitrate), AAC, \(audioBitrate)"
     }
 
