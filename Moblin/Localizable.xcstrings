@@ -15405,8 +15405,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ich in Benutzername Farbe"
+            "state" : "translated",
+            "value" : "/me in der Farbe des Nutzernamens"
           }
         },
         "el" : {
@@ -27063,7 +27063,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Weit Dual (auto)"
+            "value" : "Weitwinkel Dual (auto)"
           }
         },
         "el" : {
