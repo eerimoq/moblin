@@ -21,8 +21,9 @@ struct DebugSettingsView: View {
                 }
                 NavigationLink(destination: InlinePickerView(title: String(localized: "Log level"),
                                                              onChange: onLogLevelChange,
-                                                             items: logLevels,
-                                                             selected: model.database
+                                                             items: InlinePickerItem
+                                                                 .fromStrings(values: logLevels),
+                                                             selectedId: model.database
                                                                  .debug!.logLevel
                                                                  .rawValue))
                 {

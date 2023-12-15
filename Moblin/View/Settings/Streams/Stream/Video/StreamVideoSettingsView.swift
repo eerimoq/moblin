@@ -35,8 +35,9 @@ struct StreamVideoSettingsView: View {
             Section {
                 NavigationLink(destination: InlinePickerView(title: String(localized: "Resolution"),
                                                              onChange: onResolutionChange,
-                                                             items: resolutions,
-                                                             selected: stream.resolution
+                                                             items: InlinePickerItem
+                                                                 .fromStrings(values: resolutions),
+                                                             selectedId: stream.resolution
                                                                  .rawValue))
                 {
                     TextItemView(name: String(localized: "Resolution"), value: stream.resolution.rawValue)
@@ -44,8 +45,9 @@ struct StreamVideoSettingsView: View {
                 .disabled(stream.enabled && model.isLive)
                 NavigationLink(destination: InlinePickerView(title: "FPS",
                                                              onChange: onFpsChange,
-                                                             items: fpss,
-                                                             selected: String(stream
+                                                             items: InlinePickerItem
+                                                                 .fromStrings(values: fpss),
+                                                             selectedId: String(stream
                                                                  .fps)))
                 {
                     TextItemView(name: "FPS", value: String(stream.fps))
@@ -53,8 +55,9 @@ struct StreamVideoSettingsView: View {
                 .disabled(stream.enabled && model.isLive)
                 NavigationLink(destination: InlinePickerView(title: String(localized: "Codec"),
                                                              onChange: onCodecChange,
-                                                             items: codecs,
-                                                             selected: stream.codec
+                                                             items: InlinePickerItem
+                                                                 .fromStrings(values: codecs),
+                                                             selectedId: stream.codec
                                                                  .rawValue))
                 {
                     TextItemView(name: String(localized: "Codec"), value: stream.codec.rawValue)

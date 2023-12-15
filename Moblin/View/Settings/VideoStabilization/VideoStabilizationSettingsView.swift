@@ -15,8 +15,8 @@ struct VideoStabilizationSettingsView: View {
             title: String(localized: "Video stabilization"),
             onChange: onChange,
             footers: [String(localized: "Video stabilization sometimes gives audio-video sync issues.")],
-            items: videoStabilizationModes,
-            selected: model.database.videoStabilizationMode.toString()
+            items: InlinePickerItem.fromStrings(values: videoStabilizationModes),
+            selectedId: model.database.videoStabilizationMode.toString()
         )) {
             TextItemView(
                 name: String(localized: "Video stabilization"),

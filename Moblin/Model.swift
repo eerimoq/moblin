@@ -18,7 +18,8 @@ private let noValue = ""
 private let maximumNumberOfChatMessages = 50
 private let secondsSuffix = String(localized: "/sec")
 
-struct Camera {
+struct Camera: Identifiable {
+    var id: String
     var type: SettingsCameraType
     var name: String
 }
@@ -864,17 +865,17 @@ final class Model: ObservableObject {
         return deviceDiscovery.devices.map { device in
             switch device.deviceType {
             case .builtInTripleCamera:
-                return Camera(type: .triple, name: cameraName(device: device))
+                return Camera(id: device.uniqueID, type: .triple, name: cameraName(device: device))
             case .builtInDualCamera:
-                return Camera(type: .dual, name: cameraName(device: device))
+                return Camera(id: device.uniqueID, type: .dual, name: cameraName(device: device))
             case .builtInDualWideCamera:
-                return Camera(type: .dualWide, name: cameraName(device: device))
+                return Camera(id: device.uniqueID, type: .dualWide, name: cameraName(device: device))
             case .builtInUltraWideCamera:
-                return Camera(type: .ultraWide, name: cameraName(device: device))
+                return Camera(id: device.uniqueID, type: .ultraWide, name: cameraName(device: device))
             case .builtInWideAngleCamera:
-                return Camera(type: .wide, name: cameraName(device: device))
+                return Camera(id: device.uniqueID, type: .wide, name: cameraName(device: device))
             case .builtInTelephotoCamera:
-                return Camera(type: .telephoto, name: cameraName(device: device))
+                return Camera(id: device.uniqueID, type: .telephoto, name: cameraName(device: device))
             default:
                 fatalError("Bad camera")
             }

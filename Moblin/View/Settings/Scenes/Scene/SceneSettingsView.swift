@@ -94,8 +94,8 @@ struct SceneSettingsView: View {
                     footers: [
                         String(localized: "The Picture in Picture layout is experimental and does not work."),
                     ],
-                    items: cameraLayouts,
-                    selected: scene.cameraLayout!.toString()
+                    items: InlinePickerItem.fromStrings(values: cameraLayouts),
+                    selectedId: scene.cameraLayout!.toString()
                 )) {
                     TextItemView(name: String(localized: "Layout"), value: scene.cameraLayout!.toString())
                 }
@@ -103,8 +103,8 @@ struct SceneSettingsView: View {
                     NavigationLink(destination: InlinePickerView(
                         title: String(localized: "Camera"),
                         onChange: onCameraChange,
-                        items: cameraPositions,
-                        selected: scene.cameraPosition!.toString()
+                        items: InlinePickerItem.fromStrings(values: cameraPositions),
+                        selectedId: scene.cameraPosition!.toString()
                     )) {
                         TextItemView(
                             name: String(localized: "Camera"),
@@ -115,8 +115,8 @@ struct SceneSettingsView: View {
                     NavigationLink(destination: InlinePickerView(
                         title: String(localized: "Large camera"),
                         onChange: onCameraChange,
-                        items: cameraPositions,
-                        selected: scene.cameraPosition!.toString()
+                        items: InlinePickerItem.fromStrings(values: cameraPositions),
+                        selectedId: scene.cameraPosition!.toString()
                     )) {
                         TextItemView(
                             name: String(localized: "Large camera"),

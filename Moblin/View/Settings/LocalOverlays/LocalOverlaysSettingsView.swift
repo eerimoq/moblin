@@ -82,8 +82,9 @@ struct LocalOverlaysSettingsView: View {
             Section("Top right") {
                 NavigationLink(destination: InlinePickerView(title: String(localized: "Audio level"),
                                                              onChange: onAudioLevelChange,
-                                                             items: audioLevels,
-                                                             selected: audioLevel()))
+                                                             items: InlinePickerItem
+                                                                 .fromStrings(values: audioLevels),
+                                                             selectedId: audioLevel()))
                 {
                     Toggle(isOn: Binding(get: {
                         show.audioLevel

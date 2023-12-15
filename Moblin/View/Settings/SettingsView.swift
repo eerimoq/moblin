@@ -77,6 +77,10 @@ struct SettingsView: View {
         model.sceneUpdated()
     }
 
+    private func toCameraId(value: SettingsCameraType, cameras: [Camera]) -> String {
+        return cameras.first(where: { $0.type == value })?.id ?? ""
+    }
+
     private func toCameraName(value: SettingsCameraType, cameras: [Camera]) -> String {
         return cameras.first(where: { $0.type == value })?.name ?? ""
     }
@@ -121,8 +125,8 @@ struct SettingsView: View {
                         one is used at a time. This allows the phone to quickly change camera when zooming.
                         """),
                     ],
-                    items: model.backCameras.map { $0.name },
-                    selected: toCameraName(value: model.database.backCameraType!, cameras: model.backCameras)
+                    items: model.backCameras.map { InlinePickerItem(id: $0.id, text: $0.name) },
+                    selectedId: toCameraId(value: model.database.backCameraType!, cameras: model.backCameras)
                 )) {
                     TextItemView(
                         name: String(localized: "Back camera"),
@@ -132,8 +136,8 @@ struct SettingsView: View {
                 NavigationLink(destination: InlinePickerView(
                     title: String(localized: "Front camera"),
                     onChange: onChangeFrontCamera,
-                    items: model.frontCameras.map { $0.name },
-                    selected: toCameraName(
+                    items: model.frontCameras.map { InlinePickerItem(id: $0.id, text: $0.name) },
+                    selectedId: toCameraId(
                         value: model.database.frontCameraType!,
                         cameras: model.frontCameras
                     )
