@@ -187,7 +187,7 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "-"
           }
         },
@@ -281,8 +281,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : ":"
+            "state" : "translated",
+            "value" : ": "
           }
         },
         "ja" : {
@@ -1361,6 +1361,12 @@
             "value" : "🎉 Du är LIVE på %@ 🎉"
           }
         },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🎉 %@ 🎉"
+          }
+        },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
@@ -1543,10 +1549,22 @@
             "value" : "😎 Går LIVE på %@ 😎"
           }
         },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "😎 %@ 😎"
+          }
+        },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "😎 Đi trực tiếp tại %@ 😎"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "😎以％@ live"
           }
         },
         "zh-Hant" : {
