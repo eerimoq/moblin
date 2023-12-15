@@ -9,8 +9,8 @@ struct StreamAudioSettingsView: View {
             model.makeErrorToast(title: "Bitrate must be a number")
             return
         }
-        guard bitrate >= 32 && bitrate <= 192 else {
-            model.makeErrorToast(title: "Bitrate not 32 - 192 kbps")
+        guard bitrate >= 32 && bitrate <= 320 else {
+            model.makeErrorToast(title: "Bitrate not 32 - 320 kbps")
             return
         }
         stream.audioBitrate = bitrate * 1000
@@ -27,7 +27,7 @@ struct StreamAudioSettingsView: View {
                     title: String(localized: "Bitrate"),
                     value: String(stream.audioBitrate! / 1000),
                     onSubmit: onBitrateChange,
-                    footer: Text("Audio bitrate as 32 - 192 kbps. Only AAC codec is supported.")
+                    footer: Text("Audio bitrate as 32 - 320 kbps. Only AAC codec is supported.")
                 )) {
                     TextItemView(
                         name: String(localized: "Bitrate"),
