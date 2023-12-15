@@ -3180,6 +3180,9 @@
         }
       }
     },
+    "Audio bitrate as 32 - 192 kbps. Only AAC codec is supported." : {
+
+    },
     "Audio level" : {
       "localizations" : {
         "de" : {

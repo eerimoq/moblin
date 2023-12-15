@@ -1319,6 +1319,7 @@ final class Model: ObservableObject {
         setStreamCodec()
         setStreamKeyFrameInterval()
         setStreamBitrate(stream: stream)
+        setAudioStreamBitrate(stream: stream)
         reloadConnections()
         resetChat()
     }
@@ -1411,6 +1412,10 @@ final class Model: ObservableObject {
 
     func setStreamBitrate(stream: SettingsStream) {
         media.setVideoStreamBitrate(bitrate: stream.bitrate)
+    }
+
+    func setAudioStreamBitrate(stream: SettingsStream) {
+        media.setAudioStreamBitrate(bitrate: stream.audioBitrate!)
     }
 
     private func setStreamCodec() {

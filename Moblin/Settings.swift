@@ -86,6 +86,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var captureSessionPresetEnabled: Bool = false
     var captureSessionPreset: SettingsCaptureSessionPreset = .medium
     var maxKeyFrameInterval: Int32? = 2
+    var audioBitrate: Int? = 64 * 1000
 
     init(name: String) {
         self.name = name
@@ -112,6 +113,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
         scene.captureSessionPresetEnabled = captureSessionPresetEnabled
         scene.captureSessionPreset = captureSessionPreset
         scene.maxKeyFrameInterval = maxKeyFrameInterval
+        scene.audioBitrate = audioBitrate
         return scene
     }
 
@@ -1277,6 +1279,10 @@ final class Settings {
         }
         if realDatabase.chat.meInUsernameColor == nil {
             realDatabase.chat.meInUsernameColor = true
+            store()
+        }
+        for stream in realDatabase.streams where stream.audioBitrate == nil {
+            stream.audioBitrate = 64 * 1000
             store()
         }
     }

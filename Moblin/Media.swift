@@ -327,6 +327,10 @@ final class Media: NSObject {
         netStream.videoSettings.maxKeyFrameIntervalDuration = seconds
     }
 
+    func setAudioStreamBitrate(bitrate: Int) {
+        netStream.audioSettings.bitRate = bitrate
+    }
+
     func setCameraZoomLevel(level: Float, rate: Float?) -> Float? {
         guard let device = netStream.videoCapture()?.device else {
             logger.warning("Device not ready to zoom")

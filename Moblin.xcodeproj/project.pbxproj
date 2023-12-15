@@ -23,6 +23,7 @@
 		031852A62B21890A00AEAD0D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 031852A42B21890A00AEAD0D /* InfoPlist.strings */; };
 		031A2E002ADBE34F005CE350 /* DraggableItemPrefixView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031A2DFF2ADBE34F005CE350 /* DraggableItemPrefixView.swift */; };
 		031A2E112ADDDD7E005CE350 /* VideoStabilizationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031A2E102ADDDD7E005CE350 /* VideoStabilizationSettingsView.swift */; };
+		031A4DC72B2CED460053F67D /* StreamAudioSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031A4DC62B2CED460053F67D /* StreamAudioSettingsView.swift */; };
 		031CCE2D2ACA76CF00CB5D46 /* NoiseReductionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031CCE2C2ACA76CF00CB5D46 /* NoiseReductionEffect.swift */; };
 		0320D8762AED36860030418F /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 0320D8752AED36860030418F /* WrappingHStack */; };
 		032469A92AE1B3040097B18B /* StreamSrtSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032469A82AE1B3040097B18B /* StreamSrtSettingsView.swift */; };
@@ -146,6 +147,7 @@
 		031852A52B21890A00AEAD0D /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		031A2DFF2ADBE34F005CE350 /* DraggableItemPrefixView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraggableItemPrefixView.swift; sourceTree = "<group>"; };
 		031A2E102ADDDD7E005CE350 /* VideoStabilizationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoStabilizationSettingsView.swift; sourceTree = "<group>"; };
+		031A4DC62B2CED460053F67D /* StreamAudioSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamAudioSettingsView.swift; sourceTree = "<group>"; };
 		031CCE2C2ACA76CF00CB5D46 /* NoiseReductionEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoiseReductionEffect.swift; sourceTree = "<group>"; };
 		032469A82AE1B3040097B18B /* StreamSrtSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamSrtSettingsView.swift; sourceTree = "<group>"; };
 		032815DB2AC915AE001F8A85 /* RandomEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomEffect.swift; sourceTree = "<group>"; };
@@ -291,6 +293,7 @@
 		0315A3402AA31ADC00295443 /* Stream */ = {
 			isa = PBXGroup;
 			children = (
+				031A4DC42B2CED2D0053F67D /* Audio */,
 				03BDE2242B24654E00DF193A /* OBS */,
 				03EF34B72B1B027000A19221 /* AfreecaTv */,
 				0330F2B22AFADD05001262C3 /* YouTube */,
@@ -365,6 +368,14 @@
 				031A2E102ADDDD7E005CE350 /* VideoStabilizationSettingsView.swift */,
 			);
 			path = VideoStabilization;
+			sourceTree = "<group>";
+		};
+		031A4DC42B2CED2D0053F67D /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				031A4DC62B2CED460053F67D /* StreamAudioSettingsView.swift */,
+			);
+			path = Audio;
 			sourceTree = "<group>";
 		};
 		032469A72AE1B2D80097B18B /* Srt */ = {
@@ -981,6 +992,7 @@
 				032815DF2AC9885C001F8A85 /* TripleEffect.swift in Sources */,
 				03B374022AA0354C0028DDD5 /* GrayScaleEffect.swift in Sources */,
 				032FDC022B0B11C5007BE85E /* SizeEditView.swift in Sources */,
+				031A4DC72B2CED460053F67D /* StreamAudioSettingsView.swift in Sources */,
 				03E95AC62ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift in Sources */,
 				03A983632A9A05D7008FF0DB /* SettingsView.swift in Sources */,
 				036BE2D22ABD518E0048F9C5 /* StreamKickSettingsView.swift in Sources */,
