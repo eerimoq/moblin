@@ -3244,8 +3244,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ljudbithastighet som 32 - 320 kbps. Endast AAC-codec stöds."
+            "state" : "translated",
+            "value" : "Ljudbitrate i intervallet 32 - 320 kbps. Endast AAC-codec stöds."
           }
         },
         "tr" : {
@@ -20541,7 +20541,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Skrolla"
           }
         },
@@ -21199,7 +21199,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Visa namn"
           }
         },
@@ -25429,7 +25429,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Två kolumner"
           }
         },
