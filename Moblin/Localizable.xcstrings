@@ -869,8 +869,8 @@
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ (%@ totaal)"
+            "state" : "translated",
+            "value" : "%1$@ (%2$@ totaal)"
           }
         },
         "pl" : {
@@ -969,8 +969,8 @@
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ (%@)"
+            "state" : "translated",
+            "value" : "%1$@ (%2$@)"
           }
         },
         "pl" : {
@@ -1651,8 +1651,8 @@
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "FFFFF"
+            "state" : "translated",
+            "value" : "😢 FFFFF 😢"
           }
         },
         "zh-Hans" : {
