@@ -156,8 +156,12 @@ enum StreamState {
     case disconnected
 }
 
-struct ButtonPair: Identifiable {
-    var id: Int
+struct ButtonPair: Identifiable, Equatable {
+    static func == (lhs: ButtonPair, rhs: ButtonPair) -> Bool {
+        return lhs.id == rhs.id
+    }
+
+    var id: UUID
     var first: ButtonState
     var second: ButtonState?
 }
@@ -175,6 +179,7 @@ final class Model: ObservableObject {
         }
     }
 
+    @Published var scrollQuickButtons: Int = 0
     @Published var bias: Float = 0.0
     @Published var showingSettings = false
     @Published var settingsLayout: SettingsLayout = .right
@@ -467,6 +472,10 @@ final class Model: ObservableObject {
         showingToast = true
     }
 
+    func scrollQuickButtonsToBottom() {
+        scrollQuickButtons += 1
+    }
+
     func updateButtonStates() {
         guard let scene = findEnabledScene(id: selectedSceneId) else {
             buttonPairs = []
@@ -483,12 +492,12 @@ final class Model: ObservableObject {
         for index in stride(from: 0, to: states.count, by: 2) {
             if states.count - index > 1 {
                 pairs.append(ButtonPair(
-                    id: index / 2,
+                    id: UUID(),
                     first: states[index],
                     second: states[index + 1]
                 ))
             } else {
-                pairs.append(ButtonPair(id: index / 2, first: states[index]))
+                pairs.append(ButtonPair(id: UUID(), first: states[index]))
             }
         }
         buttonPairs = pairs.reversed()
@@ -811,6 +820,7 @@ final class Model: ObservableObject {
         setupPeriodicTimers()
         setupThermalState()
         updateButtonStates()
+        scrollQuickButtonsToBottom()
         removeUnusedImages()
         NotificationCenter.default.addObserver(
             self,
@@ -1944,11 +1954,16 @@ final class Model: ObservableObject {
         }
     }
 
-    func sceneUpdated(imageEffectChanged: Bool = false, store: Bool = true) {
+    func sceneUpdated(imageEffectChanged: Bool = false, store: Bool = true,
+                      scrollQuickButtons: Bool = false)
+    {
         if store {
             self.store()
         }
         updateButtonStates()
+        if scrollQuickButtons {
+            scrollQuickButtonsToBottom()
+        }
         sceneUpdatedOff()
         if imageEffectChanged {
             reloadImageEffects()

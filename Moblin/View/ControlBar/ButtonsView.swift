@@ -2,10 +2,12 @@ import AVFoundation
 import SwiftUI
 
 private let imageBackground = Color(red: 0.25, green: 0.25, blue: 0.25)
+private let singleButtonSize: CGFloat = 45
 
 struct ButtonImage: View {
     var image: String
     var on: Bool
+    var buttonSize: CGFloat
     var slash: Bool = false
     var pause: Bool = false
     var overlayColor: Color = .white
@@ -43,6 +45,53 @@ struct ButtonImage: View {
                     .bold()
                     .font(.system(size: 9))
                     .frame(width: buttonSize, height: buttonSize)
+                    .offset(y: -1)
+                    .foregroundColor(overlayColor)
+            }
+        }
+    }
+}
+
+struct ButtonImageSingle: View {
+    var image: String
+    var on: Bool
+    var slash: Bool = false
+    var pause: Bool = false
+    var overlayColor: Color = .white
+
+    var body: some View {
+        let image = Image(systemName: image)
+            .frame(width: singleButtonSize, height: singleButtonSize)
+            .foregroundColor(.white)
+            .background(imageBackground)
+            .clipShape(Circle())
+        ZStack {
+            if on {
+                image.overlay(
+                    Circle()
+                        .stroke(.white)
+                )
+            } else {
+                image
+            }
+            if slash {
+                // Button press animation not perfect.
+                Image(systemName: "line.diagonal")
+                    .frame(width: singleButtonSize, height: singleButtonSize)
+                    .foregroundColor(.white)
+                    .rotationEffect(Angle(degrees: 90))
+                    .shadow(color: imageBackground, radius: 0, x: 1, y: 0)
+                    .shadow(color: imageBackground, radius: 0, x: -1, y: 0)
+                    .shadow(color: imageBackground, radius: 0, x: 0, y: 1)
+                    .shadow(color: imageBackground, radius: 0, x: 0, y: -1)
+                    .shadow(color: imageBackground, radius: 0, x: -2, y: -2)
+            }
+            if pause {
+                // Button press animation not perfect.
+                Image(systemName: "pause")
+                    .bold()
+                    .font(.system(size: 9))
+                    .frame(width: singleButtonSize, height: singleButtonSize)
                     .offset(y: -1)
                     .foregroundColor(overlayColor)
             }
@@ -131,7 +180,6 @@ struct ObsSceneView: View {
 
 struct ButtonsView: View {
     @EnvironmentObject var model: Model
-    var height: CGFloat
     @Environment(\.accessibilityShowButtonShapes)
     private var accessibilityShowButtonShapes
 
@@ -207,36 +255,384 @@ struct ButtonsView: View {
         model.updateButtonStates()
     }
 
-    private func buttonHeight() -> CGFloat {
-        if accessibilityShowButtonShapes {
-            return 60
-        } else {
-            return 45
-        }
-    }
-
     var body: some View {
         VStack {
-            ForEach(model.buttonPairs.suffix(Int(height / buttonHeight()))) { pair in
-                HStack {
+            ForEach(model.buttonPairs) { pair in
+                if model.database.quickButtons!.twoColumns {
+                    HStack(alignment: .top) {
+                        if let second = pair.second {
+                            VStack {
+                                switch second.button.type {
+                                case .torch:
+                                    Button(action: {
+                                        torchAction(state: second)
+                                    }, label: {
+                                        ButtonImage(
+                                            image: getImage(state: second),
+                                            on: second.isOn,
+                                            buttonSize: buttonSize
+                                        )
+                                    })
+                                case .mute:
+                                    Button(action: {
+                                        muteAction(state: second)
+                                    }, label: {
+                                        ButtonImage(
+                                            image: getImage(state: second),
+                                            on: second.isOn,
+                                            buttonSize: buttonSize
+                                        )
+                                    })
+                                case .bitrate:
+                                    Button(action: {
+                                        model.showingBitrate = true
+                                    }, label: {
+                                        ButtonImage(
+                                            image: getImage(state: second),
+                                            on: second.isOn,
+                                            buttonSize: buttonSize
+                                        )
+                                    })
+                                case .widget:
+                                    Button(action: {
+                                        widgetAction(state: second)
+                                    }, label: {
+                                        ButtonImage(
+                                            image: getImage(state: second),
+                                            on: second.isOn,
+                                            buttonSize: buttonSize
+                                        )
+                                    })
+                                case .mic:
+                                    Button(action: {
+                                        model.showingMic = true
+                                    }, label: {
+                                        ButtonImage(
+                                            image: getImage(state: second),
+                                            on: second.isOn,
+                                            buttonSize: buttonSize
+                                        )
+                                    })
+                                case .chat:
+                                    Button(action: {
+                                        chatAction(state: second)
+                                    }, label: {
+                                        ButtonImage(
+                                            image: getImage(state: second),
+                                            on: second.isOn,
+                                            buttonSize: buttonSize,
+                                            slash: true
+                                        )
+                                    })
+                                case .pauseChat:
+                                    Button(action: {
+                                        pauseChatAction(state: second)
+                                    }, label: {
+                                        ButtonImage(
+                                            image: getImage(state: second),
+                                            on: second.isOn,
+                                            buttonSize: buttonSize,
+                                            pause: true,
+                                            overlayColor: pauseChatOverlayColor()
+                                        )
+                                    })
+                                case .blackScreen:
+                                    Button(action: {
+                                        blackScreenAction(state: second)
+                                    }, label: {
+                                        ButtonImage(
+                                            image: getImage(state: second),
+                                            on: second.isOn,
+                                            buttonSize: buttonSize
+                                        )
+                                    })
+                                case .obsScene:
+                                    Button(action: {
+                                        obsSceneAction(state: second)
+                                    }, label: {
+                                        ButtonImage(
+                                            image: getImage(state: second),
+                                            on: second.isOn,
+                                            buttonSize: buttonSize
+                                        )
+                                    })
+                                case .obsStartStopStream:
+                                    Button(action: {
+                                        obsStartStopStreamAction(state: second)
+                                    }, label: {
+                                        ButtonImage(
+                                            image: getImage(state: second),
+                                            on: second.isOn,
+                                            buttonSize: buttonSize
+                                        )
+                                    })
+                                }
+                                if model.database.quickButtons!.showName {
+                                    Text(second.button.name)
+                                        .foregroundColor(.white)
+                                        .font(.system(size: 10))
+                                }
+                                // Text("\(second.button.id)")
+                                //  .foregroundColor(.white)
+                            }
+                            .id(second.button.id)
+                        } else {
+                            ButtonPlaceholderImage()
+                        }
+                        VStack {
+                            switch pair.first.button.type {
+                            case .torch:
+                                Button(action: {
+                                    torchAction(state: pair.first)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: pair.first),
+                                        on: pair.first.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
+                            case .mute:
+                                Button(action: {
+                                    muteAction(state: pair.first)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: pair.first),
+                                        on: pair.first.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
+                            case .bitrate:
+                                Button(action: {
+                                    model.showingBitrate = true
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: pair.first),
+                                        on: pair.first.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
+                            case .widget:
+                                Button(action: {
+                                    widgetAction(state: pair.first)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: pair.first),
+                                        on: pair.first.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
+                            case .mic:
+                                Button(action: {
+                                    model.showingMic = true
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: pair.first),
+                                        on: pair.first.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
+                            case .chat:
+                                Button(action: {
+                                    chatAction(state: pair.first)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: pair.first),
+                                        on: pair.first.isOn,
+                                        buttonSize: buttonSize,
+                                        slash: true
+                                    )
+                                })
+                            case .pauseChat:
+                                Button(action: {
+                                    pauseChatAction(state: pair.first)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: pair.first),
+                                        on: pair.first.isOn,
+                                        buttonSize: buttonSize,
+                                        pause: true,
+                                        overlayColor: pauseChatOverlayColor()
+                                    )
+                                })
+                            case .blackScreen:
+                                Button(action: {
+                                    blackScreenAction(state: pair.first)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: pair.first),
+                                        on: pair.first.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
+                            case .obsScene:
+                                Button(action: {
+                                    obsSceneAction(state: pair.first)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: pair.first),
+                                        on: pair.first.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
+                            case .obsStartStopStream:
+                                Button(action: {
+                                    obsStartStopStreamAction(state: pair.first)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: pair.first),
+                                        on: pair.first.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
+                            }
+                            if model.database.quickButtons!.showName {
+                                Text(pair.first.button.name)
+                                    .foregroundColor(.white)
+                                    .font(.system(size: 10))
+                            }
+                            // Text("\(pair.first.button.id)")
+                            //  .foregroundColor(.white)
+                        }
+                        .id(pair.first.button.id)
+                    }
+                } else {
                     if let second = pair.second {
-                        switch second.button.type {
+                        VStack {
+                            switch second.button.type {
+                            case .torch:
+                                Button(action: {
+                                    torchAction(state: second)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: second),
+                                        on: second.isOn,
+                                        buttonSize: singleButtonSize
+                                    )
+                                })
+                            case .mute:
+                                Button(action: {
+                                    muteAction(state: second)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: second),
+                                        on: second.isOn,
+                                        buttonSize: singleButtonSize
+                                    )
+                                })
+                            case .bitrate:
+                                Button(action: {
+                                    model.showingBitrate = true
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: second),
+                                        on: second.isOn,
+                                        buttonSize: singleButtonSize
+                                    )
+                                })
+                            case .widget:
+                                Button(action: {
+                                    widgetAction(state: second)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: second),
+                                        on: second.isOn,
+                                        buttonSize: singleButtonSize
+                                    )
+                                })
+                            case .mic:
+                                Button(action: {
+                                    model.showingMic = true
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: second),
+                                        on: second.isOn,
+                                        buttonSize: singleButtonSize
+                                    )
+                                })
+                            case .chat:
+                                Button(action: {
+                                    chatAction(state: second)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: second),
+                                        on: second.isOn,
+                                        buttonSize: singleButtonSize,
+                                        slash: true
+                                    )
+                                })
+                            case .pauseChat:
+                                Button(action: {
+                                    pauseChatAction(state: second)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: second),
+                                        on: second.isOn,
+                                        buttonSize: singleButtonSize,
+                                        pause: true,
+                                        overlayColor: pauseChatOverlayColor()
+                                    )
+                                })
+                            case .blackScreen:
+                                Button(action: {
+                                    blackScreenAction(state: second)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: second),
+                                        on: second.isOn,
+                                        buttonSize: singleButtonSize
+                                    )
+                                })
+                            case .obsScene:
+                                Button(action: {
+                                    obsSceneAction(state: second)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: second),
+                                        on: second.isOn,
+                                        buttonSize: singleButtonSize
+                                    )
+                                })
+                            case .obsStartStopStream:
+                                Button(action: {
+                                    obsStartStopStreamAction(state: second)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: second),
+                                        on: second.isOn,
+                                        buttonSize: singleButtonSize
+                                    )
+                                })
+                            }
+                            if model.database.quickButtons!.showName {
+                                Text(second.button.name)
+                                    .foregroundColor(.white)
+                                    .font(.system(size: 10))
+                            }
+                        }
+                        .id(second.button.id)
+                    } else {
+                        EmptyView()
+                    }
+                    VStack {
+                        switch pair.first.button.type {
                         case .torch:
                             Button(action: {
-                                torchAction(state: second)
+                                torchAction(state: pair.first)
                             }, label: {
                                 ButtonImage(
-                                    image: getImage(state: second),
-                                    on: second.isOn
+                                    image: getImage(state: pair.first),
+                                    on: pair.first.isOn,
+                                    buttonSize: singleButtonSize
                                 )
                             })
                         case .mute:
                             Button(action: {
-                                muteAction(state: second)
+                                muteAction(state: pair.first)
                             }, label: {
                                 ButtonImage(
-                                    image: getImage(state: second),
-                                    on: second.isOn
+                                    image: getImage(state: pair.first),
+                                    on: pair.first.isOn,
+                                    buttonSize: singleButtonSize
                                 )
                             })
                         case .bitrate:
@@ -244,17 +640,19 @@ struct ButtonsView: View {
                                 model.showingBitrate = true
                             }, label: {
                                 ButtonImage(
-                                    image: getImage(state: second),
-                                    on: second.isOn
+                                    image: getImage(state: pair.first),
+                                    on: pair.first.isOn,
+                                    buttonSize: singleButtonSize
                                 )
                             })
                         case .widget:
                             Button(action: {
-                                widgetAction(state: second)
+                                widgetAction(state: pair.first)
                             }, label: {
                                 ButtonImage(
-                                    image: getImage(state: second),
-                                    on: second.isOn
+                                    image: getImage(state: pair.first),
+                                    on: pair.first.isOn,
+                                    buttonSize: singleButtonSize
                                 )
                             })
                         case .mic:
@@ -262,157 +660,72 @@ struct ButtonsView: View {
                                 model.showingMic = true
                             }, label: {
                                 ButtonImage(
-                                    image: getImage(state: second),
-                                    on: second.isOn
+                                    image: getImage(state: pair.first),
+                                    on: pair.first.isOn,
+                                    buttonSize: singleButtonSize
                                 )
                             })
                         case .chat:
                             Button(action: {
-                                chatAction(state: second)
+                                chatAction(state: pair.first)
                             }, label: {
                                 ButtonImage(
-                                    image: getImage(state: second),
-                                    on: second.isOn,
+                                    image: getImage(state: pair.first),
+                                    on: pair.first.isOn,
+                                    buttonSize: singleButtonSize,
                                     slash: true
                                 )
                             })
                         case .pauseChat:
                             Button(action: {
-                                pauseChatAction(state: second)
+                                pauseChatAction(state: pair.first)
                             }, label: {
                                 ButtonImage(
-                                    image: getImage(state: second),
-                                    on: second.isOn,
+                                    image: getImage(state: pair.first),
+                                    on: pair.first.isOn,
+                                    buttonSize: singleButtonSize,
                                     pause: true,
                                     overlayColor: pauseChatOverlayColor()
                                 )
                             })
                         case .blackScreen:
                             Button(action: {
-                                blackScreenAction(state: second)
+                                blackScreenAction(state: pair.first)
                             }, label: {
                                 ButtonImage(
-                                    image: getImage(state: second),
-                                    on: second.isOn
+                                    image: getImage(state: pair.first),
+                                    on: pair.first.isOn,
+                                    buttonSize: singleButtonSize
                                 )
                             })
                         case .obsScene:
                             Button(action: {
-                                obsSceneAction(state: second)
+                                obsSceneAction(state: pair.first)
                             }, label: {
                                 ButtonImage(
-                                    image: getImage(state: second),
-                                    on: second.isOn
+                                    image: getImage(state: pair.first),
+                                    on: pair.first.isOn,
+                                    buttonSize: singleButtonSize
                                 )
                             })
                         case .obsStartStopStream:
                             Button(action: {
-                                obsStartStopStreamAction(state: second)
+                                obsStartStopStreamAction(state: pair.first)
                             }, label: {
                                 ButtonImage(
-                                    image: getImage(state: second),
-                                    on: second.isOn
+                                    image: getImage(state: pair.first),
+                                    on: pair.first.isOn,
+                                    buttonSize: singleButtonSize
                                 )
                             })
                         }
-                    } else {
-                        ButtonPlaceholderImage()
+                        if model.database.quickButtons!.showName {
+                            Text(pair.first.button.name)
+                                .foregroundColor(.white)
+                                .font(.system(size: 10))
+                        }
                     }
-                    switch pair.first.button.type {
-                    case .torch:
-                        Button(action: {
-                            torchAction(state: pair.first)
-                        }, label: {
-                            ButtonImage(
-                                image: getImage(state: pair.first),
-                                on: pair.first.isOn
-                            )
-                        })
-                    case .mute:
-                        Button(action: {
-                            muteAction(state: pair.first)
-                        }, label: {
-                            ButtonImage(
-                                image: getImage(state: pair.first),
-                                on: pair.first.isOn
-                            )
-                        })
-                    case .bitrate:
-                        Button(action: {
-                            model.showingBitrate = true
-                        }, label: {
-                            ButtonImage(
-                                image: getImage(state: pair.first),
-                                on: pair.first.isOn
-                            )
-                        })
-                    case .widget:
-                        Button(action: {
-                            widgetAction(state: pair.first)
-                        }, label: {
-                            ButtonImage(
-                                image: getImage(state: pair.first),
-                                on: pair.first.isOn
-                            )
-                        })
-                    case .mic:
-                        Button(action: {
-                            model.showingMic = true
-                        }, label: {
-                            ButtonImage(
-                                image: getImage(state: pair.first),
-                                on: pair.first.isOn
-                            )
-                        })
-                    case .chat:
-                        Button(action: {
-                            chatAction(state: pair.first)
-                        }, label: {
-                            ButtonImage(
-                                image: getImage(state: pair.first),
-                                on: pair.first.isOn,
-                                slash: true
-                            )
-                        })
-                    case .pauseChat:
-                        Button(action: {
-                            pauseChatAction(state: pair.first)
-                        }, label: {
-                            ButtonImage(
-                                image: getImage(state: pair.first),
-                                on: pair.first.isOn,
-                                pause: true,
-                                overlayColor: pauseChatOverlayColor()
-                            )
-                        })
-                    case .blackScreen:
-                        Button(action: {
-                            blackScreenAction(state: pair.first)
-                        }, label: {
-                            ButtonImage(
-                                image: getImage(state: pair.first),
-                                on: pair.first.isOn
-                            )
-                        })
-                    case .obsScene:
-                        Button(action: {
-                            obsSceneAction(state: pair.first)
-                        }, label: {
-                            ButtonImage(
-                                image: getImage(state: pair.first),
-                                on: pair.first.isOn
-                            )
-                        })
-                    case .obsStartStopStream:
-                        Button(action: {
-                            obsStartStopStreamAction(state: pair.first)
-                        }, label: {
-                            ButtonImage(
-                                image: getImage(state: pair.first),
-                                on: pair.first.isOn
-                            )
-                        })
-                    }
+                    .id(pair.first.button.id)
                 }
             }
         }

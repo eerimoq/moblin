@@ -166,6 +166,9 @@ struct SettingsView: View {
                     model.database.batteryPercentage = value
                     model.store()
                 }))
+                NavigationLink(destination: QuickButtonsSettingsView()) {
+                    Text("Quick buttons")
+                }
             }
             Section {
                 NavigationLink(destination: CosmeticsSettingsView(

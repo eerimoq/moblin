@@ -116,6 +116,7 @@
 		03C088372B0AFFA8000990DA /* InlinePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C088362B0AFFA8000990DA /* InlinePickerView.swift */; };
 		03CC5F892AD060DB0019CBA5 /* WidgetBrowserUrlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CC5F882AD060DB0019CBA5 /* WidgetBrowserUrlSettingsView.swift */; };
 		03D445E22AE5966B00A0F6E9 /* CacheAsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D445E12AE5966B00A0F6E9 /* CacheAsyncImage.swift */; };
+		03E877F72B2DB27800086355 /* QuickButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E877F62B2DB27800086355 /* QuickButtonsSettingsView.swift */; };
 		03E95AC62ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */; };
 		03E95ADF2ADB7A2E00DAE2DF /* MaximumScreenFpsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95ADE2ADB7A2E00DAE2DF /* MaximumScreenFpsSettingsView.swift */; };
 		03E95AE42ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95AE32ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift */; };
@@ -234,6 +235,7 @@
 		03C088362B0AFFA8000990DA /* InlinePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlinePickerView.swift; sourceTree = "<group>"; };
 		03CC5F882AD060DB0019CBA5 /* WidgetBrowserUrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBrowserUrlSettingsView.swift; sourceTree = "<group>"; };
 		03D445E12AE5966B00A0F6E9 /* CacheAsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheAsyncImage.swift; sourceTree = "<group>"; };
+		03E877F62B2DB27800086355 /* QuickButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickButtonsSettingsView.swift; sourceTree = "<group>"; };
 		03E92AD42B248D3C00EBAC77 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomSwitchToSettingsView.swift; sourceTree = "<group>"; };
 		03E95ADE2ADB7A2E00DAE2DF /* MaximumScreenFpsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaximumScreenFpsSettingsView.swift; sourceTree = "<group>"; };
@@ -674,6 +676,7 @@
 		03B373F42A9EF8BD0028DDD5 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				03E877F52B2DB26100086355 /* Quick buttons */,
 				031A2E0E2ADDDD62005CE350 /* VideoStabilization */,
 				03E95AE22ADB7B2200DAE2DF /* TapScreenToFocus */,
 				03E95ADD2ADB7A0D00DAE2DF /* MaxScreenVideoFps */,
@@ -755,6 +758,14 @@
 				03BDE2252B24656400DF193A /* StreamObsSettingsView.swift */,
 			);
 			path = OBS;
+			sourceTree = "<group>";
+		};
+		03E877F52B2DB26100086355 /* Quick buttons */ = {
+			isa = PBXGroup;
+			children = (
+				03E877F62B2DB27800086355 /* QuickButtonsSettingsView.swift */,
+			);
+			path = "Quick buttons";
 			sourceTree = "<group>";
 		};
 		03E95ADD2ADB7A0D00DAE2DF /* MaxScreenVideoFps */ = {
@@ -991,6 +1002,7 @@
 				0379BB942AACF16600B718B6 /* SepiaEffect.swift in Sources */,
 				032815DF2AC9885C001F8A85 /* TripleEffect.swift in Sources */,
 				03B374022AA0354C0028DDD5 /* GrayScaleEffect.swift in Sources */,
+				03E877F72B2DB27800086355 /* QuickButtonsSettingsView.swift in Sources */,
 				032FDC022B0B11C5007BE85E /* SizeEditView.swift in Sources */,
 				031A4DC72B2CED460053F67D /* StreamAudioSettingsView.swift in Sources */,
 				03E95AC62ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift in Sources */,

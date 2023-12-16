@@ -196,7 +196,7 @@ struct RightOverlayView: View {
             }
             .onChange(of: model.sceneIndex) { tag in
                 model.selectedSceneId = model.enabledScenes[tag].id
-                model.sceneUpdated()
+                model.sceneUpdated(scrollQuickButtons: true)
             }
             .pickerStyle(.segmented)
             .padding([.bottom], 1)

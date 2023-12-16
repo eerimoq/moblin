@@ -19258,6 +19258,9 @@
         }
       }
     },
+    "Quick buttons" : {
+
+    },
     "Random" : {
       "localizations" : {
         "de" : {
@@ -20292,6 +20295,9 @@
         }
       }
     },
+    "Scroll" : {
+
+    },
     "Select image" : {
       "localizations" : {
         "de" : {
@@ -20855,6 +20861,9 @@
           }
         }
       }
+    },
+    "Show name" : {
+
     },
     "Show sensitive URL" : {
       "localizations" : {
@@ -24991,6 +25000,9 @@
           }
         }
       }
+    },
+    "Two columns" : {
+
     },
     "Type" : {
       "localizations" : {

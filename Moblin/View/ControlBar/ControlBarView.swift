@@ -97,13 +97,25 @@ struct ControlBarView: View {
             }
             .padding([.leading, .trailing], 10)
             GeometryReader { metrics in
-                VStack(spacing: 0) {
-                    Spacer()
-                    ButtonsView(height: metrics.size.height)
-                        .frame(width: metrics.size.width)
+                ScrollView {
+                    ScrollViewReader { reader in
+                        VStack {
+                            Spacer(minLength: 0)
+                            ButtonsView()
+                                .frame(width: metrics.size.width)
+                                .onChange(of: model.scrollQuickButtons) { _ in
+                                    let id = model.buttonPairs.last?.first.button.id ?? model.buttonPairs
+                                        .last?.second?.button.id ?? UUID()
+                                    reader.scrollTo(id, anchor: .bottom)
+                                }
+                        }
+                        .frame(minHeight: metrics.size.height)
+                    }
                 }
+                .scrollDisabled(!model.database.quickButtons!.enableScroll)
+                .padding([.top], 5)
             }
-            .padding([.leading, .trailing], 10)
+            .padding([.leading, .trailing], 0)
             StreamButton()
                 .padding([.top], 10)
                 .padding([.leading, .trailing], 5)

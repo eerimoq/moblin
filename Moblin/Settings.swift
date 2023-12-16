@@ -564,7 +564,7 @@ class SettingsButtonWidget: Codable, Identifiable {
     }
 }
 
-class SettingsButton: Codable, Identifiable, Equatable {
+class SettingsButton: Codable, Identifiable, Equatable, Hashable {
     var name: String
     var id: UUID = .init()
     var type: SettingsButtonType = .torch
@@ -580,6 +580,10 @@ class SettingsButton: Codable, Identifiable, Equatable {
 
     static func == (lhs: SettingsButton, rhs: SettingsButton) -> Bool {
         return lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
 }
 
@@ -721,6 +725,12 @@ class SettingsDebug: Codable {
     var srtOverheadBandwidth: Int32? = 25
 }
 
+class SettingsQuickButtons: Codable {
+    var twoColumns: Bool = true
+    var showName: Bool = false
+    var enableScroll: Bool = true
+}
+
 class Database: Codable {
     var streams: [SettingsStream] = []
     var scenes: [SettingsScene] = []
@@ -741,6 +751,7 @@ class Database: Codable {
     var batteryPercentage: Bool? = false
     var mic: SettingsMic? = .bottom
     var debug: SettingsDebug? = .init()
+    var quickButtons: SettingsQuickButtons? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -1283,6 +1294,10 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.audioBitrate == nil {
             stream.audioBitrate = 64 * 1000
+            store()
+        }
+        if realDatabase.quickButtons == nil {
+            realDatabase.quickButtons = .init()
             store()
         }
     }
