@@ -241,8 +241,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : " - "
+            "state" : "translated",
+            "value" : "-"
           }
         }
       }
@@ -335,8 +335,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "："
+            "state" : "translated",
+            "value" : ": "
           }
         }
       }
@@ -429,7 +429,7 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "/"
           }
         }
@@ -523,8 +523,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "/應用程式/"
+            "state" : "translated",
+            "value" : "/app/"
           }
         }
       }
@@ -663,8 +663,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "％.1f/min"
+            "state" : "translated",
+            "value" : "%.1f/min"
           }
         },
         "ko" : {
@@ -711,8 +711,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "％.1F/min"
+            "state" : "translated",
+            "value" : "%.1f/min"
           }
         }
       }
@@ -757,8 +757,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "％@"
+            "state" : "translated",
+            "value" : "%@"
           }
         },
         "ko" : {
@@ -805,8 +805,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "％@"
+            "state" : "translated",
+            "value" : "%@"
           }
         }
       }
@@ -821,8 +821,8 @@
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ (%@ σύνολο)"
+            "state" : "translated",
+            "value" : "%1$@ (%2$@ σύνολο)"
           }
         },
         "en" : {
@@ -845,20 +845,20 @@
         },
         "hi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ (%@ कुल)"
+            "state" : "translated",
+            "value" : "%1$@ (%2$@ कुल)"
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ (%@ total)"
+            "state" : "translated",
+            "value" : "%1$@ (%2$@ total)"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "％@ （％@ 合計）"
+            "state" : "translated",
+            "value" : "%1$@ （%2$@ 合計）"
           }
         },
         "ko" : {
@@ -893,8 +893,8 @@
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ (%@ tổng cộng)"
+            "state" : "translated",
+            "value" : "%1$@ (%2$@ tổng cộng)"
           }
         },
         "zh-Hans" : {
@@ -905,8 +905,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "％@ （％@ 全部的）"
+            "state" : "translated",
+            "value" : "%1$@ （%2$@ 全部的）"
           }
         }
       }
@@ -921,8 +921,8 @@
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ (%@)"
+            "state" : "translated",
+            "value" : "%1$@ (%2$@)"
           }
         },
         "en" : {
@@ -945,26 +945,26 @@
         },
         "hi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ (%@)"
+            "state" : "translated",
+            "value" : "%1$@ (%2$@)"
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ (%@)"
+            "state" : "translated",
+            "value" : "%1$@ (%2$@)"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "％@（％@）"
+            "state" : "translated",
+            "value" : "%1$@（%2$@）"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ (%@)"
+            "state" : "translated",
+            "value" : "%1$@ (%2$@)"
           }
         },
         "nl" : {
@@ -993,8 +993,8 @@
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ (%@)"
+            "state" : "translated",
+            "value" : "%1$@ (%2$@)"
           }
         },
         "zh-Hans" : {
@@ -1005,8 +1005,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "％@（％@）"
+            "state" : "translated",
+            "value" : "%1$@ （%2$@）"
           }
         }
       }
@@ -1051,8 +1051,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "％LLD %%"
+            "state" : "translated",
+            "value" : "%lld %%"
           }
         },
         "ko" : {
@@ -1099,8 +1099,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "％lld %%"
+            "state" : "translated",
+            "value" : "%lld %%"
           }
         }
       }
@@ -1133,20 +1133,20 @@
         },
         "hi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%एलएलडी डीबी"
+            "state" : "translated",
+            "value" : "%lld डीबी"
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%LLD DB"
+            "state" : "translated",
+            "value" : "%lld DB"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "％lld db"
+            "state" : "translated",
+            "value" : "%lld db"
           }
         },
         "ko" : {
@@ -1157,8 +1157,8 @@
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%LLD DB"
+            "state" : "translated",
+            "value" : "%lld DB"
           }
         },
         "pl" : {
@@ -1193,8 +1193,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "％lld db"
+            "state" : "translated",
+            "value" : "%lld db"
           }
         }
       }
@@ -1287,7 +1287,7 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "+"
           }
         }
@@ -1333,8 +1333,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "🎉％@🎉で生きています"
+            "state" : "translated",
+            "value" : "🎉%@🎉で生きています"
           }
         },
         "ko" : {
@@ -1381,8 +1381,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "🎉你活在％@🎉"
+            "state" : "translated",
+            "value" : "🎉你活在%@🎉"
           }
         }
       }
@@ -1521,8 +1521,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ry％@😎でライブに行く"
+            "state" : "translated",
+            "value" : "ry%@😎でライブに行く"
           }
         },
         "ko" : {
@@ -1569,8 +1569,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "😎以％@ live"
+            "state" : "translated",
+            "value" : "😎以%@ live"
           }
         }
       }
@@ -1663,8 +1663,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "😢fffff😢"
+            "state" : "translated",
+            "value" : "😢FFFFF😢"
           }
         }
       }
@@ -2432,8 +2432,8 @@
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Το επιτρεπόμενο εύρος είναι %@ - %@."
+            "state" : "translated",
+            "value" : "Το επιτρεπόμενο εύρος είναι %1$@ - %2$@."
           }
         },
         "en" : {
@@ -2456,20 +2456,20 @@
         },
         "hi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "अनुमत रेंज %@ - %@ है।"
+            "state" : "translated",
+            "value" : "अनुमत रेंज %1$@ - %2$@ है।"
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kisaran yang diizinkan adalah %@ - %@."
+            "state" : "translated",
+            "value" : "Kisaran yang diizinkan adalah %1$@ - %2$@."
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "許容範囲は％@ -％@です。"
+            "state" : "translated",
+            "value" : "許容範囲は％%1$@ - %2$@です。"
           }
         },
         "ko" : {
@@ -2480,8 +2480,8 @@
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Toegestaan bereik is %@ - %@."
+            "state" : "translated",
+            "value" : "Toegestaan bereik is %1$@ - %2$@."
           }
         },
         "pl" : {
@@ -2504,8 +2504,8 @@
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Phạm vi được phép là %@ - %@."
+            "state" : "translated",
+            "value" : "Phạm vi được phép là %1$@ - %2$@."
           }
         },
         "zh-Hans" : {
@@ -2516,8 +2516,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "允許的範圍為％@-％@。"
+            "state" : "translated",
+            "value" : "允許的範圍為%1$@ - %2$@."
           }
         }
       }
@@ -10649,8 +10649,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBSシーンを％@に設定できませんでした"
+            "state" : "translated",
+            "value" : "OBSシーンを%@に設定できませんでした"
           }
         },
         "ko" : {
@@ -10697,8 +10697,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "無法將OBS場景設置為％@"
+            "state" : "translated",
+            "value" : "無法將OBS場景設置為%@"
           }
         }
       }
@@ -15726,8 +15726,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "マイクID％@"
+            "state" : "translated",
+            "value" : "マイクID%@"
           }
         },
         "ko" : {
@@ -15774,8 +15774,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "麥克風ID％@"
+            "state" : "translated",
+            "value" : "麥克風ID%@"
           }
         }
       }
@@ -17606,8 +17606,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "％@に設定されたOBSシーン"
+            "state" : "translated",
+            "value" : "%@に設定されたOBSシーン"
           }
         },
         "ko" : {
@@ -17654,8 +17654,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS場景設置為％@"
+            "state" : "translated",
+            "value" : "OBS場景設置為%@"
           }
         }
       }
@@ -18076,8 +18076,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS Websocketは構成されていません。設定で構成 - > streams->％@  - > obs。"
+            "state" : "translated",
+            "value" : "OBS Websocketは構成されていません。設定で構成 - > streams->%@  - > obs。"
           }
         },
         "ko" : {
@@ -18124,8 +18124,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS Websocket未配置。在設置 - >流 - >％@-> obs中配置它。"
+            "state" : "translated",
+            "value" : "OBS Websocket未配置。在設置 - >流 - >%@-> obs中配置它。"
           }
         }
       }
@@ -21281,8 +21281,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "srt connectは％@で失敗しました"
+            "state" : "translated",
+            "value" : "srt connectは%@で失敗しました"
           }
         },
         "ko" : {
@@ -21329,8 +21329,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SRT連接失敗了％@"
+            "state" : "translated",
+            "value" : "SRT連接失敗了%@"
           }
         }
       }
@@ -21469,8 +21469,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SRTエラー：％@"
+            "state" : "translated",
+            "value" : "SRTエラー：%@"
           }
         },
         "ko" : {
@@ -21517,8 +21517,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SRT錯誤：％@"
+            "state" : "translated",
+            "value" : "SRT錯誤：%@"
           }
         }
       }
@@ -24383,8 +24383,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "@@カメラへ"
+            "state" : "translated",
+            "value" : "%@カメラへ"
           }
         },
         "ko" : {
@@ -24431,8 +24431,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "到％@相機"
+            "state" : "translated",
+            "value" : "到%@相機"
           }
         }
       }
@@ -25326,8 +25326,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "サポートされていないスキーム％@"
+            "state" : "translated",
+            "value" : "サポートされていないスキーム%@"
           }
         },
         "ko" : {
@@ -25374,8 +25374,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "不支持的方案％@"
+            "state" : "translated",
+            "value" : "不支持的方案%@"
           }
         }
       }
@@ -27647,8 +27647,8 @@
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Το x πρέπει να είναι %f - %f"
+            "state" : "translated",
+            "value" : "Το x πρέπει να είναι %1$f - %2$f"
           }
         },
         "en" : {
@@ -27671,32 +27671,32 @@
         },
         "hi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "X %f - %f होना चाहिए"
+            "state" : "translated",
+            "value" : "X %1$f - %2$f होना चाहिए"
           }
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "X harus %f - %f"
+            "state" : "translated",
+            "value" : "X harus %1$f - %2$f"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "xは％f -％fでなければなりません"
+            "state" : "translated",
+            "value" : "xは%1$f -%$fでなければなりません"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "x는 %f- %f이어야합니다"
+            "state" : "translated",
+            "value" : "x는 %1$f- %2$f이어야합니다"
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "X moet %f - %f zijn"
+            "state" : "translated",
+            "value" : "X moet %1$f - %1$f zijn"
           }
         },
         "pl" : {
@@ -27713,14 +27713,14 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "X %f - %f olmalı"
+            "state" : "translated",
+            "value" : "X %1$f - %2$f olmalı"
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "X phải là %f - %f"
+            "state" : "translated",
+            "value" : "X phải là %1$f - %2$f"
           }
         },
         "zh-Hans" : {
@@ -27731,8 +27731,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "x必須為％f -％f"
+            "state" : "translated",
+            "value" : "x必須為%1$f - %2$@"
           }
         }
       }
