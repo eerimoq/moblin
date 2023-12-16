@@ -1,8 +1,7 @@
 import sys
 import json
-from googletrans import Translator
 from pathlib import Path
-
+from deep_translator import GoogleTranslator
 
 LANGUAGES = [
     ("sv", "sv"),
@@ -13,8 +12,8 @@ LANGUAGES = [
     ("vi", "vi"),
     ("nl", "nl"),
     # ("zh-HK", "zh-HK"),
-    ("zh-Hans", "zh-cn"),
-    ("zh-Hant", "zh-tw"),
+    ("zh-Hans", "zh-CN"),
+    ("zh-Hant", "zh-TW"),
     ("el", "el"),
     ("tr", "tr"),
     #("pt-BR", "pt"),
@@ -35,28 +34,25 @@ def needs_translation(item):
 def main():
     localizable_xcstrings_path = Path(sys.argv[1])
     localizable = json.loads(localizable_xcstrings_path.read_text())
-    translator = Translator()
 
     try:
         for english, value in localizable['strings'].items():
             localizations = value.get('localizations')
-        
+
             if localizations is None:
                 localizations = {}
                 value['localizations'] = localizations
-        
+
             for xcode_language, google_language in LANGUAGES:
                 item = localizations.get(xcode_language)
-        
+
                 if item is None or needs_translation(item):
                     if not english.strip():
                         continue
-        
+
                     print(f'Translating "{english}" to {xcode_language}')
-                    translated = translator.translate(
-                        english,
-                        src='en',
-                        dest=google_language).text
+                    translator = GoogleTranslator(source='en', target=google_language)
+                    translated = translator.translate(english)
                     localizations[xcode_language] = {
                         'stringUnit': {
                             'state': 'needs_review',
