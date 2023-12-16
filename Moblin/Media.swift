@@ -163,6 +163,7 @@ final class Media: NSObject {
         }
     }
 
+
     func updateSrtSpeed() {
         srtTotalByteCount = srtla?.getTotalByteCount() ?? 0
         let byteCount = max(srtTotalByteCount - srtPreviousTotalByteCount, 0)
@@ -384,6 +385,7 @@ final class Media: NSObject {
         netStream?.attachAudio(device) { error in
             logger.error("stream: Attach audio error: \(error)")
         }
+        
     }
 
     func getNetStream() -> NetStream {
@@ -507,7 +509,18 @@ extension Media: SrtlaDelegate {
 }
 
 extension Media: AdaptiveBitrateDelegate {
+    func adaptiveBitrateGetVideoSize() -> VideoSize {
+        return getVideoSize()
+    }
+
+   
+
     func adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32) {
         netStream.videoSettings.bitRate = bitrate
+        
+        
+        
+        
+        
     }
 }

@@ -46,7 +46,7 @@ class LogAppender: LBLoggerAppender {
 
 class EasyLogger {
     var handler: ((String) -> Void)?
-    var debugEnabled: Bool = false
+    var debugEnabled: Bool = true
 
     private func makeTimestamp() -> String {
         return Date()
