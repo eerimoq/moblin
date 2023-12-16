@@ -96,7 +96,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : ""
+            "value" : " "
           }
         },
         "zh-Hant" : {
@@ -884,7 +884,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ "
+            "value" : "%@"
           }
         },
         "zh-Hant" : {
@@ -3128,7 +3128,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "高性能动画表情，在低耗电模式中禁用"
+            "value" : "动画表情会占用大量CPU，在低性能模式中禁用"
           }
         },
         "zh-Hant" : {
@@ -4399,8 +4399,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "酒吧"
+            "state" : "translated",
+            "value" : "条状现实"
           }
         },
         "zh-Hant" : {
@@ -5459,8 +5459,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "盛开"
+            "state" : "translated",
+            "value" : "布隆滤镜"
           }
         },
         "zh-Hant" : {
@@ -5883,7 +5883,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "边界"
           }
         },
@@ -8003,7 +8003,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "编解码器"
           }
         },
@@ -8851,8 +8851,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "方面"
+            "state" : "translated",
+            "value" : "维度"
           }
         },
         "zh-Hant" : {
@@ -13515,8 +13515,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "发电机"
+            "state" : "translated",
+            "value" : "音频生成"
           }
         },
         "zh-Hant" : {
@@ -15529,8 +15529,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "踢"
+            "state" : "translated",
+            "value" : "Kicks"
           }
         },
         "zh-Hant" : {
@@ -15635,8 +15635,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "大型相机"
+            "state" : "translated",
+            "value" : "大相机"
           }
         },
         "zh-Hant" : {
@@ -17013,8 +17013,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "最大年龄"
+            "state" : "translated",
+            "value" : "最大期限"
           }
         },
         "zh-Hant" : {
@@ -17225,8 +17225,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "最大消息年龄在几秒钟内。"
+            "state" : "translated",
+            "value" : "最大信息期限（以秒为单位）"
           }
         },
         "zh-Hant" : {
@@ -22632,7 +22632,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "视野"
+            "value" : "相机设置"
           }
         },
         "zh-Hant" : {
@@ -22738,7 +22738,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "视野"
+            "value" : "相机设置"
           }
         },
         "zh-Hant" : {
@@ -23161,8 +23161,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "棕褐色"
+            "state" : "translated",
+            "value" : "深褐色滤镜"
           }
         },
         "zh-Hant" : {
@@ -23903,8 +23903,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "单身的"
+            "state" : "translated",
+            "value" : "单个"
           }
         },
         "zh-Hant" : {
@@ -24645,8 +24645,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "srt oheadbw"
+            "state" : "translated",
+            "value" : "SRT 花费带宽"
           }
         },
         "zh-Hant" : {
@@ -24751,8 +24751,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SRT覆盖"
+            "state" : "translated",
+            "value" : "SRT"
           }
         },
         "zh-Hant" : {
@@ -32071,8 +32071,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "变焦预设"
+            "state" : "translated",
+            "value" : "预设放大"
           }
         },
         "zh-Hant" : {
