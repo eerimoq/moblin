@@ -2019,8 +2019,8 @@
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Een groot aantal.Gebruik ontwikkelaarstools (F11) in uw browser.Bekijk WebSocket -berichten."
+            "state" : "translated",
+            "value" : "Een groot aantal.Gebruik ontwikkelaarstools (F11) in uw browser. Bekijk WebSocket -berichten."
           }
         },
         "pl" : {
@@ -3085,8 +3085,8 @@
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Geanimeerde emoties zijn redelijk CPU -intensief.Schakel uit voor minder stroomgebruik."
+            "state" : "translated",
+            "value" : "Geanimeerde emoties zijn redelijk CPU-intensief.Schakel uit voor minder stroomgebruik."
           }
         },
         "pl" : {
@@ -3721,8 +3721,8 @@
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Auto -camera's gebruiken meer energie naarmate meerdere camera's worden ingeschakeld, zelfs als er maar één tegelijk wordt gebruikt.Hierdoor kan de telefoon snel van camera veranderen tijdens het inzoomen."
+            "state" : "translated",
+            "value" : "Auto -camera's gebruiken meer energie naarmate meerdere camera's worden ingeschakeld, zelfs als er maar één tegelijk wordt gebruikt. Hierdoor kan de telefoon snel van camera veranderen tijdens het inzoomen."
           }
         },
         "pl" : {
@@ -4552,13 +4552,13 @@
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Belabox Cloud Srt"
+            "value" : "Belabox Cloud SRT"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Belabox Cloud Srt"
+            "value" : "Belabox Cloud SRT"
           }
         },
         "ko" : {
@@ -4606,7 +4606,7 @@
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Belabox Cloud Srt"
+            "value" : "Belabox Cloud SRT"
           }
         },
         "zh-Hans" : {
@@ -4634,7 +4634,7 @@
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Belabox Cloud Srtla"
+            "value" : "Belabox Cloud SRTLA"
           }
         },
         "es" : {
@@ -4651,20 +4651,20 @@
         },
         "hi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "बेलाबॉक्स क्लाउड srtla"
+            "state" : "translated",
+            "value" : "बेलाबॉक्स क्लाउड SRTLA"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Belabox Cloud Srtla"
+            "value" : "Belabox Cloud SRTLA"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Belabox Cloud srtla"
+            "value" : "Belabox Cloud SRTLA"
           }
         },
         "ko" : {
@@ -4676,7 +4676,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Belabox cloud srtla"
+            "value" : "Belabox cloud SRTla"
           }
         },
         "pl" : {
@@ -4712,7 +4712,7 @@
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Belabox Cloud Srtla"
+            "value" : "Belabox Cloud SRTLA"
           }
         },
         "zh-Hans" : {
@@ -4724,7 +4724,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Belabox Cloud Srtla"
+            "value" : "Belabox Cloud SRTLA"
           }
         }
       }
@@ -4887,8 +4887,8 @@
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Grote pakketten betekent 7 MPEG-TS-pakketten per SRT-pakket, anders 6.Soms werkt Android -hotspots niet met grote pakketten."
+            "state" : "translated",
+            "value" : "Grote pakketten betekent 7 MPEG-TS-pakketten per SRT-pakket, anders 6. Soms werkt Android -hotspots niet met grote pakketten."
           }
         },
         "pl" : {
@@ -5947,8 +5947,8 @@
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Grens is redelijk CPU -intensief.Schakel uit voor minder stroomgebruik."
+            "state" : "translated",
+            "value" : "Grens is redelijk CPU-intensief.Schakel uit voor minder stroomgebruik."
           }
         },
         "pl" : {
@@ -6689,8 +6689,8 @@
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Koop individuele pictogrammen van de ICRONS Store.Ze zijn voor altijd van jou."
+            "state" : "translated",
+            "value" : "Koop individuele pictogrammen van de ICRONS Store. Ze zijn voor altijd van jou."
           }
         },
         "pl" : {
@@ -6901,8 +6901,8 @@
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Camera -omschakeling"
+            "state" : "translated",
+            "value" : "Camera-omschakeling"
           }
         },
         "pl" : {
@@ -7643,8 +7643,8 @@
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Chatroom -ID"
+            "state" : "translated",
+            "value" : "Chatroom-ID"
           }
         },
         "pl" : {
@@ -9021,8 +9021,8 @@
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Weergegeven in hoofdweergave en als APP -pictogram."
+            "state" : "translated",
+            "value" : "Weergegeven in hoofdweergave en als APP-pictogram."
           }
         },
         "pl" : {
@@ -9934,7 +9934,7 @@
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Παράδειγμα: rtmp: //arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef"
+            "value" : "Παράδειγμα: rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef"
           }
         },
         "es" : {
@@ -9952,13 +9952,13 @@
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "उदाहरण: rtmp: //arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef"
+            "value" : "उदाहरण: rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Contoh: rtmp: //arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef"
+            "value" : "Contoh: rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef"
           }
         },
         "ja" : {
@@ -9975,8 +9975,8 @@
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Voorbeeld: rtmp: //arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef"
+            "state" : "translated",
+            "value" : "Voorbeeld: rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef"
           }
         },
         "pl" : {
@@ -10012,7 +10012,7 @@
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Ví dụ: rtmp: //arn03.contribution.live-video.net/app/live_123321_sdfopjfwwjfpawjefpjawefefefefefefefefefefefefefefefef"
+            "value" : "Ví dụ: rtmp://arn03.contribution.live-video.net/app/live_123321_sdfopjfwwjfpawjefpjawefefefefefefefefefefefefefefefef"
           }
         },
         "zh-Hans" : {
@@ -10040,7 +10040,7 @@
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Παράδειγμα: rtmp: //foobar.org: 3321/5678"
+            "value" : "Παράδειγμα: rtmp://foobar.org: 3321/5678"
           }
         },
         "es" : {
@@ -10058,13 +10058,13 @@
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "उदाहरण: rtmp: //foobar.org: 3321/5678"
+            "value" : "उदाहरण: rtmp://foobar.org: 3321/5678"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Contoh: rtmp: //foobar.org: 3321/5678"
+            "value" : "Contoh: rtmp://foobar.org: 3321/5678"
           }
         },
         "ja" : {
@@ -10081,8 +10081,8 @@
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Voorbeeld: rtmp: //foobar.org: 3321/5678"
+            "state" : "translated",
+            "value" : "Voorbeeld: rtmp://foobar.org: 3321/5678"
           }
         },
         "pl" : {
@@ -10118,7 +10118,7 @@
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Ví dụ: RTMP: //foobar.org: 3321/5678"
+            "value" : "Ví dụ: rtmp://foobar.org: 3321/5678"
           }
         },
         "zh-Hans" : {
@@ -10146,7 +10146,7 @@
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Παράδειγμα: rtmps: //fa723fc1b171.global-contribute.live-video.net/sk_us-west-123hu43ui34hrkjh"
+            "value" : "Παράδειγμα: rtmps://fa723fc1b171.global-contribute.live-video.net/sk_us-west-123hu43ui34hrkjh"
           }
         },
         "es" : {
@@ -10164,13 +10164,13 @@
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "उदाहरण: rtmps: //fa723fc1b171.global-contribute.live-video.net/sk_us-west-123hu43ui34hrkjh"
+            "value" : "उदाहरण: rtmps://fa723fc1b171.global-contribute.live-video.net/sk_us-west-123hu43ui34hrkjh"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Contoh: rtmps: //fa723fc1b171.global-contribute.live-video.net/sk_us-west-123hu43ui34hrkjhh"
+            "value" : "Contoh: rtmps://fa723fc1b171.global-contribute.live-video.net/sk_us-west-123hu43ui34hrkjhh"
           }
         },
         "ja" : {
@@ -10187,8 +10187,8 @@
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Voorbeeld: rtmps: //fa723fc1b171.global-contribute.live-video.net/sk_us-west-123hu43ui34hrkjh"
+            "state" : "translated",
+            "value" : "Voorbeeld: rtmps://fa723fc1b171.global-contribute.live-video.net/sk_us-west-123hu43ui34hrkjh"
           }
         },
         "pl" : {
@@ -10224,7 +10224,7 @@
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Ví dụ: rtmps: //fa723fc1b171.global-intribut"
+            "value" : "Ví dụ: rtmps://fa723fc1b171.global-intribut"
           }
         },
         "zh-Hans" : {
@@ -10252,7 +10252,7 @@
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Παράδειγμα: srt: //120.12.32.12: 4000; streamId = publish/live/feed"
+            "value" : "Παράδειγμα: srt://120.12.32.12: 4000; streamId = publish/live/feed"
           }
         },
         "es" : {
@@ -10270,19 +10270,19 @@
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "उदाहरण: srt: //120.12.32.12: 4000? स्ट्रीमिड = प्रकाशित/लाइव/फ़ीड"
+            "value" : "उदाहरण: srt://120.12.32.12: 4000? स्ट्रीमिड = प्रकाशित/लाइव/फ़ीड"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Contoh: SRT: //120.12.32.12: 4000? StreamID = PUBLISH/LIVE/FEED"
+            "value" : "Contoh: SRT://120.12.32.12: 4000? StreamID = PUBLISH/LIVE/FEED"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "例：srt：//120.12.32.12：4000？streamid = publish/live/feed"
+            "state" : "translated",
+            "value" : "例：srt://120.12.32.12:4000？streamid = publish/live/feed"
           }
         },
         "ko" : {
@@ -10293,8 +10293,8 @@
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Voorbeeld: srt: //120.12.32.12: 4000? Streamid = publish/live/feed"
+            "state" : "translated",
+            "value" : "Voorbeeld: srt://120.12.32.12: 4000? Streamid = publish/live/feed"
           }
         },
         "pl" : {
@@ -10330,7 +10330,7 @@
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Ví dụ: SRT: //120.12.32.12: 4000? StreamID = Publish/Live/Feed"
+            "value" : "Ví dụ: srt://120.12.32.12: 4000? StreamID = Publish/Live/Feed"
           }
         },
         "zh-Hans" : {
@@ -10358,7 +10358,7 @@
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Παράδειγμα: SRT: //134.20.342.12: 5000"
+            "value" : "Παράδειγμα: SRT://134.20.342.12: 5000"
           }
         },
         "es" : {
@@ -10376,19 +10376,19 @@
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "उदाहरण: srt: //134.20.342.12: 5000"
+            "value" : "उदाहरण: srt://134.20.342.12: 5000"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Contoh: SRT: //134.20.342.12: 5000"
+            "value" : "Contoh: SRT://134.20.342.12: 5000"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "例：srt：//134.20.342.12：5000"
+            "state" : "translated",
+            "value" : "例：srt://134.20.342.12：5000"
           }
         },
         "ko" : {
@@ -10400,7 +10400,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Voorbeeld: srt: //134.20.342.12: 5000"
+            "value" : "Voorbeeld: srt://134.20.342.12: 5000"
           }
         },
         "pl" : {
@@ -10436,7 +10436,7 @@
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Ví dụ: SRT: //134.20.342.12: 5000"
+            "value" : "Ví dụ: SRT://134.20.342.12: 5000"
           }
         },
         "zh-Hans" : {
@@ -10448,7 +10448,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "示例：SRT：//134.20.342.12：5000"
+            "value" : "示例：srt：//134.20.342.12：5000"
           }
         }
       }
@@ -10464,7 +10464,7 @@
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Παράδειγμα: srtla: //foobar.org: 4432"
+            "value" : "Παράδειγμα: srtla://foobar.org: 4432"
           }
         },
         "es" : {
@@ -10482,19 +10482,19 @@
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "उदाहरण: srtla: //foobar.org: 4432"
+            "value" : "उदाहरण: srtla://foobar.org: 4432"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Contoh: srtla: //foobar.org: 4432"
+            "value" : "Contoh: srtla://foobar.org: 4432"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "例：srtla：//foobar.org：4432"
+            "state" : "translated",
+            "value" : "例：srtla://foobar.org：4432"
           }
         },
         "ko" : {
@@ -10505,8 +10505,8 @@
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Voorbeeld: srtla: //foobar.org: 4432"
+            "state" : "translated",
+            "value" : "Voorbeeld: srtla://foobar.org: 4432"
           }
         },
         "pl" : {
@@ -10542,7 +10542,7 @@
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Ví dụ: SRTLA: //foobar.org: 4432"
+            "value" : "Ví dụ: srtla://foobar.org: 4432"
           }
         },
         "zh-Hans" : {
@@ -10570,7 +10570,7 @@
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Παράδειγμα: rtmp: //a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3"
+            "value" : "Παράδειγμα: rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3"
           }
         },
         "es" : {
@@ -10588,13 +10588,13 @@
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "उदाहरण: rtmp: //a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3"
+            "value" : "उदाहरण: rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Contoh: rtmp: //a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3"
+            "value" : "Contoh: rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3"
           }
         },
         "ja" : {
@@ -10611,8 +10611,8 @@
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Voorbeeld: rtmp: //a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3"
+            "state" : "translated",
+            "value" : "Voorbeeld: rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3"
           }
         },
         "pl" : {
@@ -10648,7 +10648,7 @@
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Ví dụ: RTMP: //a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3"
+            "value" : "Ví dụ: rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3"
           }
         },
         "zh-Hans" : {
@@ -10676,7 +10676,7 @@
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Παράδειγμα: rtmps: //live-api-s.facebook.com: 443/rtmp/fb-11525221225111115-0-bctncp9jzzz-aaa"
+            "value" : "Παράδειγμα: rtmps://live-api-s.facebook.com: 443/rtmp/fb-11525221225111115-0-bctncp9jzzz-aaa"
           }
         },
         "es" : {
@@ -10694,13 +10694,13 @@
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "उदाहरण: rtmps: //live-api-s.facebook.com: 443/rtmp/fb-111525221222511115-0-bctncp9jzz-aaa"
+            "value" : "उदाहरण: rtmps://live-api-s.facebook.com: 443/rtmp/fb-111525221222511115-0-bctncp9jzz-aaa"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Contoh: rtmps: //live-api-s.facebook.com: 443/rtmp/fb-115252211111115-0-bctncp9jzzz-aaa"
+            "value" : "Contoh: rtmps://live-api-s.facebook.com: 443/rtmp/fb-115252211111115-0-bctncp9jzzz-aaa"
           }
         },
         "ja" : {
@@ -10718,7 +10718,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Voorbeeld: rtmps: //live-api-s.facebook.com: 443/rtmp/fb-1115252212251111115-0-bctncp9jzzz-aaa"
+            "value" : "Voorbeeld: rtmps://live-api-s.facebook.com: 443/rtmp/fb-1115252212251111115-0-bctncp9jzzz-aaa"
           }
         },
         "pl" : {
@@ -10754,7 +10754,7 @@
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Ví dụ: rtmps: //live-api-s.facebook.com: 443/rtmp/fb-1115252222511115-0-bctncp9jzzz-aaa"
+            "value" : "Ví dụ: rtmps://live-api-s.facebook.com: 443/rtmp/fb-1115252222511115-0-bctncp9jzzz-aaa"
           }
         },
         "zh-Hans" : {
@@ -10782,7 +10782,7 @@
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Παράδειγμα: srt: //uk.srt.belabox.net: 4000; streamId = ntlpuqxgfv4bcm448wgc4fuuldvdb3"
+            "value" : "Παράδειγμα: srt://uk.srt.belabox.net: 4000; streamId = ntlpuqxgfv4bcm448wgc4fuuldvdb3"
           }
         },
         "es" : {
@@ -10800,19 +10800,19 @@
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "उदाहरण: srt: //uk.srt.belabox.net: 4000? Stread = ntlpuqxgfv4bcm448wgc4fuuldvdb3"
+            "value" : "उदाहरण: srt://uk.srt.belabox.net: 4000? Stread = ntlpuqxgfv4bcm448wgc4fuuldvdb3"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Contoh: srt: //uk.srt.belabox.net: 4000? Streamid = ntlpuqxgfv4bcm448wgc4fuuldvdb3"
+            "value" : "Contoh: srt://uk.srt.belabox.net: 4000? Streamid = ntlpuqxgfv4bcm448wgc4fuuldvdb3"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "例：srt：//uk.srt.belabox.net：4000？streamid = ntlpuqxgfv4bcm448wgc4fuuldvdb3"
+            "state" : "translated",
+            "value" : "例：srt://uk.srt.belabox.net：4000？streamid = ntlpuqxgfv4bcm448wgc4fuuldvdb3"
           }
         },
         "ko" : {
@@ -10824,7 +10824,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Voorbeeld: srt: //uk.srt.belabox.net: 4000? Streamid = ntlpuqxgfv4bcm448wgc4fuuldvdb3"
+            "value" : "Voorbeeld: srt://uk.srt.belabox.net: 4000? Streamid = ntlpuqxgfv4bcm448wgc4fuuldvdb3"
           }
         },
         "pl" : {
@@ -10860,7 +10860,7 @@
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Ví dụ: srt: //uk.srt.belabox.net: 4000?"
+            "value" : "Ví dụ: srt://uk.srt.belabox.net: 4000?"
           }
         },
         "zh-Hans" : {
@@ -10888,7 +10888,7 @@
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Παράδειγμα: srtla: //uk.srt.belabox.net: 5000; streamId = ntlpuqxgfv4bcm448wgc4fuuldvdb3"
+            "value" : "Παράδειγμα: srtla://uk.srt.belabox.net: 5000; streamId = ntlpuqxgfv4bcm448wgc4fuuldvdb3"
           }
         },
         "es" : {
@@ -10906,19 +10906,19 @@
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "उदाहरण: srtla: //uk.srt.belabox.net: 5000? स्ट्रीमिड = ntlpuqxgfv4bcm448wgc4fuuldvdb3"
+            "value" : "उदाहरण: srtla://uk.srt.belabox.net: 5000? स्ट्रीमिड = ntlpuqxgfv4bcm448wgc4fuuldvdb3"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Contoh: srtla: //uk.srt.belabox.net: 5000? Streamid = ntlpuqxgfv4bcm448wgc4fuuldvdb3"
+            "value" : "Contoh: srtla://uk.srt.belabox.net: 5000? Streamid = ntlpuqxgfv4bcm448wgc4fuuldvdb3"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "例：srtla：//uk.srt.belabox.net：5000？streamid = ntlpuqxgfv4bcm448wgc4fuuldvdb3"
+            "state" : "translated",
+            "value" : "例：srtla://uk.srt.belabox.net：5000？streamid = ntlpuqxgfv4bcm448wgc4fuuldvdb3"
           }
         },
         "ko" : {
@@ -10930,7 +10930,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Voorbeeld: srtla: //uk.srt.belabox.net: 5000? Streamid = ntlpuqxgfv4bcm448wgc4fuuldvdb3"
+            "value" : "Voorbeeld: srtla://uk.srt.belabox.net: 5000? Streamid = ntlpuqxgfv4bcm448wgc4fuuldvdb3"
           }
         },
         "pl" : {
@@ -10966,7 +10966,7 @@
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Ví dụ: srtla: //uk.srt.belabox.net: 5000?"
+            "value" : "Ví dụ: srtla://uk.srt.belabox.net: 5000?"
           }
         },
         "zh-Hans" : {
@@ -12796,7 +12796,7 @@
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Για παράδειγμα, ws: //232.32.45.332: 4567."
+            "value" : "Για παράδειγμα, ws://232.32.45.332: 4567."
           }
         },
         "es" : {
@@ -12814,13 +12814,13 @@
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "उदाहरण के लिए ws: //232.32.45.332: 4567।"
+            "value" : "उदाहरण के लिए ws://232.32.45.332: 4567।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Misalnya WS: //232.32.45.332: 4567."
+            "value" : "Misalnya WS://232.32.45.332: 4567."
           }
         },
         "ja" : {
@@ -12832,19 +12832,19 @@
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "예를 들어 WS : //232.32.45.332 : 4567."
+            "value" : "예를 들어 WS ://232.32.45.332 : 4567."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Bijvoorbeeld WS: //232.32.45.332: 4567."
+            "value" : "Bijvoorbeeld WS://232.32.45.332: 4567."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Na przykład WS: //232.32.45.332: 4567."
+            "value" : "Na przykład WS://232.32.45.332: 4567."
           }
         },
         "pt-BR" : {
@@ -12874,7 +12874,7 @@
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Ví dụ WS: //232.32.45.332: 4567."
+            "value" : "Ví dụ WS://232.32.45.332: 4567."
           }
         },
         "zh-Hans" : {
@@ -16629,8 +16629,8 @@
         },
         "hi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "विकृत SRT (LA) URL"
+            "state" : "translated",
+            "value" : "विकृत SRT(LA) URL"
           }
         },
         "id" : {
@@ -16641,8 +16641,8 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "奇形のSRT（LA）URL"
+            "state" : "translated",
+            "value" : "奇形のSRT(LA）URL"
           }
         },
         "ko" : {
@@ -17778,7 +17778,7 @@
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "MOBLIN: // Οι βαθιές συνδέσεις μπορούν να χρησιμοποιηθούν για την εισαγωγή ορισμένων ρυθμίσεων, συχνά χρησιμοποιώντας κωδικούς QR ή ένα πρόγραμμα περιήγησης.Δείτε https://github.com/eerimoq/moblin για λεπτομέρειες."
+            "value" : "moblin:// Οι βαθιές συνδέσεις μπορούν να χρησιμοποιηθούν για την εισαγωγή ορισμένων ρυθμίσεων, συχνά χρησιμοποιώντας κωδικούς QR ή ένα πρόγραμμα περιήγησης.Δείτε https://github.com/eerimoq/moblin για λεπτομέρειες."
           }
         },
         "es" : {
@@ -17796,13 +17796,13 @@
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "MOBLIN: // गहरे लिंक का उपयोग कुछ सेटिंग्स आयात करने के लिए किया जा सकता है, अक्सर QR कोड या ब्राउज़र का उपयोग करके।विवरण के लिए https://github.com/eerimoq/moblin देखें।"
+            "value" : "moblin:// गहरे लिंक का उपयोग कुछ सेटिंग्स आयात करने के लिए किया जा सकता है, अक्सर QR कोड या ब्राउज़र का उपयोग करके।विवरण के लिए https://github.com/eerimoq/moblin देखें।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Moblin: // Tautan dalam dapat digunakan untuk mengimpor beberapa pengaturan, sering menggunakan kode QR atau browser.Lihat https://github.com/eerimoq/moblin untuk detailnya."
+            "value" : "moblin:// Tautan dalam dapat digunakan untuk mengimpor beberapa pengaturan, sering menggunakan kode QR atau browser.Lihat https://github.com/eerimoq/moblin untuk detailnya."
           }
         },
         "ja" : {
@@ -17820,7 +17820,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "MOBLIN: // Diepe links kunnen worden gebruikt om sommige instellingen te importeren, vaak met behulp van QR -codes of een browser.Zie https://github.com/eerimoq/moblin voor meer informatie."
+            "value" : "moblin:// Diepe links kunnen worden gebruikt om sommige instellingen te importeren, vaak met behulp van QR -codes of een browser.Zie https://github.com/eerimoq/moblin voor meer informatie."
           }
         },
         "pl" : {
@@ -17850,25 +17850,25 @@
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Moblin: // Derin bağlantılar, genellikle QR kodları veya tarayıcı kullanılarak bazı ayarları içe aktarmak için kullanılabilir.Ayrıntılar için bkz. Https://github.com/eerimoq/moblin."
+            "value" : "moblin:// Derin bağlantılar, genellikle QR kodları veya tarayıcı kullanılarak bazı ayarları içe aktarmak için kullanılabilir.Ayrıntılar için bkz. Https://github.com/eerimoq/moblin."
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Moblin: // Các liên kết sâu có thể được sử dụng để nhập một số cài đặt, thường sử dụng mã QR hoặc trình duyệt.Xem https://github.com/erimoq/moblin để biết chi tiết."
+            "value" : "moblin:// Các liên kết sâu có thể được sử dụng để nhập một số cài đặt, thường sử dụng mã QR hoặc trình duyệt.Xem https://github.com/erimoq/moblin để biết chi tiết."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "mobilin:// 深层链接可用于导入部分设置，可使用二维码或浏览器。参见https://github.com/eerimoq/moblin获取更多细节。"
+            "value" : "moblin:// 深层链接可用于导入部分设置，可使用二维码或浏览器。参见https://github.com/eerimoq/moblin获取更多细节。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "MOBLIN：//深層鏈接可用於導入某些設置，通常使用QR碼或瀏覽器。有關詳細信息，請參見https://github.com/eerimoq/moblin。"
+            "value" : "moblin：//深層鏈接可用於導入某些設置，通常使用QR碼或瀏覽器。有關詳細信息，請參見https://github.com/eerimoq/moblin。"
           }
         }
       }
@@ -24579,8 +24579,8 @@
         },
         "hi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Srt oheadbw"
+            "state" : "translated",
+            "value" : "SRT oheadbw"
           }
         },
         "id" : {
@@ -25003,8 +25003,8 @@
         },
         "hi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Srtla सर्वर"
+            "state" : "translated",
+            "value" : "SRTLA सर्वर"
           }
         },
         "id" : {
@@ -26152,7 +26152,7 @@
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Πρότυπο: rtmp: //"
+            "value" : "Πρότυπο: rtmp://"
           }
         },
         "es" : {
@@ -26170,13 +26170,13 @@
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "टेम्पलेट: rtmp: //"
+            "value" : "टेम्पलेट: rtmp://"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Template: rtmp: //"
+            "value" : "Template: rtmp://"
           }
         },
         "ja" : {
@@ -26194,7 +26194,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Sjabloon: rtmp: //"
+            "value" : "Sjabloon: rtmp://"
           }
         },
         "pl" : {
@@ -26224,13 +26224,13 @@
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Şablon: rtmp: //"
+            "value" : "Şablon: rtmp://"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Mẫu: RTMP: //"
+            "value" : "Mẫu: rtmp://"
           }
         },
         "zh-Hans" : {
@@ -26242,7 +26242,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "模板：RTMP：//"
+            "value" : "模板：rtmp：//"
           }
         }
       }
@@ -26258,7 +26258,7 @@
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Πρότυπο: rtmp: // my_public_ip: my_public_port/my_stream_key"
+            "value" : "Πρότυπο: rtmp:// my_public_ip: my_public_port/my_stream_key"
           }
         },
         "es" : {
@@ -26276,13 +26276,13 @@
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "टेम्पलेट: rtmp: // my_public_ip: my_public_port/my_stream_key"
+            "value" : "टेम्पलेट: rtmp:// my_public_ip: my_public_port/my_stream_key"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Templat: rtmp: // my_public_ip: my_public_port/my_stream_key"
+            "value" : "Templat: rtmp:// my_public_ip: my_public_port/my_stream_key"
           }
         },
         "ja" : {
@@ -26300,7 +26300,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Sjabloon: rtmp: // my_public_ip: my_public_port/my_stream_key"
+            "value" : "Sjabloon: rtmp:// my_public_ip: my_public_port/my_stream_key"
           }
         },
         "pl" : {
@@ -26330,13 +26330,13 @@
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Şablon: rtmp: // my_public_ip: my_public_port/my_stream_key"
+            "value" : "Şablon: rtmp:// my_public_ip: my_public_port/my_stream_key"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Mẫu: rtmp: // my_public_ip: my_public_port/my_stream_key"
+            "value" : "Mẫu: rtmp:// my_public_ip: my_public_port/my_stream_key"
           }
         },
         "zh-Hans" : {
@@ -26364,7 +26364,7 @@
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Πρότυπο: srt: // my_public_ip: my_public_port"
+            "value" : "Πρότυπο: srt:// my_public_ip: my_public_port"
           }
         },
         "es" : {
@@ -26382,13 +26382,13 @@
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "टेम्पलेट: srt: // my_public_ip: my_public_port"
+            "value" : "टेम्पलेट: srt:// my_public_ip: my_public_port"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Template: srt: // my_public_ip: my_public_port"
+            "value" : "Template: srt:// my_public_ip: my_public_port"
           }
         },
         "ja" : {
@@ -26406,7 +26406,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Sjabloon: srt: // my_public_ip: my_public_port"
+            "value" : "Sjabloon: srt:// my_public_ip: my_public_port"
           }
         },
         "pl" : {
@@ -26436,13 +26436,13 @@
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Şablon: srt: // my_public_ip: my_public_port"
+            "value" : "Şablon: srt:// my_public_ip: my_public_port"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Mẫu: SRT: // my_public_ip: my_public_port"
+            "value" : "Mẫu: SRT:// my_public_ip: my_public_port"
           }
         },
         "zh-Hans" : {
@@ -26470,7 +26470,7 @@
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Πρότυπο: srt: // my_public_ip: my_public_port; streamID = publish/live/my_key"
+            "value" : "Πρότυπο: srt:// my_public_ip: my_public_port; streamID = publish/live/my_key"
           }
         },
         "es" : {
@@ -26488,13 +26488,13 @@
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "टेम्पलेट: srt: // my_public_ip: my_public_port? StreamId = publish/live/my_key"
+            "value" : "टेम्पलेट: srt:// my_public_ip: my_public_port? StreamId = publish/live/my_key"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Template: srt: // my_public_ip: my_public_port? Streamid = publish/live/my_key"
+            "value" : "Template: srt:// my_public_ip: my_public_port? Streamid = publish/live/my_key"
           }
         },
         "ja" : {
@@ -26512,7 +26512,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Template: srt: // my_public_ip: my_public_port? Streamid = publish/live/my_key"
+            "value" : "Template: srt:// my_public_ip: my_public_port? Streamid = publish/live/my_key"
           }
         },
         "pl" : {
@@ -26542,13 +26542,13 @@
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Şablon: srt: // my_public_ip: my_public_port?"
+            "value" : "Şablon: srt:// my_public_ip: my_public_port?"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Mẫu: srt: // my_public_ip: my_public_port? Streamid = publish/live/my_key"
+            "value" : "Mẫu: srt:// my_public_ip: my_public_port? Streamid = publish/live/my_key"
           }
         },
         "zh-Hans" : {
@@ -26576,7 +26576,7 @@
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Πρότυπο: srtla: // my_public_ip: my_public_port"
+            "value" : "Πρότυπο: srtla:// my_public_ip: my_public_port"
           }
         },
         "es" : {
@@ -26594,13 +26594,13 @@
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "टेम्पलेट: srtla: // my_public_ip: my_public_port"
+            "value" : "टेम्पलेट: srtla:// my_public_ip: my_public_port"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Template: srtla: // my_public_ip: my_public_port"
+            "value" : "Template: srtla:// my_public_ip: my_public_port"
           }
         },
         "ja" : {
@@ -26618,7 +26618,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Sjabloon: srtla: // my_public_ip: my_public_port"
+            "value" : "Sjabloon: srtla:// my_public_ip: my_public_port"
           }
         },
         "pl" : {
@@ -26648,13 +26648,13 @@
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Şablon: srtla: // my_public_ip: my_public_port"
+            "value" : "Şablon: srtla:// my_public_ip: my_public_port"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Mẫu: srtla: // my_public_ip: my_public_port"
+            "value" : "Mẫu: srtla:// my_public_ip: my_public_port"
           }
         },
         "zh-Hans" : {
