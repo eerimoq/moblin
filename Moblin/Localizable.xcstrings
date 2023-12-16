@@ -194,7 +194,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : " - "
+            "value" : "-"
           }
         },
         "ko" : {
@@ -212,6 +212,18 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "-"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "-"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
             "value" : "-"
           }
         },
@@ -309,6 +321,18 @@
             "value" : ": "
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : ": "
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : ": "
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -400,6 +424,18 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "/"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "/"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
             "value" : "/"
           }
         },
@@ -497,6 +533,18 @@
             "value" : "/app/"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "/aplicativo/"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "/aplicativo/"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -589,6 +637,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "/sek"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "/seg"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "/seg"
           }
         },
         "sv" : {
@@ -685,6 +745,18 @@
             "value" : "%.1f/min"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%.1f/min"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%.1f/min"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -777,6 +849,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ "
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%@"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%@"
           }
         },
         "sv" : {
@@ -879,6 +963,18 @@
             "value" : "%1$@ (Wszystkich: %2$@)"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ (%2$@total)"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ (%2$@total)"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -979,6 +1075,18 @@
             "value" : "%1$@ (%2$@)"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ (%2$@)"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ (%2$@)"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1006,7 +1114,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ （%2$@）"
+            "value" : "%1$@ (%2$@)"
           }
         }
       }
@@ -1070,6 +1178,18 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "%lld %%"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%lld %%"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
             "value" : "%lld %%"
           }
         },
@@ -1167,6 +1287,18 @@
             "value" : "%lld dB"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%llddB"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%llddB"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1258,6 +1390,18 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "+"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "+"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
             "value" : "+"
           }
         },
@@ -1355,6 +1499,18 @@
             "value" : "Jesteś na żywo, profil: %@ 🎉"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🎉 Você está AO VIVO em %@ 🎉"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🎉 Você está AO VIVO em %@ 🎉"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1447,6 +1603,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zakończono stream 🤟"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🤟 Transmissão encerrada 🤟"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🤟 Transmissão encerrada 🤟"
           }
         },
         "sv" : {
@@ -1543,6 +1711,18 @@
             "value" : "Zaczynasz live, profil: %@ 😎"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "😎 Ao vivo em %@ 😎"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "😎 Ao vivo em %@ 😎"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1635,6 +1815,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "😢 FFFFF 😢"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "😢FFFFFF😢"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "😢FFFFFF😢"
           }
         },
         "sv" : {
@@ -1731,6 +1923,18 @@
             "value" : "0.0/min"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "0,0/min"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "0,0/min"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1825,6 +2029,18 @@
             "value" : "Ciąg cyfr, użyj narzędzi deweloperskich (F11) w twojej przeglądarce. Sprawdź wiadomości websocket."
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Um grande número. Use ferramentas de desenvolvedor (F11) em seu navegador. Veja as mensagens do websocket."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Um grande número. Use ferramentas de desenvolvedor (F11) em seu navegador. Veja as mensagens do websocket."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1853,101 +2069,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "大量。在瀏覽器中使用開發人員工具（F11）。查看Websocket消息。"
-          }
-        }
-      }
-    },
-    "A low maximum screen FPS reduces power usage." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eine niedrige maximale Bildwiederholrate verringert den Stromverbrauch."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Μια χαμηλή μέγιστη οθόνη FPS μειώνει τη χρήση ισχύος."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Un valor bajo de los FPS máximos en pantalla reduce el consumo de energía"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Une fréquence de rafraichissement d'écran plus faible réduit l'utilisation de la batterie."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "एक कम अधिकतम स्क्रीन एफपीएस बिजली के उपयोग को कम करता है।"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "FPS layar maksimum rendah mengurangi penggunaan daya."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "低い画面FPSは、電力使用量を削減します。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "화면의 최대 프레임(FPS)가 낮으면 전력 사용량이 줄어듭니다."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Een laag maximaal scherm FPS vermindert het stroomverbruik."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Niski maksymalny ekran FPS zmniejsza zużycie mocy."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "En låg maximal skärm FPS minskar effektanvändningen."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Düşük maksimum ekran FP'leri güç kullanımını azaltır."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "FPS màn hình tối đa thấp làm giảm việc sử dụng năng lượng."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "低最大屏幕FPS可减少功率使用。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "低最大屏幕FPS可減少功率使用。"
           }
         }
       }
@@ -2012,6 +2133,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "O aplikacji"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sobre"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sobre"
           }
         },
         "sv" : {
@@ -2108,6 +2241,18 @@
             "value" : "Adaptacyjny bitrate"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Taxa de bits adaptável"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Taxa de bits adaptável"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2200,6 +2345,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Adaptacyjny bitrate jest w wersji testowej."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "A taxa de bits adaptativa é experimental."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "A taxa de bits adaptativa é experimental."
           }
         },
         "sv" : {
@@ -2296,6 +2453,18 @@
             "value" : "Dodaj"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Adicionar"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Adicionar"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2387,6 +2556,18 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "AfreecaTV"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "AfreecaTV"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
             "value" : "AfreecaTV"
           }
         },
@@ -2490,6 +2671,18 @@
             "value" : "Dopuszczalny zakres między %1$@ - %2$@."
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O intervalo permitido é %1$@ - %2$@."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O intervalo permitido é %1$@ - %2$@."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2582,6 +2775,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Amplituda"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Amplitude"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Amplitude"
           }
         },
         "sv" : {
@@ -2678,6 +2883,18 @@
             "value" : "Niepełna lista osób, które przyczyniły się do rozwoju aplikacji przez koncepcje, programowanie, testowanie, promocję i więcej."
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Uma lista incompleta de pessoas que contribuíram com ideias, programação,\ntestes, promoção e muito mais."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Uma lista incompleta de pessoas que contribuíram com ideias, programação,\ntestes, promoção e muito mais."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2770,6 +2987,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Animowane emotki"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Emotes animados"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Emotes animados"
           }
         },
         "sv" : {
@@ -2866,6 +3095,18 @@
             "value" : "Animowane emotki mogą przyczynić się do obciążenia CPU. Wyłącz, aby zmniejszyć zużycie energii. "
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Emotes animados consomem bastante CPU. Desative para menos consumo de energia."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Emotes animados consomem bastante CPU. Desative para menos consumo de energia."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2958,6 +3199,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Klucz API"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Chave API"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Chave API"
           }
         },
         "sv" : {
@@ -3054,6 +3307,18 @@
             "value" : "Czy jesteś pewny(a)?"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tem certeza?"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tem certeza?"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3146,6 +3411,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Audio"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Áudio"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Áudio"
           }
         },
         "sv" : {
@@ -3242,6 +3519,18 @@
             "value" : "Szybkość transmisji dźwięku 32–320 kb/s. Obsługiwany jest tylko kodek AAC."
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Taxa de bits de áudio de 32 a 320 kbps. Somente o codec AAC é compatível."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Taxa de bits de áudio de 32 a 320 kbps. Somente o codec AAC é compatível."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3334,6 +3623,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Poziom audio"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nível de áudio"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nível de áudio"
           }
         },
         "sv" : {
@@ -3430,6 +3731,18 @@
             "value" : "Automatyczne kamery zużywają więcej energii, ponieważ zasilane jest wiele kamer, nawet jeśli tylko jedna jest używana na raz.Pozwala to telefonowi szybko zmienić aparat podczas powiększenia."
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "As câmeras automáticas consomem mais energia porque várias câmeras são ligadas, mesmo que apenas uma seja usada por vez. Isso permite que o telefone mude rapidamente de câmera ao aplicar zoom."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "As câmeras automáticas consomem mais energia porque várias câmeras são ligadas, mesmo que apenas uma seja usada por vez. Isso permite que o telefone mude rapidamente de câmera ao aplicar zoom."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3522,6 +3835,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "tylny"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "voltar"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "voltar"
           }
         },
         "sv" : {
@@ -3618,6 +3943,18 @@
             "value" : "Tylny"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Voltar"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Voltar"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3710,6 +4047,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tylny aparat"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Câmera traseira"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Câmera traseira"
           }
         },
         "sv" : {
@@ -3806,6 +4155,18 @@
             "value" : "Presety tylnego aparatu"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Predefinições da câmera traseira"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Predefinições da câmera traseira"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3898,6 +4259,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tło"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fundo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fundo"
           }
         },
         "sv" : {
@@ -3994,6 +4367,18 @@
             "value" : "Pasek"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bar"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bar"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4086,6 +4471,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Procent naładowania baterii"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Porcentagem de bateria"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Porcentagem de bateria"
           }
         },
         "sv" : {
@@ -4182,6 +4579,18 @@
             "value" : "BELABOX cloud SRT"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BELABOX nuvem SRT"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BELABOX nuvem SRT"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4274,6 +4683,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "BELABOX cloud SRTLA"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BELABOX nuvem SRTLA"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "BELABOX nuvem SRTLA"
           }
         },
         "sv" : {
@@ -4370,6 +4791,18 @@
             "value" : "Duże pakiety"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pacotes grandes"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pacotes grandes"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4462,6 +4895,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Duże pakiety oznaczają 7 MPEG-TS pakietów na pakiet SRT, 6 w przeciwnym razie. Czasami hotspoty na Androidzie nie działają z dużymi pakietami."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pacotes grandes significam 7 pacotes MPEG-TS por pacote SRT, caso contrário, 6. Às vezes, os hotspots Android não funcionam com pacotes grandes."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pacotes grandes significam 7 pacotes MPEG-TS por pacote SRT, caso contrário, 6. Às vezes, os hotspots Android não funcionam com pacotes grandes."
           }
         },
         "sv" : {
@@ -4558,6 +5003,18 @@
             "value" : "Bitrate"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Taxa de bits"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Taxa de bits"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4650,6 +5107,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bitrate musi być większy od zera"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "A taxa de bits deve ser maior que zero"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "A taxa de bits deve ser maior que zero"
           }
         },
         "sv" : {
@@ -4746,6 +5215,18 @@
             "value" : "Presety bitrate"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Predefinições de taxa de bits"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Predefinições de taxa de bits"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4838,6 +5319,18 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Czarny ekran"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tela preta"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tela preta"
           }
         },
         "sv" : {
@@ -4934,6 +5427,18 @@
             "value" : "Bloom"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Florescer"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Florescer"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5026,6 +5531,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Niebieski"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Azul"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Azul"
           }
         },
         "sv" : {
@@ -5122,6 +5639,18 @@
             "value" : "Pogrubiona treść wiadomości"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mensagem ousada"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mensagem ousada"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5214,6 +5743,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pogrubiona nazwa użytkownika"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nome de usuário em negrito"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nome de usuário em negrito"
           }
         },
         "sv" : {
@@ -5310,6 +5851,18 @@
             "value" : "Obrys"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fronteira"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fronteira"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5402,6 +5955,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Obrys może przyczynić się do obciążenia CPU. Wyłącz, aby zmniejszyć zużycie energii"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Border consome bastante CPU. Desative para menos consumo de energia."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Border consome bastante CPU. Desative para menos consumo de energia."
           }
         },
         "sv" : {
@@ -5498,6 +6063,18 @@
             "value" : "Prawy dolny"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Canto inferior direito"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Canto inferior direito"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5590,6 +6167,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Przeglądarka"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Navegador"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Navegador"
           }
         },
         "sv" : {
@@ -5686,6 +6275,18 @@
             "value" : "Przycisk"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Botão"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Botão"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5778,6 +6379,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nazwa przycisku"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nome do botão"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nome do botão"
           }
         },
         "sv" : {
@@ -5874,6 +6487,18 @@
             "value" : "Przyciski"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Botões"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Botões"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5966,6 +6591,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Przyciski pojawią się od dołu w górę."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Os botões aparecem de baixo para cima."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Os botões aparecem de baixo para cima."
           }
         },
         "sv" : {
@@ -6062,6 +6699,18 @@
             "value" : "Kup indywidualne ikony w sklepie ikon.Są twoje na zawsze."
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Compre ícones individuais na loja de ícones. Eles são seus para sempre."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Compre ícones individuais na loja de ícones. Eles são seus para sempre."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6154,6 +6803,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aparat"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Câmera"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Câmera"
           }
         },
         "sv" : {
@@ -6250,6 +6911,18 @@
             "value" : "Przełączanie kamery"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Troca de câmera"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Troca de câmera"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6342,6 +7015,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Anuluj"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cancelar"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cancelar"
           }
         },
         "sv" : {
@@ -6438,6 +7123,18 @@
             "value" : "ID kanału"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ID do canal"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ID do canal"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6530,6 +7227,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nazwa kanału"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nome do canal"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nome do canal"
           }
         },
         "sv" : {
@@ -6626,6 +7335,18 @@
             "value" : "Czat"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bater papo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bater papo"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6718,6 +7439,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Czat jest ukryty"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O bate-papo está oculto"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O bate-papo está oculto"
           }
         },
         "sv" : {
@@ -6814,6 +7547,18 @@
             "value" : "Czat został wstrzymany"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O bate-papo está pausado"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O bate-papo está pausado"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6906,6 +7651,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ID pokoju"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ID da sala de bate-papo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ID da sala de bate-papo"
           }
         },
         "sv" : {
@@ -7002,6 +7759,18 @@
             "value" : "Tryb kinowy"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cinematográfico"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cinematográfico"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7094,6 +7863,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zamknij"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fechar"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fechar"
           }
         },
         "sv" : {
@@ -7190,6 +7971,18 @@
             "value" : "Kodek"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Codec"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Codec"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7282,6 +8075,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kolory"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cores"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cores"
           }
         },
         "sv" : {
@@ -7378,6 +8183,18 @@
             "value" : "Ulepszenia"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cosméticos"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cosméticos"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7470,6 +8287,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Utwórz"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Criar"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Criar"
           }
         },
         "sv" : {
@@ -7566,6 +8395,18 @@
             "value" : "Debugowanie"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Depurar"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Depurar"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7658,6 +8499,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Decybele"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Decibel"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Decibel"
           }
         },
         "sv" : {
@@ -7754,6 +8607,18 @@
             "value" : "Usuń"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Excluir"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Excluir"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7846,6 +8711,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Stworzone przez"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Projetado por"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Projetado por"
           }
         },
         "sv" : {
@@ -7942,6 +8819,18 @@
             "value" : "Wymiary"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Dimensões"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Dimensões"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8034,6 +8923,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Discord"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Discórdia"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Discórdia"
           }
         },
         "sv" : {
@@ -8130,6 +9031,18 @@
             "value" : "Wyświetlane w widoku głównym i jako ikona aplikacji."
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Exibido na visualização principal e como ícone do aplicativo."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Exibido na visualização principal e como ícone do aplicativo."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8222,6 +9135,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nie udostępniaj nikomu swoich ustawień, ponieważ mogą zawierać poufne dane (klucz strumienia itp.)!"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Não compartilhe suas configurações com ninguém, pois elas podem conter dados confidenciais (chaves de transmissão, etc.)!"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Não compartilhe suas configurações com ninguém, pois elas podem conter dados confidenciais (chaves de transmissão, etc.)!"
           }
         },
         "sv" : {
@@ -8318,6 +9243,18 @@
             "value" : "Aby twój kanał nie został przejęty, nie udostępniaj nikomu swojego adresu URL!"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Não compartilhe seu URL com ninguém ou eles podem sequestrar seu canal!"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Não compartilhe seu URL com ninguém ou eles podem sequestrar seu canal!"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8410,6 +9347,18 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Dwukrotnie dotknij, aby powrócić do głównego widoku"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Toque duas vezes para retornar à visualização principal"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Toque duas vezes para retornar à visualização principal"
           }
         },
         "sv" : {
@@ -8506,6 +9455,18 @@
             "value" : "Dual (auto)"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Duplo (automático)"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Duplo (automático)"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8598,6 +9559,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Duplikuj"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Duplicado"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Duplicado"
           }
         },
         "sv" : {
@@ -8694,6 +9667,18 @@
             "value" : "Schowek jest pusty"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Área de transferência vazia"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Área de transferência vazia"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8786,6 +9771,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zakończ"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fim"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fim"
           }
         },
         "sv" : {
@@ -8882,6 +9879,18 @@
             "value" : "Przykład: https://play.afreecatv.com/myChannelName/twójWideoId"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL de exemplo: https://play.afreecatv.com/myChannelName/myVideoId"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL de exemplo: https://play.afreecatv.com/myChannelName/myVideoId"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8974,6 +9983,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Przykład:  rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Exemplo: rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Exemplo: rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef"
           }
         },
         "sv" : {
@@ -9070,6 +10091,18 @@
             "value" : "Przykład: rtmp://foobar.org:3321/5678"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Exemplo: rtmp://foobar.org:3321/5678"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Exemplo: rtmp://foobar.org:3321/5678"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9162,6 +10195,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Przykład: rtmps://fa723fc1b171.global-contribute.live-video.net/sk_us-west-123hu43ui34hrkjh"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Exemplo: rtmps://fa723fc1b171.global-contribute.live-video.net/sk_us-west-123hu43ui34hrkjh"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Exemplo: rtmps://fa723fc1b171.global-contribute.live-video.net/sk_us-west-123hu43ui34hrkjh"
           }
         },
         "sv" : {
@@ -9258,6 +10303,18 @@
             "value" : "Przykład: srt://120.12.32.12:4000?streamid=publish/live/feed"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Exemplo: srt://120.12.32.12:4000?streamid=publish/live/feed"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Exemplo: srt://120.12.32.12:4000?streamid=publish/live/feed"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9350,6 +10407,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Przykład: srt://134.20.342.12:5000"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Exemplo: srt://134.20.342.12:5000"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Exemplo: srt://134.20.342.12:5000"
           }
         },
         "sv" : {
@@ -9446,6 +10515,18 @@
             "value" : "Przykład: srtla://foobar.org:4432"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Exemplo: srtla://foobar.org:4432"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Exemplo: srtla://foobar.org:4432"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9538,6 +10619,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Przykład: rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Exemplo: rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Exemplo: rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3"
           }
         },
         "sv" : {
@@ -9634,6 +10727,18 @@
             "value" : "Przykład: rtmps://live-api-s.facebook.com:443/rtmp/FB-11152522122511115-0-BctNCp9jzzz-AAA"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Exemplo: rtmps://live-api-s.facebook.com:443/rtmp/FB-11152522122511115-0-BctNCp9jzzz-AAA"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Exemplo: rtmps://live-api-s.facebook.com:443/rtmp/FB-11152522122511115-0-BctNCp9jzzz-AAA"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9726,6 +10831,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Przykład: srt://uk.srt.belabox.net:4000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Exemplo: srt://uk.srt.belabox.net:4000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Exemplo: srt://uk.srt.belabox.net:4000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
           }
         },
         "sv" : {
@@ -9822,6 +10939,18 @@
             "value" : "Przykład: srtla://uk.srt.belabox.net:5000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Exemplo: srtla://uk.srt.belabox.net:5000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Exemplo: srtla://uk.srt.belabox.net:5000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9914,6 +11043,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Eksportuj do schowka"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Exportar para a área de transferência"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Exportar para a área de transferência"
           }
         },
         "sv" : {
@@ -10010,6 +11151,18 @@
             "value" : "Ekspozycja"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Exposição"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Exposição"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10101,6 +11254,18 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "Facebook"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Facebook"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
             "value" : "Facebook"
           }
         },
@@ -10198,6 +11363,18 @@
             "value" : "Nie udało się pobierać scen SEP"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Falha ao buscar cenas do OBS"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Falha ao buscar cenas do OBS"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10290,6 +11467,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Błąd przy ładowaniu - 7TV (emotki kanału)"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Falha ao obter emotes do canal 7TV"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Falha ao obter emotes do canal 7TV"
           }
         },
         "sv" : {
@@ -10386,6 +11575,18 @@
             "value" : "Błąd przy ładowaniu - 7TV (emotki globalne)"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Falha ao obter emotes globais da 7TV"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Falha ao obter emotes globais da 7TV"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10478,6 +11679,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Błąd przy ładowaniu - BTTV (emotki globalne)"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Falha ao obter emotes BTTV"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Falha ao obter emotes BTTV"
           }
         },
         "sv" : {
@@ -10574,6 +11787,18 @@
             "value" : "Błąd przy ładowaniu - FFZ (emotki globalne)"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Falha ao obter emotes FFZ"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Falha ao obter emotes FFZ"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10666,6 +11891,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Wybór mikrofonu nie powiódł się"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Falha ao selecionar o microfone"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Falha ao selecionar o microfone"
           }
         },
         "sv" : {
@@ -10762,6 +11999,18 @@
             "value" : "Nie udało się ustawić sceny OB na %@"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Falha ao definir cena OBS para %@"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Falha ao definir cena OBS para %@"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10854,6 +12103,18 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Nie udało się uruchomić strumienia OBS"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Falha ao iniciar a transmissão do OBS"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Falha ao iniciar a transmissão do OBS"
           }
         },
         "sv" : {
@@ -10950,6 +12211,18 @@
             "value" : "Nie udało się zatrzymać strumienia OB"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Falha ao interromper a transmissão do OBS"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Falha ao interromper a transmissão do OBS"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11042,6 +12315,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Potrzebujesz pomocy lub chcesz wyrazić swoją opinię? Dołącz do serwera Moblin na Discordzie, bądź napisz zgłoszenie na Githubie."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sinta-se à vontade para ingressar no servidor Moblin Discord ou escrever um problema no Github se precisar de ajuda ou quiser dar feedback."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sinta-se à vontade para ingressar no servidor Moblin Discord ou escrever um problema no Github se precisar de ajuda ou quiser dar feedback."
           }
         },
         "sv" : {
@@ -11138,6 +12423,18 @@
             "value" : "Pobieranie scen OS z serwera ..."
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Buscando cenas OBS do servidor..."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Buscando cenas OBS do servidor..."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11230,6 +12527,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Znajdź swoją nazwę kanału (twojaNazwaKanału) lub ID wideo (twójWideoId) w Twoim adresie URL streama."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Encontre o nome do seu canal (myChannelName) e o ID do vídeo (myVideoId) no URL do seu stream."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Encontre o nome do seu canal (myChannelName) e o ID do vídeo (myVideoId) no URL do seu stream."
           }
         },
         "sv" : {
@@ -11326,6 +12635,18 @@
             "value" : "Znajdź ID swojego pokoju https://kick.com/api/v1/channels/twoja_nazwa i zamień twoja_nazwa na swój nick."
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Encontre o ID da sua sala de chat em https://kick.com/api/v1/channels/my_user. Substitua my_user pelo seu usuário."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Encontre o ID da sua sala de chat em https://kick.com/api/v1/channels/my_user. Substitua my_user pelo seu usuário."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11418,6 +12739,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Wielkość czcionki"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tamanho da fonte"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tamanho da fonte"
           }
         },
         "sv" : {
@@ -11514,6 +12847,18 @@
             "value" : "Na przykład WS: //232.32.45.332: 4567."
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Por exemplo, ws://232.32.45.332:4567."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Por exemplo, ws://232.32.45.332:4567."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11606,6 +12951,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "przedni"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "frente"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "frente"
           }
         },
         "sv" : {
@@ -11702,6 +13059,18 @@
             "value" : "Przedni"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Frente"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Frente"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11794,6 +13163,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Przedni aparat"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Câmera frontal"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Câmera frontal"
           }
         },
         "sv" : {
@@ -11890,6 +13271,18 @@
             "value" : "Presety przedniego aparatu"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Predefinições da câmera frontal"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Predefinições da câmera frontal"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11982,6 +13375,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ustawienia podstawowe"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Em geral"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Em geral"
           }
         },
         "sv" : {
@@ -12078,6 +13483,18 @@
             "value" : "Generator"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Gerador"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Gerador"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -12169,6 +13586,18 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "Geometria"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Geometria"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
             "value" : "Geometria"
           }
         },
@@ -12266,6 +13695,18 @@
             "value" : "Github"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "GitHub"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "GitHub"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -12358,6 +13799,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zacznij live"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Vá ao vivo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Vá ao vivo"
           }
         },
         "sv" : {
@@ -12454,6 +13907,18 @@
             "value" : "Skala szarości"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Escala de cinza"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Escala de cinza"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -12546,6 +14011,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zielony"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Verde"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Verde"
           }
         },
         "sv" : {
@@ -12642,6 +14119,18 @@
             "value" : "Wysokość"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Altura"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Altura"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -12734,6 +14223,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pomoc i wsparcie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ajuda e suporte"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ajuda e suporte"
           }
         },
         "sv" : {
@@ -12830,6 +14331,18 @@
             "value" : "Ukryj poufne informacje"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ocultar URL confidencial"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ocultar URL confidencial"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -12922,6 +14435,18 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Brak hosta"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Host ausente"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Host ausente"
           }
         },
         "sv" : {
@@ -13018,6 +14543,18 @@
             "value" : "Ikony"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ícones"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ícones"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -13110,6 +14647,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ikony w sklepie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ícones na loja"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ícones na loja"
           }
         },
         "sv" : {
@@ -13206,6 +14755,18 @@
             "value" : "Ikony jeszcze niedostępne"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ícones ainda não disponíveis na loja"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ícones ainda não disponíveis na loja"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -13298,6 +14859,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Obraz"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Imagem"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Imagem"
           }
         },
         "sv" : {
@@ -13394,6 +14967,18 @@
             "value" : "Importuj i eksportuj ustawienia"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Configurações de importação e exportação"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Configurações de importação e exportação"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -13486,6 +15071,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Importuj ze schowka"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Importar da área de transferência"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Importar da área de transferência"
           }
         },
         "sv" : {
@@ -13582,6 +15179,18 @@
             "value" : "Importowanie ustawień nie powiodło się"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Falha nas configurações de importação"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Falha nas configurações de importação"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -13674,6 +15283,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Interwał"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Intervalo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Intervalo"
           }
         },
         "sv" : {
@@ -13770,6 +15391,18 @@
             "value" : "Interwał klatek kluczowych"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Intervalo de quadro-chave"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Intervalo de quadro-chave"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -13862,6 +15495,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kick"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Chute"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Chute"
           }
         },
         "sv" : {
@@ -13958,6 +15603,18 @@
             "value" : "Duży aparat"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Câmera grande"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Câmera grande"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -14050,6 +15707,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Latencja"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Latência"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Latência"
           }
         },
         "sv" : {
@@ -14146,6 +15815,18 @@
             "value" : "Układ"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Disposição"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Disposição"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -14238,6 +15919,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Licencje"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Licenças"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Licenças"
           }
         },
         "sv" : {
@@ -14334,6 +16027,18 @@
             "value" : "Personalizacja ekranu"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sobreposições locais"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sobreposições locais"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -14426,6 +16131,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Spersonalizowany układ ekranu nie pojawia się na streamie."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "As sobreposições locais não aparecem na transmissão."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "As sobreposições locais não aparecem na transmissão."
           }
         },
         "sv" : {
@@ -14522,6 +16239,18 @@
             "value" : "Logi"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Registro"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Registro"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -14614,6 +16343,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Poziom logów"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nível de registro"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nível de registro"
           }
         },
         "sv" : {
@@ -14710,6 +16451,18 @@
             "value" : "Zadowolenie URL RTMP"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL RTMP malformado"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL RTMP malformado"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -14802,6 +16555,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nieprawidłowe ustawienia"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Configurações malformadas"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Configurações malformadas"
           }
         },
         "sv" : {
@@ -14898,6 +16663,18 @@
             "value" : "URL zniekształconego SRT (LA)"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL SRT(LA) malformado"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL SRT(LA) malformado"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -14990,6 +16767,18 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Zadowolony adres URL"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL malformado"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL malformado"
           }
         },
         "sv" : {
@@ -15086,6 +16875,18 @@
             "value" : "Wielkie podziękowania od deweloperów Moblin!"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Muito obrigado dos desenvolvedores do Moblin!"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Muito obrigado dos desenvolvedores do Moblin!"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -15178,6 +16979,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Czas wyświetlania"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Idade máxima"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Idade máxima"
           }
         },
         "sv" : {
@@ -15274,6 +17087,18 @@
             "value" : "Maksymalny interwał klatek kluczowych na sekundę. Ustaw na 0, aby skorzystać z trybu automatycznego."
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Intervalo máximo do quadro-chave em segundos. Defina como 0 para automático."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Intervalo máximo do quadro-chave em segundos. Defina como 0 para automático."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -15368,6 +17193,18 @@
             "value" : "Maksymalny czas wyświetlania wiadomości"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Duração máxima da mensagem em segundos."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Duração máxima da mensagem em segundos."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -15396,101 +17233,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "最大消息年齡在幾秒鐘內。"
-          }
-        }
-      }
-    },
-    "Maximum screen FPS" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maximale Bildwiederholrate"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Μέγιστη οθόνη FPS"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "FPS máximos en pantalla"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fréquence maximale de rafraichissement d'écran"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "अधिकतम स्क्रीन एफपीएस"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "FPS Layar Maksimum"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "最大画面FPS"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "화면 최대 프레임(FPS)"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Maximale scherm FPS"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Maksymalny ekran FPS"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Maximal skärm FPS"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Maksimum ekran FPS"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Màn hình tối đa FPS"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "最大屏幕FPS"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "最大屏幕FPS"
           }
         }
       }
@@ -15555,6 +17297,18 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Ja w kolorze nazwy użytkownika"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Eu na cor do nome de usuário"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Eu na cor do nome de usuário"
           }
         },
         "sv" : {
@@ -15651,6 +17405,18 @@
             "value" : "Wiadomość"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mensagem"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mensagem"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -15743,6 +17509,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mikrofon"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Microfone"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Microfone"
           }
         },
         "sv" : {
@@ -15839,6 +17617,18 @@
             "value" : "ID mikrofonu: %@"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ID do microfone %@"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ID do microfone %@"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -15931,6 +17721,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nie wykryto mikrofonu"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Microfone não encontrado"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Microfone não encontrado"
           }
         },
         "sv" : {
@@ -16027,6 +17829,18 @@
             "value" : "Linki moblin:// mogą być używane do importowania niektórych ustawień, często przy użyciu kodów QR lub przeglądarki. Szczegółowe informacje można znaleźć na stronie https://github.com/eerimoq/moblin."
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Os links diretos moblin:// podem ser usados ​​para importar algumas configurações, geralmente usando códigos QR ou um navegador. Consulte https://github.com/eerimoq/moblin para obter detalhes."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Os links diretos moblin:// podem ser usados ​​para importar algumas configurações, geralmente usando códigos QR ou um navegador. Consulte https://github.com/eerimoq/moblin para obter detalhes."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -16119,6 +17933,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Film"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Filme"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Filme"
           }
         },
         "sv" : {
@@ -16215,6 +18041,18 @@
             "value" : "Włącz/wyłącz mikrofon"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mudo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mudo"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -16307,6 +18145,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Wyciszono"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Silenciado"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Silenciado"
           }
         },
         "sv" : {
@@ -16403,6 +18253,18 @@
             "value" : "Moje ikony"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Meus ícones"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Meus ícones"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -16495,6 +18357,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moje sceny"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Minha cena"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Minha cena"
           }
         },
         "sv" : {
@@ -16591,6 +18465,18 @@
             "value" : "Mój stream"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Minha transmissão"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Minha transmissão"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -16683,6 +18569,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mój widget"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Meu widget"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Meu widget"
           }
         },
         "sv" : {
@@ -16779,6 +18677,18 @@
             "value" : "mój_klucz_streama"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "minha_stream_key"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "minha_stream_key"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -16871,6 +18781,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nazwa"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nome"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nome"
           }
         },
         "sv" : {
@@ -16967,6 +18889,18 @@
             "value" : "nearby_ingest_endpoint"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "nas proximidades_ingest_endpoint"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "nas proximidades_ingest_endpoint"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -17059,6 +18993,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Poziom hałasu"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nível de ruído"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nível de ruído"
           }
         },
         "sv" : {
@@ -17155,6 +19101,18 @@
             "value" : "Redukcja hałasu"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Redução de ruído"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Redução de ruído"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -17247,6 +19205,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nie ustawiono"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Não configurado"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Não configurado"
           }
         },
         "sv" : {
@@ -17343,6 +19313,18 @@
             "value" : "OBS Media Source (SRT)"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fonte de mídia OBS (SRT)"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fonte de mídia OBS (SRT)"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -17435,6 +19417,18 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Obs zdalne sterowanie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Controle remoto OBS"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Controle remoto OBS"
           }
         },
         "sv" : {
@@ -17531,6 +19525,18 @@
             "value" : "Scena obs"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cena obs"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cena obs"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -17623,6 +19629,18 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Scena obs"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cena OBS"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cena OBS"
           }
         },
         "sv" : {
@@ -17719,6 +19737,18 @@
             "value" : "Scena OB ustawiona na %@"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cena OBS definida como %@"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cena OBS definida como %@"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -17811,6 +19841,18 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "STREAM START/STOP STREAM"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "OBS iniciar/parar transmissão"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "OBS iniciar/parar transmissão"
           }
         },
         "sv" : {
@@ -17907,6 +19949,18 @@
             "value" : "Status OB"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Status do ORG"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Status do ORG"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -17999,6 +20053,18 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Rozpoczął się strumień OB"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Transmissão de OBS iniciada"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Transmissão de OBS iniciada"
           }
         },
         "sv" : {
@@ -18095,6 +20161,18 @@
             "value" : "Strumień OB zatrzymał się"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fluxo de OBS interrompido"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fluxo de OBS interrompido"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -18187,6 +20265,18 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "OBS WebSocket nie jest skonfigurowany.Skonfiguruj go w Ustawieniach -> Strumienie -> %@ -> obs."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "OBS WebSocket não está configurado. Configure-o em Configurações -> Streams -> %@ -> OBS."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "OBS WebSocket não está configurado. Configure-o em Configurações -> Streams -> %@ -> OBS."
           }
         },
         "sv" : {
@@ -18283,6 +20373,18 @@
             "value" : "OBS WebSocket nie jest podłączony do serwera"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "OBS WebSocket não está conectado ao servidor"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "OBS WebSocket não está conectado ao servidor"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -18375,6 +20477,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Wyłącz"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Desligado"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Desligado"
           }
         },
         "sv" : {
@@ -18471,6 +20585,18 @@
             "value" : "Włącz"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sobre"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sobre"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -18563,6 +20689,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tylko nieużywane przyciski mogą być usunięte."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Somente botões não utilizados podem ser excluídos."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Somente botões não utilizados podem ser excluídos."
           }
         },
         "sv" : {
@@ -18659,6 +20797,18 @@
             "value" : "Tylko nieużywane widgety mogą być usunięte."
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Somente widgets não utilizados podem ser excluídos."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Somente widgets não utilizados podem ser excluídos."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -18751,6 +20901,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pakiety w ruchu"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pacotes em voo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pacotes em voo"
           }
         },
         "sv" : {
@@ -18847,6 +21009,18 @@
             "value" : "Parametry"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Parâmetros"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Parâmetros"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -18939,6 +21113,18 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Hasło"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Senha"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Senha"
           }
         },
         "sv" : {
@@ -19035,6 +21221,18 @@
             "value" : "Zatrzymaj czat"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pausar bate-papo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pausar bate-papo"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -19127,6 +21325,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Obraz w obrazie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Imagem em Imagem"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Imagem em Imagem"
           }
         },
         "sv" : {
@@ -19223,6 +21433,18 @@
             "value" : "Wprowadź adres URL strumieniowego w ustawieniach strumienia przed uruchomieniem."
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Insira o URL da sua transmissão nas configurações da transmissão antes de entrar ao vivo."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Insira o URL da sua transmissão nas configurações da transmissão antes de entrar ao vivo."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -19315,6 +21537,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Preset"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Predefinido"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Predefinido"
           }
         },
         "sv" : {
@@ -19411,6 +21645,18 @@
             "value" : "Szybkie przyciski"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Botões rápidos"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Botões rápidos"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -19503,6 +21749,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Losowy"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aleatório"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aleatório"
           }
         },
         "sv" : {
@@ -19599,6 +21857,18 @@
             "value" : "Czerwony"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Vermelho"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Vermelho"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -19691,6 +21961,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zresetuj ustawienia"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Redefinir as configurações"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Redefinir as configurações"
           }
         },
         "sv" : {
@@ -19787,6 +22069,18 @@
             "value" : "Rozdzielczość"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Resolução"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Resolução"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -19879,6 +22173,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ponowna próba za chwilę"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tentando novamente mais tarde"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tentando novamente mais tarde"
           }
         },
         "sv" : {
@@ -19975,6 +22281,18 @@
             "value" : "Røde poziomy audio"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nível de áudio Røde"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nível de áudio Røde"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -20067,6 +22385,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Serwer RTMP"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Servidor RTMP"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Servidor RTMP"
           }
         },
         "sv" : {
@@ -20163,6 +22493,18 @@
             "value" : "Brak nazwy strumienia RTMP"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nome do fluxo RTMP ausente"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nome do fluxo RTMP ausente"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -20255,6 +22597,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Scena"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cena"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cena"
           }
         },
         "sv" : {
@@ -20351,6 +22705,18 @@
             "value" : "Sceny"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cenas"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cenas"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -20443,6 +22809,18 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Brak schematu"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Esquema ausente"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Esquema ausente"
           }
         },
         "sv" : {
@@ -20539,6 +22917,18 @@
             "value" : "Zwój"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Rolagem"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Rolagem"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -20631,6 +23021,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Wybierz obraz"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Selecione a imagem"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Selecione a imagem"
           }
         },
         "sv" : {
@@ -20727,6 +23129,18 @@
             "value" : "Sepia"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sépia"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sépia"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -20819,6 +23233,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ustawienia"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Configurações"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Configurações"
           }
         },
         "sv" : {
@@ -20915,6 +23341,18 @@
             "value" : "Zaimportowano ustawienia"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Configurações importadas"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Configurações importadas"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -21007,6 +23445,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ustawienia, które mogłyby zatrzymać stream są wyłączone podczas transmisji na żywo."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "As configurações que interromperiam a transmissão serão desativadas durante a transmissão ao vivo."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "As configurações que interromperiam a transmissão serão desativadas durante a transmissão ao vivo."
           }
         },
         "sv" : {
@@ -21103,6 +23553,18 @@
             "value" : "Ostrość"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nitidez"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nitidez"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -21195,6 +23657,18 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Pokaż nazwę"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mostrar nome"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mostrar nome"
           }
         },
         "sv" : {
@@ -21291,6 +23765,18 @@
             "value" : "Pokaż poufne informacje"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mostrar URL confidencial"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mostrar URL confidencial"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -21383,6 +23869,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pojedynczy"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Solteiro"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Solteiro"
           }
         },
         "sv" : {
@@ -21479,6 +23977,18 @@
             "value" : "Mały aparat"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Câmera pequena"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Câmera pequena"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -21571,6 +24081,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Szybkość"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Velocidade"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Velocidade"
           }
         },
         "sv" : {
@@ -21667,6 +24189,18 @@
             "value" : "Połączenie SRT nie powiodło się z powodu %@"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "A conexão SRT falhou com %@"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "A conexão SRT falhou com %@"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -21759,6 +24293,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Połączenie SRT rozłączone"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT desconectado"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT desconectado"
           }
         },
         "sv" : {
@@ -21855,6 +24401,18 @@
             "value" : "Błąd połączenia SRT: %@"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Erro SRT: %@"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Erro SRT: %@"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -21949,6 +24507,18 @@
             "value" : "SRT Live Server (SLS)"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Servidor SRT ativo (SLS)"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Servidor SRT ativo (SLS)"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -22040,6 +24610,18 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "SRT oheadbw"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT oheadbw"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
             "value" : "SRT oheadbw"
           }
         },
@@ -22137,6 +24719,18 @@
             "value" : "Nakładka SRT"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sobreposição SRT"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sobreposição SRT"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -22228,6 +24822,18 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "SRT(LA)"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "SRT(LA)"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
             "value" : "SRT(LA)"
           }
         },
@@ -22325,6 +24931,18 @@
             "value" : "Brak numeru portu SRT (LA)"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Número da porta SRT(LA) ausente"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Número da porta SRT(LA) ausente"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -22417,6 +25035,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Serwer SRTLA"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Servidor SRTLA"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Servidor SRTLA"
           }
         },
         "sv" : {
@@ -22513,6 +25143,18 @@
             "value" : "Podstawowa"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Padrão"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Padrão"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -22607,6 +25249,18 @@
             "value" : "Stream"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fluxo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fluxo"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -22698,6 +25352,18 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "stream_url"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "stream_url"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
             "value" : "stream_url"
           }
         },
@@ -22795,6 +25461,18 @@
             "value" : "Połączenia"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fluxos"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fluxos"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -22887,6 +25565,18 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Subskrybowane"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Subscrito"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Subscrito"
           }
         },
         "sv" : {
@@ -22983,6 +25673,18 @@
             "value" : "Subskrypcje"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Assinaturas"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Assinaturas"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -23075,6 +25777,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Wspieraj deweloperów Moblin kupując ikony."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Apoie os desenvolvedores do Moblin comprando ícones."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Apoie os desenvolvedores do Moblin comprando ícones."
           }
         },
         "sv" : {
@@ -23171,6 +25885,18 @@
             "value" : "Dotknij ekranu, aby ustawić ostrość"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Toque na tela para focar"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Toque na tela para focar"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -23263,6 +25989,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dotknięcie ekranu, aby ustawić ostrości nie jest obsługiwane przez tę kamerę"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Toque para focar não é compatível com esta câmera"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Toque para focar não é compatível com esta câmera"
           }
         },
         "sv" : {
@@ -23359,6 +26097,18 @@
             "value" : "Teleobiektyw"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Telefoto"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Telefoto"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -23451,6 +26201,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Szablon: rtmp://"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Modelo: rtmp://"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Modelo: rtmp://"
           }
         },
         "sv" : {
@@ -23547,6 +26309,18 @@
             "value" : "Szablon: rtmp://my_public_ip:my_public_port/my_stream_key"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Modelo: rtmp://my_public_ip:my_public_port/my_stream_key"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Modelo: rtmp://my_public_ip:my_public_port/my_stream_key"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -23639,6 +26413,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Szablon: srt://my_public_ip:my_public_port"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Modelo: srt://my_public_ip:my_public_port"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Modelo: srt://my_public_ip:my_public_port"
           }
         },
         "sv" : {
@@ -23735,6 +26521,18 @@
             "value" : "Szablon: srt://my_public_ip:my_public_port?streamid=publish/live/my_key"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Modelo: srt://my_public_ip:my_public_port?streamid=publish/live/my_key"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Modelo: srt://my_public_ip:my_public_port?streamid=publish/live/my_key"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -23827,6 +26625,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Szablon: srtla://my_public_ip:my_public_port"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Modelo: srtla://my_public_ip:my_public_port"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Modelo: srtla://my_public_ip:my_public_port"
           }
         },
         "sv" : {
@@ -23923,6 +26733,18 @@
             "value" : "Subskrypcja „Wszystkie ikony” zapewnia dostęp do wszystkich ikon, o ile subskrypcja trwa.Obejmuje to wszystkie ikony dodane w przyszłości."
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "A assinatura \"Todos os ícones\" dá acesso a todos os ícones da loja enquanto durar a assinatura. Isso inclui todos os ícones adicionados no futuro."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "A assinatura \"Todos os ícones\" dá acesso a todos os ícones da loja enquanto durar a assinatura. Isso inclui todos os ícones adicionados no futuro."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -24015,6 +26837,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Widget z przeglądarki jest w fazie testów i nie działa jeszcze w pełni."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O widget do navegador é experimental e ainda não funciona muito bem."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O widget do navegador é experimental e ainda não funciona muito bem."
           }
         },
         "sv" : {
@@ -24111,6 +26945,18 @@
             "value" : "Logi są puste"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O registro está vazio."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O registro está vazio."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -24203,6 +27049,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nazwa twojego kanału."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O nome do seu canal."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O nome do seu canal."
           }
         },
         "sv" : {
@@ -24299,6 +27157,18 @@
             "value" : "Tryb obraz w obrazie jest w fazie testów i aktualnie nie działa."
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O layout Picture in Picture é experimental e não funciona."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O layout Picture in Picture é experimental e não funciona."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -24391,6 +27261,18 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Ultra szeroki aparat nie działa dobrze w niskich warunkach światła.Podobnie, auto kamery nie działają dobrze, gdy zoom wynosi 0,5-1,0x, ponieważ zostanie użyty ultra szerokiej kamery."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "A câmera ultra grande angular não funciona bem em condições de pouca luz. Da mesma forma, as câmeras automáticas não funcionam bem quando o zoom é de 0,5-1,0x, pois a câmera ultra grande angular será usada."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "A câmera ultra grande angular não funciona bem em condições de pouca luz. Da mesma forma, as câmeras automáticas não funcionam bem quando o zoom é de 0,5-1,0x, pois a câmera ultra grande angular será usada."
           }
         },
         "sv" : {
@@ -24487,6 +27369,18 @@
             "value" : "Włączenie spowoduje ustawienie zoomu (na wartość X) podczas przełączania aparatów."
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O zoom (em X) a ser definido ao alternar para determinada câmera, se ativado."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O zoom (em X) a ser definido ao alternar para determinada câmera, se ativado."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -24579,6 +27473,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Czas"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tempo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tempo"
           }
         },
         "sv" : {
@@ -24675,6 +27581,18 @@
             "value" : "Znacznik czasu"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Carimbo de data e hora"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Carimbo de data e hora"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -24767,6 +27685,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Na %@ aparat"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Para %@ câmera"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Para %@ câmera"
           }
         },
         "sv" : {
@@ -24863,6 +27793,18 @@
             "value" : "Lewy górny"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Canto superior esquerdo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Canto superior esquerdo"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -24955,6 +27897,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Prawy górny"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Canto superior direito"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Canto superior direito"
           }
         },
         "sv" : {
@@ -25051,6 +28005,18 @@
             "value" : "Latarka"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tocha"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tocha"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -25143,6 +28109,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Potrójny ekran"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Triplo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Triplo"
           }
         },
         "sv" : {
@@ -25239,6 +28217,18 @@
             "value" : "Triple (auto)"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Triplo (automático)"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Triplo (automático)"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -25331,6 +28321,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Twitch"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Contração muscular"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Contração muscular"
           }
         },
         "sv" : {
@@ -25427,6 +28429,18 @@
             "value" : "Dwie kolumny"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Duas colunas"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Duas colunas"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -25519,6 +28533,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Typ"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tipo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tipo"
           }
         },
         "sv" : {
@@ -25615,6 +28641,18 @@
             "value" : "Ultra szeroka"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ultra amplo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ultra amplo"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -25707,6 +28745,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nieznany"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Desconhecido"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Desconhecido"
           }
         },
         "sv" : {
@@ -25803,6 +28853,18 @@
             "value" : "Nieobsługiwany schemat %@"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Esquema não suportado %@"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Esquema não suportado %@"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -25895,6 +28957,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nieużywany"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Não utilizado"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Não utilizado"
           }
         },
         "sv" : {
@@ -25991,6 +29065,18 @@
             "value" : "Czas online"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tempo de atividade"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tempo de atividade"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -26082,6 +29168,18 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "URL"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
             "value" : "URL"
           }
         },
@@ -26179,6 +29277,18 @@
             "value" : "Import adresu URL nie powiódł się"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Falha na importação de URL"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Falha na importação de URL"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -26271,6 +29381,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Użyj pierwszego kanału dla poziomów audio. Do debugowania nieznanego poziomu mikofonów Røde."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Use o primeiro canal para nível de áudio. Para depurar o nível desconhecido do microfone Røde."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Use o primeiro canal para nível de áudio. Para depurar o nível desconhecido do microfone Røde."
           }
         },
         "sv" : {
@@ -26367,6 +29489,18 @@
             "value" : "Użyj wygenerowanego dźwięku jako źródło zamiast mikrofonu."
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Use o áudio gerado como fonte em vez do microfone."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Use o áudio gerado como fonte em vez do microfone."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -26459,6 +29593,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nazwa użytkownika"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nome de usuário"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nome de usuário"
           }
         },
         "sv" : {
@@ -26555,6 +29701,18 @@
             "value" : "Wersja"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Versão"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Versão"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -26649,6 +29807,18 @@
             "value" : "W fazie testów i bardzo poufne!"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Muito experimental e muito secreto!"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Muito experimental e muito secreto!"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -26677,101 +29847,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "非常實驗性和非常秘密！"
-          }
-        }
-      }
-    },
-    "Very experimental and very secret! Does not work yet!" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sehr experimentell und sehr geheim! Funktioniert noch nicht!"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Πολύ πειραματικό και πολύ μυστικό!Δεν λειτουργεί ακόμα!"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "¡Muy experimental y muy secreto! ¡No funciona todavía!"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Très expérimental et très secret ! Ne fonctionne pas encore…"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "बहुत प्रयोगात्मक और बहुत गुप्त!अभी तक काम नहीं करता है!"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Sangat eksperimental dan sangat rahasia!Belum berhasil!"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "非常に実験的で秘密です！まだ動作しません！"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "매우 실험적이고 매우 비밀스럽습니다! 아직 작동하지 않습니다!"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Zeer experimenteel en erg geheim!Werkt nog niet!"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "W fazie testów i bardzo poufne! Nie działa w tym momencie!"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Väldigt experimentella och väldigt hemliga inställningar. Fungerar inte än!"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Çok deneysel ve çok gizli!Henüz çalışmıyor!"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Rất thử nghiệm và rất bí mật!Chưa hoạt động!"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "非常实验性和非常秘密！还没有工作！"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "非常實驗性和非常秘密！還沒有工作！"
           }
         }
       }
@@ -26836,6 +29911,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Wideo"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Vídeo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Vídeo"
           }
         },
         "sv" : {
@@ -26932,6 +30019,18 @@
             "value" : "Efekty wideo"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Efeito de vídeo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Efeito de vídeo"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -27024,6 +30123,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ID wideo"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ID do vídeo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ID do vídeo"
           }
         },
         "sv" : {
@@ -27120,6 +30231,18 @@
             "value" : "Stabilizacja wideo"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Estabilização de vídeo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Estabilização de vídeo"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -27212,6 +30335,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Stabilizacja wideo czasami powoduje problemy z synchronizacją (dźwięk-obraz)."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "A estabilização de vídeo às vezes causa problemas de sincronização de áudio e vídeo."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "A estabilização de vídeo às vezes causa problemas de sincronização de áudio e vídeo."
           }
         },
         "sv" : {
@@ -27308,6 +30443,18 @@
             "value" : "Liczba widzów"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Espectadores"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Espectadores"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -27397,6 +30544,18 @@
           }
         },
         "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "WebSocket"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "WebSocket"
+          }
+        },
+        "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "WebSocket"
@@ -27496,6 +30655,18 @@
             "value" : "Szeroki"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Largo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Largo"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -27588,6 +30759,18 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Szeroki podwójny (auto)"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Amplo duplo (automático)"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Amplo duplo (automático)"
           }
         },
         "sv" : {
@@ -27684,6 +30867,18 @@
             "value" : "Widget"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ferramenta"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ferramenta"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -27776,6 +30971,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nazwa widgetu"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nome do widget"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nome do widget"
           }
         },
         "sv" : {
@@ -27872,6 +31079,18 @@
             "value" : "Widgety"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Widgets"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Widgets"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -27966,6 +31185,18 @@
             "value" : "Widgety układają się od spodu w górę."
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Os widgets são empilhados de trás para frente."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Os widgets são empilhados de trás para frente."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -28058,6 +31289,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Szerokość"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Largura"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Largura"
           }
         },
         "sv" : {
@@ -28160,6 +31403,18 @@
             "value" : "X musi być między %1$f - %2$f"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "X deve ser %1$f - %2$f"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "X deve ser %1$f - %2$f"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -28254,6 +31509,18 @@
             "value" : "Już kupiłeś wszystko!"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Você já comprou tudo!"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Você já comprou tudo!"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -28345,6 +31612,18 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "YouTube"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "YouTube"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
             "value" : "YouTube"
           }
         },
@@ -28442,6 +31721,18 @@
             "value" : "Zero lub więcej milisekund. Każdy parametr latencji dodany do adresu URL nadpisuje tę wartość."
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Zero ou mais milissegundos. Qualquer parâmetro de latência fornecido no URL substitui esse valor."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Zero ou mais milissegundos. Qualquer parâmetro de latência fornecido no URL substitui esse valor."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -28534,6 +31825,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zoom"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ampliação"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ampliação"
           }
         },
         "sv" : {
@@ -28630,6 +31933,18 @@
             "value" : "Preset zoomu"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Predefinição de zoom"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Predefinição de zoom"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -28722,6 +32037,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Presety zoomu"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Predefinições de zoom"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Predefinições de zoom"
           }
         },
         "sv" : {
