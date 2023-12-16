@@ -372,10 +372,7 @@ struct ButtonsView: View {
                                         .foregroundColor(.white)
                                         .font(.system(size: 10))
                                 }
-                                // Text("\(second.button.id)")
-                                //  .foregroundColor(.white)
                             }
-                            .id(second.button.id)
                         } else {
                             ButtonPlaceholderImage()
                         }
@@ -490,11 +487,9 @@ struct ButtonsView: View {
                                     .foregroundColor(.white)
                                     .font(.system(size: 10))
                             }
-                            // Text("\(pair.first.button.id)")
-                            //  .foregroundColor(.white)
                         }
-                        .id(pair.first.button.id)
                     }
+                    .id(pair.first.button.id)
                 } else {
                     if let second = pair.second {
                         VStack {
@@ -609,7 +604,6 @@ struct ButtonsView: View {
                                     .font(.system(size: 10))
                             }
                         }
-                        .id(second.button.id)
                     } else {
                         EmptyView()
                     }
