@@ -1,4 +1,5 @@
 import Foundation
+import Network
 
 protocol SrtlaDelegate: AnyObject {
     func srtlaReady(port: UInt16)
@@ -28,29 +29,35 @@ class Srtla {
         }
     }
 
+    private let networkPathMonitor = NWPathMonitor()
+    private let mpegtsPacketsPerPacket: Int
+    private var host: String = ""
+    private var port: Int = 0
+    private var groupId: Data?
+
     private var totalByteCount: Int64 = 0
 
     init(delegate: SrtlaDelegate, passThrough: Bool, mpegtsPacketsPerPacket: Int) {
         self.delegate = delegate
         self.passThrough = passThrough
+        self.mpegtsPacketsPerPacket = mpegtsPacketsPerPacket
         logger.info("srtla: SRT instead of SRTLA: \(passThrough)")
         if passThrough {
             remoteConnections.append(RemoteConnection(
                 type: nil,
-                mpegtsPacketsPerPacket: mpegtsPacketsPerPacket
+                mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
+                interface: nil
             ))
         } else {
             remoteConnections.append(RemoteConnection(
                 type: .cellular,
-                mpegtsPacketsPerPacket: mpegtsPacketsPerPacket
+                mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
+                interface: nil
             ))
             remoteConnections.append(RemoteConnection(
                 type: .wifi,
-                mpegtsPacketsPerPacket: mpegtsPacketsPerPacket
-            ))
-            remoteConnections.append(RemoteConnection(
-                type: .wiredEthernet,
-                mpegtsPacketsPerPacket: mpegtsPacketsPerPacket
+                mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
+                interface: nil
             ))
         }
     }
@@ -61,15 +68,17 @@ class Srtla {
 
     func start(uri: String, timeout: Double) {
         srtlaDispatchQueue.async {
+            if !self.passThrough {
+                self.networkPathMonitor.pathUpdateHandler = self.handleNetworkPathUpdate(path:)
+                self.networkPathMonitor.start(queue: srtlaDispatchQueue)
+            }
             self.totalByteCount = 0
-            guard
-                let url = URL(string: uri),
-                let host = url.host,
-                let port = url.port
-            else {
+            guard let url = URL(string: uri), let host = url.host, let port = url.port else {
                 logger.error("srtla: Malformed URL")
                 return
             }
+            self.host = host
+            self.port = port
             for connection in self.remoteConnections {
                 self.startRemote(connection: connection, host: host, port: port)
             }
@@ -94,7 +103,47 @@ class Srtla {
             self.stopListener()
             self.cancelConnectTimer()
             self.state = .idle
+            self.networkPathMonitor.cancel()
         }
+    }
+
+    private func handleNetworkPathUpdate(path: NWPath) {
+        logger.info("srtla: interface: \(path.debugDescription)")
+        var newRemoteConnections: [RemoteConnection] = []
+        for connection in remoteConnections {
+            if let interface = connection.interface {
+                if path.availableInterfaces.contains(interface) {
+                    logger.info("srtla: interface: Re-add ethernet \(interface)")
+                    newRemoteConnections.append(connection)
+                } else {
+                    logger.info("srtla: interface: Stop ethernet \(interface)")
+                    stopRemote(connection: connection)
+                }
+            } else {
+                logger.info("srtla: interface: Re-add non-ethernet")
+                newRemoteConnections.append(connection)
+            }
+        }
+        for interface in path.availableInterfaces {
+            logger.info("srtla: interface: Available \(interface.name): \(interface.type)")
+            if interface.type == .wiredEthernet {
+                if !newRemoteConnections.contains(where: { connection in
+                    connection.interface == interface
+                }) {
+                    logger.info("srtla: interface: Adding ethernet \(interface)")
+                    newRemoteConnections.append(RemoteConnection(
+                        type: .wiredEthernet,
+                        mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
+                        interface: interface
+                    ))
+                    startRemote(connection: newRemoteConnections.last!, host: host, port: port)
+                    if let groupId {
+                        newRemoteConnections.last!.register(groupId: groupId)
+                    }
+                }
+            }
+        }
+        remoteConnections = newRemoteConnections
     }
 
     func connectionStatistics() -> String? {
@@ -273,6 +322,7 @@ class Srtla {
         guard state == .waitForGroupId else {
             return
         }
+        self.groupId = groupId
         for connection in remoteConnections {
             connection.register(groupId: groupId)
         }

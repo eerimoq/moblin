@@ -53,6 +53,8 @@ class RemoteConnection {
         }
     }
 
+    let interface: NWInterface?
+
     private var totalDataSentByteCount: UInt64 = 0
 
     private var nullPacket: Data = {
@@ -75,9 +77,10 @@ class RemoteConnection {
     var onSrtNak: ((_ sn: UInt32) -> Void)?
     var onSrtlaAck: ((_ sn: UInt32) -> Void)?
 
-    init(type: NWInterface.InterfaceType?, mpegtsPacketsPerPacket: Int) {
+    init(type: NWInterface.InterfaceType?, mpegtsPacketsPerPacket: Int, interface: NWInterface?) {
         self.type = type
         self.mpegtsPacketsPerPacket = mpegtsPacketsPerPacket
+        self.interface = interface
         switch type {
         case .wifi:
             typeString = "WiFi"
@@ -110,6 +113,7 @@ class RemoteConnection {
             params.requiredInterfaceType = type
         }
         params.prohibitExpensivePaths = false
+        params.requiredInterface = interface
         connection = NWConnection(
             host: NWEndpoint.Host(host),
             port: NWEndpoint.Port(integerLiteral: port),

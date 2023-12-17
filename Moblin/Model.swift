@@ -288,8 +288,6 @@ final class Model: ObservableObject {
         return SettingsStream(name: "")
     }
 
-    private let networkPathMonitor = NWPathMonitor()
-
     var enabledScenes: [SettingsScene] {
         database.scenes.filter { scene in scene.enabled }
     }
@@ -827,8 +825,6 @@ final class Model: ObservableObject {
             name: UIDevice.orientationDidChangeNotification,
             object: nil
         )
-        networkPathMonitor.pathUpdateHandler = handleNetworkPathUpdate(path:)
-        networkPathMonitor.start(queue: DispatchQueue.main)
         iconImage = database.iconImage
         Task {
             appStoreUpdateListenerTask = listenForAppStoreTransactions()
@@ -884,11 +880,6 @@ final class Model: ObservableObject {
 
     deinit {
         appStoreUpdateListenerTask?.cancel()
-    }
-
-    private func handleNetworkPathUpdate(path: NWPath) {
-        logger
-            .debug("Network: \(path.debugDescription), All: \(path.availableInterfaces)")
     }
 
     private func updateOrientation() {
