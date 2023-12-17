@@ -20,7 +20,6 @@ private let secondsSuffix = String(localized: "/sec")
 
 struct Camera: Identifiable {
     var id: String
-    var type: SettingsCameraType
     var name: String
 }
 
@@ -861,36 +860,25 @@ final class Model: ObservableObject {
     }
 
     private func listCameras(position: AVCaptureDevice.Position) -> [Camera] {
+        var deviceTypes: [AVCaptureDevice.DeviceType] = [
+            .builtInTripleCamera,
+            .builtInDualCamera,
+            .builtInDualWideCamera,
+            .builtInUltraWideCamera,
+            .builtInWideAngleCamera,
+            .builtInTelephotoCamera,
+        ]
+        if #available(iOS 17.0, *) {
+            deviceTypes.append(.external)
+        }
         let deviceDiscovery = AVCaptureDevice.DiscoverySession(
-            deviceTypes: [
-                .builtInTripleCamera,
-                .builtInDualCamera,
-                .builtInDualWideCamera,
-                .builtInUltraWideCamera,
-                .builtInWideAngleCamera,
-                .builtInTelephotoCamera,
-            ],
+            deviceTypes: deviceTypes,
             mediaType: .video,
             position: position
         )
         return deviceDiscovery.devices.map { device in
             logger.info("Found camera '\(device.localizedName)'")
-            switch device.deviceType {
-            case .builtInTripleCamera:
-                return Camera(id: device.uniqueID, type: .triple, name: cameraName(device: device))
-            case .builtInDualCamera:
-                return Camera(id: device.uniqueID, type: .dual, name: cameraName(device: device))
-            case .builtInDualWideCamera:
-                return Camera(id: device.uniqueID, type: .dualWide, name: cameraName(device: device))
-            case .builtInUltraWideCamera:
-                return Camera(id: device.uniqueID, type: .ultraWide, name: cameraName(device: device))
-            case .builtInWideAngleCamera:
-                return Camera(id: device.uniqueID, type: .wide, name: cameraName(device: device))
-            case .builtInTelephotoCamera:
-                return Camera(id: device.uniqueID, type: .telephoto, name: cameraName(device: device))
-            default:
-                fatalError("Bad camera")
-            }
+            return Camera(id: device.uniqueID, name: cameraName(device: device))
         }
     }
 

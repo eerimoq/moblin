@@ -33,6 +33,128 @@
 		032A49B82AC54DD000ED3916 /* ExportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A49B72AC54DD000ED3916 /* ExportSettingsView.swift */; };
 		032A49BA2AC54E6500ED3916 /* ImportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A49B92AC54E6500ED3916 /* ImportSettingsView.swift */; };
 		032A49BC2AC5DF3F00ED3916 /* ImportExportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A49BB2AC5DF3F00ED3916 /* ImportExportSettingsView.swift */; };
+		032E064D2B2F3E9D00EAE5F8 /* IconAndTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37272AB0EBB500045B92 /* IconAndTextView.swift */; };
+		032E064E2B2F3E9D00EAE5F8 /* StreamOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9835F2A9A05D7008FF0DB /* StreamOverlayView.swift */; };
+		032E064F2B2F3E9D00EAE5F8 /* TextItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3792AA39DA800295443 /* TextItemView.swift */; };
+		032E06502B2F3E9D00EAE5F8 /* StreamOverlayIconAndTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBA12AAD824600B718B6 /* StreamOverlayIconAndTextView.swift */; };
+		032E06512B2F3E9D00EAE5F8 /* CacheAsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D445E12AE5966B00A0F6E9 /* CacheAsyncImage.swift */; };
+		032E06522B2F3E9D00EAE5F8 /* TextEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F3BF182ADAAA94009A8D3E /* TextEffect.swift */; };
+		032E06532B2F3E9D00EAE5F8 /* TwitchPubSub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */; };
+		032E06542B2F3E9D00EAE5F8 /* WidgetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A983602A9A05D7008FF0DB /* WidgetSettingsView.swift */; };
+		032E06552B2F3E9D00EAE5F8 /* StreamUrlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036BE2CB2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift */; };
+		032E06562B2F3E9D00EAE5F8 /* BrowserEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */; };
+		032E06572B2F3E9D00EAE5F8 /* StreamVideoSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB872AA836B500B718B6 /* StreamVideoSettingsView.swift */; };
+		032E06582B2F3E9D00EAE5F8 /* StreamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A983582A9A05D7008FF0DB /* StreamView.swift */; };
+		032E06592B2F3E9D00EAE5F8 /* StreamOverlayLeftView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB9B2AAD819800B718B6 /* StreamOverlayLeftView.swift */; };
+		032E065A2B2F3E9D00EAE5F8 /* WidgetImageSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3662AA33C6A00295443 /* WidgetImageSettingsView.swift */; };
+		032E065B2B2F3E9D00EAE5F8 /* AboutDesignedBySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0344AFE62B00023E00C177DB /* AboutDesignedBySettingsView.swift */; };
+		032E065C2B2F3E9D00EAE5F8 /* StreamOverlayChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030947C22A9C0496003FC387 /* StreamOverlayChatView.swift */; };
+		032E065D2B2F3E9D00EAE5F8 /* ObsWebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BDE2212B24367D00DF193A /* ObsWebSocket.swift */; };
+		032E065E2B2F3E9D00EAE5F8 /* WidgetBrowserUrlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CC5F882AD060DB0019CBA5 /* WidgetBrowserUrlSettingsView.swift */; };
+		032E065F2B2F3E9D00EAE5F8 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A983562A9A05D7008FF0DB /* MainView.swift */; };
+		032E06602B2F3E9D00EAE5F8 /* ButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374032AA036D10028DDD5 /* ButtonsView.swift */; };
+		032E06612B2F3E9D00EAE5F8 /* ButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBB52AAD9B5B00B718B6 /* ButtonsSettingsView.swift */; };
+		032E06622B2F3E9D00EAE5F8 /* RandomEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032815DB2AC915AE001F8A85 /* RandomEffect.swift */; };
+		032E06632B2F3E9D00EAE5F8 /* StreamTwitchSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3452AA31E9000295443 /* StreamTwitchSettingsView.swift */; };
+		032E06642B2F3E9D00EAE5F8 /* DebugSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBAE2AAD96B200B718B6 /* DebugSettingsView.swift */; };
+		032E06652B2F3E9D00EAE5F8 /* BitratePresetsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FB4B2E2AD8CF83005AA183 /* BitratePresetsSettingsView.swift */; };
+		032E06662B2F3E9D00EAE5F8 /* BatteryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373F82A9EFB340028DDD5 /* BatteryView.swift */; };
+		032E06672B2F3E9D00EAE5F8 /* InlinePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C088362B0AFFA8000990DA /* InlinePickerView.swift */; };
+		032E06682B2F3E9D00EAE5F8 /* TapScreenToFocusSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95AE32ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift */; };
+		032E06692B2F3E9D00EAE5F8 /* Seventv.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC11612AE4BDA200C38FC4 /* Seventv.swift */; };
+		032E066A2B2F3E9D00EAE5F8 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FC2A9F35EF0028DDD5 /* Utils.swift */; };
+		032E066B2B2F3E9D00EAE5F8 /* DebugAudioSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031839162AF6A03100320FB2 /* DebugAudioSettingsView.swift */; };
+		032E066C2B2F3E9D00EAE5F8 /* PositionEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032FDBFE2B0B11B0007BE85E /* PositionEditView.swift */; };
+		032E066D2B2F3E9D00EAE5F8 /* StreamOverlayTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB9F2AAD823900B718B6 /* StreamOverlayTextView.swift */; };
+		032E066E2B2F3E9D00EAE5F8 /* MovieEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374062AA0EA650028DDD5 /* MovieEffect.swift */; };
+		032E066F2B2F3E9D00EAE5F8 /* StreamSrtSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032469A82AE1B3040097B18B /* StreamSrtSettingsView.swift */; };
+		032E06702B2F3E9D00EAE5F8 /* StreamSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A983592A9A05D7008FF0DB /* StreamSettingsView.swift */; };
+		032E06712B2F3E9D00EAE5F8 /* NameEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A37B2AA439B500295443 /* NameEditView.swift */; };
+		032E06722B2F3E9D00EAE5F8 /* AdaptiveBitrate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A3F4C62AF4C0AD00F465D1 /* AdaptiveBitrate.swift */; };
+		032E06732B2F3E9D00EAE5F8 /* ControlBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373F52A9EF98E0028DDD5 /* ControlBarView.swift */; };
+		032E06742B2F3E9D00EAE5F8 /* DebugLogSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB8D2AA90D1900B718B6 /* DebugLogSettingsView.swift */; };
+		032E06752B2F3E9D00EAE5F8 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0382933A2A9A73ED008963AA /* Settings.swift */; };
+		032E06762B2F3E9D00EAE5F8 /* ImageEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374082AA0EA700028DDD5 /* ImageEffect.swift */; };
+		032E06772B2F3E9D00EAE5F8 /* StreamVideoCaptureSessionPresetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038B67612AE84BFC000DC43B /* StreamVideoCaptureSessionPresetSettingsView.swift */; };
+		032E06782B2F3E9D00EAE5F8 /* CreateButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9835D2A9A05D7008FF0DB /* CreateButtonView.swift */; };
+		032E06792B2F3E9D00EAE5F8 /* CosmeticsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03831D582AD9A198008D26CC /* CosmeticsSettingsView.swift */; };
+		032E067A2B2F3E9D00EAE5F8 /* AboutLicensesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBBF2AADC4EC00B718B6 /* AboutLicensesSettingsView.swift */; };
+		032E067B2B2F3E9D00EAE5F8 /* ResetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBB12AAD97FB00B718B6 /* ResetSettingsView.swift */; };
+		032E067C2B2F3E9D00EAE5F8 /* WidgetsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBB72AAD9B7200B718B6 /* WidgetsSettingsView.swift */; };
+		032E067D2B2F3E9D00EAE5F8 /* StreamChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BBAE992B2EB4FD0033D425 /* StreamChatSettingsView.swift */; };
+		032E067E2B2F3E9D00EAE5F8 /* HelpAndSupportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBA92AAD953200B718B6 /* HelpAndSupportSettingsView.swift */; };
+		032E067F2B2F3E9D00EAE5F8 /* WidgetBrowserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */; };
+		032E06802B2F3E9D00EAE5F8 /* ImportExportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A49BB2AC5DF3F00ED3916 /* ImportExportSettingsView.swift */; };
+		032E06812B2F3E9D00EAE5F8 /* StreamAfreecaTvSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EF34B92B1B028900A19221 /* StreamAfreecaTvSettingsView.swift */; };
+		032E06822B2F3E9D00EAE5F8 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9836D2A9A05F9008FF0DB /* Model.swift */; };
+		032E06832B2F3E9D00EAE5F8 /* Emotes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC11632AE4BEC400C38FC4 /* Emotes.swift */; };
+		032E06842B2F3E9D00EAE5F8 /* TwitchChatMoblin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A983702A9A0659008FF0DB /* TwitchChatMoblin.swift */; };
+		032E06852B2F3E9D00EAE5F8 /* LocalOverlaysSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBA42AAD945D00B718B6 /* LocalOverlaysSettingsView.swift */; };
+		032E06862B2F3E9D00EAE5F8 /* ButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB752AA6345400B718B6 /* ButtonSettingsView.swift */; };
+		032E06872B2F3E9D00EAE5F8 /* SceneCameraPipSmallCameraSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C0882F2B0A939F000990DA /* SceneCameraPipSmallCameraSettingsView.swift */; };
+		032E06882B2F3E9D00EAE5F8 /* ZoomPresetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035E775B2ACC969D00738DCE /* ZoomPresetSettingsView.swift */; };
+		032E06892B2F3E9D00EAE5F8 /* ScenesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9835B2A9A05D7008FF0DB /* ScenesSettingsView.swift */; };
+		032E068A2B2F3E9D00EAE5F8 /* YouTubeLiveChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0330F2AF2AFAD26C001262C3 /* YouTubeLiveChat.swift */; };
+		032E068B2B2F3E9D00EAE5F8 /* AboutSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBAC2AAD964000B718B6 /* AboutSettingsView.swift */; };
+		032E068C2B2F3E9D00EAE5F8 /* Srt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F5A8DE2AD5DACB00F354D2 /* Srt.swift */; };
+		032E068D2B2F3E9D00EAE5F8 /* KickPusher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036BE2CE2ABD4CA60048F9C5 /* KickPusher.swift */; };
+		032E068E2B2F3E9D00EAE5F8 /* AfreecaTvChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EF34B32B1AFBB600A19221 /* AfreecaTvChat.swift */; };
+		032E068F2B2F3E9D00EAE5F8 /* Ffz.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC115F2AE4BD9200C38FC4 /* Ffz.swift */; };
+		032E06902B2F3E9D00EAE5F8 /* TextEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A37D2AA43DCC00295443 /* TextEditView.swift */; };
+		032E06912B2F3E9D00EAE5F8 /* MoblinApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035E9E362A9A02D6009D4F5A /* MoblinApp.swift */; };
+		032E06922B2F3E9D00EAE5F8 /* VideoStabilizationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031A2E102ADDDD7E005CE350 /* VideoStabilizationSettingsView.swift */; };
+		032E06932B2F3E9D00EAE5F8 /* RemoteConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */; };
+		032E06942B2F3E9D00EAE5F8 /* ButtonImagePickerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB7D2AA7C55000B718B6 /* ButtonImagePickerSettingsView.swift */; };
+		032E06952B2F3E9D00EAE5F8 /* ThermalStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FE2A9FCA790028DDD5 /* ThermalStateView.swift */; };
+		032E06962B2F3E9D00EAE5F8 /* ExportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A49B72AC54DD000ED3916 /* ExportSettingsView.swift */; };
+		032E06972B2F3E9D00EAE5F8 /* MoblinSettingsUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03831D512AD90AB5008D26CC /* MoblinSettingsUrl.swift */; };
+		032E06982B2F3E9D00EAE5F8 /* ImportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A49B92AC54E6500ED3916 /* ImportSettingsView.swift */; };
+		032E06992B2F3E9D00EAE5F8 /* ZoomSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A14BE22ACC903E00D180FF /* ZoomSettingsView.swift */; };
+		032E069A2B2F3E9D00EAE5F8 /* SceneSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9835C2A9A05D7008FF0DB /* SceneSettingsView.swift */; };
+		032E069B2B2F3E9D00EAE5F8 /* SepiaEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB932AACF16600B718B6 /* SepiaEffect.swift */; };
+		032E069C2B2F3E9D00EAE5F8 /* TripleEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032815DE2AC9885C001F8A85 /* TripleEffect.swift */; };
+		032E069D2B2F3E9D00EAE5F8 /* GrayScaleEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374012AA0354C0028DDD5 /* GrayScaleEffect.swift */; };
+		032E069E2B2F3E9D00EAE5F8 /* QuickButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E877F62B2DB27800086355 /* QuickButtonsSettingsView.swift */; };
+		032E069F2B2F3E9D00EAE5F8 /* SizeEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032FDC012B0B11C5007BE85E /* SizeEditView.swift */; };
+		032E06A02B2F3E9D00EAE5F8 /* StreamAudioSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031A4DC62B2CED460053F67D /* StreamAudioSettingsView.swift */; };
+		032E06A12B2F3E9D00EAE5F8 /* ZoomSwitchToSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */; };
+		032E06A22B2F3E9D00EAE5F8 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A983572A9A05D7008FF0DB /* SettingsView.swift */; };
+		032E06A32B2F3E9D00EAE5F8 /* StreamKickSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036BE2D12ABD518E0048F9C5 /* StreamKickSettingsView.swift */; };
+		032E06A42B2F3E9D00EAE5F8 /* BitratePresetsPresetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FB4B302AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift */; };
+		032E06A52B2F3E9D00EAE5F8 /* Srtla.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374122AA277570028DDD5 /* Srtla.swift */; };
+		032E06A62B2F3E9D00EAE5F8 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB8F2AABA7DC00B718B6 /* Log.swift */; };
+		032E06A72B2F3E9D00EAE5F8 /* NoiseReductionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031CCE2C2ACA76CF00CB5D46 /* NoiseReductionEffect.swift */; };
+		032E06A82B2F3E9D00EAE5F8 /* AddButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9835A2A9A05D7008FF0DB /* AddButtonView.swift */; };
+		032E06A92B2F3E9D00EAE5F8 /* StreamsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A983552A9A05D7008FF0DB /* StreamsSettingsView.swift */; };
+		032E06AA2B2F3E9D00EAE5F8 /* Media.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A08B7F2AC368860018BA95 /* Media.swift */; };
+		032E06AB2B2F3E9D00EAE5F8 /* ImageStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036333272AAE2E5100FF1231 /* ImageStorage.swift */; };
+		032E06AC2B2F3E9D00EAE5F8 /* Bttv.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC115C2AE4BD7B00C38FC4 /* Bttv.swift */; };
+		032E06AD2B2F3E9D00EAE5F8 /* SceneWidgetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A36F2AA3771F00295443 /* SceneWidgetSettingsView.swift */; };
+		032E06AE2B2F3E9D00EAE5F8 /* StreamOverlayRightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB9D2AAD81AA00B718B6 /* StreamOverlayRightView.swift */; };
+		032E06AF2B2F3E9D00EAE5F8 /* StreamObsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BDE2252B24656400DF193A /* StreamObsSettingsView.swift */; };
+		032E06B02B2F3E9D00EAE5F8 /* StreamYouTubeSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0330F2B42AFADD18001262C3 /* StreamYouTubeSettingsView.swift */; };
+		032E06B12B2F3E9D00EAE5F8 /* DraggableItemPrefixView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031A2DFF2ADBE34F005CE350 /* DraggableItemPrefixView.swift */; };
+		032E06B22B2F3E9D00EAE5F8 /* WidgetVideoEffectSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB782AA64C9500B718B6 /* WidgetVideoEffectSettingsView.swift */; };
+		032E06B32B2F3E9D00EAE5F8 /* LocalListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33A2AA2FA7100295443 /* LocalListener.swift */; };
+		032E06B42B2F3E9D00EAE5F8 /* StreamVideoBitrateSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37362AB230E700045B92 /* StreamVideoBitrateSettingsView.swift */; };
+		032E06B52B2F3E9D00EAE5F8 /* ValueEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032FDBFB2B0B1183007BE85E /* ValueEditView.swift */; };
+		032E06B62B2F3E9D00EAE5F8 /* DebugAdaptiveBitrateSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0318391A2AF79DDF00320FB2 /* DebugAdaptiveBitrateSettingsView.swift */; };
+		032E06B72B2F3E9D00EAE5F8 /* StreamOverlayDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F5A8E42AD6FF8E00F354D2 /* StreamOverlayDebugView.swift */; };
+		032E06B82B2F3E9D00EAE5F8 /* LocalOverlaysChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030399122AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift */; };
+		032E06BA2B2F3E9D00EAE5F8 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 030786992AEC23FB0061FDE2 /* StoreKit.framework */; };
+		032E06BB2B2F3E9D00EAE5F8 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 032E06462B2F3E9D00EAE5F8 /* SDWebImageSwiftUI */; };
+		032E06BC2B2F3E9D00EAE5F8 /* HaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 032E063D2B2F3E9D00EAE5F8 /* HaishinKit */; };
+		032E06BD2B2F3E9D00EAE5F8 /* TwitchChat in Frameworks */ = {isa = PBXBuildFile; productRef = 032E063B2B2F3E9D00EAE5F8 /* TwitchChat */; };
+		032E06BE2B2F3E9D00EAE5F8 /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 032E064A2B2F3E9D00EAE5F8 /* WrappingHStack */; };
+		032E06BF2B2F3E9D00EAE5F8 /* LicenseList in Frameworks */ = {isa = PBXBuildFile; productRef = 032E06442B2F3E9D00EAE5F8 /* LicenseList */; };
+		032E06C02B2F3E9D00EAE5F8 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 032E06402B2F3E9D00EAE5F8 /* Collections */; };
+		032E06C12B2F3E9D00EAE5F8 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = 032E06422B2F3E9D00EAE5F8 /* AlertToast */; };
+		032E06C22B2F3E9D00EAE5F8 /* SDWebImageWebPCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 032E06482B2F3E9D00EAE5F8 /* SDWebImageWebPCoder */; };
+		032E06C32B2F3E9D00EAE5F8 /* SRTHaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 032E063F2B2F3E9D00EAE5F8 /* SRTHaishinKit */; };
+		032E06C52B2F3E9D00EAE5F8 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3D2A9A02D7009D4F5A /* Preview Assets.xcassets */; };
+		032E06C62B2F3E9D00EAE5F8 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 031852A42B21890A00AEAD0D /* InfoPlist.strings */; };
+		032E06C72B2F3E9D00EAE5F8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */; };
+		032E06C82B2F3E9D00EAE5F8 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03F853B22B151FA700719B89 /* Localizable.xcstrings */; };
 		032FDBFC2B0B1183007BE85E /* ValueEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032FDBFB2B0B1183007BE85E /* ValueEditView.swift */; };
 		032FDBFF2B0B11B0007BE85E /* PositionEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032FDBFE2B0B11B0007BE85E /* PositionEditView.swift */; };
 		032FDC022B0B11C5007BE85E /* SizeEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032FDC012B0B11C5007BE85E /* SizeEditView.swift */; };
@@ -157,6 +279,7 @@
 		032A49B92AC54E6500ED3916 /* ImportSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportSettingsView.swift; sourceTree = "<group>"; };
 		032A49BB2AC5DF3F00ED3916 /* ImportExportSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportExportSettingsView.swift; sourceTree = "<group>"; };
 		032BC5B22AD8E18000DEC883 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		032E06CC2B2F3E9D00EAE5F8 /* Moblin 16.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Moblin 16.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		032FDBFB2B0B1183007BE85E /* ValueEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueEditView.swift; sourceTree = "<group>"; };
 		032FDBFE2B0B11B0007BE85E /* PositionEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PositionEditView.swift; sourceTree = "<group>"; };
 		032FDC012B0B11C5007BE85E /* SizeEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SizeEditView.swift; sourceTree = "<group>"; };
@@ -253,6 +376,23 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		032E06B92B2F3E9D00EAE5F8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				032E06BA2B2F3E9D00EAE5F8 /* StoreKit.framework in Frameworks */,
+				032E06BB2B2F3E9D00EAE5F8 /* SDWebImageSwiftUI in Frameworks */,
+				032E06BC2B2F3E9D00EAE5F8 /* HaishinKit in Frameworks */,
+				032E06BD2B2F3E9D00EAE5F8 /* TwitchChat in Frameworks */,
+				032E06BE2B2F3E9D00EAE5F8 /* WrappingHStack in Frameworks */,
+				032E06BF2B2F3E9D00EAE5F8 /* LicenseList in Frameworks */,
+				032E06C02B2F3E9D00EAE5F8 /* Collections in Frameworks */,
+				032E06C12B2F3E9D00EAE5F8 /* AlertToast in Frameworks */,
+				032E06C22B2F3E9D00EAE5F8 /* SDWebImageWebPCoder in Frameworks */,
+				032E06C32B2F3E9D00EAE5F8 /* SRTHaishinKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		035E9E302A9A02D6009D4F5A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -446,6 +586,7 @@
 			isa = PBXGroup;
 			children = (
 				035E9E332A9A02D6009D4F5A /* Moblin.app */,
+				032E06CC2B2F3E9D00EAE5F8 /* Moblin 16.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -813,6 +954,35 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		032E06392B2F3E9D00EAE5F8 /* Moblin 16 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 032E06C92B2F3E9D00EAE5F8 /* Build configuration list for PBXNativeTarget "Moblin 16" */;
+			buildPhases = (
+				032E064C2B2F3E9D00EAE5F8 /* Sources */,
+				032E06B92B2F3E9D00EAE5F8 /* Frameworks */,
+				032E06C42B2F3E9D00EAE5F8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				032E063A2B2F3E9D00EAE5F8 /* PBXTargetDependency */,
+			);
+			name = "Moblin 16";
+			packageProductDependencies = (
+				032E063B2B2F3E9D00EAE5F8 /* TwitchChat */,
+				032E063D2B2F3E9D00EAE5F8 /* HaishinKit */,
+				032E063F2B2F3E9D00EAE5F8 /* SRTHaishinKit */,
+				032E06402B2F3E9D00EAE5F8 /* Collections */,
+				032E06422B2F3E9D00EAE5F8 /* AlertToast */,
+				032E06442B2F3E9D00EAE5F8 /* LicenseList */,
+				032E06462B2F3E9D00EAE5F8 /* SDWebImageSwiftUI */,
+				032E06482B2F3E9D00EAE5F8 /* SDWebImageWebPCoder */,
+				032E064A2B2F3E9D00EAE5F8 /* WrappingHStack */,
+			);
+			productName = Mobs;
+			productReference = 032E06CC2B2F3E9D00EAE5F8 /* Moblin 16.app */;
+			productType = "com.apple.product-type.application";
+		};
 		035E9E322A9A02D6009D4F5A /* Moblin */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 035E9E412A9A02D7009D4F5A /* Build configuration list for PBXNativeTarget "Moblin" */;
@@ -899,11 +1069,23 @@
 			projectRoot = "";
 			targets = (
 				035E9E322A9A02D6009D4F5A /* Moblin */,
+				032E06392B2F3E9D00EAE5F8 /* Moblin 16 */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		032E06C42B2F3E9D00EAE5F8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				032E06C52B2F3E9D00EAE5F8 /* Preview Assets.xcassets in Resources */,
+				032E06C62B2F3E9D00EAE5F8 /* InfoPlist.strings in Resources */,
+				032E06C72B2F3E9D00EAE5F8 /* Assets.xcassets in Resources */,
+				032E06C82B2F3E9D00EAE5F8 /* Localizable.xcstrings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		035E9E312A9A02D6009D4F5A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -918,6 +1100,121 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		032E064C2B2F3E9D00EAE5F8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				032E064D2B2F3E9D00EAE5F8 /* IconAndTextView.swift in Sources */,
+				032E064E2B2F3E9D00EAE5F8 /* StreamOverlayView.swift in Sources */,
+				032E064F2B2F3E9D00EAE5F8 /* TextItemView.swift in Sources */,
+				032E06502B2F3E9D00EAE5F8 /* StreamOverlayIconAndTextView.swift in Sources */,
+				032E06512B2F3E9D00EAE5F8 /* CacheAsyncImage.swift in Sources */,
+				032E06522B2F3E9D00EAE5F8 /* TextEffect.swift in Sources */,
+				032E06532B2F3E9D00EAE5F8 /* TwitchPubSub.swift in Sources */,
+				032E06542B2F3E9D00EAE5F8 /* WidgetSettingsView.swift in Sources */,
+				032E06552B2F3E9D00EAE5F8 /* StreamUrlSettingsView.swift in Sources */,
+				032E06562B2F3E9D00EAE5F8 /* BrowserEffect.swift in Sources */,
+				032E06572B2F3E9D00EAE5F8 /* StreamVideoSettingsView.swift in Sources */,
+				032E06582B2F3E9D00EAE5F8 /* StreamView.swift in Sources */,
+				032E06592B2F3E9D00EAE5F8 /* StreamOverlayLeftView.swift in Sources */,
+				032E065A2B2F3E9D00EAE5F8 /* WidgetImageSettingsView.swift in Sources */,
+				032E065B2B2F3E9D00EAE5F8 /* AboutDesignedBySettingsView.swift in Sources */,
+				032E065C2B2F3E9D00EAE5F8 /* StreamOverlayChatView.swift in Sources */,
+				032E065D2B2F3E9D00EAE5F8 /* ObsWebSocket.swift in Sources */,
+				032E065E2B2F3E9D00EAE5F8 /* WidgetBrowserUrlSettingsView.swift in Sources */,
+				032E065F2B2F3E9D00EAE5F8 /* MainView.swift in Sources */,
+				032E06602B2F3E9D00EAE5F8 /* ButtonsView.swift in Sources */,
+				032E06612B2F3E9D00EAE5F8 /* ButtonsSettingsView.swift in Sources */,
+				032E06622B2F3E9D00EAE5F8 /* RandomEffect.swift in Sources */,
+				032E06632B2F3E9D00EAE5F8 /* StreamTwitchSettingsView.swift in Sources */,
+				032E06642B2F3E9D00EAE5F8 /* DebugSettingsView.swift in Sources */,
+				032E06652B2F3E9D00EAE5F8 /* BitratePresetsSettingsView.swift in Sources */,
+				032E06662B2F3E9D00EAE5F8 /* BatteryView.swift in Sources */,
+				032E06672B2F3E9D00EAE5F8 /* InlinePickerView.swift in Sources */,
+				032E06682B2F3E9D00EAE5F8 /* TapScreenToFocusSettingsView.swift in Sources */,
+				032E06692B2F3E9D00EAE5F8 /* Seventv.swift in Sources */,
+				032E066A2B2F3E9D00EAE5F8 /* Utils.swift in Sources */,
+				032E066B2B2F3E9D00EAE5F8 /* DebugAudioSettingsView.swift in Sources */,
+				032E066C2B2F3E9D00EAE5F8 /* PositionEditView.swift in Sources */,
+				032E066D2B2F3E9D00EAE5F8 /* StreamOverlayTextView.swift in Sources */,
+				032E066E2B2F3E9D00EAE5F8 /* MovieEffect.swift in Sources */,
+				032E066F2B2F3E9D00EAE5F8 /* StreamSrtSettingsView.swift in Sources */,
+				032E06702B2F3E9D00EAE5F8 /* StreamSettingsView.swift in Sources */,
+				032E06712B2F3E9D00EAE5F8 /* NameEditView.swift in Sources */,
+				032E06722B2F3E9D00EAE5F8 /* AdaptiveBitrate.swift in Sources */,
+				032E06732B2F3E9D00EAE5F8 /* ControlBarView.swift in Sources */,
+				032E06742B2F3E9D00EAE5F8 /* DebugLogSettingsView.swift in Sources */,
+				032E06752B2F3E9D00EAE5F8 /* Settings.swift in Sources */,
+				032E06762B2F3E9D00EAE5F8 /* ImageEffect.swift in Sources */,
+				032E06772B2F3E9D00EAE5F8 /* StreamVideoCaptureSessionPresetSettingsView.swift in Sources */,
+				032E06782B2F3E9D00EAE5F8 /* CreateButtonView.swift in Sources */,
+				032E06792B2F3E9D00EAE5F8 /* CosmeticsSettingsView.swift in Sources */,
+				032E067A2B2F3E9D00EAE5F8 /* AboutLicensesSettingsView.swift in Sources */,
+				032E067B2B2F3E9D00EAE5F8 /* ResetSettingsView.swift in Sources */,
+				032E067C2B2F3E9D00EAE5F8 /* WidgetsSettingsView.swift in Sources */,
+				032E067D2B2F3E9D00EAE5F8 /* StreamChatSettingsView.swift in Sources */,
+				032E067E2B2F3E9D00EAE5F8 /* HelpAndSupportSettingsView.swift in Sources */,
+				032E067F2B2F3E9D00EAE5F8 /* WidgetBrowserSettingsView.swift in Sources */,
+				032E06802B2F3E9D00EAE5F8 /* ImportExportSettingsView.swift in Sources */,
+				032E06812B2F3E9D00EAE5F8 /* StreamAfreecaTvSettingsView.swift in Sources */,
+				032E06822B2F3E9D00EAE5F8 /* Model.swift in Sources */,
+				032E06832B2F3E9D00EAE5F8 /* Emotes.swift in Sources */,
+				032E06842B2F3E9D00EAE5F8 /* TwitchChatMoblin.swift in Sources */,
+				032E06852B2F3E9D00EAE5F8 /* LocalOverlaysSettingsView.swift in Sources */,
+				032E06862B2F3E9D00EAE5F8 /* ButtonSettingsView.swift in Sources */,
+				032E06872B2F3E9D00EAE5F8 /* SceneCameraPipSmallCameraSettingsView.swift in Sources */,
+				032E06882B2F3E9D00EAE5F8 /* ZoomPresetSettingsView.swift in Sources */,
+				032E06892B2F3E9D00EAE5F8 /* ScenesSettingsView.swift in Sources */,
+				032E068A2B2F3E9D00EAE5F8 /* YouTubeLiveChat.swift in Sources */,
+				032E068B2B2F3E9D00EAE5F8 /* AboutSettingsView.swift in Sources */,
+				032E068C2B2F3E9D00EAE5F8 /* Srt.swift in Sources */,
+				032E068D2B2F3E9D00EAE5F8 /* KickPusher.swift in Sources */,
+				032E068E2B2F3E9D00EAE5F8 /* AfreecaTvChat.swift in Sources */,
+				032E068F2B2F3E9D00EAE5F8 /* Ffz.swift in Sources */,
+				032E06902B2F3E9D00EAE5F8 /* TextEditView.swift in Sources */,
+				032E06912B2F3E9D00EAE5F8 /* MoblinApp.swift in Sources */,
+				032E06922B2F3E9D00EAE5F8 /* VideoStabilizationSettingsView.swift in Sources */,
+				032E06932B2F3E9D00EAE5F8 /* RemoteConnection.swift in Sources */,
+				032E06942B2F3E9D00EAE5F8 /* ButtonImagePickerSettingsView.swift in Sources */,
+				032E06952B2F3E9D00EAE5F8 /* ThermalStateView.swift in Sources */,
+				032E06962B2F3E9D00EAE5F8 /* ExportSettingsView.swift in Sources */,
+				032E06972B2F3E9D00EAE5F8 /* MoblinSettingsUrl.swift in Sources */,
+				032E06982B2F3E9D00EAE5F8 /* ImportSettingsView.swift in Sources */,
+				032E06992B2F3E9D00EAE5F8 /* ZoomSettingsView.swift in Sources */,
+				032E069A2B2F3E9D00EAE5F8 /* SceneSettingsView.swift in Sources */,
+				032E069B2B2F3E9D00EAE5F8 /* SepiaEffect.swift in Sources */,
+				032E069C2B2F3E9D00EAE5F8 /* TripleEffect.swift in Sources */,
+				032E069D2B2F3E9D00EAE5F8 /* GrayScaleEffect.swift in Sources */,
+				032E069E2B2F3E9D00EAE5F8 /* QuickButtonsSettingsView.swift in Sources */,
+				032E069F2B2F3E9D00EAE5F8 /* SizeEditView.swift in Sources */,
+				032E06A02B2F3E9D00EAE5F8 /* StreamAudioSettingsView.swift in Sources */,
+				032E06A12B2F3E9D00EAE5F8 /* ZoomSwitchToSettingsView.swift in Sources */,
+				032E06A22B2F3E9D00EAE5F8 /* SettingsView.swift in Sources */,
+				032E06A32B2F3E9D00EAE5F8 /* StreamKickSettingsView.swift in Sources */,
+				032E06A42B2F3E9D00EAE5F8 /* BitratePresetsPresetSettingsView.swift in Sources */,
+				032E06A52B2F3E9D00EAE5F8 /* Srtla.swift in Sources */,
+				032E06A62B2F3E9D00EAE5F8 /* Log.swift in Sources */,
+				032E06A72B2F3E9D00EAE5F8 /* NoiseReductionEffect.swift in Sources */,
+				032E06A82B2F3E9D00EAE5F8 /* AddButtonView.swift in Sources */,
+				032E06A92B2F3E9D00EAE5F8 /* StreamsSettingsView.swift in Sources */,
+				032E06AA2B2F3E9D00EAE5F8 /* Media.swift in Sources */,
+				032E06AB2B2F3E9D00EAE5F8 /* ImageStorage.swift in Sources */,
+				032E06AC2B2F3E9D00EAE5F8 /* Bttv.swift in Sources */,
+				032E06AD2B2F3E9D00EAE5F8 /* SceneWidgetSettingsView.swift in Sources */,
+				032E06AE2B2F3E9D00EAE5F8 /* StreamOverlayRightView.swift in Sources */,
+				032E06AF2B2F3E9D00EAE5F8 /* StreamObsSettingsView.swift in Sources */,
+				032E06B02B2F3E9D00EAE5F8 /* StreamYouTubeSettingsView.swift in Sources */,
+				032E06B12B2F3E9D00EAE5F8 /* DraggableItemPrefixView.swift in Sources */,
+				032E06B22B2F3E9D00EAE5F8 /* WidgetVideoEffectSettingsView.swift in Sources */,
+				032E06B32B2F3E9D00EAE5F8 /* LocalListener.swift in Sources */,
+				032E06B42B2F3E9D00EAE5F8 /* StreamVideoBitrateSettingsView.swift in Sources */,
+				032E06B52B2F3E9D00EAE5F8 /* ValueEditView.swift in Sources */,
+				032E06B62B2F3E9D00EAE5F8 /* DebugAdaptiveBitrateSettingsView.swift in Sources */,
+				032E06B72B2F3E9D00EAE5F8 /* StreamOverlayDebugView.swift in Sources */,
+				032E06B82B2F3E9D00EAE5F8 /* LocalOverlaysChatSettingsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		035E9E2F2A9A02D6009D4F5A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1040,6 +1337,10 @@
 			isa = PBXTargetDependency;
 			productRef = 032815D62AC855B1001F8A85 /* PrepareLicenseList */;
 		};
+		032E063A2B2F3E9D00EAE5F8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 032815D62AC855B1001F8A85 /* PrepareLicenseList */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
@@ -1057,6 +1358,96 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		032E06CA2B2F3E9D00EAE5F8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Moblin/Preview Content\"";
+				DEVELOPMENT_TEAM = L82N7LD4N5;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Moblin/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Moblin;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Moblin live streams video from the camera.";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Moblin uses localhost as input and output to SRT library.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Moblin live streams audio from the microphone.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Moblin shows selected images as overlays.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Moblin shows selected images as overlays.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIStatusBarHidden = NO;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.104.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		032E06CB2B2F3E9D00EAE5F8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Moblin/Preview Content\"";
+				DEVELOPMENT_TEAM = L82N7LD4N5;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Moblin/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Moblin;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Moblin live streams video from the camera.";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Moblin uses localhost as input and output to SRT library.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Moblin live streams audio from the microphone.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Moblin shows selected images as overlays.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Moblin shows selected images as overlays.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIStatusBarHidden = NO;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.104.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
 		035E9E3F2A9A02D7009D4F5A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1212,6 +1603,7 @@
 				INFOPLIST_KEY_UIStatusBarHidden = NO;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1256,6 +1648,7 @@
 				INFOPLIST_KEY_UIStatusBarHidden = NO;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1276,6 +1669,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		032E06C92B2F3E9D00EAE5F8 /* Build configuration list for PBXNativeTarget "Moblin 16" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				032E06CA2B2F3E9D00EAE5F8 /* Debug */,
+				032E06CB2B2F3E9D00EAE5F8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		035E9E2E2A9A02D6009D4F5A /* Build configuration list for PBXProject "Moblin" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1311,6 +1713,70 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 0.3.2;
+			};
+		};
+		032E063C2B2F3E9D00EAE5F8 /* XCRemoteSwiftPackageReference "twitch-chat" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/eerimoq/twitch-chat";
+			requirement = {
+				branch = trunk;
+				kind = branch;
+			};
+		};
+		032E063E2B2F3E9D00EAE5F8 /* XCRemoteSwiftPackageReference "HaishinKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/eerimoq/HaishinKit.swift";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+		032E06412B2F3E9D00EAE5F8 /* XCRemoteSwiftPackageReference "swift-collections" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-collections.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+		032E06432B2F3E9D00EAE5F8 /* XCRemoteSwiftPackageReference "AlertToast" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/elai950/AlertToast.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+		032E06452B2F3E9D00EAE5F8 /* XCRemoteSwiftPackageReference "LicenseList" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/cybozu/LicenseList.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.3.2;
+			};
+		};
+		032E06472B2F3E9D00EAE5F8 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImageSwiftUI";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+		032E06492B2F3E9D00EAE5F8 /* XCRemoteSwiftPackageReference "SDWebImageWebPCoder" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImageWebPCoder";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.14.0;
+			};
+		};
+		032E064B2B2F3E9D00EAE5F8 /* XCRemoteSwiftPackageReference "WrappingHStack" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ksemianov/WrappingHStack";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.3;
 			};
 		};
 		03A08B7A2AC295620018BA95 /* XCRemoteSwiftPackageReference "AlertToast" */ = {
@@ -1378,6 +1844,51 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 032815D32AC855A5001F8A85 /* XCRemoteSwiftPackageReference "LicenseList" */;
 			productName = "plugin:PrepareLicenseList";
+		};
+		032E063B2B2F3E9D00EAE5F8 /* TwitchChat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 032E063C2B2F3E9D00EAE5F8 /* XCRemoteSwiftPackageReference "twitch-chat" */;
+			productName = TwitchChat;
+		};
+		032E063D2B2F3E9D00EAE5F8 /* HaishinKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 032E063E2B2F3E9D00EAE5F8 /* XCRemoteSwiftPackageReference "HaishinKit" */;
+			productName = HaishinKit;
+		};
+		032E063F2B2F3E9D00EAE5F8 /* SRTHaishinKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 032E063E2B2F3E9D00EAE5F8 /* XCRemoteSwiftPackageReference "HaishinKit" */;
+			productName = SRTHaishinKit;
+		};
+		032E06402B2F3E9D00EAE5F8 /* Collections */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 032E06412B2F3E9D00EAE5F8 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = Collections;
+		};
+		032E06422B2F3E9D00EAE5F8 /* AlertToast */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 032E06432B2F3E9D00EAE5F8 /* XCRemoteSwiftPackageReference "AlertToast" */;
+			productName = AlertToast;
+		};
+		032E06442B2F3E9D00EAE5F8 /* LicenseList */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 032E06452B2F3E9D00EAE5F8 /* XCRemoteSwiftPackageReference "LicenseList" */;
+			productName = LicenseList;
+		};
+		032E06462B2F3E9D00EAE5F8 /* SDWebImageSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 032E06472B2F3E9D00EAE5F8 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
+			productName = SDWebImageSwiftUI;
+		};
+		032E06482B2F3E9D00EAE5F8 /* SDWebImageWebPCoder */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 032E06492B2F3E9D00EAE5F8 /* XCRemoteSwiftPackageReference "SDWebImageWebPCoder" */;
+			productName = SDWebImageWebPCoder;
+		};
+		032E064A2B2F3E9D00EAE5F8 /* WrappingHStack */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 032E064B2B2F3E9D00EAE5F8 /* XCRemoteSwiftPackageReference "WrappingHStack" */;
+			productName = WrappingHStack;
 		};
 		035D372B2AB103E600045B92 /* SRTHaishinKit */ = {
 			isa = XCSwiftPackageProductDependency;
