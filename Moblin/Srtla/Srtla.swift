@@ -113,34 +113,33 @@ class Srtla {
         for connection in remoteConnections {
             if let interface = connection.interface {
                 if path.availableInterfaces.contains(interface) {
-                    logger.info("srtla: interface: Re-add ethernet \(interface)")
+                    logger.info("srtla: interface: Re-adding ethernet \(interface)")
                     newRemoteConnections.append(connection)
                 } else {
-                    logger.info("srtla: interface: Stop ethernet \(interface)")
+                    logger.info("srtla: interface: Removing ethernet \(interface)")
                     stopRemote(connection: connection)
                 }
             } else {
-                logger.info("srtla: interface: Re-add non-ethernet")
+                logger.info("srtla: interface: Re-adding non-ethernet")
                 newRemoteConnections.append(connection)
             }
         }
-        for interface in path.availableInterfaces {
-            logger.info("srtla: interface: Available \(interface.name): \(interface.type)")
-            if interface.type == .wiredEthernet {
-                if !newRemoteConnections.contains(where: { connection in
-                    connection.interface == interface
-                }) {
-                    logger.info("srtla: interface: Adding ethernet \(interface)")
-                    newRemoteConnections.append(RemoteConnection(
-                        type: .wiredEthernet,
-                        mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
-                        interface: interface
-                    ))
-                    startRemote(connection: newRemoteConnections.last!, host: host, port: port)
-                    if let groupId {
-                        newRemoteConnections.last!.register(groupId: groupId)
-                    }
-                }
+        for interface in path.availableInterfaces where interface.type == .wiredEthernet {
+            logger.info("srtla: interface: Available ethernet \(interface.name): \(interface.type)")
+            guard !newRemoteConnections.contains(where: { connection in
+                connection.interface == interface
+            }) else {
+                continue
+            }
+            logger.info("srtla: interface: Adding ethernet \(interface)")
+            newRemoteConnections.append(RemoteConnection(
+                type: .wiredEthernet,
+                mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
+                interface: interface
+            ))
+            startRemote(connection: newRemoteConnections.last!, host: host, port: port)
+            if let groupId {
+                newRemoteConnections.last!.register(groupId: groupId)
             }
         }
         remoteConnections = newRemoteConnections
