@@ -104,6 +104,7 @@
 		03B374072AA0EA650028DDD5 /* MovieEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374062AA0EA650028DDD5 /* MovieEffect.swift */; };
 		03B374092AA0EA700028DDD5 /* ImageEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374082AA0EA700028DDD5 /* ImageEffect.swift */; };
 		03B374132AA277570028DDD5 /* Srtla.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374122AA277570028DDD5 /* Srtla.swift */; };
+		03BBAE9A2B2EB4FD0033D425 /* StreamChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BBAE992B2EB4FD0033D425 /* StreamChatSettingsView.swift */; };
 		03BC115D2AE4BD7B00C38FC4 /* Bttv.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC115C2AE4BD7B00C38FC4 /* Bttv.swift */; };
 		03BC11602AE4BD9200C38FC4 /* Ffz.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC115F2AE4BD9200C38FC4 /* Ffz.swift */; };
 		03BC11622AE4BDA200C38FC4 /* Seventv.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC11612AE4BDA200C38FC4 /* Seventv.swift */; };
@@ -226,6 +227,7 @@
 		03B374082AA0EA700028DDD5 /* ImageEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEffect.swift; sourceTree = "<group>"; };
 		03B374122AA277570028DDD5 /* Srtla.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Srtla.swift; sourceTree = "<group>"; };
 		03BBAE952B2E5FD20033D425 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		03BBAE992B2EB4FD0033D425 /* StreamChatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamChatSettingsView.swift; sourceTree = "<group>"; };
 		03BC115C2AE4BD7B00C38FC4 /* Bttv.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bttv.swift; sourceTree = "<group>"; };
 		03BC115F2AE4BD9200C38FC4 /* Ffz.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ffz.swift; sourceTree = "<group>"; };
 		03BC11612AE4BDA200C38FC4 /* Seventv.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Seventv.swift; sourceTree = "<group>"; };
@@ -296,6 +298,7 @@
 		0315A3402AA31ADC00295443 /* Stream */ = {
 			isa = PBXGroup;
 			children = (
+				03BBAE972B2EB4CE0033D425 /* Chat */,
 				031A4DC42B2CED2D0053F67D /* Audio */,
 				03BDE2242B24654E00DF193A /* OBS */,
 				03EF34B72B1B027000A19221 /* AfreecaTv */,
@@ -734,6 +737,14 @@
 			path = VideoEffects;
 			sourceTree = "<group>";
 		};
+		03BBAE972B2EB4CE0033D425 /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				03BBAE992B2EB4FD0033D425 /* StreamChatSettingsView.swift */,
+			);
+			path = Chat;
+			sourceTree = "<group>";
+		};
 		03BC115B2AE4BD6200C38FC4 /* Emotes */ = {
 			isa = PBXGroup;
 			children = (
@@ -970,6 +981,7 @@
 				0379BBC02AADC4EC00B718B6 /* AboutLicensesSettingsView.swift in Sources */,
 				0379BBB22AAD97FB00B718B6 /* ResetSettingsView.swift in Sources */,
 				0379BBB82AAD9B7200B718B6 /* WidgetsSettingsView.swift in Sources */,
+				03BBAE9A2B2EB4FD0033D425 /* StreamChatSettingsView.swift in Sources */,
 				0379BBAA2AAD953200B718B6 /* HelpAndSupportSettingsView.swift in Sources */,
 				03403DF62AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift in Sources */,
 				032A49BC2AC5DF3F00ED3916 /* ImportExportSettingsView.swift in Sources */,

@@ -1967,6 +1967,9 @@
         }
       }
     },
+    "7TV emotes" : {
+
+    },
     "A large number. Use developer tools (F11) in your browser. Look at websocket messages." : {
       "localizations" : {
         "de" : {
@@ -6212,6 +6215,9 @@
           }
         }
       }
+    },
+    "BTTV emotes" : {
+
     },
     "Button" : {
       "localizations" : {
@@ -12466,6 +12472,9 @@
           }
         }
       }
+    },
+    "FFZ emotes" : {
+
     },
     "Find your channel name (myChannelName) and video id (myVideoId) in your stream's URL." : {
       "localizations" : {

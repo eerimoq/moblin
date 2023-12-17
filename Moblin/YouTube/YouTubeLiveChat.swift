@@ -50,14 +50,16 @@ final class YouTubeLiveChat: NSObject {
     private var nextToken: String?
     private var task: Task<Void, Error>?
     private var emotes: Emotes
+    private var settings: SettingsStreamChat
     private var channelToTitle: [String: String] = [:]
     private var pollingIntervalMillis: UInt64 = minimumPollingIntervalMillis
     private var connected: Bool = false
 
-    init(model: Model, apiKey: String, videoId: String) {
+    init(model: Model, apiKey: String, videoId: String, settings: SettingsStreamChat) {
         self.model = model
         self.apiKey = apiKey
         self.videoId = videoId
+        self.settings = settings.clone()
         emotes = Emotes()
     }
 
@@ -68,7 +70,8 @@ final class YouTubeLiveChat: NSObject {
             platform: .youtube,
             channelId: videoId,
             onError: handleError,
-            onOk: handleOk
+            onOk: handleOk,
+            settings: settings
         )
         task = Task.init {
             while true {

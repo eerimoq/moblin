@@ -28,8 +28,10 @@ class Emotes {
         platform: EmotesPlatform,
         channelId: String,
         onError: @escaping (String, String) -> Void,
-        onOk: @escaping (String) -> Void
+        onOk: @escaping (String) -> Void,
+        settings: SettingsStreamChat
     ) {
+        let settings = settings.clone()
         ready = false
         emotes.removeAll()
         task = Task.init {
@@ -38,17 +40,20 @@ class Emotes {
             while !self.ready {
                 let (bttvEmotes, bttvError) = await fetchBttvEmotes(
                     platform: platform,
-                    channelId: channelId
+                    channelId: channelId,
+                    enabled: settings.bttvEmotes
                 )
                 self.emotes = self.emotes.merging(bttvEmotes) { $1 }
                 let (ffzEmotes, ffzError) = await fetchFfzEmotes(
                     platform: platform,
-                    channelId: channelId
+                    channelId: channelId,
+                    enabled: settings.ffzEmotes
                 )
                 self.emotes = self.emotes.merging(ffzEmotes) { $1 }
                 let (seventvEmotes, seventvError) = await fetchSeventvEmotes(
                     platform: platform,
-                    channelId: channelId
+                    channelId: channelId,
+                    enabled: settings.seventvEmotes
                 )
                 self.emotes = self.emotes.merging(seventvEmotes) { $1 }
                 if Task.isCancelled {

@@ -1334,12 +1334,16 @@ final class Model: ObservableObject {
         resetChat()
     }
 
-    private func reloadConnections() {
+    private func reloadChats() {
         reloadTwitchChat()
-        reloadTwitchPubSub()
         reloadKickPusher()
         reloadYouTubeLiveChat()
         reloadAfreecaTvChat()
+    }
+
+    private func reloadConnections() {
+        reloadChats()
+        reloadTwitchPubSub()
         reloadObsWebSocket()
     }
 
@@ -1550,7 +1554,8 @@ final class Model: ObservableObject {
         if isTwitchChatConfigured() {
             twitchChat.start(
                 channelName: stream.twitchChannelName,
-                channelId: stream.twitchChannelId
+                channelId: stream.twitchChannelId,
+                settings: stream.chat!
             )
         } else {
             logger.info("Twitch channel name not configured. No Twitch chat.")
@@ -1572,7 +1577,7 @@ final class Model: ObservableObject {
         kickPusher?.stop()
         kickPusher = nil
         if isKickPusherConfigured() {
-            kickPusher = KickPusher(model: self, channelId: stream.kickChatroomId)
+            kickPusher = KickPusher(model: self, channelId: stream.kickChatroomId, settings: stream.chat!)
             kickPusher!.start()
         } else {
             logger.info("Kick chatroom id not configured. No Kick chat.")
@@ -1586,7 +1591,8 @@ final class Model: ObservableObject {
             youTubeLiveChat = YouTubeLiveChat(
                 model: self,
                 apiKey: stream.youTubeApiKey!,
-                videoId: stream.youTubeVideoId!
+                videoId: stream.youTubeVideoId!,
+                settings: stream.chat!
             )
             youTubeLiveChat!.start()
         } else {
@@ -1701,6 +1707,18 @@ final class Model: ObservableObject {
 
     func obsWebSocketPasswordUpdated() {
         reloadObsWebSocket()
+    }
+
+    func bttvEmotesEnabledUpdated() {
+        reloadChats()
+    }
+
+    func ffzEmotesEnabledUpdated() {
+        reloadChats()
+    }
+
+    func seventvEmotesEnabledUpdated() {
+        reloadChats()
     }
 
     func obsStartStream() {

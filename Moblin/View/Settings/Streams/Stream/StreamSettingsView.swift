@@ -74,6 +74,9 @@ struct StreamSettingsView: View {
                     }
                 }))
             }
+            NavigationLink(destination: StreamChatSettingsView(stream: stream)) {
+                Text("Chat")
+            }
             NavigationLink(destination: StreamObsSettingsView(stream: stream)) {
                 Toggle("OBS remote control", isOn: Binding(get: {
                     stream.obsWebSocketEnabled!

@@ -25,12 +25,13 @@ final class TwitchChatMoblin {
         emotes = Emotes()
     }
 
-    func start(channelName: String, channelId: String) {
+    func start(channelName: String, channelId: String, settings: SettingsStreamChat!) {
         emotes.start(
             platform: .twitch,
             channelId: channelId,
             onError: handleError,
-            onOk: handleOk
+            onOk: handleOk,
+            settings: settings
         )
         task = Task.init {
             do {

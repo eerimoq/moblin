@@ -11,8 +11,11 @@ private struct BttvChannel: Codable {
 }
 
 func fetchBttvEmotes(platform: EmotesPlatform,
-                     channelId: String) async -> ([String: Emote], String?)
+                     channelId: String, enabled: Bool) async -> ([String: Emote], String?)
 {
+    guard enabled else {
+        return ([:], nil)
+    }
     var message: String?
     var emotes: [String: Emote] = [:]
     do {

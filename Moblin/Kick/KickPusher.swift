@@ -46,10 +46,12 @@ final class KickPusher: NSObject {
     private var reconnectTime = firstReconnectTime
     private var running = true
     private var emotes: Emotes
+    private var settings: SettingsStreamChat
 
-    init(model: Model, channelId: String) {
+    init(model: Model, channelId: String, settings: SettingsStreamChat) {
         self.model = model
         self.channelId = channelId
+        self.settings = settings.clone()
         emotes = Emotes()
         webSocket = URLSession(configuration: .default).webSocketTask(with: url)
     }
@@ -73,7 +75,8 @@ final class KickPusher: NSObject {
             platform: .kick,
             channelId: channelId,
             onError: handleError,
-            onOk: handleOk
+            onOk: handleOk,
+            settings: settings
         )
     }
 

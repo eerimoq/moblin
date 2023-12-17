@@ -54,6 +54,20 @@ enum SettingsCaptureSessionPreset: String, Codable, CaseIterable {
 
 let captureSessionPresets = SettingsCaptureSessionPreset.allCases.map { $0.rawValue }
 
+class SettingsStreamChat: Codable {
+    var bttvEmotes: Bool = true
+    var ffzEmotes: Bool = true
+    var seventvEmotes: Bool = true
+
+    func clone() -> SettingsStreamChat {
+        let chat = SettingsStreamChat()
+        chat.bttvEmotes = bttvEmotes
+        chat.ffzEmotes = ffzEmotes
+        chat.seventvEmotes = seventvEmotes
+        return chat
+    }
+}
+
 class SettingsStream: Codable, Identifiable, Equatable {
     static func == (lhs: SettingsStream, rhs: SettingsStream) -> Bool {
         lhs.id == rhs.id
@@ -87,34 +101,36 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var captureSessionPreset: SettingsCaptureSessionPreset = .medium
     var maxKeyFrameInterval: Int32? = 2
     var audioBitrate: Int? = 64 * 1000
+    var chat: SettingsStreamChat? = .init()
 
     init(name: String) {
         self.name = name
     }
 
     func clone() -> SettingsStream {
-        let scene = SettingsStream(name: name)
-        scene.url = url
-        scene.twitchChannelName = twitchChannelName
-        scene.twitchChannelId = twitchChannelId
-        scene.kickChatroomId = kickChatroomId
-        scene.youTubeApiKey = youTubeApiKey
-        scene.youTubeVideoId = youTubeVideoId
-        scene.afreecaTvChannelName = afreecaTvChannelName
-        scene.afreecaTvStreamId = afreecaTvStreamId
-        scene.obsWebSocketUrl = obsWebSocketUrl
-        scene.obsWebSocketPassword = obsWebSocketPassword
-        scene.resolution = resolution
-        scene.fps = fps
-        scene.bitrate = bitrate
-        scene.codec = codec
-        scene.adaptiveBitrate = adaptiveBitrate
-        scene.srt = srt.clone()
-        scene.captureSessionPresetEnabled = captureSessionPresetEnabled
-        scene.captureSessionPreset = captureSessionPreset
-        scene.maxKeyFrameInterval = maxKeyFrameInterval
-        scene.audioBitrate = audioBitrate
-        return scene
+        let stream = SettingsStream(name: name)
+        stream.url = url
+        stream.twitchChannelName = twitchChannelName
+        stream.twitchChannelId = twitchChannelId
+        stream.kickChatroomId = kickChatroomId
+        stream.youTubeApiKey = youTubeApiKey
+        stream.youTubeVideoId = youTubeVideoId
+        stream.afreecaTvChannelName = afreecaTvChannelName
+        stream.afreecaTvStreamId = afreecaTvStreamId
+        stream.obsWebSocketUrl = obsWebSocketUrl
+        stream.obsWebSocketPassword = obsWebSocketPassword
+        stream.resolution = resolution
+        stream.fps = fps
+        stream.bitrate = bitrate
+        stream.codec = codec
+        stream.adaptiveBitrate = adaptiveBitrate
+        stream.srt = srt.clone()
+        stream.captureSessionPresetEnabled = captureSessionPresetEnabled
+        stream.captureSessionPreset = captureSessionPreset
+        stream.maxKeyFrameInterval = maxKeyFrameInterval
+        stream.audioBitrate = audioBitrate
+        stream.chat = chat?.clone()
+        return stream
     }
 
     private func getScheme() -> String? {
@@ -1298,6 +1314,10 @@ final class Settings {
         }
         if realDatabase.quickButtons == nil {
             realDatabase.quickButtons = .init()
+            store()
+        }
+        for stream in realDatabase.streams where stream.chat == nil {
+            stream.chat = .init()
             store()
         }
     }
