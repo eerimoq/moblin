@@ -4,27 +4,6 @@ struct StreamChatSettingsView: View {
     @EnvironmentObject var model: Model
     var stream: SettingsStream
 
-    func submitWebSocketUrl(value: String) {
-        let url = cleanUrl(url: value)
-        if let message = isValidWebSocketUrl(url: url) {
-            model.makeErrorToast(title: message)
-            return
-        }
-        stream.obsWebSocketUrl = url
-        model.store()
-        if stream.enabled {
-            model.obsWebSocketUrlUpdated()
-        }
-    }
-
-    func submitWebSocketPassword(value: String) {
-        stream.obsWebSocketPassword = value
-        model.store()
-        if stream.enabled {
-            model.obsWebSocketPasswordUpdated()
-        }
-    }
-
     var body: some View {
         Form {
             Section {

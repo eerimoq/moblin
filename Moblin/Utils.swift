@@ -451,16 +451,9 @@ func getBestBackCameraDevice() -> AVCaptureDevice? {
     return device
 }
 
-func getBestBackCameraType() -> SettingsCameraType {
+func getBestBackCameraId() -> String {
     guard let device = getBestBackCameraDevice() else {
-        return .dual
+        return ""
     }
-    switch device.deviceType {
-    case .builtInTripleCamera:
-        return .triple
-    case .builtInDualCamera:
-        return .dual
-    default:
-        return .dual
-    }
+    return device.uniqueID
 }

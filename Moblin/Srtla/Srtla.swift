@@ -180,7 +180,6 @@ class Srtla {
             return
         }
         localListener = LocalListener()
-        localListener!.packetHandler = handleLocalPacket(packet:)
         localListener!.onReady = handleLocalReady(port:)
         localListener!.onError = handleLocalError
         localListener!.start()
@@ -189,7 +188,6 @@ class Srtla {
 
     private func stopListener() {
         localListener?.stop()
-        localListener?.packetHandler = nil
         localListener?.onReady = nil
         localListener?.onError = nil
         localListener = nil

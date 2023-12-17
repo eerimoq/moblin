@@ -67,22 +67,18 @@ struct QuickSettingsToolbar: ToolbarContent {
 struct SettingsView: View {
     @EnvironmentObject var model: Model
 
-    private func onChangeBackCamera(camera: String) {
-        model.database.backCameraType = model.backCameras.first { $0.id == camera }!.type
+    private func onChangeBackCamera(id: String) {
+        model.database.backCameraId = id
         model.sceneUpdated()
     }
 
-    private func onChangeFrontCamera(camera: String) {
-        model.database.frontCameraType = model.frontCameras.first { $0.id == camera }!.type
+    private func onChangeFrontCamera(id: String) {
+        model.database.frontCameraId = id
         model.sceneUpdated()
     }
 
-    private func toCameraId(value: SettingsCameraType, cameras: [Camera]) -> String {
-        return cameras.first(where: { $0.type == value })?.id ?? ""
-    }
-
-    private func toCameraName(value: SettingsCameraType, cameras: [Camera]) -> String {
-        return cameras.first(where: { $0.type == value })?.name ?? ""
+    private func toCameraName(id: String, cameras: [Camera]) -> String {
+        return cameras.first(where: { $0.id == id })?.name ?? ""
     }
 
     var body: some View {
@@ -126,26 +122,23 @@ struct SettingsView: View {
                         """),
                     ],
                     items: model.backCameras.map { InlinePickerItem(id: $0.id, text: $0.name) },
-                    selectedId: toCameraId(value: model.database.backCameraType!, cameras: model.backCameras)
+                    selectedId: model.database.backCameraId!
                 )) {
                     TextItemView(
                         name: String(localized: "Back camera"),
-                        value: toCameraName(value: model.database.backCameraType!, cameras: model.backCameras)
+                        value: toCameraName(id: model.database.backCameraId!, cameras: model.backCameras)
                     )
                 }
                 NavigationLink(destination: InlinePickerView(
                     title: String(localized: "Front camera"),
                     onChange: onChangeFrontCamera,
                     items: model.frontCameras.map { InlinePickerItem(id: $0.id, text: $0.name) },
-                    selectedId: toCameraId(
-                        value: model.database.frontCameraType!,
-                        cameras: model.frontCameras
-                    )
+                    selectedId: model.database.frontCameraId!
                 )) {
                     TextItemView(
                         name: String(localized: "Front camera"),
                         value: toCameraName(
-                            value: model.database.frontCameraType!,
+                            id: model.database.frontCameraId!,
                             cameras: model.frontCameras
                         )
                     )

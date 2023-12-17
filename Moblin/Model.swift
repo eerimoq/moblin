@@ -772,13 +772,13 @@ final class Model: ObservableObject {
         SDImageCodersManager.shared.addCoder(WebPCoder)
         UIDevice.current.isBatteryMonitoringEnabled = true
         backCameras = listCameras(position: .back)
-        if !backCameras.contains(where: { $0.type == database.backCameraType! }) {
-            database.backCameraType = backCameras.first?.type ?? .dual
+        if !backCameras.contains(where: { $0.id == database.backCameraId! }) {
+            database.backCameraId = backCameras.first?.id ?? ""
             store()
         }
         frontCameras = listCameras(position: .front)
-        if !frontCameras.contains(where: { $0.type == database.frontCameraType! }) {
-            database.frontCameraType = frontCameras.first?.type ?? .dual
+        if !frontCameras.contains(where: { $0.id == database.frontCameraId! }) {
+            database.frontCameraId = frontCameras.first?.id ?? ""
             store()
         }
         updateBatteryLevel()
@@ -874,6 +874,7 @@ final class Model: ObservableObject {
             position: position
         )
         return deviceDiscovery.devices.map { device in
+            logger.info("Found camera '\(device.localizedName)'")
             switch device.deviceType {
             case .builtInTripleCamera:
                 return Camera(id: device.uniqueID, type: .triple, name: cameraName(device: device))
@@ -1241,22 +1242,6 @@ final class Model: ObservableObject {
 
     func store() {
         settings.store()
-    }
-
-    func setMaximumScreenFps(fps: Int) {
-        database.maximumScreenFps = fps
-        store()
-        videoView.fps = Double(fps)
-    }
-
-    func setMaximumScreenFpsEnabled(value: Bool) {
-        database.maximumScreenFpsEnabled = value
-        store()
-        if value {
-            videoView.fps = Double(database.maximumScreenFps)
-        } else {
-            videoView.fps = nil
-        }
     }
 
     func startStream() {
@@ -2480,32 +2465,11 @@ final class Model: ObservableObject {
     }
 
     func preferredCamera(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
-        var cameraType: SettingsCameraType
         if position == .back {
-            cameraType = database.backCameraType!
+            return AVCaptureDevice(uniqueID: database.backCameraId!)
         } else {
-            cameraType = database.frontCameraType!
+            return AVCaptureDevice(uniqueID: database.frontCameraId!)
         }
-        var deviceType: AVCaptureDevice.DeviceType
-        switch cameraType {
-        case .triple:
-            deviceType = .builtInTripleCamera
-        case .dual:
-            deviceType = .builtInDualCamera
-        case .dualWide:
-            deviceType = .builtInDualWideCamera
-        case .ultraWide:
-            deviceType = .builtInUltraWideCamera
-        case .wide:
-            deviceType = .builtInWideAngleCamera
-        case .telephoto:
-            deviceType = .builtInTelephotoCamera
-        }
-        if let device = AVCaptureDevice.default(deviceType, for: .video, position: position) {
-            return device
-        }
-        logger.error("No camera")
-        return nil
     }
 
     private func factorToX(position: AVCaptureDevice.Position, factor: Float) -> Float {

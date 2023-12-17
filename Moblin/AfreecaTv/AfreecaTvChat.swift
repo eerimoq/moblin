@@ -105,18 +105,6 @@ final class AfreecaTvChat: NSObject {
         return URL(string: "wss://\(chdomain):\(chpt + 1)/Websocket/\(channelName)")
     }
 
-    private func handleError(title: String, subTitle: String) {
-        DispatchQueue.main.async {
-            self.model.makeErrorToast(title: title, subTitle: subTitle)
-        }
-    }
-
-    private func handleOk(title: String) {
-        DispatchQueue.main.async {
-            self.model.makeToast(title: title)
-        }
-    }
-
     private func sendOne() async throws {
         try await webSocket.send(.data(packMessage(kind: .one, parts: ["", "", "16"])))
     }

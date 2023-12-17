@@ -13,58 +13,58 @@ private enum OpCode: Int, Codable {
     case requestBatchResponse = 9
 }
 
-private enum CloseCode: Int, Codable {
-    case dontClose = 0
-    case unknownReason = 4000
-    case messageDecodeError = 4002
-    case missingDataField = 4003
-    case invalidDataFieldType = 4004
-    case invalidDataFieldValue = 4005
-    case unknownOpCode = 4006
-    case notIdentified = 4007
-    case alreadyIdentified = 4008
-    case authenticationFailed = 4009
-    case unsupportedRpcVersion = 4010
-    case sessionInvalidated = 4011
-    case unsupportedFeature = 4012
-}
+/* private enum CloseCode: Int, Codable {
+     case dontClose = 0
+     case unknownReason = 4000
+     case messageDecodeError = 4002
+     case missingDataField = 4003
+     case invalidDataFieldType = 4004
+     case invalidDataFieldValue = 4005
+     case unknownOpCode = 4006
+     case notIdentified = 4007
+     case alreadyIdentified = 4008
+     case authenticationFailed = 4009
+     case unsupportedRpcVersion = 4010
+     case sessionInvalidated = 4011
+     case unsupportedFeature = 4012
+ } */
 
-private enum RequestStatus: Int, Codable {
-    case unknown = 0
-    case noError = 10
-    case success = 100
-    case missingRequestType = 203
-    case unknownRequestType = 204
-    case genericError = 205
-    case unsupportedRequestBatchExecutionType = 206
-    case notReady = 207
-    case missingRequestField = 300
-    case missingRequestData = 301
-    case invalidRequestField = 400
-    case invalidRequestFieldType = 401
-    case requestFieldOutOfRange = 402
-    case requestFieldEmpty = 403
-    case tooManyRequestFields = 404
-    case outputRunning = 500
-    case outputNotRunning = 501
-    case outputPaused = 502
-    case outputNotPaused = 503
-    case outputDisabled = 504
-    case studioModeActive = 505
-    case studioModeNotActive = 506
-    case resourceNotFound = 600
-    case resourceAlreadyExists = 601
-    case invalidResourceType = 602
-    case notEnoughResources = 603
-    case invalidResourceState = 604
-    case invalidInputKind = 605
-    case resourceNotConfigurable = 606
-    case invalidFilterKind = 607
-    case resourceCreationFailed = 700
-    case resourceActionFailed = 701
-    case requestProcessingFailed = 702
-    case cannotAct = 703
-}
+/* private enum RequestStatus: Int, Codable {
+     case unknown = 0
+     case noError = 10
+     case success = 100
+     case missingRequestType = 203
+     case unknownRequestType = 204
+     case genericError = 205
+     case unsupportedRequestBatchExecutionType = 206
+     case notReady = 207
+     case missingRequestField = 300
+     case missingRequestData = 301
+     case invalidRequestField = 400
+     case invalidRequestFieldType = 401
+     case requestFieldOutOfRange = 402
+     case requestFieldEmpty = 403
+     case tooManyRequestFields = 404
+     case outputRunning = 500
+     case outputNotRunning = 501
+     case outputPaused = 502
+     case outputNotPaused = 503
+     case outputDisabled = 504
+     case studioModeActive = 505
+     case studioModeNotActive = 506
+     case resourceNotFound = 600
+     case resourceAlreadyExists = 601
+     case invalidResourceType = 602
+     case notEnoughResources = 603
+     case invalidResourceState = 604
+     case invalidInputKind = 605
+     case resourceNotConfigurable = 606
+     case invalidFilterKind = 607
+     case resourceCreationFailed = 700
+     case resourceActionFailed = 701
+     case requestProcessingFailed = 702
+     case cannotAct = 703
+ } */
 
 private struct ResponseRequestStatus: Codable {
     let result: Bool
@@ -105,8 +105,8 @@ private struct HelloAuthentication: Decodable {
 }
 
 private struct Hello: Decodable {
-    let obsWebSocketVersion: String
-    let rpcVersion: Int
+    // let obsWebSocketVersion: String
+    // let rpcVersion: Int
     let authentication: HelloAuthentication?
 }
 
@@ -390,22 +390,23 @@ class ObsWebSocket {
         })
     }
 
-    func startRecord(onSuccess: @escaping () -> Void, onError: @escaping () -> Void) {
-        performRequest(type: .startRecord, data: nil, onSuccess: { _ in
-            onSuccess()
-        }, onError: {
-            onError()
-        })
-    }
+    /*
+     func startRecord(onSuccess: @escaping () -> Void, onError: @escaping () -> Void) {
+         performRequest(type: .startRecord, data: nil, onSuccess: { _ in
+             onSuccess()
+         }, onError: {
+             onError()
+         })
+     }
 
-    func stopRecord(onSuccess: @escaping () -> Void, onError: @escaping () -> Void) {
-        performRequest(type: .stopRecord, data: nil, onSuccess: { _ in
-            onSuccess()
-        }, onError: {
-            onError()
-        })
-    }
-
+     func stopRecord(onSuccess: @escaping () -> Void, onError: @escaping () -> Void) {
+         performRequest(type: .stopRecord, data: nil, onSuccess: { _ in
+             onSuccess()
+         }, onError: {
+             onError()
+         })
+     }
+     */
     private func performRequest(
         type: RequestType,
         data: Data?,

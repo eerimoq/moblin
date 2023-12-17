@@ -52,53 +52,6 @@ struct ButtonImage: View {
     }
 }
 
-struct ButtonImageSingle: View {
-    var image: String
-    var on: Bool
-    var slash: Bool = false
-    var pause: Bool = false
-    var overlayColor: Color = .white
-
-    var body: some View {
-        let image = Image(systemName: image)
-            .frame(width: singleButtonSize, height: singleButtonSize)
-            .foregroundColor(.white)
-            .background(imageBackground)
-            .clipShape(Circle())
-        ZStack {
-            if on {
-                image.overlay(
-                    Circle()
-                        .stroke(.white)
-                )
-            } else {
-                image
-            }
-            if slash {
-                // Button press animation not perfect.
-                Image(systemName: "line.diagonal")
-                    .frame(width: singleButtonSize, height: singleButtonSize)
-                    .foregroundColor(.white)
-                    .rotationEffect(Angle(degrees: 90))
-                    .shadow(color: imageBackground, radius: 0, x: 1, y: 0)
-                    .shadow(color: imageBackground, radius: 0, x: -1, y: 0)
-                    .shadow(color: imageBackground, radius: 0, x: 0, y: 1)
-                    .shadow(color: imageBackground, radius: 0, x: 0, y: -1)
-                    .shadow(color: imageBackground, radius: 0, x: -2, y: -2)
-            }
-            if pause {
-                // Button press animation not perfect.
-                Image(systemName: "pause")
-                    .bold()
-                    .font(.system(size: 9))
-                    .frame(width: singleButtonSize, height: singleButtonSize)
-                    .offset(y: -1)
-                    .foregroundColor(overlayColor)
-            }
-        }
-    }
-}
-
 struct ButtonPlaceholderImage: View {
     var body: some View {
         Button {} label: {
@@ -180,8 +133,6 @@ struct ObsSceneView: View {
 
 struct ButtonsView: View {
     @EnvironmentObject var model: Model
-    @Environment(\.accessibilityShowButtonShapes)
-    private var accessibilityShowButtonShapes
 
     private func getImage(state: ButtonState) -> String {
         if state.isOn {

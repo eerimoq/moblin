@@ -760,8 +760,8 @@ class Database: Codable {
     var iconImage: String = plainIcon.image()
     var maximumScreenFpsEnabled: Bool = false
     var maximumScreenFps: Int = 15
-    var backCameraType: SettingsCameraType? = .dual
-    var frontCameraType: SettingsCameraType? = .wide
+    var backCameraId: String? = ""
+    var frontCameraId: String? = ""
     var videoStabilizationMode: SettingsVideoStabilizationMode = .off
     var chat: SettingsChat = .init()
     var batteryPercentage: Bool? = false
@@ -1073,7 +1073,7 @@ func addDefaultButtons(database: Database) {
 
 func createDefault() -> Database {
     let database = Database()
-    database.backCameraType = getBestBackCameraType()
+    database.backCameraId = getBestBackCameraId()
     addDefaultWidgets(database: database)
     addDefaultButtons(database: database)
     addDefaultScenes(database: database)
@@ -1188,12 +1188,12 @@ final class Settings {
             stream.maxKeyFrameInterval = 2
             store()
         }
-        if realDatabase.backCameraType == nil {
-            realDatabase.backCameraType = getBestBackCameraType()
+        if realDatabase.backCameraId == nil {
+            realDatabase.backCameraId = getBestBackCameraId()
             store()
         }
-        if realDatabase.frontCameraType == nil {
-            realDatabase.frontCameraType = .wide
+        if realDatabase.frontCameraId == nil {
+            realDatabase.frontCameraId = ""
             store()
         }
         for scene in realDatabase.scenes where scene.cameraPosition == nil {
