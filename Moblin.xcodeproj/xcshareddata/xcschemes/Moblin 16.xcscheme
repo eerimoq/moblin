@@ -39,6 +39,16 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "032E06392B2F3E9D00EAE5F8"
+            BuildableName = "Moblin 16.app"
+            BlueprintName = "Moblin 16"
+            ReferencedContainer = "container:Moblin.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"

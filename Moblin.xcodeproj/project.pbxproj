@@ -1456,7 +1456,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.104.0;
+				MARKETING_VERSION = 0.106.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1501,7 +1501,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.104.0;
+				MARKETING_VERSION = 0.106.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
