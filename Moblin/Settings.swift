@@ -730,6 +730,7 @@ class SettingsDebug: Codable {
     var logLevel: SettingsLogLevel = .error
     var srtOverlay: Bool = false
     var srtOverheadBandwidth: Int32? = 25
+    var createStreamWizard: Bool? = false
 }
 
 class SettingsQuickButtons: Codable {
@@ -1309,6 +1310,10 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.chat == nil {
             stream.chat = .init()
+            store()
+        }
+        if realDatabase.debug!.createStreamWizard == nil {
+            realDatabase.debug!.createStreamWizard = false
             store()
         }
     }

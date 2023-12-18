@@ -69,11 +69,11 @@ struct StreamsSettingsView: View {
                     })
                 }
                 CreateButtonView(action: {
-                    if true {
+                    if model.database.debug!.createStreamWizard! {
+                        model.isPresentingWizard = true
+                    } else {
                         database.streams.append(SettingsStream(name: String(localized: "My stream")))
                         model.store()
-                    } else {
-                        model.isPresentingWizard = true
                     }
                 })
                 .sheet(isPresented: $model.isPresentingWizard) {

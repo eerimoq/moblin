@@ -8360,6 +8360,12 @@
         }
       }
     },
+    "Create manually" : {
+
+    },
+    "Create stream wizard" : {
+
+    },
     "Debug" : {
       "localizations" : {
         "de" : {
@@ -30680,7 +30686,7 @@
         }
       }
     },
-    "Where do you want to stream?" : {
+    "Where do you want to stream to?" : {
 
     },
     "Wide" : {

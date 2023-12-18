@@ -7,8 +7,6 @@ struct CreateStreamWizardToolbar: ToolbarContent {
         ToolbarItem(placement: .navigationBarTrailing) {
             HStack {
                 Button(action: {
-                    model.database.streams.append(SettingsStream(name: String(localized: "My stream")))
-                    model.store()
                     model.isPresentingWizard = false
                 }, label: {
                     Text("Close")
@@ -23,7 +21,7 @@ struct StreamWizardSettingsView: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            Text("Where do you want to stream?")
+            Text("Where do you want to stream to?")
                 .font(.title2)
                 .padding()
             Form {
@@ -33,6 +31,19 @@ struct StreamWizardSettingsView: View {
                     }
                     NavigationLink(destination: StreamWizardKickSettingsView()) {
                         Text("Kick")
+                    }
+                }
+                Section {
+                    Button {
+                        model.database.streams.append(SettingsStream(name: String(localized: "My stream")))
+                        model.store()
+                        model.isPresentingWizard = false
+                    } label: {
+                        HStack {
+                            Spacer()
+                            Text("Create manually")
+                            Spacer()
+                        }
                     }
                 }
             }

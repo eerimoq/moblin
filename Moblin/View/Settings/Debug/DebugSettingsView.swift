@@ -86,6 +86,12 @@ struct DebugSettingsView: View {
                     Text(String(Int32(srtOverheadBandwidth)))
                         .frame(width: 40)
                 }
+                Toggle("Create stream wizard", isOn: Binding(get: {
+                    model.database.debug!.createStreamWizard!
+                }, set: { value in
+                    model.database.debug!.createStreamWizard = value
+                    model.store()
+                }))
             }
         }
         .navigationTitle("Debug")
