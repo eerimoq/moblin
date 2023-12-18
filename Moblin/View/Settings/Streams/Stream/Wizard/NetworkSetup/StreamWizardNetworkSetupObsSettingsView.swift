@@ -3,7 +3,7 @@ import SwiftUI
 struct StreamWizardNetworkSetupObsSettingsView: View {
     @State var address = ""
     @State var port = ""
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             Text("Some information about how to setup OBS Media Source")

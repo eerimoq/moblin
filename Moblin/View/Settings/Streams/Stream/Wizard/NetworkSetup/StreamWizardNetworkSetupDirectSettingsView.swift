@@ -3,7 +3,7 @@ import SwiftUI
 struct StreamWizardNetworkSetupDirectSettingsView: View {
     @State var ingest = ""
     @State var streamKey = ""
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             Form {
