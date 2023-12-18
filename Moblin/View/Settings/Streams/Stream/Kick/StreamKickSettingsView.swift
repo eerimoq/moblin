@@ -24,7 +24,10 @@ struct StreamKickSettingsView: View {
                 }
             } footer: {
                 Text(
-                    "Find your chatroom id at https://kick.com/api/v1/channels/my_user. Replace my_user with your user."
+                    """
+                    Find your chatroom id at https://kick.com/api/v1/channels/my_user. \
+                    Replace my_user with your user.
+                    """
                 )
             }
         }

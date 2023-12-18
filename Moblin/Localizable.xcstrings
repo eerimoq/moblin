@@ -1970,6 +1970,21 @@
     "7TV emotes" : {
 
     },
+    "213.33.45.132" : {
+
+    },
+    "7000" : {
+
+    },
+    "90812903" : {
+
+    },
+    "908123903" : {
+
+    },
+    "23234234234234" : {
+
+    },
     "A large number. Use developer tools (F11) in your browser. Look at websocket messages." : {
       "localizations" : {
         "de" : {
@@ -4520,6 +4535,9 @@
         }
       }
     },
+    "BELABOX cloud" : {
+
+    },
     "BELABOX cloud SRT" : {
       "localizations" : {
         "de" : {
@@ -4731,6 +4749,9 @@
           }
         }
       }
+    },
+    "Best possible stability." : {
+
     },
     "Big packets" : {
       "localizations" : {
@@ -13854,6 +13875,9 @@
         }
       }
     },
+    "Good stability in most network conditions." : {
+
+    },
     "Gray scale" : {
       "localizations" : {
         "de" : {
@@ -14489,6 +14513,9 @@
           }
         }
       }
+    },
+    "How to get belabox cloud" : {
+
     },
     "Icons" : {
       "localizations" : {
@@ -17776,6 +17803,9 @@
         }
       }
     },
+    "Moblin" : {
+
+    },
     "moblin:// deep links can be used to import some settings, often using QR codes or a browser. See https://github.com/eerimoq/moblin for details." : {
       "localizations" : {
         "de" : {
@@ -18730,6 +18760,9 @@
         }
       }
     },
+    "MyChannel" : {
+
+    },
     "Name" : {
       "localizations" : {
         "de" : {
@@ -18836,6 +18869,9 @@
         }
       }
     },
+    "Nearby ingest" : {
+
+    },
     "nearby_ingest_endpoint" : {
       "localizations" : {
         "de" : {
@@ -18941,6 +18977,18 @@
           }
         }
       }
+    },
+    "Needed for chat." : {
+
+    },
+    "Needed for your emotes." : {
+
+    },
+    "Network setup" : {
+
+    },
+    "Next" : {
+
     },
     "Noise level" : {
       "localizations" : {
@@ -19260,6 +19308,12 @@
         }
       }
     },
+    "OBS" : {
+
+    },
+    "OBS address" : {
+
+    },
     "OBS Media Source (SRT)" : {
       "localizations" : {
         "de" : {
@@ -19365,6 +19419,9 @@
           }
         }
       }
+    },
+    "OBS port" : {
+
     },
     "OBS remote control" : {
       "localizations" : {
@@ -20532,6 +20589,9 @@
         }
       }
     },
+    "Often bad stability if network connection is unstable. No server side disconnection protection possible." : {
+
+    },
     "On" : {
       "localizations" : {
         "de" : {
@@ -20849,6 +20909,9 @@
           }
         }
       }
+    },
+    "Open belabox cloud page" : {
+
     },
     "Packets in flight" : {
       "localizations" : {
@@ -21379,6 +21442,9 @@
           }
         }
       }
+    },
+    "Platform" : {
+
     },
     "Please enter your stream URL in stream settings before going live." : {
       "localizations" : {
@@ -22545,6 +22611,9 @@
           }
         }
       }
+    },
+    "rtmp://foobar" : {
+
     },
     "Scene" : {
       "localizations" : {
@@ -24030,6 +24099,9 @@
         }
       }
     },
+    "Some information about how to setup OBS Media Source" : {
+
+    },
     "Speed" : {
       "localizations" : {
         "de" : {
@@ -24984,6 +25056,9 @@
         }
       }
     },
+    "SRTLA" : {
+
+    },
     "SRTLA server" : {
       "localizations" : {
         "de" : {
@@ -25301,6 +25376,9 @@
           }
         }
       }
+    },
+    "Stream key" : {
+
     },
     "stream_url" : {
       "localizations" : {
@@ -30601,6 +30679,9 @@
           }
         }
       }
+    },
+    "Where do you want to stream?" : {
+
     },
     "Wide" : {
       "localizations" : {

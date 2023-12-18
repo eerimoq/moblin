@@ -309,11 +309,11 @@ Create stream wizard
 
 2. Select setup
 
-   - Moblin -> Platform
+   - Moblin -> OBS server -> Platform
 
    - Moblin -> BELABOX cloud -> OBS server -> Platform
 
-   - Moblin -> OBS server -> Platform
+   - Moblin -> Platform
 
    - ...
 

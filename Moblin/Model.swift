@@ -267,6 +267,11 @@ final class Model: ObservableObject {
         settings.database
     }
 
+    @Published var isPresentingWizard: Bool = false
+    @Published var wizardTwitchChannelName: String = ""
+    @Published var wizardTwitchChannelId: String = ""
+    @Published var wizardKickChatroomId: String = ""
+
     var cameraDevice: AVCaptureDevice?
     var cameraZoomLevelToXScale: Float = 1.0
     var cameraZoomXMinimum: Float = 1.0
