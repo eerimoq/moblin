@@ -269,8 +269,10 @@ final class Model: ObservableObject {
     }
 
     @Published var isPresentingWizard: Bool = false
+    @Published var wizardName: String = ""
     @Published var wizardTwitchChannelName: String = ""
     @Published var wizardTwitchChannelId: String = ""
+    @Published var wizardKickChannelName: String = ""
     @Published var wizardKickChatroomId: String = ""
 
     var cameraDevice: AVCaptureDevice?

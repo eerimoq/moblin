@@ -3,8 +3,21 @@ import SwiftUI
 struct StreamWizardKickSettingsView: View {
     @EnvironmentObject private var model: Model
 
+    private func url() -> String {
+        return "https://kick.com/api/v1/channels/\(channelName())"
+    }
+
+    private func channelName() -> String {
+        return model.wizardKickChannelName.trim()
+    }
+
     var body: some View {
         Form {
+            Section {
+                TextField("MyChannel", text: $model.wizardKickChannelName)
+            } header: {
+                Text("Channel name")
+            }
             Section {
                 TextField("90812903", text: $model.wizardKickChatroomId)
             } header: {
@@ -13,12 +26,14 @@ struct StreamWizardKickSettingsView: View {
                 VStack(alignment: .leading) {
                     Text("Needed for chat.")
                     Text("")
-                    Text(
-                        """
-                        Find your chatroom id at https://kick.com/api/v1/channels/my_user. \
-                        Replace my_user with your user.
-                        """
-                    )
+                    if !channelName().isEmpty, let url = URL(string: url()) {
+                        HStack(spacing: 0) {
+                            Text("Find your chatroom id ")
+                            Link("here", destination: url)
+                                .font(.footnote)
+                            Text(".")
+                        }
+                    }
                 }
             }
             Section {
@@ -30,7 +45,7 @@ struct StreamWizardKickSettingsView: View {
                         Spacer()
                     }
                 }
-                .disabled(model.wizardKickChatroomId.isEmpty)
+                .disabled(model.wizardKickChannelName.isEmpty)
             }
         }
         .navigationTitle("Kick")

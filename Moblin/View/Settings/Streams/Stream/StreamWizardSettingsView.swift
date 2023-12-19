@@ -20,34 +20,22 @@ struct StreamWizardSettingsView: View {
     @EnvironmentObject private var model: Model
 
     var body: some View {
-        VStack(alignment: .leading) {
-            Text("Where do you want to stream to?")
-                .font(.title2)
-                .padding()
-            Form {
-                Section {
-                    NavigationLink(destination: StreamWizardTwitchSettingsView()) {
-                        Text("Twitch")
-                    }
-                    NavigationLink(destination: StreamWizardKickSettingsView()) {
-                        Text("Kick")
-                    }
+        Form {
+            Section {
+                NavigationLink(destination: StreamWizardTwitchSettingsView()) {
+                    Text("Twitch")
                 }
-                Section {
-                    Button {
-                        model.database.streams.append(SettingsStream(name: String(localized: "My stream")))
-                        model.store()
-                        model.isPresentingWizard = false
-                    } label: {
-                        HStack {
-                            Spacer()
-                            Text("Create manually")
-                            Spacer()
-                        }
-                    }
+                NavigationLink(destination: StreamWizardKickSettingsView()) {
+                    Text("Kick")
+                }
+            } header: {
+                Text("Platform to stream to")
+            }
+            Section {
+                NavigationLink(destination: StreamWizardAdvancedSettingsView()) {
+                    Text("Advanced")
                 }
             }
-            Spacer()
         }
         .navigationTitle("Platform")
         .toolbar {

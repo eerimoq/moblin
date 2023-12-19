@@ -18,16 +18,19 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                 Text("Stream key")
             }
             Section {
-                HStack {
-                    Spacer()
-                    Button {
-                        model.isPresentingWizard = false
-                    } label: {
-                        Text("Create")
+                NavigationLink(destination: StreamWizardCreateSettingsView()) {
+                    HStack {
+                        Spacer()
+                        Text("Next")
+                            .foregroundColor(.accentColor)
+                        Spacer()
                     }
-                    Spacer()
                 }
             }
+        }
+        .navigationTitle("Direct")
+        .toolbar {
+            CreateStreamWizardToolbar()
         }
     }
 }

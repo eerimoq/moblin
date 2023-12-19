@@ -9,16 +9,19 @@ struct StreamWizardNetworkSetupBelaboxSettingsView: View {
                 Text("Open belabox cloud page")
             }
             Section {
-                HStack {
-                    Spacer()
-                    Button {
-                        model.isPresentingWizard = false
-                    } label: {
-                        Text("Create")
+                NavigationLink(destination: StreamWizardCreateSettingsView()) {
+                    HStack {
+                        Spacer()
+                        Text("Next")
+                            .foregroundColor(.accentColor)
+                        Spacer()
                     }
-                    Spacer()
                 }
             }
+        }
+        .navigationTitle("BELABOX cloud and OBS")
+        .toolbar {
+            CreateStreamWizardToolbar()
         }
     }
 }

@@ -18,16 +18,19 @@ struct StreamWizardNetworkSetupObsSettingsView: View {
                 Text("OBS port")
             }
             Section {
-                HStack {
-                    Spacer()
-                    Button {
-                        model.isPresentingWizard = false
-                    } label: {
-                        Text("Create")
+                NavigationLink(destination: StreamWizardCreateSettingsView()) {
+                    HStack {
+                        Spacer()
+                        Text("Next")
+                            .foregroundColor(.accentColor)
+                        Spacer()
                     }
-                    Spacer()
                 }
             }
+        }
+        .navigationTitle("OBS")
+        .toolbar {
+            CreateStreamWizardToolbar()
         }
     }
 }

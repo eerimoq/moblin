@@ -365,6 +365,9 @@
         }
       }
     },
+    "." : {
+
+    },
     "/" : {
       "localizations" : {
         "de" : {
@@ -2515,6 +2518,9 @@
         }
       }
     },
+    "Advanced" : {
+
+    },
     "AfreecaTV" : {
       "localizations" : {
         "de" : {
@@ -4541,6 +4547,9 @@
     "BELABOX cloud" : {
 
     },
+    "BELABOX cloud and OBS" : {
+
+    },
     "BELABOX cloud SRT" : {
       "localizations" : {
         "de" : {
@@ -4753,7 +4762,7 @@
         }
       }
     },
-    "Best possible stability. Paid service." : {
+    "Best possible stability. Uses bonding. Paid service." : {
 
     },
     "Big packets" : {
@@ -8363,9 +8372,6 @@
         }
       }
     },
-    "Create manually" : {
-
-    },
     "Create stream wizard" : {
 
     },
@@ -8898,6 +8904,9 @@
           }
         }
       }
+    },
+    "Direct" : {
+
     },
     "Discord" : {
       "localizations" : {
@@ -12612,6 +12621,9 @@
         }
       }
     },
+    "Find your chatroom id " : {
+
+    },
     "Find your chatroom id at https://kick.com/api/v1/channels/my_user. Replace my_user with your user." : {
       "localizations" : {
         "de" : {
@@ -14310,6 +14322,9 @@
           }
         }
       }
+    },
+    "here" : {
+
     },
     "Hide sensitive URL" : {
       "localizations" : {
@@ -21452,6 +21467,9 @@
     "Platform" : {
 
     },
+    "Platform to stream to" : {
+
+    },
     "Please enter your stream URL in stream settings before going live." : {
       "localizations" : {
         "de" : {
@@ -25381,6 +25399,9 @@
       }
     },
     "Stream key" : {
+
+    },
+    "Stream name" : {
 
     },
     "stream_url" : {
@@ -30682,9 +30703,6 @@
           }
         }
       }
-    },
-    "Where do you want to stream to?" : {
-
     },
     "Wide" : {
       "localizations" : {
