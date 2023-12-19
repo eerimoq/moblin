@@ -202,7 +202,8 @@ final class YouTubeLiveChat: NSObject {
                     segments: segments,
                     timestamp: model.digitalClock,
                     timestampDate: Date(),
-                    isAction: false
+                    isAction: false,
+                    isAnnouncement: false
                 )
             }
         }

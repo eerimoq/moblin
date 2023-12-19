@@ -68,7 +68,8 @@ final class TwitchChatMoblin {
                                     segments: segments,
                                     timestamp: model.digitalClock,
                                     timestampDate: Date(),
-                                    isAction: isAction
+                                    isAction: isAction,
+                                    isAnnouncement: message.announcement
                                 )
                             }
                         }

@@ -247,7 +247,8 @@ final class AfreecaTvChat: NSObject {
                 segments: segments,
                 timestamp: model.digitalClock,
                 timestampDate: Date(),
-                isAction: false
+                isAction: false,
+                isAnnouncement: false
             )
         }
     }

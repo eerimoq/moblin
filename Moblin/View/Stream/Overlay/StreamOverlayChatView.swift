@@ -3,6 +3,54 @@ import SDWebImageSwiftUI
 import SwiftUI
 import WrappingHStack
 
+struct AnnouncementView: View {
+    var chat: SettingsChat
+
+    private func messageColor() -> Color {
+        return chat.messageColor.color()
+    }
+
+    private func backgroundColor() -> Color {
+        if chat.backgroundColorEnabled {
+            return chat.backgroundColor.color().opacity(0.6)
+        } else {
+            return .clear
+        }
+    }
+
+    private func shadowColor() -> Color {
+        if chat.shadowColorEnabled {
+            return chat.shadowColor.color()
+        } else {
+            return .clear
+        }
+    }
+
+    var body: some View {
+        let messageColor = messageColor()
+        let shadowColor = shadowColor()
+        WrappingHStack(
+            alignment: .leading,
+            horizontalSpacing: 0,
+            verticalSpacing: 0,
+            fitContentWidth: true
+        ) {
+            Image(systemName: "horn.blast")
+            Text(" Announcement")
+        }
+        .foregroundColor(messageColor)
+        .shadow(color: shadowColor, radius: 0, x: 1.5, y: 0.0)
+        .shadow(color: shadowColor, radius: 0, x: -1.5, y: 0.0)
+        .shadow(color: shadowColor, radius: 0, x: 0.0, y: 1.5)
+        .shadow(color: shadowColor, radius: 0, x: 0.0, y: -1.5)
+        .padding([.leading], 5)
+        .font(.system(size: CGFloat(chat.fontSize)))
+        .background(backgroundColor())
+        .foregroundColor(.white)
+        .cornerRadius(5)
+    }
+}
+
 struct LineView: View {
     var post: ChatPost
     var chat: SettingsChat
@@ -124,11 +172,28 @@ struct StreamOverlayChatView: View {
                                 LazyVStack(alignment: .leading, spacing: 1) {
                                     ForEach(model.chatPosts) { post in
                                         if post.user != nil {
-                                            LineView(
-                                                post: post,
-                                                chat: model.database.chat
-                                            )
-                                            .id(post)
+                                            if post.isAnnouncement {
+                                                HStack(spacing: 0) {
+                                                    Rectangle()
+                                                        .frame(width: 3)
+                                                        .foregroundColor(.green)
+                                                    VStack(alignment: .leading) {
+                                                        AnnouncementView(chat: model.database.chat)
+                                                        LineView(
+                                                            post: post,
+                                                            chat: model.database.chat
+                                                        )
+                                                    }
+                                                }
+                                                .id(post)
+                                            } else {
+                                                LineView(
+                                                    post: post,
+                                                    chat: model.database.chat
+                                                )
+                                                .padding([.leading], 3)
+                                                .id(post)
+                                            }
                                         } else {
                                             Rectangle()
                                                 .fill(.red)
