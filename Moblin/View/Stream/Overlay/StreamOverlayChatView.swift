@@ -36,7 +36,8 @@ struct AnnouncementView: View {
             fitContentWidth: true
         ) {
             Image(systemName: "horn.blast")
-            Text(" Announcement")
+            Text(" ")
+            Text("Announcement")
         }
         .foregroundColor(messageColor)
         .shadow(color: shadowColor, radius: 0, x: 1.5, y: 0.0)

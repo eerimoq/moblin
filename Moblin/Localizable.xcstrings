@@ -153,9 +153,6 @@
         }
       }
     },
-    " Announcement" : {
-
-    },
     "-" : {
       "localizations" : {
         "de" : {
@@ -3159,6 +3156,9 @@
           }
         }
       }
+    },
+    "Announcement" : {
+
     },
     "API key" : {
       "localizations" : {
