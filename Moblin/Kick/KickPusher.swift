@@ -141,7 +141,8 @@ final class KickPusher: NSObject {
             timestamp: model.digitalClock,
             timestampDate: Date(),
             isAction: false,
-            isAnnouncement: false
+            isAnnouncement: false,
+            isFirstMessage: false
         )
     }
 

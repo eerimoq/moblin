@@ -138,6 +138,7 @@ struct ChatPost: Identifiable, Hashable {
     var timestampDate: Date
     var isAction: Bool
     var isAnnouncement: Bool
+    var isFirstMessage: Bool
 }
 
 class ButtonState {
@@ -330,7 +331,7 @@ final class Model: ObservableObject {
     private var products: [String: Product] = [:]
 
     func createStreamFromWizard() {
-        var stream = SettingsStream(name: wizardName.trim())
+        let stream = SettingsStream(name: wizardName.trim())
         stream.twitchEnabled = false
         stream.kickEnabled = false
         stream.youTubeEnabled = false
@@ -1821,7 +1822,8 @@ final class Model: ObservableObject {
                           timestamp: post.timestamp,
                           timestampDate: post.timestampDate,
                           isAction: post.isAction,
-                          isAnnouncement: post.isAnnouncement)
+                          isAnnouncement: post.isAnnouncement,
+                          isFirstMessage: post.isFirstMessage)
     }
 
     func appendChatMessage(
@@ -1831,7 +1833,8 @@ final class Model: ObservableObject {
         timestamp: String,
         timestampDate: Date,
         isAction: Bool,
-        isAnnouncement: Bool
+        isAnnouncement: Bool,
+        isFirstMessage: Bool
     ) {
         let post = ChatPost(
             id: chatPostId,
@@ -1841,7 +1844,8 @@ final class Model: ObservableObject {
             timestamp: timestamp,
             timestampDate: timestampDate,
             isAction: isAction,
-            isAnnouncement: isAnnouncement
+            isAnnouncement: isAnnouncement,
+            isFirstMessage: isFirstMessage
         )
         chatPostId += 1
         if chatPaused {
@@ -1888,7 +1892,8 @@ final class Model: ObservableObject {
                 timestamp: "",
                 timestampDate: Date(),
                 isAction: false,
-                isAnnouncement: false
+                isAnnouncement: false,
+                isFirstMessage: false
             )
         }
         for post in pausedChatPosts {
