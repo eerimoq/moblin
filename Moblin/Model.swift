@@ -368,6 +368,7 @@ final class Model: ObservableObject {
             stream.url = defaultStreamUrl
             stream.codec = .h264avc
         }
+        stream.audioBitrate = 128_000
         database.streams.append(stream)
         store()
     }
