@@ -15,7 +15,7 @@ struct StreamWizardNetworkSetupBelaboxSettingsView: View {
             }
         }
         .onAppear {
-            model.wizardNotworkSetup = .belaboxCloudObs
+            model.wizardNetworkSetup = .belaboxCloudObs
         }
         .navigationTitle("BELABOX cloud and OBS")
         .toolbar {

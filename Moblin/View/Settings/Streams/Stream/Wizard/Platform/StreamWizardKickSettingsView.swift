@@ -15,11 +15,13 @@ struct StreamWizardKickSettingsView: View {
         Form {
             Section {
                 TextField("MyChannel", text: $model.wizardKickChannelName)
+                    .disableAutocorrection(true)
             } header: {
                 Text("Channel name")
             }
             Section {
                 TextField("90812903", text: $model.wizardKickChatroomId)
+                    .disableAutocorrection(true)
             } header: {
                 Text("Chatroom id")
             } footer: {

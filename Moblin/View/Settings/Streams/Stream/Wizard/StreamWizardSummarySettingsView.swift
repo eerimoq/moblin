@@ -12,13 +12,13 @@ struct StreamWizardSummarySettingsView: View {
                 if model.wizardPlatform == .kick {
                     Text("Some Kick information")
                 }
-                if model.wizardNotworkSetup == .obs {
+                if model.wizardNetworkSetup == .obs {
                     Text("OBS")
                 }
-                if model.wizardNotworkSetup == .belaboxCloudObs {
+                if model.wizardNetworkSetup == .belaboxCloudObs {
                     Text("BELABOX cloud")
                 }
-                if model.wizardNotworkSetup == .direct {
+                if model.wizardNetworkSetup == .direct {
                     Text("Direct")
                 }
             }

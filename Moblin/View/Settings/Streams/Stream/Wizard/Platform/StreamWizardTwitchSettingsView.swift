@@ -7,11 +7,13 @@ struct StreamWizardTwitchSettingsView: View {
         Form {
             Section {
                 TextField("MyChannel", text: $model.wizardTwitchChannelName)
+                    .disableAutocorrection(true)
             } header: {
                 Text("Channel name")
             }
             Section {
                 TextField("908123903", text: $model.wizardTwitchChannelId)
+                    .disableAutocorrection(true)
             } header: {
                 Text("Channel id")
             } footer: {

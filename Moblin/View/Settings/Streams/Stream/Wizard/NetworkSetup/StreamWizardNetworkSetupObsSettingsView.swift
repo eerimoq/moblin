@@ -11,11 +11,13 @@ struct StreamWizardNetworkSetupObsSettingsView: View {
         Form {
             Section {
                 TextField("213.33.45.132", text: $model.wizardObsAddress)
+                    .disableAutocorrection(true)
             } header: {
                 Text("IP address or domain name")
             }
             Section {
                 TextField("7000", text: $model.wizardObsPort)
+                    .disableAutocorrection(true)
             } header: {
                 Text("Port")
             }
@@ -27,7 +29,7 @@ struct StreamWizardNetworkSetupObsSettingsView: View {
             }
         }
         .onAppear {
-            model.wizardNotworkSetup = .obs
+            model.wizardNetworkSetup = .obs
         }
         .navigationTitle("OBS")
         .toolbar {

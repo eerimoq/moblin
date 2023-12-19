@@ -11,11 +11,13 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
         Form {
             Section {
                 TextField("rtmp://foobar", text: $model.wizardDirectIngress)
+                    .disableAutocorrection(true)
             } header: {
                 Text("Nearby ingest")
             }
             Section {
                 TextField("9fh260lbtb730gy73gkd", text: $model.wizardDirectStreamKey)
+                    .disableAutocorrection(true)
             } header: {
                 Text("Stream key")
             }
@@ -27,7 +29,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
             }
         }
         .onAppear {
-            model.wizardNotworkSetup = .direct
+            model.wizardNetworkSetup = .direct
         }
         .navigationTitle("Direct")
         .toolbar {

@@ -283,7 +283,7 @@ final class Model: ObservableObject {
 
     @Published var isPresentingWizard: Bool = false
     var wizardPlatform: WizardPlatform = .custom
-    var wizardNotworkSetup: WizardNetworkSetup = .none
+    var wizardNetworkSetup: WizardNetworkSetup = .none
     @Published var wizardName: String = ""
     @Published var wizardTwitchChannelName: String = ""
     @Published var wizardTwitchChannelId: String = ""
@@ -330,7 +330,45 @@ final class Model: ObservableObject {
     private var products: [String: Product] = [:]
 
     func createStreamFromWizard() {
-        database.streams.append(SettingsStream(name: wizardName.trim()))
+        var stream = SettingsStream(name: wizardName.trim())
+        stream.twitchEnabled = false
+        stream.kickEnabled = false
+        stream.youTubeEnabled = false
+        stream.afreecaTvEnabled = false
+        stream.obsWebSocketEnabled = false
+        switch wizardPlatform {
+        case .twitch:
+            stream.twitchEnabled = true
+            stream.twitchChannelName = wizardTwitchChannelName
+            stream.twitchChannelId = wizardTwitchChannelId
+        case .kick:
+            stream.kickEnabled = true
+            stream.kickChatroomId = wizardKickChatroomId
+        case .custom:
+            break
+        }
+        stream.chat!.bttvEmotes = wizardChatBttv
+        stream.chat!.ffzEmotes = wizardChatFfz
+        stream.chat!.seventvEmotes = wizardChatSeventv
+        switch wizardNetworkSetup {
+        case .none:
+            break
+        case .obs:
+            let url = cleanUrl(url: "srt://\(wizardObsAddress):\(wizardObsPort)")
+            if let message = isValidUrl(url: url) {
+                logger.info("URL error: \(message)")
+                return
+            }
+            stream.url = url
+            stream.codec = .h265hevc
+        case .belaboxCloudObs:
+            stream.url = defaultStreamUrl
+            stream.codec = .h265hevc
+        case .direct:
+            stream.url = defaultStreamUrl
+            stream.codec = .h264avc
+        }
+        database.streams.append(stream)
         store()
     }
 
