@@ -2,31 +2,32 @@ import SwiftUI
 
 struct StreamWizardNetworkSetupObsSettingsView: View {
     @EnvironmentObject private var model: Model
-    @State var address = ""
-    @State var port = ""
+
+    private func isDisabled() -> Bool {
+        return model.wizardObsAddress.isEmpty || model.wizardObsPort.isEmpty
+    }
 
     var body: some View {
         Form {
             Section {
-                TextField("213.33.45.132", text: $address)
+                TextField("213.33.45.132", text: $model.wizardObsAddress)
             } header: {
-                Text("OBS address")
+                Text("IP address or domain name")
             }
             Section {
-                TextField("7000", text: $port)
+                TextField("7000", text: $model.wizardObsPort)
             } header: {
-                Text("OBS port")
+                Text("Port")
             }
             Section {
-                NavigationLink(destination: StreamWizardCreateSettingsView()) {
-                    HStack {
-                        Spacer()
-                        Text("Next")
-                            .foregroundColor(.accentColor)
-                        Spacer()
-                    }
+                NavigationLink(destination: StreamWizardGeneralSettingsView()) {
+                    WizardNextButtonView()
                 }
+                .disabled(isDisabled())
             }
+        }
+        .onAppear {
+            model.wizardNotworkSetup = .obs
         }
         .navigationTitle("OBS")
         .toolbar {

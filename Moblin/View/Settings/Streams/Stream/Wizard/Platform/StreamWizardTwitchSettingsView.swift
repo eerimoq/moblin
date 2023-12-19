@@ -9,8 +9,6 @@ struct StreamWizardTwitchSettingsView: View {
                 TextField("MyChannel", text: $model.wizardTwitchChannelName)
             } header: {
                 Text("Channel name")
-            } footer: {
-                Text("The name of your channel.")
             }
             Section {
                 TextField("908123903", text: $model.wizardTwitchChannelId)
@@ -30,15 +28,13 @@ struct StreamWizardTwitchSettingsView: View {
             }
             Section {
                 NavigationLink(destination: StreamWizardNetworkSetupSettingsView(platform: "Twitch")) {
-                    HStack {
-                        Spacer()
-                        Text("Next")
-                            .foregroundColor(.accentColor)
-                        Spacer()
-                    }
+                    WizardNextButtonView()
                 }
                 .disabled(model.wizardTwitchChannelName.isEmpty)
             }
+        }
+        .onAppear {
+            model.wizardPlatform = .twitch
         }
         .navigationTitle("Twitch")
         .toolbar {

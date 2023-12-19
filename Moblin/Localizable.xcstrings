@@ -1973,6 +1973,9 @@
     "7TV emotes" : {
 
     },
+    "9fh260lbtb730gy73gkd" : {
+
+    },
     "213.33.45.132" : {
 
     },
@@ -1983,9 +1986,6 @@
 
     },
     "908123903" : {
-
-    },
-    "23234234234234" : {
 
     },
     "A large number. Use developer tools (F11) in your browser. Look at websocket messages." : {
@@ -2517,9 +2517,6 @@
           }
         }
       }
-    },
-    "Advanced" : {
-
     },
     "AfreecaTV" : {
       "localizations" : {
@@ -8373,6 +8370,12 @@
       }
     },
     "Create stream wizard" : {
+
+    },
+    "Creating a stream with default settings." : {
+
+    },
+    "Custom" : {
 
     },
     "Debug" : {
@@ -15386,6 +15389,9 @@
         }
       }
     },
+    "IP address or domain name" : {
+
+    },
     "Key frame interval" : {
       "localizations" : {
         "de" : {
@@ -19332,9 +19338,6 @@
     "OBS" : {
 
     },
-    "OBS address" : {
-
-    },
     "OBS Media Source (SRT)" : {
       "localizations" : {
         "de" : {
@@ -19440,9 +19443,6 @@
           }
         }
       }
-    },
-    "OBS port" : {
-
     },
     "OBS remote control" : {
       "localizations" : {
@@ -21464,9 +21464,6 @@
         }
       }
     },
-    "Platform" : {
-
-    },
     "Platform to stream to" : {
 
     },
@@ -21575,6 +21572,9 @@
           }
         }
       }
+    },
+    "Port" : {
+
     },
     "Preset" : {
       "localizations" : {
@@ -24123,6 +24123,12 @@
         }
       }
     },
+    "Some Kick information" : {
+
+    },
+    "Some Twitch information" : {
+
+    },
     "Speed" : {
       "localizations" : {
         "de" : {
@@ -25827,6 +25833,9 @@
           }
         }
       }
+    },
+    "Summary" : {
+
     },
     "Support Moblin developers by buying icons." : {
       "localizations" : {
@@ -31663,6 +31672,9 @@
           }
         }
       }
+    },
+    "You must configure it once the wizard completes." : {
+
     },
     "YouTube" : {
       "localizations" : {

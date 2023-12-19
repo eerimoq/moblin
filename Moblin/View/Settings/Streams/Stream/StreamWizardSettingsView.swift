@@ -1,5 +1,16 @@
 import SwiftUI
 
+struct WizardNextButtonView: View {
+    var body: some View {
+        HStack {
+            Spacer()
+            Text("Next")
+                .foregroundColor(.accentColor)
+            Spacer()
+        }
+    }
+}
+
 struct CreateStreamWizardToolbar: ToolbarContent {
     @EnvironmentObject var model: Model
 
@@ -17,8 +28,6 @@ struct CreateStreamWizardToolbar: ToolbarContent {
 }
 
 struct StreamWizardSettingsView: View {
-    @EnvironmentObject private var model: Model
-
     var body: some View {
         Form {
             Section {
@@ -32,12 +41,12 @@ struct StreamWizardSettingsView: View {
                 Text("Platform to stream to")
             }
             Section {
-                NavigationLink(destination: StreamWizardAdvancedSettingsView()) {
-                    Text("Advanced")
+                NavigationLink(destination: StreamWizardCustomSettingsView()) {
+                    Text("Custom")
                 }
             }
         }
-        .navigationTitle("Platform")
+        .navigationTitle("Create stream wizard")
         .toolbar {
             CreateStreamWizardToolbar()
         }

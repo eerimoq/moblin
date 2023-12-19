@@ -171,6 +171,19 @@ struct LogEntry: Identifiable {
     var message: String
 }
 
+enum WizardPlatform {
+    case twitch
+    case kick
+    case custom
+}
+
+enum WizardNetworkSetup {
+    case none
+    case obs
+    case belaboxCloudObs
+    case direct
+}
+
 final class Model: ObservableObject {
     private let media = Media()
     var streamState = StreamState.disconnected {
@@ -269,11 +282,20 @@ final class Model: ObservableObject {
     }
 
     @Published var isPresentingWizard: Bool = false
+    var wizardPlatform: WizardPlatform = .custom
+    var wizardNotworkSetup: WizardNetworkSetup = .none
     @Published var wizardName: String = ""
     @Published var wizardTwitchChannelName: String = ""
     @Published var wizardTwitchChannelId: String = ""
     @Published var wizardKickChannelName: String = ""
     @Published var wizardKickChatroomId: String = ""
+    @Published var wizardObsAddress = ""
+    @Published var wizardObsPort = ""
+    @Published var wizardDirectIngress = ""
+    @Published var wizardDirectStreamKey = ""
+    @Published var wizardChatBttv = true
+    @Published var wizardChatFfz = true
+    @Published var wizardChatSeventv = true
 
     var cameraDevice: AVCaptureDevice?
     var cameraZoomLevelToXScale: Float = 1.0
@@ -306,6 +328,11 @@ final class Model: ObservableObject {
     @Published var iconsSubscriptions: [Subscription] = []
     private var appStoreUpdateListenerTask: Task<Void, Error>?
     private var products: [String: Product] = [:]
+
+    func createStreamFromWizard() {
+        database.streams.append(SettingsStream(name: wizardName.trim()))
+        store()
+    }
 
     func setAdaptiveBitratePacketsInFlight(value: Int32) {
         adaptiveBitratePacketsInFlightLimit = value

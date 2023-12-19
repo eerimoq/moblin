@@ -38,15 +38,13 @@ struct StreamWizardKickSettingsView: View {
             }
             Section {
                 NavigationLink(destination: StreamWizardNetworkSetupSettingsView(platform: "Kick")) {
-                    HStack {
-                        Spacer()
-                        Text("Next")
-                            .foregroundColor(.accentColor)
-                        Spacer()
-                    }
+                    WizardNextButtonView()
                 }
                 .disabled(model.wizardKickChannelName.isEmpty)
             }
+        }
+        .onAppear {
+            model.wizardPlatform = .kick
         }
         .navigationTitle("Kick")
         .toolbar {

@@ -2,31 +2,32 @@ import SwiftUI
 
 struct StreamWizardNetworkSetupDirectSettingsView: View {
     @EnvironmentObject private var model: Model
-    @State var ingest = ""
-    @State var streamKey = ""
+
+    private func isDisabled() -> Bool {
+        return model.wizardDirectIngress.isEmpty || model.wizardDirectStreamKey.isEmpty
+    }
 
     var body: some View {
         Form {
             Section {
-                TextField("rtmp://foobar", text: $ingest)
+                TextField("rtmp://foobar", text: $model.wizardDirectIngress)
             } header: {
                 Text("Nearby ingest")
             }
             Section {
-                TextField("23234234234234", text: $streamKey)
+                TextField("9fh260lbtb730gy73gkd", text: $model.wizardDirectStreamKey)
             } header: {
                 Text("Stream key")
             }
             Section {
-                NavigationLink(destination: StreamWizardCreateSettingsView()) {
-                    HStack {
-                        Spacer()
-                        Text("Next")
-                            .foregroundColor(.accentColor)
-                        Spacer()
-                    }
+                NavigationLink(destination: StreamWizardGeneralSettingsView()) {
+                    WizardNextButtonView()
                 }
+                .disabled(isDisabled())
             }
+        }
+        .onAppear {
+            model.wizardNotworkSetup = .direct
         }
         .navigationTitle("Direct")
         .toolbar {
