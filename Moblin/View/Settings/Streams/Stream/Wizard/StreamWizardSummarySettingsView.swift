@@ -26,6 +26,7 @@ struct StreamWizardSummarySettingsView: View {
                 TextField("Name", text: $model.wizardName)
             } header: {
                 Text("Stream name")
+                    .disableAutocorrection(true)
             }
             Section {
                 HStack {

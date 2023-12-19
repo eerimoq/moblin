@@ -31,7 +31,7 @@ struct StreamAudioSettingsView: View {
                 )) {
                     TextItemView(
                         name: String(localized: "Bitrate"),
-                        value: String(stream.audioBitrate! / 1000)
+                        value: formatBytesPerSecond(speed: Int64(stream.audioBitrate!))
                     )
                 }
             }
