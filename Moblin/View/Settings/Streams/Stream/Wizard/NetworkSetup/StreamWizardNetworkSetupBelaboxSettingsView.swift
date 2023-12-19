@@ -1,15 +1,23 @@
 import SwiftUI
 
 struct StreamWizardNetworkSetupBelaboxSettingsView: View {
+    @EnvironmentObject private var model: Model
+
     var body: some View {
-        VStack(alignment: .leading) {
-            VStack(alignment: .leading) {
-                Text("How to get belabox cloud")
-                Text("Some information about how to setup OBS Media Source")
-            }
-            .padding()
-            Form {
+        Form {
+            Section {
                 Text("Open belabox cloud page")
+            }
+            Section {
+                HStack {
+                    Spacer()
+                    Button {
+                        model.isPresentingWizard = false
+                    } label: {
+                        Text("Create")
+                    }
+                    Spacer()
+                }
             }
         }
     }

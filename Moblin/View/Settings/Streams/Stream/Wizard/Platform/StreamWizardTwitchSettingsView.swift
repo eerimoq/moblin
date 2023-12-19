@@ -33,6 +33,7 @@ struct StreamWizardTwitchSettingsView: View {
                     HStack {
                         Spacer()
                         Text("Next")
+                            .foregroundColor(.accentColor)
                         Spacer()
                     }
                 }

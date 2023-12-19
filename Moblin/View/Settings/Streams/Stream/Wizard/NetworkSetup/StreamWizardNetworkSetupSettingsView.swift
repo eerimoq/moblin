@@ -32,7 +32,7 @@ struct StreamWizardNetworkSetupSettingsView: View {
                         }
                     }
                 } footer: {
-                    Text("Best possible stability.")
+                    Text("Best possible stability. Paid service.")
                 }
                 Section {
                     NavigationLink(destination: StreamWizardNetworkSetupDirectSettingsView()) {

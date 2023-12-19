@@ -26,6 +26,7 @@ struct StreamWizardKickSettingsView: View {
                     HStack {
                         Spacer()
                         Text("Next")
+                            .foregroundColor(.accentColor)
                         Spacer()
                     }
                 }

@@ -4750,7 +4750,7 @@
         }
       }
     },
-    "Best possible stability." : {
+    "Best possible stability. Paid service." : {
 
     },
     "Big packets" : {
@@ -14520,9 +14520,6 @@
         }
       }
     },
-    "How to get belabox cloud" : {
-
-    },
     "Icons" : {
       "localizations" : {
         "de" : {
@@ -24104,9 +24101,6 @@
           }
         }
       }
-    },
-    "Some information about how to setup OBS Media Source" : {
-
     },
     "Speed" : {
       "localizations" : {
