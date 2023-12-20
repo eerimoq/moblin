@@ -3,36 +3,41 @@ import SwiftUI
 struct StreamAudioSettingsView: View {
     @EnvironmentObject var model: Model
     var stream: SettingsStream
+    @State var bitrate: Float
 
-    private func onBitrateChange(bitrate: String) {
-        guard let bitrate = Int(bitrate) else {
-            model.makeErrorToast(title: "Bitrate must be a number")
-            return
-        }
-        guard bitrate >= 32 && bitrate <= 320 else {
-            model.makeErrorToast(title: "Bitrate not 32 - 320 kbps")
-            return
-        }
-        stream.audioBitrate = bitrate * 1000
-        model.store()
-        if model.stream.enabled {
-            model.setAudioStreamBitrate(stream: stream)
-        }
+    private func calcBitrate() -> Int {
+        return Int((bitrate * 1000).rounded(.up))
     }
 
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: TextEditView(
-                    title: String(localized: "Bitrate"),
-                    value: String(stream.audioBitrate! / 1000),
-                    onSubmit: onBitrateChange,
-                    footer: Text("Audio bitrate as 32 - 320 kbps. Only AAC codec is supported.")
-                )) {
-                    TextItemView(
-                        name: String(localized: "Bitrate"),
-                        value: formatBytesPerSecond(speed: Int64(stream.audioBitrate!))
+                HStack {
+                    Slider(
+                        value: $bitrate,
+                        in: 32 ... 320,
+                        step: 32,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            stream.audioBitrate = calcBitrate()
+                            model.store()
+                            if model.stream.enabled {
+                                model.setAudioStreamBitrate(stream: stream)
+                            }
+                        }
                     )
+                    Text(formatBytesPerSecond(speed: Int64(calcBitrate())))
+                        .frame(width: 90)
+                }
+            } header: {
+                Text("Bitrate")
+            } footer: {
+                VStack(alignment: .leading) {
+                    Text("128 Kpbs or higher is recommended.")
+                    Text("")
+                    Text("The actual bitrate may be lower if the device does not support it.")
                 }
             }
         }

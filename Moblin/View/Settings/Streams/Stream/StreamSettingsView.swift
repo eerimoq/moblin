@@ -27,7 +27,10 @@ struct StreamSettingsView: View {
             NavigationLink(destination: StreamVideoSettingsView(stream: stream)) {
                 Text("Video")
             }
-            NavigationLink(destination: StreamAudioSettingsView(stream: stream)) {
+            NavigationLink(destination: StreamAudioSettingsView(
+                stream: stream,
+                bitrate: Float(stream.audioBitrate! / 1000)
+            )) {
                 Text("Audio")
             }
             NavigationLink(destination: StreamTwitchSettingsView(stream: stream)) {

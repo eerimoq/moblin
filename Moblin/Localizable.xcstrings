@@ -1976,6 +1976,9 @@
     "9fh260lbtb730gy73gkd" : {
 
     },
+    "128 Kpbs or higher is recommended." : {
+
+    },
     "213.33.45.132" : {
 
     },
@@ -3482,6 +3485,7 @@
       }
     },
     "Audio bitrate as 32 - 320 kbps. Only AAC codec is supported." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -26899,6 +26903,9 @@
           }
         }
       }
+    },
+    "The actual bitrate may be lower if the device does not support it." : {
+
     },
     "The browser widget is experimental does not work very well yet." : {
       "localizations" : {
