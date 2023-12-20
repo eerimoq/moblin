@@ -152,12 +152,58 @@ class SettingsStream: Codable, Identifiable, Equatable {
         }
     }
 
+    func protocolString() -> String {
+        if getProtocol() == .srt && isSrtla() {
+            return "SRTLA"
+        } else if getProtocol() == .rtmp && isRtmps() {
+            return "RTMPS"
+        } else {
+            return getProtocol().rawValue
+        }
+    }
+
     func isRtmps() -> Bool {
         return getScheme() == "rtmps"
     }
 
     func isSrtla() -> Bool {
         return getScheme() == "srtla"
+    }
+
+    func resolutionString() -> String {
+        switch resolution {
+        case .r1920x1080:
+            return "1080p"
+        case .r1280x720:
+            return "720p"
+        case .r854x480:
+            return "480p"
+        case .r640x360:
+            return "360p"
+        case .r426x240:
+            return "240p"
+        }
+    }
+
+    func codecString() -> String {
+        switch codec {
+        case .h265hevc:
+            return "H.265"
+        case .h264avc:
+            return "H.264"
+        }
+    }
+
+    func bitrateString() -> String {
+        var bitrate = formatBytesPerSecond(speed: Int64(bitrate))
+        if getProtocol() == .srt && adaptiveBitrate {
+            bitrate = "<\(bitrate)"
+        }
+        return bitrate
+    }
+
+    func audioBitrateString() -> String {
+        return formatBytesPerSecond(speed: Int64(audioBitrate!))
     }
 }
 

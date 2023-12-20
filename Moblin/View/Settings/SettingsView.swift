@@ -101,9 +101,7 @@ struct SettingsView: View {
                 NavigationLink(destination: ScenesSettingsView()) {
                     Text("Scenes")
                 }
-                NavigationLink(
-                    destination: LocalOverlaysSettingsView()
-                ) {
+                NavigationLink(destination: LocalOverlaysSettingsView()) {
                     Text("Local overlays")
                 }
                 NavigationLink(destination: InlinePickerView(
@@ -164,13 +162,17 @@ struct SettingsView: View {
                 }
             }
             Section {
-                NavigationLink(destination: CosmeticsSettingsView(
-                )) {
+                NavigationLink(destination: CosmeticsSettingsView()) {
                     HStack {
                         Image(systemName: "heart.fill")
                             .foregroundColor(.red)
                         Text("Cosmetics")
                     }
+                }
+            }
+            Section {
+                NavigationLink(destination: StreamingHistorySettingsView()) {
+                    Text("Streaming history")
                 }
             }
             Section {
@@ -190,9 +192,7 @@ struct SettingsView: View {
                 }
             }
             Section {
-                NavigationLink(
-                    destination: ImportExportSettingsView()
-                ) {
+                NavigationLink(destination: ImportExportSettingsView()) {
                     Text("Import and export settings")
                 }
             }

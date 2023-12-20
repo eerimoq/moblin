@@ -166,6 +166,12 @@
 		0330F2B52AFADD18001262C3 /* StreamYouTubeSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0330F2B42AFADD18001262C3 /* StreamYouTubeSettingsView.swift */; };
 		03403DF62AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */; };
 		0344AFE72B00023E00C177DB /* AboutDesignedBySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0344AFE62B00023E00C177DB /* AboutDesignedBySettingsView.swift */; };
+		03487F242B334AD0003D9ED9 /* StreamingHistorySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03487F232B334AD0003D9ED9 /* StreamingHistorySettingsView.swift */; };
+		03487F262B334B63003D9ED9 /* StreamingHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03487F252B334B63003D9ED9 /* StreamingHistory.swift */; };
+		03487F272B334C3E003D9ED9 /* StreamingHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03487F252B334B63003D9ED9 /* StreamingHistory.swift */; };
+		03487F282B334C48003D9ED9 /* StreamingHistorySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03487F232B334AD0003D9ED9 /* StreamingHistorySettingsView.swift */; };
+		03487F2B2B33535A003D9ED9 /* StreamingHistoryStreamSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03487F2A2B33535A003D9ED9 /* StreamingHistoryStreamSettingsView.swift */; };
+		03487F2C2B33535A003D9ED9 /* StreamingHistoryStreamSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03487F2A2B33535A003D9ED9 /* StreamingHistoryStreamSettingsView.swift */; };
 		035D37282AB0EBB500045B92 /* IconAndTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37272AB0EBB500045B92 /* IconAndTextView.swift */; };
 		035D372C2AB103E600045B92 /* SRTHaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 035D372B2AB103E600045B92 /* SRTHaishinKit */; };
 		035D37372AB230E700045B92 /* StreamVideoBitrateSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37362AB230E700045B92 /* StreamVideoBitrateSettingsView.swift */; };
@@ -309,6 +315,9 @@
 		0330F2B42AFADD18001262C3 /* StreamYouTubeSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamYouTubeSettingsView.swift; sourceTree = "<group>"; };
 		03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBrowserSettingsView.swift; sourceTree = "<group>"; };
 		0344AFE62B00023E00C177DB /* AboutDesignedBySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutDesignedBySettingsView.swift; sourceTree = "<group>"; };
+		03487F232B334AD0003D9ED9 /* StreamingHistorySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamingHistorySettingsView.swift; sourceTree = "<group>"; };
+		03487F252B334B63003D9ED9 /* StreamingHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamingHistory.swift; sourceTree = "<group>"; };
+		03487F2A2B33535A003D9ED9 /* StreamingHistoryStreamSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamingHistoryStreamSettingsView.swift; sourceTree = "<group>"; };
 		034FC8512B2B6D4A00EF0C62 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		035D37272AB0EBB500045B92 /* IconAndTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconAndTextView.swift; sourceTree = "<group>"; };
 		035D37362AB230E700045B92 /* StreamVideoBitrateSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoBitrateSettingsView.swift; sourceTree = "<group>"; };
@@ -597,6 +606,15 @@
 			path = Browser;
 			sourceTree = "<group>";
 		};
+		03487F222B334AB4003D9ED9 /* StreamingHistory */ = {
+			isa = PBXGroup;
+			children = (
+				03487F232B334AD0003D9ED9 /* StreamingHistorySettingsView.swift */,
+				03487F2A2B33535A003D9ED9 /* StreamingHistoryStreamSettingsView.swift */,
+			);
+			path = StreamingHistory;
+			sourceTree = "<group>";
+		};
 		035D372A2AB103E600045B92 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -647,6 +665,7 @@
 				03831D512AD90AB5008D26CC /* MoblinSettingsUrl.swift */,
 				03A08B7F2AC368860018BA95 /* Media.swift */,
 				03B373FC2A9F35EF0028DDD5 /* Utils.swift */,
+				03487F252B334B63003D9ED9 /* StreamingHistory.swift */,
 				035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */,
 				03F853B22B151FA700719B89 /* Localizable.xcstrings */,
 			);
@@ -862,6 +881,7 @@
 		03B373F42A9EF8BD0028DDD5 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				03487F222B334AB4003D9ED9 /* StreamingHistory */,
 				03E877F52B2DB26100086355 /* Quick buttons */,
 				031A2E0E2ADDDD62005CE350 /* VideoStabilization */,
 				03E95AE22ADB7B2200DAE2DF /* TapScreenToFocus */,
@@ -1202,6 +1222,7 @@
 				03DBD1042B300D55004B0BE6 /* StreamWizardNetworkSetupBelaboxSettingsView.swift in Sources */,
 				032E06682B2F3E9D00EAE5F8 /* TapScreenToFocusSettingsView.swift in Sources */,
 				032E06692B2F3E9D00EAE5F8 /* Seventv.swift in Sources */,
+				03487F272B334C3E003D9ED9 /* StreamingHistory.swift in Sources */,
 				032E066A2B2F3E9D00EAE5F8 /* Utils.swift in Sources */,
 				032E066B2B2F3E9D00EAE5F8 /* DebugAudioSettingsView.swift in Sources */,
 				032E066C2B2F3E9D00EAE5F8 /* PositionEditView.swift in Sources */,
@@ -1232,6 +1253,7 @@
 				032E06842B2F3E9D00EAE5F8 /* TwitchChatMoblin.swift in Sources */,
 				032E06852B2F3E9D00EAE5F8 /* LocalOverlaysSettingsView.swift in Sources */,
 				032E06862B2F3E9D00EAE5F8 /* ButtonSettingsView.swift in Sources */,
+				03487F282B334C48003D9ED9 /* StreamingHistorySettingsView.swift in Sources */,
 				032E06872B2F3E9D00EAE5F8 /* SceneCameraPipSmallCameraSettingsView.swift in Sources */,
 				032E06882B2F3E9D00EAE5F8 /* ZoomPresetSettingsView.swift in Sources */,
 				03DBD10F2B301403004B0BE6 /* StreamWizardSettingsView.swift in Sources */,
@@ -1278,6 +1300,7 @@
 				032E06AE2B2F3E9D00EAE5F8 /* StreamOverlayRightView.swift in Sources */,
 				032E06AF2B2F3E9D00EAE5F8 /* StreamObsSettingsView.swift in Sources */,
 				032E06B02B2F3E9D00EAE5F8 /* StreamYouTubeSettingsView.swift in Sources */,
+				03487F2C2B33535A003D9ED9 /* StreamingHistoryStreamSettingsView.swift in Sources */,
 				032E06B12B2F3E9D00EAE5F8 /* DraggableItemPrefixView.swift in Sources */,
 				032E06B22B2F3E9D00EAE5F8 /* WidgetVideoEffectSettingsView.swift in Sources */,
 				032E06B32B2F3E9D00EAE5F8 /* LocalListener.swift in Sources */,
@@ -1330,6 +1353,7 @@
 				03BC11622AE4BDA200C38FC4 /* Seventv.swift in Sources */,
 				03B373FD2A9F35EF0028DDD5 /* Utils.swift in Sources */,
 				031839172AF6A03100320FB2 /* DebugAudioSettingsView.swift in Sources */,
+				03487F262B334B63003D9ED9 /* StreamingHistory.swift in Sources */,
 				032FDBFF2B0B11B0007BE85E /* PositionEditView.swift in Sources */,
 				0379BBA02AAD823900B718B6 /* StreamOverlayTextView.swift in Sources */,
 				03B374072AA0EA650028DDD5 /* MovieEffect.swift in Sources */,
@@ -1398,11 +1422,13 @@
 				03A983612A9A05D7008FF0DB /* StreamsSettingsView.swift in Sources */,
 				03A08B802AC368860018BA95 /* Media.swift in Sources */,
 				036333282AAE2E5100FF1231 /* ImageStorage.swift in Sources */,
+				03487F242B334AD0003D9ED9 /* StreamingHistorySettingsView.swift in Sources */,
 				03BC115D2AE4BD7B00C38FC4 /* Bttv.swift in Sources */,
 				0315A3702AA3771F00295443 /* SceneWidgetSettingsView.swift in Sources */,
 				0379BB9E2AAD81AA00B718B6 /* StreamOverlayRightView.swift in Sources */,
 				03BDE2262B24656400DF193A /* StreamObsSettingsView.swift in Sources */,
 				0330F2B52AFADD18001262C3 /* StreamYouTubeSettingsView.swift in Sources */,
+				03487F2B2B33535A003D9ED9 /* StreamingHistoryStreamSettingsView.swift in Sources */,
 				031A2E002ADBE34F005CE350 /* DraggableItemPrefixView.swift in Sources */,
 				0379BB792AA64C9500B718B6 /* WidgetVideoEffectSettingsView.swift in Sources */,
 				0315A33B2AA2FA7100295443 /* LocalListener.swift in Sources */,

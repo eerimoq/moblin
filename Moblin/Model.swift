@@ -304,12 +304,15 @@ final class Model: ObservableObject {
     var cameraZoomXMaximum: Float = 1.0
     var secondCameraDevice: AVCaptureDevice?
     @Published var srtDebugLines: [String] = []
+    @Published var streamingHistory = StreamingHistory()
+    private var streamingHistoryStream: StreamingHistoryStream?
 
     var backCameras: [Camera] = []
     var frontCameras: [Camera] = []
 
     init() {
         settings.load()
+        streamingHistory.load()
     }
 
     var stream: SettingsStream {
@@ -1322,6 +1325,7 @@ final class Model: ObservableObject {
         reconnectTime = firstReconnectTime
         UIApplication.shared.isIdleTimerDisabled = true
         startNetStream()
+        streamingHistoryStream = StreamingHistoryStream(settings: stream.clone())
     }
 
     func stopStream() {
@@ -1334,6 +1338,12 @@ final class Model: ObservableObject {
         UIApplication.shared.isIdleTimerDisabled = false
         stopNetStream()
         streamState = .disconnected
+        if var streamingHistoryStream {
+            streamingHistoryStream.stopTime = Date()
+            streamingHistoryStream.totalBytes = UInt64(media.streamTotal())
+            streamingHistory.append(stream: streamingHistoryStream)
+            streamingHistory.store()
+        }
     }
 
     private func startNetStream() {

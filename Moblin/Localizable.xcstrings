@@ -792,6 +792,9 @@
         }
       }
     },
+    "%@" : {
+
+    },
     "%@ " : {
       "localizations" : {
         "de" : {
@@ -1121,6 +1124,19 @@
           }
         }
       }
+    },
+    "%@ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ %2$@"
+          }
+        }
+      }
+    },
+    "%lld" : {
+
     },
     "%lld %%" : {
       "localizations" : {
@@ -3483,6 +3499,9 @@
           }
         }
       }
+    },
+    "Audio bitrate" : {
+
     },
     "Audio bitrate as 32 - 320 kbps. Only AAC codec is supported." : {
       "extractionState" : "stale",
@@ -9663,6 +9682,9 @@
         }
       }
     },
+    "Duration" : {
+
+    },
     "Empty clipboard" : {
       "localizations" : {
         "de" : {
@@ -12957,6 +12979,9 @@
           }
         }
       }
+    },
+    "FPS" : {
+
     },
     "front" : {
       "localizations" : {
@@ -21695,6 +21720,9 @@
         }
       }
     },
+    "Protocol" : {
+
+    },
     "Quick buttons" : {
       "localizations" : {
         "de" : {
@@ -25311,6 +25339,12 @@
         }
       }
     },
+    "Start time" : {
+
+    },
+    "Statistics" : {
+
+    },
     "Stream" : {
       "localizations" : {
         "de" : {
@@ -25423,6 +25457,9 @@
     "Stream name" : {
 
     },
+    "Stream summary" : {
+
+    },
     "stream_url" : {
       "localizations" : {
         "de" : {
@@ -25528,6 +25565,9 @@
           }
         }
       }
+    },
+    "Streaming history" : {
+
     },
     "Streams" : {
       "localizations" : {
@@ -28184,6 +28224,12 @@
           }
         }
       }
+    },
+    "Total sent" : {
+
+    },
+    "Total time" : {
+
     },
     "Triple" : {
       "localizations" : {

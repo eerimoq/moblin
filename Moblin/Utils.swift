@@ -219,6 +219,19 @@ var digitalClockFormatter: DateFormatter {
     return formatter
 }
 
+var hoursMinutesFormatter: DateComponentsFormatter {
+    let formatter = DateComponentsFormatter()
+    formatter.allowedUnits = [.hour, .minute]
+    formatter.unitsStyle = .abbreviated
+    return formatter
+}
+
+extension Duration {
+    func format() -> String {
+        return hoursMinutesFormatter.string(from: Double(components.seconds))!
+    }
+}
+
 extension ProcessInfo.ThermalState {
     func string() -> String {
         switch self {
@@ -456,4 +469,10 @@ func getBestBackCameraId() -> String {
         return ""
     }
     return device.uniqueID
+}
+
+extension UInt64 {
+    func formatBytes() -> String {
+        return sizeFormatter.string(fromByteCount: Int64(self))
+    }
 }
