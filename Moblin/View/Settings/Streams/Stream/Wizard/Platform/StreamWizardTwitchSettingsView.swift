@@ -18,7 +18,7 @@ struct StreamWizardTwitchSettingsView: View {
                 Text("Channel id")
             } footer: {
                 VStack(alignment: .leading) {
-                    Text("Needed for your emotes.")
+                    Text("Needed for chat emotes and number of viewers.")
                     Text("")
                     Text(
                         """

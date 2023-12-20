@@ -5,23 +5,56 @@ struct StreamWizardSummarySettingsView: View {
 
     var body: some View {
         Form {
-            Section {
-                if model.wizardPlatform == .twitch {
-                    Text("Some Twitch information")
-                }
-                if model.wizardPlatform == .kick {
-                    Text("Some Kick information")
-                }
-                if model.wizardNetworkSetup == .obs {
-                    Text("OBS")
-                }
-                if model.wizardNetworkSetup == .belaboxCloudObs {
-                    Text("BELABOX cloud")
-                }
-                if model.wizardNetworkSetup == .direct {
-                    Text("Direct")
+            if model.wizardPlatform == .twitch {
+                Section {
+                    HStack {
+                        Text("Channel name")
+                        Spacer()
+                        Text(model.wizardTwitchChannelName)
+                    }
+                    HStack {
+                        Text("Channel id")
+                        Spacer()
+                        Text(model.wizardTwitchChannelId)
+                    }
+                } header: {
+                    Text("Twitch")
                 }
             }
+            if model.wizardPlatform == .kick {
+                Section {
+                    HStack {
+                        Text("Channel name")
+                        Spacer()
+                        Text(model.wizardKickChannelName)
+                    }
+                    HStack {
+                        Text("Chatroom id")
+                        Spacer()
+                        Text(model.wizardKickChatroomId)
+                    }
+                } header: {
+                    Text("Kick")
+                }
+            }
+            if model.wizardNetworkSetup == .obs {
+                Section {
+                    HStack {
+                        Text("IP address or domain name")
+                        Spacer()
+                        Text(model.wizardObsAddress)
+                    }
+                    HStack {
+                        Text("Port")
+                        Spacer()
+                        Text(model.wizardObsPort)
+                    }
+                } header: {
+                    Text("OBS")
+                }
+            }
+            if model.wizardNetworkSetup == .belaboxCloudObs {}
+            if model.wizardNetworkSetup == .direct {}
             Section {
                 TextField("Name", text: $model.wizardName)
             } header: {
@@ -37,11 +70,12 @@ struct StreamWizardSummarySettingsView: View {
                     } label: {
                         Text("Create")
                     }
+                    .disabled(model.wizardName.isEmpty)
                     Spacer()
                 }
             }
         }
-        .navigationTitle("Summary")
+        .navigationTitle("Summary and stream name")
         .toolbar {
             CreateStreamWizardToolbar()
         }

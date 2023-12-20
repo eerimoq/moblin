@@ -14,12 +14,34 @@ struct StreamWizardNetworkSetupObsSettingsView: View {
                     .disableAutocorrection(true)
             } header: {
                 Text("IP address or domain name")
+            } footer: {
+                Text("Your public IP address if streaming over the internet.")
             }
             Section {
-                TextField("7000", text: $model.wizardObsPort)
+                TextField("7654", text: $model.wizardObsPort)
                     .disableAutocorrection(true)
             } header: {
                 Text("Port")
+            } footer: {
+                Text("Configure port forwarding in your router to forward incoming traffic to OBS.")
+            }
+            Section {
+                VStack(alignment: .leading) {
+                    Text("Create a Media Source in OBS and configure it as shown below.")
+                    Text("")
+                    Text("Replace 192.168.50.72 with your local IP address (typically 192.168.x.y).")
+                    Text("")
+                    Text("Replace 7654 with your port.")
+                }
+            }
+            Section {
+                HStack {
+                    Spacer()
+                    Image("ObsMediaSourceSrt")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                    Spacer()
+                }
             }
             Section {
                 NavigationLink(destination: StreamWizardGeneralSettingsView()) {

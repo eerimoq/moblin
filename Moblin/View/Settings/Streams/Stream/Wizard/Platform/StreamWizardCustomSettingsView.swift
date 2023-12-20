@@ -8,7 +8,7 @@ struct StreamWizardCustomSettingsView: View {
             VStack(alignment: .leading) {
                 Text("Creating a stream with default settings.")
                 Text("")
-                Text("You must configure it once the wizard completes.")
+                Text("You must configure it after the wizard ends.")
             }
             Section {
                 NavigationLink(destination: StreamWizardSummarySettingsView()) {

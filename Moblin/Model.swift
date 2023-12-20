@@ -330,6 +330,24 @@ final class Model: ObservableObject {
     private var appStoreUpdateListenerTask: Task<Void, Error>?
     private var products: [String: Product] = [:]
 
+    private func createStreamFromWizardUrl() -> String {
+        var url = defaultStreamUrl
+        switch wizardNetworkSetup {
+        case .none:
+            break
+        case .obs:
+            url = cleanUrl(url: "srt://\(wizardObsAddress):\(wizardObsPort)")
+            if isValidUrl(url: url) != nil {
+                url = defaultStreamUrl
+            }
+        case .belaboxCloudObs:
+            break
+        case .direct:
+            break
+        }
+        return url
+    }
+
     func createStreamFromWizard() {
         let stream = SettingsStream(name: wizardName.trim())
         stream.twitchEnabled = false
@@ -351,22 +369,15 @@ final class Model: ObservableObject {
         stream.chat!.bttvEmotes = wizardChatBttv
         stream.chat!.ffzEmotes = wizardChatFfz
         stream.chat!.seventvEmotes = wizardChatSeventv
+        stream.url = createStreamFromWizardUrl()
         switch wizardNetworkSetup {
         case .none:
             break
         case .obs:
-            let url = cleanUrl(url: "srt://\(wizardObsAddress):\(wizardObsPort)")
-            if let message = isValidUrl(url: url) {
-                logger.info("URL error: \(message)")
-                return
-            }
-            stream.url = url
             stream.codec = .h265hevc
         case .belaboxCloudObs:
-            stream.url = defaultStreamUrl
             stream.codec = .h265hevc
         case .direct:
-            stream.url = defaultStreamUrl
             stream.codec = .h264avc
         }
         stream.audioBitrate = 128_000

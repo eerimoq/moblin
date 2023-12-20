@@ -1982,7 +1982,7 @@
     "213.33.45.132" : {
 
     },
-    "7000" : {
+    "7654" : {
 
     },
     "90812903" : {
@@ -8161,6 +8161,9 @@
         }
       }
     },
+    "Configure port forwarding in your router to forward incoming traffic to OBS." : {
+
+    },
     "Cosmetics" : {
       "localizations" : {
         "de" : {
@@ -8372,6 +8375,9 @@
           }
         }
       }
+    },
+    "Create a Media Source in OBS and configure it as shown below." : {
+
     },
     "Create stream wizard" : {
 
@@ -19012,10 +19018,10 @@
         }
       }
     },
-    "Needed for chat." : {
+    "Needed for chat emotes and number of viewers." : {
 
     },
-    "Needed for your emotes." : {
+    "Needed for chat." : {
 
     },
     "Network setup" : {
@@ -22007,6 +22013,12 @@
         }
       }
     },
+    "Replace 192.168.50.72 with your local IP address (typically 192.168.x.y)." : {
+
+    },
+    "Replace 7654 with your port." : {
+
+    },
     "Reset settings" : {
       "localizations" : {
         "de" : {
@@ -24130,12 +24142,6 @@
         }
       }
     },
-    "Some Kick information" : {
-
-    },
-    "Some Twitch information" : {
-
-    },
     "Speed" : {
       "localizations" : {
         "de" : {
@@ -25841,7 +25847,7 @@
         }
       }
     },
-    "Summary" : {
+    "Summary and stream name" : {
 
     },
     "Support Moblin developers by buying icons." : {
@@ -31683,7 +31689,10 @@
         }
       }
     },
-    "You must configure it once the wizard completes." : {
+    "You must configure it after the wizard ends." : {
+
+    },
+    "Your public IP address if streaming over the internet." : {
 
     },
     "YouTube" : {
