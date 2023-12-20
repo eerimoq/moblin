@@ -21,14 +21,32 @@ struct LeftOverlayView: View {
         } else {
             proto = stream.getProtocol().rawValue
         }
-        let resolution = stream.resolution.rawValue
-        let codec = stream.codec.rawValue
+        var resolution: String
+        switch stream.resolution {
+        case .r1920x1080:
+            resolution = "1080p"
+        case .r1280x720:
+            resolution = "720p"
+        case .r854x480:
+            resolution = "480p"
+        case .r640x360:
+            resolution = "360p"
+        case .r426x240:
+            resolution = "240p"
+        }
+        let codec: String
+        switch stream.codec {
+        case .h265hevc:
+            codec = "H.264"
+        case .h264avc:
+            codec = "H.265"
+        }
         var bitrate = formatBytesPerSecond(speed: Int64(stream.bitrate))
         if stream.getProtocol() == .srt && stream.adaptiveBitrate {
             bitrate = "<\(bitrate)"
         }
         let audioBitrate = formatBytesPerSecond(speed: Int64(stream.audioBitrate!))
-        return "\(stream.name) (\(resolution), \(stream.fps), \(proto), \(codec), \(bitrate), AAC, \(audioBitrate)"
+        return "\(stream.name) (\(resolution), \(stream.fps), \(proto), \(codec) \(bitrate), AAC \(audioBitrate))"
     }
 
     func viewersText() -> String {
