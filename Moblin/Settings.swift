@@ -100,7 +100,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var captureSessionPresetEnabled: Bool = false
     var captureSessionPreset: SettingsCaptureSessionPreset = .medium
     var maxKeyFrameInterval: Int32? = 2
-    var audioBitrate: Int? = 64 * 1000
+    var audioBitrate: Int? = 128_000
     var chat: SettingsStreamChat? = .init()
 
     init(name: String) {
@@ -1301,7 +1301,7 @@ final class Settings {
             store()
         }
         for stream in realDatabase.streams where stream.audioBitrate == nil {
-            stream.audioBitrate = 64 * 1000
+            stream.audioBitrate = 128_000
             store()
         }
         if realDatabase.quickButtons == nil {
