@@ -27,7 +27,7 @@ Features
 
 - SRTLA.
 
-  - Can use one cellular, one WiFi and one Ethernet connection
+  - Can use one cellular, one WiFi and multiple Ethernet connections
     simultaneously. Often called bonding.
 
   - Upload statistics per active connection.
@@ -37,6 +37,10 @@ Features
   - Number of viewers.
 
   - Chat.
+
+    - Announcements.
+
+    - /me styling.
 
 - Kick integration.
 
@@ -111,9 +115,19 @@ Features
 
   - Triple. Show center of image three times. Experimental.
 
-- Chat styling (colors, background, shadow, bold).
+- Chat styling.
 
-  - Twitch, BTTV, FFZ and 7TV emotes.
+  - Colors, background, border and bold.
+
+  - Twitch, Kick, BTTV, FFZ and 7TV emotes.
+
+  - Optionally animated emotes.
+
+  - Optionally remove old messages.
+
+  - Width and height.
+
+  - Optional message timestamp.
 
 - Cosmetics.
 
