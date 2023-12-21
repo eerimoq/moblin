@@ -42,8 +42,13 @@ struct StreamingHistorySettingsView: View {
                     ForEach(model.streamingHistory.database.streams.reversed()) { stream in
                         NavigationLink(destination: StreamingHistoryStreamSettingsView(stream: stream)) {
                             HStack {
-                                Image(systemName: "checkmark.circle")
-                                    .foregroundColor(.green)
+                                if stream.isSuccessful() {
+                                    Image(systemName: "checkmark.circle")
+                                        .foregroundColor(.green)
+                                } else {
+                                    Image(systemName: "exclamationmark.circle")
+                                        .foregroundColor(.red)
+                                }
                                 VStack(alignment: .leading) {
                                     Text(formatStreamTitle(stream: stream))
                                     Text(stream.settings.name)

@@ -21,6 +21,15 @@ struct StreamingHistoryStreamSettingsView: View {
                     Spacer()
                     Text(stream.totalBytes.formatBytes())
                 }
+                HStack {
+                    if stream.numberOfFffffs! != 0 {
+                        Image(systemName: "exclamationmark.circle")
+                            .foregroundColor(.red)
+                    }
+                    Text("Number of FFFFF:s")
+                    Spacer()
+                    Text("\(stream.numberOfFffffs!)")
+                }
             } header: {
                 Text("Statistics")
             }

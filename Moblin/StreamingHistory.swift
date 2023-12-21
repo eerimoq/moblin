@@ -2,15 +2,24 @@ import AVFoundation
 import Foundation
 import SwiftUI
 
-struct StreamingHistoryStream: Identifiable, Codable {
+class StreamingHistoryStream: Identifiable, Codable {
     var id = UUID()
     var settings: SettingsStream
     var startTime: Date = .init()
     var stopTime: Date = .init()
     var totalBytes: UInt64 = 0
+    var numberOfFffffs: Int? = 0
+
+    init(settings: SettingsStream) {
+        self.settings = settings
+    }
 
     func duration() -> Duration {
         return .seconds(stopTime.timeIntervalSince(startTime))
+    }
+
+    func isSuccessful() -> Bool {
+        return numberOfFffffs! == 0
     }
 }
 
@@ -82,6 +91,10 @@ final class StreamingHistory {
         }
         if database.totalStreams == nil {
             database.totalStreams = UInt64(database.streams.count)
+            store()
+        }
+        for stream in database.streams where stream.numberOfFffffs == nil {
+            stream.numberOfFffffs = 0
             store()
         }
     }

@@ -1339,7 +1339,7 @@ final class Model: ObservableObject {
         UIApplication.shared.isIdleTimerDisabled = false
         stopNetStream()
         streamState = .disconnected
-        if var streamingHistoryStream {
+        if let streamingHistoryStream {
             streamingHistoryStream.stopTime = Date()
             streamingHistoryStream.totalBytes = totalBytes
             streamingHistory.append(stream: streamingHistoryStream)
@@ -2417,6 +2417,7 @@ final class Model: ObservableObject {
         streamState = .disconnected
         stopNetStream()
         makeFffffToast(reason: reason)
+        streamingHistoryStream?.numberOfFffffs! += 1
         reconnectTimer = Timer
             .scheduledTimer(withTimeInterval: reconnectTime, repeats: false) { _ in
                 logger.info("stream: Reconnecting")
