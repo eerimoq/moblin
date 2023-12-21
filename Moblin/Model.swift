@@ -1334,13 +1334,14 @@ final class Model: ObservableObject {
             return
         }
         logger.info("stream: Stop")
+        let totalBytes = UInt64(media.streamTotal())
         streaming = false
         UIApplication.shared.isIdleTimerDisabled = false
         stopNetStream()
         streamState = .disconnected
         if var streamingHistoryStream {
             streamingHistoryStream.stopTime = Date()
-            streamingHistoryStream.totalBytes = UInt64(media.streamTotal())
+            streamingHistoryStream.totalBytes = totalBytes
             streamingHistory.append(stream: streamingHistoryStream)
             streamingHistory.store()
         }
