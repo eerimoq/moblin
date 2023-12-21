@@ -323,6 +323,10 @@ final class Media: NSObject {
         netStream.videoSettings.profileLevel = profile as String
     }
 
+    func setAllowFrameReordering(value: Bool) {
+        netStream.videoSettings.allowFrameReordering = value
+    }
+
     func setStreamKeyFrameInterval(seconds: Int32) {
         netStream.videoSettings.maxKeyFrameIntervalDuration = seconds
     }
