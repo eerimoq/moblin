@@ -95,6 +95,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var fps: Int = 30
     var bitrate: UInt32 = 3_000_000
     var codec: SettingsStreamCodec = .h265hevc
+    var bFrames: Bool? = false
     var adaptiveBitrate: Bool = false
     var srt: SettingsStreamSrt = .init()
     var captureSessionPresetEnabled: Bool = false
@@ -123,6 +124,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
         stream.fps = fps
         stream.bitrate = bitrate
         stream.codec = codec
+        stream.bFrames = bFrames
         stream.adaptiveBitrate = adaptiveBitrate
         stream.srt = srt.clone()
         stream.captureSessionPresetEnabled = captureSessionPresetEnabled
@@ -1360,6 +1362,10 @@ final class Settings {
         }
         if realDatabase.debug!.createStreamWizard == nil {
             realDatabase.debug!.createStreamWizard = false
+            store()
+        }
+        for stream in realDatabase.streams where stream.bFrames == nil {
+            stream.bFrames = false
             store()
         }
     }

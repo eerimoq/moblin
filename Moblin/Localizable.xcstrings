@@ -3822,6 +3822,9 @@
         }
       }
     },
+    "B-frames" : {
+
+    },
     "back" : {
       "localizations" : {
         "de" : {

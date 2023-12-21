@@ -84,6 +84,13 @@ struct StreamVideoSettingsView: View {
                     )
                 }
                 .disabled(stream.enabled && model.isLive)
+                Toggle("B-frames", isOn: Binding(get: {
+                    stream.bFrames!
+                }, set: { value in
+                    stream.bFrames = value
+                    model.storeAndReloadStreamIfEnabled(stream: stream)
+                }))
+                .disabled(stream.enabled && model.isLive)
                 if logger.debugEnabled {
                     NavigationLink(
                         destination: StreamVideoCaptureSessionPresetSettingsView(

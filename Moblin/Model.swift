@@ -1497,11 +1497,10 @@ final class Model: ObservableObject {
         switch stream.codec {
         case .h264avc:
             media.setVideoProfile(profile: kVTProfileLevel_H264_Main_AutoLevel)
-            media.setAllowFrameReordering(value: false)
         case .h265hevc:
             media.setVideoProfile(profile: kVTProfileLevel_HEVC_Main_AutoLevel)
-            media.setAllowFrameReordering(value: true)
         }
+        media.setAllowFrameReordering(value: stream.bFrames!)
     }
 
     private func setStreamKeyFrameInterval() {
