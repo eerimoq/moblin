@@ -1,10 +1,6 @@
 import SwiftUI
 
 struct HelpAndSupportSettingsView: View {
-    func openUrl(url: String) {
-        UIApplication.shared.open(URL(string: url)!)
-    }
-
     var body: some View {
         Form {
             Section {

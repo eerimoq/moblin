@@ -9900,6 +9900,9 @@
         }
       }
     },
+    "End-user license agreement (EULA)" : {
+
+    },
     "Example URL: https://play.afreecatv.com/myChannelName/myVideoId" : {
       "localizations" : {
         "de" : {
@@ -21722,6 +21725,9 @@
           }
         }
       }
+    },
+    "Privacy policy" : {
+
     },
     "Protocol" : {
 

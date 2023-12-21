@@ -476,3 +476,7 @@ extension UInt64 {
         return sizeFormatter.string(fromByteCount: Int64(self))
     }
 }
+
+func openUrl(url: String) {
+    UIApplication.shared.open(URL(string: url)!)
+}
