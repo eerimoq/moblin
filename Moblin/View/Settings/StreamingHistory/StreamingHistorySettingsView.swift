@@ -16,14 +16,21 @@ struct StreamingHistorySettingsView: View {
             HStack {
                 Spacer()
                 VStack {
-                    Text(history.database.totalTime().format())
+                    Text("\(history.database.totalStreams!)")
+                        .font(.title2)
+                    Text("Total streams")
+                        .font(.subheadline)
+                }
+                Spacer()
+                VStack {
+                    Text(history.database.totalTime!.format())
                         .font(.title2)
                     Text("Total time")
                         .font(.subheadline)
                 }
                 Spacer()
                 VStack {
-                    Text(history.database.totalBytes().formatBytes())
+                    Text(history.database.totalBytes!.formatBytes())
                         .font(.title2)
                     Text("Total sent")
                         .font(.subheadline)

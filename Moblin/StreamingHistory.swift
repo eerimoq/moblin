@@ -15,26 +15,13 @@ struct StreamingHistoryStream: Identifiable, Codable {
 }
 
 class StreamingHistoryDatabase: Codable {
+    var totalTime: Duration? = .seconds(0)
+    var totalBytes: UInt64? = 0
+    var totalStreams: UInt64? = 0
     var streams: [StreamingHistoryStream]
 
     init() {
         streams = []
-    }
-
-    func totalBytes() -> UInt64 {
-        var bytes: UInt64 = 0
-        for stream in streams {
-            bytes += stream.totalBytes
-        }
-        return bytes
-    }
-
-    func totalTime() -> Duration {
-        var time: Duration = .zero
-        for stream in streams {
-            time += stream.duration()
-        }
-        return time
     }
 
     static func fromString(settings: String) throws -> StreamingHistoryDatabase {
@@ -80,12 +67,32 @@ final class StreamingHistory {
         }
     }
 
-    private func migrateFromOlderVersions() {}
+    private func migrateFromOlderVersions() {
+        if database.totalTime == nil {
+            database.totalTime = database.streams.reduce(.seconds(0)) { total, stream in
+                total + stream.duration()
+            }
+            store()
+        }
+        if database.totalBytes == nil {
+            database.totalBytes = database.streams.reduce(0) { total, stream in
+                total + stream.totalBytes
+            }
+            store()
+        }
+        if database.totalStreams == nil {
+            database.totalStreams = UInt64(database.streams.count)
+            store()
+        }
+    }
 
     func append(stream: StreamingHistoryStream) {
         while database.streams.count > 100 {
             database.streams.remove(at: 0)
         }
+        database.totalTime! += stream.duration()
+        database.totalBytes! += stream.totalBytes
+        database.totalStreams! += 1
         database.streams.append(stream)
     }
 }

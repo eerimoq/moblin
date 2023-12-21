@@ -1350,6 +1350,9 @@
         }
       }
     },
+    "%llu" : {
+
+    },
     "+" : {
       "localizations" : {
         "de" : {
@@ -28235,6 +28238,9 @@
       }
     },
     "Total sent" : {
+
+    },
+    "Total streams" : {
 
     },
     "Total time" : {
