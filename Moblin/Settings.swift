@@ -207,6 +207,10 @@ class SettingsStream: Codable, Identifiable, Equatable {
     func audioBitrateString() -> String {
         return formatBytesPerSecond(speed: Int64(audioBitrate!))
     }
+
+    func audioCodecString() -> String {
+        return "AAC"
+    }
 }
 
 class SettingsSceneWidget: Codable, Identifiable, Equatable {

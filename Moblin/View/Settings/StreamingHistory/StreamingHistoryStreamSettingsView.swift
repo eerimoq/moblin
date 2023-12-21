@@ -56,6 +56,11 @@ struct StreamingHistoryStreamSettingsView: View {
                     Text(stream.settings.bitrateString())
                 }
                 HStack {
+                    Text("Audio codec")
+                    Spacer()
+                    Text(stream.settings.audioCodecString())
+                }
+                HStack {
                     Text("Audio bitrate")
                     Spacer()
                     Text("\(stream.settings.audioBitrateString())")

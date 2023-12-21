@@ -17,8 +17,12 @@ struct LeftOverlayView: View {
         let resolution = stream.resolutionString()
         let codec = stream.codecString()
         let bitrate = stream.bitrateString()
+        let audioCodec = stream.audioCodecString()
         let audioBitrate = stream.audioBitrateString()
-        return "\(stream.name) (\(resolution), \(stream.fps), \(proto), \(codec) \(bitrate), AAC \(audioBitrate))"
+        return """
+        \(stream.name) (\(resolution), \(stream.fps), \(proto), \(codec) \(bitrate), \
+        \(audioCodec) \(audioBitrate))
+        """
     }
 
     func viewersText() -> String {
