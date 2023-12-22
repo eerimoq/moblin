@@ -138,7 +138,7 @@ struct RightOverlayView: View {
                     color: netStreamColor()
                 )
             }
-            if model.stream.isSrtla() {
+            if model.stream.isSrtla() && model.isLive {
                 StreamOverlayIconAndTextView(
                     icon: "phone.connection",
                     text: model.srtlaConnectionStatistics,

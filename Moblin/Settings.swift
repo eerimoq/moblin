@@ -1117,6 +1117,7 @@ func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "record.circle"
     button.systemImageNameOff = "record.circle"
+    button.enabled = false
     addGlobalButtonIfMissing(database: database, button: button)
 }
 
