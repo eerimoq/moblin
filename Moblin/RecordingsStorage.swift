@@ -16,6 +16,10 @@ class Recording: Identifiable {
         return "\(startTime.formatted()), \(length().format())"
     }
 
+    func subTitle() -> String {
+        return "1080p, 1 Kb"
+    }
+
     func name() -> String {
         return "\(id).mp4"
     }
@@ -54,5 +58,13 @@ class RecordingsStorage {
 
     func listRecordings() -> [Recording] {
         return recordings
+    }
+
+    func numberOfRecordingsString() -> String {
+        return String(recordings.count)
+    }
+
+    func totalSizeString() -> String {
+        return UInt64(0).formatBytes()
     }
 }
