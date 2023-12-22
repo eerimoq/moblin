@@ -1355,6 +1355,7 @@ final class Model: ObservableObject {
         UIApplication.shared.isIdleTimerDisabled = true
         startNetStream()
         streamingHistoryStream = StreamingHistoryStream(settings: stream.clone())
+        streamingHistoryStream!.updateHighestThermalState(thermalState: ThermalState(from: thermalState))
     }
 
     func stopStream() {
@@ -2187,6 +2188,7 @@ final class Model: ObservableObject {
 
     private func updateThermalState() {
         thermalState = ProcessInfo.processInfo.thermalState
+        streamingHistoryStream?.updateHighestThermalState(thermalState: ThermalState(from: thermalState))
         logger.info("Thermal state is \(thermalState.string())")
     }
 

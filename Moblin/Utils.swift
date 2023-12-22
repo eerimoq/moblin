@@ -484,3 +484,20 @@ extension UInt64 {
 func openUrl(url: String) {
     UIApplication.shared.open(URL(string: url)!)
 }
+
+extension ProcessInfo.ThermalState {
+    func color() -> Color {
+        switch self {
+        case .nominal:
+            return .white
+        case .fair:
+            return .white
+        case .serious:
+            return .yellow
+        case .critical:
+            return .red
+        default:
+            return .pink
+        }
+    }
+}

@@ -2,6 +2,45 @@ import AVFoundation
 import Foundation
 import SwiftUI
 
+enum ThermalState: Int, Codable, Comparable {
+    case nominal = 0
+    case fair = 1
+    case serious = 2
+    case critical = 3
+
+    init(from: ProcessInfo.ThermalState) {
+        switch from {
+        case .nominal:
+            self = .nominal
+        case .fair:
+            self = .fair
+        case .serious:
+            self = .serious
+        case .critical:
+            self = .critical
+        @unknown default:
+            self = .nominal
+        }
+    }
+
+    static func < (lhs: ThermalState, rhs: ThermalState) -> Bool {
+        return lhs.rawValue < rhs.rawValue
+    }
+
+    func toProcessInfo() -> ProcessInfo.ThermalState {
+        switch self {
+        case .nominal:
+            return .nominal
+        case .fair:
+            return .fair
+        case .serious:
+            return .serious
+        case .critical:
+            return .critical
+        }
+    }
+}
+
 class StreamingHistoryStream: Identifiable, Codable {
     var id = UUID()
     var settings: SettingsStream
@@ -9,9 +48,16 @@ class StreamingHistoryStream: Identifiable, Codable {
     var stopTime: Date = .init()
     var totalBytes: UInt64 = 0
     var numberOfFffffs: Int? = 0
+    var highestThermalState: ThermalState? = .nominal
 
     init(settings: SettingsStream) {
         self.settings = settings
+    }
+
+    func updateHighestThermalState(thermalState: ThermalState) {
+        if thermalState > highestThermalState! {
+            highestThermalState = thermalState
+        }
     }
 
     func duration() -> Duration {
@@ -95,6 +141,10 @@ final class StreamingHistory {
         }
         for stream in database.streams where stream.numberOfFffffs == nil {
             stream.numberOfFffffs = 0
+            store()
+        }
+        for stream in database.streams where stream.highestThermalState == nil {
+            stream.highestThermalState = .nominal
             store()
         }
     }

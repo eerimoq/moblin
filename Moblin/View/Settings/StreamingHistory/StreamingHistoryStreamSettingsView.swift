@@ -30,6 +30,12 @@ struct StreamingHistoryStreamSettingsView: View {
                     Spacer()
                     Text("\(stream.numberOfFffffs!)")
                 }
+                HStack {
+                    Text("Highest thermal state")
+                    Spacer()
+                    Image(systemName: "flame")
+                        .foregroundColor(stream.highestThermalState!.toProcessInfo().color())
+                }
             } header: {
                 Text("Statistics")
             }
