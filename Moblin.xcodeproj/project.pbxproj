@@ -475,6 +475,17 @@
 			path = Chat;
 			sourceTree = "<group>";
 		};
+		030D487F2B35E4AF003B2014 /* Platforms */ = {
+			isa = PBXGroup;
+			children = (
+				03EF34B22B1AFB7F00A19221 /* AfreecaTv */,
+				0330F2AE2AFAD24F001262C3 /* YouTube */,
+				0379BB712AA4BFA500B718B6 /* Twitch */,
+				036BE2CD2ABD4C960048F9C5 /* Kick */,
+			);
+			path = Platforms;
+			sourceTree = "<group>";
+		};
 		0315A3392AA2FA0A00295443 /* Srtla */ = {
 			isa = PBXGroup;
 			children = (
@@ -662,10 +673,7 @@
 				032BC5B22AD8E18000DEC883 /* Info.plist */,
 				031852A42B21890A00AEAD0D /* InfoPlist.strings */,
 				03BC115B2AE4BD6200C38FC4 /* Emotes */,
-				036BE2CD2ABD4C960048F9C5 /* Kick */,
-				0379BB712AA4BFA500B718B6 /* Twitch */,
-				0330F2AE2AFAD24F001262C3 /* YouTube */,
-				03EF34B22B1AFB7F00A19221 /* AfreecaTv */,
+				030D487F2B35E4AF003B2014 /* Platforms */,
 				03BDE2202B24364700DF193A /* OBS */,
 				03B374052AA0EA370028DDD5 /* VideoEffects */,
 				0315A3392AA2FA0A00295443 /* Srtla */,
