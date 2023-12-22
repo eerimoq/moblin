@@ -1387,5 +1387,22 @@ final class Settings {
             button.enabled = true
             store()
         }
+        var nonWidgetButtons: [SettingsButton] = []
+        for button in realDatabase.buttons where button.type != .widget {
+            nonWidgetButtons.append(button)
+        }
+        if !nonWidgetButtons.isEmpty {
+            realDatabase.buttons = realDatabase.buttons.filter { button in
+                button.type == .widget
+            }
+            for scene in realDatabase.scenes {
+                scene.buttons = scene.buttons.filter { button in
+                    !nonWidgetButtons.contains { nonWidgetButton in
+                        nonWidgetButton.id == button.buttonId
+                    }
+                }
+            }
+            store()
+        }
     }
 }
