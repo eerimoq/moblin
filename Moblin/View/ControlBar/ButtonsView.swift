@@ -131,8 +131,13 @@ struct ObsSceneView: View {
     }
 }
 
+private func obsStartStopText(button: ButtonState) -> String {
+    return button.isOn ? "Stop" : "Start"
+}
+
 struct ButtonsView: View {
     @EnvironmentObject var model: Model
+    @State private var isPresentingObsStartStopConfirm: Bool = false
 
     private func getImage(state: ButtonState) -> String {
         if state.isOn {
@@ -204,6 +209,7 @@ struct ButtonsView: View {
             model.obsStopStream()
         }
         model.updateButtonStates()
+        isPresentingObsStartStopConfirm = false
     }
 
     var body: some View {
@@ -309,7 +315,7 @@ struct ButtonsView: View {
                                     })
                                 case .obsStartStopStream:
                                     Button(action: {
-                                        obsStartStopStreamAction(state: second)
+                                        isPresentingObsStartStopConfirm = true
                                     }, label: {
                                         ButtonImage(
                                             image: getImage(state: second),
@@ -317,6 +323,11 @@ struct ButtonsView: View {
                                             buttonSize: buttonSize
                                         )
                                     })
+                                    .confirmationDialog("", isPresented: $isPresentingObsStartStopConfirm) {
+                                        Button(obsStartStopText(button: second)) {
+                                            obsStartStopStreamAction(state: second)
+                                        }
+                                    }
                                 }
                                 if model.database.quickButtons!.showName {
                                     Text(second.button.name)
@@ -424,7 +435,7 @@ struct ButtonsView: View {
                                 })
                             case .obsStartStopStream:
                                 Button(action: {
-                                    obsStartStopStreamAction(state: pair.first)
+                                    isPresentingObsStartStopConfirm = true
                                 }, label: {
                                     ButtonImage(
                                         image: getImage(state: pair.first),
@@ -432,6 +443,11 @@ struct ButtonsView: View {
                                         buttonSize: buttonSize
                                     )
                                 })
+                                .confirmationDialog("", isPresented: $isPresentingObsStartStopConfirm) {
+                                    Button(obsStartStopText(button: pair.first)) {
+                                        obsStartStopStreamAction(state: pair.first)
+                                    }
+                                }
                             }
                             if model.database.quickButtons!.showName {
                                 Text(pair.first.button.name)
@@ -540,7 +556,7 @@ struct ButtonsView: View {
                                 })
                             case .obsStartStopStream:
                                 Button(action: {
-                                    obsStartStopStreamAction(state: second)
+                                    isPresentingObsStartStopConfirm = true
                                 }, label: {
                                     ButtonImage(
                                         image: getImage(state: second),
@@ -548,6 +564,11 @@ struct ButtonsView: View {
                                         buttonSize: singleButtonSize
                                     )
                                 })
+                                .confirmationDialog("", isPresented: $isPresentingObsStartStopConfirm) {
+                                    Button(obsStartStopText(button: second)) {
+                                        obsStartStopStreamAction(state: second)
+                                    }
+                                }
                             }
                             if model.database.quickButtons!.showName {
                                 Text(second.button.name)
@@ -655,7 +676,7 @@ struct ButtonsView: View {
                             })
                         case .obsStartStopStream:
                             Button(action: {
-                                obsStartStopStreamAction(state: pair.first)
+                                isPresentingObsStartStopConfirm = true
                             }, label: {
                                 ButtonImage(
                                     image: getImage(state: pair.first),
@@ -663,6 +684,11 @@ struct ButtonsView: View {
                                     buttonSize: singleButtonSize
                                 )
                             })
+                            .confirmationDialog("", isPresented: $isPresentingObsStartStopConfirm) {
+                                Button(obsStartStopText(button: pair.first)) {
+                                    obsStartStopStreamAction(state: pair.first)
+                                }
+                            }
                         }
                         if model.database.quickButtons!.showName {
                             Text(pair.first.button.name)
