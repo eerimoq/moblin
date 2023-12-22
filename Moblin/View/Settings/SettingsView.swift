@@ -171,6 +171,11 @@ struct SettingsView: View {
                 }
             }
             Section {
+                if model.database.debug!.recordings! {
+                    NavigationLink(destination: RecordingsSettingsView()) {
+                        Text("Recordings")
+                    }
+                }
                 NavigationLink(destination: StreamingHistorySettingsView()) {
                     Text("Streaming history")
                 }

@@ -208,8 +208,8 @@ func formatBytesPerSecond(speed: Int64) -> String {
 
 var uptimeFormatter: DateComponentsFormatter {
     let formatter = DateComponentsFormatter()
-    formatter.allowedUnits = [.hour, .minute, .second]
-    formatter.zeroFormattingBehavior = .pad
+    formatter.allowedUnits = [.day, .hour, .minute, .second]
+    formatter.unitsStyle = .abbreviated
     return formatter
 }
 

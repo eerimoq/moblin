@@ -783,6 +783,7 @@ class SettingsDebug: Codable {
     var srtOverlay: Bool = false
     var srtOverheadBandwidth: Int32? = 25
     var createStreamWizard: Bool? = false
+    var recordings: Bool? = false
 }
 
 class SettingsQuickButtons: Codable {
@@ -1370,6 +1371,10 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.bFrames == nil {
             stream.bFrames = false
+            store()
+        }
+        if realDatabase.debug!.recordings == nil {
+            realDatabase.debug!.recordings = false
             store()
         }
     }

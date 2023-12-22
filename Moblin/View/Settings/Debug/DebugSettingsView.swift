@@ -92,6 +92,12 @@ struct DebugSettingsView: View {
                     model.database.debug!.createStreamWizard = value
                     model.store()
                 }))
+                Toggle("Recordings", isOn: Binding(get: {
+                    model.database.debug!.recordings!
+                }, set: { value in
+                    model.database.debug!.recordings = value
+                    model.store()
+                }))
             }
         }
         .navigationTitle("Debug")

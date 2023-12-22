@@ -146,6 +146,14 @@ struct RightOverlayView: View {
                     color: netStreamColor()
                 )
             }
+            if model.isRecording {
+                StreamOverlayIconAndTextView(
+                    icon: "record.circle",
+                    text: uptimeFormatter.string(from: TimeInterval(truncating: 123))!,
+                    textFirst: true,
+                    color: .white
+                )
+            }
             Spacer()
             if database.show.zoomPresets {
                 if model.cameraPosition == .front {

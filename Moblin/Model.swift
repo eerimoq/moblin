@@ -208,6 +208,7 @@ final class Model: ObservableObject {
     private var micChange = noMic
     private var streamStartDate: Date?
     @Published var isLive = false
+    @Published var isRecording = false
     private var subscriptions = Set<AnyCancellable>()
     @Published var uptime = noValue
     @Published var srtlaConnectionStatistics = noValue
@@ -309,6 +310,8 @@ final class Model: ObservableObject {
 
     var backCameras: [Camera] = []
     var frontCameras: [Camera] = []
+
+    var recordingsStorage = RecordingsStorage()
 
     init() {
         settings.load()
@@ -938,6 +941,8 @@ final class Model: ObservableObject {
                                                    .willEnterForegroundNotification,
                                                object: nil)
         updateOrientation()
+        let recording = recordingsStorage.createRecording(settings: stream.clone())
+        recordingsStorage.append(recording: recording)
     }
 
     @objc func handleWillEnterForegroundNotification() {

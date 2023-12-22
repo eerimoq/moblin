@@ -172,6 +172,8 @@
 		03487F282B334C48003D9ED9 /* StreamingHistorySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03487F232B334AD0003D9ED9 /* StreamingHistorySettingsView.swift */; };
 		03487F2B2B33535A003D9ED9 /* StreamingHistoryStreamSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03487F2A2B33535A003D9ED9 /* StreamingHistoryStreamSettingsView.swift */; };
 		03487F2C2B33535A003D9ED9 /* StreamingHistoryStreamSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03487F2A2B33535A003D9ED9 /* StreamingHistoryStreamSettingsView.swift */; };
+		034D2EC22B351715003C6D14 /* RecordingsStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D2EC12B351715003C6D14 /* RecordingsStorage.swift */; };
+		034D2EC32B351715003C6D14 /* RecordingsStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D2EC12B351715003C6D14 /* RecordingsStorage.swift */; };
 		035D37282AB0EBB500045B92 /* IconAndTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37272AB0EBB500045B92 /* IconAndTextView.swift */; };
 		035D372C2AB103E600045B92 /* SRTHaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 035D372B2AB103E600045B92 /* SRTHaishinKit */; };
 		035D37372AB230E700045B92 /* StreamVideoBitrateSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37362AB230E700045B92 /* StreamVideoBitrateSettingsView.swift */; };
@@ -229,6 +231,10 @@
 		03A9836E2A9A05F9008FF0DB /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9836D2A9A05F9008FF0DB /* Model.swift */; };
 		03A983712A9A0659008FF0DB /* TwitchPubSub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */; };
 		03A983722A9A0659008FF0DB /* TwitchChatMoblin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A983702A9A0659008FF0DB /* TwitchChatMoblin.swift */; };
+		03B16A242B35612000E5AB07 /* RecordingsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B16A232B35612000E5AB07 /* RecordingsSettingsView.swift */; };
+		03B16A252B35612000E5AB07 /* RecordingsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B16A232B35612000E5AB07 /* RecordingsSettingsView.swift */; };
+		03B16A282B35614100E5AB07 /* RecordingsRecordingSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B16A272B35614100E5AB07 /* RecordingsRecordingSettingsView.swift */; };
+		03B16A292B35614100E5AB07 /* RecordingsRecordingSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B16A272B35614100E5AB07 /* RecordingsRecordingSettingsView.swift */; };
 		03B373F62A9EF98E0028DDD5 /* ControlBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373F52A9EF98E0028DDD5 /* ControlBarView.swift */; };
 		03B373F92A9EFB340028DDD5 /* BatteryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373F82A9EFB340028DDD5 /* BatteryView.swift */; };
 		03B373FD2A9F35EF0028DDD5 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FC2A9F35EF0028DDD5 /* Utils.swift */; };
@@ -318,6 +324,7 @@
 		03487F232B334AD0003D9ED9 /* StreamingHistorySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamingHistorySettingsView.swift; sourceTree = "<group>"; };
 		03487F252B334B63003D9ED9 /* StreamingHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamingHistory.swift; sourceTree = "<group>"; };
 		03487F2A2B33535A003D9ED9 /* StreamingHistoryStreamSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamingHistoryStreamSettingsView.swift; sourceTree = "<group>"; };
+		034D2EC12B351715003C6D14 /* RecordingsStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsStorage.swift; sourceTree = "<group>"; };
 		034FC8512B2B6D4A00EF0C62 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		035D37272AB0EBB500045B92 /* IconAndTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconAndTextView.swift; sourceTree = "<group>"; };
 		035D37362AB230E700045B92 /* StreamVideoBitrateSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoBitrateSettingsView.swift; sourceTree = "<group>"; };
@@ -371,6 +378,8 @@
 		03A9836D2A9A05F9008FF0DB /* Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitchPubSub.swift; sourceTree = "<group>"; };
 		03A983702A9A0659008FF0DB /* TwitchChatMoblin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitchChatMoblin.swift; sourceTree = "<group>"; };
+		03B16A232B35612000E5AB07 /* RecordingsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsSettingsView.swift; sourceTree = "<group>"; };
+		03B16A272B35614100E5AB07 /* RecordingsRecordingSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsRecordingSettingsView.swift; sourceTree = "<group>"; };
 		03B373F52A9EF98E0028DDD5 /* ControlBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlBarView.swift; sourceTree = "<group>"; };
 		03B373F82A9EFB340028DDD5 /* BatteryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryView.swift; sourceTree = "<group>"; };
 		03B373FC2A9F35EF0028DDD5 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
@@ -658,7 +667,6 @@
 				035E9E3C2A9A02D7009D4F5A /* Preview Content */,
 				03D445E12AE5966B00A0F6E9 /* CacheAsyncImage.swift */,
 				0379BB8F2AABA7DC00B718B6 /* Log.swift */,
-				036333272AAE2E5100FF1231 /* ImageStorage.swift */,
 				035E9E362A9A02D6009D4F5A /* MoblinApp.swift */,
 				03A9836D2A9A05F9008FF0DB /* Model.swift */,
 				0382933A2A9A73ED008963AA /* Settings.swift */,
@@ -666,6 +674,8 @@
 				03A08B7F2AC368860018BA95 /* Media.swift */,
 				03B373FC2A9F35EF0028DDD5 /* Utils.swift */,
 				03487F252B334B63003D9ED9 /* StreamingHistory.swift */,
+				036333272AAE2E5100FF1231 /* ImageStorage.swift */,
+				034D2EC12B351715003C6D14 /* RecordingsStorage.swift */,
 				035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */,
 				03F853B22B151FA700719B89 /* Localizable.xcstrings */,
 			);
@@ -878,9 +888,19 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		03B16A222B35610100E5AB07 /* Recordings */ = {
+			isa = PBXGroup;
+			children = (
+				03B16A232B35612000E5AB07 /* RecordingsSettingsView.swift */,
+				03B16A272B35614100E5AB07 /* RecordingsRecordingSettingsView.swift */,
+			);
+			path = Recordings;
+			sourceTree = "<group>";
+		};
 		03B373F42A9EF8BD0028DDD5 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				03B16A222B35610100E5AB07 /* Recordings */,
 				03487F222B334AB4003D9ED9 /* StreamingHistory */,
 				03E877F52B2DB26100086355 /* Quick buttons */,
 				031A2E0E2ADDDD62005CE350 /* VideoStabilization */,
@@ -1213,6 +1233,7 @@
 				032E06622B2F3E9D00EAE5F8 /* RandomEffect.swift in Sources */,
 				032E06632B2F3E9D00EAE5F8 /* StreamTwitchSettingsView.swift in Sources */,
 				032E06642B2F3E9D00EAE5F8 /* DebugSettingsView.swift in Sources */,
+				03B16A292B35614100E5AB07 /* RecordingsRecordingSettingsView.swift in Sources */,
 				03DBD0FC2B30078B004B0BE6 /* StreamWizardKickSettingsView.swift in Sources */,
 				03D541762B32095B00B9D595 /* StreamWizardCustomSettingsView.swift in Sources */,
 				032E06652B2F3E9D00EAE5F8 /* BitratePresetsSettingsView.swift in Sources */,
@@ -1220,6 +1241,7 @@
 				032E06662B2F3E9D00EAE5F8 /* BatteryView.swift in Sources */,
 				032E06672B2F3E9D00EAE5F8 /* InlinePickerView.swift in Sources */,
 				03DBD1042B300D55004B0BE6 /* StreamWizardNetworkSetupBelaboxSettingsView.swift in Sources */,
+				03B16A252B35612000E5AB07 /* RecordingsSettingsView.swift in Sources */,
 				032E06682B2F3E9D00EAE5F8 /* TapScreenToFocusSettingsView.swift in Sources */,
 				032E06692B2F3E9D00EAE5F8 /* Seventv.swift in Sources */,
 				03487F272B334C3E003D9ED9 /* StreamingHistory.swift in Sources */,
@@ -1277,6 +1299,7 @@
 				032E069A2B2F3E9D00EAE5F8 /* SceneSettingsView.swift in Sources */,
 				032E069B2B2F3E9D00EAE5F8 /* SepiaEffect.swift in Sources */,
 				032E069C2B2F3E9D00EAE5F8 /* TripleEffect.swift in Sources */,
+				034D2EC32B351715003C6D14 /* RecordingsStorage.swift in Sources */,
 				032E069D2B2F3E9D00EAE5F8 /* GrayScaleEffect.swift in Sources */,
 				03DBD1002B30091B004B0BE6 /* StreamWizardNetworkSetupSettingsView.swift in Sources */,
 				032E069E2B2F3E9D00EAE5F8 /* QuickButtonsSettingsView.swift in Sources */,
@@ -1341,6 +1364,7 @@
 				03A983622A9A05D7008FF0DB /* MainView.swift in Sources */,
 				03B374042AA036D10028DDD5 /* ButtonsView.swift in Sources */,
 				0379BBB62AAD9B5B00B718B6 /* ButtonsSettingsView.swift in Sources */,
+				03B16A282B35614100E5AB07 /* RecordingsRecordingSettingsView.swift in Sources */,
 				032815DC2AC915AE001F8A85 /* RandomEffect.swift in Sources */,
 				03D541752B32095B00B9D595 /* StreamWizardCustomSettingsView.swift in Sources */,
 				0315A3462AA31E9000295443 /* StreamTwitchSettingsView.swift in Sources */,
@@ -1348,6 +1372,7 @@
 				0379BBAF2AAD96B200B718B6 /* DebugSettingsView.swift in Sources */,
 				03FB4B2F2AD8CF83005AA183 /* BitratePresetsSettingsView.swift in Sources */,
 				03B373F92A9EFB340028DDD5 /* BatteryView.swift in Sources */,
+				03B16A242B35612000E5AB07 /* RecordingsSettingsView.swift in Sources */,
 				03C088372B0AFFA8000990DA /* InlinePickerView.swift in Sources */,
 				03E95AE42ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift in Sources */,
 				03BC11622AE4BDA200C38FC4 /* Seventv.swift in Sources */,
@@ -1405,6 +1430,7 @@
 				03A14BE32ACC903E00D180FF /* ZoomSettingsView.swift in Sources */,
 				03A983682A9A05D7008FF0DB /* SceneSettingsView.swift in Sources */,
 				0379BB942AACF16600B718B6 /* SepiaEffect.swift in Sources */,
+				034D2EC22B351715003C6D14 /* RecordingsStorage.swift in Sources */,
 				032815DF2AC9885C001F8A85 /* TripleEffect.swift in Sources */,
 				03B374022AA0354C0028DDD5 /* GrayScaleEffect.swift in Sources */,
 				03E877F72B2DB27800086355 /* QuickButtonsSettingsView.swift in Sources */,
