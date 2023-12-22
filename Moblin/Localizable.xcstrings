@@ -16514,6 +16514,9 @@
         }
       }
     },
+    "Lowest battery percentage" : {
+
+    },
     "Malformed RTMP URL" : {
       "localizations" : {
         "de" : {

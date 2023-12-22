@@ -36,6 +36,11 @@ struct StreamingHistoryStreamSettingsView: View {
                     Image(systemName: "flame")
                         .foregroundColor(stream.highestThermalState!.toProcessInfo().color())
                 }
+                HStack {
+                    Text("Lowest battery percentage")
+                    Spacer()
+                    Text(stream.lowestBatteryPercentageString())
+                }
             } header: {
                 Text("Statistics")
             }

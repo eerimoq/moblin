@@ -49,6 +49,7 @@ class StreamingHistoryStream: Identifiable, Codable {
     var totalBytes: UInt64 = 0
     var numberOfFffffs: Int? = 0
     var highestThermalState: ThermalState? = .nominal
+    var lowestBatteryLevel: Double? = 1.0
 
     init(settings: SettingsStream) {
         self.settings = settings
@@ -58,6 +59,16 @@ class StreamingHistoryStream: Identifiable, Codable {
         if thermalState > highestThermalState! {
             highestThermalState = thermalState
         }
+    }
+
+    func updateLowestBatteryLevel(level: Double) {
+        if level < lowestBatteryLevel! {
+            lowestBatteryLevel = level
+        }
+    }
+
+    func lowestBatteryPercentageString() -> String {
+        return "\(Int(100 * lowestBatteryLevel!)) %"
     }
 
     func duration() -> Duration {
@@ -145,6 +156,10 @@ final class StreamingHistory {
         }
         for stream in database.streams where stream.highestThermalState == nil {
             stream.highestThermalState = .nominal
+            store()
+        }
+        for stream in database.streams where stream.lowestBatteryLevel == nil {
+            stream.lowestBatteryLevel = 1.0
             store()
         }
     }

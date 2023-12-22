@@ -2119,6 +2119,7 @@ final class Model: ObservableObject {
 
     private func updateBatteryLevel() {
         batteryLevel = Double(UIDevice.current.batteryLevel)
+        streamingHistoryStream?.updateLowestBatteryLevel(level: batteryLevel)
     }
 
     private func updateChatSpeed() {
@@ -2189,6 +2190,7 @@ final class Model: ObservableObject {
     private func updateThermalState() {
         thermalState = ProcessInfo.processInfo.thermalState
         streamingHistoryStream?.updateHighestThermalState(thermalState: ThermalState(from: thermalState))
+        streamingHistoryStream?.updateLowestBatteryLevel(level: batteryLevel)
         logger.info("Thermal state is \(thermalState.string())")
     }
 
