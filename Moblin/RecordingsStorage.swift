@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 private let recordingsDirectory = URL.documentsDirectory.appending(component: "Recordings")
 
@@ -39,6 +40,8 @@ class Recording: Identifiable {
 class RecordingsStorage {
     var recordings: [Recording] = []
 
+    @AppStorage("recordings") var storage = ""
+
     init() {
         do {
             try FileManager.default.createDirectory(
@@ -49,6 +52,8 @@ class RecordingsStorage {
             logger.error("Failed to create recordings directory with error \(error.localizedDescription)")
         }
     }
+
+    func load() {}
 
     func createRecording(settings: SettingsStream) -> Recording {
         return Recording(settings: settings)

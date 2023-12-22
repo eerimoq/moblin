@@ -122,7 +122,7 @@ struct RightOverlayView: View {
             if database.show.audioLevel {
                 AudioLevelView(showBar: database.show.audioBar, level: model.audioLevel)
             }
-            if database.show.speed {
+            if database.show.speed && model.isLive {
                 StreamOverlayIconAndTextView(
                     icon: "speedometer",
                     text: model.speedAndTotal,
@@ -130,7 +130,7 @@ struct RightOverlayView: View {
                     color: netStreamColor()
                 )
             }
-            if database.show.uptime {
+            if database.show.uptime && model.isLive {
                 StreamOverlayIconAndTextView(
                     icon: "deskclock",
                     text: model.uptime,
@@ -149,7 +149,7 @@ struct RightOverlayView: View {
             if model.isRecording {
                 StreamOverlayIconAndTextView(
                     icon: "record.circle",
-                    text: uptimeFormatter.string(from: TimeInterval(truncating: 123))!,
+                    text: model.recordingLength,
                     textFirst: true,
                     color: .white
                 )

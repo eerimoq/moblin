@@ -558,6 +558,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case blackScreen = "Black screen"
     case obsScene = "OBS scene"
     case obsStartStopStream = "OBS start/stop stream"
+    case record = "Record"
 
     static func fromString(value: String) -> SettingsButtonType {
         switch value {
@@ -581,6 +582,8 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return .obsScene
         case String(localized: "OBS start/stop stream"):
             return .obsStartStopStream
+        case String(localized: "Record"):
+            return .record
         default:
             return .torch
         }
@@ -608,6 +611,8 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return String(localized: "OBS scene")
         case .obsStartStopStream:
             return String(localized: "OBS start/stop stream")
+        case .record:
+            return String(localized: "Record")
         }
     }
 }

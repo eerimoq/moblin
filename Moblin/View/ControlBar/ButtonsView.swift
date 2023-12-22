@@ -131,13 +131,14 @@ struct ObsSceneView: View {
     }
 }
 
-private func obsStartStopText(button: ButtonState) -> String {
+private func startStopText(button: ButtonState) -> String {
     return button.isOn ? "Stop" : "Start"
 }
 
 struct ButtonsView: View {
     @EnvironmentObject var model: Model
     @State private var isPresentingObsStartStopConfirm: Bool = false
+    @State private var isPresentingRecordConfirm: Bool = false
 
     private func getImage(state: ButtonState) -> String {
         if state.isOn {
@@ -210,6 +211,16 @@ struct ButtonsView: View {
         }
         model.updateButtonStates()
         isPresentingObsStartStopConfirm = false
+    }
+
+    private func recordAction(state: ButtonState) {
+        state.button.isOn.toggle()
+        if state.button.isOn {
+            model.startRecording()
+        } else {
+            model.stopRecording()
+        }
+        model.updateButtonStates()
     }
 
     var body: some View {
@@ -324,8 +335,23 @@ struct ButtonsView: View {
                                         )
                                     })
                                     .confirmationDialog("", isPresented: $isPresentingObsStartStopConfirm) {
-                                        Button(obsStartStopText(button: second)) {
+                                        Button(startStopText(button: second)) {
                                             obsStartStopStreamAction(state: second)
+                                        }
+                                    }
+                                case .record:
+                                    Button(action: {
+                                        isPresentingRecordConfirm = true
+                                    }, label: {
+                                        ButtonImage(
+                                            image: getImage(state: second),
+                                            on: second.isOn,
+                                            buttonSize: buttonSize
+                                        )
+                                    })
+                                    .confirmationDialog("", isPresented: $isPresentingRecordConfirm) {
+                                        Button(startStopText(button: second)) {
+                                            recordAction(state: second)
                                         }
                                     }
                                 }
@@ -444,8 +470,23 @@ struct ButtonsView: View {
                                     )
                                 })
                                 .confirmationDialog("", isPresented: $isPresentingObsStartStopConfirm) {
-                                    Button(obsStartStopText(button: pair.first)) {
+                                    Button(startStopText(button: pair.first)) {
                                         obsStartStopStreamAction(state: pair.first)
+                                    }
+                                }
+                            case .record:
+                                Button(action: {
+                                    isPresentingRecordConfirm = true
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: pair.first),
+                                        on: pair.first.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
+                                .confirmationDialog("", isPresented: $isPresentingRecordConfirm) {
+                                    Button(startStopText(button: pair.first)) {
+                                        recordAction(state: pair.first)
                                     }
                                 }
                             }
@@ -565,8 +606,23 @@ struct ButtonsView: View {
                                     )
                                 })
                                 .confirmationDialog("", isPresented: $isPresentingObsStartStopConfirm) {
-                                    Button(obsStartStopText(button: second)) {
+                                    Button(startStopText(button: second)) {
                                         obsStartStopStreamAction(state: second)
+                                    }
+                                }
+                            case .record:
+                                Button(action: {
+                                    isPresentingRecordConfirm = true
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: second),
+                                        on: second.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
+                                .confirmationDialog("", isPresented: $isPresentingRecordConfirm) {
+                                    Button(startStopText(button: second)) {
+                                        recordAction(state: second)
                                     }
                                 }
                             }
@@ -685,8 +741,23 @@ struct ButtonsView: View {
                                 )
                             })
                             .confirmationDialog("", isPresented: $isPresentingObsStartStopConfirm) {
-                                Button(obsStartStopText(button: pair.first)) {
+                                Button(startStopText(button: pair.first)) {
                                     obsStartStopStreamAction(state: pair.first)
+                                }
+                            }
+                        case .record:
+                            Button(action: {
+                                isPresentingRecordConfirm = true
+                            }, label: {
+                                ButtonImage(
+                                    image: getImage(state: pair.first),
+                                    on: pair.first.isOn,
+                                    buttonSize: buttonSize
+                                )
+                            })
+                            .confirmationDialog("", isPresented: $isPresentingRecordConfirm) {
+                                Button(startStopText(button: pair.first)) {
+                                    recordAction(state: pair.first)
                                 }
                             }
                         }

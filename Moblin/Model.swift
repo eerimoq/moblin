@@ -209,6 +209,8 @@ final class Model: ObservableObject {
     private var streamStartDate: Date?
     @Published var isLive = false
     @Published var isRecording = false
+    private var currentRecording: Recording?
+    @Published var recordingLength = noValue
     private var subscriptions = Set<AnyCancellable>()
     @Published var uptime = noValue
     @Published var srtlaConnectionStatistics = noValue
@@ -316,6 +318,7 @@ final class Model: ObservableObject {
     init() {
         settings.load()
         streamingHistory.load()
+        recordingsStorage.load()
     }
 
     var stream: SettingsStream {
@@ -941,8 +944,6 @@ final class Model: ObservableObject {
                                                    .willEnterForegroundNotification,
                                                object: nil)
         updateOrientation()
-        let recording = recordingsStorage.createRecording(settings: stream.clone())
-        recordingsStorage.append(recording: recording)
     }
 
     @objc func handleWillEnterForegroundNotification() {
@@ -1058,6 +1059,7 @@ final class Model: ObservableObject {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             let now = Date()
             self.updateUptime(now: now)
+            self.updateRecordingLength(now: now)
             self.updateDigitalClock(now: now)
             self.updateChatSpeed()
             self.media.updateSrtSpeed()
@@ -1315,6 +1317,22 @@ final class Model: ObservableObject {
 
     func store() {
         settings.store()
+    }
+
+    func startRecording() {
+        currentRecording = recordingsStorage.createRecording(settings: stream.clone())
+        makeToast(title: "Recording started")
+        isRecording = true
+    }
+
+    func stopRecording() {
+        makeToast(title: "Recording stopped")
+        if let currentRecording {
+            recordingsStorage.append(recording: currentRecording)
+        }
+        updateRecordingLength(now: Date())
+        currentRecording = nil
+        isRecording = false
     }
 
     func startStream() {
@@ -2073,6 +2091,15 @@ final class Model: ObservableObject {
             uptime = uptimeFormatter.string(from: elapsed)!
         } else if uptime != noValue {
             uptime = noValue
+        }
+    }
+
+    private func updateRecordingLength(now: Date) {
+        if let currentRecording {
+            let elapsed = now.timeIntervalSince(currentRecording.startTime)
+            recordingLength = uptimeFormatter.string(from: elapsed)!
+        } else if recordingLength != noValue {
+            recordingLength = noValue
         }
     }
 
