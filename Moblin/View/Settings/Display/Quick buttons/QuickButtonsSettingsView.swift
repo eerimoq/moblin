@@ -30,6 +30,36 @@ struct QuickButtonsSettingsView: View {
                     model.updateButtonStates()
                     model.scrollQuickButtonsToBottom()
                 }))
+            } header: {
+                Text("Appearence")
+            }
+            Section {
+                List {
+                    ForEach(model.database.globalButtons!) { button in
+                        Toggle(isOn: Binding(get: {
+                            button.enabled!
+                        }, set: { value in
+                            button.enabled = value
+                            model.store()
+                            model.updateButtonStates()
+                        })) {
+                            HStack {
+                                DraggableItemPrefixView()
+                                IconAndTextView(
+                                    image: button.systemImageNameOff,
+                                    text: button.name
+                                )
+                                Spacer()
+                            }
+                        }
+                    }
+                    .onMove(perform: { froms, to in
+                        model.database.globalButtons!.move(fromOffsets: froms, toOffset: to)
+                        model.sceneUpdated()
+                    })
+                }
+            } header: {
+                Text("Buttons")
             }
         }
         .navigationTitle("Quick buttons")

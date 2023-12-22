@@ -573,7 +573,12 @@ final class Model: ObservableObject {
             buttonPairs = []
             return
         }
-        let states = scene
+        var states = database.globalButtons!.filter({ button in
+            button.enabled!
+        }).map { button in
+            return ButtonState(isOn: button.isOn, button: button)
+        }
+        states += scene
             .buttons
             .filter { button in button.enabled }
             .map { button in

@@ -617,7 +617,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     }
 }
 
-let buttonTypes = SettingsButtonType.allCases.map { $0.toString() }
+let buttonTypes = ["Widget"]
 
 class SettingsButtonWidget: Codable, Identifiable {
     var widgetId: UUID
@@ -637,6 +637,7 @@ class SettingsButton: Codable, Identifiable, Equatable, Hashable {
     var systemImageNameOff: String = "mic"
     var widget: SettingsButtonWidget = .init(widgetId: UUID())
     var isOn: Bool = false
+    var enabled: Bool? = true
 
     init(name: String) {
         self.name = name
@@ -818,6 +819,7 @@ class Database: Codable {
     var mic: SettingsMic? = .bottom
     var debug: SettingsDebug? = .init()
     var quickButtons: SettingsQuickButtons? = .init()
+    var globalButtons: [SettingsButton]? = []
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -839,6 +841,7 @@ class Database: Codable {
         if database.bitratePresets.isEmpty {
             addDefaultBitratePresets(database: database)
         }
+        addMissingGlobalButtons(database: database)
         return database
     }
 
@@ -899,30 +902,13 @@ func addDefaultScenes(database: Database) {
     scene.addButton(id: database.buttons[0].id)
     scene.addButton(id: database.buttons[1].id)
     scene.addButton(id: database.buttons[2].id)
-    scene.addButton(id: database.buttons[7].id)
-    scene.addButton(id: database.buttons[8].id)
-    scene.addButton(id: database.buttons[9].id)
-    scene.addButton(id: database.buttons[10].id)
-    scene.addButton(id: database.buttons[11].id)
-    scene.addButton(id: database.buttons[12].id)
     scene.addButton(id: database.buttons[3].id)
-    scene.addButton(id: database.buttons[4].id)
-    scene.addButton(id: database.buttons[5].id)
-    scene.addButton(id: database.buttons[6].id)
     database.scenes.append(scene)
 
     scene = SettingsScene(name: String(localized: "Front"))
     scene.cameraPosition = .front
     scene.widgets.append(createSceneWidgetVideoEffectMovie(database: database))
-    scene.addButton(id: database.buttons[1].id)
-    scene.addButton(id: database.buttons[2].id)
-    scene.addButton(id: database.buttons[7].id)
-    scene.addButton(id: database.buttons[8].id)
-    scene.addButton(id: database.buttons[9].id)
-    scene.addButton(id: database.buttons[10].id)
-    scene.addButton(id: database.buttons[11].id)
-    scene.addButton(id: database.buttons[12].id)
-    scene.addButton(id: database.buttons[3].id)
+    scene.addButton(id: database.buttons[0].id)
     database.scenes.append(scene)
 }
 
@@ -1000,34 +986,7 @@ func addDefaultBitratePresets(database: Database) {
 
 func addDefaultButtons(database: Database) {
     // 0
-    var button = SettingsButton(name: String(localized: "Torch"))
-    button.id = UUID()
-    button.type = .torch
-    button.imageType = "System name"
-    button.systemImageNameOn = "lightbulb.fill"
-    button.systemImageNameOff = "lightbulb"
-    database.buttons.append(button)
-
-    // 1
-    button = SettingsButton(name: String(localized: "Mute"))
-    button.id = UUID()
-    button.type = .mute
-    button.imageType = "System name"
-    button.systemImageNameOn = "mic.slash"
-    button.systemImageNameOff = "mic"
-    database.buttons.append(button)
-
-    // 2
-    button = SettingsButton(name: String(localized: "Bitrate"))
-    button.id = UUID()
-    button.type = .bitrate
-    button.imageType = "System name"
-    button.systemImageNameOn = "speedometer"
-    button.systemImageNameOff = "speedometer"
-    database.buttons.append(button)
-
-    // 3
-    button = SettingsButton(name: String(localized: "Movie"))
+    var button = SettingsButton(name: String(localized: "Movie"))
     button.id = UUID()
     button.type = .widget
     button.imageType = "System name"
@@ -1036,7 +995,7 @@ func addDefaultButtons(database: Database) {
     button.widget.widgetId = database.widgets[0].id
     database.buttons.append(button)
 
-    // 4
+    // 1
     button = SettingsButton(name: String(localized: "Gray scale"))
     button.id = UUID()
     button.type = .widget
@@ -1046,7 +1005,7 @@ func addDefaultButtons(database: Database) {
     button.widget.widgetId = database.widgets[1].id
     database.buttons.append(button)
 
-    // 5
+    // 2
     button = SettingsButton(name: String(localized: "Sepia"))
     button.id = UUID()
     button.type = .widget
@@ -1056,7 +1015,7 @@ func addDefaultButtons(database: Database) {
     button.widget.widgetId = database.widgets[2].id
     database.buttons.append(button)
 
-    // 6
+    // 3
     button = SettingsButton(name: String(localized: "Random"))
     button.id = UUID()
     button.type = .widget
@@ -1065,60 +1024,100 @@ func addDefaultButtons(database: Database) {
     button.systemImageNameOff = "dice"
     button.widget.widgetId = database.widgets[3].id
     database.buttons.append(button)
+}
 
-    // 7
+func addGlobalButtonIfMissing(database: Database, button: SettingsButton) {
+    if database.globalButtons!.contains(where: { globalButton in
+        globalButton.type == button.type
+    }) {
+        return
+    }
+    database.globalButtons!.append(button)
+}
+
+func addMissingGlobalButtons(database: Database) {
+    if database.globalButtons == nil {
+        database.globalButtons = []
+    }
+    var button = SettingsButton(name: String(localized: "Torch"))
+    button.id = UUID()
+    button.type = .torch
+    button.imageType = "System name"
+    button.systemImageNameOn = "lightbulb.fill"
+    button.systemImageNameOff = "lightbulb"
+    addGlobalButtonIfMissing(database: database, button: button)
+
+    button = SettingsButton(name: String(localized: "Mute"))
+    button.id = UUID()
+    button.type = .mute
+    button.imageType = "System name"
+    button.systemImageNameOn = "mic.slash"
+    button.systemImageNameOff = "mic"
+    addGlobalButtonIfMissing(database: database, button: button)
+
+    button = SettingsButton(name: String(localized: "Bitrate"))
+    button.id = UUID()
+    button.type = .bitrate
+    button.imageType = "System name"
+    button.systemImageNameOn = "speedometer"
+    button.systemImageNameOff = "speedometer"
+    addGlobalButtonIfMissing(database: database, button: button)
+
     button = SettingsButton(name: String(localized: "Mic"))
     button.id = UUID()
     button.type = .mic
     button.imageType = "System name"
     button.systemImageNameOn = "music.mic"
     button.systemImageNameOff = "music.mic"
-    database.buttons.append(button)
+    addGlobalButtonIfMissing(database: database, button: button)
 
-    // 8
     button = SettingsButton(name: String(localized: "Chat"))
     button.id = UUID()
     button.type = .chat
     button.imageType = "System name"
     button.systemImageNameOn = "message.fill"
     button.systemImageNameOff = "message"
-    database.buttons.append(button)
+    addGlobalButtonIfMissing(database: database, button: button)
 
-    // 9
     button = SettingsButton(name: String(localized: "Pause chat"))
     button.id = UUID()
     button.type = .pauseChat
     button.imageType = "System name"
     button.systemImageNameOn = "message.fill"
     button.systemImageNameOff = "message"
-    database.buttons.append(button)
+    addGlobalButtonIfMissing(database: database, button: button)
 
-    // 10
     button = SettingsButton(name: String(localized: "Black screen"))
     button.id = UUID()
     button.type = .blackScreen
     button.imageType = "System name"
     button.systemImageNameOn = "sunset"
     button.systemImageNameOff = "sunset"
-    database.buttons.append(button)
+    addGlobalButtonIfMissing(database: database, button: button)
 
-    // 11
     button = SettingsButton(name: String(localized: "OBS scene"))
     button.id = UUID()
     button.type = .obsScene
     button.imageType = "System name"
     button.systemImageNameOn = "photo"
     button.systemImageNameOff = "photo"
-    database.buttons.append(button)
+    addGlobalButtonIfMissing(database: database, button: button)
 
-    // 12
     button = SettingsButton(name: String(localized: "OBS start/stop stream"))
     button.id = UUID()
     button.type = .obsStartStopStream
     button.imageType = "System name"
     button.systemImageNameOn = "dot.radiowaves.left.and.right"
     button.systemImageNameOff = "dot.radiowaves.left.and.right"
-    database.buttons.append(button)
+    addGlobalButtonIfMissing(database: database, button: button)
+
+    button = SettingsButton(name: String(localized: "Record"))
+    button.id = UUID()
+    button.type = .record
+    button.imageType = "System name"
+    button.systemImageNameOn = "record.circle"
+    button.systemImageNameOff = "record.circle"
+    addGlobalButtonIfMissing(database: database, button: button)
 }
 
 func createDefault() -> Database {
@@ -1130,6 +1129,7 @@ func createDefault() -> Database {
     addDefaultStreams(database: database)
     addDefaultZoomPresets(database: database)
     addDefaultBitratePresets(database: database)
+    addMissingGlobalButtons(database: database)
     return database
 }
 
@@ -1380,6 +1380,10 @@ final class Settings {
         }
         if realDatabase.debug!.recordings == nil {
             realDatabase.debug!.recordings = false
+            store()
+        }
+        for button in realDatabase.buttons where button.enabled == nil {
+            button.enabled = true
             store()
         }
     }
