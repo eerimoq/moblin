@@ -24,7 +24,7 @@ struct RecordingsRecordingSettingsView: View {
                 HStack {
                     Text("Length")
                     Spacer()
-                    Text(recording.length().format())
+                    Text(recording.length().formatWithSeconds())
                 }
             } header: {
                 Text("About")

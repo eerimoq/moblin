@@ -13,11 +13,11 @@ class Recording: Identifiable {
     }
 
     func title() -> String {
-        return "\(startTime.formatted()), \(length().format())"
+        return "\(startTime.formatted()), \(length().formatWithSeconds())"
     }
 
     func subTitle() -> String {
-        return "1080p, 1 Kb"
+        return "\(settings.resolutionString()), \(settings.fps) FPS, \(UInt64(0).formatBytes())"
     }
 
     func name() -> String {
@@ -25,7 +25,10 @@ class Recording: Identifiable {
     }
 
     func length() -> Duration {
-        return .seconds(999)
+        return Duration(
+            secondsComponent: Int64(stopTime.timeIntervalSince(startTime)),
+            attosecondsComponent: 0
+        )
     }
 
     func url() -> URL {

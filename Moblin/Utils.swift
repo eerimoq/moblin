@@ -230,6 +230,10 @@ extension Duration {
     func format() -> String {
         return durationFormatter.string(from: Double(components.seconds))!
     }
+
+    func formatWithSeconds() -> String {
+        return uptimeFormatter.string(from: Double(components.seconds))!
+    }
 }
 
 extension ProcessInfo.ThermalState {
