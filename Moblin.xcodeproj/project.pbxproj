@@ -235,6 +235,10 @@
 		03B16A252B35612000E5AB07 /* RecordingsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B16A232B35612000E5AB07 /* RecordingsSettingsView.swift */; };
 		03B16A282B35614100E5AB07 /* RecordingsRecordingSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B16A272B35614100E5AB07 /* RecordingsRecordingSettingsView.swift */; };
 		03B16A292B35614100E5AB07 /* RecordingsRecordingSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B16A272B35614100E5AB07 /* RecordingsRecordingSettingsView.swift */; };
+		03B16A2D2B35D72F00E5AB07 /* CameraSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B16A2C2B35D72F00E5AB07 /* CameraSettingsView.swift */; };
+		03B16A2E2B35D72F00E5AB07 /* CameraSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B16A2C2B35D72F00E5AB07 /* CameraSettingsView.swift */; };
+		03B16A312B35D74800E5AB07 /* DisplaySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B16A302B35D74800E5AB07 /* DisplaySettingsView.swift */; };
+		03B16A322B35D74800E5AB07 /* DisplaySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B16A302B35D74800E5AB07 /* DisplaySettingsView.swift */; };
 		03B373F62A9EF98E0028DDD5 /* ControlBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373F52A9EF98E0028DDD5 /* ControlBarView.swift */; };
 		03B373F92A9EFB340028DDD5 /* BatteryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373F82A9EFB340028DDD5 /* BatteryView.swift */; };
 		03B373FD2A9F35EF0028DDD5 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FC2A9F35EF0028DDD5 /* Utils.swift */; };
@@ -380,6 +384,8 @@
 		03A983702A9A0659008FF0DB /* TwitchChatMoblin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitchChatMoblin.swift; sourceTree = "<group>"; };
 		03B16A232B35612000E5AB07 /* RecordingsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsSettingsView.swift; sourceTree = "<group>"; };
 		03B16A272B35614100E5AB07 /* RecordingsRecordingSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsRecordingSettingsView.swift; sourceTree = "<group>"; };
+		03B16A2C2B35D72F00E5AB07 /* CameraSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraSettingsView.swift; sourceTree = "<group>"; };
+		03B16A302B35D74800E5AB07 /* DisplaySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplaySettingsView.swift; sourceTree = "<group>"; };
 		03B373F52A9EF98E0028DDD5 /* ControlBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlBarView.swift; sourceTree = "<group>"; };
 		03B373F82A9EFB340028DDD5 /* BatteryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryView.swift; sourceTree = "<group>"; };
 		03B373FC2A9F35EF0028DDD5 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
@@ -897,22 +903,40 @@
 			path = Recordings;
 			sourceTree = "<group>";
 		};
+		03B16A2A2B35D70D00E5AB07 /* Camera */ = {
+			isa = PBXGroup;
+			children = (
+				03FB4B2C2AD8CF6B005AA183 /* BitratePresets */,
+				03A14BE02ACC902B00D180FF /* Zoom */,
+				031A2E0E2ADDDD62005CE350 /* VideoStabilization */,
+				03B16A2C2B35D72F00E5AB07 /* CameraSettingsView.swift */,
+			);
+			path = Camera;
+			sourceTree = "<group>";
+		};
+		03B16A2B2B35D71500E5AB07 /* Display */ = {
+			isa = PBXGroup;
+			children = (
+				0379BBA32AAD944000B718B6 /* LocalOverlays */,
+				03E95AE22ADB7B2200DAE2DF /* TapScreenToFocus */,
+				03E877F52B2DB26100086355 /* Quick buttons */,
+				03B16A302B35D74800E5AB07 /* DisplaySettingsView.swift */,
+			);
+			path = Display;
+			sourceTree = "<group>";
+		};
 		03B373F42A9EF8BD0028DDD5 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				03B16A2A2B35D70D00E5AB07 /* Camera */,
+				03B16A2B2B35D71500E5AB07 /* Display */,
 				03B16A222B35610100E5AB07 /* Recordings */,
 				03487F222B334AB4003D9ED9 /* StreamingHistory */,
-				03E877F52B2DB26100086355 /* Quick buttons */,
-				031A2E0E2ADDDD62005CE350 /* VideoStabilization */,
-				03E95AE22ADB7B2200DAE2DF /* TapScreenToFocus */,
 				03831D562AD9A188008D26CC /* Cosmetics */,
-				03FB4B2C2AD8CF6B005AA183 /* BitratePresets */,
-				03A14BE02ACC902B00D180FF /* Zoom */,
 				032A49B62AC54DAD00ED3916 /* ImportExport */,
 				0379BBB02AAD97EA00B718B6 /* Reset */,
 				0379BBAB2AAD962700B718B6 /* About */,
 				0379BBA82AAD951400B718B6 /* HelpAndSupport */,
-				0379BBA32AAD944000B718B6 /* LocalOverlays */,
 				0379BB992AAD80AF00B718B6 /* Debug */,
 				0379BB982AAD804F00B718B6 /* Streams */,
 				0379BB972AAD802C00B718B6 /* Scenes */,
@@ -1230,6 +1254,7 @@
 				032E065F2B2F3E9D00EAE5F8 /* MainView.swift in Sources */,
 				032E06602B2F3E9D00EAE5F8 /* ButtonsView.swift in Sources */,
 				032E06612B2F3E9D00EAE5F8 /* ButtonsSettingsView.swift in Sources */,
+				03B16A322B35D74800E5AB07 /* DisplaySettingsView.swift in Sources */,
 				032E06622B2F3E9D00EAE5F8 /* RandomEffect.swift in Sources */,
 				032E06632B2F3E9D00EAE5F8 /* StreamTwitchSettingsView.swift in Sources */,
 				032E06642B2F3E9D00EAE5F8 /* DebugSettingsView.swift in Sources */,
@@ -1259,6 +1284,7 @@
 				032E06752B2F3E9D00EAE5F8 /* Settings.swift in Sources */,
 				032E06762B2F3E9D00EAE5F8 /* ImageEffect.swift in Sources */,
 				032E06772B2F3E9D00EAE5F8 /* StreamVideoCaptureSessionPresetSettingsView.swift in Sources */,
+				03B16A2E2B35D72F00E5AB07 /* CameraSettingsView.swift in Sources */,
 				032E06782B2F3E9D00EAE5F8 /* CreateButtonView.swift in Sources */,
 				032E06792B2F3E9D00EAE5F8 /* CosmeticsSettingsView.swift in Sources */,
 				032E067A2B2F3E9D00EAE5F8 /* AboutLicensesSettingsView.swift in Sources */,
@@ -1361,6 +1387,7 @@
 				03BDE2222B24367D00DF193A /* ObsWebSocket.swift in Sources */,
 				03DBD0FB2B30078B004B0BE6 /* StreamWizardKickSettingsView.swift in Sources */,
 				03CC5F892AD060DB0019CBA5 /* WidgetBrowserUrlSettingsView.swift in Sources */,
+				03B16A312B35D74800E5AB07 /* DisplaySettingsView.swift in Sources */,
 				03A983622A9A05D7008FF0DB /* MainView.swift in Sources */,
 				03B374042AA036D10028DDD5 /* ButtonsView.swift in Sources */,
 				0379BBB62AAD9B5B00B718B6 /* ButtonsSettingsView.swift in Sources */,
@@ -1390,6 +1417,7 @@
 				03A3F4C72AF4C0AD00F465D1 /* AdaptiveBitrate.swift in Sources */,
 				03B373F62A9EF98E0028DDD5 /* ControlBarView.swift in Sources */,
 				0379BB8E2AA90D1900B718B6 /* DebugLogSettingsView.swift in Sources */,
+				03B16A2D2B35D72F00E5AB07 /* CameraSettingsView.swift in Sources */,
 				0382933B2A9A73ED008963AA /* Settings.swift in Sources */,
 				03B374092AA0EA700028DDD5 /* ImageEffect.swift in Sources */,
 				038B67622AE84BFC000DC43B /* StreamVideoCaptureSessionPresetSettingsView.swift in Sources */,

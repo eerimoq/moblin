@@ -9055,6 +9055,9 @@
         }
       }
     },
+    "Display" : {
+
+    },
     "Displayed in main view and as app icon." : {
       "localizations" : {
         "de" : {
