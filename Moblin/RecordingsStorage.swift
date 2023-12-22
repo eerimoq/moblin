@@ -94,8 +94,7 @@ final class RecordingsStorage {
         }
     }
 
-    private func migrateFromOlderVersions() {
-    }
+    private func migrateFromOlderVersions() {}
 
     func createRecording(settings: SettingsStream) -> Recording {
         return Recording(settings: settings)
