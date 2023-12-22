@@ -1329,6 +1329,7 @@ final class Model: ObservableObject {
         makeToast(title: "Recording stopped")
         if let currentRecording {
             recordingsStorage.append(recording: currentRecording)
+            recordingsStorage.store()
         }
         updateRecordingLength(now: Date())
         currentRecording = nil
