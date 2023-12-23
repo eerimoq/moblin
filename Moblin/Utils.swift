@@ -1,7 +1,7 @@
 import AVKit
 import SwiftUI
 
-let firstReconnectTime = 5.0
+let firstReconnectTime = 7.0
 let buttonSize: CGFloat = 40
 
 func nextReconnectTime(_ reconnectTime: Double) -> Double {
@@ -492,21 +492,6 @@ extension ProcessInfo.ThermalState {
             return .white
         case .fair:
             return .white
-        case .serious:
-            return .yellow
-        case .critical:
-            return .red
-        default:
-            return .pink
-        }
-    }
-
-    func colorPrimary() -> Color {
-        switch self {
-        case .nominal:
-            return .primary
-        case .fair:
-            return .primary
         case .serious:
             return .yellow
         case .critical:

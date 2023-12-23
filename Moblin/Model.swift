@@ -1390,7 +1390,9 @@ final class Model: ObservableObject {
 
     private func startNetStream(reconnect: Bool = false) {
         streamState = .connecting
-        if !reconnect {
+        if reconnect {
+            makeReconnectToast()
+        } else {
             makeGoingLiveToast()
         }
         switch stream.getProtocol() {
@@ -2472,10 +2474,13 @@ final class Model: ObservableObject {
             return
         }
         logger.info("stream: Disconnected with reason \(reason)")
+        let subTitle = "\(reason) - Trying again in \(Int(reconnectTime)) seconds."
         if streamState == .connected {
             totalBytes += UInt64(media.streamTotal())
             streamingHistoryStream?.numberOfFffffs! += 1
-            makeFffffToast(reason: reason)
+            makeFffffToast(subTitle: subTitle)
+        } else if streamState == .connecting {
+            makeConnectFailureToast(subTitle: subTitle)
         }
         streamState = .disconnected
         stopNetStream(reconnect: true)
@@ -2517,6 +2522,15 @@ final class Model: ObservableObject {
         makeToast(title: String(localized: "😎 Going live at \(stream.name) 😎"))
     }
 
+    private func makeReconnectToast() {
+        makeToast(title: String(localized: "🤞 Connecting to \(stream.name) 🤞"))
+    }
+
+    private func makeConnectFailureToast(subTitle: String) {
+        makeErrorToast(title: String(localized: "😢 Failed to connect to \(stream.name) 😢"),
+                       subTitle: subTitle)
+    }
+
     private func makeYouAreLiveToast() {
         makeToast(title: String(localized: "🎉 You are LIVE at \(stream.name) 🎉"))
     }
@@ -2525,11 +2539,11 @@ final class Model: ObservableObject {
         makeToast(title: String(localized: "🤟 Stream ended 🤟"))
     }
 
-    private func makeFffffToast(reason: String) {
+    private func makeFffffToast(subTitle: String) {
         makeErrorToast(
             title: String(localized: "😢 FFFFF 😢"),
             font: .system(size: 64).bold(),
-            subTitle: reason
+            subTitle: subTitle
         )
     }
 

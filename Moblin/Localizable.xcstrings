@@ -1568,6 +1568,9 @@
         }
       }
     },
+    "🤞 Connecting to %@ 🤞" : {
+
+    },
     "🤟 Stream ended 🤟" : {
       "localizations" : {
         "de" : {
@@ -1779,6 +1782,9 @@
           }
         }
       }
+    },
+    "😢 Failed to connect to %@ 😢" : {
+
     },
     "😢 FFFFF 😢" : {
       "localizations" : {
