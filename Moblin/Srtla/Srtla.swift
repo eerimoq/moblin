@@ -23,7 +23,7 @@ class Srtla {
     private weak var delegate: (any SrtlaDelegate)?
     private let passThrough: Bool
     private var connectTimer: DispatchSourceTimer?
-    private var state = State.idle {
+    private var state: State = .idle {
         didSet {
             logger.info("srtla: State \(oldValue) -> \(state)")
         }
