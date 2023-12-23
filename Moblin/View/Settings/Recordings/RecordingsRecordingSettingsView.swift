@@ -16,30 +16,15 @@ struct RecordingsRecordingSettingsView: View {
                 Text("Thumbnail")
             }
             Section {
-                HStack {
-                    Text("Start time")
-                    Spacer()
-                    Text(recording.startTime.formatted())
-                }
-                HStack {
-                    Text("Length")
-                    Spacer()
-                    Text(recording.length().formatWithSeconds())
-                }
+                TextValueView(name: "Start time", value: recording.startTime.formatted())
+                TextValueView(name: "Length", value: recording.length().formatWithSeconds())
+                TextValueView(name: "Size", value: recording.sizeString())
             } header: {
                 Text("About")
             }
             Section {
-                HStack {
-                    Text("Resolution")
-                    Spacer()
-                    Text(recording.settings.resolutionString())
-                }
-                HStack {
-                    Text("FPS")
-                    Spacer()
-                    Text("\(recording.settings.fps)")
-                }
+                TextValueView(name: "Resolution", value: recording.settings.resolutionString())
+                TextValueView(name: "FPS", value: "\(recording.settings.fps)")
             } header: {
                 Text("Settings")
             }

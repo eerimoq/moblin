@@ -8,6 +8,7 @@ class Recording: Identifiable, Codable {
     var settings: SettingsStream
     var startTime: Date = .init()
     var stopTime: Date = .init()
+    var size: UInt64? = 0
 
     init(settings: SettingsStream) {
         self.settings = settings
@@ -35,10 +36,16 @@ class Recording: Identifiable, Codable {
     func url() -> URL {
         return recordingsDirectory.appending(component: "\(id)")
     }
+
+    func sizeString() -> String {
+        return size!.formatBytes()
+    }
 }
 
 class RecordingsDatabase: Codable {
     var recordings: [Recording] = []
+    var totalRecordings: UInt64? = 0
+    var totalSize: UInt64? = 0
 
     static func fromString(settings: String) throws -> RecordingsDatabase {
         let database = try JSONDecoder().decode(
@@ -94,7 +101,20 @@ final class RecordingsStorage {
         }
     }
 
-    private func migrateFromOlderVersions() {}
+    private func migrateFromOlderVersions() {
+        for recording in database.recordings where recording.size == nil {
+            recording.size = 0
+            store()
+        }
+        if database.totalSize == nil {
+            database.totalSize = 0
+            store()
+        }
+        if database.totalRecordings == nil {
+            database.totalRecordings = 0
+            store()
+        }
+    }
 
     func createRecording(settings: SettingsStream) -> Recording {
         return Recording(settings: settings)
@@ -104,15 +124,17 @@ final class RecordingsStorage {
         while database.recordings.count > 100 {
             database.recordings.remove(at: 0)
         }
+        database.totalRecordings! += 1
+        database.totalSize! += recording.size!
         recording.stopTime = Date()
         database.recordings.insert(recording, at: 0)
     }
 
     func numberOfRecordingsString() -> String {
-        return String(database.recordings.count)
+        return String(database.totalRecordings!)
     }
 
     func totalSizeString() -> String {
-        return UInt64(0).formatBytes()
+        return database.totalSize!.formatBytes()
     }
 }
