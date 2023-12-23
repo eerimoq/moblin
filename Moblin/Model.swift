@@ -2163,7 +2163,7 @@ final class Model: ObservableObject {
             let speed = formatBytesPerSecond(speed: media.streamSpeed())
             let total = sizeFormatter.string(fromByteCount: media.streamTotal())
             speedAndTotal = String(localized: "\(speed) (\(total))")
-        } else {
+        } else if speedAndTotal != noValue {
             speedAndTotal = noValue
         }
     }
