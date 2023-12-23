@@ -868,8 +868,10 @@ struct AboutVersionHistorySettingsView: View {
                         Text(version.version)
                             .font(.title2)
                             .padding()
-                        ForEach(version.changes, id: \.self) { change in
-                            Text(change)
+                        VStack(alignment: .leading) {
+                            ForEach(version.changes, id: \.self) { change in
+                                Text(change)
+                            }
                         }
                     }
                     Spacer()
