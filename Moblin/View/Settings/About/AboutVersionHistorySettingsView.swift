@@ -7,6 +7,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.111.0", changes: [
+        "• Rework connection toasts.",
+        "  • Show FFFFF if disconnected.",
+        "  • Show Failed to connect if no connection could be established.",
+        "  • Increase initial reconnect timer to 7 seconds (from 5). It gets higher over time, up to 60 seconds.",
+        "• Average and highest bitrate in stream summary statistics."
+    ]),
     Version(version: "0.110.0",
             changes: [
                 "• Confirm dialog when pressing OBS start/stop stream button.",
