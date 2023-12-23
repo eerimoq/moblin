@@ -210,6 +210,8 @@
 		03831D522AD90AB5008D26CC /* MoblinSettingsUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03831D512AD90AB5008D26CC /* MoblinSettingsUrl.swift */; };
 		03831D592AD9A198008D26CC /* CosmeticsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03831D582AD9A198008D26CC /* CosmeticsSettingsView.swift */; };
 		038B67622AE84BFC000DC43B /* StreamVideoCaptureSessionPresetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038B67612AE84BFC000DC43B /* StreamVideoCaptureSessionPresetSettingsView.swift */; };
+		0391BB3D2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0391BB3C2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift */; };
+		0391BB3E2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0391BB3C2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift */; };
 		03A08B7C2AC295620018BA95 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = 03A08B7B2AC295620018BA95 /* AlertToast */; };
 		03A08B802AC368860018BA95 /* Media.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A08B7F2AC368860018BA95 /* Media.swift */; };
 		03A14BE32ACC903E00D180FF /* ZoomSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A14BE22ACC903E00D180FF /* ZoomSettingsView.swift */; };
@@ -365,6 +367,7 @@
 		03831D512AD90AB5008D26CC /* MoblinSettingsUrl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinSettingsUrl.swift; sourceTree = "<group>"; };
 		03831D582AD9A198008D26CC /* CosmeticsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmeticsSettingsView.swift; sourceTree = "<group>"; };
 		038B67612AE84BFC000DC43B /* StreamVideoCaptureSessionPresetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoCaptureSessionPresetSettingsView.swift; sourceTree = "<group>"; };
+		0391BB3C2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutVersionHistorySettingsView.swift; sourceTree = "<group>"; };
 		03A08B7F2AC368860018BA95 /* Media.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Media.swift; sourceTree = "<group>"; };
 		03A14BE22ACC903E00D180FF /* ZoomSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomSettingsView.swift; sourceTree = "<group>"; };
 		03A3F4C62AF4C0AD00F465D1 /* AdaptiveBitrate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveBitrate.swift; sourceTree = "<group>"; };
@@ -842,6 +845,7 @@
 				0379BBAC2AAD964000B718B6 /* AboutSettingsView.swift */,
 				0379BBBF2AADC4EC00B718B6 /* AboutLicensesSettingsView.swift */,
 				0344AFE62B00023E00C177DB /* AboutDesignedBySettingsView.swift */,
+				0391BB3C2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift */,
 			);
 			path = About;
 			sourceTree = "<group>";
@@ -1265,6 +1269,7 @@
 				03B16A322B35D74800E5AB07 /* DisplaySettingsView.swift in Sources */,
 				032E06622B2F3E9D00EAE5F8 /* RandomEffect.swift in Sources */,
 				032E06632B2F3E9D00EAE5F8 /* StreamTwitchSettingsView.swift in Sources */,
+				0391BB3E2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift in Sources */,
 				032E06642B2F3E9D00EAE5F8 /* DebugSettingsView.swift in Sources */,
 				03B16A292B35614100E5AB07 /* RecordingsRecordingSettingsView.swift in Sources */,
 				03DBD0FC2B30078B004B0BE6 /* StreamWizardKickSettingsView.swift in Sources */,
@@ -1398,6 +1403,7 @@
 				03B16A312B35D74800E5AB07 /* DisplaySettingsView.swift in Sources */,
 				03A983622A9A05D7008FF0DB /* MainView.swift in Sources */,
 				03B374042AA036D10028DDD5 /* ButtonsView.swift in Sources */,
+				0391BB3D2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift in Sources */,
 				0379BBB62AAD9B5B00B718B6 /* ButtonsSettingsView.swift in Sources */,
 				03B16A282B35614100E5AB07 /* RecordingsRecordingSettingsView.swift in Sources */,
 				032815DC2AC915AE001F8A85 /* RandomEffect.swift in Sources */,

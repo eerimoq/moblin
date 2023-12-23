@@ -5,12 +5,17 @@ struct AboutSettingsView: View {
         Form {
             Section {
                 TextItemView(name: String(localized: "Version"), value: version())
+                NavigationLink(destination: AboutVersionHistorySettingsView()) {
+                    Text("Version history")
+                }
                 NavigationLink(destination: AboutDesignedBySettingsView()) {
                     Text("Designed by")
                 }
                 NavigationLink(destination: AboutLicensesSettingsView()) {
                     Text("Licenses")
                 }
+            }
+            Section {
                 Button(action: {
                     openUrl(url: "https://eerimoq.github.io/moblin/privacy-policy/en.html")
                 }, label: {
