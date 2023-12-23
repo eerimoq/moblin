@@ -21787,6 +21787,7 @@
 
     },
     "Quick buttons" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

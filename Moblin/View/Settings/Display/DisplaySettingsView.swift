@@ -17,7 +17,7 @@ struct DisplaySettingsView: View {
                     model.store()
                 }))
                 NavigationLink(destination: QuickButtonsSettingsView()) {
-                    Text("Quick buttons")
+                    Text("Buttons")
                 }
             }
         }

@@ -62,7 +62,7 @@ struct QuickButtonsSettingsView: View {
                 Text("Buttons")
             }
         }
-        .navigationTitle("Quick buttons")
+        .navigationTitle("Buttons")
         .toolbar {
             SettingsToolbar()
         }
