@@ -28,17 +28,19 @@ struct StreamWizardSummarySettingsView: View {
                     Text("OBS")
                 }
             } else if model.wizardNetworkSetup == .belaboxCloudObs {
-                Section {} header: {
+                Section {
+                    TextItemView(name: "Ingest URL", value: model.wizardBelaboxUrl)
+                } header: {
                     Text("BELABOX cloud")
                 }
             } else if model.wizardNetworkSetup == .direct {
                 Section {
                     if model.wizardPlatform == .twitch {
                         TextItemView(name: "Nearby ingest endpoint", value: model.wizardDirectIngest)
-                        TextItemView(name: "Stream key", value: model.wizardDirectStreamKey, sensitive: true)
+                        TextItemView(name: "Stream key", value: model.wizardDirectStreamKey)
                     } else if model.wizardPlatform == .kick {
                         TextItemView(name: "Stream URL", value: model.wizardDirectIngest)
-                        TextItemView(name: "Stream key", value: model.wizardDirectStreamKey, sensitive: true)
+                        TextItemView(name: "Stream key", value: model.wizardDirectStreamKey)
                     }
                 } header: {
                     Text("Direct")

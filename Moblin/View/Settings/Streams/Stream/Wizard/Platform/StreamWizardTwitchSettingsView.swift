@@ -22,8 +22,8 @@ struct StreamWizardTwitchSettingsView: View {
                     Text("")
                     Text(
                         """
-                        A large number. Use developer tools (F11) \
-                        in your browser. Look at websocket messages. Hard to find.
+                        Use https://streamscharts.com/tools/convert-username to convert your \
+                        channel name to your channel id.
                         """
                     )
                 }

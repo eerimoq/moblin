@@ -842,6 +842,9 @@ class Database: Codable {
             addDefaultBitratePresets(database: database)
         }
         addMissingGlobalButtons(database: database)
+        for button in database.globalButtons! {
+            button.isOn = false
+        }
         return database
     }
 

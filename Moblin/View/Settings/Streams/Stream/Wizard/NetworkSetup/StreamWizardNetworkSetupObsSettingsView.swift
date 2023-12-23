@@ -27,12 +27,14 @@ struct StreamWizardNetworkSetupObsSettingsView: View {
             }
             Section {
                 VStack(alignment: .leading) {
-                    Text("Create a Media Source in OBS and configure it as shown below.")
+                    Text("1. Create a Media Source in OBS and configure it as shown in the image below.")
                     Text("")
-                    Text("Replace 192.168.50.72 with your local IP address (typically 192.168.x.y).")
+                    Text("2. Replace 192.168.50.72 with your local IP address (typically 192.168.x.y).")
                     Text("")
-                    Text("Replace 7654 with your port.")
+                    Text("3. Replace 7654 with your port.")
                 }
+            } header: {
+                Text("Configure OBS on your computer")
             }
             Section {
                 HStack {

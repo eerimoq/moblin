@@ -7,6 +7,10 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
         return model.wizardDirectIngest.isEmpty || model.wizardDirectStreamKey.isEmpty
     }
 
+    private func twitchStreamKeyUrl() -> String {
+        return "https://dashboard.twitch.tv/u/\(model.wizardTwitchChannelName.trim())/settings/stream"
+    }
+
     var body: some View {
         Form {
             if model.wizardPlatform == .twitch {
@@ -17,8 +21,8 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                     Text("Nearby ingest endpoint")
                 } footer: {
                     Text("""
-                    Copy a nearby ingest endpoint from \
-                    https://help.twitch.tv/s/twitch-ingest-recommendation
+                    Copy from \
+                    https://help.twitch.tv/s/twitch-ingest-recommendation. Remove {stream_key}.
                     """)
                 }
                 Section {
@@ -30,13 +34,12 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                 } header: {
                     Text("Stream key")
                 } footer: {
-                    Text(
-                        """
-                        Copy your Stream key from \
-                        https://dashboard.twitch.tv/u/\(model.wizardTwitchChannelName)/settings/stream \
-                        (requires login).
-                        """
-                    )
+                    HStack(spacing: 0) {
+                        Text("Copy from ")
+                        Link(twitchStreamKeyUrl(), destination: URL(string: twitchStreamKeyUrl())!)
+                            .font(.footnote)
+                        Text(" (requires login).")
+                    }
                 }
             } else if model.wizardPlatform == .kick {
                 Section {
@@ -49,7 +52,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                     Text("Stream URL")
                 } footer: {
                     Text(
-                        "Copy the Stream URL from https://kick.com/dashboard/settings/stream (requires login)."
+                        "Copy from https://kick.com/dashboard/settings/stream (requires login)."
                     )
                 }
                 Section {
@@ -62,7 +65,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                     Text("Stream key")
                 } footer: {
                     Text(
-                        "Copy your Stream ket from https://kick.com/dashboard/settings/stream (requires login)."
+                        "Copy from https://kick.com/dashboard/settings/stream (requires login)."
                     )
                 }
             }

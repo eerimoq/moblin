@@ -153,6 +153,9 @@
         }
       }
     },
+    " (requires login)." : {
+
+    },
     "-" : {
       "localizations" : {
         "de" : {
@@ -1989,6 +1992,15 @@
         }
       }
     },
+    "1. Create a Media Source in OBS and configure it as shown in the image below." : {
+
+    },
+    "2. Replace 192.168.50.72 with your local IP address (typically 192.168.x.y)." : {
+
+    },
+    "3. Replace 7654 with your port." : {
+
+    },
     "7TV emotes" : {
 
     },
@@ -2112,9 +2124,6 @@
           }
         }
       }
-    },
-    "A large number. Use developer tools (F11) in your browser. Look at websocket messages. Hard to find." : {
-
     },
     "About" : {
       "localizations" : {
@@ -8192,19 +8201,22 @@
         }
       }
     },
+    "Configure OBS on your computer" : {
+
+    },
     "Configure port forwarding in your router to forward incoming traffic to OBS." : {
 
     },
-    "Copy a nearby ingest endpoint from https://help.twitch.tv/s/twitch-ingest-recommendation" : {
+    "Copy from " : {
 
     },
-    "Copy the Stream URL from https://kick.com/dashboard/settings/stream (requires login)." : {
+    "Copy from https://cloud.belabox.net SRT(LA) relays (requires login). See image below for example. Replace srt:// with srtla:// and change port to use SRTLA instead of SRT." : {
 
     },
-    "Copy your Stream ket from https://kick.com/dashboard/settings/stream (requires login)." : {
+    "Copy from https://help.twitch.tv/s/twitch-ingest-recommendation. Remove {stream_key}." : {
 
     },
-    "Copy your Stream key from https://dashboard.twitch.tv/u/%@/settings/stream (requires login)." : {
+    "Copy from https://kick.com/dashboard/settings/stream (requires login)." : {
 
     },
     "Cosmetics" : {
@@ -8418,9 +8430,6 @@
           }
         }
       }
-    },
-    "Create a Media Source in OBS and configure it as shown below." : {
-
     },
     "Create stream wizard" : {
 
@@ -14612,6 +14621,9 @@
         }
       }
     },
+    "https://dashboard.twitch.tv/u/%@/settings/stream" : {
+
+    },
     "Icons" : {
       "localizations" : {
         "de" : {
@@ -15353,6 +15365,9 @@
           }
         }
       }
+    },
+    "Ingest URL" : {
+
     },
     "Interval" : {
       "localizations" : {
@@ -21017,9 +21032,6 @@
         }
       }
     },
-    "Open belabox cloud page" : {
-
-    },
     "Packets in flight" : {
       "localizations" : {
         "de" : {
@@ -22100,12 +22112,6 @@
           }
         }
       }
-    },
-    "Replace 192.168.50.72 with your local IP address (typically 192.168.x.y)." : {
-
-    },
-    "Replace 7654 with your port." : {
-
     },
     "Reset settings" : {
       "localizations" : {
@@ -25298,6 +25304,9 @@
           }
         }
       }
+    },
+    "srtla://uk.srt.belabox.net:5000?streamid=jO4ijfFgrlpv4m2375msdoG3DDr2" : {
+
     },
     "Standard" : {
       "localizations" : {
@@ -29798,6 +29807,9 @@
           }
         }
       }
+    },
+    "Use https://streamscharts.com/tools/convert-username to convert your channel name to your channel id." : {
+
     },
     "Username" : {
       "localizations" : {

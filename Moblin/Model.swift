@@ -300,6 +300,7 @@ final class Model: ObservableObject {
     @Published var wizardChatBttv = true
     @Published var wizardChatFfz = true
     @Published var wizardChatSeventv = true
+    @Published var wizardBelaboxUrl = ""
 
     var cameraDevice: AVCaptureDevice?
     var cameraZoomLevelToXScale: Float = 1.0
@@ -339,25 +340,29 @@ final class Model: ObservableObject {
     private var appStoreUpdateListenerTask: Task<Void, Error>?
     private var products: [String: Product] = [:]
 
+    private func cleanWizardUrl(url: String) -> String {
+        var cleanedUrl = cleanUrl(url: url)
+        if isValidUrl(url: cleanedUrl) != nil {
+            cleanedUrl = defaultStreamUrl
+            makeErrorToast(title: "Malformed stream URL", subTitle: "Using default")
+        }
+        return cleanedUrl
+    }
+
     private func createStreamFromWizardUrl() -> String {
         var url = defaultStreamUrl
         switch wizardNetworkSetup {
         case .none:
             break
         case .obs:
-            url = cleanUrl(url: "srt://\(wizardObsAddress):\(wizardObsPort)")
-            if isValidUrl(url: url) != nil {
-                url = defaultStreamUrl
-            }
+            url = "srt://\(wizardObsAddress):\(wizardObsPort)"
         case .belaboxCloudObs:
-            break
+            url = wizardBelaboxUrl
         case .direct:
-            url = cleanUrl(url: "\(wizardDirectIngest)/\(wizardDirectStreamKey)")
-            if isValidUrl(url: url) != nil {
-                url = defaultStreamUrl
-            }
+            let ingestUrl = wizardDirectIngest.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+            url = "\(ingestUrl)/\(wizardDirectStreamKey)"
         }
-        return url
+        return cleanWizardUrl(url: url)
     }
 
     func createStreamFromWizard() {
