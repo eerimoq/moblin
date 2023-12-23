@@ -3840,6 +3840,9 @@
         }
       }
     },
+    "Average bitrate" : {
+
+    },
     "B-frames" : {
 
     },
@@ -8863,6 +8866,9 @@
           }
         }
       }
+    },
+    "Device health" : {
+
     },
     "Dimensions" : {
       "localizations" : {
@@ -14511,6 +14517,9 @@
           }
         }
       }
+    },
+    "Highest bitrate" : {
+
     },
     "Highest thermal state" : {
 
@@ -25416,9 +25425,6 @@
       }
     },
     "Start time" : {
-
-    },
-    "Statistics" : {
 
     },
     "Stream" : {

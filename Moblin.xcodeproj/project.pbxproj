@@ -265,6 +265,8 @@
 		03D445E22AE5966B00A0F6E9 /* CacheAsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D445E12AE5966B00A0F6E9 /* CacheAsyncImage.swift */; };
 		03D541752B32095B00B9D595 /* StreamWizardCustomSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D541742B32095B00B9D595 /* StreamWizardCustomSettingsView.swift */; };
 		03D541762B32095B00B9D595 /* StreamWizardCustomSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D541742B32095B00B9D595 /* StreamWizardCustomSettingsView.swift */; };
+		03D691532B36EDB600038F13 /* TextValueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D691522B36EDB600038F13 /* TextValueView.swift */; };
+		03D691542B36EDB600038F13 /* TextValueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D691522B36EDB600038F13 /* TextValueView.swift */; };
 		03DBD0F82B300659004B0BE6 /* StreamWizardSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DBD0F72B300659004B0BE6 /* StreamWizardSettingsView.swift */; };
 		03DBD0FB2B30078B004B0BE6 /* StreamWizardKickSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DBD0FA2B30078B004B0BE6 /* StreamWizardKickSettingsView.swift */; };
 		03DBD0FC2B30078B004B0BE6 /* StreamWizardKickSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DBD0FA2B30078B004B0BE6 /* StreamWizardKickSettingsView.swift */; };
@@ -411,6 +413,7 @@
 		03CC5F882AD060DB0019CBA5 /* WidgetBrowserUrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBrowserUrlSettingsView.swift; sourceTree = "<group>"; };
 		03D445E12AE5966B00A0F6E9 /* CacheAsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheAsyncImage.swift; sourceTree = "<group>"; };
 		03D541742B32095B00B9D595 /* StreamWizardCustomSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardCustomSettingsView.swift; sourceTree = "<group>"; };
+		03D691522B36EDB600038F13 /* TextValueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextValueView.swift; sourceTree = "<group>"; };
 		03DBD0F72B300659004B0BE6 /* StreamWizardSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardSettingsView.swift; sourceTree = "<group>"; };
 		03DBD0FA2B30078B004B0BE6 /* StreamWizardKickSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardKickSettingsView.swift; sourceTree = "<group>"; };
 		03DBD0FE2B30091B004B0BE6 /* StreamWizardNetworkSetupSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardNetworkSetupSettingsView.swift; sourceTree = "<group>"; };
@@ -553,6 +556,7 @@
 				032FDBFB2B0B1183007BE85E /* ValueEditView.swift */,
 				032FDBFE2B0B11B0007BE85E /* PositionEditView.swift */,
 				032FDC012B0B11C5007BE85E /* SizeEditView.swift */,
+				03D691522B36EDB600038F13 /* TextValueView.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -1287,6 +1291,7 @@
 				032E066B2B2F3E9D00EAE5F8 /* DebugAudioSettingsView.swift in Sources */,
 				032E066C2B2F3E9D00EAE5F8 /* PositionEditView.swift in Sources */,
 				032E066D2B2F3E9D00EAE5F8 /* StreamOverlayTextView.swift in Sources */,
+				03D691542B36EDB600038F13 /* TextValueView.swift in Sources */,
 				032E066E2B2F3E9D00EAE5F8 /* MovieEffect.swift in Sources */,
 				032E066F2B2F3E9D00EAE5F8 /* StreamSrtSettingsView.swift in Sources */,
 				032E06702B2F3E9D00EAE5F8 /* StreamSettingsView.swift in Sources */,
@@ -1421,6 +1426,7 @@
 				031839172AF6A03100320FB2 /* DebugAudioSettingsView.swift in Sources */,
 				03487F262B334B63003D9ED9 /* StreamingHistory.swift in Sources */,
 				032FDBFF2B0B11B0007BE85E /* PositionEditView.swift in Sources */,
+				03D691532B36EDB600038F13 /* TextValueView.swift in Sources */,
 				0379BBA02AAD823900B718B6 /* StreamOverlayTextView.swift in Sources */,
 				03B374072AA0EA650028DDD5 /* MovieEffect.swift in Sources */,
 				032469A92AE1B3040097B18B /* StreamSrtSettingsView.swift in Sources */,

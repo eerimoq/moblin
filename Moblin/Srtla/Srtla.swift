@@ -260,6 +260,9 @@ class Srtla {
     }
 
     private func onDisconnected(message: String) {
+        guard state != .idle else {
+            return
+        }
         stop()
         delegate?.srtlaError(message: message)
         state = .idle

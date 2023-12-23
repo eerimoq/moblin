@@ -50,9 +50,26 @@ class StreamingHistoryStream: Identifiable, Codable {
     var numberOfFffffs: Int? = 0
     var highestThermalState: ThermalState? = .nominal
     var lowestBatteryLevel: Double? = 1.0
+    var highestBitrate: Int64? = Int64.min
+    var averageBitrate: Int64? = 0
 
     init(settings: SettingsStream) {
         self.settings = settings
+    }
+
+    func updateBitrate(bitrate: Int64) {
+        if bitrate > highestBitrate! {
+            highestBitrate = bitrate
+        }
+    }
+
+    func averageBitrateString() -> String {
+        let bitrate = Int64(8 * totalBytes / UInt64(duration().components.seconds))
+        return formatBytesPerSecond(speed: bitrate)
+    }
+
+    func highestBitrateString() -> String {
+        return formatBytesPerSecond(speed: highestBitrate!)
     }
 
     func updateHighestThermalState(thermalState: ThermalState) {
@@ -160,6 +177,10 @@ final class StreamingHistory {
         }
         for stream in database.streams where stream.lowestBatteryLevel == nil {
             stream.lowestBatteryLevel = 1.0
+            store()
+        }
+        for stream in database.streams where stream.highestBitrate == nil {
+            stream.highestBitrate = Int64.min
             store()
         }
     }

@@ -339,6 +339,7 @@ final class Model: ObservableObject {
     @Published var iconsSubscriptions: [Subscription] = []
     private var appStoreUpdateListenerTask: Task<Void, Error>?
     private var products: [String: Product] = [:]
+    private var totalBytes: UInt64 = 0
 
     private func cleanWizardUrl(url: String) -> String {
         var cleanedUrl = cleanUrl(url: url)
@@ -1359,6 +1360,7 @@ final class Model: ObservableObject {
         }
         isLive = true
         streaming = true
+        totalBytes = 0
         reconnectTime = firstReconnectTime
         UIApplication.shared.isIdleTimerDisabled = true
         startNetStream()
@@ -1373,7 +1375,7 @@ final class Model: ObservableObject {
             return
         }
         logger.info("stream: Stop")
-        let totalBytes = UInt64(media.streamTotal())
+        totalBytes += UInt64(media.streamTotal())
         streaming = false
         UIApplication.shared.isIdleTimerDisabled = false
         stopNetStream()
@@ -1386,9 +1388,11 @@ final class Model: ObservableObject {
         }
     }
 
-    private func startNetStream() {
+    private func startNetStream(reconnect: Bool = false) {
         streamState = .connecting
-        makeGoingLiveToast()
+        if !reconnect {
+            makeGoingLiveToast()
+        }
         switch stream.getProtocol() {
         case .rtmp:
             rtmpStartStream()
@@ -1408,7 +1412,7 @@ final class Model: ObservableObject {
         updateSpeed()
     }
 
-    private func stopNetStream() {
+    private func stopNetStream(reconnect: Bool = false) {
         reconnectTimer?.invalidate()
         media.rtmpStopStream()
         media.srtStopStream()
@@ -1417,7 +1421,9 @@ final class Model: ObservableObject {
         updateSpeed()
         updateAudioLevel()
         srtlaConnectionStatistics = noValue
-        makeStreamEndedToast()
+        if !reconnect {
+            makeStreamEndedToast()
+        }
     }
 
     func reloadStream() {
@@ -2160,9 +2166,11 @@ final class Model: ObservableObject {
 
     private func updateSpeed() {
         if isLive {
-            let speed = formatBytesPerSecond(speed: media.streamSpeed())
+            let speed = media.streamSpeed()
+            streamingHistoryStream?.updateBitrate(bitrate: speed)
+            let speedString = formatBytesPerSecond(speed: speed)
             let total = sizeFormatter.string(fromByteCount: media.streamTotal())
-            speedAndTotal = String(localized: "\(speed) (\(total))")
+            speedAndTotal = String(localized: "\(speedString) (\(total))")
         } else if speedAndTotal != noValue {
             speedAndTotal = noValue
         }
@@ -2464,14 +2472,17 @@ final class Model: ObservableObject {
             return
         }
         logger.info("stream: Disconnected with reason \(reason)")
+        if streamState == .connected {
+            totalBytes += UInt64(media.streamTotal())
+            streamingHistoryStream?.numberOfFffffs! += 1
+            makeFffffToast(reason: reason)
+        }
         streamState = .disconnected
-        stopNetStream()
-        makeFffffToast(reason: reason)
-        streamingHistoryStream?.numberOfFffffs! += 1
+        stopNetStream(reconnect: true)
         reconnectTimer = Timer
             .scheduledTimer(withTimeInterval: reconnectTime, repeats: false) { _ in
                 logger.info("stream: Reconnecting")
-                self.startNetStream()
+                self.startNetStream(reconnect: true)
                 self.reconnectTime = nextReconnectTime(self.reconnectTime)
             }
     }

@@ -500,4 +500,19 @@ extension ProcessInfo.ThermalState {
             return .pink
         }
     }
+
+    func colorPrimary() -> Color {
+        switch self {
+        case .nominal:
+            return .primary
+        case .fair:
+            return .primary
+        case .serious:
+            return .yellow
+        case .critical:
+            return .red
+        default:
+            return .pink
+        }
+    }
 }

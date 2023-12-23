@@ -6,43 +6,42 @@ struct StreamingHistoryStreamSettingsView: View {
     var body: some View {
         Form {
             Section {
-                HStack {
-                    Text("Start time")
-                    Spacer()
-                    Text(stream.startTime.formatted())
-                }
-                HStack {
-                    Text("Duration")
-                    Spacer()
-                    Text(stream.duration().formatWithSeconds())
-                }
-                HStack {
-                    Text("Total sent")
-                    Spacer()
-                    Text(stream.totalBytes.formatBytes())
-                }
+                TextValueView(name: "Start time", value: stream.startTime.formatted())
+                TextValueView(name: "Duration", value: stream.duration().formatWithSeconds())
+                TextValueView(name: "Total sent", value: stream.totalBytes.formatBytes())
+                TextValueView(name: "Average bitrate", value: stream.averageBitrateString())
+                TextValueView(name: "Highest bitrate", value: stream.highestBitrateString())
                 HStack {
                     if stream.numberOfFffffs! != 0 {
                         Image(systemName: "exclamationmark.circle")
                             .foregroundColor(.red)
                     }
-                    Text("Number of FFFFF:s")
-                    Spacer()
-                    Text("\(stream.numberOfFffffs!)")
+                    TextValueView(name: "Number of FFFFF:s", value: "\(stream.numberOfFffffs!)")
                 }
+            } header: {
+                Text("General")
+            }
+            Section {
                 HStack {
                     Text("Highest thermal state")
                     Spacer()
                     Image(systemName: "flame")
+                        .padding([.leading, .trailing], 4)
+                        .padding([.top, .bottom], 2)
                         .foregroundColor(stream.highestThermalState!.toProcessInfo().color())
+                        .background(.black)
+                        .cornerRadius(3)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 3)
+                                .stroke(.secondary)
+                        )
                 }
-                HStack {
-                    Text("Lowest battery percentage")
-                    Spacer()
-                    Text(stream.lowestBatteryPercentageString())
-                }
+                TextValueView(
+                    name: "Lowest battery percentage",
+                    value: stream.lowestBatteryPercentageString()
+                )
             } header: {
-                Text("Statistics")
+                Text("Device health")
             }
             Section {
                 HStack {
