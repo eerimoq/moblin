@@ -105,11 +105,7 @@ final class RecordingsStorage {
             database.recordings.remove(at: 0)
         }
         recording.stopTime = Date()
-        database.recordings.append(recording)
-    }
-
-    func listRecordings() -> [Recording] {
-        return database.recordings
+        database.recordings.insert(recording, at: 0)
     }
 
     func numberOfRecordingsString() -> String {

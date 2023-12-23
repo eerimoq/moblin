@@ -352,7 +352,10 @@ final class Model: ObservableObject {
         case .belaboxCloudObs:
             break
         case .direct:
-            break
+            url = cleanUrl(url: "\(wizardDirectIngest)/\(wizardDirectStreamKey)")
+            if isValidUrl(url: url) != nil {
+                url = defaultStreamUrl
+            }
         }
         return url
     }
@@ -367,11 +370,11 @@ final class Model: ObservableObject {
         switch wizardPlatform {
         case .twitch:
             stream.twitchEnabled = true
-            stream.twitchChannelName = wizardTwitchChannelName
-            stream.twitchChannelId = wizardTwitchChannelId
+            stream.twitchChannelName = wizardTwitchChannelName.trim()
+            stream.twitchChannelId = wizardTwitchChannelId.trim()
         case .kick:
             stream.kickEnabled = true
-            stream.kickChatroomId = wizardKickChatroomId
+            stream.kickChatroomId = wizardKickChatroomId.trim()
         case .custom:
             break
         }
@@ -1356,6 +1359,7 @@ final class Model: ObservableObject {
         startNetStream()
         streamingHistoryStream = StreamingHistoryStream(settings: stream.clone())
         streamingHistoryStream!.updateHighestThermalState(thermalState: ThermalState(from: thermalState))
+        streamingHistoryStream!.updateLowestBatteryLevel(level: batteryLevel)
     }
 
     func stopStream() {
@@ -2190,7 +2194,6 @@ final class Model: ObservableObject {
     private func updateThermalState() {
         thermalState = ProcessInfo.processInfo.thermalState
         streamingHistoryStream?.updateHighestThermalState(thermalState: ThermalState(from: thermalState))
-        streamingHistoryStream?.updateLowestBatteryLevel(level: batteryLevel)
         logger.info("Thermal state is \(thermalState.string())")
     }
 

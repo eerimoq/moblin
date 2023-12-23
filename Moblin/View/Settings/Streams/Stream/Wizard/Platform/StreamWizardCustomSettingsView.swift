@@ -6,7 +6,7 @@ struct StreamWizardCustomSettingsView: View {
     var body: some View {
         Form {
             VStack(alignment: .leading) {
-                Text("Custom streams must be configured after the wizard ends.")
+                Text("Custom streams are configured after the wizard ends.")
             }
             Section {
                 NavigationLink(destination: StreamWizardSummarySettingsView()) {

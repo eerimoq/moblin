@@ -9,7 +9,7 @@ struct RecordingsSettingsView: View {
 
     var body: some View {
         VStack {
-            let recordings = recordingsStorage.listRecordings()
+            let recordings = recordingsStorage.database.recordings
             if recordings.isEmpty {
                 HStack {
                     Spacer()
@@ -38,19 +38,25 @@ struct RecordingsSettingsView: View {
                     }
                     Form {
                         Section {
-                            ForEach(recordings.reversed()) { recording in
-                                NavigationLink(
-                                    destination: RecordingsRecordingSettingsView(recording: recording)
-                                ) {
-                                    HStack {
-                                        Image(systemName: "photo")
-                                        VStack(alignment: .leading) {
-                                            Text(recording.title())
-                                            Text(recording.subTitle())
-                                                .font(.footnote)
+                            List {
+                                ForEach(recordings) { recording in
+                                    NavigationLink(
+                                        destination: RecordingsRecordingSettingsView(recording: recording)
+                                    ) {
+                                        HStack {
+                                            Image(systemName: "photo")
+                                            VStack(alignment: .leading) {
+                                                Text(recording.title())
+                                                Text(recording.subTitle())
+                                                    .font(.footnote)
+                                            }
                                         }
                                     }
                                 }
+                                .onDelete(perform: { indexSet in
+                                    recordingsStorage.database.recordings.remove(atOffsets: indexSet)
+                                    recordingsStorage.store()
+                                })
                             }
                         }
                     }

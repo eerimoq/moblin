@@ -166,11 +166,11 @@ final class StreamingHistory {
 
     func append(stream: StreamingHistoryStream) {
         while database.streams.count > 100 {
-            database.streams.remove(at: 0)
+            database.streams.removeLast()
         }
         database.totalTime! += stream.duration()
         database.totalBytes! += stream.totalBytes
         database.totalStreams! += 1
-        database.streams.append(stream)
+        database.streams.insert(stream, at: 0)
     }
 }

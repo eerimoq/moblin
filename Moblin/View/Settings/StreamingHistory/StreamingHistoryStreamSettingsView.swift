@@ -14,7 +14,7 @@ struct StreamingHistoryStreamSettingsView: View {
                 HStack {
                     Text("Duration")
                     Spacer()
-                    Text(stream.duration().format())
+                    Text(stream.duration().formatWithSeconds())
                 }
                 HStack {
                     Text("Total sent")

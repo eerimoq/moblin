@@ -2113,6 +2113,9 @@
         }
       }
     },
+    "A large number. Use developer tools (F11) in your browser. Look at websocket messages. Hard to find." : {
+
+    },
     "About" : {
       "localizations" : {
         "de" : {
@@ -8192,7 +8195,7 @@
     "Configure port forwarding in your router to forward incoming traffic to OBS." : {
 
     },
-    "Copy a nearby ingest from https://help.twitch.tv/s/twitch-ingest-recommendation" : {
+    "Copy a nearby ingest endpoint from https://help.twitch.tv/s/twitch-ingest-recommendation" : {
 
     },
     "Copy the Stream URL from https://kick.com/dashboard/settings/stream (requires login)." : {
@@ -8425,7 +8428,7 @@
     "Custom" : {
 
     },
-    "Custom streams must be configured after the wizard ends." : {
+    "Custom streams are configured after the wizard ends." : {
 
     },
     "Debug" : {
@@ -19082,7 +19085,7 @@
         }
       }
     },
-    "Needed for chat emotes and number of viewers." : {
+    "Needed for channel chat emotes and number of viewers." : {
 
     },
     "Needed for chat." : {

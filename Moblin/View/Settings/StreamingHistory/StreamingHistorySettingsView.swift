@@ -39,23 +39,29 @@ struct StreamingHistorySettingsView: View {
             }
             Form {
                 Section {
-                    ForEach(model.streamingHistory.database.streams.reversed()) { stream in
-                        NavigationLink(destination: StreamingHistoryStreamSettingsView(stream: stream)) {
-                            HStack {
-                                if stream.isSuccessful() {
-                                    Image(systemName: "checkmark.circle")
-                                        .foregroundColor(.green)
-                                } else {
-                                    Image(systemName: "exclamationmark.circle")
-                                        .foregroundColor(.red)
-                                }
-                                VStack(alignment: .leading) {
-                                    Text(formatStreamTitle(stream: stream))
-                                    Text(stream.settings.name)
-                                        .font(.footnote)
+                    List {
+                        ForEach(model.streamingHistory.database.streams) { stream in
+                            NavigationLink(destination: StreamingHistoryStreamSettingsView(stream: stream)) {
+                                HStack {
+                                    if stream.isSuccessful() {
+                                        Image(systemName: "checkmark.circle")
+                                            .foregroundColor(.green)
+                                    } else {
+                                        Image(systemName: "exclamationmark.circle")
+                                            .foregroundColor(.red)
+                                    }
+                                    VStack(alignment: .leading) {
+                                        Text(formatStreamTitle(stream: stream))
+                                        Text(stream.settings.name)
+                                            .font(.footnote)
+                                    }
                                 }
                             }
                         }
+                        .onDelete(perform: { offsets in
+                            model.streamingHistory.database.streams.remove(atOffsets: offsets)
+                            model.streamingHistory.store()
+                        })
                     }
                 }
             }
