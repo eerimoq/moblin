@@ -7,54 +7,43 @@ struct StreamWizardSummarySettingsView: View {
         Form {
             if model.wizardPlatform == .twitch {
                 Section {
-                    HStack {
-                        Text("Channel name")
-                        Spacer()
-                        Text(model.wizardTwitchChannelName)
-                    }
-                    HStack {
-                        Text("Channel id")
-                        Spacer()
-                        Text(model.wizardTwitchChannelId)
-                    }
+                    TextItemView(name: "Channel name", value: model.wizardTwitchChannelName)
+                    TextItemView(name: "Channel id", value: model.wizardTwitchChannelId)
                 } header: {
                     Text("Twitch")
                 }
-            }
-            if model.wizardPlatform == .kick {
+            } else if model.wizardPlatform == .kick {
                 Section {
-                    HStack {
-                        Text("Channel name")
-                        Spacer()
-                        Text(model.wizardKickChannelName)
-                    }
-                    HStack {
-                        Text("Chatroom id")
-                        Spacer()
-                        Text(model.wizardKickChatroomId)
-                    }
+                    TextItemView(name: "Channel name", value: model.wizardKickChannelName)
+                    TextItemView(name: "Chatroom id", value: model.wizardKickChatroomId)
                 } header: {
                     Text("Kick")
                 }
             }
             if model.wizardNetworkSetup == .obs {
                 Section {
-                    HStack {
-                        Text("IP address or domain name")
-                        Spacer()
-                        Text(model.wizardObsAddress)
-                    }
-                    HStack {
-                        Text("Port")
-                        Spacer()
-                        Text(model.wizardObsPort)
-                    }
+                    TextItemView(name: "IP address or domain name", value: model.wizardObsAddress)
+                    TextItemView(name: "Port", value: model.wizardObsPort)
                 } header: {
                     Text("OBS")
                 }
+            } else if model.wizardNetworkSetup == .belaboxCloudObs {
+                Section {} header: {
+                    Text("BELABOX cloud")
+                }
+            } else if model.wizardNetworkSetup == .direct {
+                Section {
+                    if model.wizardPlatform == .twitch {
+                        TextItemView(name: "Nearby ingest endpoint", value: model.wizardDirectIngest)
+                        TextItemView(name: "Stream key", value: model.wizardDirectStreamKey, sensitive: true)
+                    } else if model.wizardPlatform == .kick {
+                        TextItemView(name: "Stream URL", value: model.wizardDirectIngest)
+                        TextItemView(name: "Stream key", value: model.wizardDirectStreamKey, sensitive: true)
+                    }
+                } header: {
+                    Text("Direct")
+                }
             }
-            if model.wizardNetworkSetup == .belaboxCloudObs {}
-            if model.wizardNetworkSetup == .direct {}
             Section {
                 TextField("Name", text: $model.wizardName)
             } header: {

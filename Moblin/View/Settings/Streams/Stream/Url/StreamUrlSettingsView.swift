@@ -110,7 +110,7 @@ struct StreamUrlSettingsView: View {
                     Group {
                         Text("Kick").underline()
                         HStack(spacing: 0) {
-                            Text("Template: rtmp://")
+                            Text("Template: rtmps://")
                             Link(
                                 "stream_url",
                                 destination: URL(

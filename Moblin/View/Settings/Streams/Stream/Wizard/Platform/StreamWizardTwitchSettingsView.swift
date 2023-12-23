@@ -18,12 +18,12 @@ struct StreamWizardTwitchSettingsView: View {
                 Text("Channel id")
             } footer: {
                 VStack(alignment: .leading) {
-                    Text("Needed for chat emotes and number of viewers.")
+                    Text("Needed for channel chat emotes and number of viewers.")
                     Text("")
                     Text(
                         """
                         A large number. Use developer tools (F11) \
-                        in your browser. Look at websocket messages.
+                        in your browser. Look at websocket messages. Hard to find.
                         """
                     )
                 }

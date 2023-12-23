@@ -1992,9 +1992,6 @@
     "7TV emotes" : {
 
     },
-    "9fh260lbtb730gy73gkd" : {
-
-    },
     "128 Kpbs or higher is recommended." : {
 
     },
@@ -8195,6 +8192,18 @@
     "Configure port forwarding in your router to forward incoming traffic to OBS." : {
 
     },
+    "Copy a nearby ingest from https://help.twitch.tv/s/twitch-ingest-recommendation" : {
+
+    },
+    "Copy the Stream URL from https://kick.com/dashboard/settings/stream (requires login)." : {
+
+    },
+    "Copy your Stream ket from https://kick.com/dashboard/settings/stream (requires login)." : {
+
+    },
+    "Copy your Stream key from https://dashboard.twitch.tv/u/%@/settings/stream (requires login)." : {
+
+    },
     "Cosmetics" : {
       "localizations" : {
         "de" : {
@@ -8413,10 +8422,10 @@
     "Create stream wizard" : {
 
     },
-    "Creating a stream with default settings." : {
+    "Custom" : {
 
     },
-    "Custom" : {
+    "Custom streams must be configured after the wizard ends." : {
 
     },
     "Debug" : {
@@ -16090,6 +16099,9 @@
         }
       }
     },
+    "live_48950233_okF4f455GRWEF443fFr23GRbt5rEv" : {
+
+    },
     "Local overlays" : {
       "localizations" : {
         "de" : {
@@ -18961,7 +18973,7 @@
         }
       }
     },
-    "Nearby ingest" : {
+    "Nearby ingest endpoint" : {
 
     },
     "nearby_ingest_endpoint" : {
@@ -20681,7 +20693,7 @@
         }
       }
     },
-    "Often bad stability if network connection is unstable. No server side disconnection protection possible." : {
+    "Often bad stability if network connection is unstable. No server side disconnection protection possible (no NOALBS)." : {
 
     },
     "On" : {
@@ -22728,7 +22740,10 @@
         }
       }
     },
-    "rtmp://foobar" : {
+    "rtmp://arn03.contribute.live-video.net/app" : {
+
+    },
+    "rtmps://fa723fc1b171.global-contribute.live-video.net" : {
 
     },
     "Scene" : {
@@ -24108,6 +24123,9 @@
           }
         }
       }
+    },
+    "sk_us-west-2_okfef49k34k_34g59gGDDHGHSREj754gYJYTJERH" : {
+
     },
     "Small camera" : {
       "localizations" : {
@@ -25505,6 +25523,9 @@
     "Stream summary" : {
 
     },
+    "Stream URL" : {
+
+    },
     "stream_url" : {
       "localizations" : {
         "de" : {
@@ -26570,6 +26591,9 @@
           }
         }
       }
+    },
+    "Template: rtmps://" : {
+
     },
     "Template: srt://my_public_ip:my_public_port" : {
       "localizations" : {
@@ -31791,9 +31815,6 @@
           }
         }
       }
-    },
-    "You must configure it after the wizard ends." : {
-
     },
     "Your public IP address if streaming over the internet." : {
 

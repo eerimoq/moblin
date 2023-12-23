@@ -295,7 +295,7 @@ final class Model: ObservableObject {
     @Published var wizardKickChatroomId: String = ""
     @Published var wizardObsAddress = ""
     @Published var wizardObsPort = ""
-    @Published var wizardDirectIngress = ""
+    @Published var wizardDirectIngest = ""
     @Published var wizardDirectStreamKey = ""
     @Published var wizardChatBttv = true
     @Published var wizardChatFfz = true
