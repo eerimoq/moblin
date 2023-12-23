@@ -9,56 +9,44 @@ struct RecordingsSettingsView: View {
 
     var body: some View {
         VStack {
-            let recordings = recordingsStorage.database.recordings
-            if recordings.isEmpty {
-                HStack {
-                    Spacer()
-                    Text("No recordings.")
-                        .padding([.top], 20)
-                    Spacer()
-                }
-            } else {
+            HStack {
+                Spacer()
                 VStack {
-                    HStack {
-                        Spacer()
-                        VStack {
-                            Text(recordingsStorage.numberOfRecordingsString())
-                                .font(.title2)
-                            Text("Total recordings")
-                                .font(.subheadline)
-                        }
-                        Spacer()
-                        VStack {
-                            Text(recordingsStorage.totalSizeString())
-                                .font(.title2)
-                            Text("Total size")
-                                .font(.subheadline)
-                        }
-                        Spacer()
-                    }
-                    Form {
-                        Section {
-                            List {
-                                ForEach(recordings) { recording in
-                                    NavigationLink(
-                                        destination: RecordingsRecordingSettingsView(recording: recording)
-                                    ) {
-                                        HStack {
-                                            Image(systemName: "photo")
-                                            VStack(alignment: .leading) {
-                                                Text(recording.title())
-                                                Text(recording.subTitle())
-                                                    .font(.footnote)
-                                            }
-                                        }
+                    Text(recordingsStorage.numberOfRecordingsString())
+                        .font(.title2)
+                    Text("Total recordings")
+                        .font(.subheadline)
+                }
+                Spacer()
+                VStack {
+                    Text(recordingsStorage.totalSizeString())
+                        .font(.title2)
+                    Text("Total size")
+                        .font(.subheadline)
+                }
+                Spacer()
+            }
+            Form {
+                Section {
+                    List {
+                        ForEach(recordingsStorage.database.recordings) { recording in
+                            NavigationLink(
+                                destination: RecordingsRecordingSettingsView(recording: recording)
+                            ) {
+                                HStack {
+                                    Image(systemName: "photo")
+                                    VStack(alignment: .leading) {
+                                        Text(recording.title())
+                                        Text(recording.subTitle())
+                                            .font(.footnote)
                                     }
                                 }
-                                .onDelete(perform: { indexSet in
-                                    recordingsStorage.database.recordings.remove(atOffsets: indexSet)
-                                    recordingsStorage.store()
-                                })
                             }
                         }
+                        .onDelete(perform: { indexSet in
+                            recordingsStorage.database.recordings.remove(atOffsets: indexSet)
+                            recordingsStorage.store()
+                        })
                     }
                 }
             }
