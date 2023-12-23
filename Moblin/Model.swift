@@ -339,7 +339,7 @@ final class Model: ObservableObject {
     @Published var iconsSubscriptions: [Subscription] = []
     private var appStoreUpdateListenerTask: Task<Void, Error>?
     private var products: [String: Product] = [:]
-    private var totalBytes: UInt64 = 0
+    private var streamTotalBytes: UInt64 = 0
 
     private func cleanWizardUrl(url: String) -> String {
         var cleanedUrl = cleanUrl(url: url)
@@ -1360,7 +1360,7 @@ final class Model: ObservableObject {
         }
         isLive = true
         streaming = true
-        totalBytes = 0
+        streamTotalBytes = 0
         reconnectTime = firstReconnectTime
         UIApplication.shared.isIdleTimerDisabled = true
         startNetStream()
@@ -1375,14 +1375,14 @@ final class Model: ObservableObject {
             return
         }
         logger.info("stream: Stop")
-        totalBytes += UInt64(media.streamTotal())
+        streamTotalBytes += UInt64(media.streamTotal())
         streaming = false
         UIApplication.shared.isIdleTimerDisabled = false
         stopNetStream()
         streamState = .disconnected
         if let streamingHistoryStream {
             streamingHistoryStream.stopTime = Date()
-            streamingHistoryStream.totalBytes = totalBytes
+            streamingHistoryStream.totalBytes = streamTotalBytes
             streamingHistory.append(stream: streamingHistoryStream)
             streamingHistory.store()
         }
@@ -2476,7 +2476,7 @@ final class Model: ObservableObject {
         logger.info("stream: Disconnected with reason \(reason)")
         let subTitle = "\(reason) - Trying again in \(Int(reconnectTime)) seconds."
         if streamState == .connected {
-            totalBytes += UInt64(media.streamTotal())
+            streamTotalBytes += UInt64(media.streamTotal())
             streamingHistoryStream?.numberOfFffffs! += 1
             makeFffffToast(subTitle: subTitle)
         } else if streamState == .connecting {
