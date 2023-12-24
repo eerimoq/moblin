@@ -7,6 +7,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.114.0", changes: [
+        "• Added \"Chat messages\" to stream summary.",
+        "• Snow behind black screen.",
+        "• Always use create stream wizard.",
+        "• Added scuffed YouTube and AfreecaTV create stream wizards.",
+        "• Setup OBS remote control as part of create stream wizard.",
+    ]),
     Version(version: "0.113.0", changes: [
         "• Let it snow on screen.",
         "  • Enable in Settings → Debug → Let it snow.",
