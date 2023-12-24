@@ -19,6 +19,20 @@ struct StreamWizardSummarySettingsView: View {
                 } header: {
                     Text("Kick")
                 }
+            } else if model.wizardPlatform == .youTube {
+                Section {
+                    TextValueView(name: "API key", value: model.wizardYouTubeApiKey)
+                    TextValueView(name: "Video id", value: model.wizardYouTubeVideoId)
+                } header: {
+                    Text("YouTube")
+                }
+            } else if model.wizardPlatform == .afreecaTv {
+                Section {
+                    TextValueView(name: "Channel name", value: model.wizardAfreecaTvChannelName)
+                    TextValueView(name: "Video id", value: model.wizardAfreecsTvCStreamId)
+                } header: {
+                    Text("AfreecaTV")
+                }
             }
             if model.wizardNetworkSetup == .obs {
                 Section {
@@ -39,6 +53,12 @@ struct StreamWizardSummarySettingsView: View {
                         TextValueView(name: "Nearby ingest endpoint", value: model.wizardDirectIngest)
                         TextValueView(name: "Stream key", value: model.wizardDirectStreamKey)
                     } else if model.wizardPlatform == .kick {
+                        TextValueView(name: "Stream URL", value: model.wizardDirectIngest)
+                        TextValueView(name: "Stream key", value: model.wizardDirectStreamKey)
+                    } else if model.wizardPlatform == .youTube {
+                        TextValueView(name: "Stream URL", value: model.wizardDirectIngest)
+                        TextValueView(name: "Stream key", value: model.wizardDirectStreamKey)
+                    } else if model.wizardPlatform == .afreecaTv {
                         TextValueView(name: "Stream URL", value: model.wizardDirectIngest)
                         TextValueView(name: "Stream key", value: model.wizardDirectStreamKey)
                     }

@@ -37,6 +37,12 @@ struct StreamWizardSettingsView: View {
                 NavigationLink(destination: StreamWizardKickSettingsView()) {
                     Text("Kick")
                 }
+                NavigationLink(destination: StreamWizardYouTubeSettingsView()) {
+                    Text("YouTube")
+                }
+                NavigationLink(destination: StreamWizardAfreecaTvSettingsView()) {
+                    Text("AfreecaTV")
+                }
             } header: {
                 Text("Platform to stream to")
             }

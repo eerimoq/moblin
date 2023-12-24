@@ -175,6 +175,8 @@ struct LogEntry: Identifiable {
 enum WizardPlatform {
     case twitch
     case kick
+    case youTube
+    case afreecaTv
     case custom
 }
 
@@ -293,6 +295,10 @@ final class Model: ObservableObject {
     @Published var wizardTwitchChannelId = ""
     @Published var wizardKickChannelName = ""
     @Published var wizardKickChatroomId = ""
+    @Published var wizardYouTubeApiKey = ""
+    @Published var wizardYouTubeVideoId = ""
+    @Published var wizardAfreecaTvChannelName = ""
+    @Published var wizardAfreecsTvCStreamId = ""
     @Published var wizardObsAddress = ""
     @Published var wizardObsPort = ""
     @Published var wizardDirectIngest = ""
@@ -382,6 +388,18 @@ final class Model: ObservableObject {
         case .kick:
             stream.kickEnabled = true
             stream.kickChatroomId = wizardKickChatroomId.trim()
+        case .youTube:
+            if !wizardYouTubeApiKey.isEmpty && !wizardYouTubeVideoId.isEmpty {
+                stream.youTubeEnabled = true
+                stream.youTubeApiKey = wizardYouTubeApiKey
+                stream.youTubeVideoId = wizardYouTubeVideoId
+            }
+        case .afreecaTv:
+            if !wizardAfreecaTvChannelName.isEmpty && !wizardAfreecsTvCStreamId.isEmpty {
+                stream.afreecaTvEnabled = true
+                stream.afreecaTvChannelName = wizardAfreecaTvChannelName
+                stream.afreecaTvStreamId = wizardAfreecsTvCStreamId
+            }
         case .custom:
             break
         }
@@ -412,6 +430,10 @@ final class Model: ObservableObject {
         wizardTwitchChannelId = ""
         wizardKickChannelName = ""
         wizardKickChatroomId = ""
+        wizardYouTubeApiKey = ""
+        wizardYouTubeVideoId = ""
+        wizardAfreecaTvChannelName = ""
+        wizardAfreecsTvCStreamId = ""
         wizardObsAddress = ""
         wizardObsPort = ""
         wizardDirectIngest = ""

@@ -90,6 +90,64 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                         "Copy from https://kick.com/dashboard/settings/stream (requires login)."
                     )
                 }
+            } else if model.wizardPlatform == .youTube {
+                Section {
+                    TextField(
+                        "rtmp://a.rtmp.youtube.com/live2",
+                        text: $model.wizardDirectIngest
+                    )
+                    .disableAutocorrection(true)
+                    .onSubmit {
+                        updateIngestError()
+                    }
+                } header: {
+                    Text("Stream URL")
+                } footer: {
+                    VStack(alignment: .leading) {
+                        FormFieldError(error: ingestError)
+                        Text("Copy from https://youtube.com (requires login).")
+                    }
+                }
+                Section {
+                    TextField(
+                        "4bkf-8d03-g6w3-ekjh-emdc",
+                        text: $model.wizardDirectStreamKey
+                    )
+                    .disableAutocorrection(true)
+                } header: {
+                    Text("Stream key")
+                } footer: {
+                    Text("Copy from https://youtube.com (requires login).")
+                }
+            } else if model.wizardPlatform == .afreecaTv {
+                Section {
+                    TextField(
+                        "???",
+                        text: $model.wizardDirectIngest
+                    )
+                    .disableAutocorrection(true)
+                    .onSubmit {
+                        updateIngestError()
+                    }
+                } header: {
+                    Text("Stream URL")
+                } footer: {
+                    VStack(alignment: .leading) {
+                        FormFieldError(error: ingestError)
+                        Text("Copy from ??? (requires login).")
+                    }
+                }
+                Section {
+                    TextField(
+                        "???",
+                        text: $model.wizardDirectStreamKey
+                    )
+                    .disableAutocorrection(true)
+                } header: {
+                    Text("Stream key")
+                } footer: {
+                    Text("Copy from ??? (requires login).")
+                }
             }
             Section {
                 NavigationLink(destination: StreamWizardGeneralSettingsView()) {
