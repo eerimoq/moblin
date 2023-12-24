@@ -1,9 +1,39 @@
+import SpriteKit
 import SwiftUI
 import WebKit
+
+class SnowScene: SKScene {
+    let snowEmitterNode = SKEmitterNode(fileNamed: "Snow.sks")
+
+    override func didMove(to _: SKView) {
+        guard let snowEmitterNode = snowEmitterNode else {
+            return
+        }
+        snowEmitterNode.particleSize = CGSize(width: 50, height: 50)
+        snowEmitterNode.particleLifetime = 8
+        snowEmitterNode.particleLifetimeRange = 12
+        addChild(snowEmitterNode)
+    }
+
+    override func didChangeSize(_: CGSize) {
+        guard let snowEmitterNode = snowEmitterNode else {
+            return
+        }
+        snowEmitterNode.particlePosition = CGPoint(x: size.width / 2, y: size.height)
+        snowEmitterNode.particlePositionRange = CGVector(dx: size.width, dy: size.height)
+    }
+}
 
 struct MainView: View {
     @EnvironmentObject var model: Model
     var streamView: StreamView
+
+    var scene: SKScene {
+        let scene = SnowScene()
+        scene.scaleMode = .resizeFill
+        scene.backgroundColor = .clear
+        return scene
+    }
 
     private func settingsWidth(width: Double) -> Double {
         if model.settingsLayout == .full {
@@ -112,6 +142,12 @@ struct MainView: View {
                     .onTapGesture(count: 2) { _ in
                         model.toggleBlackScreen()
                     }
+            }
+            if model.database.debug!.letItSnow! {
+                SpriteView(scene: scene, options: [.allowsTransparency])
+                    .ignoresSafeArea()
+                    .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+                    .allowsHitTesting(false)
             }
         }
         .onAppear {

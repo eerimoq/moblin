@@ -790,6 +790,7 @@ class SettingsDebug: Codable {
     var srtOverheadBandwidth: Int32? = 25
     var createStreamWizard: Bool? = false
     var recordings: Bool? = false
+    var letItSnow: Bool? = false
 }
 
 class SettingsQuickButtons: Codable {
@@ -1405,6 +1406,10 @@ final class Settings {
                     }
                 }
             }
+            store()
+        }
+        if realDatabase.debug!.letItSnow == nil {
+            realDatabase.debug!.letItSnow = false
             store()
         }
     }

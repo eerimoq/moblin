@@ -98,6 +98,12 @@ struct DebugSettingsView: View {
                     model.database.debug!.recordings = value
                     model.store()
                 }))
+                Toggle("Let it snow", isOn: Binding(get: {
+                    model.database.debug!.letItSnow!
+                }, set: { value in
+                    model.database.debug!.letItSnow = value
+                    model.store()
+                }))
             }
         }
         .navigationTitle("Debug")
