@@ -198,6 +198,18 @@ struct ButtonsView: View {
     }
 
     private func obsSceneAction(state _: ButtonState) {
+        guard model.isObsConfigured() else {
+            model.makeErrorToast(
+                title: String(localized: "OBS remote control is not configured"),
+                subTitle: String(
+                    localized: """
+                    Configure it in Settings → Streams → \(model.stream.name) → \
+                    OBS remote control.
+                    """
+                )
+            )
+            return
+        }
         model.listObsScenes()
         model.showingObsScene = true
     }
