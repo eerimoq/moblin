@@ -7,6 +7,15 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.112.0", changes: [
+        "• Shorter disconnected and failed to connect error messages.",
+        "• Create stream wizard continued.",
+        "• Increased default bitrate from 3 Mbps to 5 Mbps.",
+        "• Only show SRT(LA) settings when SRT(LA) is configured in URL.",
+        "• Message in OBS remote control toasts.",
+        "• Add failure toast if start/stop OBS stream fails.",
+        "• Show bad URL error message after input field instead of as a toast.",
+    ]),
     Version(version: "0.111.0", changes: [
         "• Rework connection toasts.",
         "  • Show FFFFF if disconnected.",

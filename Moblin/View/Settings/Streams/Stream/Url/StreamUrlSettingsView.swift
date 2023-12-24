@@ -8,11 +8,12 @@ struct StreamUrlSettingsView: View {
     @State var show: Bool = false
     @State var changed: Bool = false
     @State var submitted: Bool = false
+    @State var error = ""
 
     func submitUrl() {
         value = cleanUrl(url: value)
         if let message = isValidUrl(url: value) {
-            model.makeErrorToast(title: message)
+            error = message
             return
         }
         submitted = true
@@ -57,6 +58,7 @@ struct StreamUrlSettingsView: View {
                 }
             } footer: {
                 VStack(alignment: .leading) {
+                    FormFieldError(error: error)
                     Text(
                         "Do not share your URL with anyone or they can hijack your channel!"
                     ).bold()
