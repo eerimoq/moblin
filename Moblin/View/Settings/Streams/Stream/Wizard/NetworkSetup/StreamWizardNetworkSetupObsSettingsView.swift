@@ -48,18 +48,16 @@ struct StreamWizardNetworkSetupObsSettingsView: View {
                     Text("2. Replace 192.168.50.72 with your local IP address (typically 192.168.x.y).")
                     Text("")
                     Text("3. Replace 7654 with your port.")
+                    HStack {
+                        Spacer()
+                        Image("ObsMediaSourceSrt")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                        Spacer()
+                    }
                 }
             } header: {
                 Text("Configure OBS on your computer")
-            }
-            Section {
-                HStack {
-                    Spacer()
-                    Image("ObsMediaSourceSrt")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                    Spacer()
-                }
             }
             Section {
                 NavigationLink(destination: StreamWizardGeneralSettingsView()) {

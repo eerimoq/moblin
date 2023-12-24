@@ -1046,6 +1046,46 @@ final class Model: ObservableObject {
         iconImage = database.iconImage
     }
 
+    func handleSettingsUrlsDefault(settings: MoblinSettingsUrl) {
+        var streamCount = 0
+        for stream in settings.streams ?? [] {
+            let newStream = SettingsStream(name: stream.name)
+            newStream.url = stream.url
+            if let video = stream.video {
+                if let codec = video.codec {
+                    newStream.codec = codec
+                }
+            }
+            if let obs = stream.obs {
+                newStream.obsWebSocketUrl = obs.webSocketUrl
+                newStream.obsWebSocketPassword = obs.webSocketPassword
+            }
+            database.streams.append(newStream)
+            logger.info("Created stream \(newStream.name)")
+            streamCount += 1
+        }
+        store()
+        makeToast(
+            title: "URL import successful",
+            subTitle: "Created \(streamCount) stream(s)"
+        )
+    }
+
+    func handleSettingsUrlsInWizard(settings: MoblinSettingsUrl) {
+        switch wizardNetworkSetup {
+        case .none:
+            break
+        case .obs:
+            break
+        case .belaboxCloudObs:
+            for stream in settings.streams ?? [] {
+                wizardBelaboxUrl = stream.url
+            }
+        case .direct:
+            break
+        }
+    }
+
     func handleSettingsUrls(urls: Set<UIOpenURLContext>) {
         for url in urls {
             guard url.url.path.isEmpty else {
@@ -1056,36 +1096,21 @@ final class Model: ObservableObject {
                 logger.warning("Custom URL query is missing")
                 continue
             }
+            let settings: MoblinSettingsUrl
             do {
-                let query = try MoblinSettingsUrl.fromString(query: query)
-                var streamCount = 0
-                for stream in query.streams ?? [] {
-                    let newStream = SettingsStream(name: stream.name)
-                    newStream.url = stream.url
-                    if let video = stream.video {
-                        if let codec = video.codec {
-                            newStream.codec = codec
-                        }
-                    }
-                    if let obs = stream.obs {
-                        newStream.obsWebSocketUrl = obs.webSocketUrl
-                        newStream.obsWebSocketPassword = obs.webSocketPassword
-                    }
-                    database.streams.append(newStream)
-                    logger.info("Created stream \(newStream.name)")
-                    streamCount += 1
-                }
-                store()
-                makeToast(
-                    title: "URL import successful",
-                    subTitle: "Created \(streamCount) stream(s)"
-                )
+                settings = try MoblinSettingsUrl.fromString(query: query)
             } catch {
                 logger.error("Failed to import URL with error: \(error)")
                 makeErrorToast(
                     title: String(localized: "URL import failed"),
                     subTitle: error.localizedDescription
                 )
+                continue
+            }
+            if isPresentingWizard {
+                handleSettingsUrlsInWizard(settings: settings)
+            } else {
+                handleSettingsUrlsDefault(settings: settings)
             }
         }
     }

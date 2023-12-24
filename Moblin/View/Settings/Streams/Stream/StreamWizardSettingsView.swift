@@ -44,6 +44,8 @@ struct StreamWizardSettingsView: View {
                 NavigationLink(destination: StreamWizardCustomSettingsView()) {
                     Text("Custom")
                 }
+            } footer: {
+                Text("For advanced users or if your platform is not in the list above.")
             }
         }
         .navigationTitle("Create stream wizard")

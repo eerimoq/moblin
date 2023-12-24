@@ -34,8 +34,8 @@ struct StreamWizardKickSettingsView: View {
                     Text("")
                     if !channelName().isEmpty, let url = URL(string: url()) {
                         HStack(spacing: 0) {
-                            Text("Find your chatroom id ")
-                            Link("here", destination: url)
+                            Text("Find your chatroom id at ")
+                            Link(url.absoluteString, destination: url)
                                 .font(.footnote)
                             Text(".")
                         }

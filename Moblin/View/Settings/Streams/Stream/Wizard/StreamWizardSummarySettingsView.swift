@@ -7,40 +7,40 @@ struct StreamWizardSummarySettingsView: View {
         Form {
             if model.wizardPlatform == .twitch {
                 Section {
-                    TextItemView(name: "Channel name", value: model.wizardTwitchChannelName)
-                    TextItemView(name: "Channel id", value: model.wizardTwitchChannelId)
+                    TextValueView(name: "Channel name", value: model.wizardTwitchChannelName)
+                    TextValueView(name: "Channel id", value: model.wizardTwitchChannelId)
                 } header: {
                     Text("Twitch")
                 }
             } else if model.wizardPlatform == .kick {
                 Section {
-                    TextItemView(name: "Channel name", value: model.wizardKickChannelName)
-                    TextItemView(name: "Chatroom id", value: model.wizardKickChatroomId)
+                    TextValueView(name: "Channel name", value: model.wizardKickChannelName)
+                    TextValueView(name: "Chatroom id", value: model.wizardKickChatroomId)
                 } header: {
                     Text("Kick")
                 }
             }
             if model.wizardNetworkSetup == .obs {
                 Section {
-                    TextItemView(name: "IP address or domain name", value: model.wizardObsAddress)
-                    TextItemView(name: "Port", value: model.wizardObsPort)
+                    TextValueView(name: "IP address or domain name", value: model.wizardObsAddress)
+                    TextValueView(name: "Port", value: model.wizardObsPort)
                 } header: {
                     Text("OBS")
                 }
             } else if model.wizardNetworkSetup == .belaboxCloudObs {
                 Section {
-                    TextItemView(name: "Ingest URL", value: model.wizardBelaboxUrl)
+                    TextValueView(name: "Ingest URL", value: model.wizardBelaboxUrl)
                 } header: {
                     Text("BELABOX cloud")
                 }
             } else if model.wizardNetworkSetup == .direct {
                 Section {
                     if model.wizardPlatform == .twitch {
-                        TextItemView(name: "Nearby ingest endpoint", value: model.wizardDirectIngest)
-                        TextItemView(name: "Stream key", value: model.wizardDirectStreamKey)
+                        TextValueView(name: "Nearby ingest endpoint", value: model.wizardDirectIngest)
+                        TextValueView(name: "Stream key", value: model.wizardDirectStreamKey)
                     } else if model.wizardPlatform == .kick {
-                        TextItemView(name: "Stream URL", value: model.wizardDirectIngest)
-                        TextItemView(name: "Stream key", value: model.wizardDirectStreamKey)
+                        TextValueView(name: "Stream URL", value: model.wizardDirectIngest)
+                        TextValueView(name: "Stream key", value: model.wizardDirectStreamKey)
                     }
                 } header: {
                     Text("Direct")
@@ -48,9 +48,9 @@ struct StreamWizardSummarySettingsView: View {
             }
             if model.wizardPlatform != .custom {
                 Section {
-                    TextItemView(name: "BTTV emotes", value: yesOrNo(model.wizardChatBttv))
-                    TextItemView(name: "FFZ emotes", value: yesOrNo(model.wizardChatFfz))
-                    TextItemView(name: "7TV emotes", value: yesOrNo(model.wizardChatSeventv))
+                    TextValueView(name: "BTTV emotes", value: yesOrNo(model.wizardChatBttv))
+                    TextValueView(name: "FFZ emotes", value: yesOrNo(model.wizardChatFfz))
+                    TextValueView(name: "7TV emotes", value: yesOrNo(model.wizardChatSeventv))
                 } header: {
                     Text("Chat")
                 }

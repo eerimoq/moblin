@@ -8231,9 +8231,6 @@
     "Copy from " : {
 
     },
-    "Copy from https://cloud.belabox.net SRT(LA) relays (requires login). See image below for example. Replace srt:// with srtla:// and change port to use SRTLA instead of SRT." : {
-
-    },
     "Copy from https://help.twitch.tv/s/twitch-ingest-recommendation. Remove {stream_key}." : {
 
     },
@@ -12719,7 +12716,7 @@
         }
       }
     },
-    "Find your chatroom id " : {
+    "Find your chatroom id at " : {
 
     },
     "Find your chatroom id at https://kick.com/api/v1/channels/my_user. Replace my_user with your user." : {
@@ -12936,6 +12933,9 @@
           }
         }
       }
+    },
+    "For advanced users or if your platform is not in the list above." : {
+
     },
     "For example ws://232.32.45.332:4567." : {
       "localizations" : {
@@ -14426,9 +14426,6 @@
           }
         }
       }
-    },
-    "here" : {
-
     },
     "Hide sensitive URL" : {
       "localizations" : {
@@ -21814,6 +21811,9 @@
           }
         }
       }
+    },
+    "Press \"Add automatically to Moblin\" on https://cloud.belabox.net SRT(LA) relays (requires login). See screenshot below." : {
+
     },
     "Privacy policy" : {
 

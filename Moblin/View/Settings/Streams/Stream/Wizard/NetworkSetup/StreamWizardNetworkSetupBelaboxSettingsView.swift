@@ -34,19 +34,17 @@ struct StreamWizardNetworkSetupBelaboxSettingsView: View {
                 VStack(alignment: .leading) {
                     FormFieldError(error: urlError)
                     Text("""
-                    Copy from https://cloud.belabox.net SRT(LA) relays (requires login). \
-                    See image below for example. Replace srt:// with srtla:// and change port \
-                    to use SRTLA instead of SRT.
+                    Press "Add automatically to Moblin" on https://cloud.belabox.net SRT(LA) relays \
+                    (requires login). See screenshot below.
                     """)
-                }
-            }
-            Section {
-                HStack {
-                    Spacer()
-                    Image("BelaboxCloudIngest")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                    Spacer()
+                    HStack {
+                        Spacer()
+                        Image("BelaboxCloudIngest")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(maxWidth: 400)
+                        Spacer()
+                    }
                 }
             }
             Section {
