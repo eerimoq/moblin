@@ -67,7 +67,7 @@ struct StreamWizardSummarySettingsView: View {
                 }
             }
             if model.wizardPlatform != .custom {
-                if !model.wizardObsRemoteControlUrl.isEmpty && !model.wizardObsRemoteControlPassword.isEmpty {
+                if model.wizardObsRemoteControlEnabled {
                     Section {
                         TextValueView(name: "URL", value: model.wizardObsRemoteControlUrl)
                         TextValueView(name: "Password", value: model.wizardObsRemoteControlPassword)
