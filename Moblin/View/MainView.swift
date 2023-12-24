@@ -135,6 +135,12 @@ struct MainView: View {
                     .frame(width: settingsHalfWidth)
                 }
             }
+            if model.database.debug!.letItSnow! {
+                SpriteView(scene: scene, options: [.allowsTransparency])
+                    .ignoresSafeArea()
+                    .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+                    .allowsHitTesting(false)
+            }
             if model.blackScreen {
                 Text("")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -142,12 +148,6 @@ struct MainView: View {
                     .onTapGesture(count: 2) { _ in
                         model.toggleBlackScreen()
                     }
-            }
-            if model.database.debug!.letItSnow! {
-                SpriteView(scene: scene, options: [.allowsTransparency])
-                    .ignoresSafeArea()
-                    .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
-                    .allowsHitTesting(false)
             }
         }
         .onAppear {
