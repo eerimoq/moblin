@@ -9,7 +9,7 @@ struct Version {
 private let versions = [
     Version(version: "0.113.0", changes: [
         "• Let it snow on screen.",
-        "  • Enable in Settings -> Debug -> Let it snow.",
+        "  • Enable in Settings → Debug → Let it snow.",
     ]),
     Version(version: "0.112.0", changes: [
         "• Shorter disconnected and failed to connect error messages.",
@@ -33,13 +33,13 @@ private let versions = [
                 "• Move Local overlays, Tap screen to focus, Battery percentage and Quick buttons to Display settings.",
                 "• Move Back camera, Front camera, Zoom, Bitrate presets and Video stabilization to Camera settings.",
                 "• Only show bitrate and uptime local overlays in top right when live.",
-                "• Global buttons. Only widget buttons are per scene now. The rest are always visible (if enabled in Settings -> Display -> Quick buttons).",
+                "• Global buttons. Only widget buttons are per scene now. The rest are always visible (if enabled in Settings → Display → Quick buttons).",
                 "  • This makes new buttons appear automatically when upgrading.",
                 "• Highest thermal state in streaming history.",
                 "• Lowest battery percentage in streaming history.",
                 "• Create stream wizard continued.",
                 "• Record UI started. Behind experimental toggle. Does not save audio and video to file yet.",
-                "• Version history (changelog) in Settings -> About -> Version history.",
+                "• Version history (changelog) in Settings → About → Version history.",
                 "• Rename Quick buttons to Buttons.",
             ]),
     Version(version: "0.109.0",
@@ -58,7 +58,7 @@ private let versions = [
     Version(version: "0.107.0",
             changes: [
                 "• Unfinished \"create stream wizard\" behind experimental toggle.",
-                "  • Enable wizard with Settings -> Debug -> Create stream wizard.",
+                "  • Enable wizard with Settings → Debug → Create stream wizard.",
                 "• Show announcements when using Twitch chat.",
                 "• 128 Kpbs audio bitrate by default.",
                 "• Slightly more compact stream info in UI.",
@@ -90,7 +90,7 @@ private let versions = [
                 "    • The buttons are slightly larger when using one column.",
                 "• More translations updates.",
                 "• Toggles to enable/disable BTTV, FFZ and 7TV emotes.",
-                "  • Settings -> Streams -> My Stream -> Chat",
+                "  • Settings → Streams → My Stream → Chat",
             ]),
     Version(version: "0.101.0",
             changes: [
@@ -246,7 +246,7 @@ private let versions = [
     Version(version: "0.82.0",
             changes: [
                 "• Røde audio level debug.",
-                "  • Enable Settings -> Debug -> Audio -> Røde audio level and audio level should show in top right of UI.",
+                "  • Enable Settings → Debug → Audio → Røde audio level and audio level should show in top right of UI.",
                 "  • When enabled, audio level is based on first channel. Other channels are ignored.",
             ]),
     Version(version: "0.81.0",
@@ -259,14 +259,14 @@ private let versions = [
     Version(version: "0.80.0",
             changes: [
                 "• Key frame interval settings. 2 by default (as it was before).",
-                "  • Settings -> Streams -> Stream -> Video -> Key frame interval",
+                "  • Settings → Streams → Stream → Video → Key frame interval",
                 "  • Usually 2 is good. Higher means potentially higher video quality for same bitrate. Lower means faster recovery from frame drops.",
                 "• Update chat in UI every 200 ms instead of immediately on every message.",
                 "  • Not to flood UI update engine when lots of messages are received.",
                 "• Back and front camera selection (triple, dual, ultra wide, wide and telephoto).",
                 "  • Zoom works, but factor is a bit off I think.",
-                "  • Settings -> Back camera",
-                "  • Settings -> Front camera",
+                "  • Settings → Back camera",
+                "  • Settings → Front camera",
             ]),
     Version(version: "0.79.0",
             changes: [
@@ -525,7 +525,7 @@ private let versions = [
             "• BTTV, FFZ and 7TV emotes. Only for Twitch chat. Kick chat later on.",
             "  • Only cached when animated. To be improved.",
             "  • Optionally animated.",
-            "    • Settings -> Local overlays -> Chat -> Animated emotes",
+            "    • Settings → Local overlays → Chat → Animated emotes",
             "  • Sometimes 7TV emotes are not received from server. Unknown why.",
             "• Fix \"Muted\" font color in light mode.",
             "• Separate bold toggles for username and message.",
@@ -554,7 +554,7 @@ private let versions = [
         version: "0.50.0",
         changes: [
             "• Configurable chat font size. Increased to 17 (from 13) by default.",
-            "  • Settings -> Local overlays -> Chat -> Font size",
+            "  • Settings → Local overlays → Chat → Font size",
             "• Total chat redesign with lots of configuration possibilities. Please let me know if you want the old chat design back.",
             "  • Username and message colors.",
             "  • Optionally bold text.",
@@ -567,7 +567,7 @@ private let versions = [
         changes: [
             "• Fix SRT and SRTLA URL parameters bug. Now srt://foo.com:1234?latency=2000 works.",
             "• SRT and SRTLA latency setting in milliseconds in UI. Any latency parameter given in the URL overrides this setting.",
-            "  • Settings -> Streams -> Stream -> SRT & SRTLA -> Latency",
+            "  • Settings → Streams → Stream → SRT & SRTLA → Latency",
             "• Support for both left and right landscape orientation. Video always with gravity down (never upside down).",
             "• Audio level as bar or number. Color thresholds are set to -8 dB (red) and -18 dB (yellow). One bar is -60 dB.",
             "  • Bar colors to be added. Currently icon changes color.",
@@ -606,7 +606,7 @@ private let versions = [
         version: "0.44.0",
         changes: [
             "• Swapping between SRT streams works now. Video do not freeze anymore.",
-            "• Configure video stabilization as Off or Standard at Settings -> Video stabilization.",
+            "• Configure video stabilization as Off or Standard at Settings → Video stabilization.",
             "• Replace debug log copy and clear text buttons with images. Share link instead of copy to clipboard.",
         ]
     ),
@@ -680,9 +680,9 @@ private let versions = [
         version: "0.36.0",
         changes: [
             "• Super simple (and probably bad) adaptive bitrate algorithm for SRT(LA). Big work in progress.",
-            "  • Enabled with Settings -> Streams -> Stream -> Video -> Adaptive bitrate.",
+            "  • Enabled with Settings → Streams → Stream → Video → Adaptive bitrate.",
             "• SRT debug overlay. ",
-            "  • Enabled with Settings -> Debug -> Debug.",
+            "  • Enabled with Settings → Debug → Debug.",
             "• Fix tap screen to focus. Double tap to use auto focus again.",
         ]
     ),
@@ -724,7 +724,7 @@ private let versions = [
         version: "0.31.0",
         changes: [
             "• Rename web page to browser (same as OBS).",
-            "• Button to select Front, Back or Bottom builtin microphone. You must create the button yourself if you are upgrading from an older MOBS version (Settings -> Scenes -> Buttons and then Settings -> Scenes -> My scene -> Add button). Clean installations will get the button by default.",
+            "• Button to select Front, Back or Bottom builtin microphone. You must create the button yourself if you are upgrading from an older MOBS version (Settings → Scenes → Buttons and then Settings → Scenes → My scene → Add button). Clean installations will get the button by default.",
             "• Front microphone selected by default.",
             "• Show selected microphone in top-left of UI.",
             "• Browser widget fixes. Still very buggy.",

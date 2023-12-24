@@ -8216,7 +8216,7 @@
         }
       }
     },
-    "Configure it in Settings -> Streams -> %@ -> OBS remote control." : {
+    "Configure it in Settings → Streams → %@ → OBS remote control." : {
 
     },
     "Configure OBS on your computer" : {
@@ -19676,7 +19676,7 @@
     "OBS remote control is not configured" : {
 
     },
-    "OBS remote control is not configured. Configure it in Settings -> Streams -> %@ -> OBS remote control." : {
+    "OBS remote control is not configured. Configure it in Settings → Streams → %@ → OBS remote control." : {
 
     },
     "OBS remote control is not connected to the server" : {

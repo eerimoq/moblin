@@ -104,7 +104,7 @@ struct ObsSceneView: View {
                 if !model.isObsConfigured() {
                     Text("""
                     OBS remote control is not configured. Configure it in \
-                    Settings -> Streams -> \(model.stream.name) -> OBS remote control.
+                    Settings → Streams → \(model.stream.name) → OBS remote control.
                     """)
                 } else if !model.isObsConnected() {
                     Text("OBS remote control is not connected to the server")
@@ -208,7 +208,7 @@ struct ButtonsView: View {
                 title: String(localized: "OBS remote control is not configured"),
                 subTitle: String(
                     localized: """
-                    Configure it in Settings -> Streams -> \(model.stream.name) -> \
+                    Configure it in Settings → Streams → \(model.stream.name) → \
                     OBS remote control.
                     """
                 )
