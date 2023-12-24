@@ -83,7 +83,7 @@ final class RecordingsStorage {
         do {
             try tryLoadAndMigrate(settings: storage)
         } catch {
-            logger.info("streaming-history: Failed to load with error \(error). Using default.")
+            logger.info("recordings: Failed to load with error \(error). Using default.")
             realDatabase = RecordingsDatabase()
         }
     }
@@ -97,7 +97,7 @@ final class RecordingsStorage {
         do {
             storage = try realDatabase.toString()
         } catch {
-            logger.error("streaming-history: Failed to store.")
+            logger.error("recordings: Failed to store.")
         }
     }
 

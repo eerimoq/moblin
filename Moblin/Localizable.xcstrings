@@ -8213,6 +8213,9 @@
         }
       }
     },
+    "Configure it in Settings -> Streams -> %@ -> OBS remote control." : {
+
+    },
     "Configure OBS on your computer" : {
 
     },
@@ -19666,6 +19669,15 @@
         }
       }
     },
+    "OBS remote control is not configured" : {
+
+    },
+    "OBS remote control is not configured. Configure it in Settings -> Streams -> %@ -> OBS remote control." : {
+
+    },
+    "OBS remote control is not connected to the server" : {
+
+    },
     "OBS scene" : {
       "localizations" : {
         "de" : {
@@ -20409,6 +20421,7 @@
       }
     },
     "OBS WebSocket is not configured. Configure it in Settings -> Streams -> %@ -> OBS." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -20515,6 +20528,7 @@
       }
     },
     "OBS WebSocket is not connected to the server" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

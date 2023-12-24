@@ -231,7 +231,7 @@ private func unpackRequestResponse(data: Data) throws -> (String, ResponseReques
 
 struct Request {
     let onSuccess: (Data?) -> Void
-    let onError: () -> Void
+    let onError: (String) -> Void
 }
 
 struct ObsSceneList {
@@ -304,10 +304,10 @@ class ObsWebSocket {
         return connected
     }
 
-    func getSceneList(onSuccess: @escaping (ObsSceneList) -> Void, onError: @escaping () -> Void) {
+    func getSceneList(onSuccess: @escaping (ObsSceneList) -> Void, onError: @escaping (String) -> Void) {
         performRequest(type: .getSceneList, data: nil, onSuccess: { data in
             guard let data else {
-                onError()
+                onError("No data received")
                 return
             }
             do {
@@ -317,76 +317,76 @@ class ObsWebSocket {
                     scenes: decoded.scenes.reversed().map { $0.sceneName }
                 ))
             } catch {
-                onError()
+                onError("JSON decode failed")
             }
-        }, onError: {
-            onError()
+        }, onError: {message in
+            onError(message)
         })
     }
 
     func setCurrentProgramScene(name: String, onSuccess: @escaping () -> Void,
-                                onError: @escaping () -> Void)
+                                onError: @escaping (String) -> Void)
     {
         let data = SetCurrentProgramSceneRequest(sceneName: name)
         do {
             let data = try JSONEncoder().encode(data)
             performRequest(type: .setCurrentProgramScene, data: data, onSuccess: { _ in
                 onSuccess()
-            }, onError: {
-                onError()
+            }, onError: {message in
+                onError(message)
             })
         } catch {
-            onError()
+            onError("JSON decode failed")
         }
     }
 
-    func getStreamStatus(onSuccess: @escaping (ObsStreamStatus) -> Void, onError: @escaping () -> Void) {
+    func getStreamStatus(onSuccess: @escaping (ObsStreamStatus) -> Void, onError: @escaping (String) -> Void) {
         performRequest(type: .getStreamStatus, data: nil, onSuccess: { data in
             guard let data else {
-                onError()
+                onError("No data received")
                 return
             }
             do {
                 let decoded = try JSONDecoder().decode(GetStreamStatusResponse.self, from: data)
                 onSuccess(ObsStreamStatus(active: decoded.outputActive))
             } catch {
-                onError()
+                onError("JSON decode failed")
             }
-        }, onError: {
-            onError()
+        }, onError: {message in
+            onError(message)
         })
     }
 
-    func getRecordStatus(onSuccess: @escaping (ObsRecordStatus) -> Void, onError: @escaping () -> Void) {
+    func getRecordStatus(onSuccess: @escaping (ObsRecordStatus) -> Void, onError: @escaping (String) -> Void) {
         performRequest(type: .getRecordStatus, data: nil, onSuccess: { data in
             guard let data else {
-                onError()
+                onError("No data received")
                 return
             }
             do {
                 let decoded = try JSONDecoder().decode(GetRecordStatusResponse.self, from: data)
                 onSuccess(ObsRecordStatus(active: decoded.outputActive))
             } catch {
-                onError()
+                onError("JSON decode failed")
             }
-        }, onError: {
-            onError()
+        }, onError: {message in
+            onError(message)
         })
     }
 
-    func startStream(onSuccess: @escaping () -> Void, onError: @escaping () -> Void) {
+    func startStream(onSuccess: @escaping () -> Void, onError: @escaping (String) -> Void) {
         performRequest(type: .startStream, data: nil, onSuccess: { _ in
             onSuccess()
-        }, onError: {
-            onError()
+        }, onError: {message in
+            onError(message)
         })
     }
 
-    func stopStream(onSuccess: @escaping () -> Void, onError: @escaping () -> Void) {
+    func stopStream(onSuccess: @escaping () -> Void, onError: @escaping (String) -> Void) {
         performRequest(type: .stopStream, data: nil, onSuccess: { _ in
             onSuccess()
-        }, onError: {
-            onError()
+        }, onError: {message in
+            onError(message)
         })
     }
 
@@ -411,10 +411,10 @@ class ObsWebSocket {
         type: RequestType,
         data: Data?,
         onSuccess: @escaping (Data?) -> Void,
-        onError: @escaping () -> Void
+        onError: @escaping (String) -> Void
     ) {
         guard connected else {
-            onError()
+            onError("Not connected to server")
             return
         }
         let requestId = getNextId()
@@ -555,7 +555,7 @@ class ObsWebSocket {
         if status.result {
             request.onSuccess(data)
         } else {
-            request.onError()
+            request.onError("Operation failed")
         }
     }
 

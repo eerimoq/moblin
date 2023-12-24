@@ -103,11 +103,11 @@ struct ObsSceneView: View {
             Section("OBS Scene") {
                 if !model.isObsConfigured() {
                     Text("""
-                    OBS WebSocket is not configured. Configure it in \
-                    Settings -> Streams -> \(model.stream.name) -> OBS.
+                    OBS remote control is not configured. Configure it in \
+                    Settings -> Streams -> \(model.stream.name) -> OBS remote control.
                     """)
                 } else if !model.isObsConnected() {
-                    Text("OBS WebSocket is not connected to the server")
+                    Text("OBS remote control is not connected to the server")
                 } else if model.obsScenes.isEmpty {
                     Text("Fetching OBS scenes from server...")
                 } else {
@@ -203,11 +203,22 @@ struct ButtonsView: View {
     }
 
     private func obsStartStopStreamAction(state: ButtonState) {
-        state.button.isOn.toggle()
+        guard model.isObsConfigured() else {
+            model.makeErrorToast(
+                title: String(localized: "OBS remote control is not configured"),
+                subTitle: String(
+                    localized: """
+                               Configure it in Settings -> Streams -> \(model.stream.name) -> \
+                               OBS remote control.
+                               """
+                )
+            )
+            return
+        }
         if state.button.isOn {
-            model.obsStartStream()
-        } else {
             model.obsStopStream()
+        } else {
+            model.obsStartStream()
         }
         model.updateButtonStates()
         isPresentingObsStartStopConfirm = false

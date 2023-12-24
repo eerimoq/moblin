@@ -838,9 +838,10 @@ final class Model: ObservableObject {
                 self.obsCurrentScene = list.current
                 self.obsScenes = list.scenes
             }
-        }, onError: {
+        }, onError: {message in
             DispatchQueue.main.async {
-                self.makeErrorToast(title: String(localized: "Failed to fetch OBS scenes"))
+                self.makeErrorToast(title: String(localized: "Failed to fetch OBS scenes"),
+                                    subTitle: message)
             }
         })
     }
@@ -851,9 +852,10 @@ final class Model: ObservableObject {
                 self.makeToast(title: String(localized: "OBS scene set to \(name)"))
                 self.obsCurrentSceneStatus = name
             }
-        }, onError: {
+        }, onError: {message in
             DispatchQueue.main.async {
-                self.makeErrorToast(title: String(localized: "Failed to set OBS scene to \(name)"))
+                self.makeErrorToast(title: String(localized: "Failed to set OBS scene to \(name)"),
+                                    subTitle: message)
             }
         })
     }
@@ -866,7 +868,7 @@ final class Model: ObservableObject {
             DispatchQueue.main.async {
                 self.obsCurrentSceneStatus = list.current
             }
-        }, onError: {
+        }, onError: {_ in
             DispatchQueue.main.async {
                 self.obsCurrentSceneStatus = "Unknown"
             }
@@ -875,7 +877,7 @@ final class Model: ObservableObject {
             DispatchQueue.main.async {
                 self.obsStreaming = status.active
             }
-        }, onError: {
+        }, onError: {_ in
             DispatchQueue.main.async {
                 self.obsStreaming = false
             }
@@ -884,7 +886,7 @@ final class Model: ObservableObject {
             DispatchQueue.main.async {
                 self.obsRecording = status.active
             }
-        }, onError: {
+        }, onError: {_ in
             DispatchQueue.main.async {
                 self.obsRecording = false
             }
@@ -1853,9 +1855,10 @@ final class Model: ObservableObject {
             DispatchQueue.main.async {
                 self.makeToast(title: String(localized: "OBS stream started"))
             }
-        }, onError: {
+        }, onError: {message in
             DispatchQueue.main.async {
-                self.makeErrorToast(title: String(localized: "Failed to start OBS stream"))
+                self.makeErrorToast(title: String(localized: "Failed to start OBS stream"),
+                subTitle: message)
             }
         })
     }
@@ -1865,9 +1868,10 @@ final class Model: ObservableObject {
             DispatchQueue.main.async {
                 self.makeToast(title: String(localized: "OBS stream stopped"))
             }
-        }, onError: {
+        }, onError: {message in
             DispatchQueue.main.async {
-                self.makeErrorToast(title: String(localized: "Failed to stop OBS stream"))
+                self.makeErrorToast(title: String(localized: "Failed to stop OBS stream"),
+                                    subTitle: message)
             }
         })
     }
@@ -1881,7 +1885,7 @@ final class Model: ObservableObject {
     private func handleObsStreamStatusChanged(active: Bool) {
         DispatchQueue.main.async {
             self.obsStreaming = active
-            for button in self.database.buttons where button.type == .obsStartStopStream {
+            for button in self.database.globalButtons! where button.type == .obsStartStopStream {
                 button.isOn = active
             }
             for pair in self.buttonPairs {
