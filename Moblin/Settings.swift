@@ -93,7 +93,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var obsWebSocketPassword: String? = ""
     var resolution: SettingsStreamResolution = .r1920x1080
     var fps: Int = 30
-    var bitrate: UInt32 = 3_000_000
+    var bitrate: UInt32 = 5_000_000
     var codec: SettingsStreamCodec = .h265hevc
     var bFrames: Bool? = false
     var adaptiveBitrate: Bool = false
@@ -697,7 +697,7 @@ class SettingsZoom: Codable {
 
 class SettingsBitratePreset: Codable, Identifiable {
     var id: UUID
-    var bitrate: UInt32 = 3_000_000
+    var bitrate: UInt32 = 5_000_000
 
     init(id: UUID, bitrate: UInt32) {
         self.id = id
