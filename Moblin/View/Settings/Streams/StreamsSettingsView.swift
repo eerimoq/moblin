@@ -21,9 +21,7 @@ struct StreamsSettingsView: View {
                                     stream.enabled
                                 }, set: { value in
                                     stream.enabled = value
-                                    for ostream in database.streams
-                                        where ostream.id != stream.id
-                                    {
+                                    for ostream in database.streams where ostream.id != stream.id {
                                         ostream.enabled = false
                                     }
                                     model.reloadStream()
@@ -32,7 +30,7 @@ struct StreamsSettingsView: View {
                                 .disabled(stream.enabled || model.isLive)
                             }
                         }
-                        if stream.enabled {
+                        if stream.enabled && model.isLive {
                             item.swipeActions(edge: .trailing) {
                                 Button(action: {
                                     database.streams.append(stream.clone())
@@ -47,6 +45,8 @@ struct StreamsSettingsView: View {
                                 Button(action: {
                                     database.streams.removeAll { $0 == stream }
                                     model.store()
+                                    model.reloadStream()
+                                    model.sceneUpdated()
                                 }, label: {
                                     Text("Delete")
                                 })
@@ -72,6 +72,7 @@ struct StreamsSettingsView: View {
                     model.resetWizard()
                     model.isPresentingWizard = true
                 })
+                .disabled(model.isLive)
                 .sheet(isPresented: $model.isPresentingWizard) {
                     NavigationStack {
                         StreamWizardSettingsView()

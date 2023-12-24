@@ -34,7 +34,7 @@ struct StreamButton: View {
                     model.stopStream()
                 }
             }
-        } else {
+        } else if model.isStreamConfigured() {
             Button(action: {
                 isPresentingGoLiveConfirm = true
             }, label: {
@@ -43,6 +43,18 @@ struct StreamButton: View {
             .confirmationDialog("", isPresented: $isPresentingGoLiveConfirm) {
                 Button("Go Live") {
                     model.startStream()
+                }
+            }
+        } else {
+            Button(action: {
+                model.resetWizard()
+                model.isPresentingSetupWizard = true
+            }, label: {
+                StreamButtonText(text: String(localized: "Setup"))
+            })
+            .sheet(isPresented: $model.isPresentingSetupWizard) {
+                NavigationStack {
+                    StreamWizardSettingsView()
                 }
             }
         }

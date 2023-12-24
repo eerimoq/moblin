@@ -829,9 +829,6 @@ class Database: Codable {
         for button in database.buttons {
             button.isOn = false
         }
-        if database.streams.isEmpty {
-            addDefaultStreams(database: database)
-        }
         if database.zoom.back.isEmpty {
             addDefaultBackZoomPresets(database: database)
         }
@@ -913,13 +910,6 @@ func addDefaultScenes(database: Database) {
     scene.widgets.append(createSceneWidgetVideoEffectMovie(database: database))
     scene.addButton(id: database.buttons[0].id)
     database.scenes.append(scene)
-}
-
-func addDefaultStreams(database: Database) {
-    let stream = SettingsStream(name: "Main")
-    stream.enabled = true
-    stream.url = defaultStreamUrl
-    database.streams.append(stream)
 }
 
 func addDefaultZoomPresets(database: Database) {
@@ -1130,7 +1120,6 @@ func createDefault() -> Database {
     addDefaultWidgets(database: database)
     addDefaultButtons(database: database)
     addDefaultScenes(database: database)
-    addDefaultStreams(database: database)
     addDefaultZoomPresets(database: database)
     addDefaultBitratePresets(database: database)
     addMissingGlobalButtons(database: database)

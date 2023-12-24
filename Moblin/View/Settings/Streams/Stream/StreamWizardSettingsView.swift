@@ -19,6 +19,7 @@ struct CreateStreamWizardToolbar: ToolbarContent {
             HStack {
                 Button(action: {
                     model.isPresentingWizard = false
+                    model.isPresentingSetupWizard = false
                 }, label: {
                     Text("Close")
                 })

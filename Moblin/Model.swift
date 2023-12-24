@@ -17,6 +17,7 @@ import VideoToolbox
 private let noValue = ""
 private let maximumNumberOfChatMessages = 50
 private let secondsSuffix = String(localized: "/sec")
+private let fallbackStream = SettingsStream(name: "Fallback")
 
 struct Camera: Identifiable {
     var id: String
@@ -288,6 +289,7 @@ final class Model: ObservableObject {
     }
 
     @Published var isPresentingWizard: Bool = false
+    @Published var isPresentingSetupWizard: Bool = false
     var wizardPlatform: WizardPlatform = .custom
     var wizardNetworkSetup: WizardNetworkSetup = .none
     @Published var wizardName = ""
@@ -335,7 +337,7 @@ final class Model: ObservableObject {
         for stream in database.streams where stream.enabled {
             return stream
         }
-        return SettingsStream(name: "")
+        return fallbackStream
     }
 
     var enabledScenes: [SettingsScene] {
@@ -428,8 +430,14 @@ final class Model: ObservableObject {
             stream.codec = .h264avc
         }
         stream.audioBitrate = 128_000
+        stream.enabled = true
         database.streams.append(stream)
         store()
+        for ostream in database.streams where ostream != stream {
+            ostream.enabled = false
+        }
+        reloadStream()
+        sceneUpdated()
     }
 
     func resetWizard() {
@@ -1114,6 +1122,7 @@ final class Model: ObservableObject {
             break
         case .belaboxCloudObs:
             for stream in settings.streams ?? [] {
+                wizardName = stream.name
                 wizardBelaboxUrl = stream.url
             }
         case .direct:
@@ -1142,7 +1151,7 @@ final class Model: ObservableObject {
                 )
                 continue
             }
-            if isPresentingWizard {
+            if isPresentingWizard || isPresentingSetupWizard {
                 handleSettingsUrlsInWizard(settings: settings)
             } else {
                 handleSettingsUrlsDefault(settings: settings)
@@ -1636,6 +1645,10 @@ final class Model: ObservableObject {
 
     private func setStreamKeyFrameInterval() {
         media.setStreamKeyFrameInterval(seconds: stream.maxKeyFrameInterval!)
+    }
+
+    func isStreamConfigured() -> Bool {
+        return stream != fallbackStream
     }
 
     func isChatConfigured() -> Bool {

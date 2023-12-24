@@ -13,16 +13,20 @@ struct LeftOverlayView: View {
     }
 
     func streamText() -> String {
-        let proto = stream.protocolString()
-        let resolution = stream.resolutionString()
-        let codec = stream.codecString()
-        let bitrate = stream.bitrateString()
-        let audioCodec = stream.audioCodecString()
-        let audioBitrate = stream.audioBitrateString()
-        return """
-        \(stream.name) (\(resolution), \(stream.fps), \(proto), \(codec) \(bitrate), \
-        \(audioCodec) \(audioBitrate))
-        """
+        if model.isStreamConfigured() {
+            let proto = stream.protocolString()
+            let resolution = stream.resolutionString()
+            let codec = stream.codecString()
+            let bitrate = stream.bitrateString()
+            let audioCodec = stream.audioCodecString()
+            let audioBitrate = stream.audioBitrateString()
+            return """
+            \(stream.name) (\(resolution), \(stream.fps), \(proto), \(codec) \(bitrate), \
+            \(audioCodec) \(audioBitrate))
+            """
+        } else {
+            return String(localized: "Not configured")
+        }
     }
 
     func viewersText() -> String {

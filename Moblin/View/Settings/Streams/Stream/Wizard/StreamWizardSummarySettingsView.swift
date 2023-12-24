@@ -95,6 +95,7 @@ struct StreamWizardSummarySettingsView: View {
                     Button {
                         model.createStreamFromWizard()
                         model.isPresentingWizard = false
+                        model.isPresentingSetupWizard = false
                     } label: {
                         Text("Create")
                     }
