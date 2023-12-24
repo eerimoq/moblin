@@ -7,6 +7,10 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.113.0", changes: [
+        "• Let it snow on screen.",
+        "  • Enable in Settings -> Debug -> Let it snow.",
+    ]),
     Version(version: "0.112.0", changes: [
         "• Shorter disconnected and failed to connect error messages.",
         "• Create stream wizard continued.",
