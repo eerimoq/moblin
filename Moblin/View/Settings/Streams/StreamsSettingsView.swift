@@ -70,6 +70,7 @@ struct StreamsSettingsView: View {
                 }
                 CreateButtonView(action: {
                     if model.database.debug!.createStreamWizard! {
+                        model.resetWizard()
                         model.isPresentingWizard = true
                     } else {
                         database.streams.append(SettingsStream(name: String(localized: "My stream")))

@@ -2,9 +2,19 @@ import SwiftUI
 
 struct StreamWizardNetworkSetupObsSettingsView: View {
     @EnvironmentObject private var model: Model
+    @State var portError = ""
 
-    private func isDisabled() -> Bool {
-        return model.wizardObsAddress.isEmpty || model.wizardObsPort.isEmpty
+    private func nextDisabled() -> Bool {
+        return model.wizardObsAddress.trim().isEmpty || model.wizardObsPort.trim().isEmpty || !portError
+            .isEmpty
+    }
+
+    private func updatePortError() {
+        if UInt16(model.wizardObsPort) != nil {
+            portError = ""
+        } else {
+            portError = "Must be a number between 1 and 65535."
+        }
     }
 
     var body: some View {
@@ -20,10 +30,16 @@ struct StreamWizardNetworkSetupObsSettingsView: View {
             Section {
                 TextField("7654", text: $model.wizardObsPort)
                     .disableAutocorrection(true)
+                    .onSubmit {
+                        updatePortError()
+                    }
             } header: {
                 Text("Port")
             } footer: {
-                Text("Configure port forwarding in your router to forward incoming traffic to OBS.")
+                VStack(alignment: .leading) {
+                    FormFieldError(error: portError)
+                    Text("Configure port forwarding in your router to forward incoming traffic to OBS.")
+                }
             }
             Section {
                 VStack(alignment: .leading) {
@@ -49,7 +65,7 @@ struct StreamWizardNetworkSetupObsSettingsView: View {
                 NavigationLink(destination: StreamWizardGeneralSettingsView()) {
                     WizardNextButtonView()
                 }
-                .disabled(isDisabled())
+                .disabled(nextDisabled())
             }
         }
         .onAppear {

@@ -2,13 +2,23 @@ import SwiftUI
 
 struct StreamWizardNetworkSetupDirectSettingsView: View {
     @EnvironmentObject private var model: Model
+    @State var ingestError = ""
 
-    private func isDisabled() -> Bool {
-        return model.wizardDirectIngest.isEmpty || model.wizardDirectStreamKey.isEmpty
+    private func nextDisabled() -> Bool {
+        return model.wizardDirectIngest.isEmpty || model.wizardDirectStreamKey.isEmpty || !ingestError.isEmpty
     }
 
     private func twitchStreamKeyUrl() -> String {
         return "https://dashboard.twitch.tv/u/\(model.wizardTwitchChannelName.trim())/settings/stream"
+    }
+
+    private func updateIngestError() {
+        let url = cleanUrl(url: model.wizardDirectIngest)
+        if url.isEmpty {
+            ingestError = ""
+        } else {
+            ingestError = isValidUrl(url: url) ?? ""
+        }
     }
 
     var body: some View {
@@ -17,13 +27,19 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                 Section {
                     TextField("rtmp://arn03.contribute.live-video.net/app", text: $model.wizardDirectIngest)
                         .disableAutocorrection(true)
+                        .onSubmit {
+                            updateIngestError()
+                        }
                 } header: {
                     Text("Nearby ingest endpoint")
                 } footer: {
-                    Text("""
-                    Copy from \
-                    https://help.twitch.tv/s/twitch-ingest-recommendation. Remove {stream_key}.
-                    """)
+                    VStack(alignment: .leading) {
+                        FormFieldError(error: ingestError)
+                        Text("""
+                        Copy from \
+                        https://help.twitch.tv/s/twitch-ingest-recommendation. Remove {stream_key}.
+                        """)
+                    }
                 }
                 Section {
                     TextField(
@@ -48,12 +64,18 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                         text: $model.wizardDirectIngest
                     )
                     .disableAutocorrection(true)
+                    .onSubmit {
+                        updateIngestError()
+                    }
                 } header: {
                     Text("Stream URL")
                 } footer: {
-                    Text(
-                        "Copy from https://kick.com/dashboard/settings/stream (requires login)."
-                    )
+                    VStack(alignment: .leading) {
+                        FormFieldError(error: ingestError)
+                        Text(
+                            "Copy from https://kick.com/dashboard/settings/stream (requires login)."
+                        )
+                    }
                 }
                 Section {
                     TextField(
@@ -73,7 +95,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                 NavigationLink(destination: StreamWizardGeneralSettingsView()) {
                     WizardNextButtonView()
                 }
-                .disabled(isDisabled())
+                .disabled(nextDisabled())
             }
         }
         .onAppear {

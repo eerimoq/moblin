@@ -92,7 +92,7 @@ func cleanUrl(url value: String) -> String {
     return components.string!
 }
 
-func isValidUrl(url value: String) -> String? {
+func isValidUrl(url value: String, allowedSchemes: [String]? = nil) -> String? {
     guard let url = URL(string: value) else {
         return String(localized: "Malformed URL")
     }
@@ -101,6 +101,11 @@ func isValidUrl(url value: String) -> String? {
     }
     guard URLComponents(url: url, resolvingAgainstBaseURL: false) != nil else {
         return String(localized: "Malformed URL")
+    }
+    if let allowedSchemes, let scheme = url.scheme {
+        if !allowedSchemes.contains(scheme) {
+            return "Only \(allowedSchemes.joined(separator: " and ")) allowed, not \(scheme)"
+        }
     }
     switch url.scheme {
     case "rtmp":
@@ -499,5 +504,13 @@ extension ProcessInfo.ThermalState {
         default:
             return .pink
         }
+    }
+}
+
+func yesOrNo(_ value: Bool) -> String {
+    if value {
+        return "Yes"
+    } else {
+        return "No"
     }
 }

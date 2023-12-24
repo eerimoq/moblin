@@ -3415,6 +3415,9 @@
         }
       }
     },
+    "Attempting again in %lld seconds." : {
+
+    },
     "Audio" : {
       "localizations" : {
         "de" : {
@@ -8216,6 +8219,9 @@
     "Configure port forwarding in your router to forward incoming traffic to OBS." : {
 
     },
+    "Configure the stream after the wizard ends." : {
+
+    },
     "Copy from " : {
 
     },
@@ -8444,9 +8450,6 @@
 
     },
     "Custom" : {
-
-    },
-    "Custom streams are configured after the wizard ends." : {
 
     },
     "Debug" : {

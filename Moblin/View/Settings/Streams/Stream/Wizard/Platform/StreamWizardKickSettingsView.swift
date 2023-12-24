@@ -11,6 +11,10 @@ struct StreamWizardKickSettingsView: View {
         return model.wizardKickChannelName.trim()
     }
 
+    private func nextDisabled() -> Bool {
+        return channelName().isEmpty
+    }
+
     var body: some View {
         Form {
             Section {
@@ -42,7 +46,7 @@ struct StreamWizardKickSettingsView: View {
                 NavigationLink(destination: StreamWizardNetworkSetupSettingsView(platform: "Kick")) {
                     WizardNextButtonView()
                 }
-                .disabled(model.wizardKickChannelName.isEmpty)
+                .disabled(nextDisabled())
             }
         }
         .onAppear {

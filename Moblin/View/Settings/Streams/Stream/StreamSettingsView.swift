@@ -91,8 +91,10 @@ struct StreamSettingsView: View {
                     }
                 }))
             }
-            NavigationLink(destination: StreamSrtSettingsView(stream: stream)) {
-                Text("SRT(LA)")
+            if stream.getProtocol() == .srt {
+                NavigationLink(destination: StreamSrtSettingsView(stream: stream)) {
+                    Text("SRT(LA)")
+                }
             }
         }
         .navigationTitle("Stream")

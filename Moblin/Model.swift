@@ -288,11 +288,11 @@ final class Model: ObservableObject {
     @Published var isPresentingWizard: Bool = false
     var wizardPlatform: WizardPlatform = .custom
     var wizardNetworkSetup: WizardNetworkSetup = .none
-    @Published var wizardName: String = ""
-    @Published var wizardTwitchChannelName: String = ""
-    @Published var wizardTwitchChannelId: String = ""
-    @Published var wizardKickChannelName: String = ""
-    @Published var wizardKickChatroomId: String = ""
+    @Published var wizardName = ""
+    @Published var wizardTwitchChannelName = ""
+    @Published var wizardTwitchChannelId = ""
+    @Published var wizardKickChannelName = ""
+    @Published var wizardKickChatroomId = ""
     @Published var wizardObsAddress = ""
     @Published var wizardObsPort = ""
     @Published var wizardDirectIngest = ""
@@ -401,6 +401,24 @@ final class Model: ObservableObject {
         stream.audioBitrate = 128_000
         database.streams.append(stream)
         store()
+    }
+
+    func resetWizard() {
+        wizardPlatform = .custom
+        wizardNetworkSetup = .none
+        wizardName = ""
+        wizardTwitchChannelName = ""
+        wizardTwitchChannelId = ""
+        wizardKickChannelName = ""
+        wizardKickChatroomId = ""
+        wizardObsAddress = ""
+        wizardObsPort = ""
+        wizardDirectIngest = ""
+        wizardDirectStreamKey = ""
+        wizardChatBttv = true
+        wizardChatFfz = true
+        wizardChatSeventv = true
+        wizardBelaboxUrl = ""
     }
 
     func setAdaptiveBitratePacketsInFlight(value: Int32) {
@@ -2474,7 +2492,7 @@ final class Model: ObservableObject {
             return
         }
         logger.info("stream: Disconnected with reason \(reason)")
-        let subTitle = "\(reason) - Trying again in \(Int(reconnectTime)) seconds."
+        let subTitle = String(localized: "Attempting again in \(Int(reconnectTime)) seconds.")
         if streamState == .connected {
             streamTotalBytes += UInt64(media.streamTotal())
             streamingHistoryStream?.numberOfFffffs! += 1

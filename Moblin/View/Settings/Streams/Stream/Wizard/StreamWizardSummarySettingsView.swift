@@ -46,6 +46,15 @@ struct StreamWizardSummarySettingsView: View {
                     Text("Direct")
                 }
             }
+            if model.wizardPlatform != .custom {
+                Section {
+                    TextItemView(name: "BTTV emotes", value: yesOrNo(model.wizardChatBttv))
+                    TextItemView(name: "FFZ emotes", value: yesOrNo(model.wizardChatFfz))
+                    TextItemView(name: "7TV emotes", value: yesOrNo(model.wizardChatSeventv))
+                } header: {
+                    Text("Chat")
+                }
+            }
             Section {
                 TextField("Name", text: $model.wizardName)
             } header: {

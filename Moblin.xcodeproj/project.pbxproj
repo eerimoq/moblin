@@ -215,6 +215,8 @@
 		03A08B7C2AC295620018BA95 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = 03A08B7B2AC295620018BA95 /* AlertToast */; };
 		03A08B802AC368860018BA95 /* Media.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A08B7F2AC368860018BA95 /* Media.swift */; };
 		03A14BE32ACC903E00D180FF /* ZoomSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A14BE22ACC903E00D180FF /* ZoomSettingsView.swift */; };
+		03A173F12B37E5E600ACC4F8 /* FormFieldError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A173F02B37E5E600ACC4F8 /* FormFieldError.swift */; };
+		03A173F22B37E5E600ACC4F8 /* FormFieldError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A173F02B37E5E600ACC4F8 /* FormFieldError.swift */; };
 		03A3F4C72AF4C0AD00F465D1 /* AdaptiveBitrate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A3F4C62AF4C0AD00F465D1 /* AdaptiveBitrate.swift */; };
 		03A974282AC137A000610E21 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 03A974272AC137A000610E21 /* Collections */; };
 		03A983422A9A03D3008FF0DB /* TwitchChat in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983412A9A03D3008FF0DB /* TwitchChat */; };
@@ -372,6 +374,7 @@
 		0391BB3C2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutVersionHistorySettingsView.swift; sourceTree = "<group>"; };
 		03A08B7F2AC368860018BA95 /* Media.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Media.swift; sourceTree = "<group>"; };
 		03A14BE22ACC903E00D180FF /* ZoomSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomSettingsView.swift; sourceTree = "<group>"; };
+		03A173F02B37E5E600ACC4F8 /* FormFieldError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormFieldError.swift; sourceTree = "<group>"; };
 		03A3F4C62AF4C0AD00F465D1 /* AdaptiveBitrate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveBitrate.swift; sourceTree = "<group>"; };
 		03A983552A9A05D7008FF0DB /* StreamsSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamsSettingsView.swift; sourceTree = "<group>"; };
 		03A983562A9A05D7008FF0DB /* MainView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
@@ -557,6 +560,7 @@
 				032FDBFE2B0B11B0007BE85E /* PositionEditView.swift */,
 				032FDC012B0B11C5007BE85E /* SizeEditView.swift */,
 				03D691522B36EDB600038F13 /* TextValueView.swift */,
+				03A173F02B37E5E600ACC4F8 /* FormFieldError.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -1307,6 +1311,7 @@
 				032E06792B2F3E9D00EAE5F8 /* CosmeticsSettingsView.swift in Sources */,
 				032E067A2B2F3E9D00EAE5F8 /* AboutLicensesSettingsView.swift in Sources */,
 				032E067B2B2F3E9D00EAE5F8 /* ResetSettingsView.swift in Sources */,
+				03A173F22B37E5E600ACC4F8 /* FormFieldError.swift in Sources */,
 				032E067C2B2F3E9D00EAE5F8 /* WidgetsSettingsView.swift in Sources */,
 				032E067D2B2F3E9D00EAE5F8 /* StreamChatSettingsView.swift in Sources */,
 				032E067E2B2F3E9D00EAE5F8 /* HelpAndSupportSettingsView.swift in Sources */,
@@ -1442,6 +1447,7 @@
 				03B374092AA0EA700028DDD5 /* ImageEffect.swift in Sources */,
 				038B67622AE84BFC000DC43B /* StreamVideoCaptureSessionPresetSettingsView.swift in Sources */,
 				03A983692A9A05D7008FF0DB /* CreateButtonView.swift in Sources */,
+				03A173F12B37E5E600ACC4F8 /* FormFieldError.swift in Sources */,
 				03831D592AD9A198008D26CC /* CosmeticsSettingsView.swift in Sources */,
 				0379BBC02AADC4EC00B718B6 /* AboutLicensesSettingsView.swift in Sources */,
 				0379BBB22AAD97FB00B718B6 /* ResetSettingsView.swift in Sources */,

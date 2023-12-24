@@ -3,6 +3,10 @@ import SwiftUI
 struct StreamWizardTwitchSettingsView: View {
     @EnvironmentObject private var model: Model
 
+    private func nextDisabled() -> Bool {
+        return model.wizardTwitchChannelName.trim().isEmpty
+    }
+
     var body: some View {
         Form {
             Section {
@@ -32,7 +36,7 @@ struct StreamWizardTwitchSettingsView: View {
                 NavigationLink(destination: StreamWizardNetworkSetupSettingsView(platform: "Twitch")) {
                     WizardNextButtonView()
                 }
-                .disabled(model.wizardTwitchChannelName.isEmpty)
+                .disabled(nextDisabled())
             }
         }
         .onAppear {

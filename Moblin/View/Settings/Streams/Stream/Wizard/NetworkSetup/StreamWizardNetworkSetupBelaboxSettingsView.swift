@@ -2,6 +2,20 @@ import SwiftUI
 
 struct StreamWizardNetworkSetupBelaboxSettingsView: View {
     @EnvironmentObject private var model: Model
+    @State var urlError = ""
+
+    private func nextDisabled() -> Bool {
+        return model.wizardBelaboxUrl.trim().isEmpty || !urlError.isEmpty
+    }
+
+    private func updateUrlError() {
+        let url = cleanUrl(url: model.wizardBelaboxUrl)
+        if url.isEmpty {
+            urlError = ""
+        } else {
+            urlError = isValidUrl(url: url, allowedSchemes: ["srt", "srtla"]) ?? ""
+        }
+    }
 
     var body: some View {
         Form {
@@ -11,14 +25,20 @@ struct StreamWizardNetworkSetupBelaboxSettingsView: View {
                     text: $model.wizardBelaboxUrl
                 )
                 .disableAutocorrection(true)
+                .onSubmit {
+                    updateUrlError()
+                }
             } header: {
                 Text("Ingest URL")
             } footer: {
-                Text("""
-                Copy from https://cloud.belabox.net SRT(LA) relays (requires login). \
-                See image below for example. Replace srt:// with srtla:// and change port \
-                to use SRTLA instead of SRT.
-                """)
+                VStack(alignment: .leading) {
+                    FormFieldError(error: urlError)
+                    Text("""
+                    Copy from https://cloud.belabox.net SRT(LA) relays (requires login). \
+                    See image below for example. Replace srt:// with srtla:// and change port \
+                    to use SRTLA instead of SRT.
+                    """)
+                }
             }
             Section {
                 HStack {
@@ -33,7 +53,7 @@ struct StreamWizardNetworkSetupBelaboxSettingsView: View {
                 NavigationLink(destination: StreamWizardGeneralSettingsView()) {
                     WizardNextButtonView()
                 }
-                .disabled(model.wizardBelaboxUrl.isEmpty)
+                .disabled(nextDisabled())
             }
         }
         .onAppear {
