@@ -8249,6 +8249,9 @@
     "Copy from https://youtube.com (requires login)." : {
 
     },
+    "Copy from OBS." : {
+
+    },
     "Cosmetics" : {
       "localizations" : {
         "de" : {
@@ -9856,6 +9859,9 @@
           }
         }
       }
+    },
+    "Enabled" : {
+
     },
     "End" : {
       "localizations" : {
@@ -21722,6 +21728,9 @@
         }
       }
     },
+    "po3Gg4pflp3s" : {
+
+    },
     "Port" : {
 
     },
@@ -29866,6 +29875,9 @@
     "Use https://streamscharts.com/tools/convert-username to convert your channel name to your channel id." : {
 
     },
+    "Use your public IP address if streaming over the internet." : {
+
+    },
     "Username" : {
       "localizations" : {
         "de" : {
@@ -31670,6 +31682,9 @@
           }
         }
       }
+    },
+    "ws://213.33.45.132" : {
+
     },
     "X must be %f - %f" : {
       "localizations" : {

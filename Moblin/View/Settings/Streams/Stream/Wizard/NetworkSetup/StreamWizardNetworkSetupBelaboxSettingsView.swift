@@ -9,11 +9,11 @@ struct StreamWizardNetworkSetupBelaboxSettingsView: View {
     }
 
     private func updateUrlError() {
-        let url = cleanUrl(url: model.wizardBelaboxUrl)
-        if url.isEmpty {
+        model.wizardBelaboxUrl = cleanUrl(url: model.wizardBelaboxUrl)
+        if model.wizardBelaboxUrl.isEmpty {
             urlError = ""
         } else {
-            urlError = isValidUrl(url: url, allowedSchemes: ["srt", "srtla"]) ?? ""
+            urlError = isValidUrl(url: model.wizardBelaboxUrl, allowedSchemes: ["srt", "srtla"]) ?? ""
         }
     }
 
@@ -48,7 +48,7 @@ struct StreamWizardNetworkSetupBelaboxSettingsView: View {
                 }
             }
             Section {
-                NavigationLink(destination: StreamWizardGeneralSettingsView()) {
+                NavigationLink(destination: StreamWizardChatSettingsView()) {
                     WizardNextButtonView()
                 }
                 .disabled(nextDisabled())
@@ -56,6 +56,7 @@ struct StreamWizardNetworkSetupBelaboxSettingsView: View {
         }
         .onAppear {
             model.wizardNetworkSetup = .belaboxCloudObs
+            updateUrlError()
         }
         .navigationTitle("BELABOX cloud and OBS")
         .toolbar {

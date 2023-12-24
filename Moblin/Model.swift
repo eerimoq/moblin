@@ -301,6 +301,9 @@ final class Model: ObservableObject {
     @Published var wizardAfreecsTvCStreamId = ""
     @Published var wizardObsAddress = ""
     @Published var wizardObsPort = ""
+    @Published var wizardObsRemoteControlEnabled = false
+    @Published var wizardObsRemoteControlUrl = ""
+    @Published var wizardObsRemoteControlPassword = ""
     @Published var wizardDirectIngest = ""
     @Published var wizardDirectStreamKey = ""
     @Published var wizardChatBttv = true
@@ -380,6 +383,13 @@ final class Model: ObservableObject {
         stream.youTubeEnabled = false
         stream.afreecaTvEnabled = false
         stream.obsWebSocketEnabled = false
+        if wizardPlatform != .custom {
+            stream.obsWebSocketEnabled = wizardObsRemoteControlEnabled
+            if wizardObsRemoteControlEnabled {
+                stream.obsWebSocketUrl = wizardObsRemoteControlUrl
+                stream.obsWebSocketPassword = wizardObsRemoteControlPassword.trim()
+            }
+        }
         switch wizardPlatform {
         case .twitch:
             stream.twitchEnabled = true
@@ -391,14 +401,14 @@ final class Model: ObservableObject {
         case .youTube:
             if !wizardYouTubeApiKey.isEmpty && !wizardYouTubeVideoId.isEmpty {
                 stream.youTubeEnabled = true
-                stream.youTubeApiKey = wizardYouTubeApiKey
-                stream.youTubeVideoId = wizardYouTubeVideoId
+                stream.youTubeApiKey = wizardYouTubeApiKey.trim()
+                stream.youTubeVideoId = wizardYouTubeVideoId.trim()
             }
         case .afreecaTv:
             if !wizardAfreecaTvChannelName.isEmpty && !wizardAfreecsTvCStreamId.isEmpty {
                 stream.afreecaTvEnabled = true
-                stream.afreecaTvChannelName = wizardAfreecaTvChannelName
-                stream.afreecaTvStreamId = wizardAfreecsTvCStreamId
+                stream.afreecaTvChannelName = wizardAfreecaTvChannelName.trim()
+                stream.afreecaTvStreamId = wizardAfreecsTvCStreamId.trim()
             }
         case .custom:
             break
@@ -436,6 +446,9 @@ final class Model: ObservableObject {
         wizardAfreecsTvCStreamId = ""
         wizardObsAddress = ""
         wizardObsPort = ""
+        wizardObsRemoteControlEnabled = false
+        wizardObsRemoteControlUrl = ""
+        wizardObsRemoteControlPassword = ""
         wizardDirectIngest = ""
         wizardDirectStreamKey = ""
         wizardChatBttv = true

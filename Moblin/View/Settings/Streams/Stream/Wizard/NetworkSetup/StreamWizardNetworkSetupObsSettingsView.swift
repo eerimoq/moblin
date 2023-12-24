@@ -10,7 +10,10 @@ struct StreamWizardNetworkSetupObsSettingsView: View {
     }
 
     private func updatePortError() {
-        if UInt16(model.wizardObsPort) != nil {
+        model.wizardObsPort = model.wizardObsPort.trim()
+        if model.wizardObsPort.isEmpty {
+            portError = ""
+        } else if UInt16(model.wizardObsPort) != nil {
             portError = ""
         } else {
             portError = "Must be a number between 1 and 65535."
@@ -60,7 +63,7 @@ struct StreamWizardNetworkSetupObsSettingsView: View {
                 Text("Configure OBS on your computer")
             }
             Section {
-                NavigationLink(destination: StreamWizardGeneralSettingsView()) {
+                NavigationLink(destination: StreamWizardChatSettingsView()) {
                     WizardNextButtonView()
                 }
                 .disabled(nextDisabled())
@@ -68,6 +71,7 @@ struct StreamWizardNetworkSetupObsSettingsView: View {
         }
         .onAppear {
             model.wizardNetworkSetup = .obs
+            updatePortError()
         }
         .navigationTitle("OBS")
         .toolbar {

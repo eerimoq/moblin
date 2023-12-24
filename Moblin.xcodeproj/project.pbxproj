@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0302F07F2B320B0500B06FF0 /* StreamWizardGeneralSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0302F07E2B320B0500B06FF0 /* StreamWizardGeneralSettingsView.swift */; };
-		0302F0802B320B0500B06FF0 /* StreamWizardGeneralSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0302F07E2B320B0500B06FF0 /* StreamWizardGeneralSettingsView.swift */; };
+		0302F07F2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0302F07E2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift */; };
+		0302F0802B320B0500B06FF0 /* StreamWizardChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0302F07E2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift */; };
 		0302F0832B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0302F0822B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift */; };
 		0302F0842B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0302F0822B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift */; };
 		030399132AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030399122AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift */; };
@@ -29,6 +29,8 @@
 		031A2E112ADDDD7E005CE350 /* VideoStabilizationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031A2E102ADDDD7E005CE350 /* VideoStabilizationSettingsView.swift */; };
 		031A4DC72B2CED460053F67D /* StreamAudioSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031A4DC62B2CED460053F67D /* StreamAudioSettingsView.swift */; };
 		031CCE2D2ACA76CF00CB5D46 /* NoiseReductionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031CCE2C2ACA76CF00CB5D46 /* NoiseReductionEffect.swift */; };
+		031F91EB2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F91EA2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift */; };
+		031F91EC2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F91EA2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift */; };
 		0320D8762AED36860030418F /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 0320D8752AED36860030418F /* WrappingHStack */; };
 		032469A92AE1B3040097B18B /* StreamSrtSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032469A82AE1B3040097B18B /* StreamSrtSettingsView.swift */; };
 		032815D52AC855A5001F8A85 /* LicenseList in Frameworks */ = {isa = PBXBuildFile; productRef = 032815D42AC855A5001F8A85 /* LicenseList */; };
@@ -302,7 +304,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0302F07E2B320B0500B06FF0 /* StreamWizardGeneralSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardGeneralSettingsView.swift; sourceTree = "<group>"; };
+		0302F07E2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardChatSettingsView.swift; sourceTree = "<group>"; };
 		0302F0822B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardSummarySettingsView.swift; sourceTree = "<group>"; };
 		030399122AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalOverlaysChatSettingsView.swift; sourceTree = "<group>"; };
 		030786992AEC23FB0061FDE2 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
@@ -322,6 +324,7 @@
 		031A2E102ADDDD7E005CE350 /* VideoStabilizationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoStabilizationSettingsView.swift; sourceTree = "<group>"; };
 		031A4DC62B2CED460053F67D /* StreamAudioSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamAudioSettingsView.swift; sourceTree = "<group>"; };
 		031CCE2C2ACA76CF00CB5D46 /* NoiseReductionEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoiseReductionEffect.swift; sourceTree = "<group>"; };
+		031F91EA2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardObsRemoteControlSettingsView.swift; sourceTree = "<group>"; };
 		032469A82AE1B3040097B18B /* StreamSrtSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamSrtSettingsView.swift; sourceTree = "<group>"; };
 		032815DB2AC915AE001F8A85 /* RandomEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomEffect.swift; sourceTree = "<group>"; };
 		032815DE2AC9885C001F8A85 /* TripleEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripleEffect.swift; sourceTree = "<group>"; };
@@ -730,7 +733,8 @@
 			children = (
 				03DBD10D2B3013CE004B0BE6 /* NetworkSetup */,
 				03DBD10C2B3013C7004B0BE6 /* Platform */,
-				0302F07E2B320B0500B06FF0 /* StreamWizardGeneralSettingsView.swift */,
+				0302F07E2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift */,
+				031F91EA2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift */,
 				0302F0822B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift */,
 			);
 			path = Wizard;
@@ -1297,7 +1301,7 @@
 				03DBD0FC2B30078B004B0BE6 /* StreamWizardKickSettingsView.swift in Sources */,
 				03D541762B32095B00B9D595 /* StreamWizardCustomSettingsView.swift in Sources */,
 				032E06652B2F3E9D00EAE5F8 /* BitratePresetsSettingsView.swift in Sources */,
-				0302F0802B320B0500B06FF0 /* StreamWizardGeneralSettingsView.swift in Sources */,
+				0302F0802B320B0500B06FF0 /* StreamWizardChatSettingsView.swift in Sources */,
 				032E06662B2F3E9D00EAE5F8 /* BatteryView.swift in Sources */,
 				032E06672B2F3E9D00EAE5F8 /* InlinePickerView.swift in Sources */,
 				03DBD1042B300D55004B0BE6 /* StreamWizardNetworkSetupBelaboxSettingsView.swift in Sources */,
@@ -1365,6 +1369,7 @@
 				032E069B2B2F3E9D00EAE5F8 /* SepiaEffect.swift in Sources */,
 				032E069C2B2F3E9D00EAE5F8 /* TripleEffect.swift in Sources */,
 				034D2EC32B351715003C6D14 /* RecordingsStorage.swift in Sources */,
+				031F91EC2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift in Sources */,
 				032E069D2B2F3E9D00EAE5F8 /* GrayScaleEffect.swift in Sources */,
 				03DBD1002B30091B004B0BE6 /* StreamWizardNetworkSetupSettingsView.swift in Sources */,
 				032E069E2B2F3E9D00EAE5F8 /* QuickButtonsSettingsView.swift in Sources */,
@@ -1435,7 +1440,7 @@
 				032815DC2AC915AE001F8A85 /* RandomEffect.swift in Sources */,
 				03D541752B32095B00B9D595 /* StreamWizardCustomSettingsView.swift in Sources */,
 				0315A3462AA31E9000295443 /* StreamTwitchSettingsView.swift in Sources */,
-				0302F07F2B320B0500B06FF0 /* StreamWizardGeneralSettingsView.swift in Sources */,
+				0302F07F2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift in Sources */,
 				0379BBAF2AAD96B200B718B6 /* DebugSettingsView.swift in Sources */,
 				03FB4B2F2AD8CF83005AA183 /* BitratePresetsSettingsView.swift in Sources */,
 				03B373F92A9EFB340028DDD5 /* BatteryView.swift in Sources */,
@@ -1503,6 +1508,7 @@
 				03A983682A9A05D7008FF0DB /* SceneSettingsView.swift in Sources */,
 				0379BB942AACF16600B718B6 /* SepiaEffect.swift in Sources */,
 				034D2EC22B351715003C6D14 /* RecordingsStorage.swift in Sources */,
+				031F91EB2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift in Sources */,
 				032815DF2AC9885C001F8A85 /* TripleEffect.swift in Sources */,
 				03B374022AA0354C0028DDD5 /* GrayScaleEffect.swift in Sources */,
 				03E877F72B2DB27800086355 /* QuickButtonsSettingsView.swift in Sources */,

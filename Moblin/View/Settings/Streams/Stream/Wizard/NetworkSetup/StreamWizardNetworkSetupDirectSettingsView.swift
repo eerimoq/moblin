@@ -150,7 +150,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                 }
             }
             Section {
-                NavigationLink(destination: StreamWizardGeneralSettingsView()) {
+                NavigationLink(destination: StreamWizardChatSettingsView()) {
                     WizardNextButtonView()
                 }
                 .disabled(nextDisabled())
@@ -158,6 +158,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
         }
         .onAppear {
             model.wizardNetworkSetup = .direct
+            updateIngestError()
         }
         .navigationTitle("Direct")
         .toolbar {

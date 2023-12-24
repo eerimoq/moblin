@@ -67,6 +67,14 @@ struct StreamWizardSummarySettingsView: View {
                 }
             }
             if model.wizardPlatform != .custom {
+                if !model.wizardObsRemoteControlUrl.isEmpty && !model.wizardObsRemoteControlPassword.isEmpty {
+                    Section {
+                        TextValueView(name: "URL", value: model.wizardObsRemoteControlUrl)
+                        TextValueView(name: "Password", value: model.wizardObsRemoteControlPassword)
+                    } header: {
+                        Text("OBS remote control")
+                    }
+                }
                 Section {
                     TextValueView(name: "BTTV emotes", value: yesOrNo(model.wizardChatBttv))
                     TextValueView(name: "FFZ emotes", value: yesOrNo(model.wizardChatFfz))

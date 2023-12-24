@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct StreamWizardGeneralSettingsView: View {
+struct StreamWizardChatSettingsView: View {
     @EnvironmentObject private var model: Model
 
     var body: some View {
@@ -15,16 +15,14 @@ struct StreamWizardGeneralSettingsView: View {
                 Toggle(isOn: $model.wizardChatSeventv, label: {
                     Text("7TV emotes")
                 })
-            } header: {
-                Text("Chat")
             }
             Section {
-                NavigationLink(destination: StreamWizardSummarySettingsView()) {
+                NavigationLink(destination: StreamWizardObsRemoteControlSettingsView()) {
                     WizardNextButtonView()
                 }
             }
         }
-        .navigationTitle("General")
+        .navigationTitle("Chat")
         .toolbar {
             CreateStreamWizardToolbar()
         }
