@@ -18592,6 +18592,7 @@
       }
     },
     "My stream" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
