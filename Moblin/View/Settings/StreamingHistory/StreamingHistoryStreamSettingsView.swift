@@ -6,18 +6,31 @@ struct StreamingHistoryStreamSettingsView: View {
     var body: some View {
         Form {
             Section {
-                TextValueView(name: "Start time", value: stream.startTime.formatted())
-                TextValueView(name: "Duration", value: stream.duration().formatWithSeconds())
-                TextValueView(name: "Total sent", value: stream.totalBytes.formatBytes())
-                TextValueView(name: "Average bitrate", value: stream.averageBitrateString())
-                TextValueView(name: "Highest bitrate", value: stream.highestBitrateString())
+                TextValueView(name: String(localized: "Start time"), value: stream.startTime.formatted())
+                TextValueView(
+                    name: String(localized: "Duration"),
+                    value: stream.duration().formatWithSeconds()
+                )
+                TextValueView(name: String(localized: "Total sent"), value: stream.totalBytes.formatBytes())
+                TextValueView(
+                    name: String(localized: "Average bitrate"),
+                    value: stream.averageBitrateString()
+                )
+                TextValueView(
+                    name: String(localized: "Highest bitrate"),
+                    value: stream.highestBitrateString()
+                )
                 HStack {
                     if stream.numberOfFffffs! != 0 {
                         Image(systemName: "exclamationmark.circle")
                             .foregroundColor(.red)
                     }
-                    TextValueView(name: "Number of FFFFF:s", value: "\(stream.numberOfFffffs!)")
+                    TextValueView(name: String(localized: "FFFFF:s"), value: "\(stream.numberOfFffffs!)")
                 }
+                TextValueView(
+                    name: String(localized: "Chat messages"),
+                    value: stream.numberOfChatMessagesString()
+                )
             } header: {
                 Text("General")
             }
@@ -37,53 +50,21 @@ struct StreamingHistoryStreamSettingsView: View {
                         )
                 }
                 TextValueView(
-                    name: "Lowest battery percentage",
+                    name: String(localized: "Lowest battery percentage"),
                     value: stream.lowestBatteryPercentageString()
                 )
             } header: {
                 Text("Device health")
             }
             Section {
-                HStack {
-                    Text("Name")
-                    Spacer()
-                    Text(stream.settings.name)
-                }
-                HStack {
-                    Text("Resolution")
-                    Spacer()
-                    Text(stream.settings.resolutionString())
-                }
-                HStack {
-                    Text("FPS")
-                    Spacer()
-                    Text("\(stream.settings.fps)")
-                }
-                HStack {
-                    Text("Protocol")
-                    Spacer()
-                    Text(stream.settings.protocolString())
-                }
-                HStack {
-                    Text("Codec")
-                    Spacer()
-                    Text(stream.settings.codecString())
-                }
-                HStack {
-                    Text("Bitrate")
-                    Spacer()
-                    Text(stream.settings.bitrateString())
-                }
-                HStack {
-                    Text("Audio codec")
-                    Spacer()
-                    Text(stream.settings.audioCodecString())
-                }
-                HStack {
-                    Text("Audio bitrate")
-                    Spacer()
-                    Text("\(stream.settings.audioBitrateString())")
-                }
+                TextValueView(name: "Name", value: stream.settings.name)
+                TextValueView(name: "Resolution", value: stream.settings.resolutionString())
+                TextValueView(name: "FPS", value: "\(stream.settings.fps)")
+                TextValueView(name: "Protocol", value: stream.settings.protocolString())
+                TextValueView(name: "Codec", value: stream.settings.codecString())
+                TextValueView(name: "Bitrate", value: stream.settings.bitrateString())
+                TextValueView(name: "Audio codec", value: stream.settings.audioCodecString())
+                TextValueView(name: "Audio bitrate", value: stream.settings.audioBitrateString())
             } header: {
                 Text("Settings")
             }

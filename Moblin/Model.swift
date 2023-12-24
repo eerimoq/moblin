@@ -340,6 +340,7 @@ final class Model: ObservableObject {
     private var appStoreUpdateListenerTask: Task<Void, Error>?
     private var products: [String: Product] = [:]
     private var streamTotalBytes: UInt64 = 0
+    private var streamTotalChatMessages: Int = 0
 
     private func cleanWizardUrl(url: String) -> String {
         var cleanedUrl = cleanUrl(url: url)
@@ -1245,6 +1246,7 @@ final class Model: ObservableObject {
             }
             chatPosts.append(post)
             numberOfChatPostsPerTick += 1
+            streamTotalChatMessages += 1
         }
     }
 
@@ -1381,6 +1383,7 @@ final class Model: ObservableObject {
         isLive = true
         streaming = true
         streamTotalBytes = 0
+        streamTotalChatMessages = 0
         reconnectTime = firstReconnectTime
         UIApplication.shared.isIdleTimerDisabled = true
         startNetStream()
@@ -1403,6 +1406,7 @@ final class Model: ObservableObject {
         if let streamingHistoryStream {
             streamingHistoryStream.stopTime = Date()
             streamingHistoryStream.totalBytes = streamTotalBytes
+            streamingHistoryStream.numberOfChatMessages = streamTotalChatMessages
             streamingHistory.append(stream: streamingHistoryStream)
             streamingHistory.store()
         }

@@ -51,7 +51,7 @@ class StreamingHistoryStream: Identifiable, Codable {
     var highestThermalState: ThermalState? = .nominal
     var lowestBatteryLevel: Double? = 1.0
     var highestBitrate: Int64? = Int64.min
-    var averageBitrate: Int64? = 0
+    var numberOfChatMessages: Int? = 0
 
     init(settings: SettingsStream) {
         self.settings = settings
@@ -61,6 +61,10 @@ class StreamingHistoryStream: Identifiable, Codable {
         if bitrate > highestBitrate! {
             highestBitrate = bitrate
         }
+    }
+
+    func numberOfChatMessagesString() -> String {
+        return countFormatter.format(numberOfChatMessages!)
     }
 
     func averageBitrateString() -> String {
@@ -181,6 +185,10 @@ final class StreamingHistory {
         }
         for stream in database.streams where stream.highestBitrate == nil {
             stream.highestBitrate = Int64.min
+            store()
+        }
+        for stream in database.streams where stream.numberOfChatMessages == nil {
+            stream.numberOfChatMessages = 0
             store()
         }
     }

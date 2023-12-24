@@ -7683,6 +7683,9 @@
         }
       }
     },
+    "Chat messages" : {
+
+    },
     "Chatroom id" : {
       "localizations" : {
         "de" : {
@@ -12603,6 +12606,9 @@
           }
         }
       }
+    },
+    "FFFFF:s" : {
+
     },
     "FFZ emotes" : {
 
@@ -19453,9 +19459,6 @@
           }
         }
       }
-    },
-    "Number of FFFFF:s" : {
-
     },
     "OBS" : {
 
