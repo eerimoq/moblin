@@ -815,7 +815,7 @@ class Database: Codable {
     var frontCameraId: String? = ""
     var videoStabilizationMode: SettingsVideoStabilizationMode = .off
     var chat: SettingsChat = .init()
-    var batteryPercentage: Bool? = false
+    var batteryPercentage: Bool? = true
     var mic: SettingsMic? = .bottom
     var debug: SettingsDebug? = .init()
     var quickButtons: SettingsQuickButtons? = .init()
@@ -1191,7 +1191,7 @@ final class Settings {
 
     private func migrateFromOlderVersions() {
         if realDatabase.batteryPercentage == nil {
-            realDatabase.batteryPercentage = false
+            realDatabase.batteryPercentage = true
             store()
         }
         if realDatabase.chat.height == nil {
