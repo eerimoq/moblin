@@ -319,7 +319,7 @@ class ObsWebSocket {
             } catch {
                 onError("JSON decode failed")
             }
-        }, onError: {message in
+        }, onError: { message in
             onError(message)
         })
     }
@@ -332,7 +332,7 @@ class ObsWebSocket {
             let data = try JSONEncoder().encode(data)
             performRequest(type: .setCurrentProgramScene, data: data, onSuccess: { _ in
                 onSuccess()
-            }, onError: {message in
+            }, onError: { message in
                 onError(message)
             })
         } catch {
@@ -340,7 +340,9 @@ class ObsWebSocket {
         }
     }
 
-    func getStreamStatus(onSuccess: @escaping (ObsStreamStatus) -> Void, onError: @escaping (String) -> Void) {
+    func getStreamStatus(onSuccess: @escaping (ObsStreamStatus) -> Void,
+                         onError: @escaping (String) -> Void)
+    {
         performRequest(type: .getStreamStatus, data: nil, onSuccess: { data in
             guard let data else {
                 onError("No data received")
@@ -352,12 +354,14 @@ class ObsWebSocket {
             } catch {
                 onError("JSON decode failed")
             }
-        }, onError: {message in
+        }, onError: { message in
             onError(message)
         })
     }
 
-    func getRecordStatus(onSuccess: @escaping (ObsRecordStatus) -> Void, onError: @escaping (String) -> Void) {
+    func getRecordStatus(onSuccess: @escaping (ObsRecordStatus) -> Void,
+                         onError: @escaping (String) -> Void)
+    {
         performRequest(type: .getRecordStatus, data: nil, onSuccess: { data in
             guard let data else {
                 onError("No data received")
@@ -369,7 +373,7 @@ class ObsWebSocket {
             } catch {
                 onError("JSON decode failed")
             }
-        }, onError: {message in
+        }, onError: { message in
             onError(message)
         })
     }
@@ -377,7 +381,7 @@ class ObsWebSocket {
     func startStream(onSuccess: @escaping () -> Void, onError: @escaping (String) -> Void) {
         performRequest(type: .startStream, data: nil, onSuccess: { _ in
             onSuccess()
-        }, onError: {message in
+        }, onError: { message in
             onError(message)
         })
     }
@@ -385,7 +389,7 @@ class ObsWebSocket {
     func stopStream(onSuccess: @escaping () -> Void, onError: @escaping (String) -> Void) {
         performRequest(type: .stopStream, data: nil, onSuccess: { _ in
             onSuccess()
-        }, onError: {message in
+        }, onError: { message in
             onError(message)
         })
     }

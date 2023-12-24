@@ -838,7 +838,7 @@ final class Model: ObservableObject {
                 self.obsCurrentScene = list.current
                 self.obsScenes = list.scenes
             }
-        }, onError: {message in
+        }, onError: { message in
             DispatchQueue.main.async {
                 self.makeErrorToast(title: String(localized: "Failed to fetch OBS scenes"),
                                     subTitle: message)
@@ -852,7 +852,7 @@ final class Model: ObservableObject {
                 self.makeToast(title: String(localized: "OBS scene set to \(name)"))
                 self.obsCurrentSceneStatus = name
             }
-        }, onError: {message in
+        }, onError: { message in
             DispatchQueue.main.async {
                 self.makeErrorToast(title: String(localized: "Failed to set OBS scene to \(name)"),
                                     subTitle: message)
@@ -868,7 +868,7 @@ final class Model: ObservableObject {
             DispatchQueue.main.async {
                 self.obsCurrentSceneStatus = list.current
             }
-        }, onError: {_ in
+        }, onError: { _ in
             DispatchQueue.main.async {
                 self.obsCurrentSceneStatus = "Unknown"
             }
@@ -877,7 +877,7 @@ final class Model: ObservableObject {
             DispatchQueue.main.async {
                 self.obsStreaming = status.active
             }
-        }, onError: {_ in
+        }, onError: { _ in
             DispatchQueue.main.async {
                 self.obsStreaming = false
             }
@@ -886,7 +886,7 @@ final class Model: ObservableObject {
             DispatchQueue.main.async {
                 self.obsRecording = status.active
             }
-        }, onError: {_ in
+        }, onError: { _ in
             DispatchQueue.main.async {
                 self.obsRecording = false
             }
@@ -1855,10 +1855,10 @@ final class Model: ObservableObject {
             DispatchQueue.main.async {
                 self.makeToast(title: String(localized: "OBS stream started"))
             }
-        }, onError: {message in
+        }, onError: { message in
             DispatchQueue.main.async {
                 self.makeErrorToast(title: String(localized: "Failed to start OBS stream"),
-                subTitle: message)
+                                    subTitle: message)
             }
         })
     }
@@ -1868,7 +1868,7 @@ final class Model: ObservableObject {
             DispatchQueue.main.async {
                 self.makeToast(title: String(localized: "OBS stream stopped"))
             }
-        }, onError: {message in
+        }, onError: { message in
             DispatchQueue.main.async {
                 self.makeErrorToast(title: String(localized: "Failed to stop OBS stream"),
                                     subTitle: message)

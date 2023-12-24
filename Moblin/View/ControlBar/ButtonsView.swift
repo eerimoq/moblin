@@ -208,9 +208,9 @@ struct ButtonsView: View {
                 title: String(localized: "OBS remote control is not configured"),
                 subTitle: String(
                     localized: """
-                               Configure it in Settings -> Streams -> \(model.stream.name) -> \
-                               OBS remote control.
-                               """
+                    Configure it in Settings -> Streams -> \(model.stream.name) -> \
+                    OBS remote control.
+                    """
                 )
             )
             return
