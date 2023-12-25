@@ -2295,6 +2295,7 @@
       }
     },
     "🤞 Connecting to %@ 🤞" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2507,6 +2508,7 @@
       }
     },
     "😎 Going live at %@ 😎" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

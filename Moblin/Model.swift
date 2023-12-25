@@ -1481,13 +1481,8 @@ final class Model: ObservableObject {
         }
     }
 
-    private func startNetStream(reconnect: Bool = false) {
+    private func startNetStream(reconnect _: Bool = false) {
         streamState = .connecting
-        if reconnect {
-            makeReconnectToast()
-        } else {
-            makeGoingLiveToast()
-        }
         switch stream.getProtocol() {
         case .rtmp:
             rtmpStartStream()
@@ -2615,14 +2610,6 @@ final class Model: ObservableObject {
             frontZoomPresetId = database.zoom.front[0].id
         }
         sceneUpdated(store: true)
-    }
-
-    private func makeGoingLiveToast() {
-        makeToast(title: String(localized: "😎 Going live at \(stream.name) 😎"))
-    }
-
-    private func makeReconnectToast() {
-        makeToast(title: String(localized: "🤞 Connecting to \(stream.name) 🤞"))
     }
 
     private func makeConnectFailureToast(subTitle: String) {
