@@ -79,6 +79,10 @@ struct SceneSettingsView: View {
         model.sceneUpdated(store: true)
     }
 
+    private func canWidgetExpand(widget: SettingsWidget) -> Bool {
+        return widgetHasPosition(id: widget.id) || widgetHasSize(id: widget.id)
+    }
+
     var body: some View {
         Form {
             NavigationLink(destination: NameEditView(
@@ -142,6 +146,7 @@ struct SceneSettingsView: View {
                         if let realWidget = widgets
                             .first(where: { item in item.id == widget.widgetId })
                         {
+                            let expanded = expandedWidget === widget && canWidgetExpand(widget: realWidget)
                             Button(action: {
                                 if expandedWidget !== widget {
                                     expandedWidget = widget
@@ -167,13 +172,13 @@ struct SceneSettingsView: View {
                                             Text(realWidget.name)
                                         }
                                     }
+                                    if canWidgetExpand(widget: realWidget) {
+                                        Image(systemName: expanded ? "chevron.down" : "chevron.right")
+                                    }
                                 }
                             })
                             .foregroundColor(.primary)
-                            if expandedWidget === widget &&
-                                (widgetHasPosition(id: realWidget.id) ||
-                                    widgetHasSize(id: realWidget.id))
-                            {
+                            if expanded {
                                 SceneWidgetSettingsView(
                                     hasPosition: widgetHasPosition(id: realWidget.id),
                                     hasSize: widgetHasSize(id: realWidget.id),
