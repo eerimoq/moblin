@@ -13,20 +13,16 @@ struct LeftOverlayView: View {
     }
 
     func streamText() -> String {
-        if model.isStreamConfigured() {
-            let proto = stream.protocolString()
-            let resolution = stream.resolutionString()
-            let codec = stream.codecString()
-            let bitrate = stream.bitrateString()
-            let audioCodec = stream.audioCodecString()
-            let audioBitrate = stream.audioBitrateString()
-            return """
-            \(stream.name) (\(resolution), \(stream.fps), \(proto), \(codec) \(bitrate), \
-            \(audioCodec) \(audioBitrate))
-            """
-        } else {
-            return String(localized: "Not configured")
-        }
+        let proto = stream.protocolString()
+        let resolution = stream.resolutionString()
+        let codec = stream.codecString()
+        let bitrate = stream.bitrateString()
+        let audioCodec = stream.audioCodecString()
+        let audioBitrate = stream.audioBitrateString()
+        return """
+        \(stream.name) (\(resolution), \(stream.fps), \(proto), \(codec) \(bitrate), \
+        \(audioCodec) \(audioBitrate))
+        """
     }
 
     func viewersText() -> String {
@@ -74,7 +70,7 @@ struct LeftOverlayView: View {
     }
 
     func obsStatusText() -> String {
-        if !model.isObsConfigured() {
+        if !model.isObsRemoteControlConfigured() {
             return String(localized: "Not configured")
         } else if model.isObsConnected() {
             if model.obsStreaming && model.obsRecording {
@@ -92,7 +88,7 @@ struct LeftOverlayView: View {
     }
 
     func obsStatusColor() -> Color {
-        if !model.isObsConfigured() {
+        if !model.isObsRemoteControlConfigured() {
             return .white
         } else if model.isObsConnected() {
             return .white
@@ -103,7 +99,7 @@ struct LeftOverlayView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 1) {
-            if database.show.stream {
+            if database.show.stream && model.isStreamConfigured() {
                 StreamOverlayIconAndTextView(
                     icon: "dot.radiowaves.left.and.right",
                     text: streamText()
@@ -127,21 +123,21 @@ struct LeftOverlayView: View {
                     text: String(format: "%.1f", model.zoomX)
                 )
             }
-            if model.database.show.obsStatus! {
+            if model.database.show.obsStatus! && model.isObsRemoteControlConfigured() {
                 StreamOverlayIconAndTextView(
                     icon: "photo",
                     text: obsStatusText(),
                     color: obsStatusColor()
                 )
             }
-            if model.database.show.chat {
+            if model.database.show.chat && model.isChatConfigured() {
                 StreamOverlayIconAndTextView(
                     icon: "message",
                     text: messageText(),
                     color: messageColor()
                 )
             }
-            if database.show.viewers {
+            if database.show.viewers && model.isViewersConfigured() {
                 StreamOverlayIconAndTextView(
                     icon: "eye",
                     text: viewersText(),

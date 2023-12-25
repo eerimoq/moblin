@@ -18191,6 +18191,9 @@
         }
       }
     },
+    "Must be a number between 1 and 65535." : {
+
+    },
     "Mute" : {
       "localizations" : {
         "de" : {

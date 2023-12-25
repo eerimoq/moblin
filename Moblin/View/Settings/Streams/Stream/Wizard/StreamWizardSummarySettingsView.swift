@@ -7,60 +7,84 @@ struct StreamWizardSummarySettingsView: View {
         Form {
             if model.wizardPlatform == .twitch {
                 Section {
-                    TextValueView(name: "Channel name", value: model.wizardTwitchChannelName)
-                    TextValueView(name: "Channel id", value: model.wizardTwitchChannelId)
+                    TextValueView(
+                        name: String(localized: "Channel name"),
+                        value: model.wizardTwitchChannelName
+                    )
+                    TextValueView(name: String(localized: "Channel id"), value: model.wizardTwitchChannelId)
                 } header: {
                     Text("Twitch")
                 }
             } else if model.wizardPlatform == .kick {
                 Section {
-                    TextValueView(name: "Channel name", value: model.wizardKickChannelName)
-                    TextValueView(name: "Chatroom id", value: model.wizardKickChatroomId)
+                    TextValueView(name: String(localized: "Channel name"), value: model.wizardKickChannelName)
+                    TextValueView(name: String(localized: "Chatroom id"), value: model.wizardKickChatroomId)
                 } header: {
                     Text("Kick")
                 }
             } else if model.wizardPlatform == .youTube {
                 Section {
-                    TextValueView(name: "API key", value: model.wizardYouTubeApiKey)
-                    TextValueView(name: "Video id", value: model.wizardYouTubeVideoId)
+                    TextValueView(name: String(localized: "API key"), value: model.wizardYouTubeApiKey)
+                    TextValueView(name: String(localized: "Video id"), value: model.wizardYouTubeVideoId)
                 } header: {
                     Text("YouTube")
                 }
             } else if model.wizardPlatform == .afreecaTv {
                 Section {
-                    TextValueView(name: "Channel name", value: model.wizardAfreecaTvChannelName)
-                    TextValueView(name: "Video id", value: model.wizardAfreecsTvCStreamId)
+                    TextValueView(
+                        name: String(localized: "Channel name"),
+                        value: model.wizardAfreecaTvChannelName
+                    )
+                    TextValueView(name: String(localized: "Video id"), value: model.wizardAfreecsTvCStreamId)
                 } header: {
                     Text("AfreecaTV")
                 }
             }
             if model.wizardNetworkSetup == .obs {
                 Section {
-                    TextValueView(name: "IP address or domain name", value: model.wizardObsAddress)
-                    TextValueView(name: "Port", value: model.wizardObsPort)
+                    TextValueView(
+                        name: String(localized: "IP address or domain name"),
+                        value: model.wizardObsAddress
+                    )
+                    TextValueView(name: String(localized: "Port"), value: model.wizardObsPort)
                 } header: {
                     Text("OBS")
                 }
             } else if model.wizardNetworkSetup == .belaboxCloudObs {
                 Section {
-                    TextValueView(name: "Ingest URL", value: model.wizardBelaboxUrl)
+                    TextValueView(name: String(localized: "Ingest URL"), value: model.wizardBelaboxUrl)
                 } header: {
                     Text("BELABOX cloud")
                 }
             } else if model.wizardNetworkSetup == .direct {
                 Section {
                     if model.wizardPlatform == .twitch {
-                        TextValueView(name: "Nearby ingest endpoint", value: model.wizardDirectIngest)
-                        TextValueView(name: "Stream key", value: model.wizardDirectStreamKey)
+                        TextValueView(
+                            name: String(localized: "Nearby ingest endpoint"),
+                            value: model.wizardDirectIngest
+                        )
+                        TextValueView(
+                            name: String(localized: "Stream key"),
+                            value: model.wizardDirectStreamKey
+                        )
                     } else if model.wizardPlatform == .kick {
-                        TextValueView(name: "Stream URL", value: model.wizardDirectIngest)
-                        TextValueView(name: "Stream key", value: model.wizardDirectStreamKey)
+                        TextValueView(name: String(localized: "Stream URL"), value: model.wizardDirectIngest)
+                        TextValueView(
+                            name: String(localized: "Stream key"),
+                            value: model.wizardDirectStreamKey
+                        )
                     } else if model.wizardPlatform == .youTube {
-                        TextValueView(name: "Stream URL", value: model.wizardDirectIngest)
-                        TextValueView(name: "Stream key", value: model.wizardDirectStreamKey)
+                        TextValueView(name: String(localized: "Stream URL"), value: model.wizardDirectIngest)
+                        TextValueView(
+                            name: String(localized: "Stream key"),
+                            value: model.wizardDirectStreamKey
+                        )
                     } else if model.wizardPlatform == .afreecaTv {
-                        TextValueView(name: "Stream URL", value: model.wizardDirectIngest)
-                        TextValueView(name: "Stream key", value: model.wizardDirectStreamKey)
+                        TextValueView(name: String(localized: "Stream URL"), value: model.wizardDirectIngest)
+                        TextValueView(
+                            name: String(localized: "Stream key"),
+                            value: model.wizardDirectStreamKey
+                        )
                     }
                 } header: {
                     Text("Direct")
@@ -69,16 +93,25 @@ struct StreamWizardSummarySettingsView: View {
             if model.wizardPlatform != .custom {
                 if model.wizardObsRemoteControlEnabled {
                     Section {
-                        TextValueView(name: "URL", value: model.wizardObsRemoteControlUrl)
-                        TextValueView(name: "Password", value: model.wizardObsRemoteControlPassword)
+                        TextValueView(name: String(localized: "URL"), value: model.wizardObsRemoteControlUrl)
+                        TextValueView(
+                            name: String(localized: "Password"),
+                            value: model.wizardObsRemoteControlPassword
+                        )
                     } header: {
                         Text("OBS remote control")
                     }
                 }
                 Section {
-                    TextValueView(name: "BTTV emotes", value: yesOrNo(model.wizardChatBttv))
-                    TextValueView(name: "FFZ emotes", value: yesOrNo(model.wizardChatFfz))
-                    TextValueView(name: "7TV emotes", value: yesOrNo(model.wizardChatSeventv))
+                    TextValueView(
+                        name: String(localized: "BTTV emotes"),
+                        value: yesOrNo(model.wizardChatBttv)
+                    )
+                    TextValueView(name: String(localized: "FFZ emotes"), value: yesOrNo(model.wizardChatFfz))
+                    TextValueView(
+                        name: String(localized: "7TV emotes"),
+                        value: yesOrNo(model.wizardChatSeventv)
+                    )
                 } header: {
                     Text("Chat")
                 }

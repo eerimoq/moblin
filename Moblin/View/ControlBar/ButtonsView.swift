@@ -101,7 +101,7 @@ struct ObsSceneView: View {
     var body: some View {
         Form {
             Section("OBS Scene") {
-                if !model.isObsConfigured() {
+                if !model.isObsRemoteControlConfigured() {
                     Text("""
                     OBS remote control is not configured. Configure it in \
                     Settings → Streams → \(model.stream.name) → OBS remote control.
@@ -198,7 +198,7 @@ struct ButtonsView: View {
     }
 
     private func obsSceneAction(state _: ButtonState) {
-        guard model.isObsConfigured() else {
+        guard model.isObsRemoteControlConfigured() else {
             model.makeErrorToast(
                 title: String(localized: "OBS remote control is not configured"),
                 subTitle: String(
@@ -215,7 +215,7 @@ struct ButtonsView: View {
     }
 
     private func obsStartStopStreamAction(state: ButtonState) {
-        guard model.isObsConfigured() else {
+        guard model.isObsRemoteControlConfigured() else {
             model.makeErrorToast(
                 title: String(localized: "OBS remote control is not configured"),
                 subTitle: String(

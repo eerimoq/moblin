@@ -861,7 +861,7 @@ final class Model: ObservableObject {
         }
     }
 
-    func isObsConfigured() -> Bool {
+    func isObsRemoteControlConfigured() -> Bool {
         return stream.obsWebSocketEnabled! && stream.obsWebSocketUrl != "" && stream
             .obsWebSocketPassword != ""
     }
@@ -1827,7 +1827,7 @@ final class Model: ObservableObject {
         obsWebSocket?.onStreamStatusChanged = nil
         obsWebSocket?.onRecordStatusChanged = nil
         obsWebSocket = nil
-        guard isObsConfigured() else {
+        guard isObsRemoteControlConfigured() else {
             return
         }
         guard let url = URL(string: stream.obsWebSocketUrl!) else {
