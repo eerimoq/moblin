@@ -11494,7 +11494,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Konfigurera den i Inställningar → Strömmar → %@ → OBS-fjärrkontroll."
+            "value" : "Konfigurera den i Inställningar → Strömmar → %@ → OBS fjärrkontroll."
           }
         },
         "tr" : {
@@ -12766,7 +12766,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Skapa strömningsguide"
+            "value" : "Skapa strömguide"
           }
         },
         "tr" : {
@@ -27609,7 +27609,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "OBS-fjärrkontrollen är inte konfigurerad"
+            "value" : "OBS fjärrkontrollen är inte konfigurerad"
           }
         },
         "tr" : {
@@ -27715,7 +27715,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "OBS-fjärrkontrollen är inte konfigurerad. Konfigurera den i Inställningar → Strömmar → %@ → OBS-fjärrkontroll."
+            "value" : "OBS fjärrkontrollen är inte konfigurerad. Konfigurera den i Inställningar → Strömmar → %@ → OBS fjärrkontroll."
           }
         },
         "tr" : {
@@ -27821,7 +27821,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "OBS-fjärrkontrollen är inte ansluten till servern"
+            "value" : "OBS fjärrkontrollen är inte ansluten till servern"
           }
         },
         "tr" : {
