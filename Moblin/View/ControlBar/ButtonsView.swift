@@ -101,28 +101,17 @@ struct ObsSceneView: View {
     var body: some View {
         Form {
             Section("OBS Scene") {
-                if !model.isObsRemoteControlConfigured() {
-                    Text("""
-                    OBS remote control is not configured. Configure it in \
-                    Settings → Streams → \(model.stream.name) → OBS remote control.
-                    """)
-                } else if !model.isObsConnected() {
-                    Text("OBS remote control is not connected to the server")
-                } else if model.obsScenes.isEmpty {
-                    Text("Fetching OBS scenes from server...")
-                } else {
-                    Picker("", selection: $model.obsCurrentScene) {
-                        ForEach(model.obsScenes, id: \.self) { scene in
-                            Text(scene)
-                        }
+                Picker("", selection: $model.obsCurrentScene) {
+                    ForEach(model.obsScenes, id: \.self) { scene in
+                        Text(scene)
                     }
-                    .onChange(of: model.obsCurrentScene) { _ in
-                        model.setObsScene(name: model.obsCurrentScene)
-                        done()
-                    }
-                    .pickerStyle(.inline)
-                    .labelsHidden()
                 }
+                .onChange(of: model.obsCurrentScene) { _ in
+                    model.setObsScene(name: model.obsCurrentScene)
+                    done()
+                }
+                .pickerStyle(.inline)
+                .labelsHidden()
             }
         }
         .toolbar {
@@ -210,8 +199,9 @@ struct ButtonsView: View {
             )
             return
         }
-        model.listObsScenes()
-        model.showingObsScene = true
+        model.listObsScenes(onComplete: { ok in
+            model.showingObsScene = ok
+        })
     }
 
     private func obsStartStopStreamAction(state: ButtonState) {

@@ -874,18 +874,20 @@ final class Model: ObservableObject {
         return obsWebSocket?.connectionErrorMessage ?? ""
     }
 
-    func listObsScenes() {
+    func listObsScenes(onComplete: ((Bool) -> Void)? = nil) {
         obsCurrentScene = ""
         obsScenes = []
         obsWebSocket?.getSceneList(onSuccess: { list in
             DispatchQueue.main.async {
                 self.obsCurrentScene = list.current
                 self.obsScenes = list.scenes
+                onComplete?(true)
             }
         }, onError: { message in
             DispatchQueue.main.async {
                 self.makeErrorToast(title: String(localized: "Failed to fetch OBS scenes"),
                                     subTitle: message)
+                onComplete?(false)
             }
         })
     }
