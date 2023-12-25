@@ -12374,6 +12374,7 @@
       }
     },
     "Copy from OBS." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -12475,6 +12476,22 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "從 OBS 複製。"
+          }
+        }
+      }
+    },
+    "Copy from OBS. Tools → WebSocket Server Settings → Show Connect Info → Server Password." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Von OBS kopieren. Tools → WebSocket Server Settings → Show Connect Info → Server Password."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kopiera från OBS. Tools → WebSocket Server Settings → Show Connect Info → Server Password."
           }
         }
       }

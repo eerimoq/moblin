@@ -918,22 +918,14 @@ final class Model: ObservableObject {
             }
         })
         obsWebSocket?.getStreamStatus(onSuccess: { status in
-            DispatchQueue.main.async {
-                self.obsStreaming = status.active
-            }
+            self.handleObsStreamStatusChanged(active: status.active)
         }, onError: { _ in
-            DispatchQueue.main.async {
-                self.obsStreaming = false
-            }
+            self.handleObsStreamStatusChanged(active: false)
         })
         obsWebSocket?.getRecordStatus(onSuccess: { status in
-            DispatchQueue.main.async {
-                self.obsRecording = status.active
-            }
+            self.handleObsRecordStatusChanged(active: status.active)
         }, onError: { _ in
-            DispatchQueue.main.async {
-                self.obsRecording = false
-            }
+            self.handleObsRecordStatusChanged(active: false)
         })
     }
 

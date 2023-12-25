@@ -54,7 +54,9 @@ struct StreamWizardObsRemoteControlSettingsView: View {
                 } header: {
                     Text("Password")
                 } footer: {
-                    Text("Copy from OBS.")
+                    Text(
+                        "Copy from OBS. Tools → WebSocket Server Settings → Show Connect Info → Server Password."
+                    )
                 }
             }
             Section {
