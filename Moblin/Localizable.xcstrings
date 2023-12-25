@@ -1108,6 +1108,7 @@
       }
     },
     "%@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1544,6 +1545,7 @@
       }
     },
     "%@ %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1656,6 +1658,7 @@
       }
     },
     "%lld" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -20743,6 +20746,7 @@
       }
     },
     "https://dashboard.twitch.tv/u/%@/settings/stream" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -22545,6 +22549,7 @@
       }
     },
     "Length" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -22620,7 +22625,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Längd"
           }
         },
@@ -22726,7 +22731,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Låt det snöa"
           }
         },
@@ -22938,7 +22943,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "live_48950233_okF4f455GRWEF443fFr23GRbt5rEv"
           }
         },
@@ -23468,7 +23473,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Lägsta batteriprocent"
           }
         },
@@ -24952,7 +24957,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Moblin"
           }
         },
@@ -25270,7 +25275,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Måste vara ett tal mellan 1 och 65535."
           }
         },
@@ -26649,7 +26654,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Behövs för chatt."
           }
         },
@@ -26755,7 +26760,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nätverksinställningar"
           }
         },
@@ -26861,7 +26866,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nästa"
           }
         },
@@ -27285,7 +27290,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "OBS"
           }
         },
@@ -27603,7 +27608,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "OBS-fjärrkontrollen är inte konfigurerad"
           }
         },
@@ -27709,7 +27714,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "OBS-fjärrkontrollen är inte konfigurerad. Konfigurera den i Inställningar → Strömmar → %@ → OBS-fjärrkontroll."
           }
         },
@@ -27815,7 +27820,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "OBS-fjärrkontrollen är inte ansluten till servern"
           }
         },
@@ -28983,7 +28988,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ofta dålig stabilitet om nätverksanslutningen är instabil. Inget skydd från serversidan är möjligt (ingen NOALBS)."
           }
         },
@@ -29937,7 +29942,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Plattform att streama till"
           }
         },
@@ -30149,7 +30154,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "po3Gg4pflp3s"
           }
         },
@@ -30573,7 +30578,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Integritetspolicy"
           }
         },
@@ -30679,7 +30684,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Protokoll"
           }
         },
@@ -30998,7 +31003,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Spela in"
           }
         },
@@ -31104,7 +31109,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Inspelning"
           }
         },
@@ -31210,7 +31215,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Inspelningar"
           }
         },
@@ -32058,7 +32063,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "rtmp://a.rtmp.youtube.com/live2"
           }
         },
@@ -32164,7 +32169,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "rtmp://arn03.contribute.live-video.net/app"
           }
         },
@@ -32270,7 +32275,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "rtmps://fa723fc1b171.global-contribute.live-video.net"
           }
         },
@@ -33860,7 +33865,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "sk_us-west-2_okfef49k34k_34g59gGDDHGHSREj754gYJYTJERH"
           }
         },
@@ -34951,6 +34956,7 @@
       }
     },
     "SRTLA" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -35026,7 +35032,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "SRTLA"
           }
         },
@@ -35238,7 +35244,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "srtla://uk.srt.belabox.net:5000?streamid=jO4ijfFgrlpv4m2375msdoG3DDr2"
           }
         },
@@ -35450,7 +35456,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Starttid"
           }
         },
@@ -35874,7 +35880,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Strömsammanfattning"
           }
         },
@@ -36192,7 +36198,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Strömningshistorik"
           }
         },
@@ -36616,7 +36622,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Sammanfattning och strömnamn"
           }
         },
@@ -37358,7 +37364,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mall: rtmps://"
           }
         },
@@ -37888,7 +37894,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Den faktiska bithastigheten kan vara lägre om enheten inte stöder det."
           }
         },
@@ -38630,7 +38636,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Miniatyr"
           }
         },
@@ -39478,7 +39484,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Totalt skickat"
           }
         },
@@ -39584,7 +39590,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Total storlek"
           }
         },
@@ -39796,7 +39802,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Total tid"
           }
         },
@@ -41386,7 +41392,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Använd https://streamscharts.com/tools/convert-username för att konvertera ditt kanalnamn till ditt kanal-id."
           }
         },
@@ -41492,7 +41498,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Använd din offentliga IP-adress om du streamar över internet."
           }
         },
@@ -41810,7 +41816,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Versionshistorik"
           }
         },
@@ -43506,7 +43512,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ws://213.33.45.132"
           }
         },

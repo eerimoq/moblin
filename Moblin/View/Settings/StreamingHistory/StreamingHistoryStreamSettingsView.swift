@@ -57,14 +57,14 @@ struct StreamingHistoryStreamSettingsView: View {
                 Text("Device health")
             }
             Section {
-                TextValueView(name: "Name", value: stream.settings.name)
-                TextValueView(name: "Resolution", value: stream.settings.resolutionString())
-                TextValueView(name: "FPS", value: "\(stream.settings.fps)")
-                TextValueView(name: "Protocol", value: stream.settings.protocolString())
-                TextValueView(name: "Codec", value: stream.settings.codecString())
-                TextValueView(name: "Bitrate", value: stream.settings.bitrateString())
-                TextValueView(name: "Audio codec", value: stream.settings.audioCodecString())
-                TextValueView(name: "Audio bitrate", value: stream.settings.audioBitrateString())
+                TextValueView(name: String(localized: "Name"), value: stream.settings.name)
+                TextValueView(name: String(localized: "Resolution"), value: stream.settings.resolutionString())
+                TextValueView(name: String(localized: "FPS"), value: "\(stream.settings.fps)")
+                TextValueView(name: String(localized: "Protocol"), value: stream.settings.protocolString())
+                TextValueView(name: String(localized: "Codec"), value: stream.settings.codecString())
+                TextValueView(name: String(localized: "Bitrate"), value: stream.settings.bitrateString())
+                TextValueView(name: String(localized: "Audio codec"), value: stream.settings.audioCodecString())
+                TextValueView(name: String(localized: "Audio bitrate"), value: stream.settings.audioBitrateString())
             } header: {
                 Text("Settings")
             }

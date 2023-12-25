@@ -43,7 +43,7 @@ struct StreamVideoSettingsView: View {
                     TextItemView(name: String(localized: "Resolution"), value: stream.resolution.rawValue)
                 }
                 .disabled(stream.enabled && model.isLive)
-                NavigationLink(destination: InlinePickerView(title: "FPS",
+                NavigationLink(destination: InlinePickerView(title: String(localized: "FPS"),
                                                              onChange: onFpsChange,
                                                              items: InlinePickerItem
                                                                  .fromStrings(values: fpss),
