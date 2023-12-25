@@ -271,6 +271,15 @@ extension Data {
         }.bigEndian
     }
 
+    func getThreeBytesBe(offset: Int = 0) -> UInt32 {
+        return UInt32(self[offset]) << 16 | UInt32(self[offset + 1]) << 8 | UInt32(self[offset + 2])
+    }
+
+    func getFourBytesBe(offset: Int = 0) -> UInt32 {
+        return UInt32(self[offset]) << 24 | UInt32(self[offset + 1]) << 16 | UInt32(self[offset + 2]) << 8 |
+            UInt32(self[offset + 3])
+    }
+
     mutating func setUInt16Be(value: UInt16, offset: Int = 0) {
         withUnsafeMutableBytes { data in data.storeBytes(
             of: value.bigEndian,

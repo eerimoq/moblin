@@ -174,6 +174,8 @@
 		03487F282B334C48003D9ED9 /* StreamingHistorySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03487F232B334AD0003D9ED9 /* StreamingHistorySettingsView.swift */; };
 		03487F2B2B33535A003D9ED9 /* StreamingHistoryStreamSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03487F2A2B33535A003D9ED9 /* StreamingHistoryStreamSettingsView.swift */; };
 		03487F2C2B33535A003D9ED9 /* StreamingHistoryStreamSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03487F2A2B33535A003D9ED9 /* StreamingHistoryStreamSettingsView.swift */; };
+		034D26FF2B3A03620097C619 /* RtmpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D26FE2B3A03620097C619 /* RtmpServer.swift */; };
+		034D27002B3A03620097C619 /* RtmpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D26FE2B3A03620097C619 /* RtmpServer.swift */; };
 		034D2EC22B351715003C6D14 /* RecordingsStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D2EC12B351715003C6D14 /* RecordingsStorage.swift */; };
 		034D2EC32B351715003C6D14 /* RecordingsStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D2EC12B351715003C6D14 /* RecordingsStorage.swift */; };
 		035D37282AB0EBB500045B92 /* IconAndTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37272AB0EBB500045B92 /* IconAndTextView.swift */; };
@@ -301,6 +303,10 @@
 		03F853B32B151FA700719B89 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03F853B22B151FA700719B89 /* Localizable.xcstrings */; };
 		03FB4B2F2AD8CF83005AA183 /* BitratePresetsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FB4B2E2AD8CF83005AA183 /* BitratePresetsSettingsView.swift */; };
 		03FB4B312AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FB4B302AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift */; };
+		03FBD1812B3B0DE500757CA9 /* RtmpServerClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FBD1802B3B0DE500757CA9 /* RtmpServerClient.swift */; };
+		03FBD1822B3B0DE500757CA9 /* RtmpServerClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FBD1802B3B0DE500757CA9 /* RtmpServerClient.swift */; };
+		03FBD1852B3B0DF300757CA9 /* RtmpServerChunkStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FBD1842B3B0DF300757CA9 /* RtmpServerChunkStream.swift */; };
+		03FBD1862B3B0DF300757CA9 /* RtmpServerChunkStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FBD1842B3B0DF300757CA9 /* RtmpServerChunkStream.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -343,6 +349,7 @@
 		03487F232B334AD0003D9ED9 /* StreamingHistorySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamingHistorySettingsView.swift; sourceTree = "<group>"; };
 		03487F252B334B63003D9ED9 /* StreamingHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamingHistory.swift; sourceTree = "<group>"; };
 		03487F2A2B33535A003D9ED9 /* StreamingHistoryStreamSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamingHistoryStreamSettingsView.swift; sourceTree = "<group>"; };
+		034D26FE2B3A03620097C619 /* RtmpServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpServer.swift; sourceTree = "<group>"; };
 		034D2EC12B351715003C6D14 /* RecordingsStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsStorage.swift; sourceTree = "<group>"; };
 		034FC8512B2B6D4A00EF0C62 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		035D37272AB0EBB500045B92 /* IconAndTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconAndTextView.swift; sourceTree = "<group>"; };
@@ -448,6 +455,8 @@
 		03F853B22B151FA700719B89 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		03FB4B2E2AD8CF83005AA183 /* BitratePresetsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitratePresetsSettingsView.swift; sourceTree = "<group>"; };
 		03FB4B302AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitratePresetsPresetSettingsView.swift; sourceTree = "<group>"; };
+		03FBD1802B3B0DE500757CA9 /* RtmpServerClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpServerClient.swift; sourceTree = "<group>"; };
+		03FBD1842B3B0DF300757CA9 /* RtmpServerChunkStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpServerChunkStream.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -664,6 +673,16 @@
 			path = StreamingHistory;
 			sourceTree = "<group>";
 		};
+		034D26FD2B3A034A0097C619 /* RtmpServer */ = {
+			isa = PBXGroup;
+			children = (
+				034D26FE2B3A03620097C619 /* RtmpServer.swift */,
+				03FBD1802B3B0DE500757CA9 /* RtmpServerClient.swift */,
+				03FBD1842B3B0DF300757CA9 /* RtmpServerChunkStream.swift */,
+			);
+			path = RtmpServer;
+			sourceTree = "<group>";
+		};
 		035D372A2AB103E600045B92 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -693,6 +712,7 @@
 		035E9E352A9A02D6009D4F5A /* Moblin */ = {
 			isa = PBXGroup;
 			children = (
+				034D26FD2B3A034A0097C619 /* RtmpServer */,
 				032BC5B22AD8E18000DEC883 /* Info.plist */,
 				031852A42B21890A00AEAD0D /* InfoPlist.strings */,
 				03BC115B2AE4BD6200C38FC4 /* Emotes */,
@@ -1278,6 +1298,7 @@
 				032E06522B2F3E9D00EAE5F8 /* TextEffect.swift in Sources */,
 				032E06532B2F3E9D00EAE5F8 /* TwitchPubSub.swift in Sources */,
 				032E06542B2F3E9D00EAE5F8 /* WidgetSettingsView.swift in Sources */,
+				034D27002B3A03620097C619 /* RtmpServer.swift in Sources */,
 				032E06552B2F3E9D00EAE5F8 /* StreamUrlSettingsView.swift in Sources */,
 				032E06562B2F3E9D00EAE5F8 /* BrowserEffect.swift in Sources */,
 				032E06572B2F3E9D00EAE5F8 /* StreamVideoSettingsView.swift in Sources */,
@@ -1345,8 +1366,10 @@
 				032E06852B2F3E9D00EAE5F8 /* LocalOverlaysSettingsView.swift in Sources */,
 				032E06862B2F3E9D00EAE5F8 /* ButtonSettingsView.swift in Sources */,
 				03487F282B334C48003D9ED9 /* StreamingHistorySettingsView.swift in Sources */,
+				03FBD1822B3B0DE500757CA9 /* RtmpServerClient.swift in Sources */,
 				032E06872B2F3E9D00EAE5F8 /* SceneCameraPipSmallCameraSettingsView.swift in Sources */,
 				032E06882B2F3E9D00EAE5F8 /* ZoomPresetSettingsView.swift in Sources */,
+				03FBD1862B3B0DF300757CA9 /* RtmpServerChunkStream.swift in Sources */,
 				03DBD10F2B301403004B0BE6 /* StreamWizardSettingsView.swift in Sources */,
 				032E06892B2F3E9D00EAE5F8 /* ScenesSettingsView.swift in Sources */,
 				032E068A2B2F3E9D00EAE5F8 /* YouTubeLiveChat.swift in Sources */,
@@ -1417,6 +1440,7 @@
 				03D445E22AE5966B00A0F6E9 /* CacheAsyncImage.swift in Sources */,
 				03F3BF192ADAAA94009A8D3E /* TextEffect.swift in Sources */,
 				03A983712A9A0659008FF0DB /* TwitchPubSub.swift in Sources */,
+				034D26FF2B3A03620097C619 /* RtmpServer.swift in Sources */,
 				03A9836C2A9A05D7008FF0DB /* WidgetSettingsView.swift in Sources */,
 				03DBD0FF2B30091B004B0BE6 /* StreamWizardNetworkSetupSettingsView.swift in Sources */,
 				036BE2CC2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift in Sources */,
@@ -1484,8 +1508,10 @@
 				03A9836E2A9A05F9008FF0DB /* Model.swift in Sources */,
 				03BC11642AE4BEC400C38FC4 /* Emotes.swift in Sources */,
 				03A983722A9A0659008FF0DB /* TwitchChatMoblin.swift in Sources */,
+				03FBD1812B3B0DE500757CA9 /* RtmpServerClient.swift in Sources */,
 				0379BBA52AAD945D00B718B6 /* LocalOverlaysSettingsView.swift in Sources */,
 				0379BB762AA6345400B718B6 /* ButtonSettingsView.swift in Sources */,
+				03FBD1852B3B0DF300757CA9 /* RtmpServerChunkStream.swift in Sources */,
 				03C088302B0A939F000990DA /* SceneCameraPipSmallCameraSettingsView.swift in Sources */,
 				035E775C2ACC969D00738DCE /* ZoomPresetSettingsView.swift in Sources */,
 				03A983672A9A05D7008FF0DB /* ScenesSettingsView.swift in Sources */,

@@ -790,6 +790,7 @@ class SettingsDebug: Codable {
     var srtOverheadBandwidth: Int32? = 25
     var recordings: Bool? = false
     var letItSnow: Bool? = false
+    var rtmpServer: Bool? = false
 }
 
 class SettingsQuickButtons: Codable {
@@ -1394,6 +1395,10 @@ final class Settings {
         }
         if realDatabase.debug!.letItSnow == nil {
             realDatabase.debug!.letItSnow = false
+            store()
+        }
+        if realDatabase.debug!.rtmpServer == nil {
+            realDatabase.debug!.rtmpServer = false
             store()
         }
     }

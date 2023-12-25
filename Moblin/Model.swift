@@ -327,6 +327,8 @@ final class Model: ObservableObject {
 
     var recordingsStorage = RecordingsStorage()
 
+    private var rtmpServer: RtmpServer?
+
     init() {
         settings.load()
         streamingHistory.load()
@@ -1016,10 +1018,24 @@ final class Model: ObservableObject {
                                                    .willEnterForegroundNotification,
                                                object: nil)
         updateOrientation()
+        reloadRtmpServer()
     }
 
     @objc func handleWillEnterForegroundNotification() {
         reloadConnections()
+    }
+
+    func reloadRtmpServer() {
+        rtmpServer?.stop()
+        rtmpServer = nil
+        if database.debug!.rtmpServer! {
+            rtmpServer = RtmpServer(onListening: { port in
+                DispatchQueue.main.async {
+                    self.makeToast(title: "RTMP server listening on port \(port)")
+                }
+            })
+            rtmpServer!.start()
+        }
     }
 
     private func listCameras(position: AVCaptureDevice.Position) -> [Camera] {

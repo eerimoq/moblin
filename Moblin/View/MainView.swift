@@ -28,7 +28,7 @@ struct MainView: View {
     @EnvironmentObject var model: Model
     var streamView: StreamView
 
-    var scene: SKScene {
+    private var scene: SKScene {
         let scene = SnowScene()
         scene.scaleMode = .resizeFill
         scene.backgroundColor = .clear

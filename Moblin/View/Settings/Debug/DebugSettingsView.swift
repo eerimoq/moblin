@@ -98,6 +98,13 @@ struct DebugSettingsView: View {
                     model.database.debug!.letItSnow = value
                     model.store()
                 }))
+                Toggle("RTMP server", isOn: Binding(get: {
+                    model.database.debug!.rtmpServer!
+                }, set: { value in
+                    model.database.debug!.rtmpServer = value
+                    model.store()
+                    model.reloadRtmpServer()
+                }))
             }
         }
         .navigationTitle("Debug")
