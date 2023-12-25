@@ -12373,6 +12373,9 @@
         }
       }
     },
+    "Copy from OBS Show Connect Info as seen in the screenshot below. Tools → WebSocket Server Settings → Show Connect Info → Server Password." : {
+
+    },
     "Copy from OBS." : {
       "extractionState" : "stale",
       "localizations" : {
@@ -12481,6 +12484,7 @@
       }
     },
     "Copy from OBS. Tools → WebSocket Server Settings → Show Connect Info → Server Password." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

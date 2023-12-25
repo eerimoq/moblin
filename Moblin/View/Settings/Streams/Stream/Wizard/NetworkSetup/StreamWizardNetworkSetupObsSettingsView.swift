@@ -13,7 +13,7 @@ struct StreamWizardNetworkSetupObsSettingsView: View {
         model.wizardObsPort = model.wizardObsPort.trim()
         if model.wizardObsPort.isEmpty {
             portError = ""
-        } else if UInt16(model.wizardObsPort) != nil {
+        } else if let port = UInt16(model.wizardObsPort), port > 0 {
             portError = ""
         } else {
             portError = String(localized: "Must be a number between 1 and 65535.")
