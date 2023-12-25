@@ -7,6 +7,16 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.115.0", changes: [
+        "• Fix OBS remote control edge case in Create stream wizard.",
+        "• Battery percentage enabled by default.",
+        "• Show error toast when pressing OBS scene button with OBS remote control is not configured.",
+        "• \"Setup\" button instead of \"Go live\" when no stream is configured.",
+        "  • The \"Setup\" button opens the \"Create stream wizard\" when pressed.",
+        "• Only show viewers, chat statistics and OBS status in top left in UI if configured.",
+        "• Visual indicator for widgets that have configurable position and/or size.",
+        "• Translations continued (mostly auto translated, to be improved).",
+    ]),
     Version(version: "0.114.0", changes: [
         "• Added \"Chat messages\" to stream summary.",
         "• Snow behind black screen.",
