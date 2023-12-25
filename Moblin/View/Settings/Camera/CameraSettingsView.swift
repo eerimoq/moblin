@@ -61,6 +61,7 @@ struct CameraSettingsView: View {
                     Text("Zoom")
                 }
                 VideoStabilizationSettingsView()
+                TapScreenToFocusSettingsView()
                 NavigationLink(
                     destination: BitratePresetsSettingsView()
                 ) {

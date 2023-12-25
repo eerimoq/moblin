@@ -9,7 +9,6 @@ struct DisplaySettingsView: View {
                 NavigationLink(destination: LocalOverlaysSettingsView()) {
                     Text("Local overlays")
                 }
-                TapScreenToFocusSettingsView()
                 Toggle("Battery percentage", isOn: Binding(get: {
                     model.database.batteryPercentage!
                 }, set: { value in
