@@ -43,7 +43,9 @@ struct StreamWizardKickSettingsView: View {
                 }
             }
             Section {
-                NavigationLink(destination: StreamWizardNetworkSetupSettingsView(platform: "Kick")) {
+                NavigationLink(
+                    destination: StreamWizardNetworkSetupSettingsView(platform: String(localized: "Kick"))
+                ) {
                     WizardNextButtonView()
                 }
                 .disabled(nextDisabled())

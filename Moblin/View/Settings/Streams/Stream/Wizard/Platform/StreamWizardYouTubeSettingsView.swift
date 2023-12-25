@@ -18,7 +18,9 @@ struct StreamWizardYouTubeSettingsView: View {
                 Text("Video id")
             }
             Section {
-                NavigationLink(destination: StreamWizardNetworkSetupSettingsView(platform: "YouTube")) {
+                NavigationLink(
+                    destination: StreamWizardNetworkSetupSettingsView(platform: String(localized: "YouTube"))
+                ) {
                     WizardNextButtonView()
                 }
             }
