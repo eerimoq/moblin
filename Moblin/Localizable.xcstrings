@@ -157,7 +157,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "(Anmeldung erforderlich)."
           }
         },
@@ -475,7 +475,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "???"
           }
         },
@@ -581,7 +581,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "."
           }
         },
@@ -1112,7 +1112,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@"
           }
         },
@@ -1549,7 +1549,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%1$@ %2$@"
           }
         },
@@ -1662,7 +1662,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%lld"
           }
         },
@@ -1980,7 +1980,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%llu"
           }
         },
@@ -2298,8 +2298,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "🤞 Verbindung zu %@ herstellen 🤞"
+            "state" : "translated",
+            "value" : "🤞 Verbindung zu %@ herstellen🤞"
           }
         },
         "el" : {
@@ -2616,7 +2616,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "😢 Verbindung zu %@ konnte nicht hergestellt werden 😢"
           }
         },
@@ -2934,8 +2934,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "1. Erstellen Sie eine Medienquelle in OBS und konfigurieren Sie sie wie im Bild unten gezeigt."
+            "state" : "translated",
+            "value" : "1. Erstelle eine Medienquelle in OBS und konfiguriere sie wie im Bild unten gezeigt."
           }
         },
         "el" : {
@@ -3040,8 +3040,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "2. Ersetzen Sie 192.168.50.72 durch Ihre lokale IP-Adresse (normalerweise 192.168.x.y)."
+            "state" : "translated",
+            "value" : "2. Ersetze 192.168.50.72 durch deine lokale IP-Adresse (normalerweise 192.168.x.y)."
           }
         },
         "el" : {
@@ -3146,8 +3146,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "3. Ersetzen Sie 7654 durch Ihren Port."
+            "state" : "translated",
+            "value" : "3. Ersetze 7654 durch deinen Port."
           }
         },
         "el" : {
@@ -3252,7 +3252,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "4bkf-8d03-g6w3-ekjh-emdc"
           }
         },
@@ -3358,7 +3358,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "7TV-Emotes"
           }
         },
@@ -3464,8 +3464,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "128 Kpbs oder höher werden empfohlen."
+            "state" : "translated",
+            "value" : "128 kbit/s oder höher werden empfohlen."
           }
         },
         "el" : {
@@ -3570,7 +3570,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "213.33.45.132"
           }
         },
@@ -3676,7 +3676,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "7654"
           }
         },
@@ -3782,7 +3782,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "90812903"
           }
         },
@@ -3888,7 +3888,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "908123903"
           }
         },
@@ -5166,8 +5166,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bekanntmachung"
+            "state" : "translated",
+            "value" : "Ankündigung"
           }
         },
         "el" : {
@@ -5378,7 +5378,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Aussehen"
           }
         },
@@ -5590,7 +5590,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Erneuter Versuch in %lld Sekunden."
           }
         },
@@ -5802,7 +5802,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Audio Bitrate"
           }
         },
@@ -5909,7 +5909,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Audio-Bitrate: 32–320 kbit/s. Es wird nur der AAC-Codec unterstützt."
           }
         },
@@ -6015,7 +6015,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Audio-Codec"
           }
         },
@@ -6333,7 +6333,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Durchschnittliche Bitrate"
           }
         },
@@ -6439,8 +6439,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "B-Rahmen"
+            "state" : "translated",
+            "value" : "B-Frames"
           }
         },
         "el" : {
@@ -7287,7 +7287,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "BELABOX-Cloud"
           }
         },
@@ -7393,7 +7393,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "BELABOX Cloud und OBS"
           }
         },
@@ -7711,8 +7711,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bestmögliche Stabilität. Verwendet Bindung. Bezahlter Service."
+            "state" : "translated",
+            "value" : "Bestmögliche Stabilität. Verwendet Bonding. Bezahlter Service."
           }
         },
         "el" : {
@@ -9301,7 +9301,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "BTTV-Emotes"
           }
         },
@@ -10785,7 +10785,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Chat-Nachrichten"
           }
         },
@@ -11421,8 +11421,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Konfigurieren Sie es unter Einstellungen → Streams → %@ → OBS-Fernbedienung."
+            "state" : "translated",
+            "value" : "Konfiguriere es unter Einstellungen → Streams → %@ → OBS-Fernbedienung."
           }
         },
         "el" : {
@@ -11527,8 +11527,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Konfigurieren Sie OBS auf Ihrem Computer"
+            "state" : "translated",
+            "value" : "Konfiguriere OBS auf deinem Computer"
           }
         },
         "el" : {
@@ -11633,8 +11633,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Konfigurieren Sie die Portweiterleitung in Ihrem Router, um eingehenden Datenverkehr an OBS weiterzuleiten."
+            "state" : "translated",
+            "value" : "Konfiguriere die Portweiterleitung in deinem Router, um eingehenden Datenverkehr an OBS weiterzuleiten."
           }
         },
         "el" : {
@@ -11739,8 +11739,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Konfigurieren Sie den Stream, nachdem der Assistent beendet ist."
+            "state" : "translated",
+            "value" : "Konfiguriere den Stream, nachdem der Assistent beendet ist."
           }
         },
         "el" : {
@@ -11845,7 +11845,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kopie von"
           }
         },
@@ -11951,7 +11951,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kopie von ??? (Anmeldung erforderlich)."
           }
         },
@@ -12057,8 +12057,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kopie von https://help.twitch.tv/s/twitch-ingest-recommendation. Entfernen Sie {stream_key}."
+            "state" : "translated",
+            "value" : "Kopie von https://help.twitch.tv/s/twitch-ingest-recommendation. Entferne {stream_key}."
           }
         },
         "el" : {
@@ -12163,7 +12163,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Von https://kick.com/dashboard/settings/stream kopieren (Anmeldung erforderlich)."
           }
         },
@@ -12269,7 +12269,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Von https://youtube.com kopieren (Anmeldung erforderlich)."
           }
         },
@@ -12375,7 +12375,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Von OBS kopieren."
           }
         },
@@ -12693,7 +12693,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Assistent zum Erstellen eines Streams"
           }
         },
@@ -12799,8 +12799,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Brauch"
+            "state" : "translated",
+            "value" : "Benutzerdefiniert"
           }
         },
         "el" : {
@@ -13329,7 +13329,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Gerätezustand"
           }
         },
@@ -13541,8 +13541,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Direkte"
+            "state" : "translated",
+            "value" : "Direkt "
           }
         },
         "el" : {
@@ -13753,8 +13753,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Anzeige"
+            "state" : "translated",
+            "value" : "Display"
           }
         },
         "el" : {
@@ -14495,7 +14495,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Dauer"
           }
         },
@@ -14707,8 +14707,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ermöglicht"
+            "state" : "translated",
+            "value" : "Aktiviert"
           }
         },
         "el" : {
@@ -14919,7 +14919,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Endbenutzer-Lizenzvereinbarung (EULA)"
           }
         },
@@ -17675,7 +17675,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "FFFFF:s"
           }
         },
@@ -17781,7 +17781,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "FFZ-Emotes"
           }
         },
@@ -17993,8 +17993,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Finden Sie Ihre Chatroom-ID unter"
+            "state" : "translated",
+            "value" : "Finde deine Chatroom-ID unter"
           }
         },
         "el" : {
@@ -18205,8 +18205,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Zum ersten Mal geplaudert"
+            "state" : "translated",
+            "value" : "Zum ersten Mal gechattet"
           }
         },
         "el" : {
@@ -18417,8 +18417,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Für fortgeschrittene Benutzer oder wenn Ihre Plattform nicht in der Liste oben aufgeführt ist."
+            "state" : "translated",
+            "value" : "Für fortgeschrittene Benutzer oder wenn deine Plattform nicht in der Liste oben aufgeführt ist."
           }
         },
         "el" : {
@@ -18629,7 +18629,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "FPS"
           }
         },
@@ -19689,7 +19689,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Gute Stabilität unter den meisten Netzwerkbedingungen."
           }
         },
@@ -19795,7 +19795,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "gr230gkwpj03"
           }
         },
@@ -20431,7 +20431,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Höchste Bitrate"
           }
         },
@@ -20537,7 +20537,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Höchster thermischer Zustand"
           }
         },
@@ -20750,7 +20750,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "https://dashboard.twitch.tv/u/%@/settings/stream"
           }
         },
@@ -21598,8 +21598,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "URL aufnehmen"
+            "state" : "translated",
+            "value" : "Aufnahme URL"
           }
         },
         "el" : {
@@ -21810,7 +21810,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "IP-Adresse oder Domänenname"
           }
         },
@@ -21916,7 +21916,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "jo304F4gr"
           }
         },
@@ -22553,7 +22553,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Länge"
           }
         },
@@ -22659,7 +22659,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Lass es schneien"
           }
         },
@@ -22871,7 +22871,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "live_48950233_okF4f455GRWEF443fFr23GRbt5rEv"
           }
         },
@@ -23401,7 +23401,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Niedrigster Batterieprozentsatz"
           }
         },
@@ -24885,7 +24885,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Moblin"
           }
         },
@@ -25203,7 +25203,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Muss eine Zahl zwischen 1 und 65535 sein."
           }
         },
@@ -26052,7 +26052,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mein Kanal"
           }
         },
@@ -26264,7 +26264,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "In der Nähe befindlicher Aufnahmeendpunkt"
           }
         },
@@ -26476,7 +26476,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Wird für Kanal-Chat-Emotes und die Anzahl der Zuschauer benötigt."
           }
         },
@@ -26582,7 +26582,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Wird für den Chat benötigt."
           }
         },
@@ -26688,7 +26688,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Netzwerkeinrichtung"
           }
         },
@@ -26794,7 +26794,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nächste"
           }
         },
@@ -27218,7 +27218,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "OBS"
           }
         },
@@ -27536,7 +27536,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "OBS-Fernbedienung ist nicht konfiguriert"
           }
         },
@@ -27642,8 +27642,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS-Fernbedienung ist nicht konfiguriert. Konfigurieren Sie es unter Einstellungen → Streams → %@ → OBS-Fernbedienung."
+            "state" : "translated",
+            "value" : "OBS-Fernbedienung ist nicht konfiguriert. Konfiguriere es unter Einstellungen → Streams → %@ → OBS-Fernbedienung."
           }
         },
         "el" : {
@@ -27748,7 +27748,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Die OBS-Fernbedienung ist nicht mit dem Server verbunden"
           }
         },
@@ -28916,7 +28916,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Oft schlechte Stabilität, wenn die Netzwerkverbindung instabil ist. Kein serverseitiger Verbindungsabbruchschutz möglich (kein NOALBS)."
           }
         },
@@ -29870,7 +29870,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Plattform zum Streamen"
           }
         },
@@ -30082,7 +30082,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "po3Gg4pflp3s"
           }
         },
@@ -30188,8 +30188,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Hafen"
+            "state" : "translated",
+            "value" : "Port"
           }
         },
         "el" : {
@@ -30400,8 +30400,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Klicken Sie auf „Automatisch zu Moblin hinzufügen“ auf https://cloud.belabox.net SRT(LA)-Relays (Anmeldung erforderlich). Siehe Screenshot unten."
+            "state" : "translated",
+            "value" : "Klicke auf „Automatisch zu Moblin hinzufügen“ auf https://cloud.belabox.net SRT(LA)-Relays (Anmeldung erforderlich). Siehe Screenshot unten."
           }
         },
         "el" : {
@@ -30506,7 +30506,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Datenschutzrichtlinie"
           }
         },
@@ -30612,7 +30612,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Protokoll"
           }
         },
@@ -30719,7 +30719,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Schnelltasten"
           }
         },
@@ -30931,7 +30931,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Aufzeichnen"
           }
         },
@@ -31037,7 +31037,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Aufzeichnung"
           }
         },
@@ -31143,7 +31143,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Aufnahmen"
           }
         },
@@ -31991,7 +31991,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "rtmp://a.rtmp.youtube.com/live2"
           }
         },
@@ -32097,7 +32097,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "rtmp://arn03.contribute.live-video.net/app"
           }
         },
@@ -32203,7 +32203,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "rtmps://fa723fc1b171.global-contribute.live-video.net"
           }
         },
@@ -32627,7 +32627,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Scrollen"
           }
         },
@@ -33263,8 +33263,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Aufstellen"
+            "state" : "translated",
+            "value" : "Setup"
           }
         },
         "el" : {
@@ -33475,7 +33475,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Name anzeigen"
           }
         },
@@ -33793,7 +33793,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "sk_us-west-2_okfef49k34k_34g59gGDDHGHSREj754gYJYTJERH"
           }
         },
@@ -34960,7 +34960,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "SRTLA"
           }
         },
@@ -35172,7 +35172,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "srtla://uk.srt.belabox.net:5000?streamid=jO4ijfFgrlpv4m2375msdoG3DDr2"
           }
         },
@@ -35384,7 +35384,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Startzeit"
           }
         },
@@ -35596,7 +35596,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Stream-Schlüssel"
           }
         },
@@ -35702,7 +35702,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Streamname"
           }
         },
@@ -35808,7 +35808,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Stream-Zusammenfassung"
           }
         },
@@ -35914,7 +35914,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Stream-URL"
           }
         },
@@ -36126,8 +36126,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Streaming-Verlauf"
+            "state" : "translated",
+            "value" : "Streaming Verlauf"
           }
         },
         "el" : {
@@ -36550,7 +36550,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Zusammenfassung und Streamname"
           }
         },
@@ -37292,7 +37292,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Vorlage: rtmps://"
           }
         },
@@ -37822,7 +37822,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Die tatsächliche Bitrate kann niedriger sein, wenn das Gerät sie nicht unterstützt."
           }
         },
@@ -38564,8 +38564,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Miniaturansicht"
+            "state" : "translated",
+            "value" : "Thumbnail"
           }
         },
         "el" : {
@@ -39306,7 +39306,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Gesamtaufnahmen"
           }
         },
@@ -39412,7 +39412,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Insgesamt gesendet"
           }
         },
@@ -39518,7 +39518,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Gesamtgröße"
           }
         },
@@ -39624,7 +39624,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Gesamtzahl der Streams"
           }
         },
@@ -39730,7 +39730,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Gesamtzeit"
           }
         },
@@ -40154,7 +40154,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Zwei Spalten"
           }
         },
@@ -41320,8 +41320,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Verwenden Sie https://streamscharts.com/tools/convert-username, um Ihren Kanalnamen in Ihre Kanal-ID umzuwandeln."
+            "state" : "translated",
+            "value" : "Verwende https://streamscharts.com/tools/convert-username, um deinen Kanalnamen in deine Kanal-ID umzuwandeln."
           }
         },
         "el" : {
@@ -41426,8 +41426,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Verwenden Sie Ihre öffentliche IP-Adresse, wenn Sie über das Internet streamen."
+            "state" : "translated",
+            "value" : "Verwende deine öffentliche IP-Adresse, wenn du über das Internet streamst."
           }
         },
         "el" : {
@@ -41744,8 +41744,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Versionsgeschichte"
+            "state" : "translated",
+            "value" : "Versionshistorie"
           }
         },
         "el" : {
@@ -43440,7 +43440,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ws://213.33.45.132"
           }
         },
@@ -43764,8 +43764,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ihre öffentliche IP-Adresse, wenn Sie über das Internet streamen."
+            "state" : "translated",
+            "value" : "Deine öffentliche IP-Adresse, wenn du über das Internet streamst."
           }
         },
         "el" : {
