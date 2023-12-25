@@ -7,6 +7,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.116.0", changes: [
+        "- German translation updated.",
+        "- Remove \"😎 Going live at <stream> 😎\" and \"🤞 Connecting to <stream> 🤞\" as they don't add much value over just the failure toasts. They are often just seen a fraction of a second, which is just irritating.",
+        "- Improved OBS remote control disconnection handling. Update start/stop stream button state after reconnect.",
+        "- Screenshot in OBS remote control wizard.",
+        "- Only show error toast when listing OBS scenes when OBS remote control is configured but not connected.",
+    ]),
     Version(version: "0.115.0", changes: [
         "• Fix OBS remote control edge case in Create stream wizard.",
         "• Battery percentage enabled by default.",
