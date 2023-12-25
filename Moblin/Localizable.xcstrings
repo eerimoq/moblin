@@ -2600,8 +2600,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "😎以％@ live"
+            "state" : "translated",
+            "value" : "😎以%@ live"
           }
         },
         "zh-Hant" : {
@@ -28156,8 +28156,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS场景设置为％@"
+            "state" : "translated",
+            "value" : "OBS场景设置为%@"
           }
         },
         "zh-Hant" : {
@@ -34201,8 +34201,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SRT连接失败了％@"
+            "state" : "translated",
+            "value" : "SRT连接失败了%@"
           }
         },
         "zh-Hant" : {
@@ -34413,8 +34413,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SRT错误：％@"
+            "state" : "translated",
+            "value" : "SRT错误：%@"
           }
         },
         "zh-Hant" : {
@@ -38972,8 +38972,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "到％@相机"
+            "state" : "translated",
+            "value" : "到%@相机"
           }
         },
         "zh-Hant" : {
@@ -40668,8 +40668,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "不支持的方案％@"
+            "state" : "translated",
+            "value" : "不支持的方案%@"
           }
         },
         "zh-Hant" : {
@@ -43642,8 +43642,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "x必须为％f -％f"
+            "state" : "translated",
+            "value" : "x必须为%1$f - %2$@"
           }
         },
         "zh-Hant" : {
