@@ -8,12 +8,19 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.117.0", date: "2023-12-26", changes: [
+        "• Move \"Tap screen to focus\" from Display to Camera settings page.",
+        "• Date in version history.",
+        "• Korean translation updated.",
+        "• RTMP server implementation started. Far from complete, but a client can connect.",
+        "  • Received audio is discarded. Received video is also discarded, but logged.",
+    ]),
     Version(version: "0.116.0", date: "2023-12-25", changes: [
-        "- German translation updated.",
-        "- Remove \"😎 Going live at <stream> 😎\" and \"🤞 Connecting to <stream> 🤞\" as they don't add much value over just the failure toasts. They are often just seen a fraction of a second, which is just irritating.",
-        "- Improved OBS remote control disconnection handling. Update start/stop stream button state after reconnect.",
-        "- Screenshot in OBS remote control wizard.",
-        "- Only show error toast when listing OBS scenes when OBS remote control is configured but not connected.",
+        "• German translation updated.",
+        "• Remove \"😎 Going live at <stream> 😎\" and \"🤞 Connecting to <stream> 🤞\" as they don't add much value over just the failure toasts. They are often just seen a fraction of a second, which is just irritating.",
+        "• Improved OBS remote control disconnection handling. Update start/stop stream button state after reconnect.",
+        "• Screenshot in OBS remote control wizard.",
+        "• Only show error toast when listing OBS scenes when OBS remote control is configured but not connected.",
     ]),
     Version(version: "0.115.0", date: "2023-12-25", changes: [
         "• Fix OBS remote control edge case in Create stream wizard.",
