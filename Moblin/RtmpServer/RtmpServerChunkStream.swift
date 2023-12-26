@@ -6,10 +6,12 @@ class RtmpServerChunkStream {
     private var messageData: Data
     private var messageLength: Int
     private var messageTypeId: UInt8
+    private var chunkStreamId: UInt32
     private var client: RtmpServerClient!
 
-    init(client: RtmpServerClient) {
+    init(client: RtmpServerClient, chunkStreamId: UInt32) {
         self.client = client
+        self.chunkStreamId = chunkStreamId
         messageData = Data()
         messageLength = 0
         messageTypeId = 0
@@ -54,7 +56,7 @@ class RtmpServerChunkStream {
 
     private func processMessage() {
         guard let messageType = RTMPMessageType(rawValue: messageTypeId) else {
-            logger.info("rtmp-server: client: Bad message type \(messageTypeId)")
+            logger.info("rtmp-server: client: \(chunkStreamId): Bad message type \(messageTypeId)")
             return
         }
         // logger.info("rtmp-server: client: Processing message \(messageType)")
@@ -70,7 +72,7 @@ class RtmpServerChunkStream {
         case .audio:
             processMessageAudio()
         default:
-            logger.info("rtmp-server: client: Message type \(messageType) not supported")
+            logger.info("rtmp-server: client: \(chunkStreamId): Message type \(messageType) not supported")
         }
     }
 
@@ -87,11 +89,11 @@ class RtmpServerChunkStream {
                 try arguments.append(amf0.deserialize())
             }
             logger.info("""
-            rtmp-server: client: Command: \(commandName), Object: \(commandObject), \
+            rtmp-server: client: \(chunkStreamId): Command: \(commandName), Object: \(commandObject), \
             Arguments: \(arguments)
             """)
         } catch {
-            logger.info("rtmp-server: client: AMF-0 decode error \(error)")
+            logger.info("rtmp-server: \(chunkStreamId): client: AMF-0 decode error \(error)")
             return
         }
         switch commandName {
@@ -108,12 +110,12 @@ class RtmpServerChunkStream {
         case "publish":
             processMessageAmf0CommandPublish(transactionId: transactionId)
         default:
-            logger.info("rtmp-server: client: Unsupported command \(commandName)")
+            logger.info("rtmp-server: client: \(chunkStreamId): Unsupported command \(commandName)")
         }
     }
 
     private func processMessageAmf0Data() {
-        logger.info("rtmp-server: client: Ignoring AMF-0 data")
+        logger.info("rtmp-server: client: \(chunkStreamId): Ignoring AMF-0 data")
     }
 
     private func processMessageAmf0CommandConnect(transactionId: Int) {
@@ -195,11 +197,53 @@ class RtmpServerChunkStream {
             return
         }
         client.chunkSizeFromClient = Int(messageData.getFourBytesBe())
-        logger.info("rtmp-server: client: Chunk size from client: \(client.chunkSizeFromClient)")
+        logger
+            .info(
+                "rtmp-server: client: \(chunkStreamId): Chunk size from client: \(client.chunkSizeFromClient)"
+            )
     }
 
     private func processMessageVideo() {
-        // logger.info("rtmp-server: client: Video: \(messageData.count)")
+        guard messageData.count > 1 else {
+            return
+        }
+        let control = messageData[0]
+        let frameType = control >> 4
+        guard (frameType & 0x8) == 0 else {
+            logger.info("rtmp-server: client: \(chunkStreamId): Unsupported video frame type \(frameType)")
+            return
+        }
+        guard let format = FLVVideoCodec(rawValue: control & 0xF) else {
+            logger.info("rtmp-server: client: \(chunkStreamId): Unsupported video format \(control & 0xF)")
+            return
+        }
+        guard format == .avc else {
+            logger
+                .info(
+                    "rtmp-server: client: \(chunkStreamId): Unsupported video format \(format). Only AVC is supported."
+                )
+            return
+        }
+        switch FLVAVCPacketType(rawValue: messageData[1]) {
+        case .seq:
+            logger.info("rtmp-server: client: \(chunkStreamId): Make format description")
+            var config = AVCDecoderConfigurationRecord()
+            config.data = messageData.subdata(in: FLVTagType.video.headerSize ..< messageData.count)
+        // status = config.makeFormatDescription(&stream.mixer.videoIO.formatDescription)
+        case .nal:
+            logger
+                .info(
+                    "rtmp-server: client: \(chunkStreamId): Make sample buffer of \(messageData.count) bytes"
+                )
+        /* if let sampleBuffer = makeSampleBuffer(stream, type: type, offset: 0) {
+             stream.mixer.videoIO.codec.appendSampleBuffer(sampleBuffer)
+         } */
+        default:
+            logger
+                .info(
+                    "rtmp-server: client: \(chunkStreamId): Unsupported video AVC packet type \(messageData[1])"
+                )
+        }
     }
 
     private func processMessageAudio() {
