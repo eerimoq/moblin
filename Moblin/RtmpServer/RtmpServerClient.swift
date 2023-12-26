@@ -27,12 +27,7 @@ class RtmpServerClient {
         }
     }
 
-    private var chunkState: ChunkState {
-        didSet {
-            logger.info("rtmp-server: client: Chunk change \(oldValue) -> \(chunkState)")
-        }
-    }
-
+    private var chunkState: ChunkState
     private var chunkSizeToClient = 128
     var chunkSizeFromClient = 128
     private var chunkStreams: [UInt32: RtmpServerChunkStream]
@@ -41,6 +36,7 @@ class RtmpServerClient {
     private var messageTypeId: UInt8
     private var messageStreamId: UInt32
     private var messageLength: Int
+    private var onDisconnected: ((RtmpServerClient) -> Void)?
 
     init(connection: NWConnection) {
         self.connection = connection
@@ -56,24 +52,28 @@ class RtmpServerClient {
         connection.start(queue: rtmpServerDispatchQueue)
     }
 
-    func start() {
-        logger.info("rtmp-server: client: start")
+    func start(onDisconnected: @escaping (RtmpServerClient) -> Void) {
+        self.onDisconnected = onDisconnected
         state = .uninitialized
         chunkState = .basicHeaderFirstByte
         receiveData(size: 1 + 1536)
     }
 
     func stop() {
-        logger.info("rtmp-server: client: stop")
         for chunkStream in chunkStreams.values {
             chunkStream.stop()
         }
         chunkStreams.removeAll()
         connection.cancel()
+        onDisconnected = nil
+    }
+
+    private func stopInternal() {
+        onDisconnected?(self)
     }
 
     private func handleStateUpdate(to state: NWConnection.State) {
-        logger.info("rtmp-server: client: State change to \(state)")
+        logger.info("rtmp-server: client: Socket state change to \(state)")
     }
 
     private func handleData(data: Data) {
@@ -91,16 +91,20 @@ class RtmpServerClient {
 
     private func handleDataUninitialized(data: Data) {
         guard data.count == 1 + 1536 else {
-            logger
-                .info(
-                    "rtmp-server: client: Wrong length \(data.count) in uninitialized (expected \(1 + 1536)"
-                )
+            logger.info(
+                """
+                rtmp-server: client: Wrong length \(data.count) in \
+                uninitialized (expected \(1 + 1536)
+                """
+            )
+            stopInternal()
             return
         }
         let version = data[0]
-        logger.info("rtmp-server: client: Client requested version \(version)")
+        // logger.info("rtmp-server: client: Client requested version \(version)")
         guard version == rtmpVersion else {
             logger.info("rtmp-server: client: Only version 3 is supported, not \(version)")
+            stopInternal()
             return
         }
         let s0 = Data([rtmpVersion])
@@ -142,18 +146,21 @@ class RtmpServerClient {
                 .info(
                     "rtmp-server: client: Wrong length \(data.count) in basic header first byte (expected 1)"
                 )
+            stopInternal()
             return
         }
         let firstByte = data[0]
         let format = firstByte >> 6
         chunkStreamId = UInt32(firstByte & 0x3F)
-        logger.info("rtmp-server: client: First byte fmt \(format) and chunk stream id \(chunkStreamId)")
+        // logger.info("rtmp-server: client: First byte fmt \(format) and chunk stream id \(chunkStreamId)")
         switch chunkStreamId {
         case 0:
             logger.info("rtmp-server: client: Two bytes basic header is not implemented")
+            stopInternal()
             return
         case 1:
             logger.info("rtmp-server: client: Three bytes basic header is not implemented")
+            stopInternal()
             return
         default:
             break
@@ -174,10 +181,13 @@ class RtmpServerClient {
 
     private func handleDataHandshakeDoneMessageHeaderType0(data: Data) {
         guard data.count == 11 else {
-            logger
-                .info(
-                    "rtmp-server: client: Wrong length \(data.count) om message header type 0 header (expected 11)"
-                )
+            logger.info(
+                """
+                rtmp-server: client: Wrong length \(data.count) om message \
+                header type 0 header (expected 11)
+                """
+            )
+            stopInternal()
             return
         }
         messageTimestamp = data.getThreeBytesBe()
@@ -191,12 +201,13 @@ class RtmpServerClient {
             receiveChunkData(size: length)
         } else {
             logger.info("rtmp-server: client: Unexpected data. Close connection.")
+            stopInternal()
         }
     }
 
     private func getChunkStream() -> RtmpServerChunkStream? {
         if chunkStreams[chunkStreamId] == nil {
-            logger.info("rtmp-server: client: New chunk stream with id \(chunkStreamId)")
+            // logger.info("rtmp-server: client: New chunk stream with id \(chunkStreamId)")
             chunkStreams[chunkStreamId] = RtmpServerChunkStream(client: self)
         }
         return chunkStreams[chunkStreamId]
@@ -208,6 +219,7 @@ class RtmpServerClient {
             rtmp-server: client: Wrong length \(data.count) in message header \
             type 1 header (expected 7)
             """)
+            stopInternal()
             return
         }
         messageTimestamp = data.getThreeBytesBe()
@@ -225,10 +237,13 @@ class RtmpServerClient {
 
     private func handleDataHandshakeDoneMessageHeaderType2(data: Data) {
         guard data.count == 3 else {
-            logger
-                .info(
-                    "rtmp-server: client: Wrong length \(data.count) in message header type 2 header (expected 3)"
-                )
+            logger.info(
+                """
+                rtmp-server: client: Wrong length \(data.count) in message header \
+                type 2 header (expected 3)
+                """
+            )
+            stopInternal()
             return
         }
         messageTimestamp = data.getThreeBytesBe()
@@ -236,6 +251,7 @@ class RtmpServerClient {
             receiveChunkData(size: length)
         } else {
             logger.info("rtmp-server: client: Unexpected data. Close connection.")
+            stopInternal()
         }
     }
 
@@ -269,6 +285,7 @@ class RtmpServerClient {
             receiveChunkData(size: length)
         } else {
             logger.info("rtmp-server: client: Unexpected data. Close connection.")
+            stopInternal()
         }
     }
 
@@ -280,11 +297,12 @@ class RtmpServerClient {
     func receiveData(size: Int) {
         connection.receive(minimumIncompleteLength: size, maximumLength: size) { data, _, _, error in
             if let data {
-                logger.info("rtmp-server: client: Got data \(data)")
+                // logger.info("rtmp-server: client: Got data \(data)")
                 self.handleData(data: data)
             }
             if let error {
                 logger.info("rtmp-server: client: Error \(error)")
+                self.stopInternal()
             }
         }
     }

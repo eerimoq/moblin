@@ -41,7 +41,7 @@ class RtmpServerChunkStream {
 
     func handleData(data: Data) {
         messageData += data
-        logger.info("rtmp-server: client: Got \(data.count) chunk data and \(messageRemain()) remain")
+        // logger.info("rtmp-server: client: Got \(data.count) chunk data and \(messageRemain()) remain")
         if messageRemain() == 0 {
             processMessage()
             messageData.removeAll()
@@ -57,7 +57,7 @@ class RtmpServerChunkStream {
             logger.info("rtmp-server: client: Bad message type \(messageTypeId)")
             return
         }
-        logger.info("rtmp-server: client: Processing message \(messageType)")
+        // logger.info("rtmp-server: client: Processing message \(messageType)")
         switch messageType {
         case .amf0Command:
             processMessageAmf0Command()
@@ -86,7 +86,10 @@ class RtmpServerChunkStream {
             if amf0.bytesAvailable > 0 {
                 try arguments.append(amf0.deserialize())
             }
-            logger.info("rtmp-server: client: Command name: \(commandName), command object: \(commandObject)")
+            logger.info("""
+            rtmp-server: client: Command: \(commandName), Object: \(commandObject), \
+            Arguments: \(arguments)
+            """)
         } catch {
             logger.info("rtmp-server: client: AMF-0 decode error \(error)")
             return
@@ -196,10 +199,10 @@ class RtmpServerChunkStream {
     }
 
     private func processMessageVideo() {
-        logger.info("rtmp-server: client: Video: \(messageData.count)")
+        // logger.info("rtmp-server: client: Video: \(messageData.count)")
     }
 
     private func processMessageAudio() {
-        logger.info("rtmp-server: client: Audio: \(messageData.count)")
+        // logger.info("rtmp-server: client: Audio: \(messageData.count)")
     }
 }

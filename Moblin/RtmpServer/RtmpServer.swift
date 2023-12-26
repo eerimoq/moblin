@@ -53,9 +53,22 @@ class RtmpServer {
         }
     }
 
+    private func handleClientDisconnected(client: RtmpServerClient) {
+        client.stop()
+        clients.removeAll { c in
+            c === client
+        }
+        logNumberOfClients()
+    }
+
     private func handleNewListenerConnection(connection: NWConnection) {
         let client = RtmpServerClient(connection: connection)
-        client.start()
+        client.start(onDisconnected: handleClientDisconnected)
         clients.append(client)
+        logNumberOfClients()
+    }
+
+    private func logNumberOfClients() {
+        logger.info("rtmp-server: Number of clients: \(clients.count)")
     }
 }
