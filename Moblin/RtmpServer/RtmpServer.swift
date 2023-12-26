@@ -11,7 +11,6 @@ class RtmpServer {
 
     init(onListening: @escaping (UInt16) -> Void) {
         self.onListening = onListening
-        logger.info("rtmp-server: Client connected")
         clients = []
     }
 
