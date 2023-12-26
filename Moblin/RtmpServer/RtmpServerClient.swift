@@ -196,7 +196,8 @@ class RtmpServerClient {
         messageStreamId = data.getFourBytesBe(offset: 7)
         if let length = getChunkStream()?.handleType0(
             messageTypeId: messageTypeId,
-            messageLength: messageLength
+            messageLength: messageLength,
+            messageTimestamp: messageTimestamp
         ), length > 0 {
             receiveChunkData(size: length)
         } else {
@@ -227,7 +228,8 @@ class RtmpServerClient {
         messageTypeId = data[6]
         if let length = getChunkStream()?.handleType1(
             messageTypeId: messageTypeId,
-            messageLength: messageLength
+            messageLength: messageLength,
+            messageTimestamp: messageTimestamp
         ), length > 0 {
             receiveChunkData(size: length)
         } else {
@@ -247,7 +249,7 @@ class RtmpServerClient {
             return
         }
         messageTimestamp = data.getThreeBytesBe()
-        if let length = getChunkStream()?.handleType2(), length > 0 {
+        if let length = getChunkStream()?.handleType2(messageTimestamp: messageTimestamp), length > 0 {
             receiveChunkData(size: length)
         } else {
             logger.info("rtmp-server: client: Unexpected data. Close connection.")
