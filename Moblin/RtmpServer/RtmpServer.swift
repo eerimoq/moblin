@@ -15,29 +15,36 @@ class RtmpServer {
         clients = []
     }
 
-    func start() {
-        do {
-            let options = NWProtocolTCP.Options()
-            let parameters = NWParameters(tls: nil, tcp: options)
-            parameters.requiredLocalEndpoint = .hostPort(host: .ipv4(IPv4Address("10.0.0.8")!), port: 1935)
-            parameters.allowLocalEndpointReuse = true
-            listener = try NWListener(using: parameters)
-        } catch {
-            logger.error("rtmp-server: Failed to create listener with error \(error)")
-            return
+    func start(port: UInt16) {
+        rtmpServerDispatchQueue.async {
+            do {
+                let options = NWProtocolTCP.Options()
+                let parameters = NWParameters(tls: nil, tcp: options)
+                parameters.requiredLocalEndpoint = .hostPort(
+                    host: .ipv4(.any),
+                    port: NWEndpoint.Port(rawValue: port) ?? 1935
+                )
+                parameters.allowLocalEndpointReuse = true
+                self.listener = try NWListener(using: parameters)
+            } catch {
+                logger.error("rtmp-server: Failed to create listener with error \(error)")
+                return
+            }
+            self.listener.stateUpdateHandler = self.handleListenerStateChange(to:)
+            self.listener.newConnectionHandler = self.handleNewListenerConnection(connection:)
+            self.listener.start(queue: rtmpServerDispatchQueue)
         }
-        listener.stateUpdateHandler = handleListenerStateChange(to:)
-        listener.newConnectionHandler = handleNewListenerConnection(connection:)
-        listener.start(queue: rtmpServerDispatchQueue)
     }
 
     func stop() {
-        for client in clients {
-            client.stop()
+        rtmpServerDispatchQueue.async {
+            for client in self.clients {
+                client.stop()
+            }
+            self.clients.removeAll()
+            self.listener?.cancel()
+            self.listener = nil
         }
-        clients.removeAll()
-        listener?.cancel()
-        listener = nil
     }
 
     private func handleListenerStateChange(to state: NWListener.State) {

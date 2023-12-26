@@ -791,6 +791,7 @@ class SettingsDebug: Codable {
     var recordings: Bool? = false
     var letItSnow: Bool? = false
     var rtmpServer: Bool? = false
+    var rtmpServerPort: UInt16? = 1935
 }
 
 class SettingsQuickButtons: Codable {
@@ -1399,6 +1400,10 @@ final class Settings {
         }
         if realDatabase.debug!.rtmpServer == nil {
             realDatabase.debug!.rtmpServer = false
+            store()
+        }
+        if realDatabase.debug!.rtmpServerPort == nil {
+            realDatabase.debug!.rtmpServerPort = 1935
             store()
         }
     }

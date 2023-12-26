@@ -13,6 +13,14 @@ struct DebugSettingsView: View {
         model.store()
     }
 
+    func submitRtmpServerPort(value: String) {
+        guard let port = UInt16(value) else {
+            return
+        }
+        model.database.debug!.rtmpServerPort = port
+        model.store()
+    }
+
     var body: some View {
         Form {
             Section {
@@ -105,6 +113,16 @@ struct DebugSettingsView: View {
                     model.store()
                     model.reloadRtmpServer()
                 }))
+                NavigationLink(destination: TextEditView(
+                    title: String(localized: "RTMP server port"),
+                    value: String(model.database.debug!.rtmpServerPort!),
+                    onSubmit: submitRtmpServerPort
+                )) {
+                    TextItemView(
+                        name: String(localized: "RTMP server port"),
+                        value: String(model.database.debug!.rtmpServerPort!)
+                    )
+                }
             }
         }
         .navigationTitle("Debug")

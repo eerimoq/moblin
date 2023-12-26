@@ -1029,12 +1029,9 @@ final class Model: ObservableObject {
         rtmpServer?.stop()
         rtmpServer = nil
         if database.debug!.rtmpServer! {
-            rtmpServer = RtmpServer(onListening: { port in
-                DispatchQueue.main.async {
-                    self.makeToast(title: "RTMP server listening on port \(port)")
-                }
+            rtmpServer = RtmpServer(onListening: { _ in
             })
-            rtmpServer!.start()
+            rtmpServer!.start(port: database.debug!.rtmpServerPort!)
         }
     }
 
