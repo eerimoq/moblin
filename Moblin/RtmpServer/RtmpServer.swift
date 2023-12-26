@@ -1,3 +1,4 @@
+import CoreMedia
 import Foundation
 import HaishinKit
 import Network
@@ -8,9 +9,11 @@ class RtmpServer {
     private var listener: NWListener!
     private var clients: [RtmpServerClient]
     private var onListening: (UInt16) -> Void
+    private var onFrame: (CMSampleBuffer) -> Void
 
-    init(onListening: @escaping (UInt16) -> Void) {
+    init(onListening: @escaping (UInt16) -> Void, onFrame: @escaping (CMSampleBuffer) -> Void) {
         self.onListening = onListening
+        self.onFrame = onFrame
         clients = []
     }
 
@@ -69,7 +72,7 @@ class RtmpServer {
 
     private func handleNewListenerConnection(connection: NWConnection) {
         let client = RtmpServerClient(connection: connection)
-        client.start(onDisconnected: handleClientDisconnected)
+        client.start(onDisconnected: handleClientDisconnected, onFrame: onFrame)
         clients.append(client)
         logNumberOfClients()
     }

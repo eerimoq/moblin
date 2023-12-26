@@ -286,7 +286,7 @@ class ObsWebSocket {
                     connectionErrorMessage = ""
                     break
                 }
-                logger.debug("obs-websocket: Disconencted")
+                logger.debug("obs-websocket: Disconnected")
                 connected = false
                 try await Task.sleep(nanoseconds: 5_000_000_000)
                 logger.debug("obs-websocket: Reconnecting")

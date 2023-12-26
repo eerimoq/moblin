@@ -1,3 +1,4 @@
+import CoreMedia
 import Foundation
 import HaishinKit
 import Network
@@ -36,7 +37,8 @@ class RtmpServerClient {
     private var messageTypeId: UInt8
     private var messageStreamId: UInt32
     private var messageLength: Int
-    private var onDisconnected: ((RtmpServerClient) -> Void)?
+    var onDisconnected: ((RtmpServerClient) -> Void)?
+    var onFrame: ((CMSampleBuffer) -> Void)?
 
     init(connection: NWConnection) {
         self.connection = connection
@@ -52,8 +54,12 @@ class RtmpServerClient {
         connection.start(queue: rtmpServerDispatchQueue)
     }
 
-    func start(onDisconnected: @escaping (RtmpServerClient) -> Void) {
+    func start(
+        onDisconnected: @escaping (RtmpServerClient) -> Void,
+        onFrame: @escaping (CMSampleBuffer) -> Void
+    ) {
         self.onDisconnected = onDisconnected
+        self.onFrame = onFrame
         state = .uninitialized
         chunkState = .basicHeaderFirstByte
         receiveData(size: 1 + 1536)
@@ -66,6 +72,7 @@ class RtmpServerClient {
         chunkStreams.removeAll()
         connection.cancel()
         onDisconnected = nil
+        onFrame = nil
     }
 
     private func stopInternal() {

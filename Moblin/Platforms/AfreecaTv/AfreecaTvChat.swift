@@ -151,7 +151,7 @@ final class AfreecaTvChat: NSObject {
                     connected = false
                     break
                 }
-                logger.info("afreecatv: Disconencted")
+                logger.info("afreecatv: Disconnected")
                 connected = false
                 try await Task.sleep(nanoseconds: 5_000_000_000)
                 logger.info("afreecatv: Reconnecting")

@@ -3,7 +3,7 @@ import Foundation
 import HaishinKit
 import Network
 
-class RtmpServerChunkStream {
+class RtmpServerChunkStream: VideoCodecDelegate {
     private var messageData: Data
     private var messageLength: Int
     private var messageTypeId: UInt8
@@ -14,6 +14,7 @@ class RtmpServerChunkStream {
     private var videoTimestamp: Double
     private var isMessageType0: Bool
     private var formatDescription: CMVideoFormatDescription?
+    private var videoCodec: VideoCodec
 
     init(client: RtmpServerClient, chunkStreamId: UInt32) {
         self.client = client
@@ -25,9 +26,11 @@ class RtmpServerChunkStream {
         videoTimestampZero = -1
         videoTimestamp = 0
         isMessageType0 = true
+        videoCodec = VideoCodec()
     }
 
     func stop() {
+        videoCodec.stopRunning()
         client = nil
     }
 
@@ -243,21 +246,29 @@ class RtmpServerChunkStream {
         }
         switch FLVAVCPacketType(rawValue: messageData[1]) {
         case .seq:
-            logger.info("rtmp-server: client: \(chunkStreamId): Make format description")
             var config = AVCDecoderConfigurationRecord()
             config.data = messageData.subdata(in: FLVTagType.video.headerSize ..< messageData.count)
             let status = config.makeFormatDescription(&formatDescription)
-            if status != noErr {
-                logger.info("rtmp-server: client: \(chunkStreamId): Format description failed")
+            if status == noErr {
+                videoCodec.formatDescription = formatDescription
+                logger
+                    .info(
+                        "rtmp-server: client: \(chunkStreamId): Dimensions: \(formatDescription!.dimensions)"
+                    )
+                videoCodec.delegate = self
+                videoCodec.startRunning()
+            } else {
+                logger.info("rtmp-server: client: \(chunkStreamId): Format description error \(status)")
             }
         case .nal:
             if let sampleBuffer = makeSampleBuffer() {
-                logger.info("""
-                rtmp-server: client: \(chunkStreamId): Created sample buffer \
-                Size: \(sampleBuffer.totalSampleSize) \
-                PTS: \(sampleBuffer.presentationTimeStamp.seconds), \
-                DTS: \(sampleBuffer.decodeTimeStamp.seconds)
-                """)
+                /* logger.info("""
+                 rtmp-server: client: \(chunkStreamId): Created sample buffer \
+                 Size: \(sampleBuffer.totalSampleSize) \
+                 PTS: \(sampleBuffer.presentationTimeStamp.seconds), \
+                 DTS: \(sampleBuffer.decodeTimeStamp.seconds)
+                 """) */
+                videoCodec.appendSampleBuffer(sampleBuffer)
             } else {
                 logger.info("rtmp-server: client: Make sample buffer failed")
             }
@@ -318,5 +329,24 @@ class RtmpServerChunkStream {
 
     private func processMessageAudio() {
         // logger.info("rtmp-server: client: Audio: \(messageData.count)")
+    }
+}
+
+extension RtmpServerChunkStream {
+    func videoCodec(_: HaishinKit.VideoCodec, didOutput _: CMFormatDescription?) {
+        // logger.info("rtmp-server: client: Codec did output format description")
+    }
+
+    func videoCodec(_: HaishinKit.VideoCodec, didOutput sampleBuffer: CMSampleBuffer) {
+        // logger.info("rtmp-server: client: Codec did output sample buffer")
+        client.onFrame?(sampleBuffer)
+    }
+
+    func videoCodec(_: HaishinKit.VideoCodec, errorOccurred error: HaishinKit.VideoCodec.Error) {
+        logger.info("rtmp-server: client: Codec error \(error)")
+    }
+
+    func videoCodecWillDropFame(_: HaishinKit.VideoCodec) -> Bool {
+        return false
     }
 }

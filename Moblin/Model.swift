@@ -328,6 +328,7 @@ final class Model: ObservableObject {
     var recordingsStorage = RecordingsStorage()
 
     private var rtmpServer: RtmpServer?
+    private var rtmpEffect = RtmpEffect()
 
     init() {
         settings.load()
@@ -1029,9 +1030,17 @@ final class Model: ObservableObject {
         rtmpServer?.stop()
         rtmpServer = nil
         if database.debug!.rtmpServer! {
+            media.registerEffect(rtmpEffect)
             rtmpServer = RtmpServer(onListening: { _ in
+            }, onFrame: { sampleBuffer in
+                guard let buffer = sampleBuffer.imageBuffer else {
+                    return
+                }
+                self.rtmpEffect.setImage(image: CIImage(cvPixelBuffer: buffer))
             })
             rtmpServer!.start(port: database.debug!.rtmpServerPort!)
+        } else {
+            media.unregisterEffect(rtmpEffect)
         }
     }
 
