@@ -3,6 +3,14 @@ import SwiftUI
 struct RtmpServerSettingsView: View {
     @EnvironmentObject var model: Model
 
+    private func submitPort(value: String) {
+        guard let port = UInt16(value.trim()) else {
+            return
+        }
+        model.database.rtmpServer!.port = port
+        model.store()
+    }
+
     var body: some View {
         Form {
             Section {
@@ -15,28 +23,25 @@ struct RtmpServerSettingsView: View {
                 }))
             }
             Section {
+                let port = model.database.rtmpServer!.port
+                NavigationLink(destination: TextEditView(
+                    title: String(localized: "Port"),
+                    value: String(port),
+                    onSubmit: submitPort
+                )) {
+                    TextItemView(name: String(localized: "Port"), value: String(port))
+                }
                 HStack {
-                    Text("rtmp://10.0.0.8:1935/camera/")
+                    Text("URL")
                     Spacer()
+                    Text("rtmp://<your-device-ip>:\(String(port))/camera/")
                     Button(action: {
-                        UIPasteboard.general.string = "rtmp://10.0.0.8:1935/camera/"
+                        UIPasteboard.general.string = "rtmp://<your-device-ip>:\(String(port))/camera/"
                         model.makeToast(title: "Copied to clipboard")
                     }, label: {
                         Image(systemName: "doc.on.doc")
                     })
                 }
-                HStack {
-                    Text("rtmp://12.132.10.27:1935/camera/")
-                    Spacer()
-                    Button(action: {
-                        UIPasteboard.general.string = "rtmp://12.132.10.27:1935/camera/"
-                        model.makeToast(title: "Copied to clipboard")
-                    }, label: {
-                        Image(systemName: "doc.on.doc")
-                    })
-                }
-            } header: {
-                Text("URLs")
             }
             Section {
                 List {

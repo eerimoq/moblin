@@ -38,7 +38,7 @@ class RtmpServerClient {
     private var messageStreamId: UInt32
     private var messageLength: Int
     var onDisconnected: ((RtmpServerClient) -> Void)?
-    var onFrame: ((CMSampleBuffer) -> Void)?
+    var onFrame: ((String, CMSampleBuffer) -> Void)?
 
     init(connection: NWConnection) {
         self.connection = connection
@@ -56,7 +56,7 @@ class RtmpServerClient {
 
     func start(
         onDisconnected: @escaping (RtmpServerClient) -> Void,
-        onFrame: @escaping (CMSampleBuffer) -> Void
+        onFrame: @escaping (String, CMSampleBuffer) -> Void
     ) {
         self.onDisconnected = onDisconnected
         self.onFrame = onFrame

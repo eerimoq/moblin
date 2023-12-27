@@ -32428,10 +32428,10 @@
         }
       }
     },
-    "rtmp://10.0.0.8:1935/camera/" : {
+    "rtmp://<your-device-ip>:%@/camera/" : {
 
     },
-    "rtmp://12.132.10.27:1935/camera/" : {
+    "rtmp://<your-device-ip>:%u/camera/" : {
 
     },
     "rtmp://a.rtmp.youtube.com/live2" : {
@@ -41550,9 +41550,6 @@
           }
         }
       }
-    },
-    "URLs" : {
-
     },
     "Use first channel for audio level. To debug Røde mic Unknown level." : {
       "localizations" : {

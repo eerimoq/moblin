@@ -341,7 +341,7 @@ extension RtmpServerChunkStream {
 
     func videoCodec(_: HaishinKit.VideoCodec, didOutput sampleBuffer: CMSampleBuffer) {
         // logger.info("rtmp-server: client: Codec did output sample buffer")
-        client?.onFrame?(sampleBuffer)
+        client?.onFrame?("test", sampleBuffer)
     }
 
     func videoCodec(_: HaishinKit.VideoCodec, errorOccurred error: HaishinKit.VideoCodec.Error) {

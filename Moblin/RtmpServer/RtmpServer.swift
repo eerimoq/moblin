@@ -9,15 +9,15 @@ class RtmpServer {
     private var listener: NWListener!
     private var clients: [RtmpServerClient]
     private var onListening: (UInt16) -> Void
-    private var onPublishStart: () -> Void
-    private var onPublishStop: () -> Void
-    private var onFrame: (CMSampleBuffer) -> Void
+    private var onPublishStart: (String) -> Void
+    private var onPublishStop: (String) -> Void
+    private var onFrame: (String, CMSampleBuffer) -> Void
 
     init(
         onListening: @escaping (UInt16) -> Void,
-        onPublishStart: @escaping () -> Void,
-        onPublishStop: @escaping () -> Void,
-        onFrame: @escaping (CMSampleBuffer) -> Void
+        onPublishStart: @escaping (String) -> Void,
+        onPublishStop: @escaping (String) -> Void,
+        onFrame: @escaping (String, CMSampleBuffer) -> Void
     ) {
         self.onListening = onListening
         self.onPublishStart = onPublishStart
@@ -77,7 +77,7 @@ class RtmpServer {
             c === client
         }
         logNumberOfClients()
-        onPublishStop()
+        onPublishStop("test")
     }
 
     private func handleNewListenerConnection(connection: NWConnection) {
@@ -85,7 +85,7 @@ class RtmpServer {
         client.start(onDisconnected: handleClientDisconnected, onFrame: onFrame)
         clients.append(client)
         logNumberOfClients()
-        onPublishStart()
+        onPublishStart("test")
     }
 
     private func logNumberOfClients() {
