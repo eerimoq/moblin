@@ -24,6 +24,9 @@ final class RtmpEffect: VideoEffect {
             )
             rtmpQueue.sync {
                 images.append(image)
+                images.sort { image1, image2 in
+                    image1.presentationTimeStamp < image2.presentationTimeStamp
+                }
             }
         }
     }
