@@ -1324,7 +1324,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%1$@ - %2$@"
           }
         },
@@ -12489,8 +12489,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kopieren Sie von OBS Show Connect Info, wie im Screenshot unten zu sehen ist. Extras → WebSocket-Servereinstellungen → Verbindungsinformationen anzeigen → Serverkennwort."
+            "state" : "translated",
+            "value" : "Kopiere die Verbindungsinformationen von OBS, wie sie im Screenshot unten zu sehen sind. Werkzeuge → WebSocket-Servereinstellungen → Verbindungsinformationen anzeigen → Serverpasswort."
           }
         },
         "el" : {
@@ -12704,7 +12704,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Von OBS kopieren. Tools → WebSocket Server Settings → Show Connect Info → Server Password."
+            "value" : "Von OBS kopieren. Werkzeuge → WebSocket Servereinstellungen → Verbindungsinformatioen anzeigen → Serverpassword."
           }
         },
         "el" : {
@@ -32216,8 +32216,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "RTMP-Server-Port"
+            "state" : "translated",
+            "value" : "RTMP Server Port"
           }
         },
         "el" : {
