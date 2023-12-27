@@ -8,6 +8,14 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.118.0", date: "2023-12-27", changes: [
+        "• RTMP server can show video on stream in fixed location and same resolution as received over RTMP.",
+        "  • Only tested with ffmpeg. I'm sure it does not work with all RTMP publishers.",
+        "  • Works best if RTMP FPS matches stream FPS.",
+        "• Support for B-frames in RTMP server.",
+        "• Add and remove RTMP overlay when client connects and disconnects.",
+        "• German translations updated.",
+    ]),
     Version(version: "0.117.0", date: "2023-12-26", changes: [
         "• Move \"Tap screen to focus\" from Display to Camera settings page.",
         "• Date in version history.",
