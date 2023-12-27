@@ -24,7 +24,7 @@ class RtmpServerClient {
     private var connection: NWConnection
     private var state: ClientState {
         didSet {
-            logger.info("rtmp-server: client: State change \(oldValue) -> \(state)")
+            // logger.info("rtmp-server: client: State change \(oldValue) -> \(state)")
         }
     }
 
@@ -38,10 +38,22 @@ class RtmpServerClient {
     private var messageStreamId: UInt32
     private var messageLength: Int
     var onDisconnected: ((RtmpServerClient) -> Void)?
-    var onFrame: ((String, CMSampleBuffer) -> Void)?
+    private var onFrame: ((String, CMSampleBuffer) -> Void)?
+    var settings: Settings
+    var streamKey: String = ""
+    var onPublishStart: (String) -> Void
+    var onPublishStop: (String) -> Void
 
-    init(connection: NWConnection) {
+    init(
+        connection: NWConnection,
+        settings: Settings,
+        onPublishStart: @escaping (String) -> Void,
+        onPublishStop: @escaping (String) -> Void
+    ) {
         self.connection = connection
+        self.settings = settings
+        self.onPublishStart = onPublishStart
+        self.onPublishStop = onPublishStop
         state = .uninitialized
         chunkState = .basicHeaderFirstByte
         messageTimestamp = 0
@@ -66,6 +78,8 @@ class RtmpServerClient {
     }
 
     func stop() {
+        logger.info("rtmp-server: client: Stop stream key \(streamKey)")
+        onPublishStop(streamKey)
         for chunkStream in chunkStreams.values {
             chunkStream.stop()
         }
@@ -75,12 +89,16 @@ class RtmpServerClient {
         onFrame = nil
     }
 
-    private func stopInternal() {
+    func stopInternal() {
         onDisconnected?(self)
     }
 
-    private func handleStateUpdate(to state: NWConnection.State) {
-        logger.info("rtmp-server: client: Socket state change to \(state)")
+    private func handleStateUpdate(to _: NWConnection.State) {
+        // logger.info("rtmp-server: client: Socket state change to \(state)")
+    }
+
+    func handleFrame(sampleBuffer: CMSampleBuffer) {
+        onFrame?(streamKey, sampleBuffer)
     }
 
     private func handleData(data: Data) {

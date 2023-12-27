@@ -1030,14 +1030,14 @@ final class Model: ObservableObject {
         rtmpServer?.stop()
         rtmpServer = nil
         if database.debug!.rtmpServer! && database.rtmpServer!.enabled {
-            rtmpServer = RtmpServer(onListening: { _ in
-            }, onPublishStart: {
+            rtmpServer = RtmpServer(settings: settings, onListening: { _ in
+            }, onPublishStart: { _ in
                 self.media.unregisterEffect(self.rtmpEffect)
                 self.rtmpEffect = RtmpEffect()
                 self.media.registerEffect(self.rtmpEffect)
-            }, onPublishStop: {
+            }, onPublishStop: { _ in
                 self.media.unregisterEffect(self.rtmpEffect)
-            }, onFrame: { sampleBuffer in
+            }, onFrame: { _, sampleBuffer in
                 self.rtmpEffect.addSampleBuffer(sampleBuffer: sampleBuffer)
             })
             rtmpServer!.start(port: database.rtmpServer!.port)

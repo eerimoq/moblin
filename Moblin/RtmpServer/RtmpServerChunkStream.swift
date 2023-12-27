@@ -100,25 +100,28 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         let amf0 = AMF0Serializer(data: messageData)
         let commandName: String
         let transactionId: Int
+        let commandObject: ASObject
+        var arguments: [Any?]
         do {
             commandName = try amf0.deserialize()
             transactionId = try amf0.deserialize()
-            let commandObject: ASObject = try amf0.deserialize()
-            var arguments: [Any?] = []
+            commandObject = try amf0.deserialize()
+            arguments = []
             if amf0.bytesAvailable > 0 {
                 try arguments.append(amf0.deserialize())
             }
-            logger.info("""
-            rtmp-server: client: \(chunkStreamId): Command: \(commandName), Object: \(commandObject), \
-            Arguments: \(arguments)
-            """)
+            /* logger.info("""
+             rtmp-server: client: \(chunkStreamId): Command: \(commandName), Object: \(commandObject), \
+             Arguments: \(arguments)
+             """) */
         } catch {
             logger.info("rtmp-server: \(chunkStreamId): client: AMF-0 decode error \(error)")
+            client?.stopInternal()
             return
         }
         switch commandName {
         case "connect":
-            processMessageAmf0CommandConnect(transactionId: transactionId)
+            processMessageAmf0CommandConnect(transactionId: transactionId, commandObject: commandObject)
         case "FCPublish":
             processMessageAmf0CommandFCPublish(transactionId: transactionId)
         case "FCUnpublish":
@@ -128,7 +131,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         case "deleteStream":
             processMessageAmf0CommandDeleteStream(transactionId: transactionId)
         case "publish":
-            processMessageAmf0CommandPublish(transactionId: transactionId)
+            processMessageAmf0CommandPublish(transactionId: transactionId, arguments: arguments)
         default:
             logger.info("rtmp-server: client: \(chunkStreamId): Unsupported command \(commandName)")
         }
@@ -138,7 +141,19 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         logger.info("rtmp-server: client: \(chunkStreamId): Ignoring AMF-0 data")
     }
 
-    private func processMessageAmf0CommandConnect(transactionId: Int) {
+    private func processMessageAmf0CommandConnect(transactionId: Int, commandObject: ASObject) {
+        guard let url = commandObject["tcUrl"] as? String else {
+            client?.stopInternal()
+            return
+        }
+        guard let url = URL(string: url) else {
+            client?.stopInternal()
+            return
+        }
+        guard url.path() == "/camera" else {
+            client?.stopInternal()
+            return
+        }
         client?.sendMessage(chunk: RTMPChunk(
             type: .zero,
             streamId: UInt16(2),
@@ -191,7 +206,28 @@ class RtmpServerChunkStream: VideoCodecDelegate {
 
     private func processMessageAmf0CommandDeleteStream(transactionId _: Int) {}
 
-    private func processMessageAmf0CommandPublish(transactionId: Int) {
+    private func processMessageAmf0CommandPublish(transactionId: Int, arguments: [Any?]) {
+        guard arguments.count > 0 else {
+            client?.stopInternal()
+            return
+        }
+        guard let streamKey = arguments[0] as? String else {
+            client?.stopInternal()
+            return
+        }
+        let isStreamKeyConfigured = DispatchQueue.main.sync {
+            client?.settings.database.rtmpServer!.streams.contains(where: { stream in
+                stream.streamKey == streamKey
+            }) == true
+        }
+        guard isStreamKeyConfigured else {
+            logger.info("rtmp-server: client: Stream key \(streamKey) not configured")
+            client?.stopInternal()
+            return
+        }
+        client?.streamKey = streamKey
+        logger.info("rtmp-server: client: Start stream key \(streamKey)")
+        client?.onPublishStart(streamKey)
         client?.sendMessage(chunk: RTMPChunk(
             type: .zero,
             streamId: UInt16(2),
@@ -214,27 +250,31 @@ class RtmpServerChunkStream: VideoCodecDelegate {
 
     private func processMessageChunkSize() {
         guard messageData.count == 4 else {
+            client?.stopInternal()
             return
         }
         client?.chunkSizeFromClient = Int(messageData.getFourBytesBe())
-        logger
-            .info(
-                "rtmp-server: client: \(chunkStreamId): Chunk size from client: \(client?.chunkSizeFromClient ?? -1)"
-            )
+        /* logger
+         .info(
+             "rtmp-server: client: \(chunkStreamId): Chunk size from client: \(client?.chunkSizeFromClient ?? -1)"
+         ) */
     }
 
     private func processMessageVideo() {
         guard messageData.count >= 12 else {
+            client?.stopInternal()
             return
         }
         let control = messageData[0]
         let frameType = control >> 4
         guard (frameType & 0x8) == 0 else {
             logger.info("rtmp-server: client: \(chunkStreamId): Unsupported video frame type \(frameType)")
+            client?.stopInternal()
             return
         }
         guard let format = FLVVideoCodec(rawValue: control & 0xF) else {
             logger.info("rtmp-server: client: \(chunkStreamId): Unsupported video format \(control & 0xF)")
+            client?.stopInternal()
             return
         }
         guard format == .avc else {
@@ -242,6 +282,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
             rtmp-server: client: \(chunkStreamId): Unsupported video \
             format \(format). Only AVC is supported.
             """)
+            client?.stopInternal()
             return
         }
         switch FLVAVCPacketType(rawValue: messageData[1]) {
@@ -251,25 +292,28 @@ class RtmpServerChunkStream: VideoCodecDelegate {
             let status = config.makeFormatDescription(&formatDescription)
             if status == noErr {
                 videoCodec.formatDescription = formatDescription
-                logger
-                    .info(
-                        "rtmp-server: client: \(chunkStreamId): Dimensions: \(formatDescription!.dimensions)"
-                    )
+                /* logger
+                 .info(
+                     "rtmp-server: client: \(chunkStreamId): Dimensions: \(formatDescription!.dimensions)"
+                 ) */
                 videoCodec.delegate = self
                 videoCodec.startRunning()
             } else {
                 logger.info("rtmp-server: client: \(chunkStreamId): Format description error \(status)")
+                client?.stopInternal()
             }
         case .nal:
             if let sampleBuffer = makeSampleBuffer() {
                 videoCodec.appendSampleBuffer(sampleBuffer)
             } else {
                 logger.info("rtmp-server: client: Make sample buffer failed")
+                client?.stopInternal()
             }
         default:
             logger.info("""
             rtmp-server: client: \(chunkStreamId): Unsupported video AVC packet type \(messageData[1])
             """)
+            client?.stopInternal()
         }
     }
 
@@ -341,7 +385,7 @@ extension RtmpServerChunkStream {
 
     func videoCodec(_: HaishinKit.VideoCodec, didOutput sampleBuffer: CMSampleBuffer) {
         // logger.info("rtmp-server: client: Codec did output sample buffer")
-        client?.onFrame?("test", sampleBuffer)
+        client?.handleFrame(sampleBuffer: sampleBuffer)
     }
 
     func videoCodec(_: HaishinKit.VideoCodec, errorOccurred error: HaishinKit.VideoCodec.Error) {
