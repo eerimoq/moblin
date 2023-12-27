@@ -1033,10 +1033,7 @@ final class Model: ObservableObject {
             media.registerEffect(rtmpEffect)
             rtmpServer = RtmpServer(onListening: { _ in
             }, onFrame: { sampleBuffer in
-                guard let buffer = sampleBuffer.imageBuffer else {
-                    return
-                }
-                self.rtmpEffect.setImage(image: CIImage(cvPixelBuffer: buffer))
+                self.rtmpEffect.addSampleBuffer(sampleBuffer: sampleBuffer)
             })
             rtmpServer!.start(port: database.debug!.rtmpServerPort!)
         } else {

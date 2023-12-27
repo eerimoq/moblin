@@ -9,7 +9,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
     private var messageTypeId: UInt8
     private var chunkStreamId: UInt32
     private var messageTimestamp: UInt32
-    private var client: RtmpServerClient!
+    private var client: RtmpServerClient?
     private var videoTimestampZero: Double
     private var videoTimestamp: Double
     private var isMessageType0: Bool
@@ -39,7 +39,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         self.messageLength = messageLength
         self.messageTimestamp = messageTimestamp
         isMessageType0 = true
-        return min(client.chunkSizeFromClient, messageRemain())
+        return min(client?.chunkSizeFromClient ?? 0, messageRemain())
     }
 
     func handleType1(messageTypeId: UInt8, messageLength: Int, messageTimestamp: UInt32) -> Int {
@@ -47,18 +47,18 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         self.messageLength = messageLength
         self.messageTimestamp = messageTimestamp
         isMessageType0 = false
-        return min(client.chunkSizeFromClient, messageRemain())
+        return min(client?.chunkSizeFromClient ?? 0, messageRemain())
     }
 
     func handleType2(messageTimestamp: UInt32) -> Int {
         self.messageTimestamp = messageTimestamp
         isMessageType0 = false
-        return min(client.chunkSizeFromClient, messageRemain())
+        return min(client?.chunkSizeFromClient ?? 0, messageRemain())
     }
 
     func handleType3() -> Int {
         isMessageType0 = false
-        return min(client.chunkSizeFromClient, messageRemain())
+        return min(client?.chunkSizeFromClient ?? 0, messageRemain())
     }
 
     func handleData(data: Data) {
@@ -139,22 +139,22 @@ class RtmpServerChunkStream: VideoCodecDelegate {
     }
 
     private func processMessageAmf0CommandConnect(transactionId: Int) {
-        client.sendMessage(chunk: RTMPChunk(
+        client?.sendMessage(chunk: RTMPChunk(
             type: .zero,
             streamId: UInt16(2),
             message: RTMPWindowAcknowledgementSizeMessage(2_500_000)
         ))
-        client.sendMessage(chunk: RTMPChunk(
+        client?.sendMessage(chunk: RTMPChunk(
             type: .zero,
             streamId: UInt16(2),
             message: RTMPSetPeerBandwidthMessage(size: 2_500_000, limit: .dynamic)
         ))
-        client.sendMessage(chunk: RTMPChunk(
+        client?.sendMessage(chunk: RTMPChunk(
             type: .zero,
             streamId: UInt16(2),
             message: RTMPSetChunkSizeMessage(1024)
         ))
-        client.sendMessage(chunk: RTMPChunk(
+        client?.sendMessage(chunk: RTMPChunk(
             type: .zero,
             streamId: UInt16(2),
             message: RTMPCommandMessage(
@@ -173,7 +173,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
     private func processMessageAmf0CommandFCUnpublish(transactionId _: Int) {}
 
     private func processMessageAmf0CommandCreateStream(transactionId: Int) {
-        client.sendMessage(chunk: RTMPChunk(
+        client?.sendMessage(chunk: RTMPChunk(
             type: .zero,
             streamId: UInt16(2),
             message: RTMPCommandMessage(
@@ -192,7 +192,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
     private func processMessageAmf0CommandDeleteStream(transactionId _: Int) {}
 
     private func processMessageAmf0CommandPublish(transactionId: Int) {
-        client.sendMessage(chunk: RTMPChunk(
+        client?.sendMessage(chunk: RTMPChunk(
             type: .zero,
             streamId: UInt16(2),
             message: RTMPCommandMessage(
@@ -216,15 +216,15 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         guard messageData.count == 4 else {
             return
         }
-        client.chunkSizeFromClient = Int(messageData.getFourBytesBe())
+        client?.chunkSizeFromClient = Int(messageData.getFourBytesBe())
         logger
             .info(
-                "rtmp-server: client: \(chunkStreamId): Chunk size from client: \(client.chunkSizeFromClient)"
+                "rtmp-server: client: \(chunkStreamId): Chunk size from client: \(client?.chunkSizeFromClient ?? -1)"
             )
     }
 
     private func processMessageVideo() {
-        guard messageData.count > 1 else {
+        guard messageData.count >= 12 else {
             return
         }
         let control = messageData[0]
@@ -262,12 +262,6 @@ class RtmpServerChunkStream: VideoCodecDelegate {
             }
         case .nal:
             if let sampleBuffer = makeSampleBuffer() {
-                /* logger.info("""
-                 rtmp-server: client: \(chunkStreamId): Created sample buffer \
-                 Size: \(sampleBuffer.totalSampleSize) \
-                 PTS: \(sampleBuffer.presentationTimeStamp.seconds), \
-                 DTS: \(sampleBuffer.decodeTimeStamp.seconds)
-                 """) */
                 videoCodec.appendSampleBuffer(sampleBuffer)
             } else {
                 logger.info("rtmp-server: client: Make sample buffer failed")
@@ -299,11 +293,19 @@ class RtmpServerChunkStream: VideoCodecDelegate {
                 value: Int64(videoTimestamp) + Int64(compositionTime),
                 timescale: 1000
             ),
-            decodeTimeStamp: compositionTime == 0 ? .invalid : CMTimeMake(
+            decodeTimeStamp: CMTimeMake(
                 value: Int64(videoTimestamp),
                 timescale: 1000
             )
         )
+        /*logger.info("""
+        rtmp-server: client: \(chunkStreamId): Created sample buffer \
+        MTS: \(messageTimestamp) \
+        CT: \(compositionTime) \
+        DUR: \(timing.duration.seconds), \
+        PTS: \(timing.presentationTimeStamp.seconds), \
+        DTS: \(timing.decodeTimeStamp.seconds)
+        """)*/
         let blockBuffer = messageData.makeBlockBuffer(advancedBy: FLVTagType.video.headerSize)
         var sampleBuffer: CMSampleBuffer?
         var sampleSize = blockBuffer?.dataLength ?? 0
@@ -339,7 +341,7 @@ extension RtmpServerChunkStream {
 
     func videoCodec(_: HaishinKit.VideoCodec, didOutput sampleBuffer: CMSampleBuffer) {
         // logger.info("rtmp-server: client: Codec did output sample buffer")
-        client.onFrame?(sampleBuffer)
+        client?.onFrame?(sampleBuffer)
     }
 
     func videoCodec(_: HaishinKit.VideoCodec, errorOccurred error: HaishinKit.VideoCodec.Error) {

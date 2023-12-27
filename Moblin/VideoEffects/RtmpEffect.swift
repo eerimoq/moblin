@@ -5,28 +5,47 @@ import UIKit
 
 private let rtmpQueue = DispatchQueue(label: "com.eerimoq.widget.rtmp")
 
+struct OverlayImage {
+    var presentationTimeStamp: Double
+    var image: CIImage
+}
+
 final class RtmpEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
-    var overlay: CIImage?
-    var image: CIImage?
+    private var overlay: CIImage?
+    private var images: [OverlayImage] = []
+    private var firstPresentationTimeStamp: Double = .nan
 
-    func setImage(image: CIImage) {
-        rtmpQueue.sync {
-            self.image = image
-        }
-    }
-
-    private func updateOverlay() {
-        rtmpQueue.sync {
-            if self.image != nil {
-                overlay = image
-                image = nil
+    func addSampleBuffer(sampleBuffer: CMSampleBuffer) {
+        if let buffer = sampleBuffer.imageBuffer {
+            let image = OverlayImage(presentationTimeStamp: sampleBuffer.presentationTimeStamp.seconds, image: CIImage(cvPixelBuffer: buffer))
+            rtmpQueue.sync {
+                images.append(image)
             }
         }
     }
 
-    override func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {
-        updateOverlay()
+    private func updateOverlay(presentationTimeStamp: Double) {
+        rtmpQueue.sync {
+            while !images.isEmpty {
+                let image = images.first!
+                if firstPresentationTimeStamp.isNaN {
+                    firstPresentationTimeStamp = presentationTimeStamp - image.presentationTimeStamp
+                }
+                if firstPresentationTimeStamp + image.presentationTimeStamp + 2 > presentationTimeStamp {
+                    break
+                }
+                overlay = image.image
+                images.remove(at: 0)
+                // logger.info("rtmp-server: Present")
+            }
+        }
+    }
+
+    override func execute(_ image: CIImage, info: CMSampleBuffer?) -> CIImage {
+        if let info  {
+            updateOverlay(presentationTimeStamp: info.presentationTimeStamp.seconds)
+        }
         filter.inputImage = overlay
         filter.backgroundImage = image
         return filter.outputImage ?? image
