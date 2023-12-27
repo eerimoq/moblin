@@ -16515,6 +16515,9 @@
         }
       }
     },
+    "Experimental" : {
+
+    },
     "Export to clipboard" : {
       "localizations" : {
         "de" : {
@@ -32213,6 +32216,7 @@
       }
     },
     "RTMP server port" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -32423,6 +32427,12 @@
           }
         }
       }
+    },
+    "rtmp://10.0.0.8:1935/camera/" : {
+
+    },
+    "rtmp://12.132.10.27:1935/camera/" : {
+
     },
     "rtmp://a.rtmp.youtube.com/live2" : {
       "localizations" : {
@@ -41540,6 +41550,9 @@
           }
         }
       }
+    },
+    "URLs" : {
+
     },
     "Use first channel for audio level. To debug Røde mic Unknown level." : {
       "localizations" : {

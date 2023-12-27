@@ -1029,7 +1029,7 @@ final class Model: ObservableObject {
     func reloadRtmpServer() {
         rtmpServer?.stop()
         rtmpServer = nil
-        if database.debug!.rtmpServer! {
+        if database.debug!.rtmpServer! && database.rtmpServer!.enabled {
             rtmpServer = RtmpServer(onListening: { _ in
             }, onPublishStart: {
                 self.media.unregisterEffect(self.rtmpEffect)
@@ -1040,7 +1040,7 @@ final class Model: ObservableObject {
             }, onFrame: { sampleBuffer in
                 self.rtmpEffect.addSampleBuffer(sampleBuffer: sampleBuffer)
             })
-            rtmpServer!.start(port: database.debug!.rtmpServerPort!)
+            rtmpServer!.start(port: database.rtmpServer!.port)
         }
     }
 

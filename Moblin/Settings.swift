@@ -791,7 +791,18 @@ class SettingsDebug: Codable {
     var recordings: Bool? = false
     var letItSnow: Bool? = false
     var rtmpServer: Bool? = false
-    var rtmpServerPort: UInt16? = 1935
+}
+
+class SettingsRtmpServerStream: Codable, Identifiable {
+    var id: UUID = .init()
+    var name: String = "My stream"
+    var streamKey: String = ""
+}
+
+class SettingsRtmpServer: Codable {
+    var enabled: Bool = false
+    var port: UInt16 = 1935
+    var streams: [SettingsRtmpServerStream] = []
 }
 
 class SettingsQuickButtons: Codable {
@@ -822,6 +833,7 @@ class Database: Codable {
     var debug: SettingsDebug? = .init()
     var quickButtons: SettingsQuickButtons? = .init()
     var globalButtons: [SettingsButton]? = []
+    var rtmpServer: SettingsRtmpServer? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -1402,8 +1414,8 @@ final class Settings {
             realDatabase.debug!.rtmpServer = false
             store()
         }
-        if realDatabase.debug!.rtmpServerPort == nil {
-            realDatabase.debug!.rtmpServerPort = 1935
+        if realDatabase.rtmpServer == nil {
+            realDatabase.rtmpServer = .init()
             store()
         }
     }

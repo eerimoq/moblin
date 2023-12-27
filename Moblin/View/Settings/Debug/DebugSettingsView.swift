@@ -13,14 +13,6 @@ struct DebugSettingsView: View {
         model.store()
     }
 
-    func submitRtmpServerPort(value: String) {
-        guard let port = UInt16(value) else {
-            return
-        }
-        model.database.debug!.rtmpServerPort = port
-        model.store()
-    }
-
     var body: some View {
         Form {
             Section {
@@ -49,6 +41,14 @@ struct DebugSettingsView: View {
                     model.database.debug!.srtOverlay = value
                     model.store()
                 }))
+                Toggle("Let it snow", isOn: Binding(get: {
+                    model.database.debug!.letItSnow!
+                }, set: { value in
+                    model.database.debug!.letItSnow = value
+                    model.store()
+                }))
+            }
+            Section {
                 NavigationLink(
                     destination: DebugAdaptiveBitrateSettingsView(
                         packetsInFlight: Double(model
@@ -56,6 +56,24 @@ struct DebugSettingsView: View {
                     )
                 ) {
                     Text("Adaptive bitrate")
+                }
+                HStack {
+                    Text("SRT oheadbw")
+                    Slider(
+                        value: $srtOverheadBandwidth,
+                        in: 5 ... 50,
+                        step: 5,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            model.database.debug!
+                                .srtOverheadBandwidth = Int32(srtOverheadBandwidth)
+                            model.store()
+                        }
+                    )
+                    Text(String(Int32(srtOverheadBandwidth)))
+                        .frame(width: 40)
                 }
                 HStack {
                     Text("Exposure")
@@ -76,34 +94,10 @@ struct DebugSettingsView: View {
                     Text(formatOneDecimal(value: model.bias))
                         .frame(width: 40)
                 }
-                HStack {
-                    Text("SRT oheadbw")
-                    Slider(
-                        value: $srtOverheadBandwidth,
-                        in: 5 ... 50,
-                        step: 5,
-                        onEditingChanged: { begin in
-                            guard !begin else {
-                                return
-                            }
-                            model.database.debug!
-                                .srtOverheadBandwidth = Int32(srtOverheadBandwidth)
-                            model.store()
-                        }
-                    )
-                    Text(String(Int32(srtOverheadBandwidth)))
-                        .frame(width: 40)
-                }
                 Toggle("Recordings", isOn: Binding(get: {
                     model.database.debug!.recordings!
                 }, set: { value in
                     model.database.debug!.recordings = value
-                    model.store()
-                }))
-                Toggle("Let it snow", isOn: Binding(get: {
-                    model.database.debug!.letItSnow!
-                }, set: { value in
-                    model.database.debug!.letItSnow = value
                     model.store()
                 }))
                 Toggle("RTMP server", isOn: Binding(get: {
@@ -113,16 +107,8 @@ struct DebugSettingsView: View {
                     model.store()
                     model.reloadRtmpServer()
                 }))
-                NavigationLink(destination: TextEditView(
-                    title: String(localized: "RTMP server port"),
-                    value: String(model.database.debug!.rtmpServerPort!),
-                    onSubmit: submitRtmpServerPort
-                )) {
-                    TextItemView(
-                        name: String(localized: "RTMP server port"),
-                        value: String(model.database.debug!.rtmpServerPort!)
-                    )
-                }
+            } header: {
+                Text("Experimental")
             }
         }
         .navigationTitle("Debug")
