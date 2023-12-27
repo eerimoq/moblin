@@ -298,14 +298,14 @@ class RtmpServerChunkStream: VideoCodecDelegate {
                 timescale: 1000
             )
         )
-        /*logger.info("""
-        rtmp-server: client: \(chunkStreamId): Created sample buffer \
-        MTS: \(messageTimestamp) \
-        CT: \(compositionTime) \
-        DUR: \(timing.duration.seconds), \
-        PTS: \(timing.presentationTimeStamp.seconds), \
-        DTS: \(timing.decodeTimeStamp.seconds)
-        """)*/
+        /* logger.info("""
+         rtmp-server: client: \(chunkStreamId): Created sample buffer \
+         MTS: \(messageTimestamp) \
+         CT: \(compositionTime) \
+         DUR: \(timing.duration.seconds), \
+         PTS: \(timing.presentationTimeStamp.seconds), \
+         DTS: \(timing.decodeTimeStamp.seconds)
+         """) */
         let blockBuffer = messageData.makeBlockBuffer(advancedBy: FLVTagType.video.headerSize)
         var sampleBuffer: CMSampleBuffer?
         var sampleSize = blockBuffer?.dataLength ?? 0

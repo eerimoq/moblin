@@ -18,7 +18,10 @@ final class RtmpEffect: VideoEffect {
 
     func addSampleBuffer(sampleBuffer: CMSampleBuffer) {
         if let buffer = sampleBuffer.imageBuffer {
-            let image = OverlayImage(presentationTimeStamp: sampleBuffer.presentationTimeStamp.seconds, image: CIImage(cvPixelBuffer: buffer))
+            let image = OverlayImage(
+                presentationTimeStamp: sampleBuffer.presentationTimeStamp.seconds,
+                image: CIImage(cvPixelBuffer: buffer)
+            )
             rtmpQueue.sync {
                 images.append(image)
             }
@@ -43,7 +46,7 @@ final class RtmpEffect: VideoEffect {
     }
 
     override func execute(_ image: CIImage, info: CMSampleBuffer?) -> CIImage {
-        if let info  {
+        if let info {
             updateOverlay(presentationTimeStamp: info.presentationTimeStamp.seconds)
         }
         filter.inputImage = overlay
