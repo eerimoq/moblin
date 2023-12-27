@@ -1322,9 +1322,111 @@
     },
     "%@ - %@" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ - %2$@"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ - %2$@"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "%1$@ - %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ - %2$@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ - %2$@"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ - %2$@"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ - %2$@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ - %2$@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ - %2$@"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ - %2$@"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ - %2$@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ - %2$@"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ - %2$@"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ - %2$@"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ - %2$@"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ - %2$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ - %2$@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
             "value" : "%1$@ - %2$@"
           }
         }
@@ -12384,7 +12486,110 @@
       }
     },
     "Copy from OBS Show Connect Info as seen in the screenshot below. Tools → WebSocket Server Settings → Show Connect Info → Server Password." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Kopieren Sie von OBS Show Connect Info, wie im Screenshot unten zu sehen ist. Extras → WebSocket-Servereinstellungen → Verbindungsinformationen anzeigen → Serverkennwort."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Αντιγράψτε από το OBS Εμφάνιση πληροφοριών σύνδεσης όπως φαίνεται στο παρακάτω στιγμιότυπο οθόνης. Εργαλεία → Ρυθμίσεις διακομιστή WebSocket → Εμφάνιση πληροφοριών σύνδεσης → Κωδικός διακομιστή."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Copie desde OBS Mostrar información de conexión como se ve en la captura de pantalla a continuación. Herramientas → Configuración del servidor WebSocket → Mostrar información de conexión → Contraseña del servidor."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Copiez depuis OBS Show Connect Info comme le montre la capture d'écran ci-dessous. Outils → Paramètres du serveur WebSocket → Afficher les informations de connexion → Mot de passe du serveur."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ओबीएस शो कनेक्ट इन्फो से कॉपी करें जैसा कि नीचे स्क्रीनशॉट में देखा गया है। टूल्स → वेबसॉकेट सर्वर सेटिंग्स → कनेक्ट जानकारी दिखाएं → सर्वर पासवर्ड।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Salin dari OBS Tampilkan Info Koneksi seperti yang terlihat pada gambar di bawah. Alat → Pengaturan Server WebSocket → Tampilkan Info Koneksi → Kata Sandi Server."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "以下のスクリーンショットに示すように、OBS Show Connect Info からコピーします。 [ツール] → [WebSocket サーバー設定] → [接続情報を表示] → [サーバーパスワード]。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "아래 스크린샷과 같이 OBS Show Connect Info에서 복사합니다. 도구 → WebSocket 서버 설정 → 연결 정보 표시 → 서버 비밀번호."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Kopieer van OBS Show Connect Info zoals te zien in de onderstaande schermafbeelding. Hulpmiddelen → WebSocket-serverinstellingen → Verbindingsinfo tonen → Serverwachtwoord."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Skopiuj z OBS Pokaż informacje o połączeniu, jak widać na zrzucie ekranu poniżej. Narzędzia → Ustawienia serwera WebSocket → Pokaż informacje o połączeniu → Hasło serwera."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Copie do OBS Show Connect Info conforme visto na imagem abaixo. Ferramentas → Configurações do servidor WebSocket → Mostrar informações de conexão → Senha do servidor."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Copie do OBS Show Connect Info conforme visto na imagem abaixo. Ferramentas → Configurações do servidor WebSocket → Mostrar informações de conexão → Senha do servidor."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kopiera från OBS Show Connect Info som visas i skärmdumpen nedan. Tools → WebSocket Server Settings → Show Connect Info → Server Password."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aşağıdaki ekran görüntüsünde görüldüğü gibi OBS Show Connect Info'dan kopyalayın. Araçlar → WebSocket Sunucu Ayarları → Bağlantı Bilgilerini Göster → Sunucu Şifresi."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sao chép từ OBS Hiển thị thông tin kết nối như trong ảnh chụp màn hình bên dưới. Công cụ → Cài đặt máy chủ WebSocket → Hiển thị thông tin kết nối → Mật khẩu máy chủ."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "从 OBS Show Connect Info 复制，如下面的屏幕截图所示。工具 → WebSocket 服务器设置 → 显示连接信息 → 服务器密码。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "從 OBS Show Connect Info 複製，如下面的螢幕截圖所示。工具 → WebSocket 伺服器設定 → 顯示連線資訊 → 伺服器密碼。"
+          }
+        }
+      }
     },
     "Copy from OBS." : {
       "extractionState" : "stale",
@@ -12502,10 +12707,100 @@
             "value" : "Von OBS kopieren. Tools → WebSocket Server Settings → Show Connect Info → Server Password."
           }
         },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Αντιγραφή από το OBS. Εργαλεία → Ρυθμίσεις διακομιστή WebSocket → Εμφάνιση πληροφοριών σύνδεσης → Κωδικός διακομιστή."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Copia de OBS. Herramientas → Configuración del servidor WebSocket → Mostrar información de conexión → Contraseña del servidor."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Copie depuis OBS. Outils → Paramètres du serveur WebSocket → Afficher les informations de connexion → Mot de passe du serveur."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ओबीएस से कॉपी करें। टूल्स → वेबसॉकेट सर्वर सेटिंग्स → कनेक्ट जानकारी दिखाएं → सर्वर पासवर्ड।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Salin dari OBS. Alat → Pengaturan Server WebSocket → Tampilkan Info Koneksi → Kata Sandi Server."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "OBSからコピーします。 [ツール] → [WebSocket サーバー設定] → [接続情報を表示] → [サーバーパスワード]。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "OBS에서 복사하세요. 도구 → WebSocket 서버 설정 → 연결 정보 표시 → 서버 비밀번호."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Kopieer vanuit OBS. Hulpmiddelen → WebSocket-serverinstellingen → Verbindingsinfo tonen → Serverwachtwoord."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Kopia z OBS. Narzędzia → Ustawienia serwera WebSocket → Pokaż informacje o połączeniu → Hasło serwera."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Copie do OBS. Ferramentas → Configurações do servidor WebSocket → Mostrar informações de conexão → Senha do servidor."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Copie do OBS. Ferramentas → Configurações do servidor WebSocket → Mostrar informações de conexão → Senha do servidor."
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kopiera från OBS. Tools → WebSocket Server Settings → Show Connect Info → Server Password."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "OBS'den kopyalayın. Araçlar → WebSocket Sunucu Ayarları → Bağlantı Bilgilerini Göster → Sunucu Şifresi."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sao chép từ OBS. Công cụ → Cài đặt máy chủ WebSocket → Hiển thị thông tin kết nối → Mật khẩu máy chủ."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "从 OBS 复制。工具 → WebSocket 服务器设置 → 显示连接信息 → 服务器密码。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "從 OBS 複製。工具 → WebSocket 伺服器設定 → 顯示連線資訊 → 伺服器密碼。"
           }
         }
       }
@@ -31918,7 +32213,110 @@
       }
     },
     "RTMP server port" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP-Server-Port"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Θύρα διακομιστή RTMP"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Puerto del servidor RTMP"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Port du serveur RTMP"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "आरटीएमपी सर्वर पोर्ट"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pelabuhan server RTMP"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMPサーバーポート"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP 서버 포트"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP-serverpoort"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Port serwera RTMP"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Porta do servidor RTMP"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Porta do servidor RTMP"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RTMP-serverport"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP sunucu bağlantı noktası"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cổng máy chủ RTMP"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP服务器端口"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP伺服器連接埠"
+          }
+        }
+      }
     },
     "RTMP stream name missing" : {
       "localizations" : {
