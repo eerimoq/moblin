@@ -1029,11 +1029,14 @@ final class Model: ObservableObject {
     func reloadRtmpServer() {
         rtmpServer?.stop()
         rtmpServer = nil
-        media.unregisterEffect(rtmpEffect)
         if database.debug!.rtmpServer! {
-            rtmpEffect = RtmpEffect()
-            media.registerEffect(rtmpEffect)
             rtmpServer = RtmpServer(onListening: { _ in
+            }, onPublishStart: {
+                self.media.unregisterEffect(self.rtmpEffect)
+                self.rtmpEffect = RtmpEffect()
+                self.media.registerEffect(self.rtmpEffect)
+            }, onPublishStop: {
+                self.media.unregisterEffect(self.rtmpEffect)
             }, onFrame: { sampleBuffer in
                 self.rtmpEffect.addSampleBuffer(sampleBuffer: sampleBuffer)
             })
