@@ -8,6 +8,9 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.120.1", date: "2023-12-28", changes: [
+        "• Remove times 3 on RTMP timestamp.",
+    ]),
     Version(version: "0.120.0", date: "2023-12-28", changes: [
         "• Set default stream name to selected platform name in create stream wizard.",
         "• Add heart and looking icons to store.",

@@ -359,15 +359,15 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         var compositionTime = Int32(data: [0] + messageData[2 ..< 5]).bigEndian
         compositionTime <<= 8
         compositionTime /= 256
-        var duration = Int64(3 * messageTimestamp)
+        var duration = Int64(messageTimestamp)
         if isMessageType0 {
             if videoTimestampZero == -1 {
-                videoTimestampZero = Double(3 * messageTimestamp)
+                videoTimestampZero = Double(messageTimestamp)
             }
             duration -= Int64(videoTimestamp)
-            videoTimestamp = Double(3 * messageTimestamp) - videoTimestampZero
+            videoTimestamp = Double(messageTimestamp) - videoTimestampZero
         } else {
-            videoTimestamp += Double(3 * messageTimestamp)
+            videoTimestamp += Double(messageTimestamp)
         }
         var timing = CMSampleTimingInfo(
             duration: CMTimeMake(value: duration, timescale: 1000),
