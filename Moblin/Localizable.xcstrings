@@ -27440,6 +27440,9 @@
         }
       }
     },
+    "Normally replace <your-device-ip> with your WiFi IP address." : {
+
+    },
     "Not configured" : {
       "localizations" : {
         "de" : {

@@ -43,6 +43,8 @@ struct RtmpServerSettingsView: View {
                         Image(systemName: "doc.on.doc")
                     })
                 }
+            } footer: {
+                Text("Normally replace <your-device-ip> with your WiFi IP address.")
             }
             Section {
                 List {
