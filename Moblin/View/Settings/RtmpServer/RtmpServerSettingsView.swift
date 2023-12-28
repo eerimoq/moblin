@@ -14,6 +14,10 @@ struct RtmpServerSettingsView: View {
 
     var body: some View {
         Form {
+            Text("""
+            The RTMP server receives video over the network, enabling Moblin to \
+            receive video from for example a drone and use it as a camera source.
+            """)
             Section {
                 Toggle("Enabled", isOn: Binding(get: {
                     model.database.rtmpServer!.enabled
@@ -24,32 +28,26 @@ struct RtmpServerSettingsView: View {
                 }))
             }
             Section {
-                let port = model.database.rtmpServer!.port
                 NavigationLink(destination: TextEditView(
                     title: String(localized: "Port"),
-                    value: String(port),
+                    value: String(model.database.rtmpServer!.port),
                     onSubmit: submitPort
                 )) {
-                    TextItemView(name: String(localized: "Port"), value: String(port))
-                }
-                HStack {
-                    Text("URL")
-                    Spacer()
-                    Text("rtmp://<your-device-ip>:\(String(port))/camera/")
-                    Button(action: {
-                        UIPasteboard.general.string = "rtmp://<your-device-ip>:\(String(port))/camera/"
-                        model.makeToast(title: "Copied to clipboard")
-                    }, label: {
-                        Image(systemName: "doc.on.doc")
-                    })
+                    TextItemView(
+                        name: String(localized: "Port"),
+                        value: String(model.database.rtmpServer!.port)
+                    )
                 }
             } footer: {
-                Text("Normally replace <your-device-ip> with your WiFi IP address.")
+                Text("The TCP port the RTMP server listens for RTMP publishers on.")
             }
             Section {
                 List {
                     ForEach(model.database.rtmpServer!.streams) { stream in
-                        NavigationLink(destination: RtmpServerStreamSettingsView(stream: stream)) {
+                        NavigationLink(destination: RtmpServerStreamSettingsView(
+                            port: model.database.rtmpServer!.port,
+                            stream: stream
+                        )) {
                             Text(stream.name)
                         }
                     }
@@ -67,7 +65,7 @@ struct RtmpServerSettingsView: View {
             } header: {
                 Text("Streams")
             } footer: {
-                Text("Configure streams to receive video from RTMP publishers.")
+                Text("Each stream can receive video from one RTMP publisher, typically a drone.")
             }
         }
         .navigationTitle("RTMP server")

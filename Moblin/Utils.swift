@@ -571,3 +571,9 @@ extension ExpressibleByIntegerLiteral {
         self = data.withUnsafeBytes { $0.baseAddress!.assumingMemoryBound(to: Self.self).pointee }
     }
 }
+
+extension Data {
+    func hexString() -> String {
+        return map { String(format: "%02hhx", $0) }.joined()
+    }
+}

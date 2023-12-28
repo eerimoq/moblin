@@ -14,7 +14,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
     private var videoTimestamp: Double
     private var isMessageType0: Bool
     private var formatDescription: CMVideoFormatDescription?
-    private var videoCodec: VideoCodec
+    private var videoCodec: VideoCodec?
 
     init(client: RtmpServerClient, chunkStreamId: UInt32) {
         self.client = client
@@ -26,11 +26,11 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         videoTimestampZero = -1
         videoTimestamp = 0
         isMessageType0 = true
-        videoCodec = VideoCodec()
     }
 
     func stop() {
-        videoCodec.stopRunning()
+        videoCodec?.stopRunning()
+        videoCodec = nil
         client = nil
     }
 
@@ -167,7 +167,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
             client.stopInternal(reason: "Invalid stream URL")
             return
         }
-        guard url.path() == "/camera" else {
+        guard url.path() == rtmpApp else {
             client.stopInternal(reason: "Not a camera path")
             return
         }
@@ -290,8 +290,8 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         guard let client else {
             return
         }
-        guard messageData.count >= 12 else {
-            client.stopInternal(reason: "Not 12 bytes in video message")
+        guard messageData.count >= 2 else {
+            client.stopInternal(reason: "Got \(messageData.count) bytes video message, expected >= 2")
             return
         }
         let control = messageData[0]
@@ -310,23 +310,36 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         }
         switch FLVAVCPacketType(rawValue: messageData[1]) {
         case .seq:
-            var config = AVCDecoderConfigurationRecord()
-            config.data = messageData.subdata(in: FLVTagType.video.headerSize ..< messageData.count)
-            let status = config.makeFormatDescription(&formatDescription)
-            if status == noErr {
-                videoCodec.formatDescription = formatDescription
-                /* logger
-                 .info(
-                     "rtmp-server: client: \(chunkStreamId): Dimensions: \(formatDescription!.dimensions)"
-                 ) */
-                videoCodec.delegate = self
-                videoCodec.startRunning()
-            } else {
-                client.stopInternal(reason: "Format description error \(status)")
+            guard messageData.count >= FLVTagType.video.headerSize else {
+                client
+                    .stopInternal(
+                        reason: """
+                        Got \(messageData.count) bytes video message, \
+                        expected >= \(FLVTagType.video.headerSize)
+                        """
+                    )
+                return
+            }
+            if videoCodec == nil {
+                var config = AVCDecoderConfigurationRecord()
+                config.data = messageData.subdata(in: FLVTagType.video.headerSize ..< messageData.count)
+                let status = config.makeFormatDescription(&formatDescription)
+                if status == noErr {
+                    videoCodec = VideoCodec()
+                    videoCodec!.formatDescription = formatDescription
+                    videoCodec!.delegate = self
+                    videoCodec!.startRunning()
+                } else {
+                    client.stopInternal(reason: "Format description error \(status)")
+                }
             }
         case .nal:
+            guard messageData.count > 9 else {
+                logger.info("rtmp-server: client: Dropping short packet with data \(messageData.hexString())")
+                return
+            }
             if let sampleBuffer = makeSampleBuffer() {
-                videoCodec.appendSampleBuffer(sampleBuffer)
+                videoCodec?.appendSampleBuffer(sampleBuffer)
             } else {
                 client.stopInternal(reason: "Make sample buffer failed")
             }
@@ -336,18 +349,25 @@ class RtmpServerChunkStream: VideoCodecDelegate {
     }
 
     private func makeSampleBuffer() -> CMSampleBuffer? {
+        guard messageData.count >= FLVTagType.video.headerSize else {
+            client?
+                .stopInternal(
+                    reason: "Got \(messageData.count) bytes video message, expected >= \(FLVTagType.video.headerSize)"
+                )
+            return nil
+        }
         var compositionTime = Int32(data: [0] + messageData[2 ..< 5]).bigEndian
         compositionTime <<= 8
         compositionTime /= 256
-        var duration = Int64(messageTimestamp)
+        var duration = Int64(3 * messageTimestamp)
         if isMessageType0 {
             if videoTimestampZero == -1 {
-                videoTimestampZero = Double(messageTimestamp)
+                videoTimestampZero = Double(3 * messageTimestamp)
             }
             duration -= Int64(videoTimestamp)
-            videoTimestamp = Double(messageTimestamp) - videoTimestampZero
+            videoTimestamp = Double(3 * messageTimestamp) - videoTimestampZero
         } else {
-            videoTimestamp += Double(messageTimestamp)
+            videoTimestamp += Double(3 * messageTimestamp)
         }
         var timing = CMSampleTimingInfo(
             duration: CMTimeMake(value: duration, timescale: 1000),
@@ -362,7 +382,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         )
         /* logger.info("""
          rtmp-server: client: \(chunkStreamId): Created sample buffer \
-         MTS: \(messageTimestamp) \
+         MTS: \(3 * messageTimestamp) \
          CT: \(compositionTime) \
          DUR: \(timing.duration.seconds), \
          PTS: \(timing.presentationTimeStamp.seconds), \

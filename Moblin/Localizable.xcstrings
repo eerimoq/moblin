@@ -11956,9 +11956,6 @@
         }
       }
     },
-    "Configure streams to receive video from RTMP publishers." : {
-
-    },
     "Configure the stream after the wizard ends." : {
       "localizations" : {
         "de" : {
@@ -15035,6 +15032,9 @@
         }
       }
     },
+    "Each stream can receive video from one RTMP publisher, typically a drone." : {
+
+    },
     "Empty clipboard" : {
       "localizations" : {
         "de" : {
@@ -15458,6 +15458,9 @@
           }
         }
       }
+    },
+    "Enter this URL into the RTMP publisher device to send video to this stream." : {
+
     },
     "Example URL: https://play.afreecatv.com/myChannelName/myVideoId" : {
       "localizations" : {
@@ -27654,6 +27657,7 @@
       }
     },
     "Normally replace <your-device-ip> with your WiFi IP address." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -31367,6 +31371,9 @@
         }
       }
     },
+    "Publish URL" : {
+
+    },
     "Quick buttons" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -32003,6 +32010,9 @@
           }
         }
       }
+    },
+    "Replace %@ with your phones IP address." : {
+
     },
     "Reset settings" : {
       "localizations" : {
@@ -32748,6 +32758,7 @@
       }
     },
     "rtmp://<your-device-ip>:%@/camera/" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -32854,6 +32865,7 @@
       }
     },
     "rtmp://<your-device-ip>:%u/camera/" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -39425,6 +39437,15 @@
           }
         }
       }
+    },
+    "The RTMP server receives video over the network, enabling Moblin to receive video from for example a drone and use it as a camera source." : {
+
+    },
+    "The stream name is shown in the list of cameras in scene settings." : {
+
+    },
+    "The TCP port the RTMP server listens for RTMP publishers on." : {
+
     },
     "The ultra wide camera does not perform well in low light conditions. Likewise, the auto cameras do not perform well when zoom is 0.5-1.0x since the ultra wide camera will be used." : {
       "localizations" : {

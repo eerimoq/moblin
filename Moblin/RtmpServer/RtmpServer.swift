@@ -4,6 +4,12 @@ import HaishinKit
 import Network
 
 let rtmpServerDispatchQueue = DispatchQueue(label: "com.eerimoq.rtmp-server")
+let rtmpApp = "/live"
+let rtmpAddressPlaceholder = "<my-device-ip>"
+
+func rtmpStreamUrl(address: String, port: UInt16, streamKey: String) -> String {
+    return "rtmp://\(address):\(port)\(rtmpApp)/\(streamKey)"
+}
 
 class RtmpServer {
     private var listener: NWListener!
