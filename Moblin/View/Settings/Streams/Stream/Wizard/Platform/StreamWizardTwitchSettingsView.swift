@@ -43,6 +43,7 @@ struct StreamWizardTwitchSettingsView: View {
         }
         .onAppear {
             model.wizardPlatform = .twitch
+            model.wizardName = "Twitch"
         }
         .navigationTitle("Twitch")
         .toolbar {

@@ -27,6 +27,7 @@ struct StreamWizardYouTubeSettingsView: View {
         }
         .onAppear {
             model.wizardPlatform = .youTube
+            model.wizardName = "YouTube"
         }
         .navigationTitle("YouTube")
         .toolbar {

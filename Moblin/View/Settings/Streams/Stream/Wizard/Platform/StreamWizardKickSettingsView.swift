@@ -67,6 +67,7 @@ struct StreamWizardKickSettingsView: View {
         }
         .onAppear {
             model.wizardPlatform = .kick
+            model.wizardName = "Kick"
         }
         .navigationTitle("Kick")
         .toolbar {

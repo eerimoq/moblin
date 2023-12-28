@@ -17,6 +17,7 @@ struct StreamWizardCustomSettingsView: View {
         .onAppear {
             model.wizardPlatform = .custom
             model.wizardNetworkSetup = .none
+            model.wizardName = "Custom"
         }
         .navigationTitle("Custom")
         .toolbar {

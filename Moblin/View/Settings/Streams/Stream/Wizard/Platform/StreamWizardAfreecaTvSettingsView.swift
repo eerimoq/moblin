@@ -29,6 +29,7 @@ struct StreamWizardAfreecaTvSettingsView: View {
         }
         .onAppear {
             model.wizardPlatform = .afreecaTv
+            model.wizardName = "AfreecaTV"
         }
         .navigationTitle("AfreecaTV")
         .toolbar {
