@@ -15033,7 +15033,110 @@
       }
     },
     "Each stream can receive video from one RTMP publisher, typically a drone." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Jeder Stream kann Videos von einem RTMP-Herausgeber empfangen, normalerweise einer Drohne."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Κάθε ροή μπορεί να λάβει βίντεο από έναν εκδότη RTMP, συνήθως ένα drone."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cada transmisión puede recibir vídeo de un editor RTMP, normalmente un dron."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Chaque flux peut recevoir la vidéo d'un éditeur RTMP, généralement un drone."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "प्रत्येक स्ट्रीम एक आरटीएमपी प्रकाशक, आमतौर पर एक ड्रोन से वीडियो प्राप्त कर सकती है।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Setiap streaming dapat menerima video dari satu penerbit RTMP, biasanya drone."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "各ストリームは、1 つの RTMP パブリッシャー (通常はドローン) からビデオを受信できます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "각 스트림은 하나의 RTMP 게시자(일반적으로 드론)로부터 비디오를 수신할 수 있습니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Elke stream kan video ontvangen van één RTMP-uitgever, meestal een drone."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Każdy strumień może odbierać wideo od jednego wydawcy RTMP, zazwyczaj jest to dron."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cada stream pode receber vídeo de um editor RTMP, normalmente um drone."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cada stream pode receber vídeo de um editor RTMP, normalmente um drone."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Varje ström kan ta emot video från en RTMP-utgivare, vanligtvis en drönare."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Her akış, bir RTMP yayıncısından, genellikle bir drone'dan video alabilir."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mỗi luồng có thể nhận video từ một nhà xuất bản RTMP, thường là máy bay không người lái."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "每个流都可以从一个 RTMP 发布者（通常是无人机）接收视频。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "每個串流都可以從一個 RTMP 發布者（通常是無人機）接收影片。"
+          }
+        }
+      }
     },
     "Empty clipboard" : {
       "localizations" : {
@@ -15460,7 +15563,110 @@
       }
     },
     "Enter this URL into the RTMP publisher device to send video to this stream." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Geben Sie diese URL in das RTMP-Publisher-Gerät ein, um Videos an diesen Stream zu senden."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Εισαγάγετε αυτήν τη διεύθυνση URL στη συσκευή εκδότη RTMP για αποστολή βίντεο σε αυτήν τη ροή."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ingrese esta URL en el dispositivo del editor RTMP para enviar video a esta transmisión."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Entrez cette URL dans l'appareil de l'éditeur RTMP pour envoyer la vidéo à ce flux."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "इस स्ट्रीम पर वीडियो भेजने के लिए इस URL को RTMP प्रकाशक डिवाइस में दर्ज करें।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Masukkan URL ini ke perangkat penerbit RTMP untuk mengirim video ke aliran ini."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "この URL を RTMP パブリッシャ デバイスに入力して、ビデオをこのストリームに送信します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "비디오를 이 스트림으로 보내려면 RTMP 게시자 장치에 이 URL을 입력하세요."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Voer deze URL in op het RTMP-uitgeverapparaat om video naar deze stream te verzenden."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Wprowadź ten adres URL na urządzeniu wydawcy RTMP, aby wysłać wideo do tego strumienia."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Insira este URL no dispositivo do editor RTMP para enviar o vídeo para este stream."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Insira este URL no dispositivo do editor RTMP para enviar o vídeo para este stream."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ange den här webbadressen i RTMP-utgivarenheten för att skicka video till den här strömmen."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bu akışa video göndermek için bu URL'yi RTMP yayıncı cihazına girin."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nhập URL này vào thiết bị của nhà xuất bản RTMP để gửi video tới luồng này."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "将此 URL 输入 RTMP 发布者设备以将视频发送到此流。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "將此 URL 輸入 RTMP 發布者裝置以將影片傳送至此串流。"
+          }
+        }
+      }
     },
     "Example URL: https://play.afreecatv.com/myChannelName/myVideoId" : {
       "localizations" : {
@@ -31372,7 +31578,110 @@
       }
     },
     "Publish URL" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL veröffentlichen"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Δημοσίευση διεύθυνσης URL"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Publicar URL"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL de publication"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "यूआरएल प्रकाशित करें"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Publikasikan URL"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URLを公開"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "게시 URL"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Publiceer-URL"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Opublikuj adres URL"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Publicar URL"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Publicar URL"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Publicera URL"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL'yi yayınla"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL xuất bản"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "发布网址"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "發布網址"
+          }
+        }
+      }
     },
     "Quick buttons" : {
       "extractionState" : "stale",
@@ -32012,7 +32321,110 @@
       }
     },
     "Replace %@ with your phones IP address." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ersetzen Sie %@ durch die IP-Adresse Ihres Telefons."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Αντικαταστήστε το %@ με τη διεύθυνση IP του τηλεφώνου σας."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Reemplace %@ con la dirección IP de su teléfono."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Remplacez %@ par l'adresse IP de votre téléphone."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%@ को अपने फ़ोन के आईपी पते से बदलें।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ganti %@ dengan alamat IP ponsel Anda."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%@ を電話の IP アドレスに置き換えます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%@을(를) 전화기 IP 주소로 바꾸세요."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Vervang %@ door het IP-adres van uw telefoon."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Zamień %@ na adres IP swojego telefonu."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Substitua %@ pelo endereço IP do seu telefone."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Substitua %@ pelo endereço IP do seu telefone."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ersätt %@ med din telefons IP-adress."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%@ yerine telefonunuzun IP adresini yazın."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Thay thế %@ bằng địa chỉ IP của điện thoại của bạn."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "将 %@ 替换为您的电话 IP 地址。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "將 %@ 替換為您的電話 IP 位址。"
+          }
+        }
+      }
     },
     "Reset settings" : {
       "localizations" : {
@@ -39439,13 +39851,322 @@
       }
     },
     "The RTMP server receives video over the network, enabling Moblin to receive video from for example a drone and use it as a camera source." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Der RTMP-Server empfängt Videos über das Netzwerk, sodass Moblin beispielsweise Videos von einer Drohne empfangen und als Kameraquelle verwenden kann."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ο διακομιστής RTMP λαμβάνει βίντεο μέσω του δικτύου, επιτρέποντας στο Moblin να λαμβάνει βίντεο για παράδειγμα από ένα drone και να το χρησιμοποιεί ως πηγή κάμερας."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "El servidor RTMP recibe vídeo a través de la red, lo que permite a Moblin recibir vídeo, por ejemplo, de un dron y utilizarlo como fuente de cámara."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Le serveur RTMP reçoit la vidéo sur le réseau, permettant à Moblin de recevoir la vidéo d'un drone par exemple et de l'utiliser comme source de caméra."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "आरटीएमपी सर्वर नेटवर्क पर वीडियो प्राप्त करता है, उदाहरण के लिए मोबलिन को ड्रोन से वीडियो प्राप्त करने और इसे कैमरा स्रोत के रूप में उपयोग करने में सक्षम बनाता है।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Server RTMP menerima video melalui jaringan, memungkinkan Moblin menerima video misalnya dari drone dan menggunakannya sebagai sumber kamera."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP サーバーはネットワーク経由でビデオを受信するため、Moblin がドローンなどからビデオを受信し、それをカメラ ソースとして使用できるようになります。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP 서버는 네트워크를 통해 비디오를 수신하므로 Moblin이 드론 등으로부터 비디오를 수신하고 이를 카메라 소스로 사용할 수 있습니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "De RTMP-server ontvangt video over het netwerk, waardoor Moblin video van bijvoorbeeld een drone kan ontvangen en als camerabron kan gebruiken."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Serwer RTMP odbiera wideo przez sieć, dzięki czemu Moblin może odbierać wideo na przykład z drona i wykorzystywać go jako źródło kamery."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O servidor RTMP recebe vídeo pela rede, permitindo que o Moblin receba vídeo, por exemplo, de um drone e o use como fonte de câmera."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O servidor RTMP recebe vídeo pela rede, permitindo que o Moblin receba vídeo, por exemplo, de um drone e o use como fonte de câmera."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP-servern tar emot video över nätverket, vilket gör att Moblin kan ta emot video från till exempel en drönare och använda den som kamerakälla."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP sunucusu ağ üzerinden video alır ve Moblin'in örneğin bir drone'dan video almasına ve bunu bir kamera kaynağı olarak kullanmasına olanak tanır."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Máy chủ RTMP nhận video qua mạng, cho phép Moblin nhận video từ máy bay không người lái và sử dụng video đó làm nguồn camera."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP 服务器通过网络接收视频，使 Moblin 能够接收来自无人机等的视频并将其用作摄像头源。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP 伺服器透過網路接收視頻，使 Moblin 能夠接收來自無人機等的視頻並將其用作攝影機來源。"
+          }
+        }
+      }
     },
     "The stream name is shown in the list of cameras in scene settings." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Der Streamname wird in der Liste der Kameras in den Szeneneinstellungen angezeigt."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Το όνομα της ροής εμφανίζεται στη λίστα των καμερών στις ρυθμίσεις σκηνής."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "El nombre de la transmisión se muestra en la lista de cámaras en la configuración de escena."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Le nom du flux est affiché dans la liste des caméras dans les paramètres de scène."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "स्ट्रीम का नाम दृश्य सेटिंग्स में कैमरों की सूची में दिखाया गया है।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nama aliran ditampilkan dalam daftar kamera dalam pengaturan pemandangan."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ストリーム名はシーン設定のカメラリストに表示されます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "스트림 이름은 장면 설정의 카메라 목록에 표시됩니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "De streamnaam wordt weergegeven in de lijst met camera's in scène-instellingen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nazwa strumienia wyświetlana jest na liście kamer w ustawieniach sceny."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O nome do stream é mostrado na lista de câmeras nas configurações de cena."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O nome do stream é mostrado na lista de câmeras nas configurações de cena."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Streamnamnet visas i listan över kameror i sceninställningar."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Akış adı, sahne ayarlarındaki kameralar listesinde gösterilir."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tên luồng được hiển thị trong danh sách camera trong cài đặt cảnh."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "流名称显示在场景设置中的摄像机列表中。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "串流名稱顯示在場景設定中的攝影機清單中。"
+          }
+        }
+      }
     },
     "The TCP port the RTMP server listens for RTMP publishers on." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Der TCP-Port, auf dem der RTMP-Server auf RTMP-Herausgeber wartet."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Η θύρα TCP στον διακομιστή RTMP ακούει για εκδότες RTMP."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "El puerto TCP en el que el servidor RTMP escucha a los editores RTMP."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Le port TCP sur lequel le serveur RTMP écoute les éditeurs RTMP."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "आरटीएमपी सर्वर जिस टीसीपी पोर्ट पर आरटीएमपी प्रकाशकों को सुनता है।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Port TCP tempat server RTMP mendengarkan penerbit RTMP."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP サーバーが RTMP パブリッシャをリッスンする TCP ポート。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP 서버가 RTMP 게시자를 수신 대기하는 TCP 포트입니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "De TCP-poort waarop de RTMP-server luistert naar RTMP-uitgevers."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Port TCP, na którym serwer RTMP nasłuchuje wydawców RTMP."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "A porta TCP na qual o servidor RTMP escuta editores RTMP."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "A porta TCP na qual o servidor RTMP escuta editores RTMP."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "TCP-porten som RTMP-servern lyssnar efter RTMP-utgivare på."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP sunucusunun RTMP yayıncılarını dinlediği TCP bağlantı noktası."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cổng TCP mà máy chủ RTMP lắng nghe các nhà xuất bản RTMP."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP 服务器侦听 RTMP 发布者的 TCP 端口。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP 伺服器偵聽 RTMP 發布者的 TCP 連接埠。"
+          }
+        }
+      }
     },
     "The ultra wide camera does not perform well in low light conditions. Likewise, the auto cameras do not perform well when zoom is 0.5-1.0x since the ultra wide camera will be used." : {
       "localizations" : {
