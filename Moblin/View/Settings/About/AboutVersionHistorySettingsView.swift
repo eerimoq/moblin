@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.119.0", date: "2023-12-28", changes: [
+        "• Experimental RTMP server settings.",
+        "• Multiple parallel RTMP streams with different stream keys.",
+        "• Kick chatroom example in wizard.",
+    ]),
     Version(version: "0.118.0", date: "2023-12-27", changes: [
         "• RTMP server can show video on stream in fixed location and same resolution as received over RTMP.",
         "  • Only tested with ffmpeg. I'm sure it does not work with all RTMP publishers.",
