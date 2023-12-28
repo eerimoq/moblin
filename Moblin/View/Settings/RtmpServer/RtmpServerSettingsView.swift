@@ -66,6 +66,8 @@ struct RtmpServerSettingsView: View {
                 })
             } header: {
                 Text("Streams")
+            } footer: {
+                Text("Configure streams to receive video from RTMP publishers.")
             }
         }
         .navigationTitle("RTMP server")
