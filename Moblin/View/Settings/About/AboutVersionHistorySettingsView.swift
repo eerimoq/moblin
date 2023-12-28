@@ -8,6 +8,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.120.0", date: "2023-12-28", changes: [
+        "• Set default stream name to selected platform name in create stream wizard.",
+        "• Add heart and looking icons to store.",
+        "• RTMP server settings restructure and more clarifications.",
+        "• Rename RTMP app from `camera` to `live`.",
+        "  • So now it is `rtmp://<my-ip-address>:1935/live/foobar`.",
+    ]),
     Version(version: "0.119.0", date: "2023-12-28", changes: [
         "• Experimental RTMP server settings.",
         "• Multiple parallel RTMP streams with different stream keys.",
