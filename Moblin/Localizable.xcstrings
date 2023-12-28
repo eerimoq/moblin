@@ -11956,6 +11956,9 @@
         }
       }
     },
+    "Configure streams to receive video from RTMP publishers." : {
+
+    },
     "Configure the stream after the wizard ends." : {
       "localizations" : {
         "de" : {

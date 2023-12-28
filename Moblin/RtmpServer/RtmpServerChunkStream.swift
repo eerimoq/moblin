@@ -130,8 +130,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
              Arguments: \(arguments)
              """) */
         } catch {
-            logger.info("rtmp-server: \(chunkStreamId): client: AMF-0 decode error \(error)")
-            client.stopInternal()
+            client.stopInternal(reason: "AMF-0 decode error \(error)")
             return
         }
         switch commandName {
@@ -161,15 +160,15 @@ class RtmpServerChunkStream: VideoCodecDelegate {
             return
         }
         guard let url = commandObject["tcUrl"] as? String else {
-            client.stopInternal()
+            client.stopInternal(reason: "Stream URL missing")
             return
         }
         guard let url = URL(string: url) else {
-            client.stopInternal()
+            client.stopInternal(reason: "Invalid stream URL")
             return
         }
         guard url.path() == "/camera" else {
-            client.stopInternal()
+            client.stopInternal(reason: "Not a camera path")
             return
         }
         client.sendMessage(chunk: RTMPChunk(
@@ -232,11 +231,11 @@ class RtmpServerChunkStream: VideoCodecDelegate {
             return
         }
         guard arguments.count > 0 else {
-            client.stopInternal()
+            client.stopInternal(reason: "Missing publish argument")
             return
         }
         guard let streamKey = arguments[0] as? String else {
-            client.stopInternal()
+            client.stopInternal(reason: "Stream key not a string")
             return
         }
         let isStreamKeyConfigured = DispatchQueue.main.sync {
@@ -245,8 +244,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
             }) == true
         }
         guard isStreamKeyConfigured else {
-            logger.info("rtmp-server: client: Stream key \(streamKey) not configured")
-            client.stopInternal()
+            client.stopInternal(reason: "Stream key \(streamKey) not configured")
             return
         }
         client.streamKey = streamKey
@@ -278,7 +276,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
             return
         }
         guard messageData.count == 4 else {
-            client.stopInternal()
+            client.stopInternal(reason: "Not 4 bytes chunk size")
             return
         }
         client.chunkSizeFromClient = Int(messageData.getFourBytesBe())
@@ -293,27 +291,21 @@ class RtmpServerChunkStream: VideoCodecDelegate {
             return
         }
         guard messageData.count >= 12 else {
-            client.stopInternal()
+            client.stopInternal(reason: "Not 12 bytes in video message")
             return
         }
         let control = messageData[0]
         let frameType = control >> 4
         guard (frameType & 0x8) == 0 else {
-            logger.info("rtmp-server: client: \(chunkStreamId): Unsupported video frame type \(frameType)")
-            client.stopInternal()
+            client.stopInternal(reason: "Unsupported video frame type \(frameType)")
             return
         }
         guard let format = FLVVideoCodec(rawValue: control & 0xF) else {
-            logger.info("rtmp-server: client: \(chunkStreamId): Unsupported video format \(control & 0xF)")
-            client.stopInternal()
+            client.stopInternal(reason: "Unsupported video format \(control & 0xF)")
             return
         }
         guard format == .avc else {
-            logger.info("""
-            rtmp-server: client: \(chunkStreamId): Unsupported video \
-            format \(format). Only AVC is supported.
-            """)
-            client.stopInternal()
+            client.stopInternal(reason: "Unsupported video format \(format). Only AVC is supported.")
             return
         }
         switch FLVAVCPacketType(rawValue: messageData[1]) {
@@ -330,21 +322,16 @@ class RtmpServerChunkStream: VideoCodecDelegate {
                 videoCodec.delegate = self
                 videoCodec.startRunning()
             } else {
-                logger.info("rtmp-server: client: \(chunkStreamId): Format description error \(status)")
-                client.stopInternal()
+                client.stopInternal(reason: "Format description error \(status)")
             }
         case .nal:
             if let sampleBuffer = makeSampleBuffer() {
                 videoCodec.appendSampleBuffer(sampleBuffer)
             } else {
-                logger.info("rtmp-server: client: Make sample buffer failed")
-                client.stopInternal()
+                client.stopInternal(reason: "Make sample buffer failed")
             }
         default:
-            logger.info("""
-            rtmp-server: client: \(chunkStreamId): Unsupported video AVC packet type \(messageData[1])
-            """)
-            client.stopInternal()
+            client.stopInternal(reason: "Unsupported video AVC packet type \(messageData[1])")
         }
     }
 

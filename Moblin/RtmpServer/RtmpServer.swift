@@ -49,7 +49,7 @@ class RtmpServer {
     func stop() {
         rtmpServerDispatchQueue.async {
             for client in self.clients {
-                client.stop()
+                client.stop(reason: "Server stop")
             }
             self.clients.removeAll()
             self.listener?.cancel()
@@ -76,16 +76,16 @@ class RtmpServer {
             activeClient.streamKey == client.streamKey
         }) else {
             logger.info("rtmp-server: Client with stream key \(client.streamKey) already connected")
-            client.stop()
+            client.stop(reason: "Client with stream key \(client.streamKey) already connected")
             return
         }
         onPublishStart(client.streamKey)
         logNumberOfClients()
     }
 
-    func handleClientDisconnected(client: RtmpServerClient) {
+    func handleClientDisconnected(client: RtmpServerClient, reason: String) {
         onPublishStop(client.streamKey)
-        client.stop()
+        client.stop(reason: reason)
         clients.removeAll { c in
             c === client
         }
