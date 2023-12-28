@@ -3892,7 +3892,11 @@
         }
       }
     },
+    "18529305" : {
+
+    },
     "90812903" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -33178,6 +33182,9 @@
           }
         }
       }
+    },
+    "Search for \"chatroom\" on that page. 18529305 is the chatroom id in the example screenshot below." : {
+
     },
     "Select image" : {
       "localizations" : {

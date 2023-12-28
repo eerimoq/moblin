@@ -24,7 +24,7 @@ struct StreamWizardKickSettingsView: View {
                 Text("Channel name")
             }
             Section {
-                TextField("90812903", text: $model.wizardKickChatroomId)
+                TextField("18529305", text: $model.wizardKickChatroomId)
                     .disableAutocorrection(true)
             } header: {
                 Text("Chatroom id")
@@ -38,6 +38,20 @@ struct StreamWizardKickSettingsView: View {
                             Link(url.absoluteString, destination: url)
                                 .font(.footnote)
                             Text(".")
+                        }
+                        Text("")
+                        Text("""
+                        Search for \"chatroom\" on that page. 18529305 is the chatroom id in \
+                        the example screenshot below.
+                        """)
+                        Text("")
+                        HStack {
+                            Spacer()
+                            Image("KickChatroomId")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(maxWidth: 200)
+                            Spacer()
                         }
                     }
                 }
