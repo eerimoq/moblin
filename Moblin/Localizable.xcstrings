@@ -3893,7 +3893,110 @@
       }
     },
     "18529305" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "18529305"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "18529305"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "18529305"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "18529305"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "18529305"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "18529305"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "18529305"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "18529305"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "18529305"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "18529305"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "18529305"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "18529305"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "18529305"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "18529305"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "18529305"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "18529305"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "18529305"
+          }
+        }
+      }
     },
     "90812903" : {
       "extractionState" : "stale",
@@ -16520,7 +16623,110 @@
       }
     },
     "Experimental" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Experimental"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Πειραματικός"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Experimental"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Expérimental"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "प्रयोगात्मक"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Eksperimental"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "実験的"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "실험적"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Experimenteel"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Eksperymentalny"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Experimental"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Experimental"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Experimentell"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Deneysel"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Thực nghiệm"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "实验性的"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "實驗性的"
+          }
+        }
+      }
     },
     "Export to clipboard" : {
       "localizations" : {
@@ -27445,7 +27651,110 @@
       }
     },
     "Normally replace <your-device-ip> with your WiFi IP address." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Normalerweise ersetzen Sie <your-device-ip> durch Ihre WLAN-IP-Adresse."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Κανονικά αντικαταστήστε το <your-device-ip> με τη διεύθυνση IP του WiFi."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Normalmente reemplace <your-device-ip> con su dirección IP WiFi."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Remplacez normalement <your-device-ip> par votre adresse IP WiFi."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "आम तौर पर <your-device-ip> को अपने वाईफाई आईपी पते से बदलें।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Biasanya ganti <ip-perangkat-Anda> dengan alamat IP WiFi Anda."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "通常、<your-device-ip> を WiFi IP アドレスに置き換えます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "일반적으로 <your-device-ip>를 WiFi IP 주소로 바꾸세요."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Normaal gesproken vervangt u <uw-apparaat-ip> door uw WiFi-IP-adres."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Zwykle zastąp <your-device-ip> adresem IP sieci Wi-Fi."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Normalmente substitua <your-device-ip> pelo seu endereço IP WiFi."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Normalmente substitua <your-device-ip> pelo seu endereço IP WiFi."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ersätt vanligtvis <din-enhets-ip> med ditt WiFi:s IP-adress."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Normalde <cihazınızın-ip> kısmını WiFi IP adresinizle değiştirin."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Thông thường thay thế <your-device-ip> bằng địa chỉ IP WiFi của bạn."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "通常将 <your-device-ip> 替换为您的 WiFi IP 地址。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "通常將 <your-device-ip> 替換為您的 WiFi IP 位址。"
+          }
+        }
+      }
     },
     "Not configured" : {
       "localizations" : {
@@ -32436,10 +32745,216 @@
       }
     },
     "rtmp://<your-device-ip>:%@/camera/" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "rtmp://<Ihr-Geräte-IP>:%@/camera/"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "rtmp://<your-device-ip>:%@/camera/"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "rtmp://<ip-de-su-dispositivo>:%@/camera/"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "rtmp://<votre-appareil-ip>:%@/camera/"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "rtmp://<your-device-ip>:%@/camera/"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "rtmp://<ip-perangkat-Anda>:%@/camera/"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "rtmp://<あなたのデバイスの IP>:%@/camera/"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "rtmp://<your-device-ip>:%@/camera/"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "rtmp://<uw-apparaat-ip>:%@/camera/"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "rtmp://<ip-twojego-urządzenia>:%@/camera/"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "rtmp://<seu-ip-do-dispositivo>:%@/camera/"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "rtmp://<seu-ip-do-dispositivo>:%@/camera/"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "rtmp://<din-enhets-ip>:%@/camera/"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "rtmp://<cihazınızın-ip'i>:%@/camera/"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "rtmp://<your-device-ip>:%@/camera/"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "rtmp://<您的设备 IP>:%@/camera/"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "rtmp://<您的裝置 IP>:%@/camera/"
+          }
+        }
+      }
     },
     "rtmp://<your-device-ip>:%u/camera/" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "rtmp://<Ihr-Geräte-IP>:%u/camera/"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "rtmp://<your-device-ip>:%u/camera/"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "rtmp://<ip-de-su-dispositivo>:%u/camera/"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "rtmp://<votre-adresse-ip>:%u/camera/"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "rtmp://<your-device-ip>:%u/camera/"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "rtmp://<ip-perangkat-Anda>:%u/camera/"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "rtmp://<あなたのデバイスの IP>:%u/camera/"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "rtmp://<사용자 장치-ip>:%u/camera/"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "rtmp://<uw-apparaat-ip>:%u/camera/"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "rtmp://<ip-twojego-urządzenia>:%u/camera/"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "rtmp://<seu-ip-do-dispositivo>:%u/camera/"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "rtmp://<seu-ip-do-dispositivo>:%u/camera/"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "rtmp://<din-enhets-ip>:%u/camera/"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "rtmp://<cihazınızın-ip'i>:%u/camera/"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "rtmp://<your-device-ip>:%u/camera/"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "rtmp://<您的设备 IP>:%u/camera/"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "rtmp://<您的裝置 IP>:%u/camera/"
+          }
+        }
+      }
     },
     "rtmp://a.rtmp.youtube.com/live2" : {
       "localizations" : {
@@ -33184,7 +33699,110 @@
       }
     },
     "Search for \"chatroom\" on that page. 18529305 is the chatroom id in the example screenshot below." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Suchen Sie auf dieser Seite nach „Chatroom“. 18529305 ist die Chatroom-ID im Beispiel-Screenshot unten."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Αναζητήστε \"chatroom\" σε αυτήν τη σελίδα. Το 18529305 είναι το αναγνωριστικό του chatroom στο παρακάτω στιγμιότυπο οθόνης."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Busque \"sala de chat\" en esa página. 18529305 es la identificación de la sala de chat en la captura de pantalla de ejemplo siguiente."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Recherchez « chatroom » sur cette page. 18529305 est l'identifiant du salon de discussion dans l'exemple de capture d'écran ci-dessous."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "उस पृष्ठ पर \"चैटरूम\" खोजें। नीचे दिए गए उदाहरण स्क्रीनशॉट में 18529305 चैटरूम आईडी है।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cari \"ruang obrolan\" di halaman itu. 18529305 adalah id ruang obrolan pada contoh tangkapan layar di bawah."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "そのページで「チャットルーム」を検索してください。 18529305 は、以下のスクリーンショットの例のチャットルーム ID です。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "해당 페이지에서 \"채팅방\"을 검색해 보세요. 18529305는 아래 예시 스크린샷의 채팅방 ID입니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Zoek op die pagina naar 'chatroom'. 18529305 is de chatroom-ID in het onderstaande voorbeeldscreenshot."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Wyszukaj „pokój rozmów” na tej stronie. 18529305 to identyfikator pokoju rozmów na przykładowym zrzucie ekranu poniżej."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Procure por \"chatroom\" nessa página. 18529305 é o ID da sala de chat no exemplo de captura de tela abaixo."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Procure por \"chatroom\" nessa página. 18529305 é o ID da sala de chat no exemplo de captura de tela abaixo."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sök efter \"chatroom\" på den sidan. 18529305 är chattrumsid i exemplet nedan."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bu sayfada \"sohbet odası\" ifadesini arayın. 18529305, aşağıdaki örnek ekran görüntüsündeki sohbet odası kimliğidir."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tìm kiếm \"chatroom\" trên trang đó. 18529305 là id phòng trò chuyện trong ảnh chụp màn hình ví dụ bên dưới."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "在该页面上搜索“聊天室”。 18529305 是下面示例屏幕截图中的聊天室 ID。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "在該頁面上搜尋「聊天室」。 18529305 是下面範例螢幕截圖中的聊天室 ID。"
+          }
+        }
+      }
     },
     "Select image" : {
       "localizations" : {
