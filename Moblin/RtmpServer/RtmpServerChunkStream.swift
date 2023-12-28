@@ -9,7 +9,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
     private var messageTypeId: UInt8
     private var chunkStreamId: UInt32
     private var messageTimestamp: UInt32
-    private var client: RtmpServerClient?
+    private weak var client: RtmpServerClient?
     private var videoTimestampZero: Double
     private var videoTimestamp: Double
     private var isMessageType0: Bool
@@ -35,30 +35,42 @@ class RtmpServerChunkStream: VideoCodecDelegate {
     }
 
     func handleType0(messageTypeId: UInt8, messageLength: Int, messageTimestamp: UInt32) -> Int {
+        guard let client else {
+            return 0
+        }
         self.messageTypeId = messageTypeId
         self.messageLength = messageLength
         self.messageTimestamp = messageTimestamp
         isMessageType0 = true
-        return min(client?.chunkSizeFromClient ?? 0, messageRemain())
+        return min(client.chunkSizeFromClient, messageRemain())
     }
 
     func handleType1(messageTypeId: UInt8, messageLength: Int, messageTimestamp: UInt32) -> Int {
+        guard let client else {
+            return 0
+        }
         self.messageTypeId = messageTypeId
         self.messageLength = messageLength
         self.messageTimestamp = messageTimestamp
         isMessageType0 = false
-        return min(client?.chunkSizeFromClient ?? 0, messageRemain())
+        return min(client.chunkSizeFromClient, messageRemain())
     }
 
     func handleType2(messageTimestamp: UInt32) -> Int {
+        guard let client else {
+            return 0
+        }
         self.messageTimestamp = messageTimestamp
         isMessageType0 = false
-        return min(client?.chunkSizeFromClient ?? 0, messageRemain())
+        return min(client.chunkSizeFromClient, messageRemain())
     }
 
     func handleType3() -> Int {
+        guard let client else {
+            return 0
+        }
         isMessageType0 = false
-        return min(client?.chunkSizeFromClient ?? 0, messageRemain())
+        return min(client.chunkSizeFromClient, messageRemain())
     }
 
     func handleData(data: Data) {
@@ -97,6 +109,9 @@ class RtmpServerChunkStream: VideoCodecDelegate {
     }
 
     private func processMessageAmf0Command() {
+        guard let client else {
+            return
+        }
         let amf0 = AMF0Serializer(data: messageData)
         let commandName: String
         let transactionId: Int
@@ -116,7 +131,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
              """) */
         } catch {
             logger.info("rtmp-server: \(chunkStreamId): client: AMF-0 decode error \(error)")
-            client?.stopInternal()
+            client.stopInternal()
             return
         }
         switch commandName {
@@ -142,34 +157,37 @@ class RtmpServerChunkStream: VideoCodecDelegate {
     }
 
     private func processMessageAmf0CommandConnect(transactionId: Int, commandObject: ASObject) {
+        guard let client else {
+            return
+        }
         guard let url = commandObject["tcUrl"] as? String else {
-            client?.stopInternal()
+            client.stopInternal()
             return
         }
         guard let url = URL(string: url) else {
-            client?.stopInternal()
+            client.stopInternal()
             return
         }
         guard url.path() == "/camera" else {
-            client?.stopInternal()
+            client.stopInternal()
             return
         }
-        client?.sendMessage(chunk: RTMPChunk(
+        client.sendMessage(chunk: RTMPChunk(
             type: .zero,
             streamId: UInt16(2),
             message: RTMPWindowAcknowledgementSizeMessage(2_500_000)
         ))
-        client?.sendMessage(chunk: RTMPChunk(
+        client.sendMessage(chunk: RTMPChunk(
             type: .zero,
             streamId: UInt16(2),
             message: RTMPSetPeerBandwidthMessage(size: 2_500_000, limit: .dynamic)
         ))
-        client?.sendMessage(chunk: RTMPChunk(
+        client.sendMessage(chunk: RTMPChunk(
             type: .zero,
             streamId: UInt16(2),
             message: RTMPSetChunkSizeMessage(1024)
         ))
-        client?.sendMessage(chunk: RTMPChunk(
+        client.sendMessage(chunk: RTMPChunk(
             type: .zero,
             streamId: UInt16(2),
             message: RTMPCommandMessage(
@@ -188,7 +206,10 @@ class RtmpServerChunkStream: VideoCodecDelegate {
     private func processMessageAmf0CommandFCUnpublish(transactionId _: Int) {}
 
     private func processMessageAmf0CommandCreateStream(transactionId: Int) {
-        client?.sendMessage(chunk: RTMPChunk(
+        guard let client else {
+            return
+        }
+        client.sendMessage(chunk: RTMPChunk(
             type: .zero,
             streamId: UInt16(2),
             message: RTMPCommandMessage(
@@ -207,28 +228,32 @@ class RtmpServerChunkStream: VideoCodecDelegate {
     private func processMessageAmf0CommandDeleteStream(transactionId _: Int) {}
 
     private func processMessageAmf0CommandPublish(transactionId: Int, arguments: [Any?]) {
+        guard let client else {
+            return
+        }
         guard arguments.count > 0 else {
-            client?.stopInternal()
+            client.stopInternal()
             return
         }
         guard let streamKey = arguments[0] as? String else {
-            client?.stopInternal()
+            client.stopInternal()
             return
         }
         let isStreamKeyConfigured = DispatchQueue.main.sync {
-            client?.settings.database.rtmpServer!.streams.contains(where: { stream in
+            client.server?.settings.streams.contains(where: { stream in
                 stream.streamKey == streamKey
             }) == true
         }
         guard isStreamKeyConfigured else {
             logger.info("rtmp-server: client: Stream key \(streamKey) not configured")
-            client?.stopInternal()
+            client.stopInternal()
             return
         }
-        client?.streamKey = streamKey
+        client.streamKey = streamKey
         logger.info("rtmp-server: client: Start stream key \(streamKey)")
-        client?.onPublishStart(streamKey)
-        client?.sendMessage(chunk: RTMPChunk(
+        client.server?.onPublishStart(streamKey)
+        client.server?.handleClientConnected(client: client)
+        client.sendMessage(chunk: RTMPChunk(
             type: .zero,
             streamId: UInt16(2),
             message: RTMPCommandMessage(
@@ -249,11 +274,14 @@ class RtmpServerChunkStream: VideoCodecDelegate {
     }
 
     private func processMessageChunkSize() {
-        guard messageData.count == 4 else {
-            client?.stopInternal()
+        guard let client else {
             return
         }
-        client?.chunkSizeFromClient = Int(messageData.getFourBytesBe())
+        guard messageData.count == 4 else {
+            client.stopInternal()
+            return
+        }
+        client.chunkSizeFromClient = Int(messageData.getFourBytesBe())
         /* logger
          .info(
              "rtmp-server: client: \(chunkStreamId): Chunk size from client: \(client?.chunkSizeFromClient ?? -1)"
@@ -261,20 +289,23 @@ class RtmpServerChunkStream: VideoCodecDelegate {
     }
 
     private func processMessageVideo() {
+        guard let client else {
+            return
+        }
         guard messageData.count >= 12 else {
-            client?.stopInternal()
+            client.stopInternal()
             return
         }
         let control = messageData[0]
         let frameType = control >> 4
         guard (frameType & 0x8) == 0 else {
             logger.info("rtmp-server: client: \(chunkStreamId): Unsupported video frame type \(frameType)")
-            client?.stopInternal()
+            client.stopInternal()
             return
         }
         guard let format = FLVVideoCodec(rawValue: control & 0xF) else {
             logger.info("rtmp-server: client: \(chunkStreamId): Unsupported video format \(control & 0xF)")
-            client?.stopInternal()
+            client.stopInternal()
             return
         }
         guard format == .avc else {
@@ -282,7 +313,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
             rtmp-server: client: \(chunkStreamId): Unsupported video \
             format \(format). Only AVC is supported.
             """)
-            client?.stopInternal()
+            client.stopInternal()
             return
         }
         switch FLVAVCPacketType(rawValue: messageData[1]) {
@@ -300,20 +331,20 @@ class RtmpServerChunkStream: VideoCodecDelegate {
                 videoCodec.startRunning()
             } else {
                 logger.info("rtmp-server: client: \(chunkStreamId): Format description error \(status)")
-                client?.stopInternal()
+                client.stopInternal()
             }
         case .nal:
             if let sampleBuffer = makeSampleBuffer() {
                 videoCodec.appendSampleBuffer(sampleBuffer)
             } else {
                 logger.info("rtmp-server: client: Make sample buffer failed")
-                client?.stopInternal()
+                client.stopInternal()
             }
         default:
             logger.info("""
             rtmp-server: client: \(chunkStreamId): Unsupported video AVC packet type \(messageData[1])
             """)
-            client?.stopInternal()
+            client.stopInternal()
         }
     }
 
@@ -384,8 +415,11 @@ extension RtmpServerChunkStream {
     }
 
     func videoCodec(_: HaishinKit.VideoCodec, didOutput sampleBuffer: CMSampleBuffer) {
+        guard let client else {
+            return
+        }
         // logger.info("rtmp-server: client: Codec did output sample buffer")
-        client?.handleFrame(sampleBuffer: sampleBuffer)
+        client.handleFrame(sampleBuffer: sampleBuffer)
     }
 
     func videoCodec(_: HaishinKit.VideoCodec, errorOccurred error: HaishinKit.VideoCodec.Error) {

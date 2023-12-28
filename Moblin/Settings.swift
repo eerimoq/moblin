@@ -797,12 +797,29 @@ class SettingsRtmpServerStream: Codable, Identifiable {
     var id: UUID = .init()
     var name: String = "My stream"
     var streamKey: String = ""
+
+    func clone() -> SettingsRtmpServerStream {
+        let stream = SettingsRtmpServerStream()
+        stream.name = name
+        stream.streamKey = streamKey
+        return stream
+    }
 }
 
 class SettingsRtmpServer: Codable {
     var enabled: Bool = false
     var port: UInt16 = 1935
     var streams: [SettingsRtmpServerStream] = []
+
+    func clone() -> SettingsRtmpServer {
+        let rtmpServer = SettingsRtmpServer()
+        rtmpServer.enabled = enabled
+        rtmpServer.port = port
+        for stream in streams {
+            rtmpServer.streams.append(stream.clone())
+        }
+        return rtmpServer
+    }
 }
 
 class SettingsQuickButtons: Codable {

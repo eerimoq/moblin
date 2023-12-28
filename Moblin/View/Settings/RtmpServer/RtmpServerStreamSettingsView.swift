@@ -7,11 +7,14 @@ struct RtmpServerStreamSettingsView: View {
     private func submitName(value: String) {
         stream.name = value.trim()
         model.store()
+        model.objectWillChange.send()
     }
 
     private func submitStreamKey(value: String) {
         stream.streamKey = value.trim()
         model.store()
+        model.reloadRtmpServer()
+        model.objectWillChange.send()
     }
 
     var body: some View {
@@ -28,7 +31,7 @@ struct RtmpServerStreamSettingsView: View {
                 value: stream.streamKey,
                 onSubmit: submitStreamKey
             )) {
-                TextItemView(name: String(localized: "Stream key"), value: stream.streamKey)
+                TextItemView(name: String(localized: "Stream key"), value: stream.streamKey, sensitive: true)
             }
         }
         .navigationTitle("Stream")

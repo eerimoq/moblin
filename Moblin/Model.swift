@@ -328,7 +328,7 @@ final class Model: ObservableObject {
     var recordingsStorage = RecordingsStorage()
 
     private var rtmpServer: RtmpServer?
-    private var rtmpEffect = RtmpEffect()
+    private var rtmpEffects: [String: RtmpEffect] = [:]
 
     init() {
         settings.load()
@@ -1029,19 +1029,40 @@ final class Model: ObservableObject {
     func reloadRtmpServer() {
         rtmpServer?.stop()
         rtmpServer = nil
-        if database.debug!.rtmpServer! && database.rtmpServer!.enabled {
-            rtmpServer = RtmpServer(settings: settings, onListening: { _ in
-            }, onPublishStart: { _ in
-                self.media.unregisterEffect(self.rtmpEffect)
-                self.rtmpEffect = RtmpEffect()
-                self.media.registerEffect(self.rtmpEffect)
-            }, onPublishStop: { _ in
-                self.media.unregisterEffect(self.rtmpEffect)
-            }, onFrame: { _, sampleBuffer in
-                self.rtmpEffect.addSampleBuffer(sampleBuffer: sampleBuffer)
-            })
-            rtmpServer!.start(port: database.rtmpServer!.port)
+        for rtmpEffect in rtmpEffects.values {
+            media.unregisterEffect(rtmpEffect)
         }
+        rtmpEffects.removeAll()
+        if database.debug!.rtmpServer! && database.rtmpServer!.enabled {
+            rtmpServer = RtmpServer(settings: database.rtmpServer!.clone(),
+                                    onPublishStart: handleRtmpServerPublishStart,
+                                    onPublishStop: handleRtmpServerPublishStop,
+                                    onFrame: handleRtmpServerFrame)
+            rtmpServer!.start()
+        }
+    }
+
+    func handleRtmpServerPublishStart(streamKey: String) {
+        if let rtmpEffect = rtmpEffects[streamKey] {
+            media.unregisterEffect(rtmpEffect)
+        }
+        let rtmpEffect = RtmpEffect()
+        media.registerEffect(rtmpEffect)
+        rtmpEffects[streamKey] = rtmpEffect
+    }
+
+    func handleRtmpServerPublishStop(streamKey: String) {
+        guard let rtmpEffect = rtmpEffects[streamKey] else {
+            return
+        }
+        media.unregisterEffect(rtmpEffect)
+    }
+
+    func handleRtmpServerFrame(streamKey: String, sampleBuffer: CMSampleBuffer) {
+        guard let rtmpEffect = rtmpEffects[streamKey] else {
+            return
+        }
+        rtmpEffect.addSampleBuffer(sampleBuffer: sampleBuffer)
     }
 
     private func listCameras(position: AVCaptureDevice.Position) -> [Camera] {

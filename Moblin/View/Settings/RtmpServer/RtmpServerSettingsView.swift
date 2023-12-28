@@ -9,6 +9,7 @@ struct RtmpServerSettingsView: View {
         }
         model.database.rtmpServer!.port = port
         model.store()
+        model.reloadRtmpServer()
     }
 
     var body: some View {
@@ -50,10 +51,16 @@ struct RtmpServerSettingsView: View {
                             Text(stream.name)
                         }
                     }
+                    .onDelete(perform: { indexes in
+                        model.database.rtmpServer!.streams.remove(atOffsets: indexes)
+                        model.store()
+                        model.reloadRtmpServer()
+                    })
                 }
                 CreateButtonView(action: {
                     model.database.rtmpServer!.streams.append(SettingsRtmpServerStream())
                     model.store()
+                    model.objectWillChange.send()
                 })
             } header: {
                 Text("Streams")

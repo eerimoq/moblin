@@ -8,34 +8,31 @@ let rtmpServerDispatchQueue = DispatchQueue(label: "com.eerimoq.rtmp-server")
 class RtmpServer {
     private var listener: NWListener!
     private var clients: [RtmpServerClient]
-    private var onListening: (UInt16) -> Void
-    private var onPublishStart: (String) -> Void
-    private var onPublishStop: (String) -> Void
-    private var onFrame: (String, CMSampleBuffer) -> Void
-    private var settings: Settings
+    var onPublishStart: (String) -> Void
+    var onPublishStop: (String) -> Void
+    var onFrame: (String, CMSampleBuffer) -> Void
+    var settings: SettingsRtmpServer
 
-    init(settings: Settings,
-         onListening: @escaping (UInt16) -> Void,
+    init(settings: SettingsRtmpServer,
          onPublishStart: @escaping (String) -> Void,
          onPublishStop: @escaping (String) -> Void,
          onFrame: @escaping (String, CMSampleBuffer) -> Void)
     {
         self.settings = settings
-        self.onListening = onListening
         self.onPublishStart = onPublishStart
         self.onPublishStop = onPublishStop
         self.onFrame = onFrame
         clients = []
     }
 
-    func start(port: UInt16) {
+    func start() {
         rtmpServerDispatchQueue.async {
             do {
                 let options = NWProtocolTCP.Options()
                 let parameters = NWParameters(tls: nil, tcp: options)
                 parameters.requiredLocalEndpoint = .hostPort(
                     host: .ipv4(.any),
-                    port: NWEndpoint.Port(rawValue: port) ?? 1935
+                    port: NWEndpoint.Port(rawValue: self.settings.port) ?? 1935
                 )
                 parameters.allowLocalEndpointReuse = true
                 self.listener = try NWListener(using: parameters)
@@ -67,13 +64,27 @@ class RtmpServer {
             break
         case .ready:
             logger.info("rtmp-server: Listening on port \(listener.port!.rawValue)")
-            onListening(listener.port!.rawValue)
         default:
             break
         }
     }
 
-    private func handleClientDisconnected(client: RtmpServerClient) {
+    func handleClientConnected(client: RtmpServerClient) {
+        guard !clients.filter({ activeClient in
+            activeClient !== client
+        }).contains(where: { activeClient in
+            activeClient.streamKey == client.streamKey
+        }) else {
+            logger.info("rtmp-server: Client with stream key \(client.streamKey) already connected")
+            client.stop()
+            return
+        }
+        onPublishStart(client.streamKey)
+        logNumberOfClients()
+    }
+
+    func handleClientDisconnected(client: RtmpServerClient) {
+        onPublishStop(client.streamKey)
         client.stop()
         clients.removeAll { c in
             c === client
@@ -82,15 +93,9 @@ class RtmpServer {
     }
 
     private func handleNewListenerConnection(connection: NWConnection) {
-        let client = RtmpServerClient(
-            connection: connection,
-            settings: settings,
-            onPublishStart: onPublishStart,
-            onPublishStop: onPublishStop
-        )
-        client.start(onDisconnected: handleClientDisconnected, onFrame: onFrame)
+        let client = RtmpServerClient(server: self, connection: connection)
+        client.start()
         clients.append(client)
-        logNumberOfClients()
     }
 
     private func logNumberOfClients() {
