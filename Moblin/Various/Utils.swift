@@ -221,7 +221,7 @@ var uptimeFormatter: DateComponentsFormatter {
 var digitalClockFormatter: DateFormatter {
     let formatter = DateFormatter()
     formatter.dateFormat = "HH:mm"
-    formatter.locale = Locale(identifier: "en_US_POSIX")
+    // formatter.locale = Locale(identifier: "en_US_POSIX")
     return formatter
 }
 
