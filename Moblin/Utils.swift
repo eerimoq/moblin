@@ -577,3 +577,5 @@ extension Data {
         return map { String(format: "%02hhx", $0) }.joined()
     }
 }
+
+let cameraPositionRtmp = "(RTMP)"

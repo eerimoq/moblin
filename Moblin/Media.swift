@@ -34,6 +34,7 @@ final class Media: NSObject {
     private var srtUrl: String = ""
     private var latency: Int32 = 2000
     private var overheadBandwidth: Int32 = 25
+    private var rtmpCameraId: UUID = .init()
     var onSrtConnected: (() -> Void)!
     var onSrtDisconnected: ((_ reason: String) -> Void)!
     var onRtmpConnected: (() -> Void)!
@@ -361,6 +362,7 @@ final class Media: NSObject {
         videoStabilizationMode: AVCaptureVideoStabilizationMode,
         onSuccess: (() -> Void)? = nil
     ) {
+        rtmpCameraId = .init()
         netStream.videoCapture()?.preferredVideoStabilizationMode = videoStabilizationMode
         netStream.multiVideoCapture()?.preferredVideoStabilizationMode = videoStabilizationMode
         if let secondDevice {
@@ -382,6 +384,18 @@ final class Media: NSObject {
                 onSuccess?()
             }
         })
+    }
+
+    func attachRtmpCamera(cameraId: UUID) {
+        rtmpCameraId = cameraId
+        netStream.attachCamera(nil)
+    }
+
+    func appendRtmpSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
+        guard cameraId == rtmpCameraId else {
+            return
+        }
+        netStream.appendVideoSampleBuffer(sampleBuffer)
     }
 
     func attachAudio(device: AVCaptureDevice?) {

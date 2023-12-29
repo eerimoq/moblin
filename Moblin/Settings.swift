@@ -264,6 +264,7 @@ class SettingsSceneButton: Codable, Identifiable, Equatable {
 enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
     case back = "Back"
     case front = "Front"
+    case rtmp = "RTMP"
 
     static func fromString(value: String) -> SettingsSceneCameraPosition {
         switch value {
@@ -271,6 +272,8 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
             return .back
         case String(localized: "Front"):
             return .front
+        case String(localized: "RTMP"):
+            return .rtmp
         default:
             return .back
         }
@@ -282,11 +285,15 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
             return String(localized: "Back")
         case .front:
             return String(localized: "Front")
+        case .rtmp:
+            return String(localized: "RTMP")
         }
     }
 }
 
-var cameraPositions = SettingsSceneCameraPosition.allCases.map { $0.toString() }
+var cameraPositions = SettingsSceneCameraPosition.allCases.filter { position in
+    position != .rtmp
+}.map { $0.toString() }
 
 enum SettingsSceneCameraLayout: String, Codable, CaseIterable {
     case single = "Single"
@@ -338,6 +345,7 @@ class SettingsScene: Codable, Identifiable, Equatable {
     var cameraLayout: SettingsSceneCameraLayout? = .single
     var cameraType: SettingsSceneCameraPosition = .back
     var cameraPosition: SettingsSceneCameraPosition? = .back
+    var rtmpCameraId: UUID? = .init()
     var cameraLayoutPip: SettingsSceneCameraLayoutPip? = .init()
     var widgets: [SettingsSceneWidget] = []
     var buttons: [SettingsSceneButton] = []
@@ -360,6 +368,7 @@ class SettingsScene: Codable, Identifiable, Equatable {
         scene.cameraLayout = cameraLayout
         scene.cameraType = cameraType
         scene.cameraPosition = cameraPosition
+        scene.rtmpCameraId = rtmpCameraId
         scene.cameraLayoutPip = cameraLayoutPip!.clone()
         for widget in widgets {
             scene.widgets.append(widget.clone())
@@ -1145,6 +1154,13 @@ func addMissingGlobalButtons(database: Database) {
     addGlobalButtonIfMissing(database: database, button: button)
 }
 
+func addDefaultRtmpServerStream(database: Database) {
+    let stream = SettingsRtmpServerStream()
+    stream.name = "DJI Mini 2 SE"
+    stream.streamKey = "dji-mini-2-se"
+    database.rtmpServer!.streams.append(stream)
+}
+
 func createDefault() -> Database {
     let database = Database()
     database.backCameraId = getBestBackCameraId()
@@ -1154,6 +1170,7 @@ func createDefault() -> Database {
     addDefaultZoomPresets(database: database)
     addDefaultBitratePresets(database: database)
     addMissingGlobalButtons(database: database)
+    addDefaultRtmpServerStream(database: database)
     return database
 }
 
@@ -1433,6 +1450,11 @@ final class Settings {
         }
         if realDatabase.rtmpServer == nil {
             realDatabase.rtmpServer = .init()
+            addDefaultRtmpServerStream(database: realDatabase)
+            store()
+        }
+        for scene in realDatabase.scenes where scene.rtmpCameraId == nil {
+            scene.rtmpCameraId = .init()
             store()
         }
     }

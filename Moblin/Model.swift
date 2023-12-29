@@ -328,7 +328,6 @@ final class Model: ObservableObject {
     var recordingsStorage = RecordingsStorage()
 
     private var rtmpServer: RtmpServer?
-    private var rtmpEffects: [String: RtmpEffect] = [:]
 
     init() {
         settings.load()
@@ -1029,10 +1028,6 @@ final class Model: ObservableObject {
     func reloadRtmpServer() {
         rtmpServer?.stop()
         rtmpServer = nil
-        for rtmpEffect in rtmpEffects.values {
-            media.unregisterEffect(rtmpEffect)
-        }
-        rtmpEffects.removeAll()
         if database.debug!.rtmpServer! && database.rtmpServer!.enabled {
             rtmpServer = RtmpServer(settings: database.rtmpServer!.clone(),
                                     onPublishStart: handleRtmpServerPublishStart,
@@ -1042,27 +1037,15 @@ final class Model: ObservableObject {
         }
     }
 
-    func handleRtmpServerPublishStart(streamKey: String) {
-        if let rtmpEffect = rtmpEffects[streamKey] {
-            media.unregisterEffect(rtmpEffect)
-        }
-        let rtmpEffect = RtmpEffect()
-        media.registerEffect(rtmpEffect)
-        rtmpEffects[streamKey] = rtmpEffect
-    }
+    func handleRtmpServerPublishStart(streamKey _: String) {}
 
-    func handleRtmpServerPublishStop(streamKey: String) {
-        guard let rtmpEffect = rtmpEffects[streamKey] else {
-            return
-        }
-        media.unregisterEffect(rtmpEffect)
-    }
+    func handleRtmpServerPublishStop(streamKey _: String) {}
 
     func handleRtmpServerFrame(streamKey: String, sampleBuffer: CMSampleBuffer) {
-        guard let rtmpEffect = rtmpEffects[streamKey] else {
+        guard let cameraId = getRtmpStream(streamKey: streamKey)?.id else {
             return
         }
-        rtmpEffect.addSampleBuffer(sampleBuffer: sampleBuffer)
+        media.appendRtmpSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
     private func listCameras(position: AVCaptureDevice.Position) -> [Camera] {
@@ -2156,6 +2139,8 @@ final class Model: ObservableObject {
             attachCamera(position: .back)
         case .front:
             attachCamera(position: .front)
+        case .rtmp:
+            attachRtmpCamera(cameraId: scene.rtmpCameraId!)
         }
     }
 
@@ -2165,6 +2150,39 @@ final class Model: ObservableObject {
             attachCamera(position: .back, secondPosition: .front)
         case .front:
             attachCamera(position: .front, secondPosition: .back)
+        case .rtmp:
+            logger.info("PiP RTMP camera not implemented")
+        }
+    }
+
+    func listCameraPositions() -> [String] {
+        return cameraPositions + rtmpCameras()
+    }
+
+    private func rtmpCameras() -> [String] {
+        guard database.debug!.rtmpServer! else {
+            return []
+        }
+        return database.rtmpServer!.streams.map { stream in
+            "\(stream.name) \(cameraPositionRtmp)"
+        }
+    }
+
+    func getRtmpStream(id: UUID) -> SettingsRtmpServerStream? {
+        return database.rtmpServer!.streams.first { stream in
+            stream.id == id
+        }
+    }
+
+    func getRtmpStream(camera: String) -> SettingsRtmpServerStream? {
+        return database.rtmpServer!.streams.first { stream in
+            camera == "\(stream.name) \(cameraPositionRtmp)"
+        }
+    }
+
+    func getRtmpStream(streamKey: String) -> SettingsRtmpServerStream? {
+        return database.rtmpServer!.streams.first { stream in
+            stream.streamKey == streamKey
         }
     }
 
@@ -2436,6 +2454,14 @@ final class Model: ObservableObject {
             }
         )
         zoomXPinch = zoomX
+    }
+
+    private func attachRtmpCamera(cameraId: UUID) {
+        cameraDevice = nil
+        cameraPosition = nil
+        secondCameraDevice = nil
+        secondCameraPosition = nil
+        media.attachRtmpCamera(cameraId: cameraId)
     }
 
     private func setCameraZoomX(x: Float, rate: Float? = nil) -> Float? {

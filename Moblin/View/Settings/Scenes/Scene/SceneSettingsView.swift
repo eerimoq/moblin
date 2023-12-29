@@ -66,6 +66,8 @@ struct SceneSettingsView: View {
             return SettingsSceneCameraPosition.front.toString()
         case .front:
             return SettingsSceneCameraPosition.back.toString()
+        case .rtmp:
+            return SettingsSceneCameraPosition.rtmp.toString()
         }
     }
 
@@ -75,12 +77,29 @@ struct SceneSettingsView: View {
     }
 
     private func onCameraChange(camera: String) {
-        scene.cameraPosition = SettingsSceneCameraPosition.fromString(value: camera)
+        if camera.hasSuffix(cameraPositionRtmp) {
+            scene.cameraPosition = .rtmp
+            scene.rtmpCameraId = model.getRtmpStream(camera: camera)?.id ?? .init()
+        } else {
+            scene.cameraPosition = SettingsSceneCameraPosition.fromString(value: camera)
+        }
         model.sceneUpdated(store: true)
     }
 
     private func canWidgetExpand(widget: SettingsWidget) -> Bool {
         return widgetHasPosition(id: widget.id) || widgetHasSize(id: widget.id)
+    }
+
+    private func getCameraPosition() -> String {
+        if scene.cameraPosition! == .rtmp {
+            if let name = model.getRtmpStream(id: scene.rtmpCameraId!)?.name {
+                return "\(name) \(cameraPositionRtmp)"
+            } else {
+                return "Back"
+            }
+        } else {
+            return scene.cameraPosition!.toString()
+        }
     }
 
     var body: some View {
@@ -107,24 +126,24 @@ struct SceneSettingsView: View {
                     NavigationLink(destination: InlinePickerView(
                         title: String(localized: "Camera"),
                         onChange: onCameraChange,
-                        items: InlinePickerItem.fromStrings(values: cameraPositions),
-                        selectedId: scene.cameraPosition!.toString()
+                        items: InlinePickerItem.fromStrings(values: model.listCameraPositions()),
+                        selectedId: getCameraPosition()
                     )) {
                         TextItemView(
                             name: String(localized: "Camera"),
-                            value: scene.cameraPosition!.toString()
+                            value: getCameraPosition()
                         )
                     }
                 } else if scene.cameraLayout == .pip {
                     NavigationLink(destination: InlinePickerView(
                         title: String(localized: "Large camera"),
                         onChange: onCameraChange,
-                        items: InlinePickerItem.fromStrings(values: cameraPositions),
-                        selectedId: scene.cameraPosition!.toString()
+                        items: InlinePickerItem.fromStrings(values: model.listCameraPositions()),
+                        selectedId: getCameraPosition()
                     )) {
                         TextItemView(
                             name: String(localized: "Large camera"),
-                            value: scene.cameraPosition!.toString()
+                            value: getCameraPosition()
                         )
                     }
                     Button(action: {

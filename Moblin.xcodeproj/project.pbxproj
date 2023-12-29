@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0301FDF72B3B79AD0056D2B4 /* RtmpEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0301FDF62B3B79AD0056D2B4 /* RtmpEffect.swift */; };
-		0301FDF82B3B79AD0056D2B4 /* RtmpEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0301FDF62B3B79AD0056D2B4 /* RtmpEffect.swift */; };
 		0302F07F2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0302F07E2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift */; };
 		0302F0802B320B0500B06FF0 /* StreamWizardChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0302F07E2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift */; };
 		0302F0832B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0302F0822B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift */; };
@@ -316,7 +314,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0301FDF62B3B79AD0056D2B4 /* RtmpEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpEffect.swift; sourceTree = "<group>"; };
 		0302F07E2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardChatSettingsView.swift; sourceTree = "<group>"; };
 		0302F0822B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardSummarySettingsView.swift; sourceTree = "<group>"; };
 		030399122AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalOverlaysChatSettingsView.swift; sourceTree = "<group>"; };
@@ -1051,7 +1048,6 @@
 				031CCE2C2ACA76CF00CB5D46 /* NoiseReductionEffect.swift */,
 				03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */,
 				03F3BF182ADAAA94009A8D3E /* TextEffect.swift */,
-				0301FDF62B3B79AD0056D2B4 /* RtmpEffect.swift */,
 			);
 			path = VideoEffects;
 			sourceTree = "<group>";
@@ -1337,7 +1333,6 @@
 				032E06622B2F3E9D00EAE5F8 /* RandomEffect.swift in Sources */,
 				032E06632B2F3E9D00EAE5F8 /* StreamTwitchSettingsView.swift in Sources */,
 				0391BB3E2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift in Sources */,
-				0301FDF82B3B79AD0056D2B4 /* RtmpEffect.swift in Sources */,
 				032E06642B2F3E9D00EAE5F8 /* DebugSettingsView.swift in Sources */,
 				03B16A292B35614100E5AB07 /* RecordingsRecordingSettingsView.swift in Sources */,
 				03DBD0FC2B30078B004B0BE6 /* StreamWizardKickSettingsView.swift in Sources */,
@@ -1482,7 +1477,6 @@
 				03A983622A9A05D7008FF0DB /* MainView.swift in Sources */,
 				03B374042AA036D10028DDD5 /* ButtonsView.swift in Sources */,
 				0391BB3D2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift in Sources */,
-				0301FDF72B3B79AD0056D2B4 /* RtmpEffect.swift in Sources */,
 				0379BBB62AAD9B5B00B718B6 /* ButtonsSettingsView.swift in Sources */,
 				03B16A282B35614100E5AB07 /* RecordingsRecordingSettingsView.swift in Sources */,
 				032815DC2AC915AE001F8A85 /* RandomEffect.swift in Sources */,
