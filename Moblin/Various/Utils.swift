@@ -280,6 +280,12 @@ extension Data {
             UInt32(self[offset + 3])
     }
 
+    func getFourBytesLe(offset: Int = 0) -> UInt32 {
+        return UInt32(self[offset + 3]) << 24 | UInt32(self[offset + 2]) << 16 | UInt32(self[offset + 1]) <<
+            8 |
+            UInt32(self[offset + 0])
+    }
+
     mutating func setUInt16Be(value: UInt16, offset: Int = 0) {
         withUnsafeMutableBytes { data in data.storeBytes(
             of: value.bigEndian,

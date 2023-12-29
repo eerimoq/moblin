@@ -15562,7 +15562,11 @@
         }
       }
     },
+    "Enter one of the URLs into the RTMP publisher device to send video to this stream. Usually enter the WiFi URL." : {
+
+    },
     "Enter this URL into the RTMP publisher device to send video to this stream." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -31578,6 +31582,7 @@
       }
     },
     "Publish URL" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -31682,6 +31687,9 @@
           }
         }
       }
+    },
+    "Publish URLs" : {
+
     },
     "Quick buttons" : {
       "extractionState" : "stale",
@@ -32321,6 +32329,7 @@
       }
     },
     "Replace %@ with your phones IP address." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -37203,6 +37212,9 @@
         }
       }
     },
+    "Stream key missing" : {
+
+    },
     "Stream name" : {
       "localizations" : {
         "de" : {
@@ -39854,6 +39866,7 @@
       }
     },
     "The RTMP server receives video over the network, enabling Moblin to receive video from for example a drone and use it as a camera source." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -42926,6 +42939,9 @@
           }
         }
       }
+    },
+    "Use drones and other RTMP compatible devices as camera." : {
+
     },
     "Use first channel for audio level. To debug Røde mic Unknown level." : {
       "localizations" : {

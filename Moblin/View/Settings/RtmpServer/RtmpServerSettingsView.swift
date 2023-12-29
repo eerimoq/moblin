@@ -14,10 +14,7 @@ struct RtmpServerSettingsView: View {
 
     var body: some View {
         Form {
-            Text("""
-            The RTMP server receives video over the network, enabling Moblin to \
-            receive video from for example a drone and use it as a camera source.
-            """)
+            Text("Use drones and other RTMP compatible devices as camera.")
             Section {
                 Toggle("Enabled", isOn: Binding(get: {
                     model.database.rtmpServer!.enabled
@@ -48,7 +45,15 @@ struct RtmpServerSettingsView: View {
                             port: model.database.rtmpServer!.port,
                             stream: stream
                         )) {
-                            Text(stream.name)
+                            HStack {
+                                if model.isRtmpStreamConnected(streamKey: stream.streamKey) {
+                                    Image(systemName: "cable.connector")
+                                } else {
+                                    Image(systemName: "cable.connector.slash")
+                                }
+                                Text(stream.name)
+                                Spacer()
+                            }
                         }
                     }
                     .onDelete(perform: { indexes in

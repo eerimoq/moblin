@@ -24,7 +24,7 @@ class RtmpServerClient {
     private var connection: NWConnection
     private var state: ClientState {
         didSet {
-            // logger.info("rtmp-server: client: State change \(oldValue) -> \(state)")
+            logger.info("rtmp-server: client: State change \(oldValue) -> \(state)")
         }
     }
 
@@ -39,6 +39,7 @@ class RtmpServerClient {
     private var messageLength: Int
     var streamKey: String = ""
     weak var server: RtmpServer?
+    var latestReveiveDate = Date()
 
     init(server: RtmpServer, connection: NWConnection) {
         self.server = server
@@ -147,7 +148,7 @@ class RtmpServerClient {
         let firstByte = data[0]
         let format = firstByte >> 6
         chunkStreamId = UInt32(firstByte & 0x3F)
-        // logger.info("rtmp-server: client: First byte fmt \(format) and chunk stream id \(chunkStreamId)")
+        // logger.info("rtmp-server: client: First byte format \(format) and chunk stream id \(chunkStreamId)")
         switch chunkStreamId {
         case 0:
             stopInternal(reason: "Two bytes basic header is not implemented")
@@ -180,11 +181,12 @@ class RtmpServerClient {
         messageTimestamp = data.getThreeBytesBe()
         messageLength = Int(data.getThreeBytesBe(offset: 3))
         messageTypeId = data[6]
-        messageStreamId = data.getFourBytesBe(offset: 7)
+        messageStreamId = data.getFourBytesLe(offset: 7)
         if let length = getChunkStream()?.handleType0(
             messageTypeId: messageTypeId,
             messageLength: messageLength,
-            messageTimestamp: messageTimestamp
+            messageTimestamp: messageTimestamp,
+            messageStreamId: messageStreamId
         ), length > 0 {
             receiveChunkData(size: length)
         } else {
@@ -194,7 +196,7 @@ class RtmpServerClient {
 
     private func getChunkStream() -> RtmpServerChunkStream? {
         if chunkStreams[chunkStreamId] == nil {
-            chunkStreams[chunkStreamId] = RtmpServerChunkStream(client: self)
+            chunkStreams[chunkStreamId] = RtmpServerChunkStream(client: self, streamId: chunkStreamId)
         }
         return chunkStreams[chunkStreamId]
     }
@@ -273,6 +275,7 @@ class RtmpServerClient {
         connection.receive(minimumIncompleteLength: size, maximumLength: size) { data, _, _, error in
             if let data {
                 // logger.info("rtmp-server: client: Got data \(data)")
+                self.latestReveiveDate = Date()
                 self.handleData(data: data)
             }
             if let error {

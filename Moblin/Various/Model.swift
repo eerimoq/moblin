@@ -355,6 +355,8 @@ final class Model: ObservableObject {
     private var products: [String: Product] = [:]
     private var streamTotalBytes: UInt64 = 0
     private var streamTotalChatMessages: Int = 0
+    var ipMonitor = IPMonitor(ipType: .ipv4)
+    @Published var ipStatuses: [IPMonitor.Status] = []
 
     private func cleanWizardUrl(url: String) -> String {
         var cleanedUrl = cleanUrl(url: url)
@@ -1020,6 +1022,10 @@ final class Model: ObservableObject {
                                                object: nil)
         updateOrientation()
         reloadRtmpServer()
+        ipMonitor.pathUpdateHandler = { statuses in
+            self.ipStatuses = statuses
+        }
+        ipMonitor.start()
     }
 
     @objc func handleWillEnterForegroundNotification() {
@@ -2195,6 +2201,10 @@ final class Model: ObservableObject {
         return database.rtmpServer!.streams.first { stream in
             stream.streamKey == streamKey
         }
+    }
+
+    func isRtmpStreamConnected(streamKey: String) -> Bool {
+        return rtmpServer?.isStreamConnected(streamKey: streamKey) ?? false
     }
 
     private func sceneUpdatedOn(scene: SettingsScene) {

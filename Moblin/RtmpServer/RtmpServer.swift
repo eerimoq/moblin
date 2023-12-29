@@ -5,7 +5,6 @@ import Network
 
 let rtmpServerDispatchQueue = DispatchQueue(label: "com.eerimoq.rtmp-server")
 let rtmpApp = "/live"
-let rtmpAddressPlaceholder = "<my-device-ip>"
 
 func rtmpStreamUrl(address: String, port: UInt16, streamKey: String) -> String {
     return "rtmp://\(address):\(port)\(rtmpApp)/\(streamKey)"
@@ -18,6 +17,7 @@ class RtmpServer {
     var onPublishStop: (String) -> Void
     var onFrame: (String, CMSampleBuffer) -> Void
     var settings: SettingsRtmpServer
+    private var clientsTimeoutTimer: DispatchSourceTimer?
 
     init(settings: SettingsRtmpServer,
          onPublishStart: @escaping (String) -> Void,
@@ -49,6 +49,19 @@ class RtmpServer {
             self.listener.stateUpdateHandler = self.handleListenerStateChange(to:)
             self.listener.newConnectionHandler = self.handleNewListenerConnection(connection:)
             self.listener.start(queue: rtmpServerDispatchQueue)
+            self.clientsTimeoutTimer = DispatchSource.makeTimerSource(queue: rtmpServerDispatchQueue)
+            self.clientsTimeoutTimer!.schedule(deadline: .now() + 3, repeating: 3)
+            self.clientsTimeoutTimer!.setEventHandler {
+                let now = Date()
+                var clientsToRemove: [RtmpServerClient] = []
+                for client in self.clients where client.latestReveiveDate + 10 < now {
+                    clientsToRemove.append(client)
+                }
+                for client in clientsToRemove {
+                    self.handleClientDisconnected(client: client, reason: "Receive timeout")
+                }
+            }
+            self.clientsTimeoutTimer!.activate()
         }
     }
 
@@ -60,6 +73,16 @@ class RtmpServer {
             self.clients.removeAll()
             self.listener?.cancel()
             self.listener = nil
+            self.clientsTimeoutTimer?.cancel()
+            self.clientsTimeoutTimer = nil
+        }
+    }
+
+    func isStreamConnected(streamKey: String) -> Bool {
+        return rtmpServerDispatchQueue.sync {
+            clients.contains(where: { client in
+                client.streamKey == streamKey
+            })
         }
     }
 

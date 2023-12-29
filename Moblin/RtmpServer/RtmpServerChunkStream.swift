@@ -12,19 +12,23 @@ class RtmpServerChunkStream: VideoCodecDelegate {
     private var messageLength: Int
     private var messageTypeId: UInt8
     private var messageTimestamp: UInt32
+    private var messageStreamId: UInt32
     private weak var client: RtmpServerClient?
+    private var streamId: UInt32
     private var videoTimestampZero: Double
     private var videoTimestamp: Double
     private var isMessageType0: Bool
     private var formatDescription: CMVideoFormatDescription?
     private var videoCodec: VideoCodec?
 
-    init(client: RtmpServerClient) {
+    init(client: RtmpServerClient, streamId: UInt32) {
         self.client = client
+        self.streamId = streamId
         messageData = Data()
         messageLength = 0
         messageTypeId = 0
         messageTimestamp = 0
+        messageStreamId = 0
         videoTimestampZero = -1
         videoTimestamp = 0
         isMessageType0 = true
@@ -36,13 +40,19 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         client = nil
     }
 
-    func handleType0(messageTypeId: UInt8, messageLength: Int, messageTimestamp: UInt32) -> Int {
+    func handleType0(
+        messageTypeId: UInt8,
+        messageLength: Int,
+        messageTimestamp: UInt32,
+        messageStreamId: UInt32
+    ) -> Int {
         guard let client else {
             return 0
         }
         self.messageTypeId = messageTypeId
         self.messageLength = messageLength
         self.messageTimestamp = messageTimestamp
+        self.messageStreamId = messageStreamId
         isMessageType0 = true
         return min(client.chunkSizeFromClient, messageRemain())
     }
@@ -175,24 +185,24 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         }
         client.sendMessage(chunk: RTMPChunk(
             type: .zero,
-            streamId: UInt16(2),
+            streamId: UInt16(streamId),
             message: RTMPWindowAcknowledgementSizeMessage(2_500_000)
         ))
         client.sendMessage(chunk: RTMPChunk(
             type: .zero,
-            streamId: UInt16(2),
+            streamId: UInt16(streamId),
             message: RTMPSetPeerBandwidthMessage(size: 2_500_000, limit: .dynamic)
         ))
         client.sendMessage(chunk: RTMPChunk(
             type: .zero,
-            streamId: UInt16(2),
+            streamId: UInt16(streamId),
             message: RTMPSetChunkSizeMessage(1024)
         ))
         client.sendMessage(chunk: RTMPChunk(
             type: .zero,
-            streamId: UInt16(2),
+            streamId: UInt16(streamId),
             message: RTMPCommandMessage(
-                streamId: 3,
+                streamId: messageStreamId,
                 transactionId: transactionId,
                 objectEncoding: .amf0,
                 commandName: "_result",
@@ -212,9 +222,9 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         }
         client.sendMessage(chunk: RTMPChunk(
             type: .zero,
-            streamId: UInt16(2),
+            streamId: UInt16(streamId),
             message: RTMPCommandMessage(
-                streamId: 3,
+                streamId: messageStreamId,
                 transactionId: transactionId,
                 objectEncoding: .amf0,
                 commandName: "_result",
@@ -250,14 +260,14 @@ class RtmpServerChunkStream: VideoCodecDelegate {
             return
         }
         client.streamKey = streamKey
-        logger.info("rtmp-server: client: Start stream key \(streamKey)")
+        // logger.info("rtmp-server: client: Start stream key \(streamKey)")
         client.server?.onPublishStart(streamKey)
         client.server?.handleClientConnected(client: client)
         client.sendMessage(chunk: RTMPChunk(
             type: .zero,
-            streamId: UInt16(2),
+            streamId: UInt16(streamId),
             message: RTMPCommandMessage(
-                streamId: 3,
+                streamId: messageStreamId,
                 transactionId: transactionId,
                 objectEncoding: .amf0,
                 commandName: "onStatus",
@@ -282,10 +292,10 @@ class RtmpServerChunkStream: VideoCodecDelegate {
             return
         }
         client.chunkSizeFromClient = Int(messageData.getFourBytesBe())
-        /* logger
-         .info(
-             "rtmp-server: client: Chunk size from client: \(client?.chunkSizeFromClient ?? -1)"
-         ) */
+        logger
+            .info(
+                "rtmp-server: client: Chunk size from client: \(client.chunkSizeFromClient)"
+            )
     }
 
     private func processMessageVideo() {
