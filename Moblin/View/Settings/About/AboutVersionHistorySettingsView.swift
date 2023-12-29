@@ -9,7 +9,7 @@ struct Version {
 // swiftlint:disable line_length
 private let versions = [
     Version(version: "0.122.0", date: "2023-12-29", changes: [
-        "• RTMP fixes. Can stream from IRL Pro to Moblin, but with wrong timestamps, so video all messed up.",
+        "• RTMP server fixes. Can stream from IRL Pro to Moblin, but with wrong timestamps, so video all messed up.",
     ]),
     Version(version: "0.121.0", date: "2023-12-29", changes: [
         "• Select RTMP stream as camera for scenes.",
