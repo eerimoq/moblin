@@ -95,6 +95,12 @@ struct LocalOverlaysSettingsView: View {
                         TextItemView(name: String(localized: "Audio level"), value: audioLevel())
                     }
                 }
+                Toggle("RTMP server bitrate", isOn: Binding(get: {
+                    show.rtmpSpeed!
+                }, set: { value in
+                    show.rtmpSpeed = value
+                    model.store()
+                }))
                 Toggle("Bitrate", isOn: Binding(get: {
                     show.speed
                 }, set: { value in

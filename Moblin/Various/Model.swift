@@ -329,6 +329,7 @@ final class Model: ObservableObject {
     var recordingsStorage = RecordingsStorage()
 
     private var rtmpServer: RtmpServer?
+    @Published var rtmpSpeedAndTotal = noValue
 
     init() {
         settings.load()
@@ -1205,6 +1206,7 @@ final class Model: ObservableObject {
             self.updateChatSpeed()
             self.media.updateSrtSpeed()
             self.updateSpeed()
+            self.updateRtmpSpeed()
             self.updateTwitchPubSub(now: now)
             if !self.database.show.audioBar {
                 self.updateAudioLevel()
@@ -2361,6 +2363,23 @@ final class Model: ObservableObject {
         } else if speedAndTotal != noValue {
             speedAndTotal = noValue
         }
+    }
+
+    private func updateRtmpSpeed() {
+        guard let rtmpServer else {
+            return
+        }
+        let stats = rtmpServer.updateStats()
+        if rtmpServer.numberOfClients() > 0 {
+            let total = stats.total.formatBytes()
+            let speed = formatBytesPerSecond(speed: Int64(8 * stats.speed))
+            let message = String(localized: "\(speed) (\(total))")
+            rtmpSpeedAndTotal = message
+        }
+    }
+
+    func numberOfRtmpClients() -> Int {
+        return rtmpServer?.numberOfClients() ?? 0
     }
 
     func checkDeviceAuthorization() {

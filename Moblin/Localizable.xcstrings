@@ -33277,6 +33277,9 @@
         }
       }
     },
+    "RTMP server bitrate" : {
+
+    },
     "RTMP server port" : {
       "extractionState" : "stale",
       "localizations" : {

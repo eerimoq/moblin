@@ -10,6 +10,11 @@ func rtmpStreamUrl(address: String, port: UInt16, streamKey: String) -> String {
     return "rtmp://\(address):\(port)\(rtmpApp)/\(streamKey)"
 }
 
+struct RtmpServerStats {
+    var total: UInt64
+    var speed: UInt64
+}
+
 class RtmpServer {
     private var listener: NWListener!
     private var clients: [RtmpServerClient]
@@ -18,6 +23,8 @@ class RtmpServer {
     var onFrame: (String, CMSampleBuffer) -> Void
     var settings: SettingsRtmpServer
     private var clientsTimeoutTimer: DispatchSourceTimer?
+    var totalBytesReceived: UInt64 = 0
+    private var prevTotalBytesReceived: UInt64 = 0
 
     init(settings: SettingsRtmpServer,
          onPublishStart: @escaping (String) -> Void,
@@ -83,6 +90,20 @@ class RtmpServer {
             clients.contains(where: { client in
                 client.streamKey == streamKey
             })
+        }
+    }
+
+    func updateStats() -> RtmpServerStats {
+        return rtmpServerDispatchQueue.sync {
+            let speed = totalBytesReceived - prevTotalBytesReceived
+            prevTotalBytesReceived = totalBytesReceived
+            return RtmpServerStats(total: totalBytesReceived, speed: speed)
+        }
+    }
+
+    func numberOfClients() -> Int {
+        return rtmpServerDispatchQueue.sync {
+            clients.count
         }
     }
 

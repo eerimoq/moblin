@@ -275,6 +275,7 @@ class RtmpServerClient {
         connection.receive(minimumIncompleteLength: size, maximumLength: size) { data, _, _, error in
             if let data {
                 // logger.info("rtmp-server: client: Got data \(data)")
+                self.server?.totalBytesReceived += UInt64(data.count)
                 self.latestReveiveDate = Date()
                 self.handleData(data: data)
             }

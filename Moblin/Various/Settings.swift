@@ -674,6 +674,7 @@ class SettingsShow: Codable {
     var audioBar: Bool = true
     var cameras: Bool? = true
     var obsStatus: Bool? = true
+    var rtmpSpeed: Bool? = true
 }
 
 class SettingsZoomPreset: Codable, Identifiable {
@@ -1459,6 +1460,10 @@ final class Settings {
         }
         for scene in realDatabase.scenes where scene.rtmpCameraId == nil {
             scene.rtmpCameraId = .init()
+            store()
+        }
+        if realDatabase.show.rtmpSpeed == nil {
+            realDatabase.show.rtmpSpeed = true
             store()
         }
     }
