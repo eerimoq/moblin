@@ -1038,9 +1038,19 @@ final class Model: ObservableObject {
         }
     }
 
-    func handleRtmpServerPublishStart(streamKey _: String) {}
+    func handleRtmpServerPublishStart(streamKey: String) {
+        DispatchQueue.main.async {
+            let camera = self.getRtmpStream(streamKey: streamKey)?.camera() ?? rtmpCamera(name: "Unknown")
+            self.makeToast(title: "\(camera) connected")
+        }
+    }
 
-    func handleRtmpServerPublishStop(streamKey _: String) {}
+    func handleRtmpServerPublishStop(streamKey: String) {
+        DispatchQueue.main.async {
+            let camera = self.getRtmpStream(streamKey: streamKey)?.camera() ?? rtmpCamera(name: "Unknown")
+            self.makeToast(title: "\(camera) disconnected")
+        }
+    }
 
     func handleRtmpServerFrame(streamKey: String, sampleBuffer: CMSampleBuffer) {
         guard let cameraId = getRtmpStream(streamKey: streamKey)?.id else {
@@ -2165,7 +2175,7 @@ final class Model: ObservableObject {
             return []
         }
         return database.rtmpServer!.streams.map { stream in
-            "\(stream.name) \(cameraPositionRtmp)"
+            stream.camera()
         }
     }
 
@@ -2177,7 +2187,7 @@ final class Model: ObservableObject {
 
     func getRtmpStream(camera: String) -> SettingsRtmpServerStream? {
         return database.rtmpServer!.streams.first { stream in
-            camera == "\(stream.name) \(cameraPositionRtmp)"
+            camera == stream.camera()
         }
     }
 

@@ -807,6 +807,10 @@ class SettingsRtmpServerStream: Codable, Identifiable {
     var name: String = "My stream"
     var streamKey: String = ""
 
+    func camera() -> String {
+        return rtmpCamera(name: name)
+    }
+
     func clone() -> SettingsRtmpServerStream {
         let stream = SettingsRtmpServerStream()
         stream.name = name

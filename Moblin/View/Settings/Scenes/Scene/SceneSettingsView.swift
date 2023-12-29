@@ -77,7 +77,7 @@ struct SceneSettingsView: View {
     }
 
     private func onCameraChange(camera: String) {
-        if camera.hasSuffix(cameraPositionRtmp) {
+        if isRtmpCamera(camera: camera) {
             scene.cameraPosition = .rtmp
             scene.rtmpCameraId = model.getRtmpStream(camera: camera)?.id ?? .init()
         } else {
@@ -92,8 +92,8 @@ struct SceneSettingsView: View {
 
     private func getCameraPosition() -> String {
         if scene.cameraPosition! == .rtmp {
-            if let name = model.getRtmpStream(id: scene.rtmpCameraId!)?.name {
-                return "\(name) \(cameraPositionRtmp)"
+            if let stream = model.getRtmpStream(id: scene.rtmpCameraId!) {
+                return stream.camera()
             } else {
                 return "Back"
             }

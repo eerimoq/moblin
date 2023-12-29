@@ -578,4 +578,12 @@ extension Data {
     }
 }
 
-let cameraPositionRtmp = "(RTMP)"
+private let cameraPositionRtmp = "(RTMP)"
+
+func rtmpCamera(name: String) -> String {
+    return "\(name) \(cameraPositionRtmp)"
+}
+
+func isRtmpCamera(camera: String) -> Bool {
+    return camera.hasSuffix(cameraPositionRtmp)
+}
