@@ -277,6 +277,7 @@ final class Model: ObservableObject {
     @Published var backZoomPresetId = UUID()
     @Published var frontZoomPresetId = UUID()
     @Published var zoomX: Float = 1.0
+    @Published var hasZoom: Bool = true
     var zoomXPinch: Float = 1.0
     private var backZoomX: Float = 0.5
     private var frontZoomX: Float = 1.0
@@ -2454,6 +2455,7 @@ final class Model: ObservableObject {
             }
         )
         zoomXPinch = zoomX
+        hasZoom = true
     }
 
     private func attachRtmpCamera(cameraId: UUID) {
@@ -2462,6 +2464,8 @@ final class Model: ObservableObject {
         secondCameraDevice = nil
         secondCameraPosition = nil
         media.attachRtmpCamera(cameraId: cameraId)
+        videoView.isMirrored = false
+        hasZoom = false
     }
 
     private func setCameraZoomX(x: Float, rate: Float? = nil) -> Float? {
@@ -2565,6 +2569,9 @@ final class Model: ObservableObject {
     }
 
     func changeZoomX(amount: Float) {
+        guard hasZoom else {
+            return
+        }
         clearZoomId()
         if let x = setCameraZoomX(x: zoomXPinch * amount) {
             setZoomX(x: x, setPinch: false)
@@ -2572,6 +2579,9 @@ final class Model: ObservableObject {
     }
 
     func commitZoomX(amount: Float) {
+        guard hasZoom else {
+            return
+        }
         clearZoomId()
         if let x = setCameraZoomX(x: zoomXPinch * amount) {
             setZoomX(x: x)

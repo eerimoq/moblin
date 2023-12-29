@@ -117,7 +117,7 @@ struct LeftOverlayView: View {
                     text: model.mic.name
                 )
             }
-            if database.show.zoom {
+            if database.show.zoom && model.hasZoom {
                 StreamOverlayIconAndTextView(
                     icon: "magnifyingglass",
                     text: String(format: "%.1f", model.zoomX)
