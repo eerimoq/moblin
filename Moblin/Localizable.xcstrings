@@ -15563,7 +15563,110 @@
       }
     },
     "Enter one of the URLs into the RTMP publisher device to send video to this stream. Usually enter the WiFi URL." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Geben Sie eine der URLs in das RTMP-Publisher-Gerät ein, um Videos an diesen Stream zu senden. Geben Sie normalerweise die WLAN-URL ein."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Εισαγάγετε μία από τις διευθύνσεις URL στη συσκευή εκδότη RTMP για αποστολή βίντεο σε αυτήν τη ροή. Συνήθως εισάγετε τη διεύθυνση URL του WiFi."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ingrese una de las URL en el dispositivo del editor RTMP para enviar video a esta transmisión. Generalmente ingrese la URL de WiFi."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Entrez l'une des URL dans l'appareil de l'éditeur RTMP pour envoyer la vidéo à ce flux. Entrez généralement l'URL WiFi."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "इस स्ट्रीम पर वीडियो भेजने के लिए आरटीएमपी प्रकाशक डिवाइस में एक यूआरएल दर्ज करें। आमतौर पर वाईफाई यूआरएल दर्ज करें।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Masukkan salah satu URL ke perangkat penerbit RTMP untuk mengirim video ke aliran ini. Biasanya masukkan URL WiFi."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL の 1 つを RTMP パブリッシャ デバイスに入力して、ビデオをこのストリームに送信します。通常は WiFi URL を入力します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "비디오를 이 스트림으로 보내려면 RTMP 게시자 장치에 URL 중 하나를 입력하세요. 일반적으로 WiFi URL을 입력합니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Voer een van de URL's in op het RTMP-uitgeverapparaat om video naar deze stream te verzenden. Voer meestal de WiFi-URL in."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Wprowadź jeden z adresów URL w urządzeniu wydawcy RTMP, aby wysłać wideo do tego strumienia. Zwykle wprowadź adres URL Wi-Fi."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Insira um dos URLs no dispositivo do editor RTMP para enviar o vídeo para este stream. Geralmente insira o URL do WiFi."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Insira um dos URLs no dispositivo do editor RTMP para enviar o vídeo para este stream. Geralmente insira o URL do WiFi."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ange en av webbadresserna i RTMP-utgivarenheten för att skicka video till den här strömmen. Ange vanligtvis WiFi-URL."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bu akışa video göndermek için URL'lerden birini RTMP yayıncı cihazına girin. Genellikle WiFi URL'sini girin."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nhập một trong các URL vào thiết bị của nhà xuất bản RTMP để gửi video tới luồng này. Thường nhập URL WiFi."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "将 URL 之一输入 RTMP 发布者设备以将视频发送到该流。通常输入 WiFi URL。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "將 URL 之一輸入 RTMP 發布者裝置以將影片傳送到該串流。通常會輸入 WiFi URL。"
+          }
+        }
+      }
     },
     "Enter this URL into the RTMP publisher device to send video to this stream." : {
       "extractionState" : "stale",
@@ -31689,7 +31792,110 @@
       }
     },
     "Publish URLs" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URLs veröffentlichen"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Δημοσίευση διευθύνσεων URL"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Publicar URL"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Publier des URL"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "यूआरएल प्रकाशित करें"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Publikasikan URL"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URLを公開する"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "게시 URL"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Publiceer URL's"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Publikuj adresy URL"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Publicar URLs"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Publicar URLs"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Publicera URL:er"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL'leri yayınla"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Xuất bản URL"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "发布网址"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "發布網址"
+          }
+        }
+      }
     },
     "Quick buttons" : {
       "extractionState" : "stale",
@@ -32860,7 +33066,110 @@
       }
     },
     "RTMP" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "आरटीएमपी"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RTMP"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "实时MP"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "即時MP"
+          }
+        }
+      }
     },
     "RTMP server" : {
       "localizations" : {
@@ -37213,7 +37522,110 @@
       }
     },
     "Stream key missing" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Streamschlüssel fehlt"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Λείπει το κλειδί ροής"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Falta la clave de transmisión"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Clé de flux manquante"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "स्ट्रीम कुंजी गायब है"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Kunci streaming hilang"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ストリームキーがありません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "스트림 키 누락"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Streamsleutel ontbreekt"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Brak klucza do transmisji"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Chave de transmissão ausente"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Chave de transmissão ausente"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Strömningsnyckel saknas"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Yayın anahtarı eksik"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Thiếu khóa luồng"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "流密钥丢失"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "流密鑰遺失"
+          }
+        }
+      }
     },
     "Stream name" : {
       "localizations" : {
@@ -40048,8 +40460,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Streamnamnet visas i listan över kameror i sceninställningar."
+            "state" : "translated",
+            "value" : "Strömnamnet visas i listan över kameror i sceninställningar."
           }
         },
         "tr" : {
@@ -40154,7 +40566,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "TCP-porten som RTMP-servern lyssnar efter RTMP-utgivare på."
           }
         },
@@ -42941,7 +43353,110 @@
       }
     },
     "Use drones and other RTMP compatible devices as camera." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nutzen Sie Drohnen und andere RTMP-kompatible Geräte als Kamera."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Χρησιμοποιήστε drones και άλλες συσκευές συμβατές με RTMP ως κάμερα."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Utilice drones y otros dispositivos compatibles con RTMP como cámara."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Utilisez des drones et autres appareils compatibles RTMP comme caméra."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "कैमरे के रूप में ड्रोन और अन्य आरटीएमपी संगत उपकरणों का उपयोग करें।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Gunakan drone dan perangkat lain yang kompatibel dengan RTMP sebagai kamera."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ドローンやその他の RTMP 対応デバイスをカメラとして使用します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "드론 및 기타 RTMP 호환 장치를 카메라로 사용하세요."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Gebruik drones en andere RTMP-compatibele apparaten als camera."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Jako kamery używaj dronów i innych urządzeń zgodnych z RTMP."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Use drones e outros dispositivos compatíveis com RTMP como câmera."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Use drones e outros dispositivos compatíveis com RTMP como câmera."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Använd drönare och andra RTMP-kompatibla enheter som kamera."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Drone'ları ve diğer RTMP uyumlu cihazları kamera olarak kullanın."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sử dụng máy bay không người lái và các thiết bị tương thích RTMP khác làm máy ảnh."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "使用无人机和其他 RTMP 兼容设备作为相机。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "使用無人機和其他 RTMP 相容設備作為相機。"
+          }
+        }
+      }
     },
     "Use first channel for audio level. To debug Røde mic Unknown level." : {
       "localizations" : {
