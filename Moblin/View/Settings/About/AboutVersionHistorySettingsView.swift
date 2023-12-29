@@ -8,6 +8,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.121.0", date: "2023-12-29", changes: [
+        "• Select RTMP stream as camera for scenes.",
+        "  • No longer an overlay.",
+        "  • Does not work very well yet. Timing is off and possibly breaks audio.",
+        "• Show toast when RTMP streams are connected and disconnected.",
+        "• Fixed some bugs in RTMP server so IRL Pro at least can connect, but soon after disconnects.",
+    ]),
     Version(version: "0.120.1", date: "2023-12-28", changes: [
         "• Remove times 3 on RTMP timestamp.",
     ]),
