@@ -2111,7 +2111,7 @@ final class Model: ObservableObject {
         return nil
     }
 
-    private func findEnabledScene(id: UUID) -> SettingsScene? {
+    func findEnabledScene(id: UUID) -> SettingsScene? {
         for scene in enabledScenes where id == scene.id {
             return scene
         }
@@ -2174,6 +2174,21 @@ final class Model: ObservableObject {
 
     func listCameraPositions() -> [String] {
         return cameraPositions + rtmpCameras()
+    }
+
+    func getCameraPosition(scene: SettingsScene?) -> String {
+        guard let scene else {
+            return ""
+        }
+        if scene.cameraPosition! == .rtmp {
+            if let stream = getRtmpStream(id: scene.rtmpCameraId!) {
+                return stream.camera()
+            } else {
+                return "Back"
+            }
+        } else {
+            return scene.cameraPosition!.toString()
+        }
     }
 
     private func rtmpCameras() -> [String] {

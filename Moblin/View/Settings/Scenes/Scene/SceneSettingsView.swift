@@ -90,18 +90,6 @@ struct SceneSettingsView: View {
         return widgetHasPosition(id: widget.id) || widgetHasSize(id: widget.id)
     }
 
-    private func getCameraPosition() -> String {
-        if scene.cameraPosition! == .rtmp {
-            if let stream = model.getRtmpStream(id: scene.rtmpCameraId!) {
-                return stream.camera()
-            } else {
-                return "Back"
-            }
-        } else {
-            return scene.cameraPosition!.toString()
-        }
-    }
-
     var body: some View {
         Form {
             NavigationLink(destination: NameEditView(
@@ -127,11 +115,11 @@ struct SceneSettingsView: View {
                         title: String(localized: "Camera"),
                         onChange: onCameraChange,
                         items: InlinePickerItem.fromStrings(values: model.listCameraPositions()),
-                        selectedId: getCameraPosition()
+                        selectedId: model.getCameraPosition(scene: scene)
                     )) {
                         TextItemView(
                             name: String(localized: "Camera"),
-                            value: getCameraPosition()
+                            value: model.getCameraPosition(scene: scene)
                         )
                     }
                 } else if scene.cameraLayout == .pip {
@@ -139,11 +127,11 @@ struct SceneSettingsView: View {
                         title: String(localized: "Large camera"),
                         onChange: onCameraChange,
                         items: InlinePickerItem.fromStrings(values: model.listCameraPositions()),
-                        selectedId: getCameraPosition()
+                        selectedId: model.getCameraPosition(scene: scene)
                     )) {
                         TextItemView(
                             name: String(localized: "Large camera"),
-                            value: getCameraPosition()
+                            value: model.getCameraPosition(scene: scene)
                         )
                     }
                     Button(action: {

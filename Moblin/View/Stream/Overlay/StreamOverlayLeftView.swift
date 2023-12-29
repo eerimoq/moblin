@@ -108,7 +108,7 @@ struct LeftOverlayView: View {
             if database.show.cameras! {
                 StreamOverlayIconAndTextView(
                     icon: "camera",
-                    text: cameraName(device: model.cameraDevice)
+                    text: model.getCameraPosition(scene: model.findEnabledScene(id: model.selectedSceneId))
                 )
             }
             if database.show.microphone {
