@@ -207,7 +207,11 @@ class RtmpServerChunkStream: VideoCodecDelegate {
                 objectEncoding: .amf0,
                 commandName: "_result",
                 commandObject: nil,
-                arguments: []
+                arguments: [[
+                    "level": "status",
+                    "code": "NetConnection.Connect.Success",
+                    "description": "Connection succeeded.",
+                ]]
             )
         ))
     }
