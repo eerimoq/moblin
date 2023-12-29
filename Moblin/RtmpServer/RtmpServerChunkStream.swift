@@ -3,11 +3,14 @@ import Foundation
 import HaishinKit
 import Network
 
+private let messageTimestampScaling: UInt32 = 1
+// DJI Mini 2 SE is buggy
+// private let messageTimestampScaling: UInt32 = 3
+
 class RtmpServerChunkStream: VideoCodecDelegate {
     private var messageData: Data
     private var messageLength: Int
     private var messageTypeId: UInt8
-    private var chunkStreamId: UInt32
     private var messageTimestamp: UInt32
     private weak var client: RtmpServerClient?
     private var videoTimestampZero: Double
@@ -16,9 +19,8 @@ class RtmpServerChunkStream: VideoCodecDelegate {
     private var formatDescription: CMVideoFormatDescription?
     private var videoCodec: VideoCodec?
 
-    init(client: RtmpServerClient, chunkStreamId: UInt32) {
+    init(client: RtmpServerClient) {
         self.client = client
-        self.chunkStreamId = chunkStreamId
         messageData = Data()
         messageLength = 0
         messageTypeId = 0
@@ -88,7 +90,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
 
     private func processMessage() {
         guard let messageType = RTMPMessageType(rawValue: messageTypeId) else {
-            logger.info("rtmp-server: client: \(chunkStreamId): Bad message type \(messageTypeId)")
+            logger.info("rtmp-server: client: Bad message type \(messageTypeId)")
             return
         }
         // logger.info("rtmp-server: client: Processing message \(messageType)")
@@ -104,7 +106,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         case .audio:
             processMessageAudio()
         default:
-            logger.info("rtmp-server: client: \(chunkStreamId): Message type \(messageType) not supported")
+            logger.info("rtmp-server: client: Message type \(messageType) not supported")
         }
     }
 
@@ -126,7 +128,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
                 try arguments.append(amf0.deserialize())
             }
             /* logger.info("""
-             rtmp-server: client: \(chunkStreamId): Command: \(commandName), Object: \(commandObject), \
+             rtmp-server: client: Command: \(commandName), Object: \(commandObject), \
              Arguments: \(arguments)
              """) */
         } catch {
@@ -147,12 +149,12 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         case "publish":
             processMessageAmf0CommandPublish(transactionId: transactionId, arguments: arguments)
         default:
-            logger.info("rtmp-server: client: \(chunkStreamId): Unsupported command \(commandName)")
+            logger.info("rtmp-server: client: Unsupported command \(commandName)")
         }
     }
 
     private func processMessageAmf0Data() {
-        logger.info("rtmp-server: client: \(chunkStreamId): Ignoring AMF-0 data")
+        logger.info("rtmp-server: client: Ignoring AMF-0 data")
     }
 
     private func processMessageAmf0CommandConnect(transactionId: Int, commandObject: ASObject) {
@@ -282,7 +284,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         client.chunkSizeFromClient = Int(messageData.getFourBytesBe())
         /* logger
          .info(
-             "rtmp-server: client: \(chunkStreamId): Chunk size from client: \(client?.chunkSizeFromClient ?? -1)"
+             "rtmp-server: client: Chunk size from client: \(client?.chunkSizeFromClient ?? -1)"
          ) */
     }
 
@@ -310,64 +312,66 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         }
         switch FLVAVCPacketType(rawValue: messageData[1]) {
         case .seq:
-            guard messageData.count >= FLVTagType.video.headerSize else {
-                client
-                    .stopInternal(
-                        reason: """
-                        Got \(messageData.count) bytes video message, \
-                        expected >= \(FLVTagType.video.headerSize)
-                        """
-                    )
-                return
-            }
-            if videoCodec == nil {
-                var config = AVCDecoderConfigurationRecord()
-                config.data = messageData.subdata(in: FLVTagType.video.headerSize ..< messageData.count)
-                let status = config.makeFormatDescription(&formatDescription)
-                if status == noErr {
-                    videoCodec = VideoCodec()
-                    videoCodec!.formatDescription = formatDescription
-                    videoCodec!.delegate = self
-                    videoCodec!.startRunning()
-                } else {
-                    client.stopInternal(reason: "Format description error \(status)")
-                }
-            }
+            processMessageVideoTypeSeq(client: client)
         case .nal:
-            guard messageData.count > 9 else {
-                logger.info("rtmp-server: client: Dropping short packet with data \(messageData.hexString())")
-                return
-            }
-            if let sampleBuffer = makeSampleBuffer() {
-                videoCodec?.appendSampleBuffer(sampleBuffer)
-            } else {
-                client.stopInternal(reason: "Make sample buffer failed")
-            }
+            processMessageVideoTypeNal(client: client)
         default:
             client.stopInternal(reason: "Unsupported video AVC packet type \(messageData[1])")
         }
     }
 
-    private func makeSampleBuffer() -> CMSampleBuffer? {
+    private func processMessageVideoTypeSeq(client: RtmpServerClient) {
         guard messageData.count >= FLVTagType.video.headerSize else {
-            client?
+            client
                 .stopInternal(
-                    reason: "Got \(messageData.count) bytes video message, expected >= \(FLVTagType.video.headerSize)"
+                    reason: """
+                    Got \(messageData.count) bytes video message, \
+                    expected >= \(FLVTagType.video.headerSize)
+                    """
                 )
-            return nil
+            return
         }
+        guard videoCodec == nil else {
+            return
+        }
+        var config = AVCDecoderConfigurationRecord()
+        config.data = messageData.subdata(in: FLVTagType.video.headerSize ..< messageData.count)
+        let status = config.makeFormatDescription(&formatDescription)
+        if status == noErr {
+            videoCodec = VideoCodec()
+            videoCodec!.formatDescription = formatDescription
+            videoCodec!.delegate = self
+            videoCodec!.startRunning()
+        } else {
+            client.stopInternal(reason: "Format description error \(status)")
+        }
+    }
+
+    private func processMessageVideoTypeNal(client: RtmpServerClient) {
+        guard messageData.count > 9 else {
+            logger.info("rtmp-server: client: Dropping short packet with data \(messageData.hexString())")
+            return
+        }
+        if let sampleBuffer = makeSampleBuffer() {
+            videoCodec?.appendSampleBuffer(sampleBuffer)
+        } else {
+            client.stopInternal(reason: "Make sample buffer failed")
+        }
+    }
+
+    private func makeSampleBuffer() -> CMSampleBuffer? {
         var compositionTime = Int32(data: [0] + messageData[2 ..< 5]).bigEndian
         compositionTime <<= 8
         compositionTime /= 256
-        var duration = Int64(messageTimestamp)
+        var duration = Int64(messageTimestamp * messageTimestampScaling)
         if isMessageType0 {
             if videoTimestampZero == -1 {
-                videoTimestampZero = Double(messageTimestamp)
+                videoTimestampZero = Double(messageTimestamp * messageTimestampScaling)
             }
             duration -= Int64(videoTimestamp)
-            videoTimestamp = Double(messageTimestamp) - videoTimestampZero
+            videoTimestamp = Double(messageTimestamp * messageTimestampScaling) - videoTimestampZero
         } else {
-            videoTimestamp += Double(messageTimestamp)
+            videoTimestamp += Double(messageTimestamp * messageTimestampScaling)
         }
         var timing = CMSampleTimingInfo(
             duration: CMTimeMake(value: duration, timescale: 1000),
@@ -381,8 +385,8 @@ class RtmpServerChunkStream: VideoCodecDelegate {
             )
         )
         /* logger.info("""
-         rtmp-server: client: \(chunkStreamId): Created sample buffer \
-         MTS: \(3 * messageTimestamp) \
+         rtmp-server: client: Created sample buffer \
+         MTS: \(messageTimestamp * messageTimestampScaling) \
          CT: \(compositionTime) \
          DUR: \(timing.duration.seconds), \
          PTS: \(timing.presentationTimeStamp.seconds), \

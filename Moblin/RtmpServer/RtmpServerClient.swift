@@ -194,8 +194,7 @@ class RtmpServerClient {
 
     private func getChunkStream() -> RtmpServerChunkStream? {
         if chunkStreams[chunkStreamId] == nil {
-            // logger.info("rtmp-server: client: New chunk stream with id \(chunkStreamId)")
-            chunkStreams[chunkStreamId] = RtmpServerChunkStream(client: self, chunkStreamId: chunkStreamId)
+            chunkStreams[chunkStreamId] = RtmpServerChunkStream(client: self)
         }
         return chunkStreams[chunkStreamId]
     }
