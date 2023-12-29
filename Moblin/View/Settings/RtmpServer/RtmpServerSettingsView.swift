@@ -14,7 +14,10 @@ struct RtmpServerSettingsView: View {
 
     var body: some View {
         Form {
-            Text("Use drones and other RTMP compatible devices as camera.")
+            Text("""
+            The RTMP server allows Moblin to receive video streams over the network. \
+            This allows the use of some drones and other cameras as sources.
+            """)
             Section {
                 Toggle("Enabled", isOn: Binding(get: {
                     model.database.rtmpServer!.enabled

@@ -40277,6 +40277,9 @@
         }
       }
     },
+    "The RTMP server allows Moblin to receive video streams over the network. This allows the use of some drones and other cameras as sources." : {
+
+    },
     "The RTMP server receives video over the network, enabling Moblin to receive video from for example a drone and use it as a camera source." : {
       "extractionState" : "stale",
       "localizations" : {
@@ -43353,6 +43356,7 @@
       }
     },
     "Use drones and other RTMP compatible devices as camera." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

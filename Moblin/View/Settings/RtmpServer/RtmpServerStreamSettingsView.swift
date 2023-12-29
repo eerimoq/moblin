@@ -13,7 +13,11 @@ struct RtmpServerStreamSettingsView: View {
     }
 
     private func submitStreamKey(value: String) {
-        stream.streamKey = value.trim()
+        let streamKey = value.trim()
+        if model.getRtmpStream(streamKey: streamKey) != nil {
+            return
+        }
+        stream.streamKey = streamKey
         model.store()
         model.reloadRtmpServer()
         model.objectWillChange.send()
