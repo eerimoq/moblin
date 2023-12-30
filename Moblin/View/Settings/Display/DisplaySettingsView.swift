@@ -53,8 +53,8 @@ struct DisplaySettingsView: View {
                 {
                     Text("Audio level")
                 }
-                NavigationLink(destination: LocalOverlaysSrtlaSettingsView()) {
-                    Text("SRTLA interface names")
+                NavigationLink(destination: LocalOverlaysNetworkInterfaceNamesSettingsView()) {
+                    Text("Network interface names")
                 }
             }
         }

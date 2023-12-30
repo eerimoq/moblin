@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct LocalOverlaysSrtlaSettingsView: View {
+struct LocalOverlaysNetworkInterfaceNamesSettingsView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
@@ -9,7 +9,9 @@ struct LocalOverlaysSrtlaSettingsView: View {
                 List {
                     ForEach(model.database.networkInterfaceNames!) { interface in
                         NavigationLink(
-                            destination: LocalOverlaysSrtlaInterfaceSettingsView(interface: interface)
+                            destination: LocalOverlaysNetworkInterfaceNamesInterfaceSettingsView(
+                                interface: interface
+                            )
                         ) {
                             TextItemView(name: interface.interfaceName, value: interface.name)
                         }

@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct LocalOverlaysSrtlaInterfaceSettingsView: View {
+struct LocalOverlaysNetworkInterfaceNamesInterfaceSettingsView: View {
     @EnvironmentObject var model: Model
     var interface: SettingsNetworkInterfaceName
 
