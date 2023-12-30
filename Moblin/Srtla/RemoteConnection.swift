@@ -68,7 +68,19 @@ class RemoteConnection {
     private var host: String!
     private var port: UInt16!
     private let mpegtsPacketsPerPacket: Int
-    var typeString: String
+    var typeString: String {
+        switch type {
+        case .wifi:
+            return "WiFi"
+        case .wiredEthernet:
+            return networkInterfaces.names[interface?.name ?? ""] ?? interface?.name ?? "Ethernet"
+        case .cellular:
+            return "Cellular"
+        default:
+            return "Any"
+        }
+    }
+
     var onSocketConnected: (() -> Void)?
     var onReg2: ((_ groupId: Data) -> Void)?
     var onRegistered: (() -> Void)?
@@ -76,21 +88,18 @@ class RemoteConnection {
     var onSrtAck: ((_ sn: UInt32) -> Void)?
     var onSrtNak: ((_ sn: UInt32) -> Void)?
     var onSrtlaAck: ((_ sn: UInt32) -> Void)?
+    private var networkInterfaces: SrtlaNetworkInterfaces
 
-    init(type: NWInterface.InterfaceType?, mpegtsPacketsPerPacket: Int, interface: NWInterface?) {
+    init(
+        type: NWInterface.InterfaceType?,
+        mpegtsPacketsPerPacket: Int,
+        interface: NWInterface?,
+        networkInterfaces: SrtlaNetworkInterfaces
+    ) {
         self.type = type
         self.mpegtsPacketsPerPacket = mpegtsPacketsPerPacket
         self.interface = interface
-        switch type {
-        case .wifi:
-            typeString = "WiFi"
-        case .wiredEthernet:
-            typeString = interface?.name ?? "Ethernet"
-        case .cellular:
-            typeString = "Cellular"
-        default:
-            typeString = "Any"
-        }
+        self.networkInterfaces = networkInterfaces
     }
 
     deinit {

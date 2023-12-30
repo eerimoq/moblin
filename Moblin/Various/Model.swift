@@ -1463,6 +1463,10 @@ final class Model: ObservableObject {
         settings.store()
     }
 
+    func networkInterfaceNamesUpdated() {
+        media.setNetworkInterfaceNames(networkInterfaceNames: database.networkInterfaceNames!)
+    }
+
     func startRecording() {
         currentRecording = recordingsStorage.createRecording(settings: stream.clone())
         makeToast(title: "Recording started")
@@ -1535,7 +1539,8 @@ final class Model: ObservableObject {
                 adaptiveBitrate: stream.adaptiveBitrate,
                 latency: stream.srt.latency,
                 overheadBandwidth: database.debug!.srtOverheadBandwidth!,
-                mpegtsPacketsPerPacket: stream.srt.mpegtsPacketsPerPacket
+                mpegtsPacketsPerPacket: stream.srt.mpegtsPacketsPerPacket,
+                networkInterfaceNames: database.networkInterfaceNames!
             )
         }
         updateSpeed()
@@ -2387,10 +2392,6 @@ final class Model: ObservableObject {
 
     func rtmpServerEnabled() -> Bool {
         return rtmpServer != nil
-    }
-
-    func numberOfRtmpClients() -> Int {
-        return rtmpServer?.numberOfClients() ?? 0
     }
 
     func checkDeviceAuthorization() {

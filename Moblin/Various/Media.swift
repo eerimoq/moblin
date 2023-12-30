@@ -92,7 +92,8 @@ final class Media: NSObject {
         adaptiveBitrate adaptiveBitrateEnabled: Bool,
         latency: Int32,
         overheadBandwidth: Int32,
-        mpegtsPacketsPerPacket: Int
+        mpegtsPacketsPerPacket: Int,
+        networkInterfaceNames: [SettingsNetworkInterfaceName]
     ) {
         srtUrl = url
         self.latency = latency
@@ -103,7 +104,8 @@ final class Media: NSObject {
         srtla = Srtla(
             delegate: self,
             passThrough: !isSrtla,
-            mpegtsPacketsPerPacket: mpegtsPacketsPerPacket
+            mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
+            networkInterfaceNames: networkInterfaceNames
         )
         if adaptiveBitrateEnabled {
             adaptiveBitrate = AdaptiveBitrate(
@@ -133,6 +135,10 @@ final class Media: NSObject {
         srtla = nil
         srtConnectedObservation = nil
         adaptiveBitrate = nil
+    }
+
+    func setNetworkInterfaceNames(networkInterfaceNames: [SettingsNetworkInterfaceName]) {
+        srtla?.setNetworkInterfaceNames(networkInterfaceNames: networkInterfaceNames)
     }
 
     func getSrtStats(overlay: Bool) -> [String]? {

@@ -15,6 +15,10 @@ private enum State {
     case running
 }
 
+class SrtlaNetworkInterfaces {
+    var names: [String: String] = [:]
+}
+
 let srtlaDispatchQueue = DispatchQueue(label: "com.eerimoq.srtla")
 
 class Srtla {
@@ -36,28 +40,39 @@ class Srtla {
     private var groupId: Data?
 
     private var totalByteCount: Int64 = 0
+    private var networkInterfaces: SrtlaNetworkInterfaces
 
-    init(delegate: SrtlaDelegate, passThrough: Bool, mpegtsPacketsPerPacket: Int) {
+    init(
+        delegate: SrtlaDelegate,
+        passThrough: Bool,
+        mpegtsPacketsPerPacket: Int,
+        networkInterfaceNames: [SettingsNetworkInterfaceName]
+    ) {
         self.delegate = delegate
         self.passThrough = passThrough
         self.mpegtsPacketsPerPacket = mpegtsPacketsPerPacket
+        networkInterfaces = .init()
+        setNetworkInterfaceNames(networkInterfaceNames: networkInterfaceNames)
         logger.info("srtla: SRT instead of SRTLA: \(passThrough)")
         if passThrough {
             remoteConnections.append(RemoteConnection(
                 type: nil,
                 mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
-                interface: nil
+                interface: nil,
+                networkInterfaces: networkInterfaces
             ))
         } else {
             remoteConnections.append(RemoteConnection(
                 type: .cellular,
                 mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
-                interface: nil
+                interface: nil,
+                networkInterfaces: networkInterfaces
             ))
             remoteConnections.append(RemoteConnection(
                 type: .wifi,
                 mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
-                interface: nil
+                interface: nil,
+                networkInterfaces: networkInterfaces
             ))
         }
     }
@@ -107,6 +122,15 @@ class Srtla {
         }
     }
 
+    func setNetworkInterfaceNames(networkInterfaceNames: [SettingsNetworkInterfaceName]) {
+        srtlaDispatchQueue.sync {
+            self.networkInterfaces.names.removeAll()
+            for interface in networkInterfaceNames {
+                self.networkInterfaces.names[interface.interfaceName] = interface.name
+            }
+        }
+    }
+
     private func handleNetworkPathUpdate(path: NWPath) {
         logger.info("srtla: interface: \(path.debugDescription)")
         var newRemoteConnections: [RemoteConnection] = []
@@ -135,7 +159,8 @@ class Srtla {
             newRemoteConnections.append(RemoteConnection(
                 type: .wiredEthernet,
                 mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
-                interface: interface
+                interface: interface,
+                networkInterfaces: self.networkInterfaces
             ))
             startRemote(connection: newRemoteConnections.last!, host: host, port: port)
             if let groupId {

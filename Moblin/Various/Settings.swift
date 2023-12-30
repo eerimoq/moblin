@@ -842,6 +842,12 @@ class SettingsQuickButtons: Codable {
     var enableScroll: Bool = true
 }
 
+class SettingsNetworkInterfaceName: Codable, Identifiable {
+    var id: UUID = .init()
+    var interfaceName: String = ""
+    var name: String = ""
+}
+
 class Database: Codable {
     var streams: [SettingsStream] = []
     var scenes: [SettingsScene] = []
@@ -865,6 +871,7 @@ class Database: Codable {
     var quickButtons: SettingsQuickButtons? = .init()
     var globalButtons: [SettingsButton]? = []
     var rtmpServer: SettingsRtmpServer? = .init()
+    var networkInterfaceNames: [SettingsNetworkInterfaceName]? = []
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -1464,6 +1471,10 @@ final class Settings {
         }
         if realDatabase.show.rtmpSpeed == nil {
             realDatabase.show.rtmpSpeed = true
+            store()
+        }
+        if realDatabase.networkInterfaceNames == nil {
+            realDatabase.networkInterfaceNames = []
             store()
         }
     }

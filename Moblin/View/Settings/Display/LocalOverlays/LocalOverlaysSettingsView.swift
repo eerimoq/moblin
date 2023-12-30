@@ -113,6 +113,9 @@ struct LocalOverlaysSettingsView: View {
                     show.uptime = value
                     model.store()
                 }))
+                NavigationLink(destination: LocalOverlaysSrtlaSettingsView()) {
+                    Text("SRTLA")
+                }
             }
             Section {
                 Toggle("Zoom presets", isOn: Binding(get: {

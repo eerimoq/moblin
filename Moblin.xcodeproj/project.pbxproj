@@ -222,6 +222,10 @@
 		038DF9EE2B387AAF0027363A /* StreamWizardYouTubeSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038DF9EC2B387AAF0027363A /* StreamWizardYouTubeSettingsView.swift */; };
 		038DF9F12B387AC80027363A /* StreamWizardAfreecaTvSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038DF9F02B387AC80027363A /* StreamWizardAfreecaTvSettingsView.swift */; };
 		038DF9F22B387AC80027363A /* StreamWizardAfreecaTvSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038DF9F02B387AC80027363A /* StreamWizardAfreecaTvSettingsView.swift */; };
+		038ED3DB2B403664005DEC08 /* LocalOverlaysSrtlaSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038ED3DA2B403664005DEC08 /* LocalOverlaysSrtlaSettingsView.swift */; };
+		038ED3DC2B403664005DEC08 /* LocalOverlaysSrtlaSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038ED3DA2B403664005DEC08 /* LocalOverlaysSrtlaSettingsView.swift */; };
+		038ED3E02B404E99005DEC08 /* LocalOverlaysSrtlaInterfaceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038ED3DF2B404E99005DEC08 /* LocalOverlaysSrtlaInterfaceSettingsView.swift */; };
+		038ED3E12B404E99005DEC08 /* LocalOverlaysSrtlaInterfaceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038ED3DF2B404E99005DEC08 /* LocalOverlaysSrtlaInterfaceSettingsView.swift */; };
 		0391BB3D2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0391BB3C2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift */; };
 		0391BB3E2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0391BB3C2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift */; };
 		03A08B7C2AC295620018BA95 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = 03A08B7B2AC295620018BA95 /* AlertToast */; };
@@ -397,6 +401,8 @@
 		038B67612AE84BFC000DC43B /* StreamVideoCaptureSessionPresetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoCaptureSessionPresetSettingsView.swift; sourceTree = "<group>"; };
 		038DF9EC2B387AAF0027363A /* StreamWizardYouTubeSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardYouTubeSettingsView.swift; sourceTree = "<group>"; };
 		038DF9F02B387AC80027363A /* StreamWizardAfreecaTvSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardAfreecaTvSettingsView.swift; sourceTree = "<group>"; };
+		038ED3DA2B403664005DEC08 /* LocalOverlaysSrtlaSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalOverlaysSrtlaSettingsView.swift; sourceTree = "<group>"; };
+		038ED3DF2B404E99005DEC08 /* LocalOverlaysSrtlaInterfaceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalOverlaysSrtlaInterfaceSettingsView.swift; sourceTree = "<group>"; };
 		0391BB3C2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutVersionHistorySettingsView.swift; sourceTree = "<group>"; };
 		03A08B7F2AC368860018BA95 /* Media.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Media.swift; sourceTree = "<group>"; };
 		03A14BE22ACC903E00D180FF /* ZoomSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomSettingsView.swift; sourceTree = "<group>"; };
@@ -876,6 +882,7 @@
 		0379BBA32AAD944000B718B6 /* LocalOverlays */ = {
 			isa = PBXGroup;
 			children = (
+				038ED3D92B403633005DEC08 /* SRTLA */,
 				030399112AE2D0E900D27530 /* Chat */,
 				0379BBA42AAD945D00B718B6 /* LocalOverlaysSettingsView.swift */,
 			);
@@ -933,6 +940,15 @@
 				03831D582AD9A198008D26CC /* CosmeticsSettingsView.swift */,
 			);
 			path = Cosmetics;
+			sourceTree = "<group>";
+		};
+		038ED3D92B403633005DEC08 /* SRTLA */ = {
+			isa = PBXGroup;
+			children = (
+				038ED3DA2B403664005DEC08 /* LocalOverlaysSrtlaSettingsView.swift */,
+				038ED3DF2B404E99005DEC08 /* LocalOverlaysSrtlaInterfaceSettingsView.swift */,
+			);
+			path = SRTLA;
 			sourceTree = "<group>";
 		};
 		03A14BE02ACC902B00D180FF /* Zoom */ = {
@@ -1325,6 +1341,7 @@
 				032E06512B2F3E9D00EAE5F8 /* CacheAsyncImage.swift in Sources */,
 				032E06522B2F3E9D00EAE5F8 /* TextEffect.swift in Sources */,
 				032E06532B2F3E9D00EAE5F8 /* TwitchPubSub.swift in Sources */,
+				038ED3DC2B403664005DEC08 /* LocalOverlaysSrtlaSettingsView.swift in Sources */,
 				032E06542B2F3E9D00EAE5F8 /* WidgetSettingsView.swift in Sources */,
 				034D27002B3A03620097C619 /* RtmpServer.swift in Sources */,
 				032E06552B2F3E9D00EAE5F8 /* StreamUrlSettingsView.swift in Sources */,
@@ -1396,6 +1413,7 @@
 				032E06862B2F3E9D00EAE5F8 /* ButtonSettingsView.swift in Sources */,
 				03487F282B334C48003D9ED9 /* StreamingHistorySettingsView.swift in Sources */,
 				03FBD1822B3B0DE500757CA9 /* RtmpServerClient.swift in Sources */,
+				038ED3E12B404E99005DEC08 /* LocalOverlaysSrtlaInterfaceSettingsView.swift in Sources */,
 				032E06872B2F3E9D00EAE5F8 /* SceneCameraPipSmallCameraSettingsView.swift in Sources */,
 				032E06882B2F3E9D00EAE5F8 /* ZoomPresetSettingsView.swift in Sources */,
 				03FBD1862B3B0DF300757CA9 /* RtmpServerChunkStream.swift in Sources */,
@@ -1470,6 +1488,7 @@
 				0379BBA22AAD824600B718B6 /* StreamOverlayIconAndTextView.swift in Sources */,
 				03D445E22AE5966B00A0F6E9 /* CacheAsyncImage.swift in Sources */,
 				03F3BF192ADAAA94009A8D3E /* TextEffect.swift in Sources */,
+				038ED3DB2B403664005DEC08 /* LocalOverlaysSrtlaSettingsView.swift in Sources */,
 				03A983712A9A0659008FF0DB /* TwitchPubSub.swift in Sources */,
 				034D26FF2B3A03620097C619 /* RtmpServer.swift in Sources */,
 				03A9836C2A9A05D7008FF0DB /* WidgetSettingsView.swift in Sources */,
@@ -1541,6 +1560,7 @@
 				03BC11642AE4BEC400C38FC4 /* Emotes.swift in Sources */,
 				03A983722A9A0659008FF0DB /* TwitchChatMoblin.swift in Sources */,
 				03FBD1812B3B0DE500757CA9 /* RtmpServerClient.swift in Sources */,
+				038ED3E02B404E99005DEC08 /* LocalOverlaysSrtlaInterfaceSettingsView.swift in Sources */,
 				0379BBA52AAD945D00B718B6 /* LocalOverlaysSettingsView.swift in Sources */,
 				0379BB762AA6345400B718B6 /* ButtonSettingsView.swift in Sources */,
 				03FBD1852B3B0DF300757CA9 /* RtmpServerChunkStream.swift in Sources */,
