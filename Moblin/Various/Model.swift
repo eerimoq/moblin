@@ -2366,20 +2366,22 @@ final class Model: ObservableObject {
     }
 
     private func updateRtmpSpeed() {
+        let message: String
         if let rtmpServer {
             let stats = rtmpServer.updateStats()
+            let numberOfClients = rtmpServer.numberOfClients()
             if rtmpServer.numberOfClients() > 0 {
                 let total = stats.total.formatBytes()
                 let speed = formatBytesPerSecond(speed: Int64(8 * stats.speed))
-                let message = String(localized: "\(speed) (\(total))")
-                if message != rtmpSpeedAndTotal {
-                    rtmpSpeedAndTotal = message
-                }
-                return
+                 message = String(localized: "\(speed) (\(total)) \(numberOfClients)")
+            } else {
+                 message = String(numberOfClients)
             }
+        } else {
+            message = noValue
         }
-        if rtmpSpeedAndTotal != noValue {
-            rtmpSpeedAndTotal = noValue
+        if message != rtmpSpeedAndTotal {
+            rtmpSpeedAndTotal = message
         }
     }
 
