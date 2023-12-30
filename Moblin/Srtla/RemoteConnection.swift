@@ -85,7 +85,7 @@ class RemoteConnection {
         case .wifi:
             typeString = "WiFi"
         case .wiredEthernet:
-            typeString = "Ethernet"
+            typeString = interface?.name ?? "Ethernet"
         case .cellular:
             typeString = "Cellular"
         default:
