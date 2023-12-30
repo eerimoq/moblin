@@ -2373,9 +2373,9 @@ final class Model: ObservableObject {
             if rtmpServer.numberOfClients() > 0 {
                 let total = stats.total.formatBytes()
                 let speed = formatBytesPerSecond(speed: Int64(8 * stats.speed))
-                 message = String(localized: "\(speed) (\(total)) \(numberOfClients)")
+                message = String(localized: "\(speed) (\(total)) \(numberOfClients)")
             } else {
-                 message = String(numberOfClients)
+                message = String(numberOfClients)
             }
         } else {
             message = noValue
