@@ -42,7 +42,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         client = nil
     }
 
-    func handleMessage() -> Int {
+    func getChunkDataSize() -> Int {
         guard let client else {
             return 0
         }
