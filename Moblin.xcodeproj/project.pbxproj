@@ -882,8 +882,6 @@
 		0379BBA32AAD944000B718B6 /* LocalOverlays */ = {
 			isa = PBXGroup;
 			children = (
-				038ED3D92B403633005DEC08 /* SRTLA */,
-				030399112AE2D0E900D27530 /* Chat */,
 				0379BBA42AAD945D00B718B6 /* LocalOverlaysSettingsView.swift */,
 			);
 			path = LocalOverlays;
@@ -996,9 +994,11 @@
 		03B16A2B2B35D71500E5AB07 /* Display */ = {
 			isa = PBXGroup;
 			children = (
+				030399112AE2D0E900D27530 /* Chat */,
 				0379BBA32AAD944000B718B6 /* LocalOverlays */,
 				03E95AE22ADB7B2200DAE2DF /* TapScreenToFocus */,
 				03E877F52B2DB26100086355 /* Quick buttons */,
+				038ED3D92B403633005DEC08 /* SRTLA */,
 				03B16A302B35D74800E5AB07 /* DisplaySettingsView.swift */,
 			);
 			path = Display;

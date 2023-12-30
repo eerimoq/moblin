@@ -21,14 +21,14 @@ struct LocalOverlaysSrtlaSettingsView: View {
                     }
                     CreateButtonView {
                         let interface = SettingsNetworkInterfaceName()
-                        interface.interfaceName = "enx"
+                        interface.interfaceName = "enX"
                         model.database.networkInterfaceNames?.append(interface)
                         model.store()
                     }
                 }
             }
         }
-        .navigationTitle("SRTLA")
+        .navigationTitle("SRTLA interface names")
         .toolbar {
             SettingsToolbar()
         }

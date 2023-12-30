@@ -1,25 +1,10 @@
 import SwiftUI
 
-private let audioLevels = [String(localized: "Bar"), String(localized: "Decibel")]
-
 struct LocalOverlaysSettingsView: View {
     @EnvironmentObject var model: Model
 
     var show: SettingsShow {
         model.database.show
-    }
-
-    var chat: SettingsChat {
-        model.database.chat
-    }
-
-    private func onAudioLevelChange(type: String) {
-        model.database.show.audioBar = type == String(localized: "Bar")
-        model.store()
-    }
-
-    private func audioLevel() -> String {
-        return model.database.show.audioBar ? String(localized: "Bar") : String(localized: "Decibel")
     }
 
     var body: some View {
@@ -55,23 +40,12 @@ struct LocalOverlaysSettingsView: View {
                     show.obsStatus = value
                     model.store()
                 }))
-                NavigationLink(destination: LocalOverlaysChatSettingsView(
-                    timestampColor: chat.timestampColor.color(),
-                    usernameColor: chat.usernameColor.color(),
-                    messageColor: chat.messageColor.color(),
-                    backgroundColor: chat.backgroundColor.color(),
-                    shadowColor: chat.shadowColor.color(),
-                    height: chat.height!,
-                    width: chat.width!,
-                    fontSize: chat.fontSize
-                )) {
-                    Toggle("Chat", isOn: Binding(get: {
-                        show.chat
-                    }, set: { value in
-                        show.chat = value
-                        model.store()
-                    }))
-                }
+                Toggle("Chat", isOn: Binding(get: {
+                    show.chat
+                }, set: { value in
+                    show.chat = value
+                    model.store()
+                }))
                 Toggle("Viewers", isOn: Binding(get: {
                     show.viewers
                 }, set: { value in
@@ -80,22 +54,13 @@ struct LocalOverlaysSettingsView: View {
                 }))
             }
             Section("Top right") {
-                NavigationLink(destination: InlinePickerView(title: String(localized: "Audio level"),
-                                                             onChange: onAudioLevelChange,
-                                                             items: InlinePickerItem
-                                                                 .fromStrings(values: audioLevels),
-                                                             selectedId: audioLevel()))
-                {
-                    Toggle(isOn: Binding(get: {
-                        show.audioLevel
-                    }, set: { value in
-                        show.audioLevel = value
-                        model.store()
-                    })) {
-                        TextItemView(name: String(localized: "Audio level"), value: audioLevel())
-                    }
-                }
-                Toggle("RTMP server bitrate", isOn: Binding(get: {
+                Toggle("Audio level", isOn: Binding(get: {
+                    show.audioLevel
+                }, set: { value in
+                    show.audioLevel = value
+                    model.store()
+                }))
+                Toggle("RTMP server", isOn: Binding(get: {
                     show.rtmpSpeed!
                 }, set: { value in
                     show.rtmpSpeed = value
@@ -113,9 +78,6 @@ struct LocalOverlaysSettingsView: View {
                     show.uptime = value
                     model.store()
                 }))
-                NavigationLink(destination: LocalOverlaysSrtlaSettingsView()) {
-                    Text("SRTLA")
-                }
             }
             Section {
                 Toggle("Zoom presets", isOn: Binding(get: {
