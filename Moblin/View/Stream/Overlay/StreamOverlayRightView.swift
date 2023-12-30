@@ -122,9 +122,9 @@ struct RightOverlayView: View {
             if database.show.audioLevel {
                 AudioLevelView(showBar: database.show.audioBar, level: model.audioLevel)
             }
-            if database.show.rtmpSpeed! && model.numberOfRtmpClients() > 0 {
+            if database.show.rtmpSpeed! && model.rtmpServerEnabled() {
                 StreamOverlayIconAndTextView(
-                    icon: "gauge.with.dots.needle.bottom.50percent",
+                    icon: "server.rack",
                     text: model.rtmpSpeedAndTotal,
                     textFirst: true,
                     color: .white
