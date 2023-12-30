@@ -30,7 +30,7 @@ struct LocalOverlaysNetworkInterfaceNamesSettingsView: View {
                 }
             }
         }
-        .navigationTitle("SRTLA interface names")
+        .navigationTitle("Network interface names")
         .toolbar {
             SettingsToolbar()
         }
