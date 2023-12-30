@@ -22,7 +22,7 @@ class RtmpServer {
     var onPublishStop: (String) -> Void
     var onFrame: (String, CMSampleBuffer) -> Void
     var settings: SettingsRtmpServer
-    private var clientsTimeoutTimer: DispatchSourceTimer?
+    private var periodicTimer: DispatchSourceTimer?
     var totalBytesReceived: UInt64 = 0
     private var prevTotalBytesReceived: UInt64 = 0
 
@@ -40,36 +40,8 @@ class RtmpServer {
 
     func start() {
         rtmpServerDispatchQueue.async {
-            do {
-                let options = NWProtocolTCP.Options()
-                // options.noDelay = true
-                let parameters = NWParameters(tls: nil, tcp: options)
-                parameters.requiredLocalEndpoint = .hostPort(
-                    host: .ipv4(.any),
-                    port: NWEndpoint.Port(rawValue: self.settings.port) ?? 1935
-                )
-                parameters.allowLocalEndpointReuse = true
-                self.listener = try NWListener(using: parameters)
-            } catch {
-                logger.error("rtmp-server: Failed to create listener with error \(error)")
-                return
-            }
-            self.listener.stateUpdateHandler = self.handleListenerStateChange(to:)
-            self.listener.newConnectionHandler = self.handleNewListenerConnection(connection:)
-            self.listener.start(queue: rtmpServerDispatchQueue)
-            self.clientsTimeoutTimer = DispatchSource.makeTimerSource(queue: rtmpServerDispatchQueue)
-            self.clientsTimeoutTimer!.schedule(deadline: .now() + 3, repeating: 3)
-            self.clientsTimeoutTimer!.setEventHandler {
-                let now = Date()
-                var clientsToRemove: [RtmpServerClient] = []
-                for client in self.clients where client.latestReveiveDate + 10 < now {
-                    clientsToRemove.append(client)
-                }
-                for client in clientsToRemove {
-                    self.handleClientDisconnected(client: client, reason: "Receive timeout")
-                }
-            }
-            self.clientsTimeoutTimer!.activate()
+            self.setupPeriodicTimer()
+            self.setupListener()
         }
     }
 
@@ -81,8 +53,8 @@ class RtmpServer {
             self.clients.removeAll()
             self.listener?.cancel()
             self.listener = nil
-            self.clientsTimeoutTimer?.cancel()
-            self.clientsTimeoutTimer = nil
+            self.periodicTimer?.cancel()
+            self.periodicTimer = nil
         }
     }
 
@@ -108,11 +80,55 @@ class RtmpServer {
         }
     }
 
+    private func setupListener() {
+        let options = NWProtocolTCP.Options()
+        // options.noDelay = true
+        let parameters = NWParameters(tls: nil, tcp: options)
+        parameters.requiredLocalEndpoint = .hostPort(
+            host: .ipv4(.any),
+            port: NWEndpoint.Port(rawValue: settings.port) ?? 1935
+        )
+        parameters.allowLocalEndpointReuse = true
+        do {
+            listener = try NWListener(using: parameters)
+        } catch {
+            logger.error("rtmp-server: Failed to create listener with error \(error)")
+            return
+        }
+        listener.stateUpdateHandler = handleListenerStateChange(to:)
+        listener.newConnectionHandler = handleNewListenerConnection(connection:)
+        listener.start(queue: rtmpServerDispatchQueue)
+    }
+
+    private func setupPeriodicTimer() {
+        periodicTimer = DispatchSource.makeTimerSource(queue: rtmpServerDispatchQueue)
+        periodicTimer!.schedule(deadline: .now() + 3, repeating: 3)
+        periodicTimer!.setEventHandler {
+            self.cleanupClients()
+            switch self.listener.state {
+            case .failed:
+                self.setupListener()
+            default:
+                break
+            }
+        }
+        periodicTimer!.activate()
+    }
+
+    private func cleanupClients() {
+        let now = Date()
+        var clientsToRemove: [RtmpServerClient] = []
+        for client in clients where client.latestReveiveDate + 10 < now {
+            clientsToRemove.append(client)
+        }
+        for client in clientsToRemove {
+            handleClientDisconnected(client: client, reason: "Receive timeout")
+        }
+    }
+
     private func handleListenerStateChange(to state: NWListener.State) {
         logger.info("rtmp-server: State change to \(state)")
         switch state {
-        case .setup:
-            break
         case .ready:
             logger.info("rtmp-server: Listening on port \(listener.port!.rawValue)")
         default:
