@@ -9,15 +9,15 @@ private let messageTimestampScaling: UInt32 = 1
 
 class RtmpServerChunkStream: VideoCodecDelegate {
     private var messageData: Data
-    private var messageLength: Int
-    private var messageTypeId: UInt8
-    private var messageTimestamp: UInt32
-    private var messageStreamId: UInt32
+    var messageLength: Int
+    var messageTypeId: UInt8
+    var messageTimestamp: UInt32
+    var messageStreamId: UInt32
     private weak var client: RtmpServerClient?
     private var streamId: UInt16
     private var videoTimestampZero: Double
     private var videoTimestamp: Double
-    private var isMessageType0: Bool
+    var isMessageType0: Bool
     private var formatDescription: CMVideoFormatDescription?
     private var videoCodec: VideoCodec?
     var extendedTimestampPresentInType3: Bool
@@ -42,34 +42,31 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         client = nil
     }
 
-    func handleType0(typeId: UInt8, length: Int, timestamp: UInt32, streamId: UInt32) -> Int {
+    func handleType0(typeId: UInt8, length: Int, streamId: UInt32) -> Int {
         guard let client else {
             return 0
         }
         messageTypeId = typeId
         messageLength = length
-        messageTimestamp = timestamp
         messageStreamId = streamId
         isMessageType0 = true
         return min(client.chunkSizeFromClient, messageRemain())
     }
 
-    func handleType1(typeId: UInt8, length: Int, timestamp: UInt32) -> Int {
+    func handleType1(typeId: UInt8, length: Int) -> Int {
         guard let client else {
             return 0
         }
         messageTypeId = typeId
         messageLength = length
-        messageTimestamp = timestamp
         isMessageType0 = false
         return min(client.chunkSizeFromClient, messageRemain())
     }
 
-    func handleType2(timestamp: UInt32) -> Int {
+    func handleType2() -> Int {
         guard let client else {
             return 0
         }
-        messageTimestamp = timestamp
         isMessageType0 = false
         return min(client.chunkSizeFromClient, messageRemain())
     }
@@ -394,14 +391,14 @@ class RtmpServerChunkStream: VideoCodecDelegate {
                 timescale: 1000
             )
         )
-        /* logger.info("""
+         logger.info("""
          rtmp-server: client: Created sample buffer \
          MTS: \(messageTimestamp * messageTimestampScaling) \
          CT: \(compositionTime) \
          DUR: \(timing.duration.seconds), \
          PTS: \(timing.presentationTimeStamp.seconds), \
          DTS: \(timing.decodeTimeStamp.seconds)
-         """) */
+         """) 
         let blockBuffer = messageData.makeBlockBuffer(advancedBy: FLVTagType.video.headerSize)
         var sampleBuffer: CMSampleBuffer?
         var sampleSize = blockBuffer?.dataLength ?? 0

@@ -35,7 +35,6 @@ class RtmpServerClient {
     var chunkSizeFromClient = 128
     private var chunkStreams: [UInt16: RtmpServerChunkStream]
     private var chunkStreamId: UInt16
-    private var messageTimestamp: UInt32
     private var waitForExtendedTimestamp: Bool
     private var messageTypeId: UInt8
     private var messageStreamId: UInt32
@@ -56,7 +55,6 @@ class RtmpServerClient {
         self.connection = connection
         state = .uninitialized
         chunkState = .basicHeaderFirstByte
-        messageTimestamp = 0
         waitForExtendedTimestamp = false
         messageTypeId = 0
         messageStreamId = 0
@@ -167,7 +165,7 @@ class RtmpServerClient {
             stopInternal(reason: "Wrong length \(data.count) in extended timestamp")
             return
         }
-        messageTimestamp = data.getUInt32Be()
+        chunkStream.messageTimestamp = data.getUInt32Be()
         switch chunkState {
         case .messageHeaderType0:
             receiveDataType0()
@@ -223,11 +221,11 @@ class RtmpServerClient {
             stopInternal(reason: "Wrong length \(data.count) in message header type 0 header")
             return
         }
-        messageTimestamp = data.getThreeBytesBe()
+        chunkStream.messageTimestamp = data.getThreeBytesBe()
         messageLength = Int(data.getThreeBytesBe(offset: 3))
         messageTypeId = data[6]
         messageStreamId = data.getFourBytesLe(offset: 7)
-        if isExtendedTimestamp(timestamp: messageTimestamp) {
+        if isExtendedTimestamp(timestamp: chunkStream.messageTimestamp) {
             receiveExtendedTimestamp()
         } else {
             receiveDataType0()
@@ -244,7 +242,6 @@ class RtmpServerClient {
         receiveChunkData(size: chunkStream.handleType0(
             typeId: messageTypeId,
             length: messageLength,
-            timestamp: messageTimestamp,
             streamId: messageStreamId
         ))
     }
@@ -254,10 +251,10 @@ class RtmpServerClient {
             stopInternal(reason: "Wrong length \(data.count) in message header type 1 header")
             return
         }
-        messageTimestamp = data.getThreeBytesBe()
+        chunkStream.messageTimestamp = data.getThreeBytesBe()
         messageLength = Int(data.getThreeBytesBe(offset: 3))
         messageTypeId = data[6]
-        if isExtendedTimestamp(timestamp: messageTimestamp) {
+        if isExtendedTimestamp(timestamp: chunkStream.messageTimestamp) {
             receiveExtendedTimestamp()
         } else {
             receiveDataType1()
@@ -267,8 +264,7 @@ class RtmpServerClient {
     private func receiveDataType1() {
         receiveChunkData(size: chunkStream.handleType1(
             typeId: messageTypeId,
-            length: messageLength,
-            timestamp: messageTimestamp
+            length: messageLength
         ))
     }
 
@@ -277,8 +273,8 @@ class RtmpServerClient {
             stopInternal(reason: "Wrong length \(data.count) in message header type 2 header")
             return
         }
-        messageTimestamp = data.getThreeBytesBe()
-        if isExtendedTimestamp(timestamp: messageTimestamp) {
+        chunkStream.messageTimestamp = data.getThreeBytesBe()
+        if isExtendedTimestamp(timestamp: chunkStream.messageTimestamp) {
             receiveExtendedTimestamp()
         } else {
             receiveDataType2()
@@ -286,7 +282,7 @@ class RtmpServerClient {
     }
 
     private func receiveDataType2() {
-        receiveChunkData(size: chunkStream.handleType2(timestamp: messageTimestamp))
+        receiveChunkData(size: chunkStream.handleType2())
     }
 
     private func handleDataHandshakeDoneData(data: Data) {
