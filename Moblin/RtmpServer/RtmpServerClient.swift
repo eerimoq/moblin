@@ -32,8 +32,8 @@ class RtmpServerClient {
     private var chunkState: ChunkState
     private var chunkSizeToClient = 128
     var chunkSizeFromClient = 128
-    private var chunkStreams: [UInt32: RtmpServerChunkStream]
-    private var chunkStreamId: UInt32
+    private var chunkStreams: [UInt16: RtmpServerChunkStream]
+    private var chunkStreamId: UInt16
     private var messageTimestamp: UInt32
     private var messageTypeId: UInt8
     private var messageStreamId: UInt32
@@ -158,7 +158,7 @@ class RtmpServerClient {
         }
         let firstByte = data[0]
         let format = firstByte >> 6
-        chunkStreamId = UInt32(firstByte & 0x3F)
+        chunkStreamId = UInt16(firstByte & 0x3F)
         // logger.info("rtmp-server: client: First byte format \(format) and chunk stream id \(chunkStreamId)")
         switch chunkStreamId {
         case 0:

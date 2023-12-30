@@ -14,14 +14,14 @@ class RtmpServerChunkStream: VideoCodecDelegate {
     private var messageTimestamp: UInt32
     private var messageStreamId: UInt32
     private weak var client: RtmpServerClient?
-    private var streamId: UInt32
+    private var streamId: UInt16
     private var videoTimestampZero: Double
     private var videoTimestamp: Double
     private var isMessageType0: Bool
     private var formatDescription: CMVideoFormatDescription?
     private var videoCodec: VideoCodec?
 
-    init(client: RtmpServerClient, streamId: UInt32) {
+    init(client: RtmpServerClient, streamId: UInt16) {
         self.client = client
         self.streamId = streamId
         messageData = Data()
@@ -185,22 +185,22 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         }
         client.sendMessage(chunk: RTMPChunk(
             type: .zero,
-            streamId: UInt16(streamId),
+            streamId: streamId,
             message: RTMPWindowAcknowledgementSizeMessage(2_500_000)
         ))
         client.sendMessage(chunk: RTMPChunk(
             type: .zero,
-            streamId: UInt16(streamId),
+            streamId: streamId,
             message: RTMPSetPeerBandwidthMessage(size: 2_500_000, limit: .dynamic)
         ))
         client.sendMessage(chunk: RTMPChunk(
             type: .zero,
-            streamId: UInt16(streamId),
+            streamId: streamId,
             message: RTMPSetChunkSizeMessage(1024)
         ))
         client.sendMessage(chunk: RTMPChunk(
             type: .zero,
-            streamId: UInt16(streamId),
+            streamId: streamId,
             message: RTMPCommandMessage(
                 streamId: messageStreamId,
                 transactionId: transactionId,
@@ -226,7 +226,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         }
         client.sendMessage(chunk: RTMPChunk(
             type: .zero,
-            streamId: UInt16(streamId),
+            streamId: streamId,
             message: RTMPCommandMessage(
                 streamId: messageStreamId,
                 transactionId: transactionId,
@@ -268,7 +268,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         client.server?.handleClientConnected(client: client)
         client.sendMessage(chunk: RTMPChunk(
             type: .zero,
-            streamId: UInt16(streamId),
+            streamId: streamId,
             message: RTMPCommandMessage(
                 streamId: messageStreamId,
                 transactionId: transactionId,
