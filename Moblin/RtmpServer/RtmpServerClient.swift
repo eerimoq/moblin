@@ -35,17 +35,15 @@ class RtmpServerClient {
     private var chunkSizeToClient = 128
     var chunkSizeFromClient = 128
     private var chunkStreams: [UInt16: RtmpServerChunkStream]
-    private var chunkStreamId: UInt16
+    private var chunkStream: RtmpServerChunkStream!
     var streamKey: String = ""
     weak var server: RtmpServer?
-    var latestReveiveDate = Date()
+    var latestReceiveDate = Date()
     var connectionState: RtmpServerClientConnectionState {
         didSet {
             logger.info("rtmp-server: client: State change \(oldValue) -> \(connectionState)")
         }
     }
-
-    private var chunkStream: RtmpServerChunkStream!
 
     init(server: RtmpServer, connection: NWConnection) {
         self.server = server
@@ -53,7 +51,6 @@ class RtmpServerClient {
         state = .uninitialized
         chunkState = .basicHeaderFirstByte
         chunkStreams = [:]
-        chunkStreamId = 0
         connectionState = .idle
         connection.stateUpdateHandler = handleStateUpdate(to:)
         connection.start(queue: rtmpServerDispatchQueue)
@@ -166,7 +163,7 @@ class RtmpServerClient {
         }
         let firstByte = data[0]
         let format = firstByte >> 6
-        chunkStreamId = UInt16(firstByte & 0x3F)
+        let chunkStreamId = UInt16(firstByte & 0x3F)
         switch chunkStreamId {
         case 0:
             stopInternal(reason: "Two bytes basic header is not implemented")
@@ -295,7 +292,7 @@ class RtmpServerClient {
             if let data {
                 // logger.info("rtmp-server: client: Got data \(data)")
                 self.server?.totalBytesReceived += UInt64(data.count)
-                self.latestReveiveDate = Date()
+                self.latestReceiveDate = Date()
                 self.handleData(data: data)
             }
             if let error {

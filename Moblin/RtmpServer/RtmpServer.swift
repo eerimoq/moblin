@@ -118,7 +118,7 @@ class RtmpServer {
     private func cleanupClients() {
         let now = Date()
         var clientsToRemove: [RtmpServerClient] = []
-        for client in clients where client.latestReveiveDate + 10 < now {
+        for client in clients where client.latestReceiveDate + 10 < now {
             clientsToRemove.append(client)
         }
         for client in clientsToRemove {
