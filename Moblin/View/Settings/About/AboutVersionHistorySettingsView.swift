@@ -8,6 +8,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.124.0", date: "2023-12-30", changes: [
+        "- Set exposure point of interest when tapping to focus.",
+        "- Show interface name (en3, en4, ..) instead of Ethernet in SRTLA UI.",
+        "- Configure human readable names for Ethernet network interfaces.",
+        "  - Settings -> Display -> Network interface names",
+        "- Move Chat and Audio level settings from Local overlays to Display.",
+    ]),
     Version(version: "0.123.0", date: "2023-12-30", changes: [
         "• Show RTMP server icon in top right when enabled.",
         "  • RTMP server bitrate next to it when at least one client is connected.",
