@@ -18,6 +18,10 @@ struct ButtonsSettingsView: View {
 
     var body: some View {
         Form {
+            Text("""
+                 A list of all scene buttons, often to hide and show widgets. A scene button can \
+                 be used in zero or more scenes.
+                 """)
             Section {
                 List {
                     ForEach(database.buttons) { button in

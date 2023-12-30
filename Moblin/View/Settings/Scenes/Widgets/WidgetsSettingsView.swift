@@ -23,6 +23,7 @@ struct WidgetsSettingsView: View {
 
     var body: some View {
         Form {
+            Text("A list of all widgets. A widget can be used in zero or more scenes.")
             Section {
                 ForEach(database.widgets) { widget in
                     NavigationLink(destination: WidgetSettingsView(

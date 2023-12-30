@@ -3781,6 +3781,218 @@
         }
       }
     },
+    "A list of all scene buttons, often to hide and show widgets. A scene button can be used in zero or more scenes." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Eine Liste aller Szenenschaltflächen, häufig zum Ein- und Ausblenden von Widgets. Eine Szenentaste kann in null oder mehreren Szenen verwendet werden."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Μια λίστα με όλα τα κουμπιά σκηνής, συχνά για απόκρυψη και εμφάνιση γραφικών στοιχείων. Ένα κουμπί σκηνής μπορεί να χρησιμοποιηθεί σε μηδέν ή περισσότερες σκηνές."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Una lista de todos los botones de escena, a menudo para ocultar y mostrar widgets. Un botón de escena se puede utilizar en cero o más escenas."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Une liste de tous les boutons de scène, souvent pour masquer et afficher les widgets. Un bouton de scène peut être utilisé dans zéro ou plusieurs scènes."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "सभी दृश्य बटनों की एक सूची, अक्सर विजेट को छिपाने और दिखाने के लिए। एक दृश्य बटन का उपयोग शून्य या अधिक दृश्यों में किया जा सकता है।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Daftar semua tombol adegan, sering kali untuk menyembunyikan dan menampilkan widget. Tombol adegan dapat digunakan dalam nol atau lebih adegan."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "すべてのシーン ボタンのリスト。多くの場合、ウィジェットの表示と非表示を切り替えます。シーン ボタンは 0 個以上のシーンで使用できます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "위젯을 숨기고 표시하는 데 사용되는 모든 장면 버튼 목록입니다. 장면 버튼은 0개 이상의 장면에서 사용할 수 있습니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Een lijst met alle scèneknoppen, vaak om widgets te verbergen en weer te geven. Een scèneknop kan worden gebruikt in nul of meer scènes."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Lista wszystkich przycisków scen, często służąca do ukrywania i pokazywania widżetów. Przycisku sceny można używać w przypadku zera lub większej liczby scen."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Uma lista de todos os botões de cena, geralmente para ocultar e mostrar widgets. Um botão de cena pode ser usado em zero ou mais cenas."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Uma lista de todos os botões de cena, geralmente para ocultar e mostrar widgets. Um botão de cena pode ser usado em zero ou mais cenas."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En lista över alla scenknappar, som ofta är till för att dölja och visa widgets. En scenknapp kan användas i noll eller fler scener."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Genellikle widget'ları gizlemek ve göstermek için kullanılan tüm sahne düğmelerinin listesi. Sıfır veya daha fazla sahnede sahne düğmesi kullanılabilir."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Danh sách tất cả các nút cảnh, thường dùng để ẩn và hiển thị các tiện ích. Nút cảnh có thể được sử dụng trong 0 hoặc nhiều cảnh."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "所有场景按钮的列表，通常用于隐藏和显示小部件。场景按钮可用于零个或多个场景。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "所有場景按鈕的列表，通常用於隱藏和顯示小部件。場景按鈕可用於零個或多個場景。"
+          }
+        }
+      }
+    },
+    "A list of all widgets. A widget can be used in zero or more scenes." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Eine Liste aller Widgets. Ein Widget kann in null oder mehreren Szenen verwendet werden."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Μια λίστα με όλα τα γραφικά στοιχεία. Ένα widget μπορεί να χρησιμοποιηθεί σε μηδέν ή περισσότερες σκηνές."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Una lista de todos los widgets. Se puede utilizar un widget en cero o más escenas."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Une liste de tous les widgets. Un widget peut être utilisé dans zéro ou plusieurs scènes."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "सभी विजेट्स की एक सूची. एक विजेट का उपयोग शून्य या अधिक दृश्यों में किया जा सकता है।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Daftar semua widget. Widget dapat digunakan dalam nol atau lebih adegan."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "すべてのウィジェットのリスト。ウィジェットは 0 個以上のシーンで使用できます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "모든 위젯의 목록입니다. 위젯은 0개 이상의 장면에서 사용될 수 있습니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Een lijst met alle widgets. Een widget kan in nul of meer scènes worden gebruikt."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Lista wszystkich widżetów. Widget może być używany w zerowej lub większej liczbie scen."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Uma lista de todos os widgets. Um widget pode ser usado em zero ou mais cenas."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Uma lista de todos os widgets. Um widget pode ser usado em zero ou mais cenas."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En lista över alla widgets. En widget kan användas i noll eller fler scener."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tüm widget'ların listesi. Bir widget sıfır veya daha fazla sahnede kullanılabilir."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Một danh sách tất cả các vật dụng. Một widget có thể được sử dụng trong không hoặc nhiều cảnh."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "所有小部件的列表。一个小部件可以在零个或多个场景中使用。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "所有小部件的清單。一個小部件可以在零個或多個場景中使用。"
+          }
+        }
+      }
+    },
     "About" : {
       "localizations" : {
         "de" : {
