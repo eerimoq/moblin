@@ -1107,113 +1107,6 @@
         }
       }
     },
-    "%@" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@"
-          }
-        }
-      }
-    },
     "%@ " : {
       "localizations" : {
         "de" : {
@@ -1652,226 +1545,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ (%2$@)"
-          }
-        }
-      }
-    },
-    "%@ %@" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ %2$@"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%1$@ %2$@"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ %2$@"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%1$@ %2$@"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%1$@ %2$@"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%1$@ %2$@"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%1$@ %2$@"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%1$@ %2$@"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ %2$@"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%1$@ %2$@"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%1$@ %2$@"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%1$@ %2$@"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%1$@ %2$@"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ %2$@"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%1$@ %2$@"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%1$@ %2$@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%1$@ %2$@"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%1$@ %2$@"
-          }
-        }
-      }
-    },
-    "%lld" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%lld"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%lld"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%lld"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%lld"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%lld"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%lld"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%lld"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%lld"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%lld"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%lld"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%lld"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%lld"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%lld"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%lld"
           }
         }
       }
@@ -2406,113 +2079,6 @@
         }
       }
     },
-    "🤞 Connecting to %@ 🤞" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "🤞 Verbindung zu %@ herstellen🤞"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "🤞 Σύνδεση στο %@ 🤞"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "🤞 Conectándose con %@ 🤞"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "🤞 Connexion à %@ 🤞"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "🤞 %@ 🤞 से कनेक्ट हो रहा हूं"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "🤞 Menghubungkan ke %@ 🤞"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "🤞 %@ に接続中 🤞"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "🤞 %@ 연결 중 🤞"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "🤞 Verbinding maken met %@ 🤞"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "🤞 Łączę z %@ 🤞"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "🤞 Conectando-se a %@ 🤞"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "🤞 Conectando-se a %@ 🤞"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "🤞 Ansluter till %@ 🤞"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "🤞 %@ ile bağlantı kuruluyor 🤞"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "🤞 Đang kết nối với %@ 🤞"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "🤞 连接到 %@ 🤞"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "🤞 連接到 %@ 🤞"
-          }
-        }
-      }
-    },
     "🤟 Stream ended 🤟" : {
       "localizations" : {
         "de" : {
@@ -2615,113 +2181,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "🤟流結束🤟"
-          }
-        }
-      }
-    },
-    "😎 Going live at %@ 😎" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "😎 Live gegangen bei %@ 😎"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "😎 Πηγαίνοντας ζωντανά στο %@ 😎"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "😎 Iniciando %@ 😎"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "😎 Début du direct sur %@ 😎"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "😎 %@ 😎 पर लाइव जा रहा है"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "😎 hidup di %@ 😎"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ry%@😎でライブに行く"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "∎ %@ 😎 송출을 시작합니다."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "😎 Live gaan op %@ 😎"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zaczynasz live, profil: %@ 😎"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "😎 Ao vivo em %@ 😎"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "😎 Ao vivo em %@ 😎"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "😎 Går LIVE på %@ 😎"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "😎 %@ 😎"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "😎 Đi trực tiếp tại %@ 😎"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "😎以%@ live"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "😎以%@ live"
           }
         }
       }
@@ -3994,113 +3453,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "18529305"
-          }
-        }
-      }
-    },
-    "90812903" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "90812903"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "90812903"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "90812903"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "90812903"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "90812903"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "90812903"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "90812903"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "90812903"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "90812903"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "90812903"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "90812903"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "90812903"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "90812903"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "90812903"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "90812903"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "90812903"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "90812903"
           }
         }
       }
@@ -6121,113 +5473,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "音訊比特率"
-          }
-        }
-      }
-    },
-    "Audio bitrate as 32 - 320 kbps. Only AAC codec is supported." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Audio-Bitrate: 32–320 kbit/s. Es wird nur der AAC-Codec unterstützt."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ρυθμός bit ήχου 32 - 320 kbps. Υποστηρίζεται μόνο ο κωδικοποιητής AAC."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Velocidad de bits de audio de 32 a 320 kbps. Solo se admite el códec AAC."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Débit audio de 32 à 320 kbps. Seul le codec AAC est pris en charge."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ऑडियो बिटरेट 32 - 320 केबीपीएस। केवल AAC कोडेक समर्थित है."
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kecepatan bit audio 32 - 320 kbps. Hanya codec AAC yang didukung."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "音声ビットレートは 32 ～ 320 kbps。 AAC コーデックのみがサポートされています。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "오디오 비트 전송률은 32 - 320kbps입니다. AAC 코덱만 지원됩니다."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Audiobitsnelheid 32 - 320 kbps. Alleen AAC-codec wordt ondersteund."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Szybkość transmisji dźwięku 32–320 kb/s. Obsługiwany jest tylko kodek AAC."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Taxa de bits de áudio de 32 a 320 kbps. Somente o codec AAC é compatível."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Taxa de bits de áudio de 32 a 320 kbps. Somente o codec AAC é compatível."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ljudbitrate i intervallet 32 - 320 kbps. Endast AAC-codec stöds."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ses bit hızı 32 - 320 kbps. Yalnızca AAC codec bileşeni desteklenir."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tốc độ bit âm thanh là 32 - 320 kbps. Chỉ hỗ trợ codec AAC."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "音频比特率为 32 - 320 kbps。仅支持 AAC 编解码器。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "音訊位元率為 32 - 320 kbps。僅支援 AAC 編解碼器。"
           }
         }
       }
@@ -12698,220 +11943,6 @@
         }
       }
     },
-    "Copy from OBS." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Von OBS kopieren."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Αντιγραφή από το OBS."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Copia de OBS."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Copie depuis OBS."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ओबीएस से कॉपी करें।"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Salin dari OBS."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBSからコピーします。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "OBS에서 복사하세요."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kopieer vanuit OBS."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kopia z OBS."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Copie do OBS."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Copie do OBS."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kopiera från OBS."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS'den kopyalayın."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Sao chép từ OBS."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "从 OBS 复制。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "從 OBS 複製。"
-          }
-        }
-      }
-    },
-    "Copy from OBS. Tools → WebSocket Server Settings → Show Connect Info → Server Password." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Von OBS kopieren. Werkzeuge → WebSocket Servereinstellungen → Verbindungsinformatioen anzeigen → Serverpassword."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Αντιγραφή από το OBS. Εργαλεία → Ρυθμίσεις διακομιστή WebSocket → Εμφάνιση πληροφοριών σύνδεσης → Κωδικός διακομιστή."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Copia de OBS. Herramientas → Configuración del servidor WebSocket → Mostrar información de conexión → Contraseña del servidor."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Copie depuis OBS. Outils → Paramètres du serveur WebSocket → Afficher les informations de connexion → Mot de passe du serveur."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ओबीएस से कॉपी करें। टूल्स → वेबसॉकेट सर्वर सेटिंग्स → कनेक्ट जानकारी दिखाएं → सर्वर पासवर्ड।"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Salin dari OBS. Alat → Pengaturan Server WebSocket → Tampilkan Info Koneksi → Kata Sandi Server."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBSからコピーします。 [ツール] → [WebSocket サーバー設定] → [接続情報を表示] → [サーバーパスワード]。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS에서 복사하세요. 도구 → WebSocket 서버 설정 → 연결 정보 표시 → 서버 비밀번호."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kopieer vanuit OBS. Hulpmiddelen → WebSocket-serverinstellingen → Verbindingsinfo tonen → Serverwachtwoord."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kopia z OBS. Narzędzia → Ustawienia serwera WebSocket → Pokaż informacje o połączeniu → Hasło serwera."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Copie do OBS. Ferramentas → Configurações do servidor WebSocket → Mostrar informações de conexão → Senha do servidor."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Copie do OBS. Ferramentas → Configurações do servidor WebSocket → Mostrar informações de conexão → Senha do servidor."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kopiera från OBS. Tools → WebSocket Server Settings → Show Connect Info → Server Password."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS'den kopyalayın. Araçlar → WebSocket Sunucu Ayarları → Bağlantı Bilgilerini Göster → Sunucu Şifresi."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Sao chép từ OBS. Công cụ → Cài đặt máy chủ WebSocket → Hiển thị thông tin kết nối → Mật khẩu máy chủ."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "从 OBS 复制。工具 → WebSocket 服务器设置 → 显示连接信息 → 服务器密码。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "從 OBS 複製。工具 → WebSocket 伺服器設定 → 顯示連線資訊 → 伺服器密碼。"
-          }
-        }
-      }
-    },
     "Cosmetics" : {
       "localizations" : {
         "de" : {
@@ -15668,113 +14699,6 @@
         }
       }
     },
-    "Enter this URL into the RTMP publisher device to send video to this stream." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Geben Sie diese URL in das RTMP-Publisher-Gerät ein, um Videos an diesen Stream zu senden."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Εισαγάγετε αυτήν τη διεύθυνση URL στη συσκευή εκδότη RTMP για αποστολή βίντεο σε αυτήν τη ροή."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ingrese esta URL en el dispositivo del editor RTMP para enviar video a esta transmisión."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Entrez cette URL dans l'appareil de l'éditeur RTMP pour envoyer la vidéo à ce flux."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "इस स्ट्रीम पर वीडियो भेजने के लिए इस URL को RTMP प्रकाशक डिवाइस में दर्ज करें।"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Masukkan URL ini ke perangkat penerbit RTMP untuk mengirim video ke aliran ini."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "この URL を RTMP パブリッシャ デバイスに入力して、ビデオをこのストリームに送信します。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "비디오를 이 스트림으로 보내려면 RTMP 게시자 장치에 이 URL을 입력하세요."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Voer deze URL in op het RTMP-uitgeverapparaat om video naar deze stream te verzenden."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Wprowadź ten adres URL na urządzeniu wydawcy RTMP, aby wysłać wideo do tego strumienia."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Insira este URL no dispositivo do editor RTMP para enviar o vídeo para este stream."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Insira este URL no dispositivo do editor RTMP para enviar o vídeo para este stream."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ange den här webbadressen i RTMP-utgivarenheten för att skicka video till den här strömmen."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bu akışa video göndermek için bu URL'yi RTMP yayıncı cihazına girin."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Nhập URL này vào thiết bị của nhà xuất bản RTMP để gửi video tới luồng này."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "将此 URL 输入 RTMP 发布者设备以将视频发送到此流。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "將此 URL 輸入 RTMP 發布者裝置以將影片傳送至此串流。"
-          }
-        }
-      }
-    },
     "Example URL: https://play.afreecatv.com/myChannelName/myVideoId" : {
       "localizations" : {
         "de" : {
@@ -18421,113 +17345,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "如果您需要幫助或想要提供反饋，請隨時加入Moblin Discord Server或在GitHub上寫問題。"
-          }
-        }
-      }
-    },
-    "Fetching OBS scenes from server..." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abruf von OBS-Szenen vom Server..."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Λήψη σκηνών Obs από διακομιστή ..."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Obteniendo las escenas OBS del servidor..."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Récupération des scènes OBS depuis le serveur…"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "सर्वर से अवलोकन दृश्य ..."
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Mengambil adegan obs dari server ..."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "サーバーからOBSシーンを取得します..."
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "서버에서 OBS 장면 가져 오기 ..."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Obs scènes ophalen van server ..."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pobieranie scen OS z serwera ..."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Buscando cenas OBS do servidor..."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Buscando cenas OBS do servidor..."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hämtar OBS-scener från servern..."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sunucudan OBS sahneleri getirme..."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tìm nạp các cảnh quan sát từ máy chủ ..."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "从服务器获取观察场景..."
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "從服務器獲取觀察場景..."
           }
         }
       }
@@ -21606,113 +20423,6 @@
         }
       }
     },
-    "https://dashboard.twitch.tv/u/%@/settings/stream" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "https://dashboard.twitch.tv/u/%@/settings/stream"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "https://dashboard.twitch.tv/u/%@/settings/stream"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "https://dashboard.twitch.tv/u/%@/settings/stream"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "https://dashboard.twitch.tv/u/%@/settings/stream"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "https://dashboard.twitch.tv/u/%@/settings/stream"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "https://dashboard.twitch.tv/u/%@/settings/stream"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "https://dashboard.twitch.tv/u/%@/settings/stream"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "https://dashboard.twitch.tv/u/%@/settings/stream"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "https://dashboard.twitch.tv/u/%@/settings/stream"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "https://dashboard.twitch.tv/u/%@/settings/stream"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "https://dashboard.twitch.tv/u/%@/settings/stream"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "https://dashboard.twitch.tv/u/%@/settings/stream"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "https://dashboard.twitch.tv/u/%@/settings/stream"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "https://dashboard.twitch.tv/u/%@/settings/stream"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "https://dashboard.twitch.tv/u/%@/settings/stream"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "https://dashboard.twitch.tv/u/%@/settings/stream"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "https://dashboard.twitch.tv/u/%@/settings/stream"
-          }
-        }
-      }
-    },
     "Icons" : {
       "localizations" : {
         "de" : {
@@ -23405,113 +22115,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "佈局"
-          }
-        }
-      }
-    },
-    "Length" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Länge"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Μήκος"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Longitud"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Longueur"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "लंबाई"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Panjang"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "長さ"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "길이"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Lengte"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Długość"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Comprimento"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Comprimento"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Längd"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Uzunluk"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Chiều dài"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "长度"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "長度"
           }
         }
       }
@@ -26590,113 +25193,6 @@
         }
       }
     },
-    "My stream" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mein Stream"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ροή μου"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mis streams"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mon stream"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "मेरा प्रवाह"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Stream saya"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "私のストリーム"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "내 스트림"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Mijn stream"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mój stream"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Minha transmissão"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Minha transmissão"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Min ström"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Akışım"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Luồng của tôi"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "我的直播流"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "我的直播"
-          }
-        }
-      }
-    },
     "My widget" : {
       "localizations" : {
         "de" : {
@@ -27969,113 +26465,6 @@
         }
       }
     },
-    "Normally replace <your-device-ip> with your WiFi IP address." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Normalerweise ersetzen Sie <your-device-ip> durch Ihre WLAN-IP-Adresse."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Κανονικά αντικαταστήστε το <your-device-ip> με τη διεύθυνση IP του WiFi."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Normalmente reemplace <your-device-ip> con su dirección IP WiFi."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Remplacez normalement <your-device-ip> par votre adresse IP WiFi."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "आम तौर पर <your-device-ip> को अपने वाईफाई आईपी पते से बदलें।"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Biasanya ganti <ip-perangkat-Anda> dengan alamat IP WiFi Anda."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "通常、<your-device-ip> を WiFi IP アドレスに置き換えます。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "일반적으로 <your-device-ip>를 WiFi IP 주소로 바꾸세요."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Normaal gesproken vervangt u <uw-apparaat-ip> door uw WiFi-IP-adres."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Zwykle zastąp <your-device-ip> adresem IP sieci Wi-Fi."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Normalmente substitua <your-device-ip> pelo seu endereço IP WiFi."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Normalmente substitua <your-device-ip> pelo seu endereço IP WiFi."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ersätt vanligtvis <din-enhets-ip> med ditt WiFi:s IP-adress."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Normalde <cihazınızın-ip> kısmını WiFi IP adresinizle değiştirin."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Thông thường thay thế <your-device-ip> bằng địa chỉ IP WiFi của bạn."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "通常将 <your-device-ip> 替换为您的 WiFi IP 地址。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "通常將 <your-device-ip> 替換為您的 WiFi IP 位址。"
-          }
-        }
-      }
-    },
     "Not configured" : {
       "localizations" : {
         "de" : {
@@ -28602,220 +26991,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "OBS遠端控制未配置"
-          }
-        }
-      }
-    },
-    "OBS remote control is not configured. Configure it in Settings → Streams → %@ → OBS remote control." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "OBS-Fernbedienung ist nicht konfiguriert. Konfiguriere es unter Einstellungen → Streams → %@ → OBS-Fernbedienung."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Το τηλεχειριστήριο OBS δεν έχει ρυθμιστεί. Διαμορφώστε το στις Ρυθμίσεις → Ροές → %@ → Τηλεχειριστήριο OBS."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "El control remoto OBS no está configurado. Configúrelo en Configuración → Streams → %@ → Control remoto OBS."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "La télécommande OBS n'est pas configurée. Configurez-le dans Paramètres → Flux → %@ → Télécommande OBS."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ओबीएस रिमोट कंट्रोल कॉन्फ़िगर नहीं है। इसे सेटिंग्स → स्ट्रीम्स → %@ → ओबीएस रिमोट कंट्रोल में कॉन्फ़िगर करें।"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kendali jarak jauh OBS tidak dikonfigurasi. Konfigurasikan di Pengaturan → Aliran → %@ → kendali jarak jauh OBS."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS リモコンが設定されていません。 「設定」→「ストリーム」→「%@」→「OBS リモコン」で設定します。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "OBS 원격 제어가 구성되지 않았습니다. 설정 → 스트림 → %@ → OBS 원격 제어에서 구성하세요."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS-afstandsbediening is niet geconfigureerd. Configureer het in Instellingen → Streams → %@ → OBS-afstandsbediening."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pilot OBS nie jest skonfigurowany. Skonfiguruj w Ustawieniach → Strumienie → %@ → Pilot OBS."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "O controle remoto OBS não está configurado. Configure-o em Configurações → Streams → %@ → Controle remoto OBS."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "O controle remoto OBS não está configurado. Configure-o em Configurações → Streams → %@ → Controle remoto OBS."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "OBS fjärrkontrollen är inte konfigurerad. Konfigurera den i Inställningar → Strömmar → %@ → OBS fjärrkontroll."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS uzaktan kontrolü yapılandırılmamış. Ayarlar → Akışlar → %@ → OBS uzaktan kumandası bölümünde yapılandırın."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Điều khiển từ xa OBS chưa được cấu hình. Định cấu hình nó trong Cài đặt → Luồng → %@ → Điều khiển từ xa OBS."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS远程控制未配置。在设置 → 流 → %@ → OBS 远程控制中进行配置。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS遠端控制未配置。在設定 → 流 → %@ → OBS 遠端控制中進行設定。"
-          }
-        }
-      }
-    },
-    "OBS remote control is not connected to the server" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Die OBS-Fernbedienung ist nicht mit dem Server verbunden"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Το τηλεχειριστήριο OBS δεν είναι συνδεδεμένο στον διακομιστή"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "El control remoto OBS no está conectado al servidor"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "La télécommande OBS n'est pas connectée au serveur"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ओबीएस रिमोट कंट्रोल सर्वर से कनेक्ट नहीं है"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kendali jarak jauh OBS tidak terhubung ke server"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS リモート コントロールがサーバーに接続されていません"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "OBS 리모컨이 서버에 연결되어 있지 않습니다"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS-afstandsbediening is niet verbonden met de server"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pilot OBS nie jest podłączony do serwera"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "O controle remoto OBS não está conectado ao servidor"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "O controle remoto OBS não está conectado ao servidor"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "OBS fjärrkontrollen är inte ansluten till servern"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS uzaktan kumandası sunucuya bağlı değil"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Điều khiển từ xa OBS không được kết nối với máy chủ"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS远程控制未连接服务器"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS遠端控制未連接伺服器"
           }
         }
       }
@@ -29558,220 +27733,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "OBS Stream停止了"
-          }
-        }
-      }
-    },
-    "OBS WebSocket is not configured. Configure it in Settings -> Streams -> %@ -> OBS." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "OBS WebSocket ist nicht konfiguriert. Konfiguriere ihn unter Einstellungen -> Streams -> %@ -> OBS."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Η παρατήρηση του Websocket δεν έχει ρυθμιστεί.Ρυθμίστε το στις Ρυθμίσεις -> Ροές -> %@ -> OBS."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El OBS WebSocket no está configurado. Configúralo en Ajustes -> Streams -> %@ -> OBS."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Le WebSocket OBS n'est pas configuré. Configurez-le dans Réglages -> Streams -> %@ -> OBS."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS Websocket कॉन्फ़िगर नहीं किया गया है।इसे सेटिंग्स में कॉन्फ़िगर करें -> स्ट्रीम -> %@ -> अवलोकन।"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Obs Websocket tidak dikonfigurasi.Konfigurasikan di Pengaturan -> Streams -> %@ -> obs."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "OBS Websocketは構成されていません。設定で構成 - > streams->%@  - > obs。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "OBS WebSocket은 구성되지 않았습니다.설정 -> streams-> %@ -> obs에서 구성하십시오."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Obs Websocket is niet geconfigureerd.Configureer het in instellingen -> streams -> %@ -> obs."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS WebSocket nie jest skonfigurowany.Skonfiguruj go w Ustawieniach -> Strumienie -> %@ -> obs."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS WebSocket não está configurado. Configure-o em Configurações -> Streams -> %@ -> OBS."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS WebSocket não está configurado. Configure-o em Configurações -> Streams -> %@ -> OBS."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "OBS WebSocket är inte konfigurerat. Konfigurera det i Inställningar -> Strömmar -> %@ -> OBS."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Obs WebSocket yapılandırılmamıştır.Ayarlarda yapılandırın -> akışlar -> %@ -> obs."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBSOCKEXT không được cấu hình.Định cấu hình nó trong cài đặt -> luồng -> %@ -> obs."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS Websocket未配置。在设置 - >流 - >％@-> obs中配置它。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "OBS Websocket未配置。在設置 - >流 - >%@-> obs中配置它。"
-          }
-        }
-      }
-    },
-    "OBS WebSocket is not connected to the server" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "OBS WebSocket ist nicht mit dem Server verbunden"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Η παρατήρηση websocket δεν είναι συνδεδεμένη με τον διακομιστή"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El OBS WebSocket no está conectado al servidor"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "WebSocket OBS non connecté au serveur"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS Websocket सर्वर से जुड़ा नहीं है"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Obs Websocket tidak terhubung ke server"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Obsocketはサーバーに接続されていません"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "OBS 웹소켓은 서버에 연결되어 있지 않습니다"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Obs Websocket is niet verbonden met de server"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS WebSocket nie jest podłączony do serwera"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS WebSocket não está conectado ao servidor"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS WebSocket não está conectado ao servidor"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "OBS WebSocketen är inte ansluten till servern"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Obs WebSocket sunucuya bağlı değil"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Obsocket không được kết nối với máy chủ"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS Websocket未连接到服务器"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS Websocket未連接到服務器"
           }
         }
       }
@@ -31684,113 +29645,6 @@
         }
       }
     },
-    "Publish URL" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "URL veröffentlichen"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Δημοσίευση διεύθυνσης URL"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Publicar URL"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "URL de publication"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "यूआरएल प्रकाशित करें"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Publikasikan URL"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "URLを公開"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "게시 URL"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Publiceer-URL"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Opublikuj adres URL"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Publicar URL"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Publicar URL"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Publicera URL"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "URL'yi yayınla"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "URL xuất bản"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "发布网址"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "發布網址"
-          }
-        }
-      }
-    },
     "Publish URLs" : {
       "localizations" : {
         "de" : {
@@ -31893,113 +29747,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "發布網址"
-          }
-        }
-      }
-    },
-    "Quick buttons" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Schnelltasten"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Γρήγορα κουμπιά"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Botones rápidos"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Boutons rapides"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "त्वरित बटन"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tombol cepat"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "クイックボタン"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "단축키"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Snelle knoppen"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Szybkie przyciski"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Botões rápidos"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Botões rápidos"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Snabbknappar"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Hızlı düğmeler"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Các nút nhanh"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "快捷按钮"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "快速按鈕"
           }
         }
       }
@@ -32530,113 +30277,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "紅色的"
-          }
-        }
-      }
-    },
-    "Replace %@ with your phones IP address." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ersetzen Sie %@ durch die IP-Adresse Ihres Telefons."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Αντικαταστήστε το %@ με τη διεύθυνση IP του τηλεφώνου σας."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Reemplace %@ con la dirección IP de su teléfono."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Remplacez %@ par l'adresse IP de votre téléphone."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ को अपने फ़ोन के आईपी पते से बदलें।"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ganti %@ dengan alamat IP ponsel Anda."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ を電話の IP アドレスに置き換えます。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@을(를) 전화기 IP 주소로 바꾸세요."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Vervang %@ door het IP-adres van uw telefoon."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Zamień %@ na adres IP swojego telefonu."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Substitua %@ pelo endereço IP do seu telefone."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Substitua %@ pelo endereço IP do seu telefone."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ersätt %@ med din telefons IP-adress."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ yerine telefonunuzun IP adresini yazın."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Thay thế %@ bằng địa chỉ IP của điện thoại của bạn."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "将 %@ 替换为您的电话 IP 地址。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "將 %@ 替換為您的電話 IP 位址。"
           }
         }
       }
@@ -33278,111 +30918,107 @@
       }
     },
     "RTMP server bitrate" : {
-
-    },
-    "RTMP server port" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "RTMP Server Port"
+            "state" : "needs_review",
+            "value" : "Bitrate des RTMP-Servers"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Θύρα διακομιστή RTMP"
+            "value" : "Ρυθμός bit διακομιστή RTMP"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Puerto del servidor RTMP"
+            "value" : "tasa de bits del servidor RTMP"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Port du serveur RTMP"
+            "value" : "Débit du serveur RTMP"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "आरटीएमपी सर्वर पोर्ट"
+            "value" : "आरटीएमपी सर्वर बिटरेट"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Pelabuhan server RTMP"
+            "value" : "Kecepatan bit server RTMP"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "RTMPサーバーポート"
+            "value" : "RTMPサーバーのビットレート"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "RTMP 서버 포트"
+            "value" : "RTMP 서버 비트레이트"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "RTMP-serverpoort"
+            "value" : "Bitsnelheid van RTMP-server"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Port serwera RTMP"
+            "value" : "Szybkość transmisji serwera RTMP"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Porta do servidor RTMP"
+            "value" : "Taxa de bits do servidor RTMP"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Porta do servidor RTMP"
+            "value" : "Taxa de bits do servidor RTMP"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "RTMP-serverport"
+            "value" : "RTMP-serverbithastighet"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "RTMP sunucu bağlantı noktası"
+            "value" : "RTMP sunucusu bit hızı"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Cổng máy chủ RTMP"
+            "value" : "Tốc độ bit của máy chủ RTMP"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "RTMP服务器端口"
+            "value" : "RTMP服务器比特率"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "RTMP伺服器連接埠"
+            "value" : "RTMP伺服器位元速率"
           }
         }
       }
@@ -33489,220 +31125,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "RTMP流名稱缺失"
-          }
-        }
-      }
-    },
-    "rtmp://<your-device-ip>:%@/camera/" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "rtmp://<Ihr-Geräte-IP>:%@/camera/"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "rtmp://<your-device-ip>:%@/camera/"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "rtmp://<ip-de-su-dispositivo>:%@/camera/"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "rtmp://<votre-appareil-ip>:%@/camera/"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "rtmp://<your-device-ip>:%@/camera/"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "rtmp://<ip-perangkat-Anda>:%@/camera/"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "rtmp://<あなたのデバイスの IP>:%@/camera/"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "rtmp://<your-device-ip>:%@/camera/"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "rtmp://<uw-apparaat-ip>:%@/camera/"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "rtmp://<ip-twojego-urządzenia>:%@/camera/"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "rtmp://<seu-ip-do-dispositivo>:%@/camera/"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "rtmp://<seu-ip-do-dispositivo>:%@/camera/"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "rtmp://<din-enhets-ip>:%@/camera/"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "rtmp://<cihazınızın-ip'i>:%@/camera/"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "rtmp://<your-device-ip>:%@/camera/"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "rtmp://<您的设备 IP>:%@/camera/"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "rtmp://<您的裝置 IP>:%@/camera/"
-          }
-        }
-      }
-    },
-    "rtmp://<your-device-ip>:%u/camera/" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "rtmp://<Ihr-Geräte-IP>:%u/camera/"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "rtmp://<your-device-ip>:%u/camera/"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "rtmp://<ip-de-su-dispositivo>:%u/camera/"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "rtmp://<votre-adresse-ip>:%u/camera/"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "rtmp://<your-device-ip>:%u/camera/"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "rtmp://<ip-perangkat-Anda>:%u/camera/"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "rtmp://<あなたのデバイスの IP>:%u/camera/"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "rtmp://<사용자 장치-ip>:%u/camera/"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "rtmp://<uw-apparaat-ip>:%u/camera/"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "rtmp://<ip-twojego-urządzenia>:%u/camera/"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "rtmp://<seu-ip-do-dispositivo>:%u/camera/"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "rtmp://<seu-ip-do-dispositivo>:%u/camera/"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "rtmp://<din-enhets-ip>:%u/camera/"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "rtmp://<cihazınızın-ip'i>:%u/camera/"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "rtmp://<your-device-ip>:%u/camera/"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "rtmp://<您的设备 IP>:%u/camera/"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "rtmp://<您的裝置 IP>:%u/camera/"
           }
         }
       }
@@ -36777,113 +34199,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "SRT（LA）端口號丟失"
-          }
-        }
-      }
-    },
-    "SRTLA" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "SRTLA"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SRTLA"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SRTLA"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SRTLA"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "एसआरटीएलए"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SRTLA"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SRTLA"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "SRTLA"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SRTLA"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SRTLA"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SRTLA"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SRTLA"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "SRTLA"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SRTLA"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SRTLA"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SRRTLA"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SRRTLA"
           }
         }
       }
@@ -40281,111 +37596,107 @@
       }
     },
     "The RTMP server allows Moblin to receive video streams over the network. This allows the use of some drones and other cameras as sources." : {
-
-    },
-    "The RTMP server receives video over the network, enabling Moblin to receive video from for example a drone and use it as a camera source." : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Der RTMP-Server empfängt Videos über das Netzwerk, sodass Moblin beispielsweise Videos von einer Drohne empfangen und als Kameraquelle verwenden kann."
+            "value" : "Der RTMP-Server ermöglicht Moblin den Empfang von Videostreams über das Netzwerk. Dies ermöglicht die Verwendung einiger Drohnen und anderer Kameras als Quellen."
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Ο διακομιστής RTMP λαμβάνει βίντεο μέσω του δικτύου, επιτρέποντας στο Moblin να λαμβάνει βίντεο για παράδειγμα από ένα drone και να το χρησιμοποιεί ως πηγή κάμερας."
+            "value" : "Ο διακομιστής RTMP επιτρέπει στο Moblin να λαμβάνει ροές βίντεο μέσω του δικτύου. Αυτό επιτρέπει τη χρήση ορισμένων drones και άλλων καμερών ως πηγών."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "El servidor RTMP recibe vídeo a través de la red, lo que permite a Moblin recibir vídeo, por ejemplo, de un dron y utilizarlo como fuente de cámara."
+            "value" : "El servidor RTMP permite a Moblin recibir transmisiones de video a través de la red. Esto permite el uso de algunos drones y otras cámaras como fuentes."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Le serveur RTMP reçoit la vidéo sur le réseau, permettant à Moblin de recevoir la vidéo d'un drone par exemple et de l'utiliser comme source de caméra."
+            "value" : "Le serveur RTMP permet à Moblin de recevoir des flux vidéo sur le réseau. Cela permet d’utiliser certains drones et autres caméras comme sources."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "आरटीएमपी सर्वर नेटवर्क पर वीडियो प्राप्त करता है, उदाहरण के लिए मोबलिन को ड्रोन से वीडियो प्राप्त करने और इसे कैमरा स्रोत के रूप में उपयोग करने में सक्षम बनाता है।"
+            "value" : "आरटीएमपी सर्वर मोबलिन को नेटवर्क पर वीडियो स्ट्रीम प्राप्त करने की अनुमति देता है। यह कुछ ड्रोन और अन्य कैमरों को स्रोत के रूप में उपयोग करने की अनुमति देता है।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Server RTMP menerima video melalui jaringan, memungkinkan Moblin menerima video misalnya dari drone dan menggunakannya sebagai sumber kamera."
+            "value" : "Server RTMP memungkinkan Moblin menerima streaming video melalui jaringan. Hal ini memungkinkan penggunaan beberapa drone dan kamera lain sebagai sumber."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "RTMP サーバーはネットワーク経由でビデオを受信するため、Moblin がドローンなどからビデオを受信し、それをカメラ ソースとして使用できるようになります。"
+            "value" : "RTMP サーバーにより、Moblin はネットワーク経由でビデオ ストリームを受信できるようになります。これにより、一部のドローンや他のカメラをソースとして使用できるようになります。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "RTMP 서버는 네트워크를 통해 비디오를 수신하므로 Moblin이 드론 등으로부터 비디오를 수신하고 이를 카메라 소스로 사용할 수 있습니다."
+            "value" : "RTMP 서버를 사용하면 Moblin이 네트워크를 통해 비디오 스트림을 수신할 수 있습니다. 이를 통해 일부 드론 및 기타 카메라를 소스로 사용할 수 있습니다."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "De RTMP-server ontvangt video over het netwerk, waardoor Moblin video van bijvoorbeeld een drone kan ontvangen en als camerabron kan gebruiken."
+            "value" : "Dankzij de RTMP-server kan Moblin videostreams over het netwerk ontvangen. Hierdoor kunnen sommige drones en andere camera's als bron worden gebruikt."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Serwer RTMP odbiera wideo przez sieć, dzięki czemu Moblin może odbierać wideo na przykład z drona i wykorzystywać go jako źródło kamery."
+            "value" : "Serwer RTMP umożliwia firmie Moblin odbieranie strumieni wideo przez sieć. Pozwala to na wykorzystanie niektórych dronów i innych kamer jako źródeł."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "O servidor RTMP recebe vídeo pela rede, permitindo que o Moblin receba vídeo, por exemplo, de um drone e o use como fonte de câmera."
+            "value" : "O servidor RTMP permite que o Moblin receba fluxos de vídeo pela rede. Isso permite o uso de alguns drones e outras câmeras como fontes."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "O servidor RTMP recebe vídeo pela rede, permitindo que o Moblin receba vídeo, por exemplo, de um drone e o use como fonte de câmera."
+            "value" : "O servidor RTMP permite que o Moblin receba fluxos de vídeo pela rede. Isso permite o uso de alguns drones e outras câmeras como fontes."
           }
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "RTMP-servern tar emot video över nätverket, vilket gör att Moblin kan ta emot video från till exempel en drönare och använda den som kamerakälla."
+            "state" : "translated",
+            "value" : "RTMP-servern tillåter Moblin att ta emot videoströmmar över nätverket. Detta möjliggör användning av vissa drönare och andra kameror som källor."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "RTMP sunucusu ağ üzerinden video alır ve Moblin'in örneğin bir drone'dan video almasına ve bunu bir kamera kaynağı olarak kullanmasına olanak tanır."
+            "value" : "RTMP sunucusu Moblin'in ağ üzerinden video akışları almasına olanak tanır. Bu, bazı drone'ların ve diğer kameraların kaynak olarak kullanılmasına olanak tanır."
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Máy chủ RTMP nhận video qua mạng, cho phép Moblin nhận video từ máy bay không người lái và sử dụng video đó làm nguồn camera."
+            "value" : "Máy chủ RTMP cho phép Moblin nhận các luồng video qua mạng. Điều này cho phép sử dụng một số máy bay không người lái và các máy ảnh khác làm nguồn."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "RTMP 服务器通过网络接收视频，使 Moblin 能够接收来自无人机等的视频并将其用作摄像头源。"
+            "value" : "RTMP 服务器允许 Moblin 通过网络接收视频流。这允许使用一些无人机和其他相机作为来源。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "RTMP 伺服器透過網路接收視頻，使 Moblin 能夠接收來自無人機等的視頻並將其用作攝影機來源。"
+            "value" : "RTMP 伺服器允許 Moblin 透過網路接收視訊串流。這允許使用一些無人機和其他相機作為來源。"
           }
         }
       }
@@ -43354,113 +40665,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "URL導入失敗"
-          }
-        }
-      }
-    },
-    "Use drones and other RTMP compatible devices as camera." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Nutzen Sie Drohnen und andere RTMP-kompatible Geräte als Kamera."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Χρησιμοποιήστε drones και άλλες συσκευές συμβατές με RTMP ως κάμερα."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Utilice drones y otros dispositivos compatibles con RTMP como cámara."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Utilisez des drones et autres appareils compatibles RTMP comme caméra."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "कैमरे के रूप में ड्रोन और अन्य आरटीएमपी संगत उपकरणों का उपयोग करें।"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Gunakan drone dan perangkat lain yang kompatibel dengan RTMP sebagai kamera."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ドローンやその他の RTMP 対応デバイスをカメラとして使用します。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "드론 및 기타 RTMP 호환 장치를 카메라로 사용하세요."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Gebruik drones en andere RTMP-compatibele apparaten als camera."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Jako kamery używaj dronów i innych urządzeń zgodnych z RTMP."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Use drones e outros dispositivos compatíveis com RTMP como câmera."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Use drones e outros dispositivos compatíveis com RTMP como câmera."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Använd drönare och andra RTMP-kompatibla enheter som kamera."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Drone'ları ve diğer RTMP uyumlu cihazları kamera olarak kullanın."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Sử dụng máy bay không người lái và các thiết bị tương thích RTMP khác làm máy ảnh."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "使用无人机和其他 RTMP 兼容设备作为相机。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "使用無人機和其他 RTMP 相容設備作為相機。"
           }
         }
       }
