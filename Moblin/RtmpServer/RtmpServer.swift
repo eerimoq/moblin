@@ -42,6 +42,7 @@ class RtmpServer {
         rtmpServerDispatchQueue.async {
             do {
                 let options = NWProtocolTCP.Options()
+                // options.noDelay = true
                 let parameters = NWParameters(tls: nil, tcp: options)
                 parameters.requiredLocalEndpoint = .hostPort(
                     host: .ipv4(.any),
@@ -119,33 +120,37 @@ class RtmpServer {
         }
     }
 
+    private func handleNewListenerConnection(connection: NWConnection) {
+        logger.info("rtmp-server: Client TCP connected")
+        let client = RtmpServerClient(server: self, connection: connection)
+        client.start()
+        clients.append(client)
+    }
+
     func handleClientConnected(client: RtmpServerClient) {
-        guard !clients.filter({ activeClient in
-            activeClient !== client
-        }).contains(where: { activeClient in
-            activeClient.streamKey == client.streamKey
-        }) else {
-            logger.info("rtmp-server: Client with stream key \(client.streamKey) already connected")
-            client.stop(reason: "Client with stream key \(client.streamKey) already connected")
-            return
+        var newClients: [RtmpServerClient] = []
+        for aClient in clients {
+            if aClient !== client, aClient.streamKey == client.streamKey {
+                onPublishStop(client.streamKey)
+                aClient.stop(reason: "Same stream key")
+            } else {
+                newClients.append(aClient)
+            }
         }
+        clients = newClients
         onPublishStart(client.streamKey)
         logNumberOfClients()
     }
 
     func handleClientDisconnected(client: RtmpServerClient, reason: String) {
-        onPublishStop(client.streamKey)
+        if !client.streamKey.isEmpty {
+            onPublishStop(client.streamKey)
+        }
         client.stop(reason: reason)
         clients.removeAll { c in
             c === client
         }
         logNumberOfClients()
-    }
-
-    private func handleNewListenerConnection(connection: NWConnection) {
-        let client = RtmpServerClient(server: self, connection: connection)
-        client.start()
-        clients.append(client)
     }
 
     private func logNumberOfClients() {

@@ -20,14 +20,15 @@ private enum ChunkState {
     case data
 }
 
+enum RtmpServerClientConnectionState {
+    case idle
+    case connecting
+    case connected
+}
+
 class RtmpServerClient {
     private var connection: NWConnection
-    private var state: ClientState {
-        didSet {
-            logger.info("rtmp-server: client: State change \(oldValue) -> \(state)")
-        }
-    }
-
+    private var state: ClientState
     private var chunkState: ChunkState
     private var chunkSizeToClient = 128
     var chunkSizeFromClient = 128
@@ -40,6 +41,11 @@ class RtmpServerClient {
     var streamKey: String = ""
     weak var server: RtmpServer?
     var latestReveiveDate = Date()
+    var connectionState: RtmpServerClientConnectionState {
+        didSet {
+            logger.info("rtmp-server: client: State change \(oldValue) -> \(connectionState)")
+        }
+    }
 
     init(server: RtmpServer, connection: NWConnection) {
         self.server = server
@@ -52,6 +58,7 @@ class RtmpServerClient {
         messageLength = 0
         chunkStreams = [:]
         chunkStreamId = 0
+        connectionState = .idle
         connection.stateUpdateHandler = handleStateUpdate(to:)
         connection.start(queue: rtmpServerDispatchQueue)
     }
@@ -60,18 +67,22 @@ class RtmpServerClient {
         state = .uninitialized
         chunkState = .basicHeaderFirstByte
         receiveData(size: 1 + 1536)
+        connectionState = .connecting
     }
 
-    func stop(reason: String) {
-        logger.info("rtmp-server: client: Stop stream key \(streamKey) with reason: \(reason)")
+    func stop(reason _: String) {
         for chunkStream in chunkStreams.values {
             chunkStream.stop()
         }
         chunkStreams.removeAll()
         connection.cancel()
+        connectionState = .idle
     }
 
     func stopInternal(reason: String) {
+        guard connectionState != .idle else {
+            return
+        }
         server?.handleClientDisconnected(client: self, reason: reason)
     }
 

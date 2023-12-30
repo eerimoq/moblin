@@ -264,8 +264,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
             return
         }
         client.streamKey = streamKey
-        // logger.info("rtmp-server: client: Start stream key \(streamKey)")
-        client.server?.onPublishStart(streamKey)
+        client.connectionState = .connected
         client.server?.handleClientConnected(client: client)
         client.sendMessage(chunk: RTMPChunk(
             type: .zero,
