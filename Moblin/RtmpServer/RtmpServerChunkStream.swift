@@ -20,6 +20,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
     private var isMessageType0: Bool
     private var formatDescription: CMVideoFormatDescription?
     private var videoCodec: VideoCodec?
+    var extendedTimestampPresentInType3: Bool
 
     init(client: RtmpServerClient, streamId: UInt16) {
         self.client = client
@@ -32,6 +33,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         videoTimestampZero = -1
         videoTimestamp = 0
         isMessageType0 = true
+        extendedTimestampPresentInType3 = false
     }
 
     func stop() {
@@ -40,39 +42,34 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         client = nil
     }
 
-    func handleType0(
-        messageTypeId: UInt8,
-        messageLength: Int,
-        messageTimestamp: UInt32,
-        messageStreamId: UInt32
-    ) -> Int {
+    func handleType0(typeId: UInt8, length: Int, timestamp: UInt32, streamId: UInt32) -> Int {
         guard let client else {
             return 0
         }
-        self.messageTypeId = messageTypeId
-        self.messageLength = messageLength
-        self.messageTimestamp = messageTimestamp
-        self.messageStreamId = messageStreamId
+        messageTypeId = typeId
+        messageLength = length
+        messageTimestamp = timestamp
+        messageStreamId = streamId
         isMessageType0 = true
         return min(client.chunkSizeFromClient, messageRemain())
     }
 
-    func handleType1(messageTypeId: UInt8, messageLength: Int, messageTimestamp: UInt32) -> Int {
+    func handleType1(typeId: UInt8, length: Int, timestamp: UInt32) -> Int {
         guard let client else {
             return 0
         }
-        self.messageTypeId = messageTypeId
-        self.messageLength = messageLength
-        self.messageTimestamp = messageTimestamp
+        messageTypeId = typeId
+        messageLength = length
+        messageTimestamp = timestamp
         isMessageType0 = false
         return min(client.chunkSizeFromClient, messageRemain())
     }
 
-    func handleType2(messageTimestamp: UInt32) -> Int {
+    func handleType2(timestamp: UInt32) -> Int {
         guard let client else {
             return 0
         }
-        self.messageTimestamp = messageTimestamp
+        messageTimestamp = timestamp
         isMessageType0 = false
         return min(client.chunkSizeFromClient, messageRemain())
     }
