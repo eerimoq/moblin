@@ -42,40 +42,10 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         client = nil
     }
 
-    func handleType0(typeId: UInt8, length: Int, streamId: UInt32) -> Int {
+    func handleMessage() -> Int {
         guard let client else {
             return 0
         }
-        messageTypeId = typeId
-        messageLength = length
-        messageStreamId = streamId
-        isMessageType0 = true
-        return min(client.chunkSizeFromClient, messageRemain())
-    }
-
-    func handleType1(typeId: UInt8, length: Int) -> Int {
-        guard let client else {
-            return 0
-        }
-        messageTypeId = typeId
-        messageLength = length
-        isMessageType0 = false
-        return min(client.chunkSizeFromClient, messageRemain())
-    }
-
-    func handleType2() -> Int {
-        guard let client else {
-            return 0
-        }
-        isMessageType0 = false
-        return min(client.chunkSizeFromClient, messageRemain())
-    }
-
-    func handleType3() -> Int {
-        guard let client else {
-            return 0
-        }
-        isMessageType0 = false
         return min(client.chunkSizeFromClient, messageRemain())
     }
 
@@ -391,14 +361,14 @@ class RtmpServerChunkStream: VideoCodecDelegate {
                 timescale: 1000
             )
         )
-         logger.info("""
+        /* logger.info("""
          rtmp-server: client: Created sample buffer \
          MTS: \(messageTimestamp * messageTimestampScaling) \
          CT: \(compositionTime) \
          DUR: \(timing.duration.seconds), \
          PTS: \(timing.presentationTimeStamp.seconds), \
          DTS: \(timing.decodeTimeStamp.seconds)
-         """) 
+         """) */
         let blockBuffer = messageData.makeBlockBuffer(advancedBy: FLVTagType.video.headerSize)
         var sampleBuffer: CMSampleBuffer?
         var sampleSize = blockBuffer?.dataLength ?? 0

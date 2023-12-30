@@ -36,9 +36,6 @@ class RtmpServerClient {
     private var chunkStreams: [UInt16: RtmpServerChunkStream]
     private var chunkStreamId: UInt16
     private var waitForExtendedTimestamp: Bool
-    private var messageTypeId: UInt8
-    private var messageStreamId: UInt32
-    private var messageLength: Int
     var streamKey: String = ""
     weak var server: RtmpServer?
     var latestReveiveDate = Date()
@@ -56,9 +53,6 @@ class RtmpServerClient {
         state = .uninitialized
         chunkState = .basicHeaderFirstByte
         waitForExtendedTimestamp = false
-        messageTypeId = 0
-        messageStreamId = 0
-        messageLength = 0
         chunkStreams = [:]
         chunkStreamId = 0
         connectionState = .idle
@@ -166,18 +160,7 @@ class RtmpServerClient {
             return
         }
         chunkStream.messageTimestamp = data.getUInt32Be()
-        switch chunkState {
-        case .messageHeaderType0:
-            receiveDataType0()
-        case .messageHeaderType1:
-            receiveDataType1()
-        case .messageHeaderType2:
-            receiveDataType2()
-        case .messageHeaderType3:
-            receiveDataType3()
-        default:
-            fatalError("Bad state \(chunkState) when waiting for extended header")
-        }
+        receiveChunkData()
     }
 
     private func handleDataHandshakeDoneBasicHeaderFirstByte(data: Data) {
@@ -202,6 +185,7 @@ class RtmpServerClient {
             chunkStreams[chunkStreamId] = RtmpServerChunkStream(client: self, streamId: chunkStreamId)
         }
         chunkStream = chunkStreams[chunkStreamId]
+        chunkStream.isMessageType0 = format == 0
         switch format {
         case 0:
             receiveMessageHeaderType0()
@@ -222,13 +206,13 @@ class RtmpServerClient {
             return
         }
         chunkStream.messageTimestamp = data.getThreeBytesBe()
-        messageLength = Int(data.getThreeBytesBe(offset: 3))
-        messageTypeId = data[6]
-        messageStreamId = data.getFourBytesLe(offset: 7)
+        chunkStream.messageLength = Int(data.getThreeBytesBe(offset: 3))
+        chunkStream.messageTypeId = data[6]
+        chunkStream.messageStreamId = data.getFourBytesLe(offset: 7)
         if isExtendedTimestamp(timestamp: chunkStream.messageTimestamp) {
             receiveExtendedTimestamp()
         } else {
-            receiveDataType0()
+            receiveChunkData()
         }
     }
 
@@ -238,34 +222,19 @@ class RtmpServerClient {
         return extended
     }
 
-    private func receiveDataType0() {
-        receiveChunkData(size: chunkStream.handleType0(
-            typeId: messageTypeId,
-            length: messageLength,
-            streamId: messageStreamId
-        ))
-    }
-
     private func handleDataHandshakeDoneMessageHeaderType1(data: Data) {
         guard data.count == 7 else {
             stopInternal(reason: "Wrong length \(data.count) in message header type 1 header")
             return
         }
         chunkStream.messageTimestamp = data.getThreeBytesBe()
-        messageLength = Int(data.getThreeBytesBe(offset: 3))
-        messageTypeId = data[6]
+        chunkStream.messageLength = Int(data.getThreeBytesBe(offset: 3))
+        chunkStream.messageTypeId = data[6]
         if isExtendedTimestamp(timestamp: chunkStream.messageTimestamp) {
             receiveExtendedTimestamp()
         } else {
-            receiveDataType1()
+            receiveChunkData()
         }
-    }
-
-    private func receiveDataType1() {
-        receiveChunkData(size: chunkStream.handleType1(
-            typeId: messageTypeId,
-            length: messageLength
-        ))
     }
 
     private func handleDataHandshakeDoneMessageHeaderType2(data: Data) {
@@ -277,12 +246,8 @@ class RtmpServerClient {
         if isExtendedTimestamp(timestamp: chunkStream.messageTimestamp) {
             receiveExtendedTimestamp()
         } else {
-            receiveDataType2()
+            receiveChunkData()
         }
-    }
-
-    private func receiveDataType2() {
-        receiveChunkData(size: chunkStream.handleType2())
     }
 
     private func handleDataHandshakeDoneData(data: Data) {
@@ -320,15 +285,12 @@ class RtmpServerClient {
             receiveExtendedTimestamp()
             chunkState = .messageHeaderType3
         } else {
-            receiveDataType3()
+            receiveChunkData()
         }
     }
 
-    private func receiveDataType3() {
-        receiveChunkData(size: chunkStream.handleType3())
-    }
-
-    private func receiveChunkData(size: Int) {
+    private func receiveChunkData() {
+        let size = chunkStream.handleMessage()
         if size > 0 {
             receiveData(size: size)
             chunkState = .data
