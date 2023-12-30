@@ -2788,8 +2788,8 @@ final class Model: ObservableObject {
             try device.lockForConfiguration()
             device.focusPointOfInterest = focusPointOfInterest
             device.focusMode = .autoFocus
-            // device.exposurePointOfInterest = focusPoint
-            // device.exposureMode = .autoExpose
+            device.exposurePointOfInterest = focusPointOfInterest
+            device.exposureMode = .autoExpose
             device.unlockForConfiguration()
             manualFocusPoint = focusPoint
             startMotionDetection()
@@ -2814,8 +2814,8 @@ final class Model: ObservableObject {
             try device.lockForConfiguration()
             device.focusPointOfInterest = CGPoint(x: 0.5, y: 0.5)
             device.focusMode = .continuousAutoFocus
-            // device.exposurePointOfInterest = CGPoint(x: 0.5, y: 0.5)
-            // device.exposureMode = .continuousAutoExposure
+            device.exposurePointOfInterest = CGPoint(x: 0.5, y: 0.5)
+            device.exposureMode = .continuousAutoExposure
             device.unlockForConfiguration()
             manualFocusPoint = nil
         } catch let error as NSError {
