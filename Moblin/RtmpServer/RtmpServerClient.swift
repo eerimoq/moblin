@@ -190,6 +190,10 @@ class RtmpServerClient {
             return
         }
         messageTimestamp = data.getThreeBytesBe()
+        if messageTimestamp == 0xffffff {
+            stopInternal(reason: "Extended timestamps are not implemented")
+            return
+        }
         messageLength = Int(data.getThreeBytesBe(offset: 3))
         messageTypeId = data[6]
         messageStreamId = data.getFourBytesLe(offset: 7)
@@ -218,6 +222,10 @@ class RtmpServerClient {
             return
         }
         messageTimestamp = data.getThreeBytesBe()
+        if messageTimestamp == 0xffffff {
+            stopInternal(reason: "Extended timestamps are not implemented")
+            return
+        }
         messageLength = Int(data.getThreeBytesBe(offset: 3))
         messageTypeId = data[6]
         if let length = getChunkStream()?.handleType1(
@@ -237,6 +245,10 @@ class RtmpServerClient {
             return
         }
         messageTimestamp = data.getThreeBytesBe()
+        if messageTimestamp == 0xffffff {
+            stopInternal(reason: "Extended timestamps are not implemented")
+            return
+        }
         if let length = getChunkStream()?.handleType2(messageTimestamp: messageTimestamp), length > 0 {
             receiveChunkData(size: length)
         } else {
