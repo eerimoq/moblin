@@ -54,7 +54,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         // logger.info("rtmp-server: client: Got \(data.count) chunk data and \(messageRemain()) remain")
         if messageRemain() == 0 {
             processMessage()
-            messageData.removeAll()
+            messageData.removeAll(keepingCapacity: true)
         }
     }
 
