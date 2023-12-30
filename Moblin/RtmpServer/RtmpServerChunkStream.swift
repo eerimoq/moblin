@@ -13,14 +13,14 @@ class RtmpServerChunkStream: VideoCodecDelegate {
     var messageTypeId: UInt8
     var messageTimestamp: UInt32
     var messageStreamId: UInt32
+    var isMessageType0: Bool
+    var extendedTimestampPresentInType3: Bool
     private weak var client: RtmpServerClient?
     private var streamId: UInt16
     private var videoTimestampZero: Double
     private var videoTimestamp: Double
-    var isMessageType0: Bool
     private var formatDescription: CMVideoFormatDescription?
     private var videoCodec: VideoCodec?
-    var extendedTimestampPresentInType3: Bool
 
     init(client: RtmpServerClient, streamId: UInt16) {
         self.client = client
