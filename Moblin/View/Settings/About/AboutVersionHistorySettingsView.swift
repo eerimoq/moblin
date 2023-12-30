@@ -12,7 +12,7 @@ private let versions = [
         "• Show RTMP server icon in top right when enabled.",
         "  • RTMP server bitrate next to it when at least one client is connected.",
         "• Not forcing clock to 24h (as Americans insist on using 12h). :slight_smile:",
-        "• RTMP server stability and major refactoring."
+        "• RTMP server stability and major refactoring.",
     ]),
     Version(version: "0.122.0", date: "2023-12-29", changes: [
         "• RTMP server fixes. Can stream from IRL Pro to Moblin, but with wrong timestamps, so video all messed up.",
