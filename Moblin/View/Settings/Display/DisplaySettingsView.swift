@@ -56,6 +56,12 @@ struct DisplaySettingsView: View {
                 NavigationLink(destination: LocalOverlaysNetworkInterfaceNamesSettingsView()) {
                     Text("Network interface names")
                 }
+                Toggle("Low bitrate warning", isOn: Binding(get: {
+                    model.database.lowBitrateWarning!
+                }, set: { value in
+                    model.database.lowBitrateWarning = value
+                    model.store()
+                }))
             }
         }
         .navigationTitle("Display")

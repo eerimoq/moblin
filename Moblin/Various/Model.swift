@@ -632,6 +632,11 @@ final class Model: ObservableObject {
         showingToast = true
     }
 
+    func makeWarningToast(title: String, subTitle: String? = nil) {
+        toast = AlertToast(type: .regular, title: "⚠️ \(title) ⚠️", subTitle: subTitle)
+        showingToast = true
+    }
+
     func makeErrorToast(title: String, font: Font? = nil, subTitle: String? = nil) {
         toast = AlertToast(
             type: .regular,
@@ -2332,7 +2337,7 @@ final class Model: ObservableObject {
         batteryLevel = Double(UIDevice.current.batteryLevel)
         streamingHistoryStream?.updateLowestBatteryLevel(level: batteryLevel)
         if batteryLevel < 0.05 {
-            makeToast(title: "⚠️ Low battery ⚠️")
+            makeWarningToast(title: String(localized: "Low battery"))
         }
     }
 
@@ -2363,13 +2368,20 @@ final class Model: ObservableObject {
         chatSpeedTicks += 1
     }
 
+    private func checkLowBitrate(speed: Int64, now: Date) {
+        guard database.lowBitrateWarning! else {
+            return
+        }
+        if speed < 500_000 && now > latestLowBitrateDate + 15 {
+            makeWarningToast(title: String(localized: "Low bitrate"))
+            latestLowBitrateDate = now
+        }
+    }
+
     private func updateSpeed(now: Date) {
         if isLive {
             let speed = media.streamSpeed()
-            if speed < 500_000 && now > latestLowBitrateDate + 15 {
-                makeToast(title: "⚠️ Low bitrate ⚠️")
-                latestLowBitrateDate = now
-            }
+            checkLowBitrate(speed: speed, now: now)
             streamingHistoryStream?.updateBitrate(bitrate: speed)
             let speedString = formatBytesPerSecond(speed: speed)
             let total = sizeFormatter.string(fromByteCount: media.streamTotal())

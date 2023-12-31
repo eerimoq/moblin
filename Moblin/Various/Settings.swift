@@ -872,6 +872,7 @@ class Database: Codable {
     var globalButtons: [SettingsButton]? = []
     var rtmpServer: SettingsRtmpServer? = .init()
     var networkInterfaceNames: [SettingsNetworkInterfaceName]? = []
+    var lowBitrateWarning: Bool? = true
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -1475,6 +1476,10 @@ final class Settings {
         }
         if realDatabase.networkInterfaceNames == nil {
             realDatabase.networkInterfaceNames = []
+            store()
+        }
+        if realDatabase.lowBitrateWarning == nil {
+            realDatabase.lowBitrateWarning = true
             store()
         }
     }
