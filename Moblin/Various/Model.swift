@@ -327,6 +327,7 @@ final class Model: ObservableObject {
     var frontCameras: [Camera] = []
 
     var recordingsStorage = RecordingsStorage()
+    private var latestLowBitrateDate = Date()
 
     private var rtmpServer: RtmpServer?
     @Published var rtmpSpeedAndTotal = noValue
@@ -1205,7 +1206,7 @@ final class Model: ObservableObject {
             self.updateDigitalClock(now: now)
             self.updateChatSpeed()
             self.media.updateSrtSpeed()
-            self.updateSpeed()
+            self.updateSpeed(now: now)
             self.updateRtmpSpeed()
             self.updateTwitchPubSub(now: now)
             if !self.database.show.audioBar {
@@ -1496,6 +1497,7 @@ final class Model: ObservableObject {
         streaming = true
         streamTotalBytes = 0
         streamTotalChatMessages = 0
+        latestLowBitrateDate = Date()
         reconnectTime = firstReconnectTime
         UIApplication.shared.isIdleTimerDisabled = true
         startNetStream()
@@ -1543,7 +1545,7 @@ final class Model: ObservableObject {
                 networkInterfaceNames: database.networkInterfaceNames!
             )
         }
-        updateSpeed()
+        updateSpeed(now: Date())
     }
 
     private func stopNetStream(reconnect: Bool = false) {
@@ -1552,7 +1554,7 @@ final class Model: ObservableObject {
         media.srtStopStream()
         streamStartDate = nil
         updateUptime(now: Date())
-        updateSpeed()
+        updateSpeed(now: Date())
         updateAudioLevel()
         srtlaConnectionStatistics = noValue
         if !reconnect {
@@ -2361,9 +2363,13 @@ final class Model: ObservableObject {
         chatSpeedTicks += 1
     }
 
-    private func updateSpeed() {
+    private func updateSpeed(now: Date) {
         if isLive {
             let speed = media.streamSpeed()
+            if speed < 500_000 && now > latestLowBitrateDate + 15 {
+                makeToast(title: "⚠️ Low bitrate ⚠️")
+                latestLowBitrateDate = now
+            }
             streamingHistoryStream?.updateBitrate(bitrate: speed)
             let speedString = formatBytesPerSecond(speed: speed)
             let total = sizeFormatter.string(fromByteCount: media.streamTotal())
