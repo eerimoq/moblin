@@ -1055,6 +1055,7 @@ final class Model: ObservableObject {
         DispatchQueue.main.async {
             let camera = self.getRtmpStream(streamKey: streamKey)?.camera() ?? rtmpCamera(name: "Unknown")
             self.makeToast(title: "\(camera) connected")
+            self.media.resetRtmpCamera()
         }
     }
 
@@ -1069,7 +1070,7 @@ final class Model: ObservableObject {
         guard let cameraId = getRtmpStream(streamKey: streamKey)?.id else {
             return
         }
-        media.appendRtmpSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+        media.addRtmpSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
     private func listCameras(position: AVCaptureDevice.Position) -> [Camera] {
