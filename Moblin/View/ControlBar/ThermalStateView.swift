@@ -5,7 +5,7 @@ struct ThermalStateView: View {
 
     var body: some View {
         Image(systemName: "flame")
-            .font(.system(size: 12))
+            .font(.system(size: 11))
             .foregroundColor(thermalState.color())
     }
 }
