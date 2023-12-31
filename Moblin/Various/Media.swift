@@ -392,16 +392,16 @@ final class Media: NSObject {
         })
     }
 
-    func attachRtmpCamera(cameraId: UUID) {
+    func attachRtmpCamera(cameraId: UUID, device: AVCaptureDevice?) {
         rtmpCameraId = cameraId
-        netStream.attachCamera(nil)
+        netStream.attachCamera(device, replaceVideo: true)
     }
 
     func appendRtmpSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
         guard cameraId == rtmpCameraId else {
             return
         }
-        netStream.appendVideoSampleBuffer(sampleBuffer)
+        netStream.addReplaceVideoSampleBuffer(sampleBuffer)
     }
 
     func attachAudio(device: AVCaptureDevice?) {

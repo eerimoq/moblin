@@ -2550,7 +2550,7 @@ final class Model: ObservableObject {
         cameraPosition = nil
         secondCameraDevice = nil
         secondCameraPosition = nil
-        media.attachRtmpCamera(cameraId: cameraId)
+        media.attachRtmpCamera(cameraId: cameraId, device: preferredCamera(position: .front))
         videoView.isMirrored = false
         hasZoom = false
     }
