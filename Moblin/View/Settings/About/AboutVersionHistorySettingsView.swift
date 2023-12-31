@@ -8,12 +8,21 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.125.0", date: "2023-12-31", changes: [
+        "• Widgets and buttons help text.",
+        "• Bigger battery meter.",
+        "• Show low battery warning toast every 10 seconds when below 5% left.",
+        "• Show low bitrate warning toast every 15 seconds if below 500 kbps.",
+        "  • Can be enabled/disabled in settings -> Display.",
+        "• RTMP server cameras can be streamed out from Moblin.",
+        "  • Front camera frames are seen when no stream and when changing scene.",
+    ]),
     Version(version: "0.124.0", date: "2023-12-30", changes: [
-        "- Set exposure point of interest when tapping to focus.",
-        "- Show interface name (en3, en4, ..) instead of Ethernet in SRTLA UI.",
-        "- Configure human readable names for Ethernet network interfaces.",
-        "  - Settings -> Display -> Network interface names",
-        "- Move Chat and Audio level settings from Local overlays to Display.",
+        "• Set exposure point of interest when tapping to focus.",
+        "• Show interface name (en3, en4, ..) instead of Ethernet in SRTLA UI.",
+        "• Configure human readable names for Ethernet network interfaces.",
+        "  • Settings -> Display -> Network interface names",
+        "• Move Chat and Audio level settings from Local overlays to Display.",
     ]),
     Version(version: "0.123.0", date: "2023-12-30", changes: [
         "• Show RTMP server icon in top right when enabled.",
