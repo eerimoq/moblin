@@ -29,7 +29,7 @@ struct StreamSrtSettingsView: View {
                         """
                     )
                 )) {
-                    TextItemView(name: String(localized: "Latency"), value: String(stream.srt.latency))
+                    TextItemView(name: String(localized: "Latency"), value: "\(stream.srt.latency) ms")
                 }
                 .disabled(stream.enabled && model.isLive)
                 Toggle("Big packets", isOn: Binding(get: {

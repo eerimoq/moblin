@@ -392,7 +392,7 @@ final class Media: NSObject {
         })
     }
 
-    func attachRtmpCamera(cameraId: UUID, device: AVCaptureDevice?) {
+    func attachRtmpCamera(cameraId: UUID, latency _: Int32, device: AVCaptureDevice?) {
         rtmpCameraId = cameraId
         netStream.attachCamera(device, replaceVideo: true)
     }

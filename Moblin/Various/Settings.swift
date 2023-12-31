@@ -807,6 +807,7 @@ class SettingsRtmpServerStream: Codable, Identifiable {
     var id: UUID = .init()
     var name: String = "My stream"
     var streamKey: String = ""
+    var latency: Int32? = 2000
 
     func camera() -> String {
         return rtmpCamera(name: name)
@@ -1480,6 +1481,10 @@ final class Settings {
         }
         if realDatabase.lowBitrateWarning == nil {
             realDatabase.lowBitrateWarning = true
+            store()
+        }
+        for stream in realDatabase.rtmpServer!.streams where stream.latency == nil {
+            stream.latency = 2000
             store()
         }
     }

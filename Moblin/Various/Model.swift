@@ -2546,11 +2546,18 @@ final class Model: ObservableObject {
     }
 
     private func attachRtmpCamera(cameraId: UUID) {
+        guard let rtmpStream = getRtmpStream(id: cameraId) else {
+            return
+        }
         cameraDevice = nil
         cameraPosition = nil
         secondCameraDevice = nil
         secondCameraPosition = nil
-        media.attachRtmpCamera(cameraId: cameraId, device: preferredCamera(position: .front))
+        media.attachRtmpCamera(
+            cameraId: cameraId,
+            latency: rtmpStream.latency!,
+            device: preferredCamera(position: .front)
+        )
         videoView.isMirrored = false
         hasZoom = false
     }

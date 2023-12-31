@@ -23,6 +23,19 @@ struct RtmpServerStreamSettingsView: View {
         model.objectWillChange.send()
     }
 
+    func submitLatency(value: String) {
+        guard let latency = Int32(value) else {
+            return
+        }
+        guard latency >= 0 else {
+            return
+        }
+        stream.latency = latency
+        model.store()
+        model.reloadRtmpServer()
+        model.objectWillChange.send()
+    }
+
     private func streamUrl(address: String) -> String {
         return rtmpStreamUrl(address: address, port: port, streamKey: stream.streamKey)
     }
@@ -60,6 +73,14 @@ struct RtmpServerStreamSettingsView: View {
                     onSubmit: submitStreamKey
                 )) {
                     TextItemView(name: String(localized: "Stream key"), value: stream.streamKey)
+                }
+                NavigationLink(destination: TextEditView(
+                    title: String(localized: "Latency"),
+                    value: String(stream.latency!),
+                    onSubmit: submitLatency,
+                    footer: Text("Zero or more milliseconds.")
+                )) {
+                    TextItemView(name: String(localized: "Latency"), value: "\(stream.latency!) ms")
                 }
             } footer: {
                 Text("The stream name is shown in the list of cameras in scene settings.")
