@@ -15,7 +15,7 @@ struct BatteryView: View {
 
     private func width(level: Double) -> Double {
         if level >= 0.0 && level <= 1.0 {
-            return 17 * level
+            return 23 * level
         } else {
             return 0
         }
@@ -30,16 +30,12 @@ struct BatteryView: View {
             if model.database.batteryPercentage! {
                 ZStack(alignment: .center) {
                     RoundedRectangle(cornerRadius: 2)
-                        .stroke(.white)
-                        .background(.white)
                         .foregroundColor(.white)
-                        .frame(width: 18, height: 9)
+                        .frame(width: 24, height: 12)
                     Text(percentage(level: model.batteryLevel))
-                        .lineLimit(1)
-                        .padding(0)
-                        .fixedSize()
                         .foregroundColor(.black)
-                        .font(.system(size: 10))
+                        .font(.system(size: 12))
+                        .fixedSize()
                         .bold()
                 }
             } else {
@@ -49,7 +45,7 @@ struct BatteryView: View {
                     RoundedRectangle(cornerRadius: 1)
                         .foregroundColor(color(level: model.batteryLevel))
                         .padding([.leading], 1)
-                        .frame(width: width(level: model.batteryLevel), height: 8)
+                        .frame(width: width(level: model.batteryLevel), height: 10)
                 }
             }
             Circle()
@@ -59,6 +55,6 @@ struct BatteryView: View {
                 .frame(width: 4)
         }
         .padding([.top], 1)
-        .frame(width: 22, height: 11)
+        .frame(width: 28, height: 13)
     }
 }

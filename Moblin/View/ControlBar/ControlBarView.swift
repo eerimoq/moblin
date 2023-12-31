@@ -76,17 +76,18 @@ struct ControlBarView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack {
+            HStack(spacing: 0) {
                 BatteryView()
-                Spacer()
+                Spacer(minLength: 0)
                 ThermalStateView(thermalState: model.thermalState)
-                Spacer()
+                Spacer(minLength: 0)
                 Text(model.digitalClock)
                     .foregroundColor(.white)
                     .font(smallFont)
             }
             .padding([.bottom], 10)
-            .padding([.leading, .trailing], 10)
+            .padding([.leading], 5)
+            .padding([.trailing], 5)
             HStack(spacing: 0) {
                 Image("\(model.iconImage)NoBackground")
                     .resizable()
