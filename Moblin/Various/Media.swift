@@ -34,7 +34,6 @@ final class Media: NSObject {
     private var srtUrl: String = ""
     private var latency: Int32 = 2000
     private var overheadBandwidth: Int32 = 25
-    private var rtmpCameraId: UUID = .init()
     var onSrtConnected: (() -> Void)!
     var onSrtDisconnected: ((_ reason: String) -> Void)!
     var onRtmpConnected: (() -> Void)!
@@ -368,7 +367,6 @@ final class Media: NSObject {
         videoStabilizationMode: AVCaptureVideoStabilizationMode,
         onSuccess: (() -> Void)? = nil
     ) {
-        rtmpCameraId = .init()
         netStream.videoCapture()?.preferredVideoStabilizationMode = videoStabilizationMode
         netStream.multiVideoCapture()?.preferredVideoStabilizationMode = videoStabilizationMode
         if let secondDevice {
@@ -392,23 +390,20 @@ final class Media: NSObject {
         })
     }
 
-    func attachRtmpCamera(cameraId: UUID, latency: Int32, device: AVCaptureDevice?) {
-        rtmpCameraId = cameraId
-        netStream.attachCamera(device, replaceVideo: NetStreamReplaceVideo(latency: Double(latency / 1000)))
+    func attachRtmpCamera(cameraId: UUID, device: AVCaptureDevice?) {
+        netStream.attachCamera(device, replaceVideoCameraId: cameraId)
     }
 
     func addRtmpSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
-        guard cameraId == rtmpCameraId else {
-            return
-        }
-        netStream.addReplaceVideoSampleBuffer(sampleBuffer)
+        netStream.addReplaceVideoSampleBuffer(id: cameraId, sampleBuffer)
     }
 
-    func resetRtmpCamera(cameraId: UUID) {
-        guard cameraId == rtmpCameraId else {
-            return
-        }
-        netStream.resetReplaceVideo()
+    func addRtmpCamera(cameraId: UUID, latency: Double) {
+        netStream.addReplaceVideo(cameraId: cameraId, latency: latency)
+    }
+
+    func removeRtmpCamera(cameraId: UUID) {
+        netStream.removeReplaceVideo(cameraId: cameraId)
     }
 
     func attachAudio(device: AVCaptureDevice?) {

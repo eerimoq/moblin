@@ -1092,10 +1092,10 @@ final class Model: ObservableObject {
         DispatchQueue.main.async {
             let camera = self.getRtmpStream(streamKey: streamKey)?.camera() ?? rtmpCamera(name: "Unknown")
             self.makeToast(title: "\(camera) connected")
-            guard let cameraId = self.getRtmpStream(streamKey: streamKey)?.id else {
+            guard let stream = self.getRtmpStream(streamKey: streamKey) else {
                 return
             }
-            self.media.resetRtmpCamera(cameraId: cameraId)
+            self.media.addRtmpCamera(cameraId: stream.id, latency: Double(stream.latency! / 1000))
         }
     }
 
@@ -1106,7 +1106,7 @@ final class Model: ObservableObject {
             guard let cameraId = self.getRtmpStream(streamKey: streamKey)?.id else {
                 return
             }
-            self.media.resetRtmpCamera(cameraId: cameraId)
+            self.media.removeRtmpCamera(cameraId: cameraId)
         }
     }
 
@@ -2598,18 +2598,11 @@ final class Model: ObservableObject {
     }
 
     private func attachRtmpCamera(cameraId: UUID) {
-        guard let rtmpStream = getRtmpStream(id: cameraId) else {
-            return
-        }
         cameraDevice = nil
         cameraPosition = nil
         secondCameraDevice = nil
         secondCameraPosition = nil
-        media.attachRtmpCamera(
-            cameraId: cameraId,
-            latency: rtmpStream.latency!,
-            device: preferredCamera(position: .front)
-        )
+        media.attachRtmpCamera(cameraId: cameraId, device: preferredCamera(position: .front))
         videoView.isMirrored = false
         hasZoom = false
     }
