@@ -71,7 +71,7 @@ struct DisplaySettingsView: View {
                 }))
             } footer: {
                 VStack(alignment: .leading) {
-                    Text("Enable \"Vibrate\" to vibrate the device when the following toasts are shown:")
+                    Text("Enable \"Vibrate\" to vibrate the device when the following toasts appear:")
                     Text("")
                     Text("• \(fffffMessage)")
                     Text("• \(formatWarning(lowBitrateMessage))")

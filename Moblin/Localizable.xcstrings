@@ -14811,7 +14811,7 @@
         }
       }
     },
-    "Enable \"Vibrate\" to vibrate the device when the following toasts are shown:" : {
+    "Enable \"Vibrate\" to vibrate the device when the following toasts appear:" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -14828,25 +14828,25 @@
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Habilite \"Vibrar\" para hacer vibrar el dispositivo cuando se muestren los siguientes brindis:"
+            "value" : "Habilite \"Vibrar\" para hacer vibrar el dispositivo cuando aparezcan los siguientes brindis:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Activez « Vibreur » pour faire vibrer l'appareil lorsque les toasts suivants sont affichés :"
+            "value" : "Activez « Vibreur » pour faire vibrer l'appareil lorsque les toasts suivants apparaissent :"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "निम्नलिखित टोस्ट दिखाए जाने पर डिवाइस को कंपन करने के लिए \"वाइब्रेट\" सक्षम करें:"
+            "value" : "निम्नलिखित टोस्ट दिखाई देने पर डिवाइस को कंपन करने के लिए \"वाइब्रेट\" सक्षम करें:"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Aktifkan \"Getar\" untuk menggetarkan perangkat saat toast berikut ditampilkan:"
+            "value" : "Aktifkan \"Getar\" untuk menggetarkan perangkat saat muncul toast berikut:"
           }
         },
         "ja" : {
@@ -14858,31 +14858,31 @@
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "다음 토스트 메시지가 표시될 때 장치를 진동시키려면 \"진동\"을 활성화하십시오."
+            "value" : "다음 토스트 메시지가 나타날 때 장치를 진동시키려면 \"진동\"을 활성화하십시오."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Schakel \"Trillen\" in om het apparaat te laten trillen wanneer de volgende toasts worden weergegeven:"
+            "value" : "Schakel \"Trillen\" in om het apparaat te laten trillen wanneer de volgende toasts verschijnen:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Włącz opcję „Wibracja”, aby urządzenie wibrowało po wyświetleniu następujących komunikatów:"
+            "value" : "Włącz opcję „Wibracja”, aby urządzenie wibrowało, gdy pojawią się następujące komunikaty:"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Habilite \"Vibrar\" para vibrar o dispositivo quando os seguintes brindes forem exibidos:"
+            "value" : "Ative \"Vibrar\" para vibrar o dispositivo quando os seguintes brindes aparecerem:"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Habilite \"Vibrar\" para vibrar o dispositivo quando os seguintes brindes forem exibidos:"
+            "value" : "Ative \"Vibrar\" para vibrar o dispositivo quando os seguintes brindes aparecerem:"
           }
         },
         "sv" : {
@@ -14894,25 +14894,25 @@
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Aşağıdaki tostlar gösterildiğinde cihazı titretmek için \"Titreşim\"i etkinleştirin:"
+            "value" : "Aşağıdaki tostlar göründüğünde cihazı titretmek için \"Titreşim\"i etkinleştirin:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Bật \"Rung\" để rung thiết bị khi hiển thị các thông báo sau:"
+            "value" : "Bật \"Rung\" để rung thiết bị khi xuất hiện các thông báo sau:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "启用“振动”以在显示以下提示时振动设备："
+            "value" : "启用“振动”以在出现以下提示时振动设备："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "啟用“振動”以在顯示以下提示時振動設備："
+            "value" : "啟用“振動”以在出現以下提示時振動設備："
           }
         }
       }
