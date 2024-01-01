@@ -1067,7 +1067,10 @@ final class Model: ObservableObject {
         DispatchQueue.main.async {
             let camera = self.getRtmpStream(streamKey: streamKey)?.camera() ?? rtmpCamera(name: "Unknown")
             self.makeToast(title: "\(camera) connected")
-            self.media.resetRtmpCamera()
+            guard let cameraId = self.getRtmpStream(streamKey: streamKey)?.id else {
+                return
+            }
+            self.media.resetRtmpCamera(cameraId: cameraId)
         }
     }
 
@@ -1075,6 +1078,10 @@ final class Model: ObservableObject {
         DispatchQueue.main.async {
             let camera = self.getRtmpStream(streamKey: streamKey)?.camera() ?? rtmpCamera(name: "Unknown")
             self.makeToast(title: "\(camera) disconnected")
+            guard let cameraId = self.getRtmpStream(streamKey: streamKey)?.id else {
+                return
+            }
+            self.media.resetRtmpCamera(cameraId: cameraId)
         }
     }
 

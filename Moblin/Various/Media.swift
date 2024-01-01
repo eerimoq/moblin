@@ -404,7 +404,10 @@ final class Media: NSObject {
         netStream.addReplaceVideoSampleBuffer(sampleBuffer)
     }
 
-    func resetRtmpCamera() {
+    func resetRtmpCamera(cameraId: UUID) {
+        guard cameraId == rtmpCameraId else {
+            return
+        }
         netStream.resetReplaceVideo()
     }
 
