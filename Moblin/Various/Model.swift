@@ -2373,6 +2373,9 @@ final class Model: ObservableObject {
         guard database.lowBitrateWarning! else {
             return
         }
+        guard streamState == .connected else {
+            return
+        }
         if speed < 500_000 && now > latestLowBitrateDate + 15 {
             makeWarningToast(title: String(localized: "Low bitrate"))
             latestLowBitrateDate = now
