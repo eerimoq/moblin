@@ -1665,7 +1665,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@ EV"
           }
         },
@@ -2089,7 +2089,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "• %@"
           }
         },
@@ -2301,7 +2301,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "⚠️ Audio ist noch nicht implementiert."
           }
         },
@@ -3785,7 +3785,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "18529305"
           }
         },
@@ -4103,8 +4103,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Eine Liste aller Szenenschaltflächen, häufig zum Ein- und Ausblenden von Widgets. Eine Szenentaste kann in null oder mehreren Szenen verwendet werden."
+            "state" : "translated",
+            "value" : "Eine Liste aller Szenenschaltflächen, häufig zum Ein- und Ausblenden von Widgets. Eine Szenentaste kann in keiner oder mehreren Szenen verwendet werden."
           }
         },
         "el" : {
@@ -4209,8 +4209,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Eine Liste aller Widgets. Ein Widget kann in null oder mehreren Szenen verwendet werden."
+            "state" : "translated",
+            "value" : "Eine Liste aller Widgets. Ein Widget kann in keiner oder mehreren Szenen verwendet werden."
           }
         },
         "el" : {
@@ -13649,8 +13649,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Deaktivieren Sie den Server, um seine Einstellungen zu ändern."
+            "state" : "translated",
+            "value" : "Deaktiviere den Server, um seine Einstellungen zu ändern."
           }
         },
         "el" : {
@@ -14709,8 +14709,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Jeder Stream kann Videos von einem RTMP-Herausgeber empfangen, normalerweise einer Drohne."
+            "state" : "translated",
+            "value" : "Jeder Stream kann Videos von einem RTMP-Publisher empfangen, normalerweise einer Drohne."
           }
         },
         "el" : {
@@ -14921,8 +14921,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Aktivieren Sie „Vibrieren“, um das Gerät vibrieren zu lassen, wenn die folgenden Toasts angezeigt werden:"
+            "state" : "translated",
+            "value" : "Aktiviere „Vibrieren“, um das Gerät vibrieren zu lassen, wenn die folgenden Hinweise angezeigt werden:"
           }
         },
         "el" : {
@@ -15345,8 +15345,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Geben Sie eine der URLs in das RTMP-Publisher-Gerät ein, um Videos an diesen Stream zu senden. Geben Sie normalerweise die WLAN-URL ein."
+            "state" : "translated",
+            "value" : "Gebe eine der URLs in das RTMP-Publisher-Gerät ein, um Videos an diesen Stream zu senden. Gebe normalerweise die WLAN-URL ein."
           }
         },
         "el" : {
@@ -16617,8 +16617,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Experimental"
+            "state" : "translated",
+            "value" : "Experimentell"
           }
         },
         "el" : {
@@ -16829,8 +16829,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Belichtungsfehler"
+            "state" : "translated",
+            "value" : "Belichtungsverzerrung"
           }
         },
         "el" : {
@@ -22023,7 +22023,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Schnittstelle"
           }
         },
@@ -23719,7 +23719,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Niedriger Batteriestatus"
           }
         },
@@ -23825,7 +23825,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Niedrige Bitrate"
           }
         },
@@ -23931,7 +23931,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Warnung bei niedriger Bitrate"
           }
         },
@@ -24138,6 +24138,9 @@
           }
         }
       }
+    },
+    "Make sure silent mode is off for vibrations to work." : {
+
     },
     "Malformed RTMP URL" : {
       "localizations" : {
@@ -27217,7 +27220,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Namen der Netzwerkschnittstellen"
           }
         },
@@ -30927,7 +30930,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "URLs veröffentlichen"
           }
         },
@@ -31775,7 +31778,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Einkäufe wiederherstellen"
           }
         },
@@ -32093,7 +32096,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "RTMP"
           }
         },
@@ -33153,8 +33156,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Suchen Sie auf dieser Seite nach „Chatroom“. 18529305 ist die Chatroom-ID im Beispiel-Screenshot unten."
+            "state" : "translated",
+            "value" : "Suche auf dieser Seite nach „Chatroom“. 18529305 ist die Chatroom-ID im Beispiel-Screenshot unten."
           }
         },
         "el" : {
@@ -35486,7 +35489,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "SRTLA"
           }
         },
@@ -36228,7 +36231,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Streamschlüssel fehlt"
           }
         },
@@ -38666,7 +38669,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Der RTMP-Server ermöglicht Moblin den Empfang von Videostreams über das Netzwerk. Dies ermöglicht die Verwendung einiger Drohnen und anderer Kameras als Quellen."
           }
         },
@@ -38772,7 +38775,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Der Streamname wird in der Liste der Kameras in den Szeneneinstellungen angezeigt."
           }
         },
@@ -38878,7 +38881,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Der TCP-Port, auf dem der RTMP-Server auf RTMP-Herausgeber wartet."
           }
         },
@@ -42588,7 +42591,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Vibrieren"
           }
         },
@@ -44714,7 +44717,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Null oder mehr Millisekunden."
           }
         },
