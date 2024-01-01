@@ -60,13 +60,6 @@ struct Icon: Identifiable {
     }
 }
 
-struct Subscription: Identifiable {
-    var name: String
-    var id: String
-    var price: String
-    var subscribed: Bool
-}
-
 let plainIcon = Icon(name: "Plain", id: "AppIcon", price: "")
 private let noMic = Mic(name: "", inputUid: "")
 
@@ -360,7 +353,6 @@ final class Model: ObservableObject {
     @Published var myIcons: [Icon] = []
     @Published var iconsInStore: [Icon] = []
     @Published var iconsNotYetInStore = globalIconsNotYetInStore
-    @Published var iconsSubscriptions: [Subscription] = []
     private var appStoreUpdateListenerTask: Task<Void, Error>?
     private var products: [String: Product] = [:]
     private var streamTotalBytes: UInt64 = 0
