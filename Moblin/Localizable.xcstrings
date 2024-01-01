@@ -1661,6 +1661,9 @@
         }
       }
     },
+    "%@ EV" : {
+
+    },
     "%lld %%" : {
       "localizations" : {
         "de" : {
@@ -16723,6 +16726,7 @@
       }
     },
     "Exposure" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -16827,6 +16831,9 @@
           }
         }
       }
+    },
+    "Exposure bias" : {
+
     },
     "Facebook" : {
       "localizations" : {

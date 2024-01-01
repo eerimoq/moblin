@@ -279,6 +279,7 @@ final class Model: ObservableObject {
     @Published var showingBitrate = false
     @Published var showingMic = false
     @Published var showingObsScene = false
+    @Published var showingImage = false
     @Published var obsScenes: [String] = []
     @Published var obsCurrentScene: String = ""
     @Published var obsCurrentSceneStatus: String = ""

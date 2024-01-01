@@ -135,6 +135,17 @@ struct MainView: View {
                     .frame(width: settingsHalfWidth)
                 }
             }
+            if model.showingImage {
+                HStack {
+                    Spacer()
+                    NavigationStack {
+                        ImageView {
+                            model.showingImage = false
+                        }
+                    }
+                    .frame(width: settingsHalfWidth)
+                }
+            }
             if model.database.debug!.letItSnow! {
                 SpriteView(scene: scene, options: [.allowsTransparency])
                     .ignoresSafeArea()

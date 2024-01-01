@@ -568,6 +568,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case obsScene = "OBS scene"
     case obsStartStopStream = "OBS start/stop stream"
     case record = "Record"
+    case image = "Image"
 
     static func fromString(value: String) -> SettingsButtonType {
         switch value {
@@ -593,6 +594,8 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return .obsStartStopStream
         case String(localized: "Record"):
             return .record
+        case String(localized: "Image"):
+            return .image
         default:
             return .torch
         }
@@ -622,6 +625,8 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return String(localized: "OBS start/stop stream")
         case .record:
             return String(localized: "Record")
+        case .image:
+            return String(localized: "Image")
         }
     }
 }
@@ -1134,6 +1139,15 @@ func addMissingGlobalButtons(database: Database) {
     button.systemImageNameOff = "message"
     addGlobalButtonIfMissing(database: database, button: button)
 
+    button = SettingsButton(name: String(localized: "Image"))
+    button.id = UUID()
+    button.type = .image
+    button.imageType = "System name"
+    button.systemImageNameOn = "photo"
+    button.systemImageNameOff = "photo"
+    button.enabled = false
+    addGlobalButtonIfMissing(database: database, button: button)
+
     button = SettingsButton(name: String(localized: "Black screen"))
     button.id = UUID()
     button.type = .blackScreen
@@ -1146,8 +1160,8 @@ func addMissingGlobalButtons(database: Database) {
     button.id = UUID()
     button.type = .obsScene
     button.imageType = "System name"
-    button.systemImageNameOn = "photo"
-    button.systemImageNameOff = "photo"
+    button.systemImageNameOn = "photo.on.rectangle"
+    button.systemImageNameOff = "photo.on.rectangle"
     addGlobalButtonIfMissing(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "OBS start/stop stream"))

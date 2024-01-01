@@ -125,7 +125,7 @@ struct LeftOverlayView: View {
             }
             if model.database.show.obsStatus! && model.isObsRemoteControlConfigured() {
                 StreamOverlayIconAndTextView(
-                    icon: "photo",
+                    icon: "xserve",
                     text: obsStatusText(),
                     color: obsStatusColor()
                 )

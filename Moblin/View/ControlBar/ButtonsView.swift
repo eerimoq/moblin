@@ -120,6 +120,39 @@ struct ObsSceneView: View {
     }
 }
 
+struct ImageView: View {
+    @EnvironmentObject var model: Model
+    var done: () -> Void
+
+    var body: some View {
+        Form {
+            Section("Exposure bias") {
+                HStack {
+                    Slider(
+                        value: $model.bias,
+                        in: -2 ... 2,
+                        step: 0.2,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            model.setExposureBias(bias: model.bias)
+                        }
+                    )
+                    .onChange(of: model.bias) { _ in
+                        model.setExposureBias(bias: model.bias)
+                    }
+                    Text("\(formatOneDecimal(value: model.bias)) EV")
+                        .frame(width: 60)
+                }
+            }
+        }
+        .toolbar {
+            QuickSettingsToolbar(done: done)
+        }
+    }
+}
+
 private func startStopText(button: ButtonState) -> String {
     return button.isOn ? "Stop" : "Start"
 }
@@ -367,6 +400,16 @@ struct ButtonsView: View {
                                             recordAction(state: second)
                                         }
                                     }
+                                case .image:
+                                    Button(action: {
+                                        model.showingImage = true
+                                    }, label: {
+                                        ButtonImage(
+                                            image: getImage(state: second),
+                                            on: second.isOn,
+                                            buttonSize: buttonSize
+                                        )
+                                    })
                                 }
                                 if model.database.quickButtons!.showName {
                                     Text(second.button.name)
@@ -502,6 +545,16 @@ struct ButtonsView: View {
                                         recordAction(state: pair.first)
                                     }
                                 }
+                            case .image:
+                                Button(action: {
+                                    model.showingImage = true
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: pair.first),
+                                        on: pair.first.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
                             }
                             if model.database.quickButtons!.showName {
                                 Text(pair.first.button.name)
@@ -638,6 +691,16 @@ struct ButtonsView: View {
                                         recordAction(state: second)
                                     }
                                 }
+                            case .image:
+                                Button(action: {
+                                    model.showingImage = true
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: second),
+                                        on: second.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
                             }
                             if model.database.quickButtons!.showName {
                                 Text(second.button.name)
@@ -773,6 +836,16 @@ struct ButtonsView: View {
                                     recordAction(state: pair.first)
                                 }
                             }
+                        case .image:
+                            Button(action: {
+                                model.showingImage = true
+                            }, label: {
+                                ButtonImage(
+                                    image: getImage(state: pair.first),
+                                    on: pair.first.isOn,
+                                    buttonSize: buttonSize
+                                )
+                            })
                         }
                         if model.database.quickButtons!.showName {
                             Text(pair.first.button.name)
