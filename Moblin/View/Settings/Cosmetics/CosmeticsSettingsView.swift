@@ -131,7 +131,7 @@ struct CosmeticsSettingsView: View {
             Section {
                 Button {
                     Task {
-                         await model.updateProductFromAppStore()
+                        await model.updateProductFromAppStore()
                     }
                 } label: {
                     HStack {
@@ -140,7 +140,6 @@ struct CosmeticsSettingsView: View {
                         Spacer()
                     }
                 }
-
             }
         }
         .navigationTitle("Cosmetics")
