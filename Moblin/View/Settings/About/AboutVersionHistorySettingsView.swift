@@ -8,6 +8,14 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.128.0", date: "2024-01-01", changes: [
+        "• RTMP server not experimental any more (but not perfect).",
+        "• Turn off RTMP server when in background.",
+        "  • Maybe revert this later.",
+        "• Image settings button.",
+        "  • Just exposure bias for now.",
+        "• Remove subscriptions and add restore purchases button.",
+    ]),
     Version(version: "0.127.0", date: "2024-01-01", changes: [
         "• Faster switching to RTMP server stream cameras.",
         "  • Do not flush buffers.",
