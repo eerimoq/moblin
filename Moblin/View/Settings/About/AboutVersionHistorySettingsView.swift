@@ -8,6 +8,12 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.127.0", date: "2024-01-01", changes: [
+        "• Faster switching to RTMP server stream cameras.",
+        "  • Do not flush buffers.",
+        "• Only allow changing RTMP server settings when the server is disabled.",
+        "  • Just to keep the code simple.",
+    ]),
     Version(version: "0.126.0", date: "2024-01-01", changes: [
         "• Only show \"Low bitrate\" warning when connected.",
         "• Show charging icon when charging.",
