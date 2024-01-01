@@ -1677,7 +1677,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@ EV"
           }
         },
@@ -2101,7 +2101,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "• %@"
           }
         },
@@ -2313,7 +2313,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "⚠️ El audio aún no está implementado."
           }
         },
@@ -3797,7 +3797,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "18529305"
           }
         },
@@ -4115,7 +4115,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Una lista de todos los botones de escena, a menudo para ocultar y mostrar widgets. Un botón de escena se puede utilizar en cero o más escenas."
           }
         },
@@ -4221,7 +4221,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Una lista de todos los widgets. Se puede utilizar un widget en cero o más escenas."
           }
         },
@@ -13661,8 +13661,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Deshabilite el servidor para cambiar su configuración."
+            "state" : "translated",
+            "value" : "Deshabilita el servidor para cambiar su configuración."
           }
         },
         "fr" : {
@@ -14721,7 +14721,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Cada transmisión puede recibir vídeo de un editor RTMP, normalmente un dron."
           }
         },
@@ -14933,8 +14933,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Habilite \"Vibrar\" para hacer vibrar el dispositivo cuando aparezcan los siguientes brindis:"
+            "state" : "translated",
+            "value" : "Habilita \"Vibrar\" para hacer vibrar el dispositivo cuando aparezcan los siguientes avisos:"
           }
         },
         "fr" : {
@@ -15357,8 +15357,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ingrese una de las URL en el dispositivo del editor RTMP para enviar video a esta transmisión. Generalmente ingrese la URL de WiFi."
+            "state" : "translated",
+            "value" : "Ingresa una de las URL en el dispositivo que envía el RTMP para enviar video a esta transmisión. Generalmente ingresa la URL de WiFi."
           }
         },
         "fr" : {
@@ -16629,7 +16629,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Experimental"
           }
         },
@@ -16841,8 +16841,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Sesgo de exposición"
+            "state" : "translated",
+            "value" : "Control de exposición"
           }
         },
         "fr" : {
@@ -22035,7 +22035,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Interfaz"
           }
         },
@@ -23731,7 +23731,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Batería baja"
           }
         },
@@ -23837,8 +23837,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Baja tasa de bits"
+            "state" : "translated",
+            "value" : "Bitrate bajo"
           }
         },
         "fr" : {
@@ -23943,8 +23943,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Advertencia de baja tasa de bits"
+            "state" : "translated",
+            "value" : "Advertencia de bitrate bajo"
           }
         },
         "fr" : {
@@ -27229,7 +27229,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nombres de interfaz de red"
           }
         },
@@ -30939,7 +30939,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Publicar URL"
           }
         },
@@ -31787,7 +31787,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Restaurar las compras"
           }
         },
@@ -32105,7 +32105,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "RTMP"
           }
         },
@@ -33165,8 +33165,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Busque \"sala de chat\" en esa página. 18529305 es la identificación de la sala de chat en la captura de pantalla de ejemplo siguiente."
+            "state" : "translated",
+            "value" : "Busque \"chatroom\" en esa página. 18529305 es el ID de la sala de chat de ejemplo en la siguiente captura de pantalla."
           }
         },
         "fr" : {
@@ -36240,7 +36240,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Falta la clave de transmisión"
           }
         },
@@ -38678,7 +38678,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "El servidor RTMP permite a Moblin recibir transmisiones de video a través de la red. Esto permite el uso de algunos drones y otras cámaras como fuentes."
           }
         },
@@ -38784,8 +38784,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "El nombre de la transmisión se muestra en la lista de cámaras en la configuración de escena."
+            "state" : "translated",
+            "value" : "El nombre de la transmisión se muestra en la lista de cámaras de la configuración de escena."
           }
         },
         "fr" : {
@@ -38890,8 +38890,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "El puerto TCP en el que el servidor RTMP escucha a los editores RTMP."
+            "state" : "translated",
+            "value" : "El puerto TCP en el que el servidor RTMP escucha a las direcciones RTMP entrantes."
           }
         },
         "fr" : {
@@ -42600,7 +42600,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Vibrar"
           }
         },
@@ -44726,7 +44726,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Cero o más milisegundos."
           }
         },
