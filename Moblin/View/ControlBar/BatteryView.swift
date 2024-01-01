@@ -15,7 +15,7 @@ struct BatteryView: View {
 
     private func width(level: Double) -> Double {
         if level >= 0.0 && level <= 1.0 {
-            return 23 * level
+            return 24 * level
         } else {
             return 0
         }
@@ -25,8 +25,19 @@ struct BatteryView: View {
         return String(Int(level * 100))
     }
 
+    private func boltColor() -> Color {
+        if model.batteryState == .charging || model.batteryState == .full {
+            return .white
+        } else {
+            return .black
+        }
+    }
+
     var body: some View {
         HStack(spacing: 0) {
+            Image(systemName: "bolt.fill")
+                .foregroundColor(boltColor())
+                .font(.system(size: 10))
             if model.database.batteryPercentage! {
                 ZStack(alignment: .center) {
                     RoundedRectangle(cornerRadius: 2)
@@ -42,6 +53,7 @@ struct BatteryView: View {
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 2)
                         .stroke(.gray)
+                        .frame(width: 24, height: 12)
                     RoundedRectangle(cornerRadius: 1)
                         .foregroundColor(color(level: model.batteryLevel))
                         .padding([.leading], 1)

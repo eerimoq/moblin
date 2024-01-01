@@ -14,10 +14,15 @@ struct RtmpServerSettingsView: View {
 
     var body: some View {
         Form {
-            Text("""
-            The RTMP server allows Moblin to receive video streams over the network. \
-            This allows the use of some drones and other cameras as sources.
-            """)
+            Section {
+                Text("""
+                The RTMP server allows Moblin to receive video streams over the network. \
+                This allows the use of some drones and other cameras as sources.
+                """)
+            }
+            Section {
+                Text("⚠️ Audio is not yet supported.")
+            }
             Section {
                 Toggle("Enabled", isOn: Binding(get: {
                     model.database.rtmpServer!.enabled

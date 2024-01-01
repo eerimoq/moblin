@@ -241,6 +241,7 @@ final class Model: ObservableObject {
     @Published var numberOfViewers = noValue
     var numberOfViewersUpdateDate = Date()
     @Published var batteryLevel = Double(UIDevice.current.batteryLevel)
+    @Published var batteryState: UIDevice.BatteryState = .unknown
     @Published var speedAndTotal = noValue
     @Published var thermalState = ProcessInfo.processInfo.thermalState
     var videoView = PiPHKView(frame: .zero)
@@ -1033,10 +1034,21 @@ final class Model: ObservableObject {
             self.ipStatuses = statuses
         }
         ipMonitor.start()
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(
+                                                   handleBatteryStateDidChangeNotification
+                                               ),
+                                               name: UIDevice.batteryStateDidChangeNotification,
+                                               object: nil)
+        updateBatteryState()
     }
 
     @objc func handleWillEnterForegroundNotification() {
         reloadConnections()
+    }
+
+    @objc func handleBatteryStateDidChangeNotification() {
+        updateBatteryState()
     }
 
     func reloadRtmpServer() {
@@ -2340,6 +2352,10 @@ final class Model: ObservableObject {
         if batteryLevel < 0.05 {
             makeWarningToast(title: String(localized: "Low battery"))
         }
+    }
+
+    private func updateBatteryState() {
+        batteryState = UIDevice.current.batteryState
     }
 
     private func updateChatSpeed() {
