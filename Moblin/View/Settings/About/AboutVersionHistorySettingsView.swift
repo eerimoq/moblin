@@ -8,6 +8,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.126.0", date: "2024-01-01", changes: [
+        "• Only show \"Low bitrate\" warning when connected.",
+        "• Show charging icon when charging.",
+        "• Show black frames when RTMP server streams are not connected.",
+        "• Optionally vibrate when showing FFFFF, Low bitrate and Low battery toasts.",
+        "  • Disabled by default. Enable is Settings -> Display -> Vibrate",
+    ]),
     Version(version: "0.125.0", date: "2023-12-31", changes: [
         "• Widgets and buttons help text.",
         "• Bigger battery meter.",
