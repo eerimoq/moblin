@@ -62,6 +62,21 @@ struct DisplaySettingsView: View {
                     model.database.lowBitrateWarning = value
                     model.store()
                 }))
+                Toggle("Vibrate", isOn: Binding(get: {
+                    model.database.vibrate!
+                }, set: { value in
+                    model.database.vibrate = value
+                    model.store()
+                    model.setAllowHapticsAndSystemSoundsDuringRecording()
+                }))
+            } footer: {
+                VStack(alignment: .leading) {
+                    Text("Enable \"Vibrate\" to vibrate the device when the following toasts are shown:")
+                    Text("")
+                    Text("• \(fffffMessage)")
+                    Text("• \(formatWarning(lowBitrateMessage))")
+                    Text("• \(formatWarning(lowBatteryMessage))")
+                }
             }
         }
         .navigationTitle("Display")

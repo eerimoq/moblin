@@ -18,6 +18,13 @@ private let noValue = ""
 private let maximumNumberOfChatMessages = 50
 private let secondsSuffix = String(localized: "/sec")
 private let fallbackStream = SettingsStream(name: "Fallback")
+let fffffMessage = String(localized: "😢 FFFFF 😢")
+let lowBitrateMessage = String(localized: "Low bitrate")
+let lowBatteryMessage = String(localized: "Low battery")
+
+func formatWarning(_ message: String) -> String {
+    return "⚠️ \(message) ⚠️"
+}
 
 struct Camera: Identifiable {
     var id: String
@@ -633,12 +640,15 @@ final class Model: ObservableObject {
         showingToast = true
     }
 
-    func makeWarningToast(title: String, subTitle: String? = nil) {
-        toast = AlertToast(type: .regular, title: "⚠️ \(title) ⚠️", subTitle: subTitle)
+    func makeWarningToast(title: String, subTitle: String? = nil, vibrate: Bool = false) {
+        toast = AlertToast(type: .regular, title: formatWarning(title), subTitle: subTitle)
         showingToast = true
+        if vibrate {
+            UIDevice.vibrate()
+        }
     }
 
-    func makeErrorToast(title: String, font: Font? = nil, subTitle: String? = nil) {
+    func makeErrorToast(title: String, font: Font? = nil, subTitle: String? = nil, vibrate: Bool = false) {
         toast = AlertToast(
             type: .regular,
             title: title,
@@ -646,6 +656,9 @@ final class Model: ObservableObject {
             style: .style(titleColor: .red, titleFont: font)
         )
         showingToast = true
+        if vibrate {
+            UIDevice.vibrate()
+        }
     }
 
     func scrollQuickButtonsToBottom() {
@@ -705,6 +718,13 @@ final class Model: ObservableObject {
         return data
     }
 
+    func setAllowHapticsAndSystemSoundsDuringRecording() {
+        do {
+            try AVAudioSession.sharedInstance()
+                .setAllowHapticsAndSystemSoundsDuringRecording(database.vibrate!)
+        } catch {}
+    }
+
     func setupAudioSession() {
         let session = AVAudioSession.sharedInstance()
         do {
@@ -716,6 +736,7 @@ final class Model: ObservableObject {
         } catch {
             logger.error("app: Session error \(error)")
         }
+        setAllowHapticsAndSystemSoundsDuringRecording()
     }
 
     @objc func handleAudioRouteChange(notification _: Notification) {
@@ -2357,7 +2378,7 @@ final class Model: ObservableObject {
         batteryLevel = Double(UIDevice.current.batteryLevel)
         streamingHistoryStream?.updateLowestBatteryLevel(level: batteryLevel)
         if batteryLevel < 0.05 {
-            makeWarningToast(title: String(localized: "Low battery"))
+            makeWarningToast(title: lowBatteryMessage, vibrate: true)
         }
     }
 
@@ -2400,7 +2421,7 @@ final class Model: ObservableObject {
             return
         }
         if speed < 500_000 && now > latestLowBitrateDate + 15 {
-            makeWarningToast(title: String(localized: "Low bitrate"))
+            makeWarningToast(title: lowBitrateMessage, vibrate: true)
             latestLowBitrateDate = now
         }
     }
@@ -2808,7 +2829,8 @@ final class Model: ObservableObject {
 
     private func makeConnectFailureToast(subTitle: String) {
         makeErrorToast(title: String(localized: "😢 Failed to connect to \(stream.name) 😢"),
-                       subTitle: subTitle)
+                       subTitle: subTitle,
+                       vibrate: true)
     }
 
     private func makeYouAreLiveToast() {
@@ -2823,7 +2845,8 @@ final class Model: ObservableObject {
         makeErrorToast(
             title: String(localized: "😢 FFFFF 😢"),
             font: .system(size: 64).bold(),
-            subTitle: subTitle
+            subTitle: subTitle,
+            vibrate: true
         )
     }
 

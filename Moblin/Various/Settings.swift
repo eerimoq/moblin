@@ -874,6 +874,7 @@ class Database: Codable {
     var rtmpServer: SettingsRtmpServer? = .init()
     var networkInterfaceNames: [SettingsNetworkInterfaceName]? = []
     var lowBitrateWarning: Bool? = true
+    var vibrate: Bool? = false
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -1485,6 +1486,10 @@ final class Settings {
         }
         for stream in realDatabase.rtmpServer!.streams where stream.latency == nil {
             stream.latency = 2000
+            store()
+        }
+        if realDatabase.vibrate == nil {
+            realDatabase.vibrate = false
             store()
         }
     }

@@ -594,3 +594,9 @@ func rtmpCamera(name: String) -> String {
 func isRtmpCamera(camera: String) -> Bool {
     return camera.hasSuffix(cameraPositionRtmp)
 }
+
+extension UIDevice {
+    static func vibrate() {
+        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+    }
+}
