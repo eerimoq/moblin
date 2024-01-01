@@ -164,7 +164,7 @@ private let versions = [
         "• Unfinished \"create stream wizard\" behind experimental toggle.",
         "  • Enable wizard with Settings → Debug → Create stream wizard.",
         "• Show announcements when using Twitch chat.",
-        "• 128 Kpbs audio bitrate by default.",
+        "• 128 Kbps audio bitrate by default.",
         "• Slightly more compact stream info in UI.",
         "• Slider to configure audio bitrate.",
     ]),
