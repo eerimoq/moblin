@@ -21,7 +21,7 @@ struct RtmpServerSettingsView: View {
                 """)
             }
             Section {
-                Text("⚠️ Audio is not yet supported.")
+                Text("⚠️ Audio is not yet implemented.")
             }
             Section {
                 Toggle("Enabled", isOn: Binding(get: {
