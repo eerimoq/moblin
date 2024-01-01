@@ -13645,6 +13645,9 @@
         }
       }
     },
+    "Disable the server to change its settings." : {
+
+    },
     "Discord" : {
       "localizations" : {
         "de" : {

@@ -1079,6 +1079,7 @@ final class Model: ObservableObject {
     func reloadRtmpServer() {
         rtmpServer?.stop()
         rtmpServer = nil
+        stopAllRtmpStreams()
         if database.debug!.rtmpServer! && database.rtmpServer!.enabled {
             rtmpServer = RtmpServer(settings: database.rtmpServer!.clone(),
                                     onPublishStart: handleRtmpServerPublishStart,
@@ -2274,6 +2275,12 @@ final class Model: ObservableObject {
     func getRtmpStream(streamKey: String) -> SettingsRtmpServerStream? {
         return database.rtmpServer!.streams.first { stream in
             stream.streamKey == streamKey
+        }
+    }
+
+    func stopAllRtmpStreams() {
+        for stream in database.rtmpServer!.streams {
+            media.removeRtmpCamera(cameraId: stream.id)
         }
     }
 

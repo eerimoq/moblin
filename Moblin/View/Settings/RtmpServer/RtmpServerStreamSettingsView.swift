@@ -67,6 +67,7 @@ struct RtmpServerStreamSettingsView: View {
                 )) {
                     TextItemView(name: String(localized: "Name"), value: stream.name)
                 }
+                .disabled(model.rtmpServerEnabled())
                 NavigationLink(destination: TextEditView(
                     title: String(localized: "Stream key"),
                     value: stream.streamKey,
@@ -74,6 +75,7 @@ struct RtmpServerStreamSettingsView: View {
                 )) {
                     TextItemView(name: String(localized: "Stream key"), value: stream.streamKey)
                 }
+                .disabled(model.rtmpServerEnabled())
                 NavigationLink(destination: TextEditView(
                     title: String(localized: "Latency"),
                     value: String(stream.latency!),
@@ -82,6 +84,7 @@ struct RtmpServerStreamSettingsView: View {
                 )) {
                     TextItemView(name: String(localized: "Latency"), value: "\(stream.latency!) ms")
                 }
+                .disabled(model.rtmpServerEnabled())
             } footer: {
                 Text("The stream name is shown in the list of cameras in scene settings.")
             }

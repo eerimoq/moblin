@@ -31,6 +31,10 @@ struct RtmpServerSettingsView: View {
                     model.store()
                     model.reloadRtmpServer()
                 }))
+            } footer: {
+                if model.rtmpServerEnabled() {
+                    Text("Disable the server to change its settings.")
+                }
             }
             Section {
                 NavigationLink(destination: TextEditView(
@@ -43,12 +47,13 @@ struct RtmpServerSettingsView: View {
                         value: String(model.database.rtmpServer!.port)
                     )
                 }
+                .disabled(model.rtmpServerEnabled())
             } footer: {
                 Text("The TCP port the RTMP server listens for RTMP publishers on.")
             }
             Section {
                 List {
-                    ForEach(model.database.rtmpServer!.streams) { stream in
+                    let list = ForEach(model.database.rtmpServer!.streams) { stream in
                         NavigationLink(destination: RtmpServerStreamSettingsView(
                             port: model.database.rtmpServer!.port,
                             stream: stream
@@ -64,17 +69,22 @@ struct RtmpServerSettingsView: View {
                             }
                         }
                     }
-                    .onDelete(perform: { indexes in
-                        model.database.rtmpServer!.streams.remove(atOffsets: indexes)
-                        model.store()
-                        model.reloadRtmpServer()
-                    })
+                    if model.rtmpServerEnabled() {
+                        list.onDelete(perform: { indexes in
+                            model.database.rtmpServer!.streams.remove(atOffsets: indexes)
+                            model.store()
+                            model.reloadRtmpServer()
+                        })
+                    } else {
+                        list
+                    }
                 }
                 CreateButtonView(action: {
                     model.database.rtmpServer!.streams.append(SettingsRtmpServerStream())
                     model.store()
                     model.objectWillChange.send()
                 })
+                .disabled(model.rtmpServerEnabled())
             } header: {
                 Text("Streams")
             } footer: {
