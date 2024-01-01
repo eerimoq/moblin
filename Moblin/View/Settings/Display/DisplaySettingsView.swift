@@ -74,6 +74,7 @@ struct DisplaySettingsView: View {
                     Text("Enable \"Vibrate\" to vibrate the device when the following toasts appear:")
                     Text("")
                     Text("• \(fffffMessage)")
+                    Text("• \(failedToConnectMessage("Main"))")
                     Text("• \(formatWarning(lowBitrateMessage))")
                     Text("• \(formatWarning(lowBatteryMessage))")
                 }

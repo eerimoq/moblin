@@ -26,6 +26,10 @@ func formatWarning(_ message: String) -> String {
     return "⚠️ \(message) ⚠️"
 }
 
+func failedToConnectMessage(_ name: String) -> String {
+    return String(localized: "😢 Failed to connect to \(name) 😢")
+}
+
 struct Camera: Identifiable {
     var id: String
     var name: String
@@ -1543,7 +1547,6 @@ final class Model: ObservableObject {
         streaming = true
         streamTotalBytes = 0
         streamTotalChatMessages = 0
-        latestLowBitrateDate = Date()
         reconnectTime = firstReconnectTime
         UIApplication.shared.isIdleTimerDisabled = true
         startNetStream()
@@ -1574,6 +1577,7 @@ final class Model: ObservableObject {
 
     private func startNetStream(reconnect _: Bool = false) {
         streamState = .connecting
+        latestLowBitrateDate = Date()
         switch stream.getProtocol() {
         case .rtmp:
             rtmpStartStream()
@@ -2828,7 +2832,7 @@ final class Model: ObservableObject {
     }
 
     private func makeConnectFailureToast(subTitle: String) {
-        makeErrorToast(title: String(localized: "😢 Failed to connect to \(stream.name) 😢"),
+        makeErrorToast(title: failedToConnectMessage(stream.name),
                        subTitle: subTitle,
                        vibrate: true)
     }
