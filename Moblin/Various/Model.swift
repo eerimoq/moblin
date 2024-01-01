@@ -1080,7 +1080,7 @@ final class Model: ObservableObject {
         rtmpServer?.stop()
         rtmpServer = nil
         stopAllRtmpStreams()
-        if database.debug!.rtmpServer! && database.rtmpServer!.enabled {
+        if database.rtmpServer!.enabled {
             rtmpServer = RtmpServer(settings: database.rtmpServer!.clone(),
                                     onPublishStart: handleRtmpServerPublishStart,
                                     onPublishStop: handleRtmpServerPublishStop,
@@ -2252,9 +2252,6 @@ final class Model: ObservableObject {
     }
 
     private func rtmpCameras() -> [String] {
-        guard database.debug!.rtmpServer! else {
-            return []
-        }
         return database.rtmpServer!.streams.map { stream in
             stream.camera()
         }

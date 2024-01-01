@@ -93,10 +93,8 @@ struct SettingsView: View {
                 NavigationLink(destination: CameraSettingsView()) {
                     Text("Camera")
                 }
-                if model.database.debug!.rtmpServer! {
-                    NavigationLink(destination: RtmpServerSettingsView()) {
-                        Text("RTMP server")
-                    }
+                NavigationLink(destination: RtmpServerSettingsView()) {
+                    Text("RTMP server")
                 }
             }
             Section {
