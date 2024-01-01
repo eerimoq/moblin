@@ -52,54 +52,6 @@ struct CosmeticsSettingsView: View {
             } footer: {
                 Text("Displayed in main view and as app icon.")
             }
-            Section {
-                List {
-                    ForEach(model.iconsSubscriptions) { subscription in
-                        HStack {
-                            Text(subscription.name)
-                            Spacer()
-                            if subscription.subscribed {
-                                Text("Subscribed")
-                            } else {
-                                ZStack {
-                                    Button(action: {
-                                        disabledPurchaseButtons.insert(subscription.id)
-                                        disabledPurchaseButtons = disabledPurchaseButtons
-                                        Task {
-                                            do {
-                                                try await model.purchaseProduct(id: subscription.id)
-                                            } catch {
-                                                logger
-                                                    .info(
-                                                        "cosmetics: Purchase failed with error \(error)"
-                                                    )
-                                            }
-                                            disabledPurchaseButtons.remove(subscription.id)
-                                            disabledPurchaseButtons = disabledPurchaseButtons
-                                        }
-                                    }, label: {
-                                        Text(subscription.price)
-                                    })
-                                    .padding([.leading], 10)
-                                    .disabled(disabledPurchaseButtons.contains(subscription.id))
-                                    .opacity(disabledPurchaseButtons.contains(subscription.id) ? 0.0 : 1.0)
-                                    if disabledPurchaseButtons.contains(subscription.id) {
-                                        ProgressView().padding([.leading], 10)
-                                    }
-                                }
-                            }
-                        }
-                        .tag(subscription.id)
-                    }
-                }
-            } header: {
-                Text("Subscriptions")
-            } footer: {
-                Text("""
-                The "All icons" subscription gives you access to all icons in store for as long as the \
-                subscription lasts. This includes all icons added in the future.
-                """)
-            }
             if !model.iconsInStore.isEmpty {
                 Section {
                     List {
@@ -144,8 +96,6 @@ struct CosmeticsSettingsView: View {
                     }
                 } header: {
                     Text("Icons in store")
-                } footer: {
-                    Text("Buy individual icons from the icons store. They are yours forever.")
                 }
             } else {
                 Section {
@@ -177,6 +127,20 @@ struct CosmeticsSettingsView: View {
                 }
             } header: {
                 Text("Icons not yet in store")
+            }
+            Section {
+                Button {
+                    Task {
+                         await model.updateProductFromAppStore()
+                    }
+                } label: {
+                    HStack {
+                        Spacer()
+                        Text("Restore purchases")
+                        Spacer()
+                    }
+                }
+
             }
         }
         .navigationTitle("Cosmetics")

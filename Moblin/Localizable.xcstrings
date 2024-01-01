@@ -1662,7 +1662,110 @@
       }
     },
     "%@ EV" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%@ EV"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%@ EV"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%@ EV"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ EV"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ EV"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%@ EV"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%@ EV"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ EV"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%@ EV"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ EV"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ EV"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ EV"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ EV"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%@ EV"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ EV"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ EV"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ EV"
+          }
+        }
+      }
     },
     "%lld %%" : {
       "localizations" : {
@@ -9832,112 +9935,6 @@
         }
       }
     },
-    "Buy individual icons from the icons store. They are yours forever." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kaufe individuelle Icons aus dem Icons Store. Sie gehören dir für immer."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Αγοράστε μεμονωμένα εικονίδια από το κατάστημα εικονιδίων.Είναι δικά σας για πάντα."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compra iconos individuales en la tienda de iconos. Serán tuyos para siempre"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "En achetant des icônes sur le store, elles resteront à vous."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "आइकन स्टोर से व्यक्तिगत आइकन खरीदें।वे हमेशा के लिए तुम्हारे हैं।"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Beli ikon individual dari toko ikon.Mereka milikmu selamanya."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "アイコンストアから個別のアイコンを購入します。彼らは永遠にあなたのものです。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "아이콘 저장소에서 개별 아이콘을 구입하십시오.그들은 영원히 당신의 것입니다."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Koop individuele pictogrammen van de ICRONS Store. Ze zijn voor altijd van jou."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kup indywidualne ikony w sklepie ikon.Są twoje na zawsze."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Compre ícones individuais na loja de ícones. Eles são seus para sempre."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Compre ícones individuais na loja de ícones. Eles são seus para sempre."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Köp enskilda ikoner från affären. Dom blir dina för evigt!"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Simgeler mağazasından bireysel simgeler satın alın.Sonsuza dek senin."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Mua các biểu tượng cá nhân từ cửa hàng biểu tượng.Họ là của bạn mãi mãi."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "从图标商店购买单独的图标。他们永远是你的。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "從圖標商店購買單獨的圖標。他們永遠是你的。"
-          }
-        }
-      }
-    },
     "Camera" : {
       "localizations" : {
         "de" : {
@@ -13649,7 +13646,110 @@
       }
     },
     "Disable the server to change its settings." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Deaktivieren Sie den Server, um seine Einstellungen zu ändern."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Απενεργοποιήστε τον διακομιστή για να αλλάξετε τις ρυθμίσεις του."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Deshabilite el servidor para cambiar su configuración."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Désactivez le serveur pour modifier ses paramètres."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "सर्वर की सेटिंग्स बदलने के लिए उसे अक्षम करें।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nonaktifkan server untuk mengubah pengaturannya."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "サーバーの設定を変更できないようにします。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "설정을 변경하려면 서버를 비활성화하세요."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Schakel de server uit om de instellingen te wijzigen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Wyłącz serwer, aby zmienić jego ustawienia."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Desative o servidor para alterar suas configurações."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Desative o servidor para alterar suas configurações."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inaktivera servern för att ändra dess inställningar."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ayarlarını değiştirmek için sunucuyu devre dışı bırakın."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Vô hiệu hóa máy chủ để thay đổi cài đặt của nó."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "禁用服务器以更改其设置。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "禁用伺服器以更改其設定。"
+          }
+        }
+      }
     },
     "Discord" : {
       "localizations" : {
@@ -16725,115 +16825,111 @@
         }
       }
     },
-    "Exposure" : {
-      "extractionState" : "stale",
+    "Exposure bias" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Belichtung"
+            "state" : "needs_review",
+            "value" : "Belichtungsfehler"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Εκθεση"
+            "value" : "Προκατάληψη έκθεσης"
           }
         },
         "es" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Exposición"
+            "state" : "needs_review",
+            "value" : "Sesgo de exposición"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Exposition"
+            "state" : "needs_review",
+            "value" : "Biais d'exposition"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "खुलासा"
+            "value" : "एक्सपोज़र पूर्वाग्रह"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Paparan"
+            "value" : "Bias eksposur"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "暴露"
+            "value" : "露出補正"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "노출도"
+            "state" : "needs_review",
+            "value" : "노출 편향"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Blootstelling"
+            "value" : "Blootstellingsbias"
           }
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ekspozycja"
+            "state" : "needs_review",
+            "value" : "Błąd ekspozycji"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Exposição"
+            "value" : "Viés de exposição"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Exposição"
+            "value" : "Viés de exposição"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Exponering"
+            "value" : "Exponeringsbias"
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruziyet"
+            "state" : "needs_review",
+            "value" : "Pozlama yanlılığı"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Phơi bày"
+            "value" : "Xu hướng tiếp xúc"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "曝光"
+            "state" : "needs_review",
+            "value" : "曝光偏差"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "曝露"
+            "value" : "曝光偏差"
           }
         }
       }
-    },
-    "Exposure bias" : {
-
     },
     "Facebook" : {
       "localizations" : {
@@ -31675,6 +31771,112 @@
         }
       }
     },
+    "Restore purchases" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Einkäufe wiederherstellen"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Επαναφορά αγορών"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Restaurar las compras"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Restaurer les achats"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "खरीदारी वापस लौटाएं"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mengembalikan pembelian"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "購入を復元"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "구매를 복원"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aankopen herstellen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Przywróć zakupy"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Restaurar compras"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Restaurar compras"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Återställ köp "
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Satın alınanları geri yükle"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Khôi phục mua hàng"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "恢复购买"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "恢復購買"
+          }
+        }
+      }
+    },
     "Retrying later" : {
       "localizations" : {
         "de" : {
@@ -36763,218 +36965,6 @@
         }
       }
     },
-    "Subscribed" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abonniert"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Καταγεγραμμένος"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Suscrito"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abonné"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "सदस्यता लिया"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Berlangganan"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "購読"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "구독"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Geabonneerd"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Subskrybowane"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Subscrito"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Subscrito"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Prenumerant"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Abone olundu"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Đăng ký"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "订阅"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "訂閱"
-          }
-        }
-      }
-    },
-    "Subscriptions" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abonnements"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Συνδρομές"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Suscripciones"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abonnements"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "सदस्यता"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Langganan"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "サブスクリプション"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "구독"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Abonnementen"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Subskrypcje"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Assinaturas"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Assinaturas"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Prenumereringar"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Abonelik"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Đăng ký"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "订阅"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "訂閱"
-          }
-        }
-      }
-    },
     "Summary and stream name" : {
       "localizations" : {
         "de" : {
@@ -38137,112 +38127,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "模板：srtla：// my_public_ip：my_public_port"
-          }
-        }
-      }
-    },
-    "The \"All icons\" subscription gives you access to all icons in store for as long as the subscription lasts. This includes all icons added in the future." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mit dem Abonnement \"Alle Icons\" hast du Zugriff auf alle Icons im Shop, solange das Abonnement läuft. Dies schließt alle Icons ein, die in Zukunft hinzugefügt werden."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Η συνδρομή \"All Icons\" σας δίνει πρόσβαση σε όλα τα εικονίδια στο κατάστημα για όσο διάστημα διαρκεί η συνδρομή.Αυτό περιλαμβάνει όλα τα εικονίδια που προστέθηκαν στο μέλλον."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La suscripción \"Todos los iconos\" le da acceso a todos los iconos de la tienda mientras dure la suscripción. Esto incluye todos los iconos que se añadan en el futuro."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "L'abonnement \"All icons\" vous donne accès à toutes les icônes du store pendant la durée d'abonnement. Vous aurez aussi accès aux icônes ajoutées en cours d'abonnement."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "\"ऑल आइकन\" सदस्यता आपको सब्सक्रिप्शन के रूप में लंबे समय तक स्टोर में सभी आइकन तक पहुंच प्रदान करती है।इसमें भविष्य में जोड़े गए सभी आइकन शामिल हैं।"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Langganan \"All Icons\" memberi Anda akses ke semua ikon yang ada selama langganan berlangsung.Ini termasuk semua ikon yang ditambahkan di masa depan."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "「すべてのアイコン」サブスクリプションは、サブスクリプションが続く限り、ストアのすべてのアイコンにアクセスできます。これには、将来追加されたすべてのアイコンが含まれます。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "\"모든 아이콘\"구독은 구독이 지속되는 한 상점의 모든 아이콘에 액세스 할 수 있습니다. 여기에는 향후 추가 된 모든 아이콘이 포함됩니다."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Het abonnement \"Alle pictogrammen\" geeft u toegang tot alle pictogrammen in de winkel zolang het abonnement duurt.Dit omvat alle pictogrammen die in de toekomst zijn toegevoegd."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Subskrypcja „Wszystkie ikony” zapewnia dostęp do wszystkich ikon, o ile subskrypcja trwa.Obejmuje to wszystkie ikony dodane w przyszłości."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "A assinatura \"Todos os ícones\" dá acesso a todos os ícones da loja enquanto durar a assinatura. Isso inclui todos os ícones adicionados no futuro."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "A assinatura \"Todos os ícones\" dá acesso a todos os ícones da loja enquanto durar a assinatura. Isso inclui todos os ícones adicionados no futuro."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Prenumerationen \"Alla ikoner\" ger dig tillgång till alla ikoner i butiken så länge som prenumerationen varar. Detta inkluderar alla ikoner som läggs till i framtiden."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "\"Tüm simgeler\" aboneliği, abonelik sürdüğü sürece mağazadaki tüm simgelere erişmenizi sağlar.Bu, gelecekte eklenen tüm simgeleri içerir."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Đăng ký \"Tất cả các biểu tượng\" cho phép bạn truy cập vào tất cả các biểu tượng trong cửa hàng miễn là đăng ký kéo dài.Điều này bao gồm tất cả các biểu tượng được thêm vào trong tương lai."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "“所有图标”订阅可让您访问存储中的所有图标，只要订阅持续即可。这包括将来添加的所有图标。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "“所有圖標”訂閱可讓您訪問存儲中的所有圖標，只要訂閱持續即可。這包括將來添加的所有圖標。"
           }
         }
       }

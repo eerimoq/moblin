@@ -106,11 +106,6 @@ private let globalIconsNotYetInStore = [
     Icon(name: "Eyebrows", id: "AppIconEyebrows", price: ""),
 ]
 
-private let iconsSubscriptionsProductIds = [
-    "AllIconsMonthly",
-    "AllIconsYearly",
-]
-
 struct ChatMessageEmote: Identifiable {
     var id = UUID()
     var url: URL
@@ -496,8 +491,7 @@ final class Model: ObservableObject {
     @MainActor
     private func getProductsFromAppStore() async {
         do {
-            let allProductIds = iconsProductIds + iconsSubscriptionsProductIds
-            let products = try await Product.products(for: allProductIds)
+            let products = try await Product.products(for: iconsProductIds)
             for product in products {
                 self.products[product.id] = product
             }
@@ -535,8 +529,7 @@ final class Model: ObservableObject {
     func updateProductFromAppStore() async {
         logger.info("cosmetics: Update my products from App Store")
         let myProductIds = await getMyProductIds()
-        let isSubscribed = updateSubscriptions(myProductIds: myProductIds)
-        updateIcons(myProductIds: myProductIds, isSubscribed: isSubscribed)
+        updateIcons(myProductIds: myProductIds)
     }
 
     private func getMyProductIds() async -> [String] {
@@ -551,7 +544,7 @@ final class Model: ObservableObject {
         return myProductIds
     }
 
-    private func updateIcons(myProductIds: [String], isSubscribed: Bool) {
+    private func updateIcons(myProductIds: [String]) {
         var myIcons = globalMyIcons
         var iconsInStore: [Icon] = []
         for productId in iconsProductIds {
@@ -559,7 +552,7 @@ final class Model: ObservableObject {
                 logger.info("cosmetics: Icon product \(productId) not found")
                 continue
             }
-            if myProductIds.contains(productId) || isSubscribed {
+            if myProductIds.contains(productId) {
                 myIcons.append(Icon(
                     name: product.displayName,
                     id: product.id,
@@ -575,29 +568,6 @@ final class Model: ObservableObject {
         }
         self.myIcons = myIcons
         self.iconsInStore = iconsInStore
-    }
-
-    private func updateSubscriptions(myProductIds: [String]) -> Bool {
-        var isSubscribed = false
-        var subscriptions: [Subscription] = []
-        for productId in iconsSubscriptionsProductIds {
-            guard let product = products[productId] else {
-                logger.info("cosmetics: Subscription product \(productId) not found")
-                continue
-            }
-            let subscribed = myProductIds.contains(productId)
-            subscriptions.append(Subscription(
-                name: product.displayName,
-                id: product.id,
-                price: product.displayPrice,
-                subscribed: subscribed
-            ))
-            if subscribed {
-                isSubscribed = true
-            }
-        }
-        iconsSubscriptions = subscriptions
-        return isSubscribed
     }
 
     private func findProduct(id: String) -> Product? {
