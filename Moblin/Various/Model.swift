@@ -1049,6 +1049,12 @@ final class Model: ObservableObject {
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(
+                                                   handleDidEnterBackgroundNotification
+                                               ),
+                                               name: UIApplication.didEnterBackgroundNotification,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(
                                                    handleWillEnterForegroundNotification
                                                ),
                                                name: UIApplication
@@ -1069,18 +1075,27 @@ final class Model: ObservableObject {
         updateBatteryState()
     }
 
+    @objc func handleDidEnterBackgroundNotification() {
+        stopRtmpServer()
+    }
+
     @objc func handleWillEnterForegroundNotification() {
         reloadConnections()
+        reloadRtmpServer()
     }
 
     @objc func handleBatteryStateDidChangeNotification() {
         updateBatteryState()
     }
 
-    func reloadRtmpServer() {
+    private func stopRtmpServer() {
         rtmpServer?.stop()
         rtmpServer = nil
         stopAllRtmpStreams()
+    }
+
+    func reloadRtmpServer() {
+        stopRtmpServer()
         if database.rtmpServer!.enabled {
             rtmpServer = RtmpServer(settings: database.rtmpServer!.clone(),
                                     onPublishStart: handleRtmpServerPublishStart,
