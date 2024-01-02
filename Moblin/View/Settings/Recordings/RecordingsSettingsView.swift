@@ -34,9 +34,17 @@ struct RecordingsSettingsView: View {
                                 destination: RecordingsRecordingSettingsView(recording: recording)
                             ) {
                                 HStack {
-                                    Image(systemName: "photo")
+                                    if let image = createThumbnail(path: recording.url()) {
+                                        Image(uiImage: image)
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(width: 90)
+                                    } else {
+                                        Image(systemName: "photo")
+                                    }
                                     VStack(alignment: .leading) {
-                                        Text(recording.title())
+                                        Text(recording.startTime.formatted())
+                                        Text(recording.length().format())
                                         Text(recording.subTitle())
                                             .font(.footnote)
                                     }

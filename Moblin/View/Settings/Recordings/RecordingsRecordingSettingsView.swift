@@ -13,8 +13,13 @@ struct RecordingsRecordingSettingsView: View {
                 Section {
                     HStack {
                         Spacer()
-                        Image(systemName: "photo")
-                            .font(.title)
+                        if let image = createThumbnail(path: recording.url()) {
+                            Image(uiImage: image)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                        } else {
+                            Image(systemName: "photo")
+                        }
                         Spacer()
                     }
                 } header: {
@@ -30,6 +35,8 @@ struct RecordingsRecordingSettingsView: View {
                 Section {
                     TextValueView(name: "Resolution", value: recording.settings.resolutionString())
                     TextValueView(name: "FPS", value: "\(recording.settings.fps)")
+                    TextValueView(name: "Video codec", value: recording.settings.codecString())
+                    TextValueView(name: "Audio codec", value: recording.settings.audioCodecString())
                 } header: {
                     Text("Settings")
                 }

@@ -14,10 +14,6 @@ class Recording: Identifiable, Codable {
         self.settings = settings
     }
 
-    func title() -> String {
-        return "\(startTime.formatted()), \(length().formatWithSeconds())"
-    }
-
     func subTitle() -> String {
         return "\(settings.resolutionString()), \(settings.fps) FPS, \(size!.formatBytes())"
     }

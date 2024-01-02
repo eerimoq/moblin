@@ -623,3 +623,23 @@ extension URL {
         }
     }
 }
+
+private var thumbnails: [URL: UIImage] = [:]
+
+func createThumbnail(path: URL) -> UIImage? {
+    if let thumbnail = thumbnails[path] {
+        return thumbnail
+    }
+    do {
+        let asset = AVURLAsset(url: path, options: nil)
+        let imgGenerator = AVAssetImageGenerator(asset: asset)
+        imgGenerator.appliesPreferredTrackTransform = true
+        let cgImage = try imgGenerator.copyCGImage(at: CMTimeMake(value: 0, timescale: 1), actualTime: nil)
+        let thumbnail = UIImage(cgImage: cgImage)
+        thumbnails[path] = thumbnail
+        return thumbnail
+    } catch {
+        logger.info("Failed to create thumbnail with error \(error)")
+        return nil
+    }
+}
