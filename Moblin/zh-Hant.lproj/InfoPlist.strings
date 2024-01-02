@@ -1,0 +1,21 @@
+/* Bundle display name */
+"CFBundleDisplayName" = "Moblin";
+
+/* Bundle name */
+"CFBundleName" = "Moblin 16";
+
+/* Privacy - Camera Usage Description */
+"NSCameraUsageDescription" = "Moblin 串流影像來自相機。";
+
+/* Privacy - Local Network Usage Description */
+"NSLocalNetworkUsageDescription" = "Moblin 使用本地端作為 SRT 通訊協定的輸入與輸出。";
+
+/* Privacy - Microphone Usage Description */
+"NSMicrophoneUsageDescription" = "Moblin 串流音源來自麥克風。";
+
+/* Privacy - Photo Library Additions Usage Description */
+"NSPhotoLibraryAddUsageDescription" = "Moblin 顯示所選圖片為圖層。";
+
+/* Privacy - Photo Library Usage Description */
+"NSPhotoLibraryUsageDescription" = "Moblin 顯示所選圖片為圖層。";
+

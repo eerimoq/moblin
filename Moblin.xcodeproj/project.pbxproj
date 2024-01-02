@@ -448,6 +448,7 @@
 		03C0882F2B0A939F000990DA /* SceneCameraPipSmallCameraSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneCameraPipSmallCameraSettingsView.swift; sourceTree = "<group>"; };
 		03C088362B0AFFA8000990DA /* InlinePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlinePickerView.swift; sourceTree = "<group>"; };
 		03CC5F882AD060DB0019CBA5 /* WidgetBrowserUrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBrowserUrlSettingsView.swift; sourceTree = "<group>"; };
+		03D3C0472B4493AE006BAEAC /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		03D445E12AE5966B00A0F6E9 /* CacheAsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheAsyncImage.swift; sourceTree = "<group>"; };
 		03D541742B32095B00B9D595 /* StreamWizardCustomSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardCustomSettingsView.swift; sourceTree = "<group>"; };
 		03D691522B36EDB600038F13 /* TextValueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextValueView.swift; sourceTree = "<group>"; };
@@ -1645,6 +1646,7 @@
 				03E92AD42B248D3C00EBAC77 /* ko */,
 				034FC8512B2B6D4A00EF0C62 /* es */,
 				03BBAE952B2E5FD20033D425 /* zh-Hans */,
+				03D3C0472B4493AE006BAEAC /* zh-Hant */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
