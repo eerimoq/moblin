@@ -16935,6 +16935,9 @@
         }
       }
     },
+    "External mic overrides follow scene toggle" : {
+
+    },
     "Facebook" : {
       "localizations" : {
         "de" : {
@@ -25312,6 +25315,9 @@
         }
       }
     },
+    "Mic follows scene" : {
+
+    },
     "Mic id %@" : {
       "localizations" : {
         "de" : {
@@ -25523,6 +25529,12 @@
           }
         }
       }
+    },
+    "Mic per scene" : {
+
+    },
+    "Mic used in this scene when \"Mic follows scene\" toggle is enabled." : {
+
     },
     "Moblin" : {
       "localizations" : {

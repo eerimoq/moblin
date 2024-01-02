@@ -86,6 +86,8 @@ struct SceneSettingsView: View {
         model.sceneUpdated(store: true)
     }
 
+    private func onMicChange(micId _: String) {}
+
     private func canWidgetExpand(widget: SettingsWidget) -> Bool {
         return widgetHasPosition(id: widget.id) || widgetHasSize(id: widget.id)
     }
@@ -146,6 +148,24 @@ struct SceneSettingsView: View {
                 }
             } header: {
                 Text("Camera")
+            }
+            if model.database.debug!.sceneMic! {
+                Section {
+                    NavigationLink(destination: InlinePickerView(
+                        title: String(localized: "Mic"),
+                        onChange: onMicChange,
+                        items: model.listMics().map { mic in
+                            InlinePickerItem(id: mic.id, text: mic.name)
+                        },
+                        selectedId: model.listMics().first?.id ?? ""
+                    )) {
+                        Text(model.listMics().first?.name ?? "")
+                    }
+                } header: {
+                    Text("Mic")
+                } footer: {
+                    Text("Mic used in this scene when \"Mic follows scene\" toggle is enabled.")
+                }
             }
             Section {
                 List {

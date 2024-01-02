@@ -67,10 +67,12 @@ struct MicButtonView: View {
     @EnvironmentObject var model: Model
     @State var selectedMic: Mic
     var done: () -> Void
+    @State var micFollowsScene: Bool = false
+    @State var externalMicOverrides: Bool = false
 
     var body: some View {
         Form {
-            Section("Mic") {
+            Section {
                 Picker("", selection: Binding(get: {
                     model.mic
                 }, set: { mic, _ in
@@ -86,6 +88,14 @@ struct MicButtonView: View {
                 }
                 .pickerStyle(.inline)
                 .labelsHidden()
+            } header: {
+                Text("Mic")
+            }
+            if model.database.debug!.sceneMic! {
+                Section {
+                    Toggle("Mic follows scene", isOn: $micFollowsScene)
+                    Toggle("External mic overrides follow scene toggle", isOn: $externalMicOverrides)
+                }
             }
         }
         .toolbar {

@@ -804,6 +804,7 @@ class SettingsDebug: Codable {
     var srtOverlay: Bool = false
     var srtOverheadBandwidth: Int32? = 25
     var letItSnow: Bool? = false
+    var sceneMic: Bool? = false
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -1493,6 +1494,10 @@ final class Settings {
         }
         if realDatabase.vibrate == nil {
             realDatabase.vibrate = false
+            store()
+        }
+        if realDatabase.debug!.sceneMic == nil {
+            realDatabase.debug!.sceneMic = false
             store()
         }
     }

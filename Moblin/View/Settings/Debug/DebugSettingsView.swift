@@ -75,6 +75,12 @@ struct DebugSettingsView: View {
                     Text(String(Int32(srtOverheadBandwidth)))
                         .frame(width: 40)
                 }
+                Toggle("Mic per scene", isOn: Binding(get: {
+                    model.database.debug!.sceneMic!
+                }, set: { value in
+                    model.database.debug!.sceneMic = value
+                    model.store()
+                }))
             } header: {
                 Text("Experimental")
             }
