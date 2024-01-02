@@ -135,6 +135,12 @@ Features
 
   - Optional message timestamp.
 
+- Battery indicator.
+
+  - Charging icon.
+
+  - Optionally with percentage.
+
 - Cosmetics.
 
   - Select Moblin icon to show in app and on home screen.
@@ -151,14 +157,10 @@ Features
 
 - Deep link settings (moblin://).
 
-- Configure maximum screen FPS (to save energy).
-
 - Landscape only.
 
   - Both 0 and 180 degrees orientation. Video always with gravity down
     (never upside down).
-
-- Battery indicator. Optionally with percentage.
 
 ToDo
 ====
