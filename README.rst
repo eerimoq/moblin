@@ -81,6 +81,12 @@ Features
 
 - Back camera lens selection.
 
+- Record to disk (MP4-file).
+
+- RTMP server/ingest as camera source.
+
+  - Only supports video. No audio (yet).
+
 - Localization. Supports many languages, for example English, French,
   German, Spanish, Polish, Chinese (Simplified) and Swedish.
 
@@ -187,8 +193,6 @@ Ideas/plan
 
 - Reduce brightness when thermal state is critical.
 
-- OPUS audio codec? https://github.com/alta/swift-opus
-
 - Optionally do not automatically start using external mic is plugged
   in.
 
@@ -197,22 +201,16 @@ Ideas/plan
 - Add Twitch/Kick Icons next to chat messages depending on which
   platform the message came from.
 
-- RTMP server for external video and audio?
-
 - Lookup Twitch channel id from channel name. Possibly login to
   Twitch.
 
 - Play music and short sound samples.
-
-- Record to disk.
 
 - Something that is important for professional streamers: Ad
   management. There are new endpoints to get and snooze the next ad
   schedule. No app uses it afaik yet.
 
   - https://dev.twitch.tv/docs/api/reference/#get-ad-schedule
-
-- Power off unused cameras?
 
 Import settings using moblin:// (custom URL)
 ============================================
