@@ -416,7 +416,12 @@ final class Media: NSObject {
         return netStream
     }
 
-    func startRecording(url: URL, videoCodec: SettingsStreamCodec) {
+    func startRecording(
+        url: URL,
+        videoCodec: SettingsStreamCodec,
+        videoBitrate: Int? = nil,
+        keyFrameInterval: Int? = nil
+    ) {
         var codec: AVVideoCodecType
         switch videoCodec {
         case .h264avc:
@@ -424,17 +429,28 @@ final class Media: NSObject {
         case .h265hevc:
             codec = AVVideoCodecType.hevc
         }
+        var videoProperties: [String: Any] = [
+            AVVideoCodecKey: codec,
+            AVVideoHeightKey: 0,
+            AVVideoWidthKey: 0,
+        ]
+        var compressionProperties: [String: Any] = [:]
+        if let videoBitrate {
+            compressionProperties[AVVideoAverageBitRateKey] = videoBitrate
+        }
+        if let keyFrameInterval {
+            compressionProperties[AVVideoMaxKeyFrameIntervalDurationKey] = keyFrameInterval
+        }
+        if !compressionProperties.isEmpty {
+            videoProperties[AVVideoCompressionPropertiesKey] = compressionProperties
+        }
         netStream.startRecording(url: url, [
             .audio: [
                 AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
                 AVSampleRateKey: 0,
                 AVNumberOfChannelsKey: 0,
             ],
-            .video: [
-                AVVideoCodecKey: codec,
-                AVVideoHeightKey: 0,
-                AVVideoWidthKey: 0,
-            ],
+            .video: videoProperties,
         ])
     }
 

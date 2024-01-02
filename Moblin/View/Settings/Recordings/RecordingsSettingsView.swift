@@ -44,7 +44,7 @@ struct RecordingsSettingsView: View {
                                     }
                                     VStack(alignment: .leading) {
                                         Text(recording.startTime.formatted())
-                                        Text(recording.length().format())
+                                        Text(recording.length().formatWithSeconds())
                                         Text(recording.subTitle())
                                             .font(.footnote)
                                     }
