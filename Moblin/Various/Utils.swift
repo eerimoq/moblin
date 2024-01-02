@@ -600,3 +600,26 @@ extension UIDevice {
         AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
     }
 }
+
+extension URL {
+    var attributes: [FileAttributeKey: Any]? {
+        do {
+            return try FileManager.default.attributesOfItem(atPath: path)
+        } catch {
+            logger.info("file-system: Failed to get attributes for file \(self)")
+        }
+        return nil
+    }
+
+    var fileSize: UInt64 {
+        return attributes?[.size] as? UInt64 ?? UInt64(0)
+    }
+
+    func remove() {
+        do {
+            try FileManager.default.removeItem(at: self)
+        } catch {
+            logger.info("file-system: Failed to remove file \(self)")
+        }
+    }
+}

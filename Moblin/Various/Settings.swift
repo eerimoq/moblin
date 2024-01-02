@@ -803,7 +803,6 @@ class SettingsDebug: Codable {
     var logLevel: SettingsLogLevel = .error
     var srtOverlay: Bool = false
     var srtOverheadBandwidth: Int32? = 25
-    var recordings: Bool? = false
     var letItSnow: Bool? = false
 }
 
@@ -1178,7 +1177,6 @@ func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "record.circle"
     button.systemImageNameOff = "record.circle"
-    button.enabled = false
     addGlobalButtonIfMissing(database: database, button: button)
 }
 
@@ -1441,10 +1439,6 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.bFrames == nil {
             stream.bFrames = false
-            store()
-        }
-        if realDatabase.debug!.recordings == nil {
-            realDatabase.debug!.recordings = false
             store()
         }
         for button in realDatabase.buttons where button.enabled == nil {

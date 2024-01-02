@@ -1499,11 +1499,13 @@ final class Model: ObservableObject {
 
     func startRecording() {
         currentRecording = recordingsStorage.createRecording(settings: stream.clone())
+        media.startRecording(url: currentRecording!.url(), videoCodec: stream.codec)
         makeToast(title: "Recording started")
         isRecording = true
     }
 
     func stopRecording() {
+        media.stopRecording()
         makeToast(title: "Recording stopped")
         if let currentRecording {
             recordingsStorage.append(recording: currentRecording)
@@ -2346,8 +2348,9 @@ final class Model: ObservableObject {
 
     private func updateRecordingLength(now: Date) {
         if let currentRecording {
-            let elapsed = now.timeIntervalSince(currentRecording.startTime)
-            recordingLength = uptimeFormatter.string(from: elapsed)!
+            let elapsed = uptimeFormatter.string(from: now.timeIntervalSince(currentRecording.startTime))!
+            let size = currentRecording.url().fileSize.formatBytes()
+            recordingLength = "\(elapsed) (\(size))"
         } else if recordingLength != noValue {
             recordingLength = noValue
         }

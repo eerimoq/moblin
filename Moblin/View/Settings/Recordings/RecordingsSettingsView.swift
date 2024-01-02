@@ -44,6 +44,9 @@ struct RecordingsSettingsView: View {
                             }
                         }
                         .onDelete(perform: { indexSet in
+                            for index in indexSet {
+                                recordingsStorage.database.recordings[index].url().remove()
+                            }
                             recordingsStorage.database.recordings.remove(atOffsets: indexSet)
                             recordingsStorage.store()
                         })

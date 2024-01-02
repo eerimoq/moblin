@@ -415,6 +415,32 @@ final class Media: NSObject {
     func getNetStream() -> NetStream {
         return netStream
     }
+
+    func startRecording(url: URL, videoCodec: SettingsStreamCodec) {
+        var codec: AVVideoCodecType
+        switch videoCodec {
+        case .h264avc:
+            codec = AVVideoCodecType.h264
+        case .h265hevc:
+            codec = AVVideoCodecType.hevc
+        }
+        netStream.startRecording(url: url, [
+            .audio: [
+                AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+                AVSampleRateKey: 0,
+                AVNumberOfChannelsKey: 0,
+            ],
+            .video: [
+                AVVideoCodecKey: codec,
+                AVVideoHeightKey: 0,
+                AVVideoWidthKey: 0,
+            ],
+        ])
+    }
+
+    func stopRecording() {
+        netStream.stopRecording()
+    }
 }
 
 extension Media: NetStreamDelegate {

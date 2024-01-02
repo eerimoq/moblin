@@ -75,12 +75,6 @@ struct DebugSettingsView: View {
                     Text(String(Int32(srtOverheadBandwidth)))
                         .frame(width: 40)
                 }
-                Toggle("Recordings", isOn: Binding(get: {
-                    model.database.debug!.recordings!
-                }, set: { value in
-                    model.database.debug!.recordings = value
-                    model.store()
-                }))
             } header: {
                 Text("Experimental")
             }

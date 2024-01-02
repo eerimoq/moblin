@@ -19,7 +19,7 @@ class Recording: Identifiable, Codable {
     }
 
     func subTitle() -> String {
-        return "\(settings.resolutionString()), \(settings.fps) FPS, \(UInt64(0).formatBytes())"
+        return "\(settings.resolutionString()), \(settings.fps) FPS, \(size!.formatBytes())"
     }
 
     func name() -> String {
@@ -34,7 +34,7 @@ class Recording: Identifiable, Codable {
     }
 
     func url() -> URL {
-        return recordingsDirectory.appending(component: "\(id)")
+        return recordingsDirectory.appending(component: name())
     }
 
     func sizeString() -> String {
@@ -44,8 +44,6 @@ class Recording: Identifiable, Codable {
 
 class RecordingsDatabase: Codable {
     var recordings: [Recording] = []
-    var totalRecordings: UInt64? = 0
-    var totalSize: UInt64? = 0
 
     static func fromString(settings: String) throws -> RecordingsDatabase {
         let database = try JSONDecoder().decode(
@@ -86,6 +84,24 @@ final class RecordingsStorage {
             logger.info("recordings: Failed to load with error \(error). Using default.")
             realDatabase = RecordingsDatabase()
         }
+        cleanup()
+    }
+
+    private func cleanup() {
+        guard let enumerator = FileManager.default.enumerator(
+            at: recordingsDirectory,
+            includingPropertiesForKeys: nil
+        ) else {
+            return
+        }
+        for case let fileUrl as URL in enumerator
+            where !database.recordings.contains(where: { recording in
+                fileUrl.resolvingSymlinksInPath() == recording.url().resolvingSymlinksInPath()
+            })
+        {
+            logger.info("recordings: Removing unused file \(fileUrl)")
+            fileUrl.remove()
+        }
     }
 
     private func tryLoadAndMigrate(settings: String) throws {
@@ -106,14 +122,6 @@ final class RecordingsStorage {
             recording.size = 0
             store()
         }
-        if database.totalSize == nil {
-            database.totalSize = 0
-            store()
-        }
-        if database.totalRecordings == nil {
-            database.totalRecordings = 0
-            store()
-        }
     }
 
     func createRecording(settings: SettingsStream) -> Recording {
@@ -124,17 +132,18 @@ final class RecordingsStorage {
         while database.recordings.count > 100 {
             database.recordings.remove(at: 0)
         }
-        database.totalRecordings! += 1
-        database.totalSize! += recording.size!
+        recording.size = recording.url().fileSize
         recording.stopTime = Date()
         database.recordings.insert(recording, at: 0)
     }
 
     func numberOfRecordingsString() -> String {
-        return String(database.totalRecordings!)
+        return String(database.recordings.count)
     }
 
     func totalSizeString() -> String {
-        return database.totalSize!.formatBytes()
+        return database.recordings.reduce(0) { total, recording in
+            total + recording.size!
+        }.formatBytes()
     }
 }
