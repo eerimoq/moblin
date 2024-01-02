@@ -30,10 +30,16 @@ struct RtmpServerSettingsView: View {
                     model.database.rtmpServer!.enabled = value
                     model.store()
                     model.reloadRtmpServer()
+                    model.objectWillChange.send()
                 }))
-            } footer: {
-                if model.rtmpServerEnabled() {
-                    Text("Disable the server to change its settings.")
+            }
+            if model.rtmpServerEnabled() {
+                Section {
+                    HStack {
+                        Image(systemName: "info.circle.fill")
+                            .foregroundColor(.blue)
+                        Text("Disable the RTMP server to change its settings.")
+                    }
                 }
             }
             Section {

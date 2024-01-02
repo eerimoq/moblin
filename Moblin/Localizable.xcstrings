@@ -13645,7 +13645,11 @@
         }
       }
     },
+    "Disable the RTMP server to change its settings." : {
+
+    },
     "Disable the server to change its settings." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
