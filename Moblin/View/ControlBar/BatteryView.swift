@@ -15,7 +15,7 @@ struct BatteryView: View {
 
     private func width(level: Double) -> Double {
         if level >= 0.0 && level <= 1.0 {
-            return 24 * level
+            return 23 * level
         } else {
             return 0
         }
