@@ -93,6 +93,9 @@ struct SettingsView: View {
                 NavigationLink(destination: CameraSettingsView()) {
                     Text("Camera")
                 }
+                NavigationLink(destination: BitratePresetsSettingsView()) {
+                    Text("Bitrate presets")
+                }
                 NavigationLink(destination: RtmpServerSettingsView()) {
                     Text("RTMP server")
                 }

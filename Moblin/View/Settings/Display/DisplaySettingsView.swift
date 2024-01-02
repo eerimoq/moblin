@@ -33,7 +33,7 @@ struct DisplaySettingsView: View {
                 )) {
                     Text("Chat")
                 }
-                NavigationLink(destination: QuickButtonsSettingsView()) {
+                NavigationLink(destination: GlobalButtonsSettingsView()) {
                     Text("Buttons")
                 }
                 Toggle("Battery percentage", isOn: Binding(get: {

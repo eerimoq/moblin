@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct QuickButtonsSettingsView: View {
+struct GlobalButtonsSettingsView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {

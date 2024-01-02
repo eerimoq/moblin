@@ -62,11 +62,6 @@ struct CameraSettingsView: View {
                 }
                 VideoStabilizationSettingsView()
                 TapScreenToFocusSettingsView()
-                NavigationLink(
-                    destination: BitratePresetsSettingsView()
-                ) {
-                    Text("Bitrate presets")
-                }
             }
         }
         .navigationTitle("Camera")
