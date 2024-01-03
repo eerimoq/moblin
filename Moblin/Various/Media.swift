@@ -361,6 +361,21 @@ final class Media: NSObject {
         return level
     }
 
+    func stopCameraZoomLevel() -> Float? {
+        guard let device = netStream.videoCapture()?.device else {
+            logger.warning("Device not ready to zoom")
+            return nil
+        }
+        do {
+            try device.lockForConfiguration()
+            device.videoZoomFactor = device.videoZoomFactor
+            device.unlockForConfiguration()
+        } catch let error as NSError {
+            logger.warning("While locking device for stop: \(error)")
+        }
+        return Float(device.videoZoomFactor)
+    }
+
     func attachCamera(
         device: AVCaptureDevice?,
         secondDevice: AVCaptureDevice?,

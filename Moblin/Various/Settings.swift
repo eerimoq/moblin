@@ -902,8 +902,6 @@ enum SettingsGameControllerButtonFunction: Codable, CaseIterable {
     case stream
     case zoomIn
     case zoomOut
-    case nextZoomPreset
-    case previousZoomPreset
     case nextBitratePreset
     case previousBitratePreset
     case mute
@@ -926,10 +924,6 @@ enum SettingsGameControllerButtonFunction: Codable, CaseIterable {
             return "Zoom in"
         case .zoomOut:
             return "Zoom out"
-        case .nextZoomPreset:
-            return "Next zoom preset"
-        case .previousZoomPreset:
-            return "Previous zoom preset"
         case .nextBitratePreset:
             return "Next bitrate preset"
         case .previousBitratePreset:
@@ -954,8 +948,13 @@ enum SettingsGameControllerButtonFunction: Codable, CaseIterable {
 
 var gameControllerButtonFunctions: [SettingsGameControllerButtonFunction] = [
     .unused,
+    .zoomIn,
+    .zoomOut,
     .torch,
     .mute,
+    .blackScreen,
+    .chat,
+    .pauseChat,
 ]
 
 class SettingsGameControllerButton: Codable, Identifiable {
@@ -976,9 +975,11 @@ class SettingsGameController: Codable {
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "dpad.up.fill"
+        button.function = .zoomIn
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "dpad.down.fill"
+        button.function = .zoomOut
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "a.circle"
@@ -990,6 +991,7 @@ class SettingsGameController: Codable {
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "x.circle"
+        button.function = .blackScreen
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "y.circle"
@@ -1002,9 +1004,11 @@ class SettingsGameController: Codable {
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "zr.rectangle.roundedtop"
+        button.function = .chat
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "r.rectangle.roundedbottom"
+        button.function = .pauseChat
         buttons.append(button)
     }
 }

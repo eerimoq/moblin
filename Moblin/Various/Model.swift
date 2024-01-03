@@ -286,7 +286,7 @@ final class Model: ObservableObject {
     @Published var frontZoomPresetId = UUID()
     @Published var zoomX: Float = 1.0
     @Published var hasZoom: Bool = true
-    var zoomXPinch: Float = 1.0
+    private var zoomXPinch: Float = 1.0
     private var backZoomX: Float = 0.5
     private var frontZoomX: Float = 1.0
     var cameraPosition: AVCaptureDevice.Position?
@@ -1081,14 +1081,22 @@ final class Model: ObservableObject {
         GCController.startWirelessControllerDiscovery {}
     }
 
-    private func handleGameControllerButton(button: GCControllerButtonInput, value _: Float, pressed: Bool) {
-        guard !pressed else {
-            return
+    private func handleGameControllerButtonZoom(pressed: Bool, x: Float) {
+        if pressed {
+            if let x = setCameraZoomX(x: x, rate: database.zoom.speed!) {
+                setZoomX(x: x)
+            }
+        } else {
+            if let x = stopCameraZoom() {
+                setZoomX(x: x)
+            }
         }
+    }
+
+    private func handleGameControllerButton(button: GCControllerButtonInput, value _: Float, pressed: Bool) {
         guard let name = button.sfSymbolsName else {
             return
         }
-        // logger.info("game-controller: \(name)")
         let button = database.gameController!.buttons.first(where: { button in
             button.name == name
         })
@@ -1096,16 +1104,56 @@ final class Model: ObservableObject {
             return
         }
         switch button.function {
+        case .unused:
+            break
+        case .record:
+            break
+        case .stream:
+            break
+        case .zoomIn:
+            handleGameControllerButtonZoom(pressed: pressed, x: Float.infinity)
+        case .zoomOut:
+            handleGameControllerButtonZoom(pressed: pressed, x: 0)
+        case .nextBitratePreset:
+            break
+        case .previousBitratePreset:
+            break
         case .torch:
-            toggleTorch()
-            toggleGlobalButton(type: .torch)
+            if !pressed {
+                toggleTorch()
+                toggleGlobalButton(type: .torch)
+                updateButtonStates()
+            }
         case .mute:
-            toggleMute()
-            toggleGlobalButton(type: .mute)
-        default:
+            if !pressed {
+                toggleMute()
+                toggleGlobalButton(type: .mute)
+                updateButtonStates()
+            }
+        case .blackScreen:
+            if !pressed {
+                toggleBlackScreen()
+                updateButtonStates()
+            }
+        case .chat:
+            if !pressed {
+                showChatMessages.toggle()
+                toggleGlobalButton(type: .chat)
+                sceneUpdated(store: false)
+                updateButtonStates()
+            }
+        case .pauseChat:
+            if !pressed {
+                toggleChatPaused()
+                toggleGlobalButton(type: .pauseChat)
+                sceneUpdated(store: false)
+                updateButtonStates()
+            }
+        case .scene:
+            break
+        case .obsScene:
             break
         }
-        updateButtonStates()
     }
 
     func isGameControllerConnected() -> Bool {
@@ -2750,6 +2798,14 @@ final class Model: ObservableObject {
         return level
     }
 
+    private func stopCameraZoom() -> Float? {
+        let level = media.stopCameraZoomLevel()
+        if let level {
+            return level * cameraZoomLevelToXScale
+        }
+        return level
+    }
+
     private func setMaxAutoExposure(device: AVCaptureDevice) {
         do {
             try device.lockForConfiguration()
@@ -2842,22 +2898,22 @@ final class Model: ObservableObject {
         }
     }
 
-    func changeZoomX(amount: Float) {
+    func changeZoomX(amount: Float, rate: Float? = nil) {
         guard hasZoom else {
             return
         }
         clearZoomId()
-        if let x = setCameraZoomX(x: zoomXPinch * amount) {
+        if let x = setCameraZoomX(x: zoomXPinch * amount, rate: rate) {
             setZoomX(x: x, setPinch: false)
         }
     }
 
-    func commitZoomX(amount: Float) {
+    func commitZoomX(amount: Float, rate: Float? = nil) {
         guard hasZoom else {
             return
         }
         clearZoomId()
-        if let x = setCameraZoomX(x: zoomXPinch * amount) {
+        if let x = setCameraZoomX(x: zoomXPinch * amount, rate: rate) {
             setZoomX(x: x)
         }
     }
