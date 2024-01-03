@@ -240,7 +240,7 @@ final class Model: ObservableObject {
     @Published var numberOfViewers = noValue
     var numberOfViewersUpdateDate = Date()
     @Published var batteryLevel = Double(UIDevice.current.batteryLevel)
-    @Published var batteryState: UIDevice.BatteryState = .unknown
+    @Published var batteryState: UIDevice.BatteryState = .full
     @Published var speedAndTotal = noValue
     @Published var thermalState = ProcessInfo.processInfo.thermalState
     var videoView = PiPHKView(frame: .zero)
@@ -2366,13 +2366,17 @@ final class Model: ObservableObject {
     private func updateBatteryLevel() {
         batteryLevel = Double(UIDevice.current.batteryLevel)
         streamingHistoryStream?.updateLowestBatteryLevel(level: batteryLevel)
-        if batteryLevel < 0.05 {
+        if batteryLevel < 0.05 && !isBatteryCharging() {
             makeWarningToast(title: lowBatteryMessage, vibrate: true)
         }
     }
 
     private func updateBatteryState() {
         batteryState = UIDevice.current.batteryState
+    }
+
+    func isBatteryCharging() -> Bool {
+        return batteryState == .charging || batteryState == .full
     }
 
     private func updateChatSpeed() {

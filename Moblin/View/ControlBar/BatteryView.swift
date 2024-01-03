@@ -26,7 +26,7 @@ struct BatteryView: View {
     }
 
     private func boltColor() -> Color {
-        if model.batteryState == .charging || model.batteryState == .full {
+        if model.isBatteryCharging() {
             return .white
         } else {
             return .black
