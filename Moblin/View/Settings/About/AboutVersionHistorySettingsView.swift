@@ -8,6 +8,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.132.0", date: "2024-01-03", changes: [
+        "• SRT(LA) and RTMP(S) protocols part of create stream wizard's custom section.",
+        "  • With separate fields for \"Stream id\" and \"Stream key\".",
+        "• Korean translation updated.",
+        "• Rename buttons to quick buttons.",
+        "• Use a Bluetooth (or USB?) game controller to toggle mute (B) and torch (A).",
+    ]),
     Version(version: "0.131.0", date: "2024-01-03", changes: [
         "• Do not show \"Low battery\" toast when charging.",
         "• Allow percent encoded SRT streamid (and other query parameter values).",
