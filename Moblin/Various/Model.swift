@@ -1088,7 +1088,7 @@ final class Model: ObservableObject {
         guard let name = button.sfSymbolsName else {
             return
         }
-        logger.debug("game-controller: \(name)")
+        // logger.info("game-controller: \(name)")
         switch name {
         case "a.circle":
             toggleTorch()

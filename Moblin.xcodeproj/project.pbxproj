@@ -12,6 +12,8 @@
 		0302F0832B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0302F0822B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift */; };
 		0302F0842B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0302F0822B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift */; };
 		030399132AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030399122AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift */; };
+		0304A50C2B45ADC300310842 /* GameControllerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0304A50B2B45ADC300310842 /* GameControllerSettingsView.swift */; };
+		0304A50D2B45ADC300310842 /* GameControllerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0304A50B2B45ADC300310842 /* GameControllerSettingsView.swift */; };
 		0307869A2AEC23FB0061FDE2 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 030786992AEC23FB0061FDE2 /* StoreKit.framework */; };
 		030947C32A9C0496003FC387 /* StreamOverlayChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030947C22A9C0496003FC387 /* StreamOverlayChatView.swift */; };
 		0315A33B2AA2FA7100295443 /* LocalListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33A2AA2FA7100295443 /* LocalListener.swift */; };
@@ -329,6 +331,7 @@
 		0302F07E2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardChatSettingsView.swift; sourceTree = "<group>"; };
 		0302F0822B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardSummarySettingsView.swift; sourceTree = "<group>"; };
 		030399122AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalOverlaysChatSettingsView.swift; sourceTree = "<group>"; };
+		0304A50B2B45ADC300310842 /* GameControllerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllerSettingsView.swift; sourceTree = "<group>"; };
 		030786992AEC23FB0061FDE2 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		030947C22A9C0496003FC387 /* StreamOverlayChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOverlayChatView.swift; sourceTree = "<group>"; };
 		0315A33A2AA2FA7100295443 /* LocalListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalListener.swift; sourceTree = "<group>"; };
@@ -528,6 +531,14 @@
 				030399122AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift */,
 			);
 			path = Chat;
+			sourceTree = "<group>";
+		};
+		0304A5092B45ADA900310842 /* GameController */ = {
+			isa = PBXGroup;
+			children = (
+				0304A50B2B45ADC300310842 /* GameControllerSettingsView.swift */,
+			);
+			path = GameController;
 			sourceTree = "<group>";
 		};
 		030D487F2B35E4AF003B2014 /* Platforms */ = {
@@ -1028,6 +1039,7 @@
 		03B373F42A9EF8BD0028DDD5 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				0304A5092B45ADA900310842 /* GameController */,
 				03FB4B2C2AD8CF6B005AA183 /* BitratePresets */,
 				0379BB982AAD804F00B718B6 /* Streams */,
 				0379BB972AAD802C00B718B6 /* Scenes */,
@@ -1485,6 +1497,7 @@
 				0302F0842B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift in Sources */,
 				032E06A62B2F3E9D00EAE5F8 /* Log.swift in Sources */,
 				032E06A72B2F3E9D00EAE5F8 /* NoiseReductionEffect.swift in Sources */,
+				0304A50D2B45ADC300310842 /* GameControllerSettingsView.swift in Sources */,
 				032E06A82B2F3E9D00EAE5F8 /* AddButtonView.swift in Sources */,
 				032E06A92B2F3E9D00EAE5F8 /* StreamsSettingsView.swift in Sources */,
 				0332EF622B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift in Sources */,
@@ -1635,6 +1648,7 @@
 				03B374132AA277570028DDD5 /* Srtla.swift in Sources */,
 				0379BB902AABA7DC00B718B6 /* Log.swift in Sources */,
 				031CCE2D2ACA76CF00CB5D46 /* NoiseReductionEffect.swift in Sources */,
+				0304A50C2B45ADC300310842 /* GameControllerSettingsView.swift in Sources */,
 				03A983662A9A05D7008FF0DB /* AddButtonView.swift in Sources */,
 				03A983612A9A05D7008FF0DB /* StreamsSettingsView.swift in Sources */,
 				0332EF612B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift in Sources */,

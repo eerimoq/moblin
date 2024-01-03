@@ -99,6 +99,9 @@ struct SettingsView: View {
                 NavigationLink(destination: RtmpServerSettingsView()) {
                     Text("RTMP server")
                 }
+                NavigationLink(destination: GameControllerSettingsView()) {
+                    Text("Game controller")
+                }
             }
             Section {
                 NavigationLink(destination: CosmeticsSettingsView()) {
