@@ -8,6 +8,9 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.133.0", date: "2024-01-03", changes: [
+       "• Game controller with configurable buttons."
+    ]),
     Version(version: "0.132.0", date: "2024-01-03", changes: [
         "• SRT(LA) and RTMP(S) protocols part of create stream wizard's custom section.",
         "  • With separate fields for \"Stream id\" and \"Stream key\".",
