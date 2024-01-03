@@ -1,5 +1,26 @@
 import SwiftUI
 
+private let actions = [
+    "Record",
+    "Stream",
+    "Zoom in",
+    "Zoom out",
+    "Next zoom preset",
+    "Previous zoom preset",
+    "Next bitrate preset",
+    "Previous bitrate preset",
+    "Mute",
+    "Torch",
+    "Black screen",
+    "Chat",
+    "Pause chat",
+    "Back scene",
+    "Front scene",
+    "DJI scene",
+    "Main OBS scene",
+    "Field OBS scene",
+]
+
 struct GameControllerSettingsView: View {
     var body: some View {
         Form {
