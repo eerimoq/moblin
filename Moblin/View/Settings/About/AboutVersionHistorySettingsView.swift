@@ -8,6 +8,17 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.131.0", date: "2024-01-03", changes: [
+        "• Do not show \"Low battery\" toast when charging.",
+        "• Allow percent encoded SRT streamid (and other query parameter values).",
+        "• Recording settings.",
+        "  • Video codec, video bitrate and key frame interval.",
+        "  • Resolution and FPS are same as stream.",
+        "  • Found at Settings -> Streams -> My stream -> Recording as resolution and FPS are per stream.",
+        "• Show new recording settings per recorded video.",
+        "• Charging bolt in black area (not half in video).",
+        "• Make query and fragment in RTMP URL part of stream key and not tcUrl.",
+    ]),
     Version(version: "0.130.0", date: "2024-01-02", changes: [
         "• Recording thumbnails.",
         "• Battery meter styling (fix non-precentage bar length).",
