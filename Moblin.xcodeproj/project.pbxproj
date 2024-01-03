@@ -59,7 +59,7 @@
 		032E065E2B2F3E9D00EAE5F8 /* WidgetBrowserUrlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CC5F882AD060DB0019CBA5 /* WidgetBrowserUrlSettingsView.swift */; };
 		032E065F2B2F3E9D00EAE5F8 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A983562A9A05D7008FF0DB /* MainView.swift */; };
 		032E06602B2F3E9D00EAE5F8 /* ButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374032AA036D10028DDD5 /* ButtonsView.swift */; };
-		032E06612B2F3E9D00EAE5F8 /* ButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBB52AAD9B5B00B718B6 /* ButtonsSettingsView.swift */; };
+		032E06612B2F3E9D00EAE5F8 /* QuickButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBB52AAD9B5B00B718B6 /* QuickButtonsSettingsView.swift */; };
 		032E06622B2F3E9D00EAE5F8 /* RandomEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032815DB2AC915AE001F8A85 /* RandomEffect.swift */; };
 		032E06632B2F3E9D00EAE5F8 /* StreamTwitchSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3452AA31E9000295443 /* StreamTwitchSettingsView.swift */; };
 		032E06642B2F3E9D00EAE5F8 /* DebugSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBAE2AAD96B200B718B6 /* DebugSettingsView.swift */; };
@@ -120,7 +120,7 @@
 		032E069B2B2F3E9D00EAE5F8 /* SepiaEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB932AACF16600B718B6 /* SepiaEffect.swift */; };
 		032E069C2B2F3E9D00EAE5F8 /* TripleEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032815DE2AC9885C001F8A85 /* TripleEffect.swift */; };
 		032E069D2B2F3E9D00EAE5F8 /* GrayScaleEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374012AA0354C0028DDD5 /* GrayScaleEffect.swift */; };
-		032E069E2B2F3E9D00EAE5F8 /* GlobalButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E877F62B2DB27800086355 /* GlobalButtonsSettingsView.swift */; };
+		032E069E2B2F3E9D00EAE5F8 /* GlobalQuickButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E877F62B2DB27800086355 /* GlobalQuickButtonsSettingsView.swift */; };
 		032E069F2B2F3E9D00EAE5F8 /* SizeEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032FDC012B0B11C5007BE85E /* SizeEditView.swift */; };
 		032E06A02B2F3E9D00EAE5F8 /* StreamAudioSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031A4DC62B2CED460053F67D /* StreamAudioSettingsView.swift */; };
 		032E06A12B2F3E9D00EAE5F8 /* ZoomSwitchToSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */; };
@@ -215,7 +215,7 @@
 		0379BBAD2AAD964000B718B6 /* AboutSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBAC2AAD964000B718B6 /* AboutSettingsView.swift */; };
 		0379BBAF2AAD96B200B718B6 /* DebugSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBAE2AAD96B200B718B6 /* DebugSettingsView.swift */; };
 		0379BBB22AAD97FB00B718B6 /* ResetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBB12AAD97FB00B718B6 /* ResetSettingsView.swift */; };
-		0379BBB62AAD9B5B00B718B6 /* ButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBB52AAD9B5B00B718B6 /* ButtonsSettingsView.swift */; };
+		0379BBB62AAD9B5B00B718B6 /* QuickButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBB52AAD9B5B00B718B6 /* QuickButtonsSettingsView.swift */; };
 		0379BBB82AAD9B7200B718B6 /* WidgetsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBB72AAD9B7200B718B6 /* WidgetsSettingsView.swift */; };
 		0379BBC02AADC4EC00B718B6 /* AboutLicensesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBBF2AADC4EC00B718B6 /* AboutLicensesSettingsView.swift */; };
 		0382933B2A9A73ED008963AA /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0382933A2A9A73ED008963AA /* Settings.swift */; };
@@ -307,7 +307,7 @@
 		03DBD10A2B300DA8004B0BE6 /* StreamWizardNetworkSetupDirectSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DBD1092B300DA8004B0BE6 /* StreamWizardNetworkSetupDirectSettingsView.swift */; };
 		03DBD10B2B300DA8004B0BE6 /* StreamWizardNetworkSetupDirectSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DBD1092B300DA8004B0BE6 /* StreamWizardNetworkSetupDirectSettingsView.swift */; };
 		03DBD10F2B301403004B0BE6 /* StreamWizardSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DBD0F72B300659004B0BE6 /* StreamWizardSettingsView.swift */; };
-		03E877F72B2DB27800086355 /* GlobalButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E877F62B2DB27800086355 /* GlobalButtonsSettingsView.swift */; };
+		03E877F72B2DB27800086355 /* GlobalQuickButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E877F62B2DB27800086355 /* GlobalQuickButtonsSettingsView.swift */; };
 		03E95AC62ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */; };
 		03E95AE42ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95AE32ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift */; };
 		03EBEA632ACB4A17000DF427 /* BrowserEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */; };
@@ -400,7 +400,7 @@
 		0379BBAC2AAD964000B718B6 /* AboutSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutSettingsView.swift; sourceTree = "<group>"; };
 		0379BBAE2AAD96B200B718B6 /* DebugSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSettingsView.swift; sourceTree = "<group>"; };
 		0379BBB12AAD97FB00B718B6 /* ResetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetSettingsView.swift; sourceTree = "<group>"; };
-		0379BBB52AAD9B5B00B718B6 /* ButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonsSettingsView.swift; sourceTree = "<group>"; };
+		0379BBB52AAD9B5B00B718B6 /* QuickButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickButtonsSettingsView.swift; sourceTree = "<group>"; };
 		0379BBB72AAD9B7200B718B6 /* WidgetsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetsSettingsView.swift; sourceTree = "<group>"; };
 		0379BBBF2AADC4EC00B718B6 /* AboutLicensesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutLicensesSettingsView.swift; sourceTree = "<group>"; };
 		0382933A2A9A73ED008963AA /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
@@ -467,7 +467,7 @@
 		03DBD1022B300D55004B0BE6 /* StreamWizardNetworkSetupBelaboxSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardNetworkSetupBelaboxSettingsView.swift; sourceTree = "<group>"; };
 		03DBD1062B300D91004B0BE6 /* StreamWizardNetworkSetupObsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardNetworkSetupObsSettingsView.swift; sourceTree = "<group>"; };
 		03DBD1092B300DA8004B0BE6 /* StreamWizardNetworkSetupDirectSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardNetworkSetupDirectSettingsView.swift; sourceTree = "<group>"; };
-		03E877F62B2DB27800086355 /* GlobalButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalButtonsSettingsView.swift; sourceTree = "<group>"; };
+		03E877F62B2DB27800086355 /* GlobalQuickButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalQuickButtonsSettingsView.swift; sourceTree = "<group>"; };
 		03E92AD42B248D3C00EBAC77 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomSwitchToSettingsView.swift; sourceTree = "<group>"; };
 		03E95AE32ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapScreenToFocusSettingsView.swift; sourceTree = "<group>"; };
@@ -949,7 +949,7 @@
 			isa = PBXGroup;
 			children = (
 				0379BB742AA6343E00B718B6 /* Button */,
-				0379BBB52AAD9B5B00B718B6 /* ButtonsSettingsView.swift */,
+				0379BBB52AAD9B5B00B718B6 /* QuickButtonsSettingsView.swift */,
 			);
 			path = Buttons;
 			sourceTree = "<group>";
@@ -1170,7 +1170,7 @@
 		03E877F52B2DB26100086355 /* GlobalButtons */ = {
 			isa = PBXGroup;
 			children = (
-				03E877F62B2DB27800086355 /* GlobalButtonsSettingsView.swift */,
+				03E877F62B2DB27800086355 /* GlobalQuickButtonsSettingsView.swift */,
 			);
 			path = GlobalButtons;
 			sourceTree = "<group>";
@@ -1387,7 +1387,7 @@
 				03DBD1082B300D92004B0BE6 /* StreamWizardNetworkSetupObsSettingsView.swift in Sources */,
 				032E065F2B2F3E9D00EAE5F8 /* MainView.swift in Sources */,
 				032E06602B2F3E9D00EAE5F8 /* ButtonsView.swift in Sources */,
-				032E06612B2F3E9D00EAE5F8 /* ButtonsSettingsView.swift in Sources */,
+				032E06612B2F3E9D00EAE5F8 /* QuickButtonsSettingsView.swift in Sources */,
 				03B16A322B35D74800E5AB07 /* DisplaySettingsView.swift in Sources */,
 				032E06622B2F3E9D00EAE5F8 /* RandomEffect.swift in Sources */,
 				032E06632B2F3E9D00EAE5F8 /* StreamTwitchSettingsView.swift in Sources */,
@@ -1474,7 +1474,7 @@
 				031F91EC2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift in Sources */,
 				032E069D2B2F3E9D00EAE5F8 /* GrayScaleEffect.swift in Sources */,
 				03DBD1002B30091B004B0BE6 /* StreamWizardNetworkSetupSettingsView.swift in Sources */,
-				032E069E2B2F3E9D00EAE5F8 /* GlobalButtonsSettingsView.swift in Sources */,
+				032E069E2B2F3E9D00EAE5F8 /* GlobalQuickButtonsSettingsView.swift in Sources */,
 				032E069F2B2F3E9D00EAE5F8 /* SizeEditView.swift in Sources */,
 				032E06A02B2F3E9D00EAE5F8 /* StreamAudioSettingsView.swift in Sources */,
 				032E06A12B2F3E9D00EAE5F8 /* ZoomSwitchToSettingsView.swift in Sources */,
@@ -1541,7 +1541,7 @@
 				03A983622A9A05D7008FF0DB /* MainView.swift in Sources */,
 				03B374042AA036D10028DDD5 /* ButtonsView.swift in Sources */,
 				0391BB3D2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift in Sources */,
-				0379BBB62AAD9B5B00B718B6 /* ButtonsSettingsView.swift in Sources */,
+				0379BBB62AAD9B5B00B718B6 /* QuickButtonsSettingsView.swift in Sources */,
 				03B16A282B35614100E5AB07 /* RecordingsRecordingSettingsView.swift in Sources */,
 				032815DC2AC915AE001F8A85 /* RandomEffect.swift in Sources */,
 				03D541752B32095B00B9D595 /* StreamWizardCustomSettingsView.swift in Sources */,
@@ -1624,7 +1624,7 @@
 				031F91EB2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift in Sources */,
 				032815DF2AC9885C001F8A85 /* TripleEffect.swift in Sources */,
 				03B374022AA0354C0028DDD5 /* GrayScaleEffect.swift in Sources */,
-				03E877F72B2DB27800086355 /* GlobalButtonsSettingsView.swift in Sources */,
+				03E877F72B2DB27800086355 /* GlobalQuickButtonsSettingsView.swift in Sources */,
 				032FDC022B0B11C5007BE85E /* SizeEditView.swift in Sources */,
 				031A4DC72B2CED460053F67D /* StreamAudioSettingsView.swift in Sources */,
 				03E95AC62ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift in Sources */,

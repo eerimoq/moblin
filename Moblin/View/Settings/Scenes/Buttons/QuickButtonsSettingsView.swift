@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ButtonsSettingsView: View {
+struct QuickButtonsSettingsView: View {
     @EnvironmentObject var model: Model
 
     var database: Database {
@@ -19,7 +19,7 @@ struct ButtonsSettingsView: View {
     var body: some View {
         Form {
             Text("""
-            A list of all scene buttons, often to hide and show widgets. A scene button can \
+            A list of all scene quick buttons, often to hide and show widgets. A scene button can \
             be used in zero or more scenes.
             """)
             Section {
@@ -62,10 +62,10 @@ struct ButtonsSettingsView: View {
                     model.sceneUpdated()
                 })
             } footer: {
-                Text("Only unused buttons can be deleted.")
+                Text("Only unused quick buttons can be deleted.")
             }
         }
-        .navigationTitle("Buttons")
+        .navigationTitle("Quick buttons")
         .toolbar {
             SettingsToolbar()
         }

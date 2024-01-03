@@ -325,9 +325,9 @@ struct SceneSettingsView: View {
                     }
                 }
             } header: {
-                Text("Buttons")
+                Text("Quick buttons")
             } footer: {
-                Text("Buttons appear from bottom to top.")
+                Text("Quick buttons appear from bottom to top.")
             }
         }
         .navigationTitle("Scene")

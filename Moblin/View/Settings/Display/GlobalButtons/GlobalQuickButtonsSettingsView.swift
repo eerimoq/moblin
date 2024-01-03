@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct GlobalButtonsSettingsView: View {
+struct GlobalQuickButtonsSettingsView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
@@ -59,10 +59,10 @@ struct GlobalButtonsSettingsView: View {
                     })
                 }
             } header: {
-                Text("Buttons")
+                Text("Quick buttons")
             }
         }
-        .navigationTitle("Buttons")
+        .navigationTitle("Quick buttons")
         .toolbar {
             SettingsToolbar()
         }

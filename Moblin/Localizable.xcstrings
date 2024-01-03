@@ -4103,6 +4103,7 @@
       }
     },
     "A list of all scene buttons, often to hide and show widgets. A scene button can be used in zero or more scenes." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4207,6 +4208,9 @@
           }
         }
       }
+    },
+    "A list of all scene quick buttons, often to hide and show widgets. A scene button can be used in zero or more scenes." : {
+
     },
     "A list of all widgets. A widget can be used in zero or more scenes." : {
       "localizations" : {
@@ -9727,6 +9731,7 @@
       }
     },
     "Buttons" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -9833,6 +9838,7 @@
       }
     },
     "Buttons appear from bottom to top." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -29357,6 +29363,7 @@
       }
     },
     "Only unused buttons can be deleted." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -29461,6 +29468,9 @@
           }
         }
       }
+    },
+    "Only unused quick buttons can be deleted." : {
+
     },
     "Only unused widgets can be deleted." : {
       "localizations" : {
@@ -31051,6 +31061,12 @@
           }
         }
       }
+    },
+    "Quick buttons" : {
+
+    },
+    "Quick buttons appear from bottom to top." : {
+
     },
     "Random" : {
       "localizations" : {
