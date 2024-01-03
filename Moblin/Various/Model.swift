@@ -2,6 +2,7 @@ import AlertToast
 import Collections
 import Combine
 import CoreMotion
+import GameController
 import HaishinKit
 import Logboard
 import Network
@@ -343,6 +344,9 @@ final class Model: ObservableObject {
 
     private var rtmpServer: RtmpServer?
     @Published var rtmpSpeedAndTotal = noValue
+
+    private var gameControllers: Set<GCController> = []
+    @Published var gameControllersTotal = noValue
 
     init() {
         settings.load()
@@ -1066,6 +1070,78 @@ final class Model: ObservableObject {
                                                name: UIDevice.batteryStateDidChangeNotification,
                                                object: nil)
         updateBatteryState()
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(handleGameControllerDidConnect),
+                                               name: NSNotification.Name.GCControllerDidConnect,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(handleGameControllerDidDisconnect),
+                                               name: NSNotification.Name.GCControllerDidDisconnect,
+                                               object: nil)
+        GCController.startWirelessControllerDiscovery {}
+    }
+
+    private func handleGameControllerButton(button: GCControllerButtonInput, value _: Float, pressed: Bool) {
+        guard !pressed else {
+            return
+        }
+        guard let name = button.sfSymbolsName else {
+            return
+        }
+        logger.debug("game-controller: \(name)")
+        switch name {
+        case "a.circle":
+            toggleTorch()
+            toggleGlobalButton(type: .torch)
+        case "b.circle":
+            toggleMute()
+            toggleGlobalButton(type: .mute)
+        default:
+            break
+        }
+        updateButtonStates()
+    }
+
+    func isGameControllerConnected() -> Bool {
+        return !gameControllers.isEmpty
+    }
+
+    private func updateGameControllers() {
+        gameControllersTotal = String(gameControllers.count)
+    }
+
+    @objc func handleGameControllerDidConnect(_ notification: Notification) {
+        logger.info("game-controller: Connected")
+        guard let gameController = notification.object as? GCController else {
+            return
+        }
+        guard let gamepad = gameController.extendedGamepad else {
+            return
+        }
+        gamepad.dpad.left.pressedChangedHandler = handleGameControllerButton
+        gamepad.dpad.right.pressedChangedHandler = handleGameControllerButton
+        gamepad.dpad.up.pressedChangedHandler = handleGameControllerButton
+        gamepad.dpad.down.pressedChangedHandler = handleGameControllerButton
+        gamepad.buttonA.pressedChangedHandler = handleGameControllerButton
+        gamepad.buttonB.pressedChangedHandler = handleGameControllerButton
+        gamepad.buttonX.pressedChangedHandler = handleGameControllerButton
+        gamepad.buttonY.pressedChangedHandler = handleGameControllerButton
+        gamepad.buttonMenu.pressedChangedHandler = handleGameControllerButton
+        gamepad.leftShoulder.pressedChangedHandler = handleGameControllerButton
+        gamepad.rightShoulder.pressedChangedHandler = handleGameControllerButton
+        gamepad.leftTrigger.pressedChangedHandler = handleGameControllerButton
+        gamepad.rightTrigger.pressedChangedHandler = handleGameControllerButton
+        gameControllers.insert(gameController)
+        updateGameControllers()
+    }
+
+    @objc func handleGameControllerDidDisconnect(notification: Notification) {
+        logger.info("game-controller: Disconnected")
+        guard let gameController = notification.object as? GCController else {
+            return
+        }
+        gameControllers.remove(gameController)
+        updateGameControllers()
     }
 
     @objc func handleDidEnterBackgroundNotification() {
@@ -1570,6 +1646,22 @@ final class Model: ObservableObject {
             if let state = pair.second {
                 if state.button.type == type {
                     state.isOn = isOn
+                }
+            }
+        }
+    }
+
+    private func toggleGlobalButton(type: SettingsButtonType) {
+        for button in database.globalButtons! where button.type == type {
+            button.isOn.toggle()
+        }
+        for pair in buttonPairs {
+            if pair.first.button.type == type {
+                pair.first.isOn.toggle()
+            }
+            if let state = pair.second {
+                if state.button.type == type {
+                    state.isOn.toggle()
                 }
             }
         }

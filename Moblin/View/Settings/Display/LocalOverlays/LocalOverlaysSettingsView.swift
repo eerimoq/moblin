@@ -66,6 +66,12 @@ struct LocalOverlaysSettingsView: View {
                     show.rtmpSpeed = value
                     model.store()
                 }))
+                Toggle("Game controllers", isOn: Binding(get: {
+                    show.gameControllers!
+                }, set: { value in
+                    show.gameControllers = value
+                    model.store()
+                }))
                 Toggle("Bitrate", isOn: Binding(get: {
                     show.speed
                 }, set: { value in

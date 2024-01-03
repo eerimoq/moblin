@@ -721,6 +721,7 @@ class SettingsShow: Codable {
     var cameras: Bool? = true
     var obsStatus: Bool? = true
     var rtmpSpeed: Bool? = true
+    var gameControllers: Bool? = true
 }
 
 class SettingsZoomPreset: Codable, Identifiable {
@@ -1548,6 +1549,10 @@ final class Settings {
         }
         if realDatabase.debug!.recordingsFolder == nil {
             realDatabase.debug!.recordingsFolder = false
+            store()
+        }
+        if realDatabase.show.gameControllers == nil {
+            realDatabase.show.gameControllers = true
             store()
         }
     }
