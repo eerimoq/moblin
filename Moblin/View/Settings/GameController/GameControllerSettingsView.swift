@@ -28,22 +28,26 @@ struct GameControllerSettingsView: View {
                 HStack {
                     Image(systemName: "dpad.left.fill")
                     Spacer()
-                    Text("")
+                    Text("Unused")
+                        .foregroundColor(.gray)
                 }
                 HStack {
                     Image(systemName: "dpad.right.fill")
                     Spacer()
-                    Text("")
+                    Text("Unused")
+                        .foregroundColor(.gray)
                 }
                 HStack {
                     Image(systemName: "dpad.up.fill")
                     Spacer()
-                    Text("")
+                    Text("Unused")
+                        .foregroundColor(.gray)
                 }
                 HStack {
                     Image(systemName: "dpad.down.fill")
                     Spacer()
-                    Text("")
+                    Text("Unused")
+                        .foregroundColor(.gray)
                 }
                 HStack {
                     Image(systemName: "a.circle")
@@ -58,37 +62,38 @@ struct GameControllerSettingsView: View {
                 HStack {
                     Image(systemName: "x.circle")
                     Spacer()
-                    Text("")
+                    Text("Unused")
+                        .foregroundColor(.gray)
                 }
                 HStack {
                     Image(systemName: "y.circle")
                     Spacer()
-                    Text("")
-                }
-                HStack {
-                    Image(systemName: "l.rectangle.roundedbottom")
-                    Spacer()
-                    Text("")
+                    Text("Unused")
+                        .foregroundColor(.gray)
                 }
                 HStack {
                     Image(systemName: "zl.rectangle.roundedtop")
                     Spacer()
-                    Text("")
+                    Text("Unused")
+                        .foregroundColor(.gray)
                 }
                 HStack {
-                    Image(systemName: "r.rectangle.roundedbottom")
+                    Image(systemName: "l.rectangle.roundedbottom")
                     Spacer()
-                    Text("")
+                    Text("Unused")
+                        .foregroundColor(.gray)
                 }
                 HStack {
                     Image(systemName: "zr.rectangle.roundedtop")
                     Spacer()
-                    Text("")
+                    Text("Unused")
+                        .foregroundColor(.gray)
                 }
                 HStack {
-                    Image(systemName: "plus.circle")
+                    Image(systemName: "r.rectangle.roundedbottom")
                     Spacer()
-                    Text("")
+                    Text("Unused")
+                        .foregroundColor(.gray)
                 }
             }
         }
