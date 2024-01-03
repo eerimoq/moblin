@@ -51,6 +51,8 @@ func makeRtmpUri(url: String) -> String {
     var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)!
     let path = components.joined(separator: "/")
     urlComponents.path = "/\(path)"
+    urlComponents.query = nil
+    urlComponents.fragment = nil
     url = urlComponents.url!
     return "\(url)"
 }
