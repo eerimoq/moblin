@@ -38,35 +38,37 @@ struct BatteryView: View {
             Image(systemName: "bolt.fill")
                 .foregroundColor(boltColor())
                 .font(.system(size: 10))
-            if model.database.batteryPercentage! {
-                ZStack(alignment: .center) {
-                    RoundedRectangle(cornerRadius: 2)
-                        .foregroundColor(.white)
-                        .frame(width: 24, height: 12)
-                    Text(percentage(level: model.batteryLevel))
-                        .foregroundColor(.black)
-                        .font(.system(size: 12))
-                        .fixedSize()
-                        .bold()
+            HStack(spacing: 0) {
+                if model.database.batteryPercentage! {
+                    ZStack(alignment: .center) {
+                        RoundedRectangle(cornerRadius: 2)
+                            .foregroundColor(.white)
+                            .frame(width: 24, height: 12)
+                        Text(percentage(level: model.batteryLevel))
+                            .foregroundColor(.black)
+                            .font(.system(size: 12))
+                            .fixedSize()
+                            .bold()
+                    }
+                } else {
+                    ZStack(alignment: .leading) {
+                        RoundedRectangle(cornerRadius: 2)
+                            .stroke(.gray)
+                            .frame(width: 24, height: 12)
+                        RoundedRectangle(cornerRadius: 1)
+                            .foregroundColor(color(level: model.batteryLevel))
+                            .padding([.leading], 1)
+                            .frame(width: width(level: model.batteryLevel), height: 10)
+                    }
                 }
-            } else {
-                ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 2)
-                        .stroke(.gray)
-                        .frame(width: 24, height: 12)
-                    RoundedRectangle(cornerRadius: 1)
-                        .foregroundColor(color(level: model.batteryLevel))
-                        .padding([.leading], 1)
-                        .frame(width: width(level: model.batteryLevel), height: 10)
-                }
+                Circle()
+                    .trim(from: 0.0, to: 0.5)
+                    .rotationEffect(.degrees(-90))
+                    .foregroundColor(.gray)
+                    .frame(width: 4)
             }
-            Circle()
-                .trim(from: 0.0, to: 0.5)
-                .rotationEffect(.degrees(-90))
-                .foregroundColor(.gray)
-                .frame(width: 4)
+            .frame(width: 28, height: 13)
         }
         .padding([.top], 1)
-        .frame(width: 28, height: 13)
     }
 }

@@ -41,6 +41,7 @@ struct DisplaySettingsView: View {
                 }, set: { value in
                     model.database.batteryPercentage = value
                     model.store()
+                    model.objectWillChange.send()
                 }))
                 NavigationLink(destination: LocalOverlaysSettingsView()) {
                     Text("Local overlays")

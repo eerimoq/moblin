@@ -86,7 +86,7 @@ struct ControlBarView: View {
                     .font(smallFont)
             }
             .padding([.bottom], 10)
-            .padding([.leading], 1)
+            .padding([.leading], 0)
             .padding([.trailing], 5)
             HStack(spacing: 0) {
                 Image("\(model.iconImage)NoBackground")
