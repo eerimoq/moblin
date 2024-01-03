@@ -1001,6 +1001,9 @@
         }
       }
     },
+    "#!::r=stream/-NDZ1WPA4zjMBTJTyNwU,m=publish,..." : {
+
+    },
     "%.1f/min" : {
       "localizations" : {
         "de" : {
@@ -11738,6 +11741,7 @@
       }
     },
     "Configure the stream after the wizard ends." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -32641,6 +32645,12 @@
         }
       }
     },
+    "rtmp://arn03.contribute.live-video.net/app/" : {
+
+    },
+    "RTMP(S)" : {
+
+    },
     "rtmps://fa723fc1b171.global-contribute.live-video.net" : {
       "localizations" : {
         "de" : {
@@ -34443,6 +34453,9 @@
         }
       }
     },
+    "Skip" : {
+
+    },
     "Small camera" : {
       "localizations" : {
         "de" : {
@@ -34654,6 +34667,9 @@
           }
         }
       }
+    },
+    "SRT" : {
+
     },
     "SRT connect failed with %@" : {
       "localizations" : {
@@ -35290,6 +35306,9 @@
           }
         }
       }
+    },
+    "srt://107.32.12.132:5000" : {
+
     },
     "SRT(LA)" : {
       "localizations" : {
@@ -36139,6 +36158,9 @@
           }
         }
       }
+    },
+    "Stream id" : {
+
     },
     "Stream key" : {
       "localizations" : {
@@ -41548,6 +41570,9 @@
           }
         }
       }
+    },
+    "Url" : {
+
     },
     "URL" : {
       "localizations" : {

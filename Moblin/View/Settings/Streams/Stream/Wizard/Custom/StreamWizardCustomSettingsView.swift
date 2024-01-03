@@ -5,18 +5,26 @@ struct StreamWizardCustomSettingsView: View {
 
     var body: some View {
         Form {
-            VStack(alignment: .leading) {
-                Text("Configure the stream after the wizard ends.")
+            Section {
+                NavigationLink(destination: StreamWizardCustomSrtSettingsView()) {
+                    Text("SRT(LA)")
+                }
+                NavigationLink(destination: StreamWizardCustonRtmpSettingsView()) {
+                    Text("RTMP(S)")
+                }
+            } header: {
+                Text("Protocol")
             }
             Section {
                 NavigationLink(destination: StreamWizardSummarySettingsView()) {
-                    WizardNextButtonView()
+                    WizardSkipButtonView()
                 }
             }
         }
         .onAppear {
             model.wizardPlatform = .custom
             model.wizardNetworkSetup = .none
+            model.wizardCustomProtocol = .none
             model.wizardName = "Custom"
         }
         .navigationTitle("Custom")

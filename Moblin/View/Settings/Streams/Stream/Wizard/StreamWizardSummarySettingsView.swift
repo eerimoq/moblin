@@ -90,7 +90,29 @@ struct StreamWizardSummarySettingsView: View {
                     Text("Direct")
                 }
             }
-            if model.wizardPlatform != .custom {
+            if model.wizardPlatform == .custom {
+                if model.wizardCustomProtocol == .srt {
+                    Section {
+                        TextValueView(name: String(localized: "URL"), value: model.wizardCustomSrtUrl)
+                        TextValueView(
+                            name: String(localized: "Stream id"),
+                            value: model.wizardCustomSrtStreamId
+                        )
+                    } header: {
+                        Text("SRT(LA)")
+                    }
+                } else if model.wizardCustomProtocol == .rtmp {
+                    Section {
+                        TextValueView(name: String(localized: "URL"), value: model.wizardCustomRtmpUrl)
+                        TextValueView(
+                            name: String(localized: "Stream key"),
+                            value: model.wizardCustomRtmpStreamKey
+                        )
+                    } header: {
+                        Text("RTMP(S)")
+                    }
+                }
+            } else {
                 if model.wizardObsRemoteControlEnabled {
                     Section {
                         TextValueView(name: String(localized: "URL"), value: model.wizardObsRemoteControlUrl)

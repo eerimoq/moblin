@@ -11,6 +11,17 @@ struct WizardNextButtonView: View {
     }
 }
 
+struct WizardSkipButtonView: View {
+    var body: some View {
+        HStack {
+            Spacer()
+            Text("Skip")
+                .foregroundColor(.accentColor)
+            Spacer()
+        }
+    }
+}
+
 struct CreateStreamWizardToolbar: ToolbarContent {
     @EnvironmentObject var model: Model
 

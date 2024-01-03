@@ -187,6 +187,12 @@ enum WizardNetworkSetup {
     case direct
 }
 
+enum WizardCustomProtocol {
+    case none
+    case srt
+    case rtmp
+}
+
 final class Model: ObservableObject {
     private let media = Media()
     var streamState = StreamState.disconnected {
@@ -294,6 +300,7 @@ final class Model: ObservableObject {
     @Published var isPresentingSetupWizard: Bool = false
     var wizardPlatform: WizardPlatform = .custom
     var wizardNetworkSetup: WizardNetworkSetup = .none
+    var wizardCustomProtocol: WizardCustomProtocol = .none
     @Published var wizardName = ""
     @Published var wizardTwitchChannelName = ""
     @Published var wizardTwitchChannelId = ""
@@ -314,6 +321,10 @@ final class Model: ObservableObject {
     @Published var wizardChatFfz = true
     @Published var wizardChatSeventv = true
     @Published var wizardBelaboxUrl = ""
+    @Published var wizardCustomSrtUrl = ""
+    @Published var wizardCustomSrtStreamId = ""
+    @Published var wizardCustomRtmpUrl = ""
+    @Published var wizardCustomRtmpStreamKey = ""
 
     var cameraDevice: AVCaptureDevice?
     var cameraZoomLevelToXScale: Float = 1.0
@@ -371,16 +382,36 @@ final class Model: ObservableObject {
 
     private func createStreamFromWizardUrl() -> String {
         var url = defaultStreamUrl
-        switch wizardNetworkSetup {
-        case .none:
-            break
-        case .obs:
-            url = "srt://\(wizardObsAddress):\(wizardObsPort)"
-        case .belaboxCloudObs:
-            url = wizardBelaboxUrl
-        case .direct:
-            let ingestUrl = wizardDirectIngest.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-            url = "\(ingestUrl)/\(wizardDirectStreamKey)"
+        if wizardPlatform == .custom {
+            switch wizardCustomProtocol {
+            case .none:
+                break
+            case .srt:
+                if var urlComponents = URLComponents(string: wizardCustomSrtUrl) {
+                    urlComponents.queryItems = [
+                        URLQueryItem(name: "streamid", value: wizardCustomSrtStreamId),
+                    ]
+                    if let fullUrl = urlComponents.url {
+                        url = fullUrl.absoluteString
+                    }
+                }
+            case .rtmp:
+                wizardCustomRtmpUrl = wizardCustomRtmpUrl
+                    .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+                url = "\(wizardCustomRtmpUrl)/\(wizardCustomRtmpStreamKey)"
+            }
+        } else {
+            switch wizardNetworkSetup {
+            case .none:
+                break
+            case .obs:
+                url = "srt://\(wizardObsAddress):\(wizardObsPort)"
+            case .belaboxCloudObs:
+                url = wizardBelaboxUrl
+            case .direct:
+                let ingestUrl = wizardDirectIngest.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+                url = "\(ingestUrl)/\(wizardDirectStreamKey)"
+            }
         }
         return cleanWizardUrl(url: url)
     }
