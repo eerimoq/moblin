@@ -6805,7 +6805,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "뒤로"
+            "value" : "후면"
           }
         },
         "nl" : {
@@ -8183,7 +8183,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "비트레이트"
+            "value" : "비트레이트 변경"
           }
         },
         "nl" : {
@@ -9561,7 +9561,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "버튼"
+            "value" : "버튼 UI"
           }
         },
         "nl" : {
@@ -10515,7 +10515,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "채팅"
+            "value" : "채팅 숨기기"
           }
         },
         "nl" : {
@@ -21547,7 +21547,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "이미지"
+            "value" : "노출 보정"
           }
         },
         "nl" : {
@@ -23349,7 +23349,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "로컬 오버레이"
+            "value" : "화면 UI"
           }
         },
         "nl" : {
@@ -29403,7 +29403,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "사용하지 않는 버튼만 지울 수 있습니다."
+            "value" : "사용중이지 않은 버튼만 지울 수 있습니다."
           }
         },
         "nl" : {
@@ -29509,7 +29509,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "사용하지 않는 위젯만 지울 수 있습니다."
+            "value" : "사용중이지 않은 위젯만 지울 수 있습니다."
           }
         },
         "nl" : {
@@ -34668,9 +34668,6 @@
         }
       }
     },
-    "SRT" : {
-
-    },
     "SRT connect failed with %@" : {
       "localizations" : {
         "de" : {
@@ -39389,7 +39386,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "시간"
+            "value" : "시계 표시"
           }
         },
         "nl" : {
@@ -39495,7 +39492,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "시간표시"
+            "value" : "시간 기록"
           }
         },
         "nl" : {
@@ -40873,7 +40870,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "두 개의 열"
+            "value" : "2열 배치"
           }
         },
         "nl" : {
