@@ -68,6 +68,45 @@ class SettingsStreamChat: Codable {
     }
 }
 
+class SettingsStreamRecording: Codable {
+    var videoCodec: SettingsStreamCodec = .h265hevc
+    var videoBitrate: UInt32 = 0
+    var maxKeyFrameInterval: Int32 = 0
+
+    func clone() -> SettingsStreamRecording {
+        let recording = SettingsStreamRecording()
+        recording.videoCodec = videoCodec
+        recording.videoBitrate = videoBitrate
+        recording.maxKeyFrameInterval = maxKeyFrameInterval
+        return recording
+    }
+
+    func videoCodecString() -> String {
+        switch videoCodec {
+        case .h265hevc:
+            return "H.265"
+        case .h264avc:
+            return "H.264"
+        }
+    }
+
+    func videoBitrateString() -> String {
+        if videoBitrate != 0 {
+            return formatBytesPerSecond(speed: Int64(videoBitrate))
+        } else {
+            return "Auto"
+        }
+    }
+
+    func maxKeyFrameIntervalString() -> String {
+        if maxKeyFrameInterval != 0 {
+            return String(maxKeyFrameInterval)
+        } else {
+            return "Auto"
+        }
+    }
+}
+
 class SettingsStream: Codable, Identifiable, Equatable {
     static func == (lhs: SettingsStream, rhs: SettingsStream) -> Bool {
         lhs.id == rhs.id
@@ -103,6 +142,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var maxKeyFrameInterval: Int32? = 2
     var audioBitrate: Int? = 128_000
     var chat: SettingsStreamChat? = .init()
+    var recording: SettingsStreamRecording? = .init()
 
     init(name: String) {
         self.name = name
@@ -132,6 +172,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
         stream.maxKeyFrameInterval = maxKeyFrameInterval
         stream.audioBitrate = audioBitrate
         stream.chat = chat?.clone()
+        stream.recording = recording?.clone()
         return stream
     }
 
@@ -1498,6 +1539,10 @@ final class Settings {
         }
         if realDatabase.debug!.sceneMic == nil {
             realDatabase.debug!.sceneMic = false
+            store()
+        }
+        for stream in realDatabase.streams where stream.recording == nil {
+            stream.recording = .init()
             store()
         }
     }

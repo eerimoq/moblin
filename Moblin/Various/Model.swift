@@ -1498,13 +1498,25 @@ final class Model: ObservableObject {
     }
 
     func startRecording() {
+        setGlobalButtonState(type: .record, isOn: true)
         currentRecording = recordingsStorage.createRecording(settings: stream.clone())
-        media.startRecording(url: currentRecording!.url(), videoCodec: stream.codec)
+        let bitrate = Int(stream.recording!.videoBitrate)
+        let keyFrameInterval = Int(stream.recording!.maxKeyFrameInterval)
+        media.startRecording(
+            url: currentRecording!.url(),
+            videoCodec: stream.recording!.videoCodec,
+            videoBitrate: bitrate != 0 ? bitrate : nil,
+            keyFrameInterval: keyFrameInterval != 0 ? keyFrameInterval : nil
+        )
         makeToast(title: "Recording started")
         isRecording = true
     }
 
     func stopRecording() {
+        setGlobalButtonState(type: .record, isOn: false)
+        guard isRecording else {
+            return
+        }
         media.stopRecording()
         makeToast(title: "Recording stopped")
         if let currentRecording {
@@ -1514,6 +1526,22 @@ final class Model: ObservableObject {
         updateRecordingLength(now: Date())
         currentRecording = nil
         isRecording = false
+    }
+
+    private func setGlobalButtonState(type: SettingsButtonType, isOn: Bool) {
+        for button in database.globalButtons! where button.type == type {
+            button.isOn = isOn
+        }
+        for pair in buttonPairs {
+            if pair.first.button.type == type {
+                pair.first.isOn = isOn
+            }
+            if let state = pair.second {
+                if state.button.type == type {
+                    state.isOn = isOn
+                }
+            }
+        }
     }
 
     func startStream() {
@@ -1595,6 +1623,7 @@ final class Model: ObservableObject {
 
     func reloadStream() {
         cameraPosition = nil
+        stopRecording()
         stopStream()
         setNetStream()
         setStreamResolution()
@@ -2034,19 +2063,7 @@ final class Model: ObservableObject {
     private func handleObsStreamStatusChanged(active: Bool) {
         DispatchQueue.main.async {
             self.obsStreaming = active
-            for button in self.database.globalButtons! where button.type == .obsStartStopStream {
-                button.isOn = active
-            }
-            for pair in self.buttonPairs {
-                if pair.first.button.type == .obsStartStopStream {
-                    pair.first.isOn = active
-                }
-                if let state = pair.second {
-                    if state.button.type == .obsStartStopStream {
-                        state.isOn = active
-                    }
-                }
-            }
+            self.setGlobalButtonState(type: .obsStartStopStream, isOn: active)
         }
     }
 

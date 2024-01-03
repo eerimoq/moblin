@@ -31790,6 +31790,9 @@
         }
       }
     },
+    "Resolution and FPS are same as for live stream." : {
+
+    },
     "Restore purchases" : {
       "localizations" : {
         "de" : {
@@ -41437,6 +41440,9 @@
         }
       }
     },
+    "Up to 50 Mbps. Set to 0 for automatic." : {
+
+    },
     "Uptime" : {
       "localizations" : {
         "de" : {
@@ -42814,6 +42820,12 @@
           }
         }
       }
+    },
+    "Video bitrate" : {
+
+    },
+    "Video codec" : {
+
     },
     "Video effect" : {
       "localizations" : {

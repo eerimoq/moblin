@@ -42,7 +42,7 @@ struct StreamVideoSettingsView: View {
                 {
                     TextItemView(name: String(localized: "Resolution"), value: stream.resolution.rawValue)
                 }
-                .disabled(stream.enabled && model.isLive)
+                .disabled(stream.enabled && (model.isLive || model.isRecording))
                 NavigationLink(destination: InlinePickerView(title: String(localized: "FPS"),
                                                              onChange: onFpsChange,
                                                              items: InlinePickerItem
@@ -52,7 +52,7 @@ struct StreamVideoSettingsView: View {
                 {
                     TextItemView(name: "FPS", value: String(stream.fps))
                 }
-                .disabled(stream.enabled && model.isLive)
+                .disabled(stream.enabled && (model.isLive || model.isRecording))
                 NavigationLink(destination: InlinePickerView(title: String(localized: "Codec"),
                                                              onChange: onCodecChange,
                                                              items: InlinePickerItem
@@ -80,7 +80,7 @@ struct StreamVideoSettingsView: View {
                 )) {
                     TextItemView(
                         name: String(localized: "Key frame interval"),
-                        value: String(stream.maxKeyFrameInterval!)
+                        value: "\(stream.maxKeyFrameInterval!) s"
                     )
                 }
                 .disabled(stream.enabled && model.isLive)

@@ -269,9 +269,8 @@ struct ButtonsView: View {
         isPresentingObsStartStopConfirm = false
     }
 
-    private func recordAction(state: ButtonState) {
-        state.button.isOn.toggle()
-        if state.button.isOn {
+    private func recordAction(state _: ButtonState) {
+        if !model.isRecording {
             model.startRecording()
         } else {
             model.stopRecording()

@@ -27,10 +27,10 @@ struct StreamsSettingsView: View {
                                     model.reloadStream()
                                     model.sceneUpdated()
                                 }))
-                                .disabled(stream.enabled || model.isLive)
+                                .disabled(stream.enabled || model.isLive || model.isRecording)
                             }
                         }
-                        if stream.enabled && model.isLive {
+                        if stream.enabled && (model.isLive || model.isRecording) {
                             item.swipeActions(edge: .trailing) {
                                 Button(action: {
                                     database.streams.append(stream.clone())
@@ -72,7 +72,7 @@ struct StreamsSettingsView: View {
                     model.resetWizard()
                     model.isPresentingWizard = true
                 })
-                .disabled(model.isLive)
+                .disabled(model.isLive || model.isRecording)
                 .sheet(isPresented: $model.isPresentingWizard) {
                     NavigationStack {
                         StreamWizardSettingsView()

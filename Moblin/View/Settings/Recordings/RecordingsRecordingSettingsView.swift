@@ -35,7 +35,22 @@ struct RecordingsRecordingSettingsView: View {
                 Section {
                     TextValueView(name: "Resolution", value: recording.settings.resolutionString())
                     TextValueView(name: "FPS", value: "\(recording.settings.fps)")
-                    TextValueView(name: "Video codec", value: recording.settings.codecString())
+                    if recording.settings.recording == nil {
+                        TextValueView(name: "Video codec", value: recording.settings.codecString())
+                    } else {
+                        TextValueView(
+                            name: "Video codec",
+                            value: recording.settings.recording!.videoCodecString()
+                        )
+                        TextValueView(
+                            name: "Video bitrate",
+                            value: recording.settings.recording!.videoBitrateString()
+                        )
+                        TextValueView(
+                            name: "Key frame interval",
+                            value: recording.settings.recording!.maxKeyFrameIntervalString()
+                        )
+                    }
                     TextValueView(name: "Audio codec", value: recording.settings.audioCodecString())
                 } header: {
                     Text("Settings")
