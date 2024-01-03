@@ -846,6 +846,7 @@ class SettingsDebug: Codable {
     var srtOverheadBandwidth: Int32? = 25
     var letItSnow: Bool? = false
     var sceneMic: Bool? = false
+    var recordingsFolder: Bool? = false
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -1543,6 +1544,10 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.recording == nil {
             stream.recording = .init()
+            store()
+        }
+        if realDatabase.debug!.recordingsFolder == nil {
+            realDatabase.debug!.recordingsFolder = false
             store()
         }
     }
