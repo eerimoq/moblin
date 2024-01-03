@@ -67,9 +67,9 @@ struct LocalOverlaysSettingsView: View {
                     model.store()
                 }))
                 Toggle("Game controllers", isOn: Binding(get: {
-                    show.gameControllers!
+                    show.gameController!
                 }, set: { value in
-                    show.gameControllers = value
+                    show.gameController = value
                     model.store()
                 }))
                 Toggle("Bitrate", isOn: Binding(get: {

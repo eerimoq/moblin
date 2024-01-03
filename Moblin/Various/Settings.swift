@@ -721,7 +721,7 @@ class SettingsShow: Codable {
     var cameras: Bool? = true
     var obsStatus: Bool? = true
     var rtmpSpeed: Bool? = true
-    var gameControllers: Bool? = true
+    var gameController: Bool? = true
 }
 
 class SettingsZoomPreset: Codable, Identifiable {
@@ -896,6 +896,119 @@ class SettingsNetworkInterfaceName: Codable, Identifiable {
     var name: String = ""
 }
 
+enum SettingsGameControllerButtonFunction: Codable, CaseIterable {
+    case unused
+    case record
+    case stream
+    case zoomIn
+    case zoomOut
+    case nextZoomPreset
+    case previousZoomPreset
+    case nextBitratePreset
+    case previousBitratePreset
+    case mute
+    case torch
+    case blackScreen
+    case chat
+    case pauseChat
+    case scene
+    case obsScene
+
+    func toString() -> String {
+        switch self {
+        case .unused:
+            return "Unused"
+        case .record:
+            return "Record"
+        case .stream:
+            return "Stream"
+        case .zoomIn:
+            return "Zoom in"
+        case .zoomOut:
+            return "Zoom out"
+        case .nextZoomPreset:
+            return "Next zoom preset"
+        case .previousZoomPreset:
+            return "Previous zoom preset"
+        case .nextBitratePreset:
+            return "Next bitrate preset"
+        case .previousBitratePreset:
+            return "Previous bitrate preset"
+        case .mute:
+            return "Mute"
+        case .torch:
+            return "Torch"
+        case .blackScreen:
+            return "Black screen"
+        case .chat:
+            return "Chat"
+        case .pauseChat:
+            return "Pause chat"
+        case .scene:
+            return "Scene"
+        case .obsScene:
+            return "OBS scene"
+        }
+    }
+}
+
+var gameControllerButtonFunctions: [SettingsGameControllerButtonFunction] = [
+    .unused,
+    .torch,
+    .mute,
+]
+
+class SettingsGameControllerButton: Codable, Identifiable {
+    var id: UUID = .init()
+    var name: String = ""
+    var function: SettingsGameControllerButtonFunction = .unused
+}
+
+class SettingsGameController: Codable {
+    var buttons: [SettingsGameControllerButton] = []
+
+    init() {
+        var button = SettingsGameControllerButton()
+        button.name = "dpad.left.fill"
+        buttons.append(button)
+        button = SettingsGameControllerButton()
+        button.name = "dpad.right.fill"
+        buttons.append(button)
+        button = SettingsGameControllerButton()
+        button.name = "dpad.up.fill"
+        buttons.append(button)
+        button = SettingsGameControllerButton()
+        button.name = "dpad.down.fill"
+        buttons.append(button)
+        button = SettingsGameControllerButton()
+        button.name = "a.circle"
+        button.function = .torch
+        buttons.append(button)
+        button = SettingsGameControllerButton()
+        button.name = "b.circle"
+        button.function = .mute
+        buttons.append(button)
+        button = SettingsGameControllerButton()
+        button.name = "x.circle"
+        buttons.append(button)
+        button = SettingsGameControllerButton()
+        button.name = "y.circle"
+        buttons.append(button)
+        button = SettingsGameControllerButton()
+        button.name = "zl.rectangle.roundedtop"
+        buttons.append(button)
+        button = SettingsGameControllerButton()
+        button.name = "l.rectangle.roundedbottom"
+        buttons.append(button)
+        button = SettingsGameControllerButton()
+        button.name = "zr.rectangle.roundedtop"
+        buttons.append(button)
+        button = SettingsGameControllerButton()
+        button.name = "r.rectangle.roundedbottom"
+        buttons.append(button)
+    }
+}
+
 class Database: Codable {
     var streams: [SettingsStream] = []
     var scenes: [SettingsScene] = []
@@ -922,6 +1035,7 @@ class Database: Codable {
     var networkInterfaceNames: [SettingsNetworkInterfaceName]? = []
     var lowBitrateWarning: Bool? = true
     var vibrate: Bool? = false
+    var gameController: SettingsGameController? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -1551,8 +1665,12 @@ final class Settings {
             realDatabase.debug!.recordingsFolder = false
             store()
         }
-        if realDatabase.show.gameControllers == nil {
-            realDatabase.show.gameControllers = true
+        if realDatabase.show.gameController == nil {
+            realDatabase.show.gameController = true
+            store()
+        }
+        if realDatabase.gameController == nil {
+            realDatabase.gameController = .init()
             store()
         }
     }

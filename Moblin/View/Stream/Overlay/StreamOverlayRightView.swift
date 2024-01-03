@@ -130,7 +130,7 @@ struct RightOverlayView: View {
                     color: .white
                 )
             }
-            if database.show.gameControllers! && model.isGameControllerConnected() {
+            if database.show.gameController! && model.isGameControllerConnected() {
                 StreamOverlayIconAndTextView(
                     icon: "gamecontroller",
                     text: model.gameControllersTotal,

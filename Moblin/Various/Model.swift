@@ -1089,11 +1089,17 @@ final class Model: ObservableObject {
             return
         }
         // logger.info("game-controller: \(name)")
-        switch name {
-        case "a.circle":
+        let button = database.gameController!.buttons.first(where: { button in
+            button.name == name
+        })
+        guard let button else {
+            return
+        }
+        switch button.function {
+        case .torch:
             toggleTorch()
             toggleGlobalButton(type: .torch)
-        case "b.circle":
+        case .mute:
             toggleMute()
             toggleGlobalButton(type: .mute)
         default:

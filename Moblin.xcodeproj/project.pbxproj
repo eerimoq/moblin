@@ -184,6 +184,8 @@
 		034D27002B3A03620097C619 /* RtmpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D26FE2B3A03620097C619 /* RtmpServer.swift */; };
 		034D2EC22B351715003C6D14 /* RecordingsStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D2EC12B351715003C6D14 /* RecordingsStorage.swift */; };
 		034D2EC32B351715003C6D14 /* RecordingsStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D2EC12B351715003C6D14 /* RecordingsStorage.swift */; };
+		03507F6B2B45DD5A0075648B /* GameControllerButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03507F6A2B45DD5A0075648B /* GameControllerButtonSettingsView.swift */; };
+		03507F6C2B45DD5A0075648B /* GameControllerButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03507F6A2B45DD5A0075648B /* GameControllerButtonSettingsView.swift */; };
 		035D37282AB0EBB500045B92 /* IconAndTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37272AB0EBB500045B92 /* IconAndTextView.swift */; };
 		035D372C2AB103E600045B92 /* SRTHaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 035D372B2AB103E600045B92 /* SRTHaishinKit */; };
 		035D37372AB230E700045B92 /* StreamVideoBitrateSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37362AB230E700045B92 /* StreamVideoBitrateSettingsView.swift */; };
@@ -373,6 +375,7 @@
 		034D26FE2B3A03620097C619 /* RtmpServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpServer.swift; sourceTree = "<group>"; };
 		034D2EC12B351715003C6D14 /* RecordingsStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsStorage.swift; sourceTree = "<group>"; };
 		034FC8512B2B6D4A00EF0C62 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		03507F6A2B45DD5A0075648B /* GameControllerButtonSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllerButtonSettingsView.swift; sourceTree = "<group>"; };
 		035D37272AB0EBB500045B92 /* IconAndTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconAndTextView.swift; sourceTree = "<group>"; };
 		035D37362AB230E700045B92 /* StreamVideoBitrateSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoBitrateSettingsView.swift; sourceTree = "<group>"; };
 		035E775B2ACC969D00738DCE /* ZoomPresetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomPresetSettingsView.swift; sourceTree = "<group>"; };
@@ -537,6 +540,7 @@
 			isa = PBXGroup;
 			children = (
 				0304A50B2B45ADC300310842 /* GameControllerSettingsView.swift */,
+				03507F6A2B45DD5A0075648B /* GameControllerButtonSettingsView.swift */,
 			);
 			path = GameController;
 			sourceTree = "<group>";
@@ -1426,6 +1430,7 @@
 				032E066E2B2F3E9D00EAE5F8 /* MovieEffect.swift in Sources */,
 				032E066F2B2F3E9D00EAE5F8 /* StreamSrtSettingsView.swift in Sources */,
 				03BE504B2B3EB59A004720AF /* IpMonitor.swift in Sources */,
+				03507F6C2B45DD5A0075648B /* GameControllerButtonSettingsView.swift in Sources */,
 				032E06702B2F3E9D00EAE5F8 /* StreamSettingsView.swift in Sources */,
 				032E06712B2F3E9D00EAE5F8 /* NameEditView.swift in Sources */,
 				032E06722B2F3E9D00EAE5F8 /* AdaptiveBitrate.swift in Sources */,
@@ -1577,6 +1582,7 @@
 				0379BBA02AAD823900B718B6 /* StreamOverlayTextView.swift in Sources */,
 				03B374072AA0EA650028DDD5 /* MovieEffect.swift in Sources */,
 				03BE504A2B3EB59A004720AF /* IpMonitor.swift in Sources */,
+				03507F6B2B45DD5A0075648B /* GameControllerButtonSettingsView.swift in Sources */,
 				032469A92AE1B3040097B18B /* StreamSrtSettingsView.swift in Sources */,
 				03A983652A9A05D7008FF0DB /* StreamSettingsView.swift in Sources */,
 				03DBD0F82B300659004B0BE6 /* StreamWizardSettingsView.swift in Sources */,
