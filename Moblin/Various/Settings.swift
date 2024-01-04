@@ -915,39 +915,41 @@ enum SettingsGameControllerButtonFunction: Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .unused:
-            return "Unused"
+            return String(localized: "Unused")
         case .record:
-            return "Record"
+            return String(localized: "Record")
         case .stream:
-            return "Stream"
+            return String(localized: "Stream")
         case .zoomIn:
-            return "Zoom in"
+            return String(localized: "Zoom in")
         case .zoomOut:
-            return "Zoom out"
+            return String(localized: "Zoom out")
         case .nextBitratePreset:
-            return "Next bitrate preset"
+            return String(localized: "Next bitrate preset")
         case .previousBitratePreset:
-            return "Previous bitrate preset"
+            return String(localized: "Previous bitrate preset")
         case .mute:
-            return "Mute"
+            return String(localized: "Mute")
         case .torch:
-            return "Torch"
+            return String(localized: "Torch")
         case .blackScreen:
-            return "Black screen"
+            return String(localized: "Black screen")
         case .chat:
-            return "Chat"
+            return String(localized: "Chat")
         case .pauseChat:
-            return "Pause chat"
+            return String(localized: "Pause chat")
         case .scene:
-            return "Scene"
+            return String(localized: "Scene")
         case .obsScene:
-            return "OBS scene"
+            return String(localized: "OBS scene")
         }
     }
 }
 
 var gameControllerButtonFunctions: [SettingsGameControllerButtonFunction] = [
     .unused,
+    .record,
+    .stream,
     .zoomIn,
     .zoomOut,
     .torch,
@@ -998,9 +1000,11 @@ class SettingsGameController: Codable {
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "zl.rectangle.roundedtop"
+        button.function = .stream
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "l.rectangle.roundedbottom"
+        button.function = .record
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "zr.rectangle.roundedtop"
@@ -1673,6 +1677,7 @@ final class Settings {
             realDatabase.show.gameController = true
             store()
         }
+        realDatabase.gameController = nil
         if realDatabase.gameController == nil {
             realDatabase.gameController = .init()
             store()

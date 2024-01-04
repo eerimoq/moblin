@@ -1107,9 +1107,15 @@ final class Model: ObservableObject {
         case .unused:
             break
         case .record:
-            break
+            if !pressed {
+                toggleRecording()
+                updateButtonStates()
+            }
         case .stream:
-            break
+            if !pressed {
+                toggleStream()
+                updateButtonStates()
+            }
         case .zoomIn:
             handleGameControllerButtonZoom(pressed: pressed, x: Float.infinity)
         case .zoomOut:
@@ -1658,6 +1664,14 @@ final class Model: ObservableObject {
         media.setNetworkInterfaceNames(networkInterfaceNames: database.networkInterfaceNames!)
     }
 
+    private func toggleRecording() {
+        if isRecording {
+            stopRecording()
+        } else {
+            startRecording()
+        }
+    }
+
     func startRecording() {
         setGlobalButtonState(type: .record, isOn: true)
         currentRecording = recordingsStorage.createRecording(settings: stream.clone())
@@ -1718,6 +1732,14 @@ final class Model: ObservableObject {
                     state.isOn.toggle()
                 }
             }
+        }
+    }
+
+    private func toggleStream() {
+        if isLive {
+            stopStream()
+        } else {
+            startStream()
         }
     }
 
