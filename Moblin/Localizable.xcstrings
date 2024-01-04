@@ -11534,6 +11534,9 @@
         }
       }
     },
+    "Configure it in Settings → Streams → %@ → URL." : {
+
+    },
     "Configure OBS on your computer" : {
       "localizations" : {
         "de" : {
@@ -27572,6 +27575,9 @@
         }
       }
     },
+    "Next bitrate preset" : {
+
+    },
     "Noise level" : {
       "localizations" : {
         "de" : {
@@ -30755,6 +30761,9 @@
           }
         }
       }
+    },
+    "Previous bitrate preset" : {
+
     },
     "Privacy policy" : {
       "localizations" : {
@@ -45108,6 +45117,12 @@
           }
         }
       }
+    },
+    "Zoom in" : {
+
+    },
+    "Zoom out" : {
+
     },
     "Zoom preset" : {
       "localizations" : {

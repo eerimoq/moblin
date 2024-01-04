@@ -1724,8 +1724,13 @@ final class Model: ObservableObject {
     func startStream() {
         logger.info("stream: Start")
         guard stream.url != defaultStreamUrl else {
-            makeToast(
-                title: String(localized: "Please enter your stream URL in stream settings before going live.")
+            makeErrorToast(
+                title: String(
+                    localized: "Please enter your stream URL in stream settings before going live."
+                ),
+                subTitle: String(
+                    localized: "Configure it in Settings → Streams → \(stream.name) → URL."
+                )
             )
             return
         }
