@@ -32047,6 +32047,7 @@
       }
     },
     "Røde audio level" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -41821,6 +41822,7 @@
       }
     },
     "Use first channel for audio level. To debug Røde mic Unknown level." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
