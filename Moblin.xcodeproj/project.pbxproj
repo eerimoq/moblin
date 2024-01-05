@@ -12,9 +12,11 @@
 		0302F0832B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0302F0822B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift */; };
 		0302F0842B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0302F0822B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift */; };
 		030399132AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030399122AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift */; };
-		0304A50C2B45ADC300310842 /* GameControllerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0304A50B2B45ADC300310842 /* GameControllerSettingsView.swift */; };
-		0304A50D2B45ADC300310842 /* GameControllerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0304A50B2B45ADC300310842 /* GameControllerSettingsView.swift */; };
+		0304A50C2B45ADC300310842 /* GameControllersControllerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0304A50B2B45ADC300310842 /* GameControllersControllerSettingsView.swift */; };
+		0304A50D2B45ADC300310842 /* GameControllersControllerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0304A50B2B45ADC300310842 /* GameControllersControllerSettingsView.swift */; };
 		0307869A2AEC23FB0061FDE2 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 030786992AEC23FB0061FDE2 /* StoreKit.framework */; };
+		03085C082B4865D10009DAB6 /* GameControllersSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03085C072B4865D10009DAB6 /* GameControllersSettingsView.swift */; };
+		03085C092B48681C0009DAB6 /* GameControllersSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03085C072B4865D10009DAB6 /* GameControllersSettingsView.swift */; };
 		030947C32A9C0496003FC387 /* StreamOverlayChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030947C22A9C0496003FC387 /* StreamOverlayChatView.swift */; };
 		0315A33B2AA2FA7100295443 /* LocalListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33A2AA2FA7100295443 /* LocalListener.swift */; };
 		0315A33D2AA2FA7D00295443 /* RemoteConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */; };
@@ -184,8 +186,8 @@
 		034D27002B3A03620097C619 /* RtmpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D26FE2B3A03620097C619 /* RtmpServer.swift */; };
 		034D2EC22B351715003C6D14 /* RecordingsStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D2EC12B351715003C6D14 /* RecordingsStorage.swift */; };
 		034D2EC32B351715003C6D14 /* RecordingsStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034D2EC12B351715003C6D14 /* RecordingsStorage.swift */; };
-		03507F6B2B45DD5A0075648B /* GameControllerButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03507F6A2B45DD5A0075648B /* GameControllerButtonSettingsView.swift */; };
-		03507F6C2B45DD5A0075648B /* GameControllerButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03507F6A2B45DD5A0075648B /* GameControllerButtonSettingsView.swift */; };
+		03507F6B2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03507F6A2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift */; };
+		03507F6C2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03507F6A2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift */; };
 		035D37282AB0EBB500045B92 /* IconAndTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37272AB0EBB500045B92 /* IconAndTextView.swift */; };
 		035D372C2AB103E600045B92 /* SRTHaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 035D372B2AB103E600045B92 /* SRTHaishinKit */; };
 		035D37372AB230E700045B92 /* StreamVideoBitrateSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37362AB230E700045B92 /* StreamVideoBitrateSettingsView.swift */; };
@@ -333,8 +335,9 @@
 		0302F07E2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardChatSettingsView.swift; sourceTree = "<group>"; };
 		0302F0822B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardSummarySettingsView.swift; sourceTree = "<group>"; };
 		030399122AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalOverlaysChatSettingsView.swift; sourceTree = "<group>"; };
-		0304A50B2B45ADC300310842 /* GameControllerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllerSettingsView.swift; sourceTree = "<group>"; };
+		0304A50B2B45ADC300310842 /* GameControllersControllerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllersControllerSettingsView.swift; sourceTree = "<group>"; };
 		030786992AEC23FB0061FDE2 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		03085C072B4865D10009DAB6 /* GameControllersSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllersSettingsView.swift; sourceTree = "<group>"; };
 		030947C22A9C0496003FC387 /* StreamOverlayChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOverlayChatView.swift; sourceTree = "<group>"; };
 		0315A33A2AA2FA7100295443 /* LocalListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalListener.swift; sourceTree = "<group>"; };
 		0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteConnection.swift; sourceTree = "<group>"; };
@@ -375,7 +378,7 @@
 		034D26FE2B3A03620097C619 /* RtmpServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpServer.swift; sourceTree = "<group>"; };
 		034D2EC12B351715003C6D14 /* RecordingsStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsStorage.swift; sourceTree = "<group>"; };
 		034FC8512B2B6D4A00EF0C62 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		03507F6A2B45DD5A0075648B /* GameControllerButtonSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllerButtonSettingsView.swift; sourceTree = "<group>"; };
+		03507F6A2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllersControllerButtonSettingsView.swift; sourceTree = "<group>"; };
 		035D37272AB0EBB500045B92 /* IconAndTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconAndTextView.swift; sourceTree = "<group>"; };
 		035D37362AB230E700045B92 /* StreamVideoBitrateSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoBitrateSettingsView.swift; sourceTree = "<group>"; };
 		035E775B2ACC969D00738DCE /* ZoomPresetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomPresetSettingsView.swift; sourceTree = "<group>"; };
@@ -536,13 +539,14 @@
 			path = Chat;
 			sourceTree = "<group>";
 		};
-		0304A5092B45ADA900310842 /* GameController */ = {
+		0304A5092B45ADA900310842 /* GameControllers */ = {
 			isa = PBXGroup;
 			children = (
-				0304A50B2B45ADC300310842 /* GameControllerSettingsView.swift */,
-				03507F6A2B45DD5A0075648B /* GameControllerButtonSettingsView.swift */,
+				03085C072B4865D10009DAB6 /* GameControllersSettingsView.swift */,
+				0304A50B2B45ADC300310842 /* GameControllersControllerSettingsView.swift */,
+				03507F6A2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift */,
 			);
-			path = GameController;
+			path = GameControllers;
 			sourceTree = "<group>";
 		};
 		030D487F2B35E4AF003B2014 /* Platforms */ = {
@@ -1043,7 +1047,7 @@
 		03B373F42A9EF8BD0028DDD5 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				0304A5092B45ADA900310842 /* GameController */,
+				0304A5092B45ADA900310842 /* GameControllers */,
 				03FB4B2C2AD8CF6B005AA183 /* BitratePresets */,
 				0379BB982AAD804F00B718B6 /* Streams */,
 				0379BB972AAD802C00B718B6 /* Scenes */,
@@ -1430,7 +1434,7 @@
 				032E066E2B2F3E9D00EAE5F8 /* MovieEffect.swift in Sources */,
 				032E066F2B2F3E9D00EAE5F8 /* StreamSrtSettingsView.swift in Sources */,
 				03BE504B2B3EB59A004720AF /* IpMonitor.swift in Sources */,
-				03507F6C2B45DD5A0075648B /* GameControllerButtonSettingsView.swift in Sources */,
+				03507F6C2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift in Sources */,
 				032E06702B2F3E9D00EAE5F8 /* StreamSettingsView.swift in Sources */,
 				032E06712B2F3E9D00EAE5F8 /* NameEditView.swift in Sources */,
 				032E06722B2F3E9D00EAE5F8 /* AdaptiveBitrate.swift in Sources */,
@@ -1485,6 +1489,7 @@
 				032E06982B2F3E9D00EAE5F8 /* ImportSettingsView.swift in Sources */,
 				032E06992B2F3E9D00EAE5F8 /* ZoomSettingsView.swift in Sources */,
 				032E069A2B2F3E9D00EAE5F8 /* SceneSettingsView.swift in Sources */,
+				03085C092B48681C0009DAB6 /* GameControllersSettingsView.swift in Sources */,
 				032E069B2B2F3E9D00EAE5F8 /* SepiaEffect.swift in Sources */,
 				032E069C2B2F3E9D00EAE5F8 /* TripleEffect.swift in Sources */,
 				034D2EC32B351715003C6D14 /* RecordingsStorage.swift in Sources */,
@@ -1502,7 +1507,7 @@
 				0302F0842B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift in Sources */,
 				032E06A62B2F3E9D00EAE5F8 /* Log.swift in Sources */,
 				032E06A72B2F3E9D00EAE5F8 /* NoiseReductionEffect.swift in Sources */,
-				0304A50D2B45ADC300310842 /* GameControllerSettingsView.swift in Sources */,
+				0304A50D2B45ADC300310842 /* GameControllersControllerSettingsView.swift in Sources */,
 				032E06A82B2F3E9D00EAE5F8 /* AddButtonView.swift in Sources */,
 				032E06A92B2F3E9D00EAE5F8 /* StreamsSettingsView.swift in Sources */,
 				0332EF622B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift in Sources */,
@@ -1582,7 +1587,7 @@
 				0379BBA02AAD823900B718B6 /* StreamOverlayTextView.swift in Sources */,
 				03B374072AA0EA650028DDD5 /* MovieEffect.swift in Sources */,
 				03BE504A2B3EB59A004720AF /* IpMonitor.swift in Sources */,
-				03507F6B2B45DD5A0075648B /* GameControllerButtonSettingsView.swift in Sources */,
+				03507F6B2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift in Sources */,
 				032469A92AE1B3040097B18B /* StreamSrtSettingsView.swift in Sources */,
 				03A983652A9A05D7008FF0DB /* StreamSettingsView.swift in Sources */,
 				03DBD0F82B300659004B0BE6 /* StreamWizardSettingsView.swift in Sources */,
@@ -1604,6 +1609,7 @@
 				0379BBC02AADC4EC00B718B6 /* AboutLicensesSettingsView.swift in Sources */,
 				0379BBB22AAD97FB00B718B6 /* ResetSettingsView.swift in Sources */,
 				0379BBB82AAD9B7200B718B6 /* WidgetsSettingsView.swift in Sources */,
+				03085C082B4865D10009DAB6 /* GameControllersSettingsView.swift in Sources */,
 				03BBAE9A2B2EB4FD0033D425 /* StreamChatSettingsView.swift in Sources */,
 				0379BBAA2AAD953200B718B6 /* HelpAndSupportSettingsView.swift in Sources */,
 				0364304F2B2FF9F400B7C448 /* StreamWizardTwitchSettingsView.swift in Sources */,
@@ -1654,7 +1660,7 @@
 				03B374132AA277570028DDD5 /* Srtla.swift in Sources */,
 				0379BB902AABA7DC00B718B6 /* Log.swift in Sources */,
 				031CCE2D2ACA76CF00CB5D46 /* NoiseReductionEffect.swift in Sources */,
-				0304A50C2B45ADC300310842 /* GameControllerSettingsView.swift in Sources */,
+				0304A50C2B45ADC300310842 /* GameControllersControllerSettingsView.swift in Sources */,
 				03A983662A9A05D7008FF0DB /* AddButtonView.swift in Sources */,
 				03A983612A9A05D7008FF0DB /* StreamsSettingsView.swift in Sources */,
 				0332EF612B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift in Sources */,

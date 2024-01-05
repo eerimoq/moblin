@@ -11856,6 +11856,12 @@
         }
       }
     },
+    "Controller" : {
+
+    },
+    "Controller %lld" : {
+
+    },
     "Copy from " : {
       "localizations" : {
         "de" : {
@@ -19602,9 +19608,6 @@
       }
     },
     "Function" : {
-
-    },
-    "Game controller" : {
 
     },
     "Game controller button" : {
@@ -27575,9 +27578,6 @@
         }
       }
     },
-    "Next bitrate preset" : {
-
-    },
     "Noise level" : {
       "localizations" : {
         "de" : {
@@ -30761,9 +30761,6 @@
           }
         }
       }
-    },
-    "Previous bitrate preset" : {
-
     },
     "Privacy policy" : {
       "localizations" : {

@@ -345,7 +345,7 @@ final class Model: ObservableObject {
     private var rtmpServer: RtmpServer?
     @Published var rtmpSpeedAndTotal = noValue
 
-    private var gameControllers: Set<GCController> = []
+    private var gameControllers: [GCController] = []
     @Published var gameControllersTotal = noValue
 
     init() {
@@ -1093,11 +1093,22 @@ final class Model: ObservableObject {
         }
     }
 
-    private func handleGameControllerButton(button: GCControllerButtonInput, value _: Float, pressed: Bool) {
+    private func handleGameControllerButton(
+        _ gameController: GCController,
+        _ button: GCControllerButtonInput,
+        _: Float,
+        _ pressed: Bool
+    ) {
+        guard let gameControllerIndex = gameControllers.firstIndex(of: gameController) else {
+            return
+        }
+        guard gameControllerIndex < database.gameControllers!.count else {
+            return
+        }
         guard let name = button.sfSymbolsName else {
             return
         }
-        let button = database.gameController!.buttons.first(where: { button in
+        let button = database.gameControllers![gameControllerIndex].buttons.first(where: { button in
             button.name == name
         })
         guard let button else {
@@ -1120,10 +1131,6 @@ final class Model: ObservableObject {
             handleGameControllerButtonZoom(pressed: pressed, x: Float.infinity)
         case .zoomOut:
             handleGameControllerButtonZoom(pressed: pressed, x: 0)
-        case .nextBitratePreset:
-            break
-        case .previousBitratePreset:
-            break
         case .torch:
             if !pressed {
                 toggleTorch()
@@ -1156,9 +1163,15 @@ final class Model: ObservableObject {
                 updateButtonStates()
             }
         case .scene:
-            break
-        case .obsScene:
-            break
+            if !pressed {
+                if let index = enabledScenes.firstIndex(where: { scene in
+                    scene.id == button.sceneId
+                }) {
+                    sceneIndex = index
+                    selectedSceneId = button.sceneId
+                    sceneUpdated(scrollQuickButtons: true)
+                }
+            }
         }
     }
 
@@ -1171,36 +1184,64 @@ final class Model: ObservableObject {
     }
 
     @objc func handleGameControllerDidConnect(_ notification: Notification) {
-        logger.info("game-controller: Connected")
         guard let gameController = notification.object as? GCController else {
             return
         }
         guard let gamepad = gameController.extendedGamepad else {
             return
         }
-        gamepad.dpad.left.pressedChangedHandler = handleGameControllerButton
-        gamepad.dpad.right.pressedChangedHandler = handleGameControllerButton
-        gamepad.dpad.up.pressedChangedHandler = handleGameControllerButton
-        gamepad.dpad.down.pressedChangedHandler = handleGameControllerButton
-        gamepad.buttonA.pressedChangedHandler = handleGameControllerButton
-        gamepad.buttonB.pressedChangedHandler = handleGameControllerButton
-        gamepad.buttonX.pressedChangedHandler = handleGameControllerButton
-        gamepad.buttonY.pressedChangedHandler = handleGameControllerButton
-        gamepad.buttonMenu.pressedChangedHandler = handleGameControllerButton
-        gamepad.leftShoulder.pressedChangedHandler = handleGameControllerButton
-        gamepad.rightShoulder.pressedChangedHandler = handleGameControllerButton
-        gamepad.leftTrigger.pressedChangedHandler = handleGameControllerButton
-        gamepad.rightTrigger.pressedChangedHandler = handleGameControllerButton
-        gameControllers.insert(gameController)
+        logger.info("game-controller: Player connected")
+        gamepad.dpad.left.pressedChangedHandler = { button, value, pressed in
+            self.handleGameControllerButton(gameController, button, value, pressed)
+        }
+        gamepad.dpad.right.pressedChangedHandler = { button, value, pressed in
+            self.handleGameControllerButton(gameController, button, value, pressed)
+        }
+        gamepad.dpad.up.pressedChangedHandler = { button, value, pressed in
+            self.handleGameControllerButton(gameController, button, value, pressed)
+        }
+        gamepad.dpad.down.pressedChangedHandler = { button, value, pressed in
+            self.handleGameControllerButton(gameController, button, value, pressed)
+        }
+        gamepad.buttonA.pressedChangedHandler = { button, value, pressed in
+            self.handleGameControllerButton(gameController, button, value, pressed)
+        }
+        gamepad.buttonB.pressedChangedHandler = { button, value, pressed in
+            self.handleGameControllerButton(gameController, button, value, pressed)
+        }
+        gamepad.buttonX.pressedChangedHandler = { button, value, pressed in
+            self.handleGameControllerButton(gameController, button, value, pressed)
+        }
+        gamepad.buttonY.pressedChangedHandler = { button, value, pressed in
+            self.handleGameControllerButton(gameController, button, value, pressed)
+        }
+        gamepad.buttonMenu.pressedChangedHandler = { button, value, pressed in
+            self.handleGameControllerButton(gameController, button, value, pressed)
+        }
+        gamepad.leftShoulder.pressedChangedHandler = { button, value, pressed in
+            self.handleGameControllerButton(gameController, button, value, pressed)
+        }
+        gamepad.rightShoulder.pressedChangedHandler = { button, value, pressed in
+            self.handleGameControllerButton(gameController, button, value, pressed)
+        }
+        gamepad.leftTrigger.pressedChangedHandler = { button, value, pressed in
+            self.handleGameControllerButton(gameController, button, value, pressed)
+        }
+        gamepad.rightTrigger.pressedChangedHandler = { button, value, pressed in
+            self.handleGameControllerButton(gameController, button, value, pressed)
+        }
+        gameControllers.append(gameController)
         updateGameControllers()
     }
 
     @objc func handleGameControllerDidDisconnect(notification: Notification) {
-        logger.info("game-controller: Disconnected")
         guard let gameController = notification.object as? GCController else {
             return
         }
-        gameControllers.remove(gameController)
+        logger.info("game-controller: Player disconnected")
+        gameControllers.removeAll(where: { gameController2 in
+            gameController == gameController2
+        })
         updateGameControllers()
     }
 
@@ -2377,6 +2418,12 @@ final class Model: ObservableObject {
             return scene
         }
         return nil
+    }
+
+    func getSceneName(id: UUID) -> String {
+        return database.scenes.first { scene in
+            scene.id == id
+        }?.name ?? "Unknown"
     }
 
     private func getEnabledButtonForWidgetControlledByScene(

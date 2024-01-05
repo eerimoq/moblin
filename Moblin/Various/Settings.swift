@@ -896,76 +896,32 @@ class SettingsNetworkInterfaceName: Codable, Identifiable {
     var name: String = ""
 }
 
-enum SettingsGameControllerButtonFunction: Codable, CaseIterable {
-    case unused
-    case record
-    case stream
-    case zoomIn
-    case zoomOut
-    case nextBitratePreset
-    case previousBitratePreset
-    case mute
-    case torch
-    case blackScreen
-    case chat
-    case pauseChat
-    case scene
-    case obsScene
-
-    func toString() -> String {
-        switch self {
-        case .unused:
-            return String(localized: "Unused")
-        case .record:
-            return String(localized: "Record")
-        case .stream:
-            return String(localized: "Stream")
-        case .zoomIn:
-            return String(localized: "Zoom in")
-        case .zoomOut:
-            return String(localized: "Zoom out")
-        case .nextBitratePreset:
-            return String(localized: "Next bitrate preset")
-        case .previousBitratePreset:
-            return String(localized: "Previous bitrate preset")
-        case .mute:
-            return String(localized: "Mute")
-        case .torch:
-            return String(localized: "Torch")
-        case .blackScreen:
-            return String(localized: "Black screen")
-        case .chat:
-            return String(localized: "Chat")
-        case .pauseChat:
-            return String(localized: "Pause chat")
-        case .scene:
-            return String(localized: "Scene")
-        case .obsScene:
-            return String(localized: "OBS scene")
-        }
-    }
+enum SettingsGameControllerButtonFunction: String, Codable, CaseIterable {
+    case unused = "Unused"
+    case record = "Record"
+    case stream = "Stream"
+    case zoomIn = "Zoom in"
+    case zoomOut = "Zoom out"
+    case mute = "Mute"
+    case torch = "Torch"
+    case blackScreen = "Black screen"
+    case chat = "Chat"
+    case pauseChat = "Pause chat"
+    case scene = "Scene"
+    // case obsScene = "OBS scene"
 }
 
-var gameControllerButtonFunctions: [SettingsGameControllerButtonFunction] = [
-    .unused,
-    .record,
-    .stream,
-    .zoomIn,
-    .zoomOut,
-    .torch,
-    .mute,
-    .blackScreen,
-    .chat,
-    .pauseChat,
-]
+var gameControllerButtonFunctions = SettingsGameControllerButtonFunction.allCases.map { $0.rawValue }
 
 class SettingsGameControllerButton: Codable, Identifiable {
     var id: UUID = .init()
     var name: String = ""
     var function: SettingsGameControllerButtonFunction = .unused
+    var sceneId: UUID = .init()
 }
 
-class SettingsGameController: Codable {
+class SettingsGameController: Codable, Identifiable {
+    var id: UUID = .init()
     var buttons: [SettingsGameControllerButton] = []
 
     init() {
@@ -996,7 +952,19 @@ class SettingsGameController: Codable {
         button.function = .blackScreen
         buttons.append(button)
         button = SettingsGameControllerButton()
-        button.name = "y.circle"
+        button.name = "circle.circle"
+        button.function = .torch
+        buttons.append(button)
+        button = SettingsGameControllerButton()
+        button.name = "xmark.circle"
+        button.function = .mute
+        buttons.append(button)
+        button = SettingsGameControllerButton()
+        button.name = "square.circle"
+        button.function = .blackScreen
+        buttons.append(button)
+        button = SettingsGameControllerButton()
+        button.name = "triangle.circle"
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "zl.rectangle.roundedtop"
@@ -1012,6 +980,22 @@ class SettingsGameController: Codable {
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "r.rectangle.roundedbottom"
+        button.function = .pauseChat
+        buttons.append(button)
+        button = SettingsGameControllerButton()
+        button.name = "l2.rectangle.roundedtop"
+        button.function = .stream
+        buttons.append(button)
+        button = SettingsGameControllerButton()
+        button.name = "l1.rectangle.roundedbottom"
+        button.function = .record
+        buttons.append(button)
+        button = SettingsGameControllerButton()
+        button.name = "r2.rectangle.roundedtop"
+        button.function = .chat
+        buttons.append(button)
+        button = SettingsGameControllerButton()
+        button.name = "r1.rectangle.roundedbottom"
         button.function = .pauseChat
         buttons.append(button)
     }
@@ -1043,7 +1027,7 @@ class Database: Codable {
     var networkInterfaceNames: [SettingsNetworkInterfaceName]? = []
     var lowBitrateWarning: Bool? = true
     var vibrate: Bool? = false
-    var gameController: SettingsGameController? = .init()
+    var gameControllers: [SettingsGameController]? = [.init()]
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -1677,9 +1661,8 @@ final class Settings {
             realDatabase.show.gameController = true
             store()
         }
-        realDatabase.gameController = nil
-        if realDatabase.gameController == nil {
-            realDatabase.gameController = .init()
+        if realDatabase.gameControllers == nil {
+            realDatabase.gameControllers = [.init()]
             store()
         }
     }
