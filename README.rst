@@ -141,6 +141,18 @@ Features
 
   - Optionally with percentage.
 
+- Game controller for remote control.
+
+  - Zoom in and out.
+
+  - Change scene.
+
+  - Torch.
+
+  - Mute.
+
+  - ...
+
 - Cosmetics.
 
   - Select Moblin icon to show in app and on home screen.
