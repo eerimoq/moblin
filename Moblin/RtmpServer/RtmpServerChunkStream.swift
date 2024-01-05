@@ -17,6 +17,8 @@ class RtmpServerChunkStream: VideoCodecDelegate {
     var extendedTimestampPresentInType3: Bool
     private weak var client: RtmpServerClient?
     private var streamId: UInt16
+    private var audioTimestampZero: Double
+    private var audioTimestamp: Double
     private var videoTimestampZero: Double
     private var videoTimestamp: Double
     private var formatDescription: CMVideoFormatDescription?
@@ -30,6 +32,8 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         messageTypeId = 0
         messageTimestamp = 0
         messageStreamId = 0
+        audioTimestampZero = -1
+        audioTimestamp = 0
         videoTimestampZero = -1
         videoTimestamp = 0
         isMessageType0 = true
@@ -265,6 +269,69 @@ class RtmpServerChunkStream: VideoCodecDelegate {
             )
     }
 
+    private func processMessageAudio() {
+        guard let client else {
+            return
+        }
+        guard messageData.count >= 2 else {
+            client.stopInternal(reason: "Got \(messageData.count) bytes audio message, expected >= 2")
+            return
+        }
+        let control = messageData[0]
+        guard let codec = FLVAudioCodec(rawValue: control >> 4),
+              let soundRate = FLVSoundRate(rawValue: (control & 0x0C) >> 2),
+              let soundSize = FLVSoundSize(rawValue: (control & 0x02) >> 1),
+              let soundType = FLVSoundType(rawValue: control & 0x01)
+        else {
+            client.stopInternal(reason: "Failed to parse audio settings \(control)")
+            return
+        }
+        guard codec == .aac else {
+            client.stopInternal(reason: "Unsupported audio codec \(codec)")
+            return
+        }
+        var duration = Int64(messageTimestamp * messageTimestampScaling)
+        if isMessageType0 {
+            if audioTimestampZero == -1 {
+                audioTimestampZero = Double(messageTimestamp * messageTimestampScaling)
+            }
+            duration -= Int64(audioTimestamp)
+            audioTimestamp = Double(messageTimestamp * messageTimestampScaling) - audioTimestampZero
+        } else {
+            audioTimestamp += Double(messageTimestamp * messageTimestampScaling)
+        }
+        var timing = CMSampleTimingInfo(
+            duration: CMTimeMake(value: duration, timescale: 1000),
+            presentationTimeStamp: CMTimeMake(
+                value: Int64(audioTimestamp),
+                timescale: 1000
+            ),
+            decodeTimeStamp: CMTimeMake(
+                value: Int64(audioTimestamp),
+                timescale: 1000
+            )
+        )
+        /* logger.info("""
+         rtmp-server: client: Created audio sample buffer \
+         MTS: \(messageTimestamp * messageTimestampScaling) \
+         DUR: \(timing.duration.seconds), \
+         PTS: \(timing.presentationTimeStamp.seconds), \
+         DTS: \(timing.decodeTimeStamp.seconds)
+         """) */
+        switch messageData[1] {
+        case FLVAACPacketType.seq.rawValue:
+            if let config =
+                AudioSpecificConfig(bytes: [UInt8](messageData[codec.headerSize ..< messageData.count]))
+            {
+                logger.info("rtmp-server: client: \(config.audioStreamBasicDescription())")
+            }
+        case FLVAACPacketType.raw.rawValue:
+            break
+        default:
+            break
+        }
+    }
+
     private func processMessageVideo() {
         guard let client else {
             return
@@ -390,10 +457,6 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         }
         sampleBuffer?.isNotSync = !(messageData[0] >> 4 & 0b0111 == FLVFrameType.key.rawValue)
         return sampleBuffer
-    }
-
-    private func processMessageAudio() {
-        // logger.info("rtmp-server: client: Audio: \(messageData.count)")
     }
 }
 
