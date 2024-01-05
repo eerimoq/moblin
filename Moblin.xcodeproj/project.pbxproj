@@ -17,6 +17,8 @@
 		0307869A2AEC23FB0061FDE2 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 030786992AEC23FB0061FDE2 /* StoreKit.framework */; };
 		03085C082B4865D10009DAB6 /* GameControllersSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03085C072B4865D10009DAB6 /* GameControllersSettingsView.swift */; };
 		03085C092B48681C0009DAB6 /* GameControllersSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03085C072B4865D10009DAB6 /* GameControllersSettingsView.swift */; };
+		03085C0F2B487D950009DAB6 /* PixellateEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03085C0E2B487D950009DAB6 /* PixellateEffect.swift */; };
+		03085C102B487D950009DAB6 /* PixellateEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03085C0E2B487D950009DAB6 /* PixellateEffect.swift */; };
 		030947C32A9C0496003FC387 /* StreamOverlayChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030947C22A9C0496003FC387 /* StreamOverlayChatView.swift */; };
 		0315A33B2AA2FA7100295443 /* LocalListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33A2AA2FA7100295443 /* LocalListener.swift */; };
 		0315A33D2AA2FA7D00295443 /* RemoteConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */; };
@@ -338,6 +340,7 @@
 		0304A50B2B45ADC300310842 /* GameControllersControllerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllersControllerSettingsView.swift; sourceTree = "<group>"; };
 		030786992AEC23FB0061FDE2 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		03085C072B4865D10009DAB6 /* GameControllersSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllersSettingsView.swift; sourceTree = "<group>"; };
+		03085C0E2B487D950009DAB6 /* PixellateEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixellateEffect.swift; sourceTree = "<group>"; };
 		030947C22A9C0496003FC387 /* StreamOverlayChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOverlayChatView.swift; sourceTree = "<group>"; };
 		0315A33A2AA2FA7100295443 /* LocalListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalListener.swift; sourceTree = "<group>"; };
 		0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteConnection.swift; sourceTree = "<group>"; };
@@ -1100,6 +1103,7 @@
 				031CCE2C2ACA76CF00CB5D46 /* NoiseReductionEffect.swift */,
 				03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */,
 				03F3BF182ADAAA94009A8D3E /* TextEffect.swift */,
+				03085C0E2B487D950009DAB6 /* PixellateEffect.swift */,
 			);
 			path = VideoEffects;
 			sourceTree = "<group>";
@@ -1487,6 +1491,7 @@
 				032E06962B2F3E9D00EAE5F8 /* ExportSettingsView.swift in Sources */,
 				032E06972B2F3E9D00EAE5F8 /* MoblinSettingsUrl.swift in Sources */,
 				032E06982B2F3E9D00EAE5F8 /* ImportSettingsView.swift in Sources */,
+				03085C102B487D950009DAB6 /* PixellateEffect.swift in Sources */,
 				032E06992B2F3E9D00EAE5F8 /* ZoomSettingsView.swift in Sources */,
 				032E069A2B2F3E9D00EAE5F8 /* SceneSettingsView.swift in Sources */,
 				03085C092B48681C0009DAB6 /* GameControllersSettingsView.swift in Sources */,
@@ -1640,6 +1645,7 @@
 				0379BB7E2AA7C55000B718B6 /* ButtonImagePickerSettingsView.swift in Sources */,
 				03B373FF2A9FCA790028DDD5 /* ThermalStateView.swift in Sources */,
 				032A49B82AC54DD000ED3916 /* ExportSettingsView.swift in Sources */,
+				03085C0F2B487D950009DAB6 /* PixellateEffect.swift in Sources */,
 				03831D522AD90AB5008D26CC /* MoblinSettingsUrl.swift in Sources */,
 				032A49BA2AC54E6500ED3916 /* ImportSettingsView.swift in Sources */,
 				03A14BE32ACC903E00D180FF /* ZoomSettingsView.swift in Sources */,

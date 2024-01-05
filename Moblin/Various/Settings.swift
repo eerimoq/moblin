@@ -453,6 +453,7 @@ enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
     case random = "Random"
     case triple = "Triple"
     case noiseReduction = "Noise reduction"
+    case pixellate = "Pixellate"
 
     static func fromString(value: String) -> SettingsWidgetVideoEffectType {
         switch value {
@@ -470,6 +471,8 @@ enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
             return .triple
         case String(localized: "Noise reduction"):
             return .noiseReduction
+        case String(localized: "Pixellate"):
+            return .pixellate
         default:
             return .movie
         }
@@ -491,6 +494,8 @@ enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
             return String(localized: "Triple")
         case .noiseReduction:
             return String(localized: "Noise reduction")
+        case .pixellate:
+            return String(localized: "Pixellate")
         }
     }
 }

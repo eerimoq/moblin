@@ -1639,6 +1639,8 @@ final class Model: ObservableObject {
             videoEffects[widget.id] = TripleEffect()
         case .noiseReduction:
             videoEffects[widget.id] = NoiseReductionEffect()
+        case .pixellate:
+            videoEffects[widget.id] = PixellateEffect()
         }
     }
 
