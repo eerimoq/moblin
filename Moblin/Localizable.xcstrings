@@ -11110,6 +11110,9 @@
         }
       }
     },
+    "Circle" : {
+
+    },
     "Close" : {
       "localizations" : {
         "de" : {
@@ -14409,6 +14412,9 @@
           }
         }
       }
+    },
+    "Down" : {
+
     },
     "Dual (auto)" : {
       "localizations" : {
@@ -23007,6 +23013,9 @@
           }
         }
       }
+    },
+    "Left" : {
+
     },
     "Let it snow" : {
       "localizations" : {
@@ -32046,6 +32055,9 @@
         }
       }
     },
+    "Right" : {
+
+    },
     "Røde audio level" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -34705,6 +34717,9 @@
           }
         }
       }
+    },
+    "Square" : {
+
     },
     "SRT connect failed with %@" : {
       "localizations" : {
@@ -40543,6 +40558,9 @@
         }
       }
     },
+    "Triangle" : {
+
+    },
     "Triple" : {
       "localizations" : {
         "de" : {
@@ -41496,6 +41514,9 @@
           }
         }
       }
+    },
+    "Up" : {
+
     },
     "Up to 50 Mbps. Set to 0 for automatic." : {
 
@@ -44371,6 +44392,9 @@
           }
         }
       }
+    },
+    "X mark" : {
+
     },
     "X must be %f - %f" : {
       "localizations" : {

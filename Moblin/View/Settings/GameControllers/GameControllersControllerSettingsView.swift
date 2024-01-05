@@ -33,6 +33,7 @@ struct GameControllersControllerSettingsView: View {
                     )) {
                         HStack {
                             Image(systemName: button.name)
+                            Text(button.text!)
                             Spacer()
                             Text(buttonText(button: button))
                                 .foregroundColor(buttonColor(button: button))

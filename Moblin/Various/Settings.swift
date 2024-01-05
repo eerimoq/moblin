@@ -921,6 +921,7 @@ var gameControllerButtonFunctions = SettingsGameControllerButtonFunction.allCase
 class SettingsGameControllerButton: Codable, Identifiable {
     var id: UUID = .init()
     var name: String = ""
+    var text: String? = ""
     var function: SettingsGameControllerButtonFunction = .unused
     var sceneId: UUID = .init()
 }
@@ -932,75 +933,98 @@ class SettingsGameController: Codable, Identifiable {
     init() {
         var button = SettingsGameControllerButton()
         button.name = "dpad.left.fill"
+        button.text = String(localized: "Left")
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "dpad.right.fill"
+        button.text = String(localized: "Right")
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "dpad.up.fill"
+        button.text = String(localized: "Up")
         button.function = .zoomIn
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "dpad.down.fill"
+        button.text = String(localized: "Down")
         button.function = .zoomOut
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "a.circle"
+        button.text = "A"
         button.function = .torch
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "b.circle"
+        button.text = "B"
         button.function = .mute
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "x.circle"
+        button.text = "X"
         button.function = .blackScreen
         buttons.append(button)
         button = SettingsGameControllerButton()
+        button.name = "y.circle"
+        button.text = "Y"
+        buttons.append(button)
+        button = SettingsGameControllerButton()
         button.name = "circle.circle"
+        button.text = String(localized: "Circle")
         button.function = .torch
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "xmark.circle"
+        button.text = String(localized: "X mark")
         button.function = .mute
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "square.circle"
+        button.text = String(localized: "Square")
         button.function = .blackScreen
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "triangle.circle"
+        button.text = String(localized: "Triangle")
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "zl.rectangle.roundedtop"
+        button.text = "ZL"
         button.function = .stream
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "l.rectangle.roundedbottom"
+        button.text = "L"
         button.function = .record
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "zr.rectangle.roundedtop"
+        button.text = "ZR"
         button.function = .chat
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "r.rectangle.roundedbottom"
+        button.text = "R"
         button.function = .pauseChat
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "l2.rectangle.roundedtop"
+        button.text = "L2"
         button.function = .stream
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "l1.rectangle.roundedbottom"
+        button.text = "L1"
         button.function = .record
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "r2.rectangle.roundedtop"
+        button.text = "R2"
         button.function = .chat
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "r1.rectangle.roundedbottom"
+        button.text = "R1"
         button.function = .pauseChat
         buttons.append(button)
     }
@@ -1669,6 +1693,14 @@ final class Settings {
         if realDatabase.gameControllers == nil {
             realDatabase.gameControllers = [.init()]
             store()
+        }
+        for controller in realDatabase.gameControllers! {
+            for button in controller.buttons {
+                if button.text == nil {
+                    button.text = ""
+                    store()
+                }
+            }
         }
     }
 }
