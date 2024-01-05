@@ -8,6 +8,16 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.134.0", date: "2024-01-05", changes: [
+        "• Ramp to target zoom level when zoom on camera switching in enabled for less flickering.",
+        "• Start/stop stream and start/stop recording with game controller.",
+        "  • No confirmations though.",
+        "• More information in \"Please enter your stream URL in stream settings before going live.\" toast.",
+        "  • Preferably just use the wizard though.",
+        "• Change scene with game controller.",
+        "• Support for multiple game controllers.",
+        "  • For more buttons, or if you are two persons",
+    ]),
     Version(version: "0.133.0", date: "2024-01-03", changes: [
         "• Game controller with configurable buttons.",
     ]),
