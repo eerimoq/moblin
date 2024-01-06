@@ -123,6 +123,9 @@ struct ControlBarView: View {
                                 }
                         }
                         .frame(minHeight: metrics.size.height)
+                        .onChange(of: metrics.size) { _ in
+                            model.scrollQuickButtonsToBottom()
+                        }
                     }
                 }
                 .scrollDisabled(!model.database.quickButtons!.enableScroll)
