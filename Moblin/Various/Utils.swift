@@ -509,7 +509,7 @@ func cameraName(device: AVCaptureDevice?) -> String {
         case .builtInTelephotoCamera:
             return String(localized: "Telephoto")
         default:
-            return ""
+            return device.localizedName
         }
     }
 }

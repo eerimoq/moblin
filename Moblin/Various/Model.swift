@@ -978,12 +978,15 @@ final class Model: ObservableObject {
         let WebPCoder = SDImageWebPCoder.shared
         SDImageCodersManager.shared.addCoder(WebPCoder)
         UIDevice.current.isBatteryMonitoringEnabled = true
+        let externalCameras = listExternalCameras()
         backCameras = listCameras(position: .back)
+        backCameras += externalCameras
         if !backCameras.contains(where: { $0.id == database.backCameraId! }) {
             database.backCameraId = backCameras.first?.id ?? ""
             store()
         }
         frontCameras = listCameras(position: .front)
+        frontCameras += externalCameras
         if !frontCameras.contains(where: { $0.id == database.frontCameraId! }) {
             database.frontCameraId = frontCameras.first?.id ?? ""
             store()
@@ -1351,6 +1354,25 @@ final class Model: ObservableObject {
         )
         return deviceDiscovery.devices.map { device in
             logger.info("Found camera '\(device.localizedName)'")
+            return Camera(id: device.uniqueID, name: cameraName(device: device))
+        }
+    }
+
+    private func listExternalCameras() -> [Camera] {
+        var deviceTypes: [AVCaptureDevice.DeviceType] = []
+        if #available(iOS 17.0, *) {
+            logger.info("17, wow")
+            deviceTypes.append(.external)
+        } else {
+            logger.info("16, wow")
+        }
+        let deviceDiscovery = AVCaptureDevice.DiscoverySession(
+            deviceTypes: deviceTypes,
+            mediaType: .video,
+            position: .unspecified
+        )
+        return deviceDiscovery.devices.map { device in
+            logger.info("Found external camera '\(device.localizedName)'")
             return Camera(id: device.uniqueID, name: cameraName(device: device))
         }
     }
