@@ -8,6 +8,16 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.136.0", date: "2024-01-06", changes: [
+        "• Fix quick buttons not fully shown after using keyboard when scroll is off.",
+        "• No blackish frames when switching camera.",
+        "  • Uses last frame from previous camera for 0.0-1.0 seconds after first frame from new camera. 0.3 seconds by default.",
+        "    • Configure time in Settings -> Debug -> Video blackish.",
+        "  • Looks like a frame of two are wrong sometimes. To be continued.",
+        "• Recording page styling.",
+        "• Game controller left and right buttons for Back and Front scenes by default.",
+        "• Discover external cameras?",
+    ]),
     Version(version: "0.135.0", date: "2024-01-06", changes: [
         "• Pixellate video effect widget.",
         "• Audio level for all(?) mics by default.",
