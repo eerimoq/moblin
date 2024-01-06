@@ -8,6 +8,16 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.135.0", date: "2024-01-06", changes: [
+        "• Pixellate video effect widget.",
+        "• Audio level for all(?) mics by default.",
+        "• Game controller buttons text.",
+        "• Global video effects.",
+        "  • Not yet removed from scenes.",
+        "• Keep game controller index when other controller is disconnected.",
+        "• No audio drop out when switching camera (hopefully).",
+        "• Show connect/disconnect game controller toast.",
+    ]),
     Version(version: "0.134.0", date: "2024-01-05", changes: [
         "• Ramp to target zoom level when zoom on camera switching in enabled for less flickering.",
         "• Start/stop stream and start/stop recording with game controller.",
