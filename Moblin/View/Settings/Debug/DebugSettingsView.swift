@@ -1,8 +1,10 @@
+import HaishinKit
 import SwiftUI
 
 struct DebugSettingsView: View {
     @EnvironmentObject var model: Model
     @State var srtOverheadBandwidth: Float
+    @State var cameraSwitchRemoveBlackish: Float
 
     private func onLogLevelChange(level: String) {
         guard let level = SettingsLogLevel(rawValue: level) else {
@@ -81,6 +83,24 @@ struct DebugSettingsView: View {
                     model.database.debug!.sceneMic = value
                     model.store()
                 }))
+                HStack {
+                    Text("Video blackish")
+                    Slider(
+                        value: $cameraSwitchRemoveBlackish,
+                        in: 0.0 ... 1.0,
+                        step: 0.1,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            ioVideoUnitIgnoreFramesAfterAttachSeconds = Double(cameraSwitchRemoveBlackish)
+                            model.database.debug!.cameraSwitchRemoveBlackish = cameraSwitchRemoveBlackish
+                            model.store()
+                        }
+                    )
+                    Text("\(formatOneDecimal(value: cameraSwitchRemoveBlackish)) s")
+                        .frame(width: 40)
+                }
             } header: {
                 Text("Experimental")
             }

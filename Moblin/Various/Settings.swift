@@ -883,6 +883,7 @@ class SettingsDebug: Codable {
     var letItSnow: Bool? = false
     var sceneMic: Bool? = false
     var recordingsFolder: Bool? = false
+    var cameraSwitchRemoveBlackish: Float? = 0.3
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -1681,6 +1682,10 @@ final class Settings {
                 button.text = ""
                 store()
             }
+        }
+        if realDatabase.debug!.cameraSwitchRemoveBlackish == nil {
+            realDatabase.debug!.cameraSwitchRemoveBlackish = 0.3
+            store()
         }
     }
 }

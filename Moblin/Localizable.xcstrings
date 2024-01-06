@@ -1770,6 +1770,9 @@
         }
       }
     },
+    "%@ s" : {
+
+    },
     "%lld %%" : {
       "localizations" : {
         "de" : {
@@ -42904,6 +42907,9 @@
       }
     },
     "Video bitrate" : {
+
+    },
+    "Video blackish" : {
 
     },
     "Video codec" : {

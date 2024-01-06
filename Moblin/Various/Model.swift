@@ -974,6 +974,7 @@ final class Model: ObservableObject {
     }
 
     func setup() {
+        ioVideoUnitIgnoreFramesAfterAttachSeconds = Double(database.debug!.cameraSwitchRemoveBlackish!)
         let WebPCoder = SDImageWebPCoder.shared
         SDImageCodersManager.shared.addCoder(WebPCoder)
         UIDevice.current.isBatteryMonitoringEnabled = true

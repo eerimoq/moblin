@@ -509,13 +509,7 @@ extension Media: NetStreamDelegate {
 
     func streamDidOpen(_: NetStream) {}
 
-    func stream(
-        _: NetStream,
-        audioLevel: Float,
-        numberOfChannels _: Int,
-        numberOfSamples _: Int,
-        stride _: Int
-    ) {
+    func stream(_: NetStream, audioLevel: Float) {
         DispatchQueue.main.async {
             if becameMuted(old: self.currentAudioLevel, new: audioLevel) || becameUnmuted(
                 old: self.currentAudioLevel,
