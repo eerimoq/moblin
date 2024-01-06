@@ -20,7 +20,7 @@ enum SettingsStreamResolution: String, Codable, CaseIterable {
 
 let resolutions = SettingsStreamResolution.allCases.map { $0.rawValue }
 
-let fpss = ["60", "30", "15", "5"]
+let fpss = ["60", "30", "15"]
 
 enum SettingsStreamProtocol: String, Codable {
     case rtmp = "RTMP"
