@@ -1195,6 +1195,13 @@ final class Model: ObservableObject {
         gameControllersTotal = String(numberOfGameControllers())
     }
 
+    private func gameControllerNumber(gameController: GCController) -> Int? {
+        if let gameControllerIndex = gameControllers.firstIndex(of: gameController) {
+            return gameControllerIndex + 1
+        }
+        return nil
+    }
+
     @objc func handleGameControllerDidConnect(_ notification: Notification) {
         guard let gameController = notification.object as? GCController else {
             return
@@ -1202,7 +1209,6 @@ final class Model: ObservableObject {
         guard let gamepad = gameController.extendedGamepad else {
             return
         }
-        logger.info("game-controller: Player connected")
         gamepad.dpad.left.pressedChangedHandler = { button, value, pressed in
             self.handleGameControllerButton(gameController, button, value, pressed)
         }
@@ -1247,6 +1253,9 @@ final class Model: ObservableObject {
         } else {
             gameControllers.append(gameController)
         }
+        if let number = gameControllerNumber(gameController: gameController) {
+            makeToast(title: "Game controller \(number) connected")
+        }
         updateGameControllers()
     }
 
@@ -1254,7 +1263,9 @@ final class Model: ObservableObject {
         guard let gameController = notification.object as? GCController else {
             return
         }
-        logger.info("game-controller: Player disconnected")
+        if let number = gameControllerNumber(gameController: gameController) {
+            makeToast(title: "Game controller \(number) disconnected")
+        }
         if let index = gameControllers.firstIndex(of: gameController) {
             gameControllers[index] = nil
         }
