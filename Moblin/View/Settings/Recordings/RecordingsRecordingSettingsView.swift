@@ -22,15 +22,11 @@ struct RecordingsRecordingSettingsView: View {
                         }
                         Spacer()
                     }
-                } header: {
-                    Text("Thumbnail")
                 }
                 Section {
                     TextValueView(name: "Start time", value: recording.startTime.formatted())
                     TextValueView(name: "Length", value: recording.length().formatWithSeconds())
                     TextValueView(name: "Size", value: recording.sizeString())
-                } header: {
-                    Text("About")
                 }
                 Section {
                     TextValueView(name: "Resolution", value: recording.settings.resolutionString())
