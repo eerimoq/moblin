@@ -1087,7 +1087,7 @@ class Database: Codable {
     }
 }
 
-func addDefaultWidgets(database: Database) {
+private func addDefaultWidgets(database: Database) {
     // 0
     var widget = SettingsWidget(name: String(localized: "Movie"))
     widget.type = .videoEffect
@@ -1113,23 +1113,23 @@ func addDefaultWidgets(database: Database) {
     database.widgets.append(widget)
 }
 
-func createSceneWidgetVideoEffectMovie(database: Database) -> SettingsSceneWidget {
+private func createSceneWidgetVideoEffectMovie(database: Database) -> SettingsSceneWidget {
     return SettingsSceneWidget(widgetId: database.widgets[0].id)
 }
 
-func createSceneWidgetVideoEffectGrayScale(database: Database) -> SettingsSceneWidget {
+private func createSceneWidgetVideoEffectGrayScale(database: Database) -> SettingsSceneWidget {
     return SettingsSceneWidget(widgetId: database.widgets[1].id)
 }
 
-func createSceneWidgetVideoEffectSepia(database: Database) -> SettingsSceneWidget {
+private func createSceneWidgetVideoEffectSepia(database: Database) -> SettingsSceneWidget {
     return SettingsSceneWidget(widgetId: database.widgets[2].id)
 }
 
-func createSceneWidgetVideoEffectRandom(database: Database) -> SettingsSceneWidget {
+private func createSceneWidgetVideoEffectRandom(database: Database) -> SettingsSceneWidget {
     return SettingsSceneWidget(widgetId: database.widgets[3].id)
 }
 
-func addDefaultScenes(database: Database) {
+private func addDefaultScenes(database: Database) {
     var scene = SettingsScene(name: String(localized: "Back"))
     scene.cameraPosition = .back
     scene.widgets.append(createSceneWidgetVideoEffectMovie(database: database))
@@ -1149,13 +1149,13 @@ func addDefaultScenes(database: Database) {
     database.scenes.append(scene)
 }
 
-func addDefaultZoomPresets(database: Database) {
+private func addDefaultZoomPresets(database: Database) {
     database.zoom = .init()
     addDefaultBackZoomPresets(database: database)
     addDefaultFrontZoomPresets(database: database)
 }
 
-func addDefaultBackZoomPresets(database: Database) {
+private func addDefaultBackZoomPresets(database: Database) {
     if let device = getBestBackCameraDevice() {
         let hasUltraWideCamera = hasUltraWideCamera()
         let scale = device.getZoomFactorScale(hasUltraWideCamera: hasUltraWideCamera)
@@ -1196,7 +1196,7 @@ func addDefaultBackZoomPresets(database: Database) {
     }
 }
 
-func addDefaultFrontZoomPresets(database: Database) {
+private func addDefaultFrontZoomPresets(database: Database) {
     database.zoom.front = [
         SettingsZoomPreset(id: UUID(), name: "1x", level: 1.0, x: 1.0),
         SettingsZoomPreset(id: UUID(), name: "2x", level: 2.0, x: 2.0),
@@ -1205,7 +1205,7 @@ func addDefaultFrontZoomPresets(database: Database) {
     ]
 }
 
-func addDefaultBitratePresets(database: Database) {
+private func addDefaultBitratePresets(database: Database) {
     database.bitratePresets = [
         SettingsBitratePreset(id: UUID(), bitrate: 7_000_000),
         SettingsBitratePreset(id: UUID(), bitrate: 5_000_000),
@@ -1214,7 +1214,7 @@ func addDefaultBitratePresets(database: Database) {
     ]
 }
 
-func addDefaultButtons(database: Database) {
+private func addDefaultButtons(database: Database) {
     // 0
     var button = SettingsButton(name: String(localized: "Movie"))
     button.id = UUID()
@@ -1256,7 +1256,7 @@ func addDefaultButtons(database: Database) {
     database.buttons.append(button)
 }
 
-func addGlobalButtonIfMissing(database: Database, button: SettingsButton) {
+private func addGlobalButtonIfMissing(database: Database, button: SettingsButton) {
     if database.globalButtons!.contains(where: { globalButton in
         globalButton.type == button.type
     }) {
@@ -1265,7 +1265,7 @@ func addGlobalButtonIfMissing(database: Database, button: SettingsButton) {
     database.globalButtons!.append(button)
 }
 
-func addMissingGlobalButtons(database: Database) {
+private func addMissingGlobalButtons(database: Database) {
     if database.globalButtons == nil {
         database.globalButtons = []
     }
@@ -1359,14 +1359,14 @@ func addMissingGlobalButtons(database: Database) {
     addGlobalButtonIfMissing(database: database, button: button)
 }
 
-func addDefaultRtmpServerStream(database: Database) {
+private func addDefaultRtmpServerStream(database: Database) {
     let stream = SettingsRtmpServerStream()
     stream.name = "DJI Mini 2 SE"
     stream.streamKey = "dji-mini-2-se"
     database.rtmpServer!.streams.append(stream)
 }
 
-func createDefault() -> Database {
+private func createDefault() -> Database {
     let database = Database()
     database.backCameraId = getBestBackCameraId()
     addDefaultWidgets(database: database)
