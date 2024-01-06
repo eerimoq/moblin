@@ -345,7 +345,7 @@ final class Model: ObservableObject {
     private var rtmpServer: RtmpServer?
     @Published var rtmpSpeedAndTotal = noValue
 
-    private var gameControllers: [GCController] = []
+    private var gameControllers: [GCController?] = []
     @Published var gameControllersTotal = noValue
 
     init() {
@@ -1175,12 +1175,18 @@ final class Model: ObservableObject {
         }
     }
 
+    private func numberOfGameControllers() -> Int {
+        return gameControllers.filter { gameController in
+            gameController != nil
+        }.count
+    }
+
     func isGameControllerConnected() -> Bool {
-        return !gameControllers.isEmpty
+        return numberOfGameControllers() > 0
     }
 
     private func updateGameControllers() {
-        gameControllersTotal = String(gameControllers.count)
+        gameControllersTotal = String(numberOfGameControllers())
     }
 
     @objc func handleGameControllerDidConnect(_ notification: Notification) {
@@ -1230,7 +1236,11 @@ final class Model: ObservableObject {
         gamepad.rightTrigger.pressedChangedHandler = { button, value, pressed in
             self.handleGameControllerButton(gameController, button, value, pressed)
         }
-        gameControllers.append(gameController)
+        if let index = gameControllers.firstIndex(of: nil) {
+            gameControllers[index] = gameController
+        } else {
+            gameControllers.append(gameController)
+        }
         updateGameControllers()
     }
 
@@ -1239,9 +1249,9 @@ final class Model: ObservableObject {
             return
         }
         logger.info("game-controller: Player disconnected")
-        gameControllers.removeAll(where: { gameController2 in
-            gameController == gameController2
-        })
+        if let index = gameControllers.firstIndex(of: gameController) {
+            gameControllers[index] = nil
+        }
         updateGameControllers()
     }
 

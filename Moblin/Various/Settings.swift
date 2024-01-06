@@ -1695,11 +1695,9 @@ final class Settings {
             store()
         }
         for controller in realDatabase.gameControllers! {
-            for button in controller.buttons {
-                if button.text == nil {
-                    button.text = ""
-                    store()
-                }
+            for button in controller.buttons where button.text == nil {
+                button.text = ""
+                store()
             }
         }
     }
