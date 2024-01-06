@@ -374,7 +374,13 @@ final class Model: ObservableObject {
     private var streamTotalChatMessages: Int = 0
     var ipMonitor = IPMonitor(ipType: .ipv4)
     @Published var ipStatuses: [IPMonitor.Status] = []
-
+    private var movieEffect = MovieEffect()
+    private var grayScaleEffect = GrayScaleEffect()
+    private var sepiaEffect = SepiaEffect()
+    private var randomEffect = RandomEffect()
+    private var tripleEffect = TripleEffect()
+    private var pixellateEffect = PixellateEffect()
+    
     private func cleanWizardUrl(url: String) -> String {
         var cleanedUrl = cleanUrl(url: url)
         if isValidUrl(url: cleanedUrl) != nil {
@@ -1653,12 +1659,55 @@ final class Model: ObservableObject {
             videoEffects[widget.id] = PixellateEffect()
         }
     }
-
+    
+    private func unregisterGlobalVideoEffects() {
+        media.unregisterEffect(movieEffect)
+        media.unregisterEffect(grayScaleEffect)
+        media.unregisterEffect(sepiaEffect)
+        media.unregisterEffect(randomEffect)
+        media.unregisterEffect(tripleEffect)
+        media.unregisterEffect(pixellateEffect)
+        movieEffect = MovieEffect()
+        grayScaleEffect = GrayScaleEffect()
+        sepiaEffect = SepiaEffect()
+        randomEffect = RandomEffect()
+        tripleEffect = TripleEffect()
+        pixellateEffect = PixellateEffect()
+    }
+    
+    private func isGlobalButtonOn(type: SettingsButtonType) -> Bool {
+        return database.globalButtons?.first(where: { button in
+            button.type == type
+        })?.isOn ?? false
+    }
+    
+    private func registerGlobalVideoEffects() {
+        if isGlobalButtonOn(type: .movie) {
+            media.registerEffect(movieEffect)
+        }
+        if isGlobalButtonOn(type: .grayScale) {
+            media.registerEffect(grayScaleEffect)
+        }
+        if isGlobalButtonOn(type: .sepia) {
+            media.registerEffect(sepiaEffect)
+        }
+        if isGlobalButtonOn(type: .random) {
+            media.registerEffect(randomEffect)
+        }
+        if isGlobalButtonOn(type: .triple) {
+            media.registerEffect(tripleEffect)
+        }
+        if isGlobalButtonOn(type: .pixellate) {
+            media.registerEffect(pixellateEffect)
+        }
+    }
+    
     func resetSelectedScene(changeScene: Bool = true) {
         if !enabledScenes.isEmpty && changeScene {
             selectedSceneId = enabledScenes[0].id
             sceneIndex = 0
         }
+        unregisterGlobalVideoEffects()
         for videoEffect in videoEffects.values {
             media.unregisterEffect(videoEffect)
         }
@@ -1756,7 +1805,7 @@ final class Model: ObservableObject {
         isRecording = false
     }
 
-    private func setGlobalButtonState(type: SettingsButtonType, isOn: Bool) {
+    func setGlobalButtonState(type: SettingsButtonType, isOn: Bool) {
         for button in database.globalButtons! where button.type == type {
             button.isOn = isOn
         }
@@ -2456,6 +2505,7 @@ final class Model: ObservableObject {
     }
 
     private func sceneUpdatedOff() {
+        unregisterGlobalVideoEffects()
         for videoEffect in videoEffects.values {
             media.unregisterEffect(videoEffect)
         }
@@ -2552,6 +2602,7 @@ final class Model: ObservableObject {
         case .pip:
             attachPipLayout(scene: scene)
         }
+        registerGlobalVideoEffects()
         for sceneWidget in scene.widgets.filter({ widget in widget.enabled }) {
             guard let widget = findWidget(id: sceneWidget.widgetId) else {
                 logger.error("Widget not found")

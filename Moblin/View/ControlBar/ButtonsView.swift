@@ -194,21 +194,18 @@ struct ButtonsView: View {
 
     private func widgetAction(state: ButtonState) {
         state.button.isOn.toggle()
-        model.updateButtonStates()
         model.sceneUpdated(store: false)
     }
 
     private func chatAction(state: ButtonState) {
         state.button.isOn.toggle()
         model.showChatMessages.toggle()
-        model.updateButtonStates()
         model.sceneUpdated(store: false)
     }
 
     private func pauseChatAction(state: ButtonState) {
         state.button.isOn.toggle()
         model.toggleChatPaused()
-        model.updateButtonStates()
         model.sceneUpdated(store: false)
     }
 
@@ -277,7 +274,43 @@ struct ButtonsView: View {
         }
         model.updateButtonStates()
     }
+    
+    private func movieAction(state: ButtonState) {
+        state.button.isOn.toggle()
+        model.setGlobalButtonState(type: .movie, isOn: state.button.isOn)
+        model.sceneUpdated(store: false)
+    }
 
+    private func grayScaleAction(state: ButtonState) {
+        state.button.isOn.toggle()
+        model.setGlobalButtonState(type: .grayScale, isOn: state.button.isOn)
+        model.sceneUpdated(store: false)
+    }
+
+    private func sepiaAction(state: ButtonState) {
+        state.button.isOn.toggle()
+        model.setGlobalButtonState(type: .sepia, isOn: state.button.isOn)
+        model.sceneUpdated(store: false)
+    }
+
+    private func randomAction(state: ButtonState) {
+        state.button.isOn.toggle()
+        model.setGlobalButtonState(type: .random, isOn: state.button.isOn)
+        model.sceneUpdated(store: false)
+    }
+
+    private func tripleAction(state: ButtonState) {
+        state.button.isOn.toggle()
+        model.setGlobalButtonState(type: .triple, isOn: state.button.isOn)
+        model.sceneUpdated(store: false)
+    }
+
+    private func pixellateAction(state: ButtonState) {
+        state.button.isOn.toggle()
+        model.setGlobalButtonState(type: .pixellate, isOn: state.button.isOn)
+        model.sceneUpdated(store: false)
+    }
+    
     var body: some View {
         VStack {
             ForEach(model.buttonPairs) { pair in
@@ -412,6 +445,66 @@ struct ButtonsView: View {
                                 case .image:
                                     Button(action: {
                                         model.showingImage = true
+                                    }, label: {
+                                        ButtonImage(
+                                            image: getImage(state: second),
+                                            on: second.isOn,
+                                            buttonSize: buttonSize
+                                        )
+                                    })
+                                case .movie:
+                                    Button(action: {
+                                        movieAction(state: second)
+                                    }, label: {
+                                        ButtonImage(
+                                            image: getImage(state: second),
+                                            on: second.isOn,
+                                            buttonSize: buttonSize
+                                        )
+                                    })
+                                case .grayScale:
+                                    Button(action: {
+                                        grayScaleAction(state: second)
+                                    }, label: {
+                                        ButtonImage(
+                                            image: getImage(state: second),
+                                            on: second.isOn,
+                                            buttonSize: buttonSize
+                                        )
+                                    })
+                                case .sepia:
+                                    Button(action: {
+                                        sepiaAction(state: second)
+                                    }, label: {
+                                        ButtonImage(
+                                            image: getImage(state: second),
+                                            on: second.isOn,
+                                            buttonSize: buttonSize
+                                        )
+                                    })
+                                case .random:
+                                    Button(action: {
+                                        randomAction(state: second)
+                                    }, label: {
+                                        ButtonImage(
+                                            image: getImage(state: second),
+                                            on: second.isOn,
+                                            buttonSize: buttonSize
+                                        )
+                                    })
+                                case .triple:
+                                    Button(action: {
+                                        tripleAction(state: second)
+                                    }, label: {
+                                        ButtonImage(
+                                            image: getImage(state: second),
+                                            on: second.isOn,
+                                            buttonSize: buttonSize
+                                        )
+                                    })
+                                case .pixellate:
+                                    Button(action: {
+                                        pixellateAction(state: second)
                                     }, label: {
                                         ButtonImage(
                                             image: getImage(state: second),
@@ -557,6 +650,66 @@ struct ButtonsView: View {
                             case .image:
                                 Button(action: {
                                     model.showingImage = true
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: pair.first),
+                                        on: pair.first.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
+                            case .movie:
+                                Button(action: {
+                                    movieAction(state: pair.first)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: pair.first),
+                                        on: pair.first.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
+                            case .grayScale:
+                                Button(action: {
+                                    grayScaleAction(state: pair.first)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: pair.first),
+                                        on: pair.first.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
+                            case .sepia:
+                                Button(action: {
+                                    sepiaAction(state: pair.first)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: pair.first),
+                                        on: pair.first.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
+                            case .random:
+                                Button(action: {
+                                    randomAction(state: pair.first)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: pair.first),
+                                        on: pair.first.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
+                            case .triple:
+                                Button(action: {
+                                    tripleAction(state: pair.first)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: pair.first),
+                                        on: pair.first.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
+                            case .pixellate:
+                                Button(action: {
+                                    pixellateAction(state: pair.first)
                                 }, label: {
                                     ButtonImage(
                                         image: getImage(state: pair.first),
@@ -710,6 +863,66 @@ struct ButtonsView: View {
                                         buttonSize: buttonSize
                                     )
                                 })
+                            case .movie:
+                                Button(action: {
+                                    movieAction(state: second)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: second),
+                                        on: second.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
+                            case .grayScale:
+                                Button(action: {
+                                    grayScaleAction(state: second)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: second),
+                                        on: second.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
+                            case .sepia:
+                                Button(action: {
+                                    sepiaAction(state: second)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: second),
+                                        on: second.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
+                            case .random:
+                                Button(action: {
+                                    randomAction(state: second)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: second),
+                                        on: second.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
+                            case .triple:
+                                Button(action: {
+                                    tripleAction(state: second)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: second),
+                                        on: second.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
+                            case .pixellate:
+                                Button(action: {
+                                    pixellateAction(state: second)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: second),
+                                        on: second.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
                             }
                             if model.database.quickButtons!.showName {
                                 Text(second.button.name)
@@ -848,6 +1061,66 @@ struct ButtonsView: View {
                         case .image:
                             Button(action: {
                                 model.showingImage = true
+                            }, label: {
+                                ButtonImage(
+                                    image: getImage(state: pair.first),
+                                    on: pair.first.isOn,
+                                    buttonSize: buttonSize
+                                )
+                            })
+                        case .movie:
+                            Button(action: {
+                                movieAction(state: pair.first)
+                            }, label: {
+                                ButtonImage(
+                                    image: getImage(state: pair.first),
+                                    on: pair.first.isOn,
+                                    buttonSize: buttonSize
+                                )
+                            })
+                        case .grayScale:
+                            Button(action: {
+                                grayScaleAction(state: pair.first)
+                            }, label: {
+                                ButtonImage(
+                                    image: getImage(state: pair.first),
+                                    on: pair.first.isOn,
+                                    buttonSize: buttonSize
+                                )
+                            })
+                        case .sepia:
+                            Button(action: {
+                                sepiaAction(state: pair.first)
+                            }, label: {
+                                ButtonImage(
+                                    image: getImage(state: pair.first),
+                                    on: pair.first.isOn,
+                                    buttonSize: buttonSize
+                                )
+                            })
+                        case .random:
+                            Button(action: {
+                                randomAction(state: pair.first)
+                            }, label: {
+                                ButtonImage(
+                                    image: getImage(state: pair.first),
+                                    on: pair.first.isOn,
+                                    buttonSize: buttonSize
+                                )
+                            })
+                        case .triple:
+                            Button(action: {
+                                tripleAction(state: pair.first)
+                            }, label: {
+                                ButtonImage(
+                                    image: getImage(state: pair.first),
+                                    on: pair.first.isOn,
+                                    buttonSize: buttonSize
+                                )
+                            })
+                        case .pixellate:
+                            Button(action: {
+                                pixellateAction(state: pair.first)
                             }, label: {
                                 ButtonImage(
                                     image: getImage(state: pair.first),

@@ -615,6 +615,12 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case obsStartStopStream = "OBS start/stop stream"
     case record = "Record"
     case image = "Image"
+    case movie = "Movie"
+    case grayScale = "Gray scale"
+    case sepia = "Sepia"
+    case random = "Random"
+    case triple = "Triple"
+    case pixellate = "Pixellate"
 
     static func fromString(value: String) -> SettingsButtonType {
         switch value {
@@ -642,6 +648,18 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return .record
         case String(localized: "Image"):
             return .image
+        case String(localized: "Movie"):
+            return .movie
+        case String(localized: "Gray scale"):
+            return .grayScale
+        case String(localized: "Sepia"):
+            return .sepia
+        case String(localized: "Random"):
+            return .random
+        case String(localized: "Triple"):
+            return .triple
+        case String(localized: "Pixellate"):
+            return .pixellate
         default:
             return .torch
         }
@@ -673,6 +691,18 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return String(localized: "Record")
         case .image:
             return String(localized: "Image")
+        case .movie:
+            return String(localized: "Movie")
+        case .grayScale:
+            return String(localized: "Gray scale")
+        case .sepia:
+            return String(localized: "Sepia")
+        case .random:
+            return String(localized: "Random")
+        case .triple:
+            return String(localized: "Triple")
+        case .pixellate:
+            return String(localized: "Pixellate")
         }
     }
 }
@@ -1087,65 +1117,13 @@ class Database: Codable {
     }
 }
 
-private func addDefaultWidgets(database: Database) {
-    // 0
-    var widget = SettingsWidget(name: String(localized: "Movie"))
-    widget.type = .videoEffect
-    widget.videoEffect.type = .movie
-    database.widgets.append(widget)
-
-    // 1
-    widget = SettingsWidget(name: String(localized: "Gray scale"))
-    widget.type = .videoEffect
-    widget.videoEffect.type = .grayScale
-    database.widgets.append(widget)
-
-    // 2
-    widget = SettingsWidget(name: String(localized: "Sepia"))
-    widget.type = .videoEffect
-    widget.videoEffect.type = .sepia
-    database.widgets.append(widget)
-
-    // 3
-    widget = SettingsWidget(name: String(localized: "Random"))
-    widget.type = .videoEffect
-    widget.videoEffect.type = .random
-    database.widgets.append(widget)
-}
-
-private func createSceneWidgetVideoEffectMovie(database: Database) -> SettingsSceneWidget {
-    return SettingsSceneWidget(widgetId: database.widgets[0].id)
-}
-
-private func createSceneWidgetVideoEffectGrayScale(database: Database) -> SettingsSceneWidget {
-    return SettingsSceneWidget(widgetId: database.widgets[1].id)
-}
-
-private func createSceneWidgetVideoEffectSepia(database: Database) -> SettingsSceneWidget {
-    return SettingsSceneWidget(widgetId: database.widgets[2].id)
-}
-
-private func createSceneWidgetVideoEffectRandom(database: Database) -> SettingsSceneWidget {
-    return SettingsSceneWidget(widgetId: database.widgets[3].id)
-}
-
 private func addDefaultScenes(database: Database) {
     var scene = SettingsScene(name: String(localized: "Back"))
     scene.cameraPosition = .back
-    scene.widgets.append(createSceneWidgetVideoEffectMovie(database: database))
-    scene.widgets.append(createSceneWidgetVideoEffectGrayScale(database: database))
-    scene.widgets.append(createSceneWidgetVideoEffectSepia(database: database))
-    scene.widgets.append(createSceneWidgetVideoEffectRandom(database: database))
-    scene.addButton(id: database.buttons[0].id)
-    scene.addButton(id: database.buttons[1].id)
-    scene.addButton(id: database.buttons[2].id)
-    scene.addButton(id: database.buttons[3].id)
     database.scenes.append(scene)
 
     scene = SettingsScene(name: String(localized: "Front"))
     scene.cameraPosition = .front
-    scene.widgets.append(createSceneWidgetVideoEffectMovie(database: database))
-    scene.addButton(id: database.buttons[0].id)
     database.scenes.append(scene)
 }
 
@@ -1212,48 +1190,6 @@ private func addDefaultBitratePresets(database: Database) {
         SettingsBitratePreset(id: UUID(), bitrate: 3_000_000),
         SettingsBitratePreset(id: UUID(), bitrate: 1_000_000),
     ]
-}
-
-private func addDefaultButtons(database: Database) {
-    // 0
-    var button = SettingsButton(name: String(localized: "Movie"))
-    button.id = UUID()
-    button.type = .widget
-    button.imageType = "System name"
-    button.systemImageNameOn = "film.fill"
-    button.systemImageNameOff = "film"
-    button.widget.widgetId = database.widgets[0].id
-    database.buttons.append(button)
-
-    // 1
-    button = SettingsButton(name: String(localized: "Gray scale"))
-    button.id = UUID()
-    button.type = .widget
-    button.imageType = "System name"
-    button.systemImageNameOn = "moon.fill"
-    button.systemImageNameOff = "moon"
-    button.widget.widgetId = database.widgets[1].id
-    database.buttons.append(button)
-
-    // 2
-    button = SettingsButton(name: String(localized: "Sepia"))
-    button.id = UUID()
-    button.type = .widget
-    button.imageType = "System name"
-    button.systemImageNameOn = "moonphase.waxing.crescent"
-    button.systemImageNameOff = "moonphase.waning.crescent"
-    button.widget.widgetId = database.widgets[2].id
-    database.buttons.append(button)
-
-    // 3
-    button = SettingsButton(name: String(localized: "Random"))
-    button.id = UUID()
-    button.type = .widget
-    button.imageType = "System name"
-    button.systemImageNameOn = "dice.fill"
-    button.systemImageNameOff = "dice"
-    button.widget.widgetId = database.widgets[3].id
-    database.buttons.append(button)
 }
 
 private func addGlobalButtonIfMissing(database: Database, button: SettingsButton) {
@@ -1357,6 +1293,54 @@ private func addMissingGlobalButtons(database: Database) {
     button.systemImageNameOn = "record.circle"
     button.systemImageNameOff = "record.circle"
     addGlobalButtonIfMissing(database: database, button: button)
+    
+    button = SettingsButton(name: String(localized: "Movie"))
+    button.id = UUID()
+    button.type = .movie
+    button.imageType = "System name"
+    button.systemImageNameOn = "film.fill"
+    button.systemImageNameOff = "film"
+    addGlobalButtonIfMissing(database: database, button: button)
+    
+    button = SettingsButton(name: String(localized: "Gray scale"))
+    button.id = UUID()
+    button.type = .grayScale
+    button.imageType = "System name"
+    button.systemImageNameOn = "moon.fill"
+    button.systemImageNameOff = "moon"
+    addGlobalButtonIfMissing(database: database, button: button)
+    
+    button = SettingsButton(name: String(localized: "Sepia"))
+    button.id = UUID()
+    button.type = .sepia
+    button.imageType = "System name"
+    button.systemImageNameOn = "moonphase.waxing.crescent"
+    button.systemImageNameOff = "moonphase.waning.crescent"
+    addGlobalButtonIfMissing(database: database, button: button)
+    
+    button = SettingsButton(name: String(localized: "Random"))
+    button.id = UUID()
+    button.type = .random
+    button.imageType = "System name"
+    button.systemImageNameOn = "dice.fill"
+    button.systemImageNameOff = "dice"
+    addGlobalButtonIfMissing(database: database, button: button)
+    
+    button = SettingsButton(name: String(localized: "Triple"))
+    button.id = UUID()
+    button.type = .triple
+    button.imageType = "System name"
+    button.systemImageNameOn = "person.3.fill"
+    button.systemImageNameOff = "person.3"
+    addGlobalButtonIfMissing(database: database, button: button)
+    
+    button = SettingsButton(name: String(localized: "Pixellate"))
+    button.id = UUID()
+    button.type = .pixellate
+    button.imageType = "System name"
+    button.systemImageNameOn = "squareshape.split.2x2"
+    button.systemImageNameOff = "squareshape.split.2x2"
+    addGlobalButtonIfMissing(database: database, button: button)
 }
 
 private func addDefaultRtmpServerStream(database: Database) {
@@ -1369,8 +1353,6 @@ private func addDefaultRtmpServerStream(database: Database) {
 private func createDefault() -> Database {
     let database = Database()
     database.backCameraId = getBestBackCameraId()
-    addDefaultWidgets(database: database)
-    addDefaultButtons(database: database)
     addDefaultScenes(database: database)
     addDefaultZoomPresets(database: database)
     addDefaultBitratePresets(database: database)
