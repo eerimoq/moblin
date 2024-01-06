@@ -274,7 +274,7 @@ struct ButtonsView: View {
         }
         model.updateButtonStates()
     }
-    
+
     private func movieAction(state: ButtonState) {
         state.button.isOn.toggle()
         model.setGlobalButtonState(type: .movie, isOn: state.button.isOn)
@@ -310,7 +310,7 @@ struct ButtonsView: View {
         model.setGlobalButtonState(type: .pixellate, isOn: state.button.isOn)
         model.sceneUpdated(store: false)
     }
-    
+
     var body: some View {
         VStack {
             ForEach(model.buttonPairs) { pair in

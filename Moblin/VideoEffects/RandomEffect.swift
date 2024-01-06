@@ -24,7 +24,7 @@ func setSpotLight(filter: CIFilter, width: CGFloat, height: CGFloat) {
 final class RandomEffect: VideoEffect {
     private var filter: CIFilter?
     private var name: String
-    
+
     override init() {
         name = randomEffects.shuffled().first!
         super.init()

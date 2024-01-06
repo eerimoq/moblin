@@ -380,7 +380,7 @@ final class Model: ObservableObject {
     private var randomEffect = RandomEffect()
     private var tripleEffect = TripleEffect()
     private var pixellateEffect = PixellateEffect()
-    
+
     private func cleanWizardUrl(url: String) -> String {
         var cleanedUrl = cleanUrl(url: url)
         if isValidUrl(url: cleanedUrl) != nil {
@@ -1471,7 +1471,6 @@ final class Model: ObservableObject {
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
             self.media.logStatistics()
-            self.media.logAudioStatistics()
             self.updateObsStatus()
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
@@ -1659,7 +1658,7 @@ final class Model: ObservableObject {
             videoEffects[widget.id] = PixellateEffect()
         }
     }
-    
+
     private func unregisterGlobalVideoEffects() {
         media.unregisterEffect(movieEffect)
         media.unregisterEffect(grayScaleEffect)
@@ -1674,13 +1673,13 @@ final class Model: ObservableObject {
         tripleEffect = TripleEffect()
         pixellateEffect = PixellateEffect()
     }
-    
+
     private func isGlobalButtonOn(type: SettingsButtonType) -> Bool {
         return database.globalButtons?.first(where: { button in
             button.type == type
         })?.isOn ?? false
     }
-    
+
     private func registerGlobalVideoEffects() {
         if isGlobalButtonOn(type: .movie) {
             media.registerEffect(movieEffect)
@@ -1701,7 +1700,7 @@ final class Model: ObservableObject {
             media.registerEffect(pixellateEffect)
         }
     }
-    
+
     func resetSelectedScene(changeScene: Bool = true) {
         if !enabledScenes.isEmpty && changeScene {
             selectedSceneId = enabledScenes[0].id

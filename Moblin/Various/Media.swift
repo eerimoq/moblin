@@ -46,16 +46,6 @@ final class Media: NSObject {
         srtla?.logStatistics()
     }
 
-    func logAudioStatistics() {
-        logger
-            .debug(
-                """
-                Audio: channels: \(numberOfAudioChannels), \
-                samples: \(numberOfAudioSamples)
-                """
-            )
-    }
-
     func srtlaConnectionStatistics() -> String? {
         return srtla?.connectionStatistics() ?? nil
     }
@@ -386,11 +376,6 @@ final class Media: NSObject {
         netStream.multiVideoCapture()?.preferredVideoStabilizationMode = videoStabilizationMode
         if let secondDevice {
             logger.info("Should use two cameras")
-            if false {
-                netStream.attachMultiCamera(secondDevice) { error in
-                    logger.error("stream: second camera error: \(error)")
-                }
-            }
         } else {
             netStream.attachMultiCamera(nil) { error in
                 logger.error("stream: remove second camera error: \(error)")

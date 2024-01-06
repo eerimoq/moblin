@@ -1293,7 +1293,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.systemImageNameOn = "record.circle"
     button.systemImageNameOff = "record.circle"
     addGlobalButtonIfMissing(database: database, button: button)
-    
+
     button = SettingsButton(name: String(localized: "Movie"))
     button.id = UUID()
     button.type = .movie
@@ -1301,7 +1301,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.systemImageNameOn = "film.fill"
     button.systemImageNameOff = "film"
     addGlobalButtonIfMissing(database: database, button: button)
-    
+
     button = SettingsButton(name: String(localized: "Gray scale"))
     button.id = UUID()
     button.type = .grayScale
@@ -1309,7 +1309,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.systemImageNameOn = "moon.fill"
     button.systemImageNameOff = "moon"
     addGlobalButtonIfMissing(database: database, button: button)
-    
+
     button = SettingsButton(name: String(localized: "Sepia"))
     button.id = UUID()
     button.type = .sepia
@@ -1317,7 +1317,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.systemImageNameOn = "moonphase.waxing.crescent"
     button.systemImageNameOff = "moonphase.waning.crescent"
     addGlobalButtonIfMissing(database: database, button: button)
-    
+
     button = SettingsButton(name: String(localized: "Random"))
     button.id = UUID()
     button.type = .random
@@ -1325,7 +1325,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.systemImageNameOn = "dice.fill"
     button.systemImageNameOff = "dice"
     addGlobalButtonIfMissing(database: database, button: button)
-    
+
     button = SettingsButton(name: String(localized: "Triple"))
     button.id = UUID()
     button.type = .triple
@@ -1333,7 +1333,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.systemImageNameOn = "person.3.fill"
     button.systemImageNameOff = "person.3"
     addGlobalButtonIfMissing(database: database, button: button)
-    
+
     button = SettingsButton(name: String(localized: "Pixellate"))
     button.id = UUID()
     button.type = .pixellate
