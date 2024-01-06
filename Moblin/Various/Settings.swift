@@ -1351,6 +1351,15 @@ private func addDefaultRtmpServerStream(database: Database) {
     database.rtmpServer!.streams.append(stream)
 }
 
+private func addScenesToGameController(database: Database) {
+    var button = database.gameControllers![0].buttons[0]
+    button.function = .scene
+    button.sceneId = database.scenes[0].id
+    button = database.gameControllers![0].buttons[1]
+    button.function = .scene
+    button.sceneId = database.scenes[1].id
+}
+
 private func createDefault() -> Database {
     let database = Database()
     database.backCameraId = getBestBackCameraId()
@@ -1359,6 +1368,7 @@ private func createDefault() -> Database {
     addDefaultBitratePresets(database: database)
     addMissingGlobalButtons(database: database)
     addDefaultRtmpServerStream(database: database)
+    addScenesToGameController(database: database)
     return database
 }
 
