@@ -75,7 +75,7 @@ struct RtmpServerSettingsView: View {
                             }
                         }
                     }
-                    if model.rtmpServerEnabled() {
+                    if !model.rtmpServerEnabled() {
                         list.onDelete(perform: { indexes in
                             model.database.rtmpServer!.streams.remove(atOffsets: indexes)
                             model.store()

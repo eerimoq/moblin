@@ -36,6 +36,19 @@ struct RtmpServerStreamSettingsView: View {
         model.objectWillChange.send()
     }
 
+    func submitFps(value: String) {
+        guard let fps = Double(value) else {
+            return
+        }
+        guard fps >= 0 && fps <= 1000 else {
+            return
+        }
+        stream.fps = fps
+        model.store()
+        model.reloadRtmpServer()
+        model.objectWillChange.send()
+    }
+
     private func streamUrl(address: String) -> String {
         return rtmpStreamUrl(address: address, port: port, streamKey: stream.streamKey)
     }
@@ -83,6 +96,18 @@ struct RtmpServerStreamSettingsView: View {
                     footer: Text("Zero or more milliseconds.")
                 )) {
                     TextItemView(name: String(localized: "Latency"), value: "\(stream.latency!) ms")
+                }
+                .disabled(model.rtmpServerEnabled())
+                NavigationLink(destination: TextEditView(
+                    title: String(localized: "FPS"),
+                    value: String(stream.fps!),
+                    onSubmit: submitFps,
+                    footer: Text("""
+                    Force given FPS, or set to 0 to use the publisher's FPS. B-frames \
+                    does not work with forced FPS. Forced FPS is typically needed for DJI drones.
+                    """)
+                )) {
+                    TextItemView(name: String(localized: "FPS"), value: "\(stream.fps!)")
                 }
                 .disabled(model.rtmpServerEnabled())
             } footer: {

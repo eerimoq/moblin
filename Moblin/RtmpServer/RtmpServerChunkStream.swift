@@ -23,6 +23,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
     private var videoTimestamp: Double
     private var formatDescription: CMVideoFormatDescription?
     private var videoCodec: VideoCodec?
+    private var numberOfFrames: UInt64 = 0
 
     init(client: RtmpServerClient, streamId: UInt16) {
         self.client = client
@@ -223,9 +224,14 @@ class RtmpServerChunkStream: VideoCodecDelegate {
             return
         }
         let isStreamKeyConfigured = DispatchQueue.main.sync {
-            client.server?.settings.streams.contains(where: { stream in
+            if let stream = client.server?.settings.streams.first(where: { stream in
                 stream.streamKey == streamKey
-            }) == true
+            }) {
+                client.fps = stream.fps!
+                return true
+            } else {
+                return false
+            }
         }
         guard isStreamKeyConfigured else {
             client.stopInternal(reason: "Stream key \(streamKey) not configured")
@@ -287,6 +293,8 @@ class RtmpServerChunkStream: VideoCodecDelegate {
             return
         }
         guard codec == .aac else {
+            // Make lint happy.
+            print(soundRate, soundSize, soundType)
             client.stopInternal(reason: "Unsupported audio codec \(codec)")
             return
         }
@@ -300,7 +308,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         } else {
             audioTimestamp += Double(messageTimestamp * messageTimestampScaling)
         }
-        var timing = CMSampleTimingInfo(
+        _ = CMSampleTimingInfo(
             duration: CMTimeMake(value: duration, timescale: 1000),
             presentationTimeStamp: CMTimeMake(
                 value: Int64(audioTimestamp),
@@ -396,14 +404,14 @@ class RtmpServerChunkStream: VideoCodecDelegate {
             logger.info("rtmp-server: client: Dropping short packet with data \(messageData.hexString())")
             return
         }
-        if let sampleBuffer = makeSampleBuffer() {
+        if let sampleBuffer = makeSampleBuffer(client: client) {
             videoCodec?.appendSampleBuffer(sampleBuffer)
         } else {
             client.stopInternal(reason: "Make sample buffer failed")
         }
     }
 
-    private func makeSampleBuffer() -> CMSampleBuffer? {
+    private func makeSampleBuffer(client: RtmpServerClient) -> CMSampleBuffer? {
         var compositionTime = Int32(data: [0] + messageData[2 ..< 5]).bigEndian
         compositionTime <<= 8
         compositionTime /= 256
@@ -417,17 +425,35 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         } else {
             videoTimestamp += Double(messageTimestamp * messageTimestampScaling)
         }
-        var timing = CMSampleTimingInfo(
-            duration: CMTimeMake(value: duration, timescale: 1000),
-            presentationTimeStamp: CMTimeMake(
-                value: Int64(videoTimestamp) + Int64(compositionTime),
-                timescale: 1000
-            ),
-            decodeTimeStamp: CMTimeMake(
-                value: Int64(videoTimestamp),
-                timescale: 1000
+        var timing: CMSampleTimingInfo
+        if client.fps == 0 {
+            timing = CMSampleTimingInfo(
+                duration: CMTimeMake(value: duration, timescale: 1000),
+                presentationTimeStamp: CMTimeMake(
+                    value: Int64(videoTimestamp) + Int64(compositionTime),
+                    timescale: 1000
+                ),
+                decodeTimeStamp: CMTimeMake(
+                    value: Int64(videoTimestamp),
+                    timescale: 1000
+                )
             )
-        )
+        } else {
+            let duration = 1000 / client.fps
+            let presentationTimeStamp = Int64(Double(numberOfFrames) * duration)
+            numberOfFrames += 1
+            timing = CMSampleTimingInfo(
+                duration: CMTimeMake(value: Int64(duration), timescale: 1000),
+                presentationTimeStamp: CMTimeMake(
+                    value: presentationTimeStamp,
+                    timescale: 1000
+                ),
+                decodeTimeStamp: CMTimeMake(
+                    value: presentationTimeStamp,
+                    timescale: 1000
+                )
+            )
+        }
         /* logger.info("""
          rtmp-server: client: Created sample buffer \
          MTS: \(messageTimestamp * messageTimestampScaling) \

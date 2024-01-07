@@ -45,6 +45,8 @@ class RtmpServerClient {
         }
     }
 
+    var fps: Double = 0
+
     init(server: RtmpServer, connection: NWConnection) {
         self.server = server
         self.connection = connection

@@ -891,6 +891,7 @@ class SettingsRtmpServerStream: Codable, Identifiable {
     var name: String = "My stream"
     var streamKey: String = ""
     var latency: Int32? = 2000
+    var fps: Double? = 0
 
     func camera() -> String {
         return rtmpCamera(name: name)
@@ -900,6 +901,8 @@ class SettingsRtmpServerStream: Codable, Identifiable {
         let stream = SettingsRtmpServerStream()
         stream.name = name
         stream.streamKey = streamKey
+        stream.latency = latency
+        stream.fps = fps
         return stream
     }
 }
@@ -1695,6 +1698,10 @@ final class Settings {
         }
         if realDatabase.debug!.cameraSwitchRemoveBlackish == nil {
             realDatabase.debug!.cameraSwitchRemoveBlackish = 0.3
+            store()
+        }
+        for stream in realDatabase.rtmpServer!.streams where stream.fps == nil {
+            stream.fps = 0
             store()
         }
     }

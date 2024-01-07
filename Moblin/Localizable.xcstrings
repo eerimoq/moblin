@@ -19086,6 +19086,9 @@
         }
       }
     },
+    "Force given FPS, or set to 0 to use the publisher's FPS. B-frames does not work with forced FPS. Forced FPS is typically needed for DJI drones." : {
+
+    },
     "FPS" : {
       "localizations" : {
         "de" : {
