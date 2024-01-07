@@ -1361,10 +1361,7 @@ final class Model: ObservableObject {
     private func listExternalCameras() -> [Camera] {
         var deviceTypes: [AVCaptureDevice.DeviceType] = []
         if #available(iOS 17.0, *) {
-            logger.info("17, wow")
             deviceTypes.append(.external)
-        } else {
-            logger.info("16, wow")
         }
         let deviceDiscovery = AVCaptureDevice.DiscoverySession(
             deviceTypes: deviceTypes,
