@@ -501,11 +501,11 @@ enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
 }
 
 let videoEffects = SettingsWidgetVideoEffectType.allCases.filter { effect in
-    effect != .bloom
+    effect == .noiseReduction
 }.map { $0.toString() }
 
 class SettingsWidgetVideoEffect: Codable {
-    var type: SettingsWidgetVideoEffectType = .movie
+    var type: SettingsWidgetVideoEffectType = .noiseReduction
     var noiseReductionNoiseLevel: Float = 0.01
     var noiseReductionSharpness: Float = 1.5
 }
@@ -721,7 +721,7 @@ class SettingsButtonWidget: Codable, Identifiable {
 class SettingsButton: Codable, Identifiable, Equatable, Hashable {
     var name: String
     var id: UUID = .init()
-    var type: SettingsButtonType = .torch
+    var type: SettingsButtonType = .widget
     var imageType: String = "System name"
     var systemImageNameOn: String = "mic.slash"
     var systemImageNameOff: String = "mic"

@@ -1674,22 +1674,10 @@ final class Model: ObservableObject {
 
     private func addVideoEffect(widget: SettingsWidget) {
         switch widget.videoEffect.type {
-        case .movie:
-            videoEffects[widget.id] = MovieEffect()
-        case .grayScale:
-            videoEffects[widget.id] = GrayScaleEffect()
-        case .sepia:
-            videoEffects[widget.id] = SepiaEffect()
-        case .bloom:
-            break
-        case .random:
-            videoEffects[widget.id] = RandomEffect()
-        case .triple:
-            videoEffects[widget.id] = TripleEffect()
         case .noiseReduction:
             videoEffects[widget.id] = NoiseReductionEffect()
-        case .pixellate:
-            videoEffects[widget.id] = PixellateEffect()
+        default:
+            break
         }
     }
 
@@ -2667,9 +2655,6 @@ final class Model: ObservableObject {
                             .noiseReductionNoiseLevel
                         noiseReductionEffect.sharpness = widget.videoEffect
                             .noiseReductionSharpness
-                    } else if videoEffect is RandomEffect {
-                        videoEffect = RandomEffect()
-                        videoEffects[widget.id] = videoEffect
                     }
                     media.registerEffect(videoEffect)
                 }
