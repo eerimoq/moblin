@@ -83,9 +83,13 @@ Features
 
 - Record to disk (MP4-file).
 
+  - Configurable bitrate, video codec and key frame interval.
+
 - RTMP server/ingest as camera source.
 
   - Only supports video. No audio (yet).
+
+  - Optionally fixed FPS.
 
 - Localization. Supports many languages, for example English, French,
   German, Spanish, Polish, Chinese (Simplified) and Swedish.
@@ -105,6 +109,8 @@ Features
   - Start and stop the stream.
 
 - Make phone screen black by pressing a button.
+
+- Supports UVC cameras on iPad.
 
 - Video effects.
 
