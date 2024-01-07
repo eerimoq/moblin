@@ -8,6 +8,14 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.137.0", date: "2024-01-07", changes: [
+        "• Remove all scene video effects except noise reduction.",
+        "  • Since they are global now.",
+        "• Optional FPS setting for RTMP server streams. Typically set to 30 for DJI drones.",
+        "  • Set to 0 to use publisher FPS.",
+        "• Fix mirroring when switching to/from RTMP server streams.",
+        "• Fix showing wrong camera when switching from RTMP server stream to back camera.",
+    ]),
     Version(version: "0.136.0", date: "2024-01-06", changes: [
         "• Fix quick buttons not fully shown after using keyboard when scroll is off.",
         "• No blackish frames when switching camera.",
