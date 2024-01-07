@@ -2920,7 +2920,7 @@ final class Model: ObservableObject {
             videoStabilizationMode: getVideoStabilizationMode(),
             onSuccess: {
                 self.videoView.isMirrored = isMirrored
-                if let x = self.setCameraZoomX(x: self.zoomX, rate: self.database.zoom.speed!) {
+                if let x = self.setCameraZoomX(x: self.zoomX) {
                     self.zoomX = x
                 }
                 if let device = self.cameraDevice {
