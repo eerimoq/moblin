@@ -368,10 +368,12 @@ final class Media: NSObject {
         device: AVCaptureDevice?,
         secondDevice: AVCaptureDevice?,
         videoStabilizationMode: AVCaptureVideoStabilizationMode,
+        videoMirrored: Bool,
         onSuccess: (() -> Void)? = nil
     ) {
         netStream.videoCapture()?.preferredVideoStabilizationMode = videoStabilizationMode
         netStream.multiVideoCapture()?.preferredVideoStabilizationMode = videoStabilizationMode
+        netStream.videoCapture()?.isVideoMirrored = videoMirrored
         if let secondDevice {
             logger.info("Should use two cameras")
         } else {

@@ -2837,12 +2837,20 @@ final class Model: ObservableObject {
     }
 
     func reattachCamera() {
-        media.attachCamera(device: nil, secondDevice: nil, videoStabilizationMode: .off)
+        media.attachCamera(device: nil, secondDevice: nil, videoStabilizationMode: .off, videoMirrored: false)
         media.attachCamera(
             device: cameraDevice,
             secondDevice: secondCameraDevice,
-            videoStabilizationMode: getVideoStabilizationMode()
+            videoStabilizationMode: getVideoStabilizationMode(),
+            videoMirrored: getVideoMirrored()
         )
+    }
+
+    private func getVideoMirrored() -> Bool {
+        if #available(iOS 17, *) {
+            return cameraDevice?.deviceType == .external
+        }
+        return false
     }
 
     private func hasCameraChanged(
@@ -2918,6 +2926,7 @@ final class Model: ObservableObject {
             device: cameraDevice,
             secondDevice: secondCameraDevice,
             videoStabilizationMode: getVideoStabilizationMode(),
+            videoMirrored: getVideoMirrored(),
             onSuccess: {
                 self.videoView.isMirrored = isMirrored
                 if let x = self.setCameraZoomX(x: self.zoomX) {
