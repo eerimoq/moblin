@@ -425,35 +425,22 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         } else {
             videoTimestamp += Double(messageTimestamp * messageTimestampScaling)
         }
-        var timing: CMSampleTimingInfo
+        var presentationTimeStamp: Int64
+        var decodeTimeStamp: Int64
         if client.fps == 0 {
-            timing = CMSampleTimingInfo(
-                duration: CMTimeMake(value: duration, timescale: 1000),
-                presentationTimeStamp: CMTimeMake(
-                    value: Int64(videoTimestamp) + Int64(compositionTime),
-                    timescale: 1000
-                ),
-                decodeTimeStamp: CMTimeMake(
-                    value: Int64(videoTimestamp),
-                    timescale: 1000
-                )
-            )
+            presentationTimeStamp = Int64(videoTimestamp) + Int64(compositionTime)
+            decodeTimeStamp = Int64(videoTimestamp)
         } else {
-            let duration = 1000 / client.fps
-            let presentationTimeStamp = Int64(Double(numberOfFrames) * duration)
+            duration = Int64(1000 / client.fps)
+            presentationTimeStamp = Int64(1000 * Double(numberOfFrames) / client.fps)
+            decodeTimeStamp = presentationTimeStamp
             numberOfFrames += 1
-            timing = CMSampleTimingInfo(
-                duration: CMTimeMake(value: Int64(duration), timescale: 1000),
-                presentationTimeStamp: CMTimeMake(
-                    value: presentationTimeStamp,
-                    timescale: 1000
-                ),
-                decodeTimeStamp: CMTimeMake(
-                    value: presentationTimeStamp,
-                    timescale: 1000
-                )
-            )
         }
+        var timing = CMSampleTimingInfo(
+            duration: CMTimeMake(value: duration, timescale: 1000),
+            presentationTimeStamp: CMTimeMake(value: presentationTimeStamp, timescale: 1000),
+            decodeTimeStamp: CMTimeMake(value: decodeTimeStamp, timescale: 1000)
+        )
         /* logger.info("""
          rtmp-server: client: Created sample buffer \
          MTS: \(messageTimestamp * messageTimestampScaling) \
