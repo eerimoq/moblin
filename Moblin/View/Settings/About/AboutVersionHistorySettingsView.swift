@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.138.0", date: "2024-01-07", changes: [
+        "• Set target zoom level when zoom on camera switching in enabled.",
+        "  • It was buggy, and now 300 ms latency hides most annoying frames.",
+        "• Mirror external cameras immediately when received from capture.",
+    ]),
     Version(version: "0.137.0", date: "2024-01-07", changes: [
         "• Remove all scene video effects except noise reduction.",
         "  • Since they are global now.",
