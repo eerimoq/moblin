@@ -3,9 +3,15 @@ import Foundation
 import HaishinKit
 import Network
 
-private let messageTimestampScaling: UInt32 = 1
-// DJI Mini 2 SE is buggy
-// private let messageTimestampScaling: UInt32 = 3
+private func makeTimingInfo(duration: Int64, presentationTimeStamp: Int64,
+                            decodeTimeStamp: Int64) -> CMSampleTimingInfo
+{
+    return CMSampleTimingInfo(
+        duration: CMTimeMake(value: duration, timescale: 1000),
+        presentationTimeStamp: CMTimeMake(value: presentationTimeStamp, timescale: 1000),
+        decodeTimeStamp: CMTimeMake(value: decodeTimeStamp, timescale: 1000)
+    )
+}
 
 class RtmpServerChunkStream: VideoCodecDelegate {
     private var messageData: Data
@@ -298,27 +304,18 @@ class RtmpServerChunkStream: VideoCodecDelegate {
             client.stopInternal(reason: "Unsupported audio codec \(codec)")
             return
         }
-        var duration = Int64(messageTimestamp * messageTimestampScaling)
+        var duration = Int64(messageTimestamp)
         if isMessageType0 {
             if audioTimestampZero == -1 {
-                audioTimestampZero = Double(messageTimestamp * messageTimestampScaling)
+                audioTimestampZero = Double(messageTimestamp)
             }
             duration -= Int64(audioTimestamp)
-            audioTimestamp = Double(messageTimestamp * messageTimestampScaling) - audioTimestampZero
+            audioTimestamp = Double(messageTimestamp) - audioTimestampZero
         } else {
-            audioTimestamp += Double(messageTimestamp * messageTimestampScaling)
+            audioTimestamp += Double(messageTimestamp)
         }
-        _ = CMSampleTimingInfo(
-            duration: CMTimeMake(value: duration, timescale: 1000),
-            presentationTimeStamp: CMTimeMake(
-                value: Int64(audioTimestamp),
-                timescale: 1000
-            ),
-            decodeTimeStamp: CMTimeMake(
-                value: Int64(audioTimestamp),
-                timescale: 1000
-            )
-        )
+        _ = makeTimingInfo(duration: duration, presentationTimeStamp: Int64(audioTimestamp),
+                           decodeTimeStamp: Int64(audioTimestamp))
         /* logger.info("""
          rtmp-server: client: Created audio sample buffer \
          MTS: \(messageTimestamp * messageTimestampScaling) \
@@ -415,15 +412,15 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         var compositionTime = Int32(data: [0] + messageData[2 ..< 5]).bigEndian
         compositionTime <<= 8
         compositionTime /= 256
-        var duration = Int64(messageTimestamp * messageTimestampScaling)
+        var duration = Int64(messageTimestamp)
         if isMessageType0 {
             if videoTimestampZero == -1 {
-                videoTimestampZero = Double(messageTimestamp * messageTimestampScaling)
+                videoTimestampZero = Double(messageTimestamp)
             }
             duration -= Int64(videoTimestamp)
-            videoTimestamp = Double(messageTimestamp * messageTimestampScaling) - videoTimestampZero
+            videoTimestamp = Double(messageTimestamp) - videoTimestampZero
         } else {
-            videoTimestamp += Double(messageTimestamp * messageTimestampScaling)
+            videoTimestamp += Double(messageTimestamp)
         }
         var presentationTimeStamp: Int64
         var decodeTimeStamp: Int64
@@ -436,11 +433,8 @@ class RtmpServerChunkStream: VideoCodecDelegate {
             decodeTimeStamp = presentationTimeStamp
             numberOfFrames += 1
         }
-        var timing = CMSampleTimingInfo(
-            duration: CMTimeMake(value: duration, timescale: 1000),
-            presentationTimeStamp: CMTimeMake(value: presentationTimeStamp, timescale: 1000),
-            decodeTimeStamp: CMTimeMake(value: decodeTimeStamp, timescale: 1000)
-        )
+        var timing = makeTimingInfo(duration: duration, presentationTimeStamp: presentationTimeStamp,
+                                    decodeTimeStamp: decodeTimeStamp)
         /* logger.info("""
          rtmp-server: client: Created sample buffer \
          MTS: \(messageTimestamp * messageTimestampScaling) \

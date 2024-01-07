@@ -2937,9 +2937,9 @@ final class Model: ObservableObject {
         cameraPosition = nil
         secondCameraDevice = nil
         secondCameraPosition = nil
-        media.attachRtmpCamera(cameraId: cameraId, device: preferredCamera(position: .front))
         videoView.isMirrored = false
         hasZoom = false
+        media.attachRtmpCamera(cameraId: cameraId, device: preferredCamera(position: .front))
     }
 
     private func setCameraZoomX(x: Float, rate: Float? = nil) -> Float? {
