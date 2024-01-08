@@ -1075,8 +1075,6 @@ class Database: Codable {
     var tapToFocus: Bool = false
     var bitratePresets: [SettingsBitratePreset] = []
     var iconImage: String = plainIcon.image()
-    var maximumScreenFpsEnabled: Bool = false
-    var maximumScreenFps: Int = 15
     var backCameraId: String? = ""
     var frontCameraId: String? = ""
     var videoStabilizationMode: SettingsVideoStabilizationMode = .off

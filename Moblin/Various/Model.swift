@@ -978,6 +978,13 @@ final class Model: ObservableObject {
         let WebPCoder = SDImageWebPCoder.shared
         SDImageCodersManager.shared.addCoder(WebPCoder)
         UIDevice.current.isBatteryMonitoringEnabled = true
+        logger.handler = debugLog(message:)
+        logger.debugEnabled = database.debug!.logLevel == .debug
+        let appender = LogAppender()
+        LBLogger.with("com.haishinkit.HaishinKit").appender = appender
+        LBLogger.with("com.haishinkit.SRTHaishinKit").appender = appender
+        LBLogger.with("com.haishinkit.HaishinKit").level = .debug
+        LBLogger.with("com.haishinkit.SRTHaishinKit").level = .debug
         let externalCameras = listExternalCameras()
         backCameras = listCameras(position: .back)
         backCameras += externalCameras
@@ -1013,16 +1020,6 @@ final class Model: ObservableObject {
         }
         frontZoomPresetId = database.zoom.front[0].id
         videoView.videoGravity = .resizeAspect
-        if database.maximumScreenFpsEnabled {
-            videoView.fps = Double(database.maximumScreenFps)
-        }
-        logger.handler = debugLog(message:)
-        logger.debugEnabled = database.debug!.logLevel == .debug
-        let appender = LogAppender()
-        LBLogger.with("com.haishinkit.HaishinKit").appender = appender
-        LBLogger.with("com.haishinkit.SRTHaishinKit").appender = appender
-        LBLogger.with("com.haishinkit.HaishinKit").level = .debug
-        LBLogger.with("com.haishinkit.SRTHaishinKit").level = .debug
         updateDigitalClock(now: Date())
         twitchChat = TwitchChatMoblin(model: self)
         reloadStream()
@@ -1353,7 +1350,7 @@ final class Model: ObservableObject {
             position: position
         )
         return deviceDiscovery.devices.map { device in
-            logger.info("Found camera '\(device.localizedName)'")
+            logger.info("Found camera '\(device.localizedName)' with id \(device.uniqueID)")
             return Camera(id: device.uniqueID, name: cameraName(device: device))
         }
     }
@@ -1369,7 +1366,7 @@ final class Model: ObservableObject {
             position: .unspecified
         )
         return deviceDiscovery.devices.map { device in
-            logger.info("Found external camera '\(device.localizedName)'")
+            logger.info("Found external camera '\(device.localizedName)' with id \(device.uniqueID)")
             return Camera(id: device.uniqueID, name: cameraName(device: device))
         }
     }
@@ -2646,7 +2643,7 @@ final class Model: ObservableObject {
                     media.registerEffect(textEffect)
                 }
             case .videoEffect:
-                if var videoEffect = videoEffects[widget.id] {
+                if let videoEffect = videoEffects[widget.id] {
                     if let noiseReductionEffect = videoEffect as? NoiseReductionEffect {
                         noiseReductionEffect.noiseLevel = widget.videoEffect
                             .noiseReductionNoiseLevel
