@@ -366,7 +366,7 @@ final class Media: NSObject {
 
     func attachCamera(
         device: AVCaptureDevice?,
-        secondDevice: AVCaptureDevice?,
+        secondDevice _: AVCaptureDevice?,
         videoStabilizationMode: AVCaptureVideoStabilizationMode,
         videoMirrored: Bool,
         onSuccess: (() -> Void)? = nil
