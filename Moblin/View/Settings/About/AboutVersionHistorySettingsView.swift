@@ -10,8 +10,7 @@ struct Version {
 private let versions = [
     Version(version: "0.142.0", date: "2024-01-08", changes: [
         "• Remove duplicated camera entries in lists.",
-        "• More logging pf recording errors and when finished.",
-        "• Remove duplicated cameras from lists.",
+        "• More logging of recording errors and when finished.",
         "• 4k video.",
     ]),
     Version(version: "0.138.0", date: "2024-01-07", changes: [
