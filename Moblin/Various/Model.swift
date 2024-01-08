@@ -31,7 +31,7 @@ func failedToConnectMessage(_ name: String) -> String {
     return String(localized: "😢 Failed to connect to \(name) 😢")
 }
 
-struct Camera: Identifiable {
+struct Camera: Identifiable, Equatable {
     var id: String
     var name: String
 }
@@ -987,13 +987,17 @@ final class Model: ObservableObject {
         LBLogger.with("com.haishinkit.SRTHaishinKit").level = .debug
         let externalCameras = listExternalCameras()
         backCameras = listCameras(position: .back)
-        backCameras += externalCameras
+        for camera in externalCameras where !backCameras.contains(camera) {
+            backCameras.append(camera)
+        }
         if !backCameras.contains(where: { $0.id == database.backCameraId! }) {
             database.backCameraId = backCameras.first?.id ?? ""
             store()
         }
         frontCameras = listCameras(position: .front)
-        frontCameras += externalCameras
+        for camera in externalCameras where !frontCameras.contains(camera) {
+            frontCameras.append(camera)
+        }
         if !frontCameras.contains(where: { $0.id == database.frontCameraId! }) {
             database.frontCameraId = frontCameras.first?.id ?? ""
             store()
