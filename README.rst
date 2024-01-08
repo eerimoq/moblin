@@ -23,7 +23,7 @@ Features
 
 - H.264/AVC and H.265/HEVC video codecs.
 
-- Up to 1080p and 60 FPS.
+- Up to 4K resolution and 60 FPS.
 
 - SRTLA.
 
@@ -147,7 +147,7 @@ Features
 
   - Optionally with percentage.
 
-- Game controller for remote control.
+- Game controllers for remote control.
 
   - Zoom in and out.
 
