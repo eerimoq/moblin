@@ -524,6 +524,14 @@ extension Media: NetStreamDelegate {
             }
         }
     }
+
+    func stream(_: HaishinKit.NetStream, recorderErrorOccured error: HaishinKit.IORecorder.Error) {
+        logger.info("stream: Recording failed with \(error)")
+    }
+
+    func stream(_: HaishinKit.NetStream, recorderFinishWriting _: AVAssetWriter) {
+        logger.info("stream: Recording finished")
+    }
 }
 
 extension Media: SrtlaDelegate {
