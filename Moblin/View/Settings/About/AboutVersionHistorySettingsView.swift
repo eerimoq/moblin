@@ -8,6 +8,12 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.142.0", date: "2024-01-08", changes: [
+        "• Remove duplicated camera entries in lists.",
+        "• More logging pf recording errors and when finished.",
+        "• Remove duplicated cameras from lists.",
+        "• 4k video.",
+    ]),
     Version(version: "0.138.0", date: "2024-01-07", changes: [
         "• Set target zoom level when zoom on camera switching in enabled.",
         "  • It was buggy, and now 300 ms latency hides most annoying frames.",

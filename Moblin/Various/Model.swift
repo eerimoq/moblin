@@ -2029,6 +2029,9 @@ final class Model: ObservableObject {
 
     private func setStreamResolution() {
         switch stream.resolution {
+        case .r4k:
+            media.setVideoSessionPreset(preset: getPreset(preset: .hd4K3840x2160))
+            media.setVideoSize(size: .init(width: 3840, height: 2160))
         case .r1920x1080:
             media.setVideoSessionPreset(preset: getPreset(preset: .hd1920x1080))
             media.setVideoSize(size: .init(width: 1920, height: 1080))
