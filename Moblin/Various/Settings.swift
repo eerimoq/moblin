@@ -11,7 +11,7 @@ enum SettingsStreamCodec: String, Codable, CaseIterable {
 let codecs = SettingsStreamCodec.allCases.map { $0.rawValue }
 
 enum SettingsStreamResolution: String, Codable, CaseIterable {
-    case r4k = "4K"
+    case r3840x2160 = "3840x2160"
     case r1920x1080 = "1920x1080"
     case r1280x720 = "1280x720"
     case r854x480 = "854x480"
@@ -216,8 +216,8 @@ class SettingsStream: Codable, Identifiable, Equatable {
 
     func resolutionString() -> String {
         switch resolution {
-        case .r4k:
-            return "4k"
+        case .r3840x2160:
+            return "4K"
         case .r1920x1080:
             return "1080p"
         case .r1280x720:
