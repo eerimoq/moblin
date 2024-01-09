@@ -8,6 +8,14 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.143.0", date: "2024-01-09", changes: [
+        "• Show empty audio level bar on startup.",
+        "  • Was sometimes full.",
+        "• Optionally send you location to RealtimeIRL.",
+        "  • The location service is turned off if no location is needed.",
+        "  • Configured per stream.",
+        "• Do not mirror external cameras.",
+    ]),
     Version(version: "0.142.0", date: "2024-01-08", changes: [
         "• Remove duplicated camera entries in lists.",
         "• More logging of recording errors and when finished.",
