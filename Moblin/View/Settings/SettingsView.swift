@@ -102,6 +102,11 @@ struct SettingsView: View {
                 NavigationLink(destination: GameControllersSettingsView()) {
                     Text("Game controllers")
                 }
+                if model.database.debug!.location! {
+                    NavigationLink(destination: LocationSettingsView()) {
+                        Text("Location")
+                    }
+                }
             }
             Section {
                 NavigationLink(destination: CosmeticsSettingsView()) {

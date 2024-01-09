@@ -348,6 +348,8 @@ final class Model: ObservableObject {
     private var gameControllers: [GCController?] = []
     @Published var gameControllersTotal = noValue
 
+    @Published var latestLocation = CLLocation()
+
     init() {
         settings.load()
         streamingHistory.load()
@@ -380,6 +382,7 @@ final class Model: ObservableObject {
     private var randomEffect = RandomEffect()
     private var tripleEffect = TripleEffect()
     private var pixellateEffect = PixellateEffect()
+    private var location = Location()
 
     private func cleanWizardUrl(url: String) -> String {
         var cleanedUrl = cleanUrl(url: url)
@@ -1090,6 +1093,22 @@ final class Model: ObservableObject {
                                                name: NSNotification.Name.GCControllerDidDisconnect,
                                                object: nil)
         GCController.startWirelessControllerDiscovery {}
+        reloadLocation()
+    }
+
+    func reloadLocation() {
+        location.stop()
+        if isLocationEnabled() {
+            location.start(onUpdate: handleLocationUpdate)
+        }
+    }
+
+    func isLocationEnabled() -> Bool {
+        return database.debug!.location! && database.location!.enabled
+    }
+
+    private func handleLocationUpdate(location: CLLocation) {
+        latestLocation = location
     }
 
     private func handleGameControllerButtonZoom(pressed: Bool, x: Float) {

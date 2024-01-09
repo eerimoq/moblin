@@ -4963,6 +4963,9 @@
         }
       }
     },
+    "Altitude: %@ m" : {
+
+    },
     "Amplitude" : {
       "localizations" : {
         "de" : {
@@ -22914,6 +22917,9 @@
         }
       }
     },
+    "Latitude: %lf" : {
+
+    },
     "Layout" : {
       "localizations" : {
         "de" : {
@@ -23553,6 +23559,9 @@
         }
       }
     },
+    "Location" : {
+
+    },
     "Log" : {
       "localizations" : {
         "de" : {
@@ -23764,6 +23773,9 @@
           }
         }
       }
+    },
+    "Longitude: %lf" : {
+
     },
     "Low battery" : {
       "localizations" : {
@@ -34723,6 +34735,9 @@
           }
         }
       }
+    },
+    "Speed: %@ m/s" : {
+
     },
     "Square" : {
 

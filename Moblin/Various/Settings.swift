@@ -887,6 +887,7 @@ class SettingsDebug: Codable {
     var sceneMic: Bool? = false
     var recordingsFolder: Bool? = false
     var cameraSwitchRemoveBlackish: Float? = 0.3
+    var location: Bool? = false
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -1067,6 +1068,10 @@ class SettingsGameController: Codable, Identifiable {
     }
 }
 
+class SettingsLocation: Codable {
+    var enabled: Bool = false
+}
+
 class Database: Codable {
     var streams: [SettingsStream] = []
     var scenes: [SettingsScene] = []
@@ -1092,6 +1097,7 @@ class Database: Codable {
     var lowBitrateWarning: Bool? = true
     var vibrate: Bool? = false
     var gameControllers: [SettingsGameController]? = [.init()]
+    var location: SettingsLocation? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -1703,6 +1709,14 @@ final class Settings {
         }
         for stream in realDatabase.rtmpServer!.streams where stream.fps == nil {
             stream.fps = 0
+            store()
+        }
+        if realDatabase.debug!.location == nil {
+            realDatabase.debug!.location = false
+            store()
+        }
+        if realDatabase.location == nil {
+            realDatabase.location = .init()
             store()
         }
     }

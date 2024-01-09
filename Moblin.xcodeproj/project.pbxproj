@@ -33,6 +33,8 @@
 		031F91EB2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F91EA2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift */; };
 		0320D8762AED36860030418F /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 0320D8752AED36860030418F /* WrappingHStack */; };
 		032469A92AE1B3040097B18B /* StreamSrtSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032469A82AE1B3040097B18B /* StreamSrtSettingsView.swift */; };
+		03279CE72B4CD245006CEA5A /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03279CE62B4CD245006CEA5A /* Location.swift */; };
+		03279CED2B4CDC88006CEA5A /* LocationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03279CEC2B4CDC88006CEA5A /* LocationSettingsView.swift */; };
 		032815D52AC855A5001F8A85 /* LicenseList in Frameworks */ = {isa = PBXBuildFile; productRef = 032815D42AC855A5001F8A85 /* LicenseList */; };
 		032815DC2AC915AE001F8A85 /* RandomEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032815DB2AC915AE001F8A85 /* RandomEffect.swift */; };
 		032815DF2AC9885C001F8A85 /* TripleEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032815DE2AC9885C001F8A85 /* TripleEffect.swift */; };
@@ -197,6 +199,8 @@
 		031CCE2C2ACA76CF00CB5D46 /* NoiseReductionEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoiseReductionEffect.swift; sourceTree = "<group>"; };
 		031F91EA2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardObsRemoteControlSettingsView.swift; sourceTree = "<group>"; };
 		032469A82AE1B3040097B18B /* StreamSrtSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamSrtSettingsView.swift; sourceTree = "<group>"; };
+		03279CE62B4CD245006CEA5A /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
+		03279CEC2B4CDC88006CEA5A /* LocationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSettingsView.swift; sourceTree = "<group>"; };
 		032815DB2AC915AE001F8A85 /* RandomEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomEffect.swift; sourceTree = "<group>"; };
 		032815DE2AC9885C001F8A85 /* TripleEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripleEffect.swift; sourceTree = "<group>"; };
 		032A49B72AC54DD000ED3916 /* ExportSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportSettingsView.swift; sourceTree = "<group>"; };
@@ -495,6 +499,14 @@
 				032469A82AE1B3040097B18B /* StreamSrtSettingsView.swift */,
 			);
 			path = Srt;
+			sourceTree = "<group>";
+		};
+		03279CEA2B4CDC73006CEA5A /* Location */ = {
+			isa = PBXGroup;
+			children = (
+				03279CEC2B4CDC88006CEA5A /* LocationSettingsView.swift */,
+			);
+			path = Location;
 			sourceTree = "<group>";
 		};
 		032A49B62AC54DAD00ED3916 /* ImportExport */ = {
@@ -878,6 +890,7 @@
 				0304A5092B45ADA900310842 /* GameControllers */,
 				0379BBA82AAD951400B718B6 /* HelpAndSupport */,
 				032A49B62AC54DAD00ED3916 /* ImportExport */,
+				03279CEA2B4CDC73006CEA5A /* Location */,
 				03B16A222B35610100E5AB07 /* Recordings */,
 				0379BBB02AAD97EA00B718B6 /* Reset */,
 				0332EF5B2B3CAED000BC3C16 /* RtmpServer */,
@@ -976,6 +989,7 @@
 				03D445E12AE5966B00A0F6E9 /* CacheAsyncImage.swift */,
 				03BE50492B3EB59A004720AF /* IpMonitor.swift */,
 				03B373FC2A9F35EF0028DDD5 /* Utils.swift */,
+				03279CE62B4CD245006CEA5A /* Location.swift */,
 			);
 			path = Various;
 			sourceTree = "<group>";
@@ -1217,6 +1231,7 @@
 				03BE504A2B3EB59A004720AF /* IpMonitor.swift in Sources */,
 				03507F6B2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift in Sources */,
 				032469A92AE1B3040097B18B /* StreamSrtSettingsView.swift in Sources */,
+				03279CED2B4CDC88006CEA5A /* LocationSettingsView.swift in Sources */,
 				03A983652A9A05D7008FF0DB /* StreamSettingsView.swift in Sources */,
 				03DBD0F82B300659004B0BE6 /* StreamWizardSettingsView.swift in Sources */,
 				0315A37C2AA439B500295443 /* NameEditView.swift in Sources */,
@@ -1290,6 +1305,7 @@
 				0379BB902AABA7DC00B718B6 /* Log.swift in Sources */,
 				031CCE2D2ACA76CF00CB5D46 /* NoiseReductionEffect.swift in Sources */,
 				0304A50C2B45ADC300310842 /* GameControllersControllerSettingsView.swift in Sources */,
+				03279CE72B4CD245006CEA5A /* Location.swift in Sources */,
 				03A983662A9A05D7008FF0DB /* AddButtonView.swift in Sources */,
 				03A983612A9A05D7008FF0DB /* StreamsSettingsView.swift in Sources */,
 				0332EF612B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift in Sources */,
@@ -1485,6 +1501,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Moblin live streams video from the camera.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Moblin uses localhost as input and output to SRT library.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Moblin can display your location and/or speed on stream.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Moblin live streams audio from the microphone.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Moblin shows selected images as overlays.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Moblin shows selected images as overlays.";
@@ -1530,6 +1547,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Moblin live streams video from the camera.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Moblin uses localhost as input and output to SRT library.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Moblin can display your location and/or speed on stream.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Moblin live streams audio from the microphone.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Moblin shows selected images as overlays.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Moblin shows selected images as overlays.";

@@ -101,6 +101,13 @@ struct DebugSettingsView: View {
                     Text("\(formatOneDecimal(value: cameraSwitchRemoveBlackish)) s")
                         .frame(width: 40)
                 }
+                Toggle("Location", isOn: Binding(get: {
+                    model.database.debug!.location!
+                }, set: { value in
+                    model.database.debug!.location = value
+                    model.store()
+                    model.reloadLocation()
+                }))
             } header: {
                 Text("Experimental")
             }
