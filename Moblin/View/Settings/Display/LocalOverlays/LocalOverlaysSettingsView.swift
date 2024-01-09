@@ -60,6 +60,12 @@ struct LocalOverlaysSettingsView: View {
                     show.audioLevel = value
                     model.store()
                 }))
+                Toggle("Location", isOn: Binding(get: {
+                    show.location!
+                }, set: { value in
+                    show.location = value
+                    model.store()
+                }))
                 Toggle("RTMP server", isOn: Binding(get: {
                     show.rtmpSpeed!
                 }, set: { value in

@@ -4963,9 +4963,6 @@
         }
       }
     },
-    "Altitude: %@ m" : {
-
-    },
     "Amplitude" : {
       "localizations" : {
         "de" : {
@@ -22917,9 +22914,6 @@
         }
       }
     },
-    "Latitude: %lf" : {
-
-    },
     "Layout" : {
       "localizations" : {
         "de" : {
@@ -23773,9 +23767,6 @@
           }
         }
       }
-    },
-    "Longitude: %lf" : {
-
     },
     "Low battery" : {
       "localizations" : {
@@ -31110,6 +31101,9 @@
         }
       }
     },
+    "Push key" : {
+
+    },
     "Quick buttons" : {
 
     },
@@ -31221,6 +31215,9 @@
           }
         }
       }
+    },
+    "RealtimeIRL" : {
+
     },
     "Record" : {
       "localizations" : {
@@ -33461,6 +33458,9 @@
         }
       }
     },
+    "Send your location to rtirl.com." : {
+
+    },
     "Sepia" : {
       "localizations" : {
         "de" : {
@@ -34735,9 +34735,6 @@
           }
         }
       }
-    },
-    "Speed: %@ m/s" : {
-
     },
     "Square" : {
 

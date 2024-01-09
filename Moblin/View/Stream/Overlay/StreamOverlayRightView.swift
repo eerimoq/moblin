@@ -154,6 +154,14 @@ struct RightOverlayView: View {
                     color: netStreamColor()
                 )
             }
+            if database.show.location! && model.isLocationEnabled() {
+                StreamOverlayIconAndTextView(
+                    icon: "location",
+                    text: model.location,
+                    textFirst: true,
+                    color: .white
+                )
+            }
             if model.stream.isSrtla() && model.isLive {
                 StreamOverlayIconAndTextView(
                     icon: "phone.connection",

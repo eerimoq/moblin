@@ -94,6 +94,17 @@ struct StreamSettingsView: View {
                     }
                 }))
             }
+            NavigationLink(destination: StreamRealtimeIrlSettingsView(stream: stream)) {
+                Toggle("RealtimeIRL", isOn: Binding(get: {
+                    stream.realtimeIrlEnabled!
+                }, set: { value in
+                    stream.realtimeIrlEnabled = value
+                    model.store()
+                    if stream.enabled {
+                        model.reloadLocation()
+                    }
+                }))
+            }
             if stream.getProtocol() == .srt {
                 NavigationLink(destination: StreamSrtSettingsView(stream: stream)) {
                     Text("SRT(LA)")

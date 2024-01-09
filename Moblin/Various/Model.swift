@@ -348,7 +348,7 @@ final class Model: ObservableObject {
     private var gameControllers: [GCController?] = []
     @Published var gameControllersTotal = noValue
 
-    @Published var latestLocation = CLLocation()
+    @Published var location = noValue
 
     init() {
         settings.load()
@@ -382,7 +382,8 @@ final class Model: ObservableObject {
     private var randomEffect = RandomEffect()
     private var tripleEffect = TripleEffect()
     private var pixellateEffect = PixellateEffect()
-    private var location = Location()
+    private var locationManager = Location()
+    private var realtimeIrl: RealtimeIrl?
 
     private func cleanWizardUrl(url: String) -> String {
         var cleanedUrl = cleanUrl(url: url)
@@ -1096,19 +1097,38 @@ final class Model: ObservableObject {
         reloadLocation()
     }
 
-    func reloadLocation() {
-        location.stop()
-        if isLocationEnabled() {
-            location.start(onUpdate: handleLocationUpdate)
+    private func updateLocation() {
+        let newLocation = locationManager.status()
+        if location != newLocation {
+            location = newLocation
         }
     }
 
+    func reloadLocation() {
+        locationManager.stop()
+        if isLocationEnabled() {
+            locationManager.start(onUpdate: handleLocationUpdate)
+        }
+        reloadRealtimeIrl()
+    }
+
     func isLocationEnabled() -> Bool {
-        return database.debug!.location! && database.location!.enabled
+        return isRealtimeIrlConfigured()
     }
 
     private func handleLocationUpdate(location: CLLocation) {
-        latestLocation = location
+        realtimeIrl?.update(location: location)
+    }
+
+    func isRealtimeIrlConfigured() -> Bool {
+        return stream.realtimeIrlEnabled! && !stream.realtimeIrlPushKey!.isEmpty
+    }
+
+    func reloadRealtimeIrl() {
+        realtimeIrl = nil
+        if isRealtimeIrlConfigured() {
+            realtimeIrl = RealtimeIrl(pushKey: stream.realtimeIrlPushKey!)
+        }
     }
 
     private func handleGameControllerButtonZoom(pressed: Bool, x: Float) {
@@ -1518,6 +1538,7 @@ final class Model: ObservableObject {
             }
             self.updateSrtlaConnectionStatistics()
             self.removeOldChatMessages(now: now)
+            self.updateLocation()
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
@@ -1978,6 +1999,7 @@ final class Model: ObservableObject {
         setAudioStreamBitrate(stream: stream)
         reloadConnections()
         resetChat()
+        reloadLocation()
     }
 
     private func reloadChats() {
@@ -2870,9 +2892,6 @@ final class Model: ObservableObject {
     }
 
     private func getVideoMirrored() -> Bool {
-        if #available(iOS 17, *) {
-            return cameraDevice?.deviceType == .external
-        }
         return false
     }
 

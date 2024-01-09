@@ -144,6 +144,8 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var audioBitrate: Int? = 128_000
     var chat: SettingsStreamChat? = .init()
     var recording: SettingsStreamRecording? = .init()
+    var realtimeIrlEnabled: Bool? = false
+    var realtimeIrlPushKey: String? = ""
 
     init(name: String) {
         self.name = name
@@ -760,6 +762,7 @@ class SettingsShow: Codable {
     var obsStatus: Bool? = true
     var rtmpSpeed: Bool? = true
     var gameController: Bool? = true
+    var location: Bool? = true
 }
 
 class SettingsZoomPreset: Codable, Identifiable {
@@ -1068,10 +1071,6 @@ class SettingsGameController: Codable, Identifiable {
     }
 }
 
-class SettingsLocation: Codable {
-    var enabled: Bool = false
-}
-
 class Database: Codable {
     var streams: [SettingsStream] = []
     var scenes: [SettingsScene] = []
@@ -1097,7 +1096,6 @@ class Database: Codable {
     var lowBitrateWarning: Bool? = true
     var vibrate: Bool? = false
     var gameControllers: [SettingsGameController]? = [.init()]
-    var location: SettingsLocation? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -1715,8 +1713,16 @@ final class Settings {
             realDatabase.debug!.location = false
             store()
         }
-        if realDatabase.location == nil {
-            realDatabase.location = .init()
+        for stream in database.streams where stream.realtimeIrlEnabled == nil {
+            stream.realtimeIrlEnabled = false
+            store()
+        }
+        for stream in database.streams where stream.realtimeIrlPushKey == nil {
+            stream.realtimeIrlPushKey = ""
+            store()
+        }
+        if realDatabase.show.location == nil {
+            realDatabase.show.location = true
             store()
         }
     }
