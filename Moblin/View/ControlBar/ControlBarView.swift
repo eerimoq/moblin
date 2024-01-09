@@ -85,7 +85,7 @@ struct ControlBarView: View {
                     .foregroundColor(.white)
                     .font(smallFont)
             }
-            .padding([.bottom], 10)
+            .padding([.bottom], 5)
             .padding([.leading], 0)
             .padding([.trailing], 5)
             HStack(spacing: 0) {
