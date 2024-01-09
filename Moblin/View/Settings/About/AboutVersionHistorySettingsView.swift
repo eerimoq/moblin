@@ -11,7 +11,7 @@ private let versions = [
     Version(version: "0.143.0", date: "2024-01-09", changes: [
         "• Show empty audio level bar on startup.",
         "  • Was sometimes full.",
-        "• Optionally send you location to RealtimeIRL.",
+        "• Optionally send your location to RealtimeIRL.",
         "  • The location service is turned off if no location is needed.",
         "  • Configured per stream.",
         "• Do not mirror external cameras.",
