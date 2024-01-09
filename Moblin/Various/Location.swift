@@ -28,13 +28,13 @@ class Location: NSObject, CLLocationManagerDelegate {
         }
         let latitude = formatOneDecimal(value: Float(latestLocation.coordinate.latitude))
         let longitude = formatOneDecimal(value: Float(latestLocation.coordinate.longitude))
-        var speed: String
-        if latestLocation.speed != -1 {
-            speed = formatOneDecimal(value: Float(latestLocation.speed))
-        } else {
-            speed = "-"
-        }
-        return "\(latitude) N \(longitude) W, \(speed) m/s"
+        let formatter = MeasurementFormatter()
+        formatter.numberFormatter.maximumFractionDigits = 1
+        let speed = formatter.string(from: NSMeasurement(
+            doubleValue: max(latestLocation.speed, 0),
+            unit: UnitSpeed.metersPerSecond
+        ) as Measurement<Unit>)
+        return "\(latitude) N \(longitude) W, \(speed)"
     }
 
     func locationManagerDidChangeAuthorization(_: CLLocationManager) {
