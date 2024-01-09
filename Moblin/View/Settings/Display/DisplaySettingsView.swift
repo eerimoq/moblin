@@ -52,7 +52,7 @@ struct DisplaySettingsView: View {
                                                                  .fromStrings(values: audioLevels),
                                                              selectedId: audioLevel()))
                 {
-                    Text("Audio level")
+                    TextItemView(name: "Audio level", value: audioLevel())
                 }
                 NavigationLink(destination: LocalOverlaysNetworkInterfaceNamesSettingsView()) {
                     Text("Network interface names")

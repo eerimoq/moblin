@@ -28,7 +28,7 @@ final class Media: NSObject {
     private var srtSpeed: Int64 = 0
     private var srtConnectedObservation: NSKeyValueObservation?
     private var rtmpStreamName = ""
-    private var currentAudioLevel: Float = 100.0
+    private var currentAudioLevel: Float = -160.0
     private var srtUrl: String = ""
     private var latency: Int32 = 2000
     private var overheadBandwidth: Int32 = 25
