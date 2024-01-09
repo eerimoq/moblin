@@ -890,7 +890,6 @@ class SettingsDebug: Codable {
     var sceneMic: Bool? = false
     var recordingsFolder: Bool? = false
     var cameraSwitchRemoveBlackish: Float? = 0.3
-    var location: Bool? = false
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -1707,10 +1706,6 @@ final class Settings {
         }
         for stream in realDatabase.rtmpServer!.streams where stream.fps == nil {
             stream.fps = 0
-            store()
-        }
-        if realDatabase.debug!.location == nil {
-            realDatabase.debug!.location = false
             store()
         }
         for stream in database.streams where stream.realtimeIrlEnabled == nil {
