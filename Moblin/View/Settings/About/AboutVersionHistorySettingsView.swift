@@ -8,6 +8,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.144.0", date: "2024-01-10", changes: [
+        "• Less padding over Moblin icon and settings button.",
+        "• Speed unit based on locale.",
+        "  • Often km/h or mph.",
+        "• More input checks in create stream wizard.",
+        "  • Fixes OBS remote control crash when entering \"Ws://\" instead of \"ws://\".",
+    ]),
     Version(version: "0.143.0", date: "2024-01-09", changes: [
         "• Show empty audio level bar on startup.",
         "  • Was sometimes full.",

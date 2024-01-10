@@ -1513,7 +1513,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Moblin live streams video from the camera.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Moblin uses localhost as input and output to SRT library.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Moblin can display your location and/or speed on stream.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Moblin can display your location and/or speed on screen and stream.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Moblin live streams audio from the microphone.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Moblin shows selected images as overlays.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Moblin shows selected images as overlays.";
@@ -1528,7 +1528,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.143.0;
+				MARKETING_VERSION = 0.144.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1559,7 +1559,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Moblin live streams video from the camera.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Moblin uses localhost as input and output to SRT library.";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Moblin can display your location and/or speed on stream.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Moblin can display your location and/or speed on screen and stream.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Moblin live streams audio from the microphone.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Moblin shows selected images as overlays.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Moblin shows selected images as overlays.";
@@ -1574,7 +1574,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.143.0;
+				MARKETING_VERSION = 0.144.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

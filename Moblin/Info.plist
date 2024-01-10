@@ -33,7 +33,7 @@
 		<true/>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Moblin can display your location and/or speed on stream.</string>
+	<string>Moblin can display your location and/or speed on screen and stream.</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 </dict>
