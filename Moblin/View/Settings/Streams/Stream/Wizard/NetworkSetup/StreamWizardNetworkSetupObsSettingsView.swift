@@ -10,10 +10,10 @@ struct StreamWizardNetworkSetupObsSettingsView: View {
     }
 
     private func updatePortError() {
-        model.wizardObsPort = model.wizardObsPort.trim()
-        if model.wizardObsPort.isEmpty {
+        let port = model.wizardObsPort.trim()
+        if port.isEmpty {
             portError = ""
-        } else if let port = UInt16(model.wizardObsPort), port > 0 {
+        } else if let port = UInt16(port), port > 0 {
             portError = ""
         } else {
             portError = String(localized: "Must be a number between 1 and 65535.")
@@ -33,7 +33,7 @@ struct StreamWizardNetworkSetupObsSettingsView: View {
             Section {
                 TextField("7654", text: $model.wizardObsPort)
                     .disableAutocorrection(true)
-                    .onSubmit {
+                    .onChange(of: model.wizardObsPort) { _ in
                         updatePortError()
                     }
             } header: {

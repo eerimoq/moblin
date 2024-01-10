@@ -27,7 +27,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                 Section {
                     TextField("rtmp://arn03.contribute.live-video.net/app", text: $model.wizardDirectIngest)
                         .disableAutocorrection(true)
-                        .onSubmit {
+                        .onChange(of: model.wizardDirectIngest) { _ in
                             updateIngestError()
                         }
                 } header: {
@@ -64,7 +64,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                         text: $model.wizardDirectIngest
                     )
                     .disableAutocorrection(true)
-                    .onSubmit {
+                    .onChange(of: model.wizardDirectIngest) { _ in
                         updateIngestError()
                     }
                 } header: {
@@ -97,7 +97,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                         text: $model.wizardDirectIngest
                     )
                     .disableAutocorrection(true)
-                    .onSubmit {
+                    .onChange(of: model.wizardDirectIngest) { _ in
                         updateIngestError()
                     }
                 } header: {
@@ -126,7 +126,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                         text: $model.wizardDirectIngest
                     )
                     .disableAutocorrection(true)
-                    .onSubmit {
+                    .onChange(of: model.wizardDirectIngest) { _ in
                         updateIngestError()
                     }
                 } header: {

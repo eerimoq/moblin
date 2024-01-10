@@ -401,18 +401,19 @@ final class Model: ObservableObject {
             case .none:
                 break
             case .srt:
-                if var urlComponents = URLComponents(string: wizardCustomSrtUrl) {
+                if var urlComponents = URLComponents(string: wizardCustomSrtUrl.trim()) {
                     urlComponents.queryItems = [
-                        URLQueryItem(name: "streamid", value: wizardCustomSrtStreamId),
+                        URLQueryItem(name: "streamid", value: wizardCustomSrtStreamId.trim()),
                     ]
                     if let fullUrl = urlComponents.url {
                         url = fullUrl.absoluteString
                     }
                 }
             case .rtmp:
-                wizardCustomRtmpUrl = wizardCustomRtmpUrl
+                let rtmpUrl = wizardCustomRtmpUrl
+                    .trim()
                     .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-                url = "\(wizardCustomRtmpUrl)/\(wizardCustomRtmpStreamKey)"
+                url = "\(rtmpUrl)/\(wizardCustomRtmpStreamKey.trim())"
             }
         } else {
             switch wizardNetworkSetup {
@@ -438,10 +439,13 @@ final class Model: ObservableObject {
         stream.afreecaTvEnabled = false
         stream.obsWebSocketEnabled = false
         if wizardPlatform != .custom {
-            stream.obsWebSocketEnabled = wizardObsRemoteControlEnabled
             if wizardObsRemoteControlEnabled {
-                stream.obsWebSocketUrl = wizardObsRemoteControlUrl
-                stream.obsWebSocketPassword = wizardObsRemoteControlPassword.trim()
+                let url = cleanUrl(url: wizardObsRemoteControlUrl.trim())
+                if isValidWebSocketUrl(url: url) == nil {
+                    stream.obsWebSocketEnabled = true
+                    stream.obsWebSocketUrl = url
+                    stream.obsWebSocketPassword = wizardObsRemoteControlPassword.trim()
+                }
             }
         }
         switch wizardPlatform {

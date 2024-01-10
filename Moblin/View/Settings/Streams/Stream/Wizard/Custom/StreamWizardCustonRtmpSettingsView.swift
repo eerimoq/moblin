@@ -10,16 +10,12 @@ struct StreamWizardCustonRtmpSettingsView: View {
     }
 
     private func updateUrlError() {
-        model.wizardCustomRtmpUrl = cleanUrl(url: model.wizardCustomRtmpUrl)
-        if model.wizardCustomRtmpUrl.isEmpty {
+        let url = cleanUrl(url: model.wizardCustomRtmpUrl)
+        if url.isEmpty {
             urlError = ""
         } else {
-            urlError = isValidUrl(url: model.wizardCustomRtmpUrl, allowedSchemes: ["rtmp", "rtmps"]) ?? ""
+            urlError = isValidUrl(url: url, allowedSchemes: ["rtmp", "rtmps"]) ?? ""
         }
-    }
-
-    private func updateStreamKey() {
-        model.wizardCustomRtmpStreamKey = model.wizardCustomRtmpStreamKey.trim()
     }
 
     var body: some View {
@@ -27,7 +23,7 @@ struct StreamWizardCustonRtmpSettingsView: View {
             Section {
                 TextField("rtmp://arn03.contribute.live-video.net/app/", text: $model.wizardCustomRtmpUrl)
                     .disableAutocorrection(true)
-                    .onSubmit {
+                    .onChange(of: model.wizardCustomRtmpUrl) { _ in
                         updateUrlError()
                     }
             } header: {
@@ -41,9 +37,6 @@ struct StreamWizardCustonRtmpSettingsView: View {
                     text: $model.wizardCustomRtmpStreamKey
                 )
                 .disableAutocorrection(true)
-                .onSubmit {
-                    updateStreamKey()
-                }
             } header: {
                 Text("Stream key")
             }

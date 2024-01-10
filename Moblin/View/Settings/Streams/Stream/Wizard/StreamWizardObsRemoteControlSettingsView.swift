@@ -16,8 +16,8 @@ struct StreamWizardObsRemoteControlSettingsView: View {
     }
 
     private func updateUrlError() {
-        model.wizardObsRemoteControlUrl = cleanUrl(url: model.wizardObsRemoteControlUrl)
-        if let message = isValidWebSocketUrl(url: model.wizardObsRemoteControlUrl) {
+        let url = cleanUrl(url: model.wizardObsRemoteControlUrl)
+        if let message = isValidWebSocketUrl(url: url) {
             urlError = message
         } else {
             urlError = ""
@@ -35,7 +35,7 @@ struct StreamWizardObsRemoteControlSettingsView: View {
                 Section {
                     TextField("ws://213.33.45.132", text: $model.wizardObsRemoteControlUrl)
                         .disableAutocorrection(true)
-                        .onSubmit {
+                        .onChange(of: model.wizardObsRemoteControlUrl) { _ in
                             updateUrlError()
                         }
                 } header: {

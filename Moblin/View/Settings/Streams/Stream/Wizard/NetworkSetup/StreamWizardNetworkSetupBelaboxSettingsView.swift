@@ -9,11 +9,11 @@ struct StreamWizardNetworkSetupBelaboxSettingsView: View {
     }
 
     private func updateUrlError() {
-        model.wizardBelaboxUrl = cleanUrl(url: model.wizardBelaboxUrl)
-        if model.wizardBelaboxUrl.isEmpty {
+        let url = cleanUrl(url: model.wizardBelaboxUrl)
+        if url.isEmpty {
             urlError = ""
         } else {
-            urlError = isValidUrl(url: model.wizardBelaboxUrl, allowedSchemes: ["srt", "srtla"]) ?? ""
+            urlError = isValidUrl(url: url, allowedSchemes: ["srt", "srtla"]) ?? ""
         }
     }
 
@@ -25,7 +25,7 @@ struct StreamWizardNetworkSetupBelaboxSettingsView: View {
                     text: $model.wizardBelaboxUrl
                 )
                 .disableAutocorrection(true)
-                .onSubmit {
+                .onChange(of: model.wizardBelaboxUrl) { _ in
                     updateUrlError()
                 }
             } header: {

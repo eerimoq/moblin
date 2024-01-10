@@ -9,16 +9,12 @@ struct StreamWizardCustomSrtSettingsView: View {
     }
 
     private func updateUrlError() {
-        model.wizardCustomSrtUrl = cleanUrl(url: model.wizardCustomSrtUrl)
-        if model.wizardCustomSrtUrl.isEmpty {
+        let url = cleanUrl(url: model.wizardCustomSrtUrl)
+        if url.isEmpty {
             urlError = ""
         } else {
-            urlError = isValidUrl(url: model.wizardCustomSrtUrl, allowedSchemes: ["srt", "srtla"]) ?? ""
+            urlError = isValidUrl(url: url, allowedSchemes: ["srt", "srtla"]) ?? ""
         }
-    }
-
-    private func updateStreamId() {
-        model.wizardCustomSrtStreamId = model.wizardCustomSrtStreamId.trim()
     }
 
     var body: some View {
@@ -26,7 +22,7 @@ struct StreamWizardCustomSrtSettingsView: View {
             Section {
                 TextField("srt://107.32.12.132:5000", text: $model.wizardCustomSrtUrl)
                     .disableAutocorrection(true)
-                    .onSubmit {
+                    .onChange(of: model.wizardCustomSrtUrl) { _ in
                         updateUrlError()
                     }
             } header: {
@@ -40,9 +36,6 @@ struct StreamWizardCustomSrtSettingsView: View {
                     text: $model.wizardCustomSrtStreamId
                 )
                 .disableAutocorrection(true)
-                .onSubmit {
-                    updateStreamId()
-                }
             } header: {
                 Text("Stream id")
             }
