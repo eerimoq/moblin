@@ -130,6 +130,33 @@ struct ObsSceneView: View {
     }
 }
 
+struct StreamSwitcherView: View {
+    @EnvironmentObject var model: Model
+    var done: () -> Void
+
+    var body: some View {
+        Form {
+            Section("Stream switcher") {
+                Picker("", selection: $model.streamSwitcherStream) {
+                    ForEach(model.database.streams) { stream in
+                        Text(stream.name)
+                            .tag(stream.id)
+                    }
+                }
+                .onChange(of: model.streamSwitcherStream) { _ in
+                    print("Stream switcher")
+                    done()
+                }
+                .pickerStyle(.inline)
+                .labelsHidden()
+            }
+        }
+        .toolbar {
+            QuickSettingsToolbar(done: done)
+        }
+    }
+}
+
 struct ImageView: View {
     @EnvironmentObject var model: Model
     var done: () -> Void

@@ -275,9 +275,11 @@ final class Model: ObservableObject {
     @Published var showingMic = false
     @Published var showingObsScene = false
     @Published var showingImage = false
+    @Published var showingStreamSwitcher = false
     @Published var obsScenes: [String] = []
     @Published var obsCurrentScene: String = ""
     @Published var obsCurrentSceneStatus: String = ""
+    @Published var streamSwitcherStream = "Twitch"
     var obsStreaming = false
     var obsRecording = false
     @Published var iconImage: String = plainIcon.id

@@ -13,21 +13,21 @@ struct StreamRealtimeIrlSettingsView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading) {
-            Text("Send your location to rtirl.com.")
-            Form {
-                Section {
-                    NavigationLink(destination: TextEditView(
-                        title: String(localized: "Push key"),
+        Form {
+            Section {
+                Text("Send your location to https://rtirl.com, to let your viewers know where you are.")
+            }
+            Section {
+                NavigationLink(destination: TextEditView(
+                    title: String(localized: "Push key"),
+                    value: stream.realtimeIrlPushKey!,
+                    onSubmit: submitPushKey
+                )) {
+                    TextItemView(
+                        name: String(localized: "Push key"),
                         value: stream.realtimeIrlPushKey!,
-                        onSubmit: submitPushKey
-                    )) {
-                        TextItemView(
-                            name: String(localized: "Push key"),
-                            value: stream.realtimeIrlPushKey!,
-                            sensitive: true
-                        )
-                    }
+                        sensitive: true
+                    )
                 }
             }
         }

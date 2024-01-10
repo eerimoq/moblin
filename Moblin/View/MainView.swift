@@ -135,6 +135,17 @@ struct MainView: View {
                     .frame(width: settingsHalfWidth)
                 }
             }
+            if model.showingStreamSwitcher {
+                HStack {
+                    Spacer()
+                    NavigationStack {
+                        StreamSwitcherView {
+                            model.showingStreamSwitcher = false
+                        }
+                    }
+                    .frame(width: settingsHalfWidth)
+                }
+            }
             if model.showingImage {
                 HStack {
                     Spacer()
