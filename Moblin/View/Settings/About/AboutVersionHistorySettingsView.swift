@@ -8,6 +8,16 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.145.0", date: "2024-01-11", changes: [
+        "• Default location (GPS) settings.",
+        "  • High precision.",
+        "• Disable auto capitalization in many input fields.",
+        "• Change OBS start/stop stream quick button icon to router(?) :slight_smile:",
+        "  • The old icon will be used for a new stream switcher quick button.",
+        "• Correctly duplicate various stream settings toggles.",
+        "• Switch stream quick button.",
+        "  • Immediately stops current live stream (if any), switches stream settings, and automatically goes live after 3 seconds.",
+    ]),
     Version(version: "0.144.0", date: "2024-01-10", changes: [
         "• Less padding over Moblin icon and settings button.",
         "• Speed unit based on locale.",
