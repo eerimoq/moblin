@@ -29,6 +29,7 @@ final class Media: NSObject {
     private var srtConnectedObservation: NSKeyValueObservation?
     private var rtmpStreamName = ""
     private var currentAudioLevel: Float = -160.0
+    private var numberOfAudioChannels: Int = 0
     private var srtUrl: String = ""
     private var latency: Int32 = 2000
     private var overheadBandwidth: Int32 = 25
@@ -69,6 +70,10 @@ final class Media: NSObject {
 
     func getAudioLevel() -> Float {
         return currentAudioLevel
+    }
+
+    func getNumberOfAudioChannels() -> Int {
+        return numberOfAudioChannels
     }
 
     func srtStartStream(
@@ -504,7 +509,7 @@ extension Media: NetStreamDelegate {
 
     func streamDidOpen(_: NetStream) {}
 
-    func stream(_: NetStream, audioLevel: Float) {
+    func stream(_: NetStream, audioLevel: Float, numberOfAudioChannels: Int) {
         DispatchQueue.main.async {
             if becameMuted(old: self.currentAudioLevel, new: audioLevel) || becameUnmuted(
                 old: self.currentAudioLevel,
@@ -515,6 +520,7 @@ extension Media: NetStreamDelegate {
             } else {
                 self.currentAudioLevel = audioLevel
             }
+            self.numberOfAudioChannels = numberOfAudioChannels
         }
     }
 

@@ -11,6 +11,7 @@ private let maxBars = "|||||||||||||||"
 struct AudioLevelView: View {
     var showBar: Bool
     var level: Float
+    var channels: Int
 
     private func bars(count: Float) -> Substring {
         let barCount = Int(count.rounded(.toNearestOrAwayFromZero))
@@ -43,45 +44,37 @@ struct AudioLevelView: View {
 
     var body: some View {
         HStack(spacing: 1) {
-            if level.isNaN {
-                Text("Muted")
-                    .padding([.leading, .trailing], 2)
-                    .foregroundColor(.white)
-                    .background(Color(white: 0, opacity: 0.6))
-                    .cornerRadius(5)
-                    .font(smallFont)
-            } else if level == .infinity {
-                Text("Unknown")
-                    .padding([.leading, .trailing], 2)
-                    .foregroundColor(.white)
-                    .background(Color(white: 0, opacity: 0.6))
-                    .cornerRadius(5)
-                    .font(smallFont)
-            } else {
-                if showBar {
-                    HStack(spacing: 0) {
-                        Text(redText())
-                            .foregroundColor(.red)
-                        Text(yellowText())
-                            .foregroundColor(.yellow)
-                        Text(greenText())
-                            .foregroundColor(.green)
-                    }
-                    .padding([.leading, .trailing], 2)
-                    .padding([.bottom], 2)
-                    .background(Color(white: 0, opacity: 0.6))
-                    .cornerRadius(5)
-                    .font(smallFont)
-                    .bold()
-                } else {
-                    Text("\(Int(level)) dB")
-                        .padding([.leading, .trailing], 2)
-                        .background(Color(white: 0, opacity: 0.6))
+            HStack(spacing: 1) {
+                if level.isNaN {
+                    Text("Muted,")
                         .foregroundColor(.white)
-                        .cornerRadius(5)
-                        .font(smallFont)
+                } else if level == .infinity {
+                    Text("Unknown,")
+                        .foregroundColor(.white)
+                } else {
+                    if showBar {
+                        HStack(spacing: 0) {
+                            Text(redText())
+                                .foregroundColor(.red)
+                            Text(yellowText())
+                                .foregroundColor(.yellow)
+                            Text(greenText())
+                                .foregroundColor(.green)
+                        }
+                        .padding([.bottom], 2)
+                        .bold()
+                    } else {
+                        Text("\(Int(level)) dB,")
+                            .foregroundColor(.white)
+                    }
                 }
+                Text(" \(channels) ch")
+                    .foregroundColor(.white)
             }
+            .padding([.leading, .trailing], 2)
+            .background(Color(white: 0, opacity: 0.6))
+            .cornerRadius(5)
+            .font(smallFont)
             Image(systemName: "waveform")
                 .frame(width: 17, height: 17)
                 .font(smallFont)
@@ -120,7 +113,11 @@ struct RightOverlayView: View {
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
             if database.show.audioLevel {
-                AudioLevelView(showBar: database.show.audioBar, level: model.audioLevel)
+                AudioLevelView(
+                    showBar: database.show.audioBar,
+                    level: model.audioLevel,
+                    channels: model.numberOfAudioChannels
+                )
             }
             if database.show.rtmpSpeed! && model.rtmpServerEnabled() {
                 StreamOverlayIconAndTextView(

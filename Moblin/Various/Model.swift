@@ -224,6 +224,7 @@ final class Model: ObservableObject {
     @Published var uptime = noValue
     @Published var srtlaConnectionStatistics = noValue
     @Published var audioLevel: Float = -160.0
+    @Published var numberOfAudioChannels: Int = 0
     var settings = Settings()
     @Published var digitalClock = noValue
     var selectedSceneId = UUID()
@@ -1643,6 +1644,10 @@ final class Model: ObservableObject {
 
     private func updateAudioLevel() {
         let newAudioLevel = media.getAudioLevel()
+        let newNumberOfAudioChannels = media.getNumberOfAudioChannels()
+        if newNumberOfAudioChannels != numberOfAudioChannels {
+            numberOfAudioChannels = newNumberOfAudioChannels
+        }
         if newAudioLevel == audioLevel {
             return
         }
