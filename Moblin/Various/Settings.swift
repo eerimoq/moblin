@@ -154,13 +154,18 @@ class SettingsStream: Codable, Identifiable, Equatable {
     func clone() -> SettingsStream {
         let stream = SettingsStream(name: name)
         stream.url = url
+        stream.twitchEnabled = twitchEnabled
         stream.twitchChannelName = twitchChannelName
         stream.twitchChannelId = twitchChannelId
+        stream.kickEnabled = kickEnabled
         stream.kickChatroomId = kickChatroomId
+        stream.youTubeEnabled = youTubeEnabled
         stream.youTubeApiKey = youTubeApiKey
         stream.youTubeVideoId = youTubeVideoId
+        stream.afreecaTvEnabled = afreecaTvEnabled
         stream.afreecaTvChannelName = afreecaTvChannelName
         stream.afreecaTvStreamId = afreecaTvStreamId
+        stream.obsWebSocketEnabled = obsWebSocketEnabled
         stream.obsWebSocketUrl = obsWebSocketUrl
         stream.obsWebSocketPassword = obsWebSocketPassword
         stream.resolution = resolution
@@ -176,6 +181,8 @@ class SettingsStream: Codable, Identifiable, Equatable {
         stream.audioBitrate = audioBitrate
         stream.chat = chat?.clone()
         stream.recording = recording?.clone()
+        stream.realtimeIrlEnabled = realtimeIrlEnabled
+        stream.realtimeIrlPushKey = realtimeIrlPushKey
         return stream
     }
 
