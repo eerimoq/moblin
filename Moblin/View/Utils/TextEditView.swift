@@ -6,6 +6,7 @@ struct TextEditView: View {
     @State var value: String
     var onSubmit: (String) -> Void
     var footer: Text = .init("")
+    var capitalize: Bool = false
     @State private var changed = false
     @State private var submitted = false
 
@@ -19,6 +20,7 @@ struct TextEditView: View {
         Form {
             Section {
                 TextField("", text: $value)
+                    .textInputAutocapitalization(capitalize ? .sentences : .never)
                     .disableAutocorrection(true)
                     .onChange(of: value) { _ in
                         changed = true

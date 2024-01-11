@@ -34,6 +34,7 @@ struct StreamWizardObsRemoteControlSettingsView: View {
             if model.wizardObsRemoteControlEnabled {
                 Section {
                     TextField("ws://213.33.45.132:4567", text: $model.wizardObsRemoteControlUrl)
+                        .textInputAutocapitalization(.never)
                         .disableAutocorrection(true)
                         .onChange(of: model.wizardObsRemoteControlUrl) { _ in
                             updateUrlError()
@@ -50,6 +51,7 @@ struct StreamWizardObsRemoteControlSettingsView: View {
                 }
                 Section {
                     TextField("po3Gg4pflp3s", text: $model.wizardObsRemoteControlPassword)
+                        .textInputAutocapitalization(.never)
                         .disableAutocorrection(true)
                 } header: {
                     Text("Password")

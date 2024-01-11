@@ -27,6 +27,7 @@ struct StreamUrlSettingsView: View {
             Section {
                 ZStack(alignment: .leading) {
                     TextField("", text: $value, axis: .vertical)
+                        .textInputAutocapitalization(.never)
                         .onSubmit {
                             submitUrl()
                         }

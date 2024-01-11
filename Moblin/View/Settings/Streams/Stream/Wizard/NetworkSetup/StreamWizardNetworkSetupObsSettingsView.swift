@@ -24,6 +24,7 @@ struct StreamWizardNetworkSetupObsSettingsView: View {
         Form {
             Section {
                 TextField("213.33.45.132", text: $model.wizardObsAddress)
+                    .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
             } header: {
                 Text("IP address or domain name")
@@ -32,6 +33,7 @@ struct StreamWizardNetworkSetupObsSettingsView: View {
             }
             Section {
                 TextField("7654", text: $model.wizardObsPort)
+                    .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
                     .onChange(of: model.wizardObsPort) { _ in
                         updatePortError()

@@ -28,7 +28,8 @@ struct LocalOverlaysNetworkInterfaceNamesInterfaceSettingsView: View {
             NavigationLink(destination: TextEditView(
                 title: "Name",
                 value: interface.name,
-                onSubmit: onSubmitName
+                onSubmit: onSubmitName,
+                capitalize: true
             )) {
                 TextItemView(name: "Name", value: interface.name)
             }

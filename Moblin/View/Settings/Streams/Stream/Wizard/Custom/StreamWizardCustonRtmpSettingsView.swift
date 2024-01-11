@@ -22,6 +22,7 @@ struct StreamWizardCustonRtmpSettingsView: View {
         Form {
             Section {
                 TextField("rtmp://arn03.contribute.live-video.net/app/", text: $model.wizardCustomRtmpUrl)
+                    .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
                     .onChange(of: model.wizardCustomRtmpUrl) { _ in
                         updateUrlError()
@@ -36,6 +37,7 @@ struct StreamWizardCustonRtmpSettingsView: View {
                     "live_48950233_okF4f455GRWEF443fFr23GRbt5rEv",
                     text: $model.wizardCustomRtmpStreamKey
                 )
+                .textInputAutocapitalization(.never)
                 .disableAutocorrection(true)
             } header: {
                 Text("Stream key")

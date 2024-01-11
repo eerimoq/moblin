@@ -11,12 +11,14 @@ struct StreamWizardTwitchSettingsView: View {
         Form {
             Section {
                 TextField("MyChannel", text: $model.wizardTwitchChannelName)
+                    .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
             } header: {
                 Text("Channel name")
             }
             Section {
                 TextField("908123903", text: $model.wizardTwitchChannelId)
+                    .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
             } header: {
                 Text("Channel id")

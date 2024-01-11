@@ -7,12 +7,14 @@ struct StreamWizardYouTubeSettingsView: View {
         Form {
             Section {
                 TextField("gr230gkwpj03", text: $model.wizardYouTubeApiKey)
+                    .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
             } header: {
                 Text("API key")
             }
             Section {
                 TextField("jo304F4gr", text: $model.wizardYouTubeVideoId)
+                    .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
             } header: {
                 Text("Video id")

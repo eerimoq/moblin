@@ -76,7 +76,8 @@ struct RtmpServerStreamSettingsView: View {
                 NavigationLink(destination: TextEditView(
                     title: String(localized: "Name"),
                     value: stream.name,
-                    onSubmit: submitName
+                    onSubmit: submitName,
+                    capitalize: true
                 )) {
                     TextItemView(name: String(localized: "Name"), value: stream.name)
                 }

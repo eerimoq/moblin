@@ -136,6 +136,7 @@ struct ButtonImagePickerSettingsView: View {
                     HStack {
                         Image(systemName: "line.3.horizontal.decrease.circle")
                         TextField("Icons", text: $filter)
+                            .textInputAutocapitalization(.never)
                     }
                 }
                 Section {

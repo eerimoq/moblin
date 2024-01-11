@@ -26,6 +26,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
             if model.wizardPlatform == .twitch {
                 Section {
                     TextField("rtmp://arn03.contribute.live-video.net/app", text: $model.wizardDirectIngest)
+                        .textInputAutocapitalization(.never)
                         .disableAutocorrection(true)
                         .onChange(of: model.wizardDirectIngest) { _ in
                             updateIngestError()
@@ -46,6 +47,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                         "live_48950233_okF4f455GRWEF443fFr23GRbt5rEv",
                         text: $model.wizardDirectStreamKey
                     )
+                    .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
                 } header: {
                     Text("Stream key")
@@ -63,6 +65,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                         "rtmps://fa723fc1b171.global-contribute.live-video.net",
                         text: $model.wizardDirectIngest
                     )
+                    .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
                     .onChange(of: model.wizardDirectIngest) { _ in
                         updateIngestError()
@@ -82,6 +85,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                         "sk_us-west-2_okfef49k34k_34g59gGDDHGHSREj754gYJYTJERH",
                         text: $model.wizardDirectStreamKey
                     )
+                    .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
                 } header: {
                     Text("Stream key")
@@ -96,6 +100,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                         "rtmp://a.rtmp.youtube.com/live2",
                         text: $model.wizardDirectIngest
                     )
+                    .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
                     .onChange(of: model.wizardDirectIngest) { _ in
                         updateIngestError()
@@ -113,6 +118,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                         "4bkf-8d03-g6w3-ekjh-emdc",
                         text: $model.wizardDirectStreamKey
                     )
+                    .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
                 } header: {
                     Text("Stream key")
@@ -125,6 +131,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                         "???",
                         text: $model.wizardDirectIngest
                     )
+                    .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
                     .onChange(of: model.wizardDirectIngest) { _ in
                         updateIngestError()
@@ -142,6 +149,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                         "???",
                         text: $model.wizardDirectStreamKey
                     )
+                    .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
                 } header: {
                     Text("Stream key")

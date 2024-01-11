@@ -26,7 +26,8 @@ struct StreamTwitchSettingsView: View {
                 NavigationLink(destination: TextEditView(
                     title: String(localized: "Channel name"),
                     value: stream.twitchChannelName,
-                    onSubmit: submitChannelName
+                    onSubmit: submitChannelName,
+                    capitalize: true
                 )) {
                     TextItemView(name: String(localized: "Channel name"), value: stream.twitchChannelName)
                 }

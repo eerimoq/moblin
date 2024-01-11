@@ -21,6 +21,7 @@ struct StreamWizardCustomSrtSettingsView: View {
         Form {
             Section {
                 TextField("srt://107.32.12.132:5000", text: $model.wizardCustomSrtUrl)
+                    .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
                     .onChange(of: model.wizardCustomSrtUrl) { _ in
                         updateUrlError()
@@ -35,6 +36,7 @@ struct StreamWizardCustomSrtSettingsView: View {
                     "#!::r=stream/-NDZ1WPA4zjMBTJTyNwU,m=publish,...",
                     text: $model.wizardCustomSrtStreamId
                 )
+                .textInputAutocapitalization(.never)
                 .disableAutocorrection(true)
             } header: {
                 Text("Stream id")
