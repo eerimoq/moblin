@@ -1120,7 +1120,9 @@ final class Model: ObservableObject {
     }
 
     private func handleLocationUpdate(location: CLLocation) {
-        realtimeIrl?.update(location: location)
+        if isLive {
+            realtimeIrl?.update(location: location)
+        }
     }
 
     func isRealtimeIrlConfigured() -> Bool {
