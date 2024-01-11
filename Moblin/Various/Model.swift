@@ -1097,6 +1097,7 @@ final class Model: ObservableObject {
                                                object: nil)
         GCController.startWirelessControllerDiscovery {}
         reloadLocation()
+        currentStreamId = stream.id
     }
 
     private func updateLocation() {
@@ -1906,8 +1907,14 @@ final class Model: ObservableObject {
         }
     }
 
-    func startStream() {
+    func startStream(delayed: Bool = false) {
         logger.info("stream: Start")
+        guard !streaming else {
+            return
+        }
+        if delayed && !isLive {
+            return
+        }
         guard stream.url != defaultStreamUrl else {
             makeErrorToast(
                 title: String(
@@ -1993,6 +2000,7 @@ final class Model: ObservableObject {
         for ostream in database.streams where ostream.id != stream.id {
             ostream.enabled = false
         }
+        currentStreamId = stream.id
     }
 
     func setCurrentStream(streamId: UUID) -> Bool {

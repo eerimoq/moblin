@@ -148,7 +148,11 @@ struct StreamSwitcherView: View {
                     if model.setCurrentStream(streamId: model.currentStreamId) {
                         model.reloadStream()
                         model.sceneUpdated()
-                        // model.startStream()
+                        model.isLive = true
+                        DispatchQueue.main
+                            .asyncAfter(deadline: .now() + 3) {
+                                model.startStream(delayed: true)
+                            }
                     } else {
                         model.makeErrorToast(title: "Failed to switch scene")
                     }

@@ -1313,15 +1313,15 @@ private func addMissingGlobalButtons(database: Database) {
     button.systemImageNameOn = "record.circle"
     button.systemImageNameOff = "record.circle"
     addGlobalButtonIfMissing(database: database, button: button)
-    /*
-     button = SettingsButton(name: String(localized: "Stream"))
-     button.id = UUID()
-     button.type = .stream
-     button.imageType = "System name"
-     button.systemImageNameOn = "dot.radiowaves.left.and.right"
-     button.systemImageNameOff = "dot.radiowaves.left.and.right"
-     addGlobalButtonIfMissing(database: database, button: button)
-     */
+
+    button = SettingsButton(name: String(localized: "Stream"))
+    button.id = UUID()
+    button.type = .stream
+    button.imageType = "System name"
+    button.systemImageNameOn = "dot.radiowaves.left.and.right"
+    button.systemImageNameOff = "dot.radiowaves.left.and.right"
+    addGlobalButtonIfMissing(database: database, button: button)
+
     button = SettingsButton(name: String(localized: "Movie"))
     button.id = UUID()
     button.type = .movie
@@ -1739,6 +1739,30 @@ final class Settings {
         if realDatabase.show.location == nil {
             realDatabase.show.location = true
             store()
+        }
+        for button in realDatabase.globalButtons! where button.type == .obsStartStopStream {
+            if button.systemImageNameOn != "wifi.router" {
+                button.systemImageNameOn = "wifi.router"
+                store()
+            }
+            if button.systemImageNameOff != "wifi.router" {
+                button.systemImageNameOff = "wifi.router"
+                store()
+            }
+        }
+        for button in realDatabase.globalButtons! where button.type == .image {
+            if button.name != "Camera" {
+                button.name = "Camera"
+                store()
+            }
+            if button.systemImageNameOn != "camera" {
+                button.systemImageNameOn = "camera"
+                store()
+            }
+            if button.systemImageNameOff != "camera" {
+                button.systemImageNameOff = "camera"
+                store()
+            }
         }
     }
 }
