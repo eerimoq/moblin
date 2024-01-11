@@ -33,7 +33,7 @@ struct StreamWizardObsRemoteControlSettingsView: View {
             }
             if model.wizardObsRemoteControlEnabled {
                 Section {
-                    TextField("ws://213.33.45.132", text: $model.wizardObsRemoteControlUrl)
+                    TextField("ws://213.33.45.132:4567", text: $model.wizardObsRemoteControlUrl)
                         .disableAutocorrection(true)
                         .onChange(of: model.wizardObsRemoteControlUrl) { _ in
                             updateUrlError()

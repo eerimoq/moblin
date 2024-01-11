@@ -279,7 +279,7 @@ final class Model: ObservableObject {
     @Published var obsScenes: [String] = []
     @Published var obsCurrentScene: String = ""
     @Published var obsCurrentSceneStatus: String = ""
-    @Published var streamSwitcherStream = "Twitch"
+    @Published var currentStreamId = UUID()
     var obsStreaming = false
     var obsRecording = false
     @Published var iconImage: String = plainIcon.id
@@ -488,12 +488,8 @@ final class Model: ObservableObject {
             stream.codec = .h264avc
         }
         stream.audioBitrate = 128_000
-        stream.enabled = true
         database.streams.append(stream)
-        store()
-        for ostream in database.streams where ostream != stream {
-            ostream.enabled = false
-        }
+        setCurrentStream(stream: stream)
         reloadStream()
         sceneUpdated()
     }
@@ -1989,6 +1985,27 @@ final class Model: ObservableObject {
         srtlaConnectionStatistics = noValue
         if !reconnect {
             makeStreamEndedToast()
+        }
+    }
+
+    func setCurrentStream(stream: SettingsStream) {
+        stream.enabled = true
+        for ostream in database.streams where ostream.id != stream.id {
+            ostream.enabled = false
+        }
+    }
+
+    func setCurrentStream(streamId: UUID) -> Bool {
+        guard let stream = findStream(id: streamId) else {
+            return false
+        }
+        setCurrentStream(stream: stream)
+        return true
+    }
+
+    private func findStream(id: UUID) -> SettingsStream? {
+        return database.streams.first { stream in
+            stream.id == id
         }
     }
 

@@ -19,11 +19,8 @@ struct StreamsSettingsView: View {
                                 DraggableItemPrefixView()
                                 Toggle(stream.name, isOn: Binding(get: {
                                     stream.enabled
-                                }, set: { value in
-                                    stream.enabled = value
-                                    for ostream in database.streams where ostream.id != stream.id {
-                                        ostream.enabled = false
-                                    }
+                                }, set: { _ in
+                                    model.setCurrentStream(stream: stream)
                                     model.reloadStream()
                                     model.sceneUpdated()
                                 }))

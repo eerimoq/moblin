@@ -626,6 +626,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case random = "Random"
     case triple = "Triple"
     case pixellate = "Pixellate"
+    case stream = "Stream"
 
     static func fromString(value: String) -> SettingsButtonType {
         switch value {
@@ -665,6 +666,8 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return .triple
         case String(localized: "Pixellate"):
             return .pixellate
+        case String(localized: "Stream"):
+            return .stream
         default:
             return .torch
         }
@@ -708,6 +711,8 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return String(localized: "Triple")
         case .pixellate:
             return String(localized: "Pixellate")
+        case .stream:
+            return String(localized: "Stream")
         }
     }
 }
@@ -1290,8 +1295,8 @@ private func addMissingGlobalButtons(database: Database) {
     button.id = UUID()
     button.type = .obsStartStopStream
     button.imageType = "System name"
-    button.systemImageNameOn = "dot.radiowaves.left.and.right"
-    button.systemImageNameOff = "dot.radiowaves.left.and.right"
+    button.systemImageNameOn = "wifi.router"
+    button.systemImageNameOff = "wifi.router"
     addGlobalButtonIfMissing(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Record"))
@@ -1301,7 +1306,15 @@ private func addMissingGlobalButtons(database: Database) {
     button.systemImageNameOn = "record.circle"
     button.systemImageNameOff = "record.circle"
     addGlobalButtonIfMissing(database: database, button: button)
-
+    /*
+     button = SettingsButton(name: String(localized: "Stream"))
+     button.id = UUID()
+     button.type = .stream
+     button.imageType = "System name"
+     button.systemImageNameOn = "dot.radiowaves.left.and.right"
+     button.systemImageNameOff = "dot.radiowaves.left.and.right"
+     addGlobalButtonIfMissing(database: database, button: button)
+     */
     button = SettingsButton(name: String(localized: "Movie"))
     button.id = UUID()
     button.type = .movie

@@ -6447,6 +6447,9 @@
         }
       }
     },
+    "Automatically goes live when switching stream." : {
+
+    },
     "Average bitrate" : {
       "localizations" : {
         "de" : {
@@ -36654,9 +36657,6 @@
         }
       }
     },
-    "Stream switcher" : {
-
-    },
     "Stream URL" : {
       "localizations" : {
         "de" : {
@@ -44313,6 +44313,7 @@
       }
     },
     "ws://213.33.45.132" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -44417,6 +44418,9 @@
           }
         }
       }
+    },
+    "ws://213.33.45.132:4567" : {
+
     },
     "X mark" : {
 

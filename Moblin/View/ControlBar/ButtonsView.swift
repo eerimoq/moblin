@@ -136,19 +136,30 @@ struct StreamSwitcherView: View {
 
     var body: some View {
         Form {
-            Section("Stream switcher") {
-                Picker("", selection: $model.streamSwitcherStream) {
+            Section {
+                Picker("", selection: $model.currentStreamId) {
                     ForEach(model.database.streams) { stream in
                         Text(stream.name)
-                            .tag(stream.id)
                     }
                 }
-                .onChange(of: model.streamSwitcherStream) { _ in
-                    print("Stream switcher")
+                .onChange(of: model.currentStreamId) { _ in
+                    model.stopStream()
+                    model.stopRecording()
+                    if model.setCurrentStream(streamId: model.currentStreamId) {
+                        model.reloadStream()
+                        model.sceneUpdated()
+                        // model.startStream()
+                    } else {
+                        model.makeErrorToast(title: "Failed to switch scene")
+                    }
                     done()
                 }
                 .pickerStyle(.inline)
                 .labelsHidden()
+            } header: {
+                Text("Stream")
+            } footer: {
+                Text("Automatically goes live when switching stream.")
             }
         }
         .toolbar {
@@ -336,6 +347,10 @@ struct ButtonsView: View {
         state.button.isOn.toggle()
         model.setGlobalButtonState(type: .pixellate, isOn: state.button.isOn)
         model.sceneUpdated(store: false)
+    }
+
+    private func streamAction(state _: ButtonState) {
+        model.showingStreamSwitcher = true
     }
 
     var body: some View {
@@ -532,6 +547,16 @@ struct ButtonsView: View {
                                 case .pixellate:
                                     Button(action: {
                                         pixellateAction(state: second)
+                                    }, label: {
+                                        ButtonImage(
+                                            image: getImage(state: second),
+                                            on: second.isOn,
+                                            buttonSize: buttonSize
+                                        )
+                                    })
+                                case .stream:
+                                    Button(action: {
+                                        streamAction(state: second)
                                     }, label: {
                                         ButtonImage(
                                             image: getImage(state: second),
@@ -737,6 +762,16 @@ struct ButtonsView: View {
                             case .pixellate:
                                 Button(action: {
                                     pixellateAction(state: pair.first)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: pair.first),
+                                        on: pair.first.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
+                            case .stream:
+                                Button(action: {
+                                    streamAction(state: pair.first)
                                 }, label: {
                                     ButtonImage(
                                         image: getImage(state: pair.first),
@@ -950,6 +985,16 @@ struct ButtonsView: View {
                                         buttonSize: buttonSize
                                     )
                                 })
+                            case .stream:
+                                Button(action: {
+                                    streamAction(state: second)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: second),
+                                        on: second.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
                             }
                             if model.database.quickButtons!.showName {
                                 Text(second.button.name)
@@ -1148,6 +1193,16 @@ struct ButtonsView: View {
                         case .pixellate:
                             Button(action: {
                                 pixellateAction(state: pair.first)
+                            }, label: {
+                                ButtonImage(
+                                    image: getImage(state: pair.first),
+                                    on: pair.first.isOn,
+                                    buttonSize: buttonSize
+                                )
+                            })
+                        case .stream:
+                            Button(action: {
+                                streamAction(state: pair.first)
                             }, label: {
                                 ButtonImage(
                                     image: getImage(state: pair.first),
