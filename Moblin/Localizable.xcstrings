@@ -1893,8 +1893,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ S"
+            "state" : "translated",
+            "value" : "%@ s"
           }
         },
         "el" : {
@@ -4551,8 +4551,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Eine Liste aller Szenen-Schnellschaltflächen, häufig zum Ein- und Ausblenden von Widgets. Eine Szenentaste kann in null oder mehreren Szenen verwendet werden."
+            "state" : "translated",
+            "value" : "Eine Liste aller Szenen-Quick Buttons, häufig zum Ein- und Ausblenden von Widgets. Eine Szenentaste kann in null oder mehreren Szenen verwendet werden."
           }
         },
         "el" : {
@@ -6889,7 +6889,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Wird beim Streamwechsel automatisch live geschaltet."
           }
         },
@@ -11447,7 +11447,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kreis"
           }
         },
@@ -11977,8 +11977,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Konfigurieren Sie es unter Einstellungen → Streams → %@ → URL."
+            "state" : "translated",
+            "value" : "Konfiguriere es unter Einstellungen → Streams → %@ → URL."
           }
         },
         "el" : {
@@ -12295,8 +12295,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Regler"
+            "state" : "translated",
+            "value" : "Controller"
           }
         },
         "el" : {
@@ -12401,7 +12401,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Controller %lld"
           }
         },
@@ -14309,8 +14309,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Deaktivieren Sie den RTMP-Server, um seine Einstellungen zu ändern."
+            "state" : "translated",
+            "value" : "Deaktiviere den RTMP-Server, um seine Einstellungen zu ändern."
           }
         },
         "el" : {
@@ -15051,7 +15051,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Runter"
           }
         },
@@ -17701,8 +17701,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Externe Mikrofon-Außerkraftsetzungen folgen der Szenenumschaltung"
+            "state" : "translated",
+            "value" : "Ein externes Mikrofon überschreibt Folgen bei  Szenenumschaltung"
           }
         },
         "el" : {
@@ -19927,8 +19927,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Erzwingen Sie die angegebenen FPS oder setzen Sie sie auf 0, um die FPS des Herausgebers zu verwenden. B-Frames funktionieren nicht mit erzwungenen FPS. Für DJI-Drohnen ist normalerweise eine erzwungene FPS erforderlich."
+            "state" : "translated",
+            "value" : "Erzwinge die angegebenen FPS oder setze sie auf 0, um die FPS des Herausgebers zu verwenden. B-Frames funktionieren nicht mit erzwungenen FPS. Für DJI-Drohnen ist normalerweise eine erzwungene FPS erforderlich."
           }
         },
         "el" : {
@@ -20563,7 +20563,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Funktion"
           }
         },
@@ -20669,7 +20669,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Gamecontroller-Taste"
           }
         },
@@ -20775,7 +20775,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Gamecontroller"
           }
         },
@@ -24276,7 +24276,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Links"
           }
         },
@@ -24912,7 +24912,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Standort"
           }
         },
@@ -25654,8 +25654,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Stellen Sie sicher, dass der Lautlosmodus ausgeschaltet ist, damit die Vibrationen funktionieren."
+            "state" : "translated",
+            "value" : "Stelle sicher, dass der Lautlosmodus ausgeschaltet ist, damit die Vibrationen funktionieren."
           }
         },
         "el" : {
@@ -26926,7 +26926,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Das Mikrofon folgt der Szene"
           }
         },
@@ -27244,7 +27244,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mikrofon pro Szene"
           }
         },
@@ -27350,7 +27350,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "In dieser Szene verwendetes Mikrofon, wenn die Option „Mikrofon folgt Szene“ aktiviert ist."
           }
         },
@@ -31379,8 +31379,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Es können nur nicht verwendete Schnellschaltflächen gelöscht werden."
+            "state" : "translated",
+            "value" : "Es können nur nicht verwendete Quick Buttons gelöscht werden."
           }
         },
         "el" : {
@@ -32121,8 +32121,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pixellate"
+            "state" : "translated",
+            "value" : "Pixelbild"
           }
         },
         "el" : {
@@ -33181,8 +33181,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Taste drücken"
+            "state" : "translated",
+            "value" : "Push Key"
           }
         },
         "el" : {
@@ -33287,8 +33287,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Schnelltasten"
+            "state" : "translated",
+            "value" : "Quick Buttons"
           }
         },
         "el" : {
@@ -33393,8 +33393,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Die Schnellschaltflächen werden von unten nach oben angezeigt."
+            "state" : "translated",
+            "value" : "Die Quick Buttons werden von unten nach oben angezeigt."
           }
         },
         "el" : {
@@ -33605,8 +33605,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "EchtzeitIRL"
+            "state" : "translated",
+            "value" : "RealtimeIRL"
           }
         },
         "el" : {
@@ -34347,7 +34347,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Auflösung und FPS sind dieselben wie beim Livestream."
           }
         },
@@ -34665,7 +34665,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Rechts"
           }
         },
@@ -35301,7 +35301,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "rtmp://arn03.contribute.live-video.net/app/"
           }
         },
@@ -35407,7 +35407,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "RTMP(S)"
           }
         },
@@ -36255,8 +36255,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Senden Sie Ihren Standort an https://rtirl.com, damit Ihre Zuschauer wissen, wo Sie sich befinden."
+            "state" : "translated",
+            "value" : "Senden deinen Standort an https://rtirl.com, damit deine Zuschauer wissen, wo du dich befindest."
           }
         },
         "el" : {
@@ -37421,7 +37421,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Überspringen"
           }
         },
@@ -37739,7 +37739,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Quadrat"
           }
         },
@@ -38481,7 +38481,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "srt://107.32.12.132:5000"
           }
         },
@@ -39329,7 +39329,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Stream-ID"
           }
         },
@@ -43675,7 +43675,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Dreieck"
           }
         },
@@ -44842,7 +44842,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Hoch"
           }
         },
@@ -44948,7 +44948,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Bis zu 50 Mbit/s. Für automatisch auf 0 stellen."
           }
         },
@@ -45160,7 +45160,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "URL"
           }
         },
@@ -46432,7 +46432,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Video-Bitrate"
           }
         },
@@ -46538,7 +46538,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Video schwärzlich"
           }
         },
@@ -46644,7 +46644,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Video-Codec"
           }
         },
@@ -48128,7 +48128,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ws://213.33.45.132:4567"
           }
         },
@@ -48234,7 +48234,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "X-Markierung"
           }
         },
