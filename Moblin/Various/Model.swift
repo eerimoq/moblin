@@ -277,6 +277,7 @@ final class Model: ObservableObject {
     @Published var showingObsScene = false
     @Published var showingImage = false
     @Published var showingStreamSwitcher = false
+    @Published var showingGrid = false
     @Published var obsScenes: [String] = []
     @Published var obsCurrentScene: String = ""
     @Published var obsCurrentSceneStatus: String = ""

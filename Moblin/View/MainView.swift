@@ -69,6 +69,10 @@ struct MainView: View {
                                 }
                                 model.setAutoFocus()
                             })
+                        if model.showingGrid {
+                            StreamGridView()
+                                .ignoresSafeArea()
+                        }
                     }
                     StreamOverlayView()
                 }

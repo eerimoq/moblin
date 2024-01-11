@@ -634,6 +634,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case triple = "Triple"
     case pixellate = "Pixellate"
     case stream = "Stream"
+    case grid = "Grid"
 
     static func fromString(value: String) -> SettingsButtonType {
         switch value {
@@ -675,6 +676,8 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return .pixellate
         case String(localized: "Stream"):
             return .stream
+        case String(localized: "Grid"):
+            return .grid
         default:
             return .torch
         }
@@ -720,6 +723,8 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return String(localized: "Pixellate")
         case .stream:
             return String(localized: "Stream")
+        case .grid:
+            return String(localized: "Grid")
         }
     }
 }
@@ -1320,6 +1325,14 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "dot.radiowaves.left.and.right"
     button.systemImageNameOff = "dot.radiowaves.left.and.right"
+    addGlobalButtonIfMissing(database: database, button: button)
+
+    button = SettingsButton(name: String(localized: "Grid"))
+    button.id = UUID()
+    button.type = .grid
+    button.imageType = "System name"
+    button.systemImageNameOn = "grid"
+    button.systemImageNameOff = "grid"
     addGlobalButtonIfMissing(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Movie"))

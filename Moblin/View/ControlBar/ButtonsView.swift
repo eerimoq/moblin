@@ -357,6 +357,12 @@ struct ButtonsView: View {
         model.showingStreamSwitcher = true
     }
 
+    private func gridAction(state: ButtonState) {
+        state.button.isOn.toggle()
+        model.showingGrid.toggle()
+        model.sceneUpdated(store: false)
+    }
+
     var body: some View {
         VStack {
             ForEach(model.buttonPairs) { pair in
@@ -561,6 +567,16 @@ struct ButtonsView: View {
                                 case .stream:
                                     Button(action: {
                                         streamAction(state: second)
+                                    }, label: {
+                                        ButtonImage(
+                                            image: getImage(state: second),
+                                            on: second.isOn,
+                                            buttonSize: buttonSize
+                                        )
+                                    })
+                                case .grid:
+                                    Button(action: {
+                                        gridAction(state: second)
                                     }, label: {
                                         ButtonImage(
                                             image: getImage(state: second),
@@ -776,6 +792,16 @@ struct ButtonsView: View {
                             case .stream:
                                 Button(action: {
                                     streamAction(state: pair.first)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: pair.first),
+                                        on: pair.first.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
+                            case .grid:
+                                Button(action: {
+                                    gridAction(state: pair.first)
                                 }, label: {
                                     ButtonImage(
                                         image: getImage(state: pair.first),
@@ -999,6 +1025,16 @@ struct ButtonsView: View {
                                         buttonSize: buttonSize
                                     )
                                 })
+                            case .grid:
+                                Button(action: {
+                                    gridAction(state: second)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: second),
+                                        on: second.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
                             }
                             if model.database.quickButtons!.showName {
                                 Text(second.button.name)
@@ -1207,6 +1243,16 @@ struct ButtonsView: View {
                         case .stream:
                             Button(action: {
                                 streamAction(state: pair.first)
+                            }, label: {
+                                ButtonImage(
+                                    image: getImage(state: pair.first),
+                                    on: pair.first.isOn,
+                                    buttonSize: buttonSize
+                                )
+                            })
+                        case .grid:
+                            Button(action: {
+                                gridAction(state: pair.first)
                             }, label: {
                                 ButtonImage(
                                     image: getImage(state: pair.first),
