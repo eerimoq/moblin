@@ -110,7 +110,7 @@ struct ControlBarView: View {
             }
             .padding([.leading, .trailing], 10)
             GeometryReader { metrics in
-                ScrollView {
+                ScrollView(showsIndicators: false) {
                     ScrollViewReader { reader in
                         VStack {
                             Spacer(minLength: 0)

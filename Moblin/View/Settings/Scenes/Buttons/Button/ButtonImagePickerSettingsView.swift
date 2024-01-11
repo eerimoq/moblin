@@ -140,7 +140,7 @@ struct ButtonImagePickerSettingsView: View {
                     }
                 }
                 Section {
-                    ScrollView {
+                    ScrollView(showsIndicators: false) {
                         LazyVGrid(columns: columns, spacing: 10) {
                             ForEach(imageSystemNames.filter { name in
                                 filter.isEmpty || name.contains(filter.lowercased())

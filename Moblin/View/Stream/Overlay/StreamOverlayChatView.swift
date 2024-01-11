@@ -215,7 +215,7 @@ struct StreamOverlayChatView: View {
             VStack {
                 Spacer(minLength: 0)
                 GeometryReader { metrics in
-                    ScrollView {
+                    ScrollView(showsIndicators: false) {
                         ScrollViewReader { reader in
                             VStack {
                                 Spacer(minLength: 0)
