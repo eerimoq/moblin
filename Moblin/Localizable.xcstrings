@@ -253,8 +253,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "（需要登入）。"
+            "state" : "translated",
+            "value" : " （需要登入）。"
           }
         }
       }
@@ -1431,8 +1431,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%1$@ - %2$@"
+            "state" : "translated",
+            "value" : "%@ - %@"
           }
         }
       }
@@ -1544,7 +1544,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ (%2$@ total)"
+            "value" : "%@ (%@ total)"
           }
         }
       }
@@ -1656,7 +1656,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ (%2$@)"
+            "value" : "%@ (%@)"
           }
         }
       }
@@ -1768,7 +1768,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ (%2$@) %3$lld"
+            "value" : "%@ (%@) %lld"
           }
         }
       }
@@ -6862,8 +6862,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "切換直播時自動直播。"
+            "state" : "translated",
+            "value" : "切換串流時自動開始直播。"
           }
         }
       }
@@ -11420,8 +11420,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "圓圈"
+            "state" : "translated",
+            "value" : "圓型"
           }
         }
       }
@@ -11950,8 +11950,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "在設定 → 流 → %@ → URL 中進行設定。"
+            "state" : "translated",
+            "value" : "在設定 → 串流 → %@ → URL 中進行設定。"
           }
         }
       }
@@ -14282,8 +14282,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "禁用 RTMP 伺服器以變更其設定。"
+            "state" : "translated",
+            "value" : "停用 RTMP 伺服器以變更其設定。"
           }
         }
       }
@@ -17356,8 +17356,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "實驗性的"
+            "state" : "translated",
+            "value" : "實驗中"
           }
         }
       }
@@ -17674,8 +17674,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "外部麥克風覆蓋跟隨場景切換"
+            "state" : "translated",
+            "value" : "外部麥克風覆蓋隨場景切換"
           }
         }
       }
@@ -19900,8 +19900,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "強制給定 FPS，或設定為 0 以使用發布商的 FPS。 B 幀不適用於強制 FPS。 DJI 無人機通常需要強制 FPS。"
+            "state" : "translated",
+            "value" : "強制設定 FPS，或設定 0 以使用 Publisher 的 FPS。B 畫格並不適用於強制 FPS，通常是 DJI 無人機需要進行強制設定 FPS。"
           }
         }
       }
@@ -25518,8 +25518,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "最低電池百分比"
+            "state" : "translated",
+            "value" : "最低電量百分比"
           }
         }
       }
@@ -25624,8 +25624,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "確保靜音模式已關閉，振動才能發揮作用。"
+            "state" : "translated",
+            "value" : "確認關閉手機靜音模式來使用震動功能。"
           }
         }
       }
@@ -26896,8 +26896,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "麥克風跟著場景"
+            "state" : "translated",
+            "value" : "隨場景切換麥克風"
           }
         }
       }
@@ -27320,8 +27320,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "啟用「麥克風跟隨場景」切換時，此場景中使用麥克風。"
+            "state" : "translated",
+            "value" : "當「隨場景切換麥克風」啟用時，此場景會使用麥克風。"
           }
         }
       }
@@ -28911,7 +28911,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "頻道聊天表情和觀眾數量需要。"
+            "value" : "顯示頻道聊天表情和觀眾數量需要。"
           }
         }
       }
@@ -29016,8 +29016,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "聊天時需要。"
+            "state" : "translated",
+            "value" : "聊天室需要。"
           }
         }
       }
@@ -31772,8 +31772,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "暫停聊天"
+            "state" : "translated",
+            "value" : "暫停聊天室"
           }
         }
       }
@@ -33044,8 +33044,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "按鍵"
+            "state" : "translated",
+            "value" : "Push Key"
           }
         }
       }
@@ -33150,8 +33150,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "快速按鈕"
+            "state" : "translated",
+            "value" : "快捷按鈕"
           }
         }
       }
@@ -33256,8 +33256,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "快速按鈕從下往上出現。"
+            "state" : "translated",
+            "value" : "快捷按鈕從下往上出現。"
           }
         }
       }
@@ -33468,8 +33468,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "即時IRL"
+            "state" : "translated",
+            "value" : "RealtimeIRL"
           }
         }
       }
@@ -34210,8 +34210,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "解析度和 FPS 與直播相同。"
+            "state" : "translated",
+            "value" : "與直播相同的解析度與 FPS。"
           }
         }
       }
@@ -34528,8 +34528,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "正確的"
+            "state" : "translated",
+            "value" : "右"
           }
         }
       }
@@ -39192,8 +39192,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "流id"
+            "state" : "translated",
+            "value" : "Stream ID"
           }
         }
       }
@@ -41843,7 +41843,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : " Moblin 可利用內建 RTMP 伺服器接收視訊串流，可將部份無人機和其他相機作為影像來源。"
+            "value" : "Moblin 可利用內建 RTMP 伺服器接收視訊串流，可將部份無人機和其他相機作為影像來源。"
           }
         }
       }
@@ -43220,8 +43220,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "總尺寸"
+            "state" : "translated",
+            "value" : "總大小"
           }
         }
       }
@@ -44916,8 +44916,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "網址"
+            "state" : "translated",
+            "value" : "URL"
           }
         }
       }
@@ -46188,8 +46188,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "視訊比特率"
+            "state" : "translated",
+            "value" : "視訊位元率"
           }
         }
       }
@@ -46294,8 +46294,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "影片變黑"
+            "state" : "translated",
+            "value" : "黑化影像"
           }
         }
       }
@@ -46400,8 +46400,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "視訊編解碼器"
+            "state" : "translated",
+            "value" : "視訊編碼器"
           }
         }
       }
