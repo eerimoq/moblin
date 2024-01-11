@@ -1266,12 +1266,12 @@ private func addMissingGlobalButtons(database: Database) {
     button.systemImageNameOff = "message"
     addGlobalButtonIfMissing(database: database, button: button)
 
-    button = SettingsButton(name: String(localized: "Image"))
+    button = SettingsButton(name: String(localized: "Camera"))
     button.id = UUID()
     button.type = .image
     button.imageType = "System name"
-    button.systemImageNameOn = "photo"
-    button.systemImageNameOff = "photo"
+    button.systemImageNameOn = "camera"
+    button.systemImageNameOff = "camera"
     button.enabled = false
     addGlobalButtonIfMissing(database: database, button: button)
 
