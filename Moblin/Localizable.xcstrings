@@ -1905,7 +1905,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@ s"
           }
         },
@@ -4563,8 +4563,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Una lista de todos los botones rápidos de escenas, a menudo para ocultar y mostrar widgets. Un botón de escena se puede utilizar en cero o más escenas."
+            "state" : "translated",
+            "value" : "Una lista de todos los botones rápidos de escena, a menudo para ocultar y mostrar widgets. Un botón de escena se puede utilizar en cero o más escenas."
           }
         },
         "fr" : {
@@ -6901,8 +6901,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Se transmite automáticamente al cambiar de transmisión."
+            "state" : "translated",
+            "value" : "La transmisión se inicia automáticamente al cambiarla."
           }
         },
         "fr" : {
@@ -11459,7 +11459,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Círculo"
           }
         },
@@ -11989,8 +11989,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Configúrelo en Configuración → Streams → %@ → URL."
+            "state" : "translated",
+            "value" : "Configúralo en Ajustes → Transmisiones → %@ → URL."
           }
         },
         "fr" : {
@@ -12307,7 +12307,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Controlador"
           }
         },
@@ -12413,7 +12413,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Controlador %lld"
           }
         },
@@ -14321,8 +14321,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Deshabilite el servidor RTMP para cambiar su configuración."
+            "state" : "translated",
+            "value" : "Deshabilita el servidor RTMP para cambiar su configuración."
           }
         },
         "fr" : {
@@ -15063,7 +15063,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Abajo"
           }
         },
@@ -15488,7 +15488,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cada transmisión puede recibir vídeo de un editor RTMP, normalmente un dron."
+            "value" : "Cada transmisión puede recibir vídeo de un RTMP publisher, normalmente un dron."
           }
         },
         "fr" : {
@@ -16124,7 +16124,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ingresa una de las URL en el dispositivo que envía el RTMP para enviar video a esta transmisión. Generalmente ingresa la URL de WiFi."
+            "value" : "Ingresa una de las URL en el dispositivo del RTMP publisher para enviar video a esta transmisión. Generalmente ingresa la URL de WiFi."
           }
         },
         "fr" : {
@@ -17713,8 +17713,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Las anulaciones de micrófono externo siguen el cambio de escena"
+            "state" : "translated",
+            "value" : "El micrófono externo anula la función de seguir escena"
           }
         },
         "fr" : {
@@ -19939,8 +19939,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Fuerza el FPS dado o configúralo en 0 para usar el FPS del editor. B-frames no funciona con FPS forzado. Los drones DJI suelen necesitar FPS forzados."
+            "state" : "translated",
+            "value" : "Fuerza el FPS o lo establece a 0 para usar el FPS del publisher. B-frames no funciona con FPS forzado. Los drones DJI suelen necesitar FPS forzados."
           }
         },
         "fr" : {
@@ -20575,7 +20575,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Función"
           }
         },
@@ -20681,7 +20681,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Botón del controlador de juego"
           }
         },
@@ -20787,7 +20787,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Controladores de juego"
           }
         },
@@ -23759,7 +23759,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Key frame interval"
+            "value" : "Intervalo de fotogramas clave (key frame)"
           }
         },
         "fr" : {
@@ -24288,7 +24288,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Izquierda"
           }
         },
@@ -24924,7 +24924,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ubicación"
           }
         },
@@ -25666,8 +25666,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Asegúrese de que el modo silencioso esté desactivado para que funcionen las vibraciones."
+            "state" : "translated",
+            "value" : "Asegúrate de que el modo silencioso esté desactivado para que funcionen las vibraciones."
           }
         },
         "fr" : {
@@ -26938,7 +26938,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "El micrófono sigue la escena."
           }
         },
@@ -27256,7 +27256,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Micrófono por escena"
           }
         },
@@ -27362,7 +27362,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Micrófono utilizado en esta escena cuando la opción \"El micrófono sigue la escena\" está habilitada."
           }
         },
@@ -31391,8 +31391,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Sólo se pueden eliminar los botones rápidos no utilizados."
+            "state" : "translated",
+            "value" : "Sólo se pueden eliminar los botones rápidos que no se utilicen."
           }
         },
         "fr" : {
@@ -32133,7 +32133,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Pixelar"
           }
         },
@@ -33193,8 +33193,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pulsar la tecla"
+            "state" : "translated",
+            "value" : "Push key"
           }
         },
         "fr" : {
@@ -33299,7 +33299,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Botones rápidos"
           }
         },
@@ -33405,8 +33405,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Los botones rápidos aparecen de abajo hacia arriba."
+            "state" : "translated",
+            "value" : "Los botones rápidos aparecen de abajo a arriba."
           }
         },
         "fr" : {
@@ -33617,8 +33617,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tiempo realIRL"
+            "state" : "translated",
+            "value" : "RealtimeIRL"
           }
         },
         "fr" : {
@@ -34359,8 +34359,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "La resolución y los FPS son los mismos que para la transmisión en vivo."
+            "state" : "translated",
+            "value" : "La resolución y los FPS son los mismos que para la transmisión en directo."
           }
         },
         "fr" : {
@@ -34677,8 +34677,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bien"
+            "state" : "translated",
+            "value" : "Derecha"
           }
         },
         "fr" : {
@@ -35313,7 +35313,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "rtmp://arn03.contribute.live-video.net/app/"
           }
         },
@@ -35419,7 +35419,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "RTMP(S)"
           }
         },
@@ -36267,8 +36267,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Envíe su ubicación a https://rtirl.com para que sus espectadores sepan dónde se encuentra."
+            "state" : "translated",
+            "value" : "Envía tu ubicación a https://rtirl.com para que tus espectadores sepan dónde te encuentras."
           }
         },
         "fr" : {
@@ -37433,7 +37433,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Saltar"
           }
         },
@@ -37751,7 +37751,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Cuadrado"
           }
         },
@@ -38493,8 +38493,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ruta://107.32.12.132:5000"
+            "state" : "translated",
+            "value" : "srt://107.32.12.132:5000"
           }
         },
         "fr" : {
@@ -39341,7 +39341,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ID de transmisión"
           }
         },
@@ -42204,7 +42204,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "El puerto TCP en el que el servidor RTMP escucha a las direcciones RTMP entrantes."
+            "value" : "El puerto TCP en el que el servidor RTMP escucha a los RTMP publishers entrantes."
           }
         },
         "fr" : {
@@ -43687,7 +43687,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Triángulo"
           }
         },
@@ -44854,7 +44854,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Arriba"
           }
         },
@@ -44960,8 +44960,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Hasta 50 Mbps. Establezca en 0 para automático."
+            "state" : "translated",
+            "value" : "Hasta 50 Mbps. Establécelo en 0 para automático."
           }
         },
         "fr" : {
@@ -45172,7 +45172,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "URL"
           }
         },
@@ -46444,7 +46444,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Bitrate de vídeo"
           }
         },
@@ -46550,8 +46550,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Vídeo negruzco"
+            "state" : "translated",
+            "value" : "Vídeo en negro"
           }
         },
         "fr" : {
@@ -46656,7 +46656,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Códec de vídeo"
           }
         },
@@ -48140,7 +48140,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ws://213.33.45.132:4567"
           }
         },
@@ -48246,8 +48246,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "marca x"
+            "state" : "translated",
+            "value" : "X"
           }
         },
         "fr" : {
