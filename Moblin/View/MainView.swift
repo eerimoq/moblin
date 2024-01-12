@@ -128,17 +128,6 @@ struct MainView: View {
                     .frame(width: settingsHalfWidth)
                 }
             }
-            if model.showingObsScene {
-                HStack {
-                    Spacer()
-                    NavigationStack {
-                        ObsSceneView {
-                            model.showingObsScene = false
-                        }
-                    }
-                    .frame(width: settingsHalfWidth)
-                }
-            }
             if model.showingStreamSwitcher {
                 HStack {
                     Spacer()
@@ -156,6 +145,19 @@ struct MainView: View {
                     NavigationStack {
                         ImageView {
                             model.showingImage = false
+                        }
+                    }
+                    .frame(width: settingsHalfWidth)
+                }
+            }
+            if model.showingObs {
+                HStack {
+                    Spacer()
+                    NavigationStack {
+                        ObsView {
+                            model.showingObs = false
+                            model.stopObsSourceScreenshot()
+                            model.stopObsAudioVolume()
                         }
                     }
                     .frame(width: settingsHalfWidth)

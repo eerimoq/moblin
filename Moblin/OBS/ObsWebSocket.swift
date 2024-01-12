@@ -1,6 +1,36 @@
 import CryptoKit
 import Foundation
 
+private enum EventSubscription: UInt64 {
+    case general = 0x1
+    case config = 0x2
+    case scenes = 0x4
+    case inputs = 0x8
+    case transitions = 0x10
+    case filters = 0x20
+    case outputs = 0x40
+    case sceneItems = 0x80
+    case mediaInputs = 0x100
+    case vendors = 0x200
+    case ui = 0x400
+    case inputVolumeMeters = 0x10000
+    case inputActiveStateChanged = 0x20000
+    case inputShowStateChanged = 0x40000
+    case sceneItemTransformChanged = 0x80000
+
+    static func all() -> UInt64 {
+        return EventSubscription.general.rawValue | EventSubscription.config.rawValue | EventSubscription
+            .scenes.rawValue | EventSubscription.inputs.rawValue | EventSubscription.transitions
+            .rawValue | EventSubscription.filters.rawValue | EventSubscription.outputs
+            .rawValue | EventSubscription.sceneItems.rawValue | EventSubscription.mediaInputs
+            .rawValue | EventSubscription.vendors.rawValue | EventSubscription.ui.rawValue
+    }
+}
+
+private func mulToDb(mul: Float) -> Float {
+    return 20 * log10f(mul)
+}
+
 private enum OpCode: Int, Codable {
     case hello = 0
     case identify = 1
@@ -80,6 +110,8 @@ private enum RequestType: String, Codable {
     case getRecordStatus = "GetRecordStatus"
     case startRecord = "StartRecord"
     case stopRecord = "StopRecord"
+    case getSourceScreenshot = "GetSourceScreenshot"
+    case getVersion = "GetVersion"
 }
 
 private enum EventType: String, Codable {
@@ -88,6 +120,7 @@ private enum EventType: String, Codable {
     case currentProgramSceneChanged = "CurrentProgramSceneChanged"
     case streamStateChanged = "StreamStateChanged"
     case recordStateChanged = "RecordStateChanged"
+    case inputVolumeMeters = "InputVolumeMeters"
 }
 
 private struct Identify: Codable {
@@ -97,6 +130,10 @@ private struct Identify: Codable {
 
 private struct Identified: Codable {
     let negotiatedRpcVersion: Int
+}
+
+private struct Reidentify: Codable {
+    let eventSubscriptions: UInt64
 }
 
 private struct HelloAuthentication: Decodable {
@@ -131,6 +168,16 @@ struct GetRecordStatusResponse: Codable {
     let outputActive: Bool
 }
 
+struct GetSourceScreenshot: Codable {
+    let sourceName: String
+    let imageFormat: String
+    let imageWidth: Int
+}
+
+struct GetSourceScreenshotResponse: Codable {
+    let imageData: String
+}
+
 struct SceneChangedEvent: Decodable {
     let sceneName: String
 }
@@ -141,6 +188,21 @@ struct StreamStateChangedEvent: Decodable {
 
 struct RecordStateChangedEvent: Decodable {
     let outputActive: Bool
+}
+
+struct InputVolumeMeter: Decodable {
+    let inputName: String
+    let inputLevelsMul: [[Float]]
+}
+
+struct InputVolumeMeters: Decodable {
+    let inputs: [InputVolumeMeter]
+}
+
+struct ObsAudioInputVolume: Identifiable {
+    let id: UUID = .init()
+    let name: String
+    var volumes: [Float] = []
 }
 
 private let rpcVersion = 1
@@ -259,6 +321,7 @@ class ObsWebSocket {
     var onSceneChanged: ((String) -> Void)?
     var onStreamStatusChanged: ((Bool) -> Void)?
     var onRecordStatusChanged: ((Bool) -> Void)?
+    var onAudioVolume: (([ObsAudioInputVolume]) -> Void)?
     var connectionErrorMessage: String = ""
 
     init(url: URL, password: String, onConnected: @escaping () -> Void) {
@@ -305,16 +368,16 @@ class ObsWebSocket {
     }
 
     func getSceneList(onSuccess: @escaping (ObsSceneList) -> Void, onError: @escaping (String) -> Void) {
-        performRequest(type: .getSceneList, data: nil, onSuccess: { data in
-            guard let data else {
+        performRequest(type: .getSceneList, data: nil, onSuccess: { response in
+            guard let response else {
                 onError("No data received")
                 return
             }
             do {
-                let decoded = try JSONDecoder().decode(GetSceneListResponse.self, from: data)
+                let response = try JSONDecoder().decode(GetSceneListResponse.self, from: response)
                 onSuccess(ObsSceneList(
-                    current: decoded.currentProgramSceneName,
-                    scenes: decoded.scenes.reversed().map { $0.sceneName }
+                    current: response.currentProgramSceneName,
+                    scenes: response.scenes.reversed().map { $0.sceneName }
                 ))
             } catch {
                 onError("JSON decode failed")
@@ -327,10 +390,10 @@ class ObsWebSocket {
     func setCurrentProgramScene(name: String, onSuccess: @escaping () -> Void,
                                 onError: @escaping (String) -> Void)
     {
-        let data = SetCurrentProgramSceneRequest(sceneName: name)
+        let request = SetCurrentProgramSceneRequest(sceneName: name)
         do {
-            let data = try JSONEncoder().encode(data)
-            performRequest(type: .setCurrentProgramScene, data: data, onSuccess: { _ in
+            let request = try JSONEncoder().encode(request)
+            performRequest(type: .setCurrentProgramScene, data: request, onSuccess: { _ in
                 onSuccess()
             }, onError: { message in
                 onError(message)
@@ -343,14 +406,14 @@ class ObsWebSocket {
     func getStreamStatus(onSuccess: @escaping (ObsStreamStatus) -> Void,
                          onError: @escaping (String) -> Void)
     {
-        performRequest(type: .getStreamStatus, data: nil, onSuccess: { data in
-            guard let data else {
+        performRequest(type: .getStreamStatus, data: nil, onSuccess: { response in
+            guard let response else {
                 onError("No data received")
                 return
             }
             do {
-                let decoded = try JSONDecoder().decode(GetStreamStatusResponse.self, from: data)
-                onSuccess(ObsStreamStatus(active: decoded.outputActive))
+                let response = try JSONDecoder().decode(GetStreamStatusResponse.self, from: response)
+                onSuccess(ObsStreamStatus(active: response.outputActive))
             } catch {
                 onError("JSON decode failed")
             }
@@ -362,14 +425,14 @@ class ObsWebSocket {
     func getRecordStatus(onSuccess: @escaping (ObsRecordStatus) -> Void,
                          onError: @escaping (String) -> Void)
     {
-        performRequest(type: .getRecordStatus, data: nil, onSuccess: { data in
-            guard let data else {
+        performRequest(type: .getRecordStatus, data: nil, onSuccess: { response in
+            guard let response else {
                 onError("No data received")
                 return
             }
             do {
-                let decoded = try JSONDecoder().decode(GetRecordStatusResponse.self, from: data)
-                onSuccess(ObsRecordStatus(active: decoded.outputActive))
+                let response = try JSONDecoder().decode(GetRecordStatusResponse.self, from: response)
+                onSuccess(ObsRecordStatus(active: response.outputActive))
             } catch {
                 onError("JSON decode failed")
             }
@@ -394,23 +457,53 @@ class ObsWebSocket {
         })
     }
 
-    /*
-     func startRecord(onSuccess: @escaping () -> Void, onError: @escaping () -> Void) {
-         performRequest(type: .startRecord, data: nil, onSuccess: { _ in
-             onSuccess()
-         }, onError: {
-             onError()
-         })
-     }
+    func startAudioVolume() {
+        sendReidentify(eventSubscriptions: EventSubscription.all() | EventSubscription.inputVolumeMeters
+            .rawValue)
+    }
 
-     func stopRecord(onSuccess: @escaping () -> Void, onError: @escaping () -> Void) {
-         performRequest(type: .stopRecord, data: nil, onSuccess: { _ in
-             onSuccess()
-         }, onError: {
-             onError()
-         })
-     }
-     */
+    func stopAudioVolume() {
+        sendReidentify(eventSubscriptions: EventSubscription.all())
+    }
+
+    func getSourceScreenshot(
+        name: String,
+        onSuccess: @escaping (Data) -> Void,
+        onError: @escaping (String) -> Void
+    ) {
+        var request: Data
+        do {
+            request = try JSONEncoder().encode(GetSourceScreenshot(
+                sourceName: name,
+                imageFormat: "png",
+                imageWidth: 640
+            ))
+        } catch {
+            onError("JSON encode failed")
+            return
+        }
+        performRequest(type: .getSourceScreenshot, data: request, onSuccess: { response in
+            guard let response else {
+                onError("No image data")
+                return
+            }
+            do {
+                let response = try JSONDecoder().decode(GetSourceScreenshotResponse.self, from: response)
+                let imageData = response.imageData
+                let index = imageData.index(imageData.startIndex, offsetBy: 22)
+                if let image = Data(base64Encoded: String(imageData[index...])) {
+                    onSuccess(image)
+                } else {
+                    onError("Base64 decode failed")
+                }
+            } catch {
+                onError("JSON decode failed")
+            }
+        }, onError: { message in
+            onError(message)
+        })
+    }
+
     private func performRequest(
         type: RequestType,
         data: Data?,
@@ -515,6 +608,8 @@ class ObsWebSocket {
             handleStreamChanged(data: data)
         case .recordStateChanged:
             handleRecordChanged(data: data)
+        case .inputVolumeMeters:
+            handleInputVolumeMeters(data: data)
         case nil:
             break
         }
@@ -550,6 +645,26 @@ class ObsWebSocket {
         } catch {}
     }
 
+    private func handleInputVolumeMeters(data: Data?) {
+        guard let data else {
+            return
+        }
+        do {
+            let decoded = try JSONDecoder().decode(InputVolumeMeters.self, from: data)
+            var volumes: [ObsAudioInputVolume] = []
+            for input in decoded.inputs {
+                var audioInput = ObsAudioInputVolume(name: input.inputName)
+                for channel in input.inputLevelsMul where channel.count > 0 {
+                    audioInput.volumes.append(mulToDb(mul: channel[0]))
+                }
+                volumes.append(audioInput)
+            }
+            onAudioVolume?(volumes)
+        } catch {
+            print(error)
+        }
+    }
+
     private func handleRequestResponse(data: Data) throws {
         let (requestId, status, data) = try unpackRequestResponse(data: data)
         guard let request = requests[requestId] else {
@@ -568,6 +683,15 @@ class ObsWebSocket {
         do {
             let identify = try JSONEncoder().encode(identify)
             let message = packMessage(op: .identify, data: identify)
+            webSocket.send(.string(message)) { _ in }
+        } catch {}
+    }
+
+    private func sendReidentify(eventSubscriptions: UInt64) {
+        let reidentify = Reidentify(eventSubscriptions: eventSubscriptions)
+        do {
+            let reidentify = try JSONEncoder().encode(reidentify)
+            let message = packMessage(op: .reidentify, data: reidentify)
             webSocket.send(.string(message)) { _ in }
         } catch {}
     }

@@ -25,6 +25,11 @@ struct StreamObsSettingsView: View {
         }
     }
 
+    func submitSourceName(value: String) {
+        stream.obsSourceName = value
+        model.store()
+    }
+
     var body: some View {
         Form {
             Section {
@@ -46,6 +51,17 @@ struct StreamObsSettingsView: View {
                         name: String(localized: "Password"),
                         value: stream.obsWebSocketPassword!,
                         sensitive: true
+                    )
+                }
+                NavigationLink(destination: TextEditView(
+                    title: String(localized: "Source name"),
+                    value: stream.obsSourceName!,
+                    onSubmit: submitSourceName,
+                    capitalize: true
+                )) {
+                    TextItemView(
+                        name: String(localized: "Source name"),
+                        value: stream.obsSourceName!
                     )
                 }
             } header: {

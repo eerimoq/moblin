@@ -88,8 +88,6 @@ struct MicButtonView: View {
                 }
                 .pickerStyle(.inline)
                 .labelsHidden()
-            } header: {
-                Text("Mic")
             }
             if model.database.debug!.sceneMic! {
                 Section {
@@ -98,32 +96,7 @@ struct MicButtonView: View {
                 }
             }
         }
-        .toolbar {
-            QuickSettingsToolbar(done: done)
-        }
-    }
-}
-
-struct ObsSceneView: View {
-    @EnvironmentObject var model: Model
-    var done: () -> Void
-
-    var body: some View {
-        Form {
-            Section("OBS Scene") {
-                Picker("", selection: $model.obsCurrentScene) {
-                    ForEach(model.obsScenes, id: \.self) { scene in
-                        Text(scene)
-                    }
-                }
-                .onChange(of: model.obsCurrentScene) { _ in
-                    model.setObsScene(name: model.obsCurrentScene)
-                    done()
-                }
-                .pickerStyle(.inline)
-                .labelsHidden()
-            }
-        }
+        .navigationTitle("Mic")
         .toolbar {
             QuickSettingsToolbar(done: done)
         }
@@ -160,12 +133,11 @@ struct StreamSwitcherView: View {
                 }
                 .pickerStyle(.inline)
                 .labelsHidden()
-            } header: {
-                Text("Stream")
             } footer: {
                 Text("Automatically goes live when switching stream.")
             }
         }
+        .navigationTitle("Stream")
         .toolbar {
             QuickSettingsToolbar(done: done)
         }
@@ -199,6 +171,91 @@ struct ImageView: View {
                 }
             }
         }
+        .navigationTitle("Camera")
+        .toolbar {
+            QuickSettingsToolbar(done: done)
+        }
+    }
+}
+
+struct ObsView: View {
+    @EnvironmentObject var model: Model
+    var done: () -> Void
+
+    var body: some View {
+        Form {
+            if model.obsStreaming {
+                Section {
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            model.obsStopStream()
+                        }, label: {
+                            Text("Stop streaming")
+                        })
+                        Spacer()
+                    }
+                }
+                .foregroundColor(.white)
+                .listRowBackground(Color.blue)
+            } else {
+                Section {
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            model.obsStartStream()
+                        }, label: {
+                            Text("Start streaming")
+                        })
+                        Spacer()
+                    }
+                }
+            }
+            Section {
+                Picker("", selection: $model.obsCurrentScene) {
+                    ForEach(model.obsScenes, id: \.self) { scene in
+                        Text(scene)
+                    }
+                }
+                .onChange(of: model.obsCurrentScene) { _ in
+                    model.setObsScene(name: model.obsCurrentScene)
+                }
+                .pickerStyle(.inline)
+                .labelsHidden()
+            } header: {
+                Text("Scenes")
+            }
+            if !model.stream.obsSourceName!.isEmpty {
+                Section {
+                    if model.isLive {
+                        if let image = model.obsScreenshot {
+                            Image(image, scale: 1, label: Text(""))
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                        }
+                    } else {
+                        Text("Go live to see snapshot")
+                    }
+                } header: {
+                    Text("\(model.stream.obsSourceName!) source snapshot")
+                }
+                Section {
+                    if model.isLive && !model.obsAudioVolume.isEmpty {
+                        Text(model.obsAudioVolume)
+                    } else {
+                        Text("Go live to see audio levels")
+                    }
+                } header: {
+                    Text("\(model.stream.obsSourceName!) source audio levels")
+                }
+            } else {
+                Text("""
+                Cannot show snapshot and audio levels. Configure source name in \
+                Settings → Streams → \(model.stream.name) → OBS remote control
+                """)
+            }
+        }
+        .navigationTitle("OBS")
         .toolbar {
             QuickSettingsToolbar(done: done)
         }
@@ -282,7 +339,9 @@ struct ButtonsView: View {
             return
         }
         model.listObsScenes(onComplete: { ok in
-            model.showingObsScene = ok
+            model.showingObs = ok
+            model.startObsSourceScreenshot()
+            model.startObsAudioVolume()
         })
     }
 

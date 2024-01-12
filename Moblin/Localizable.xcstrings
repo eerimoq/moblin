@@ -1995,6 +1995,12 @@
         }
       }
     },
+    "%@ source audio levels" : {
+
+    },
+    "%@ source snapshot" : {
+
+    },
     "%lld %%" : {
       "localizations" : {
         "de" : {
@@ -10594,6 +10600,9 @@
           }
         }
       }
+    },
+    "Cannot show snapshot and audio levels. Configure source name in Settings → Streams → %@ → OBS remote control" : {
+
     },
     "Channel id" : {
       "localizations" : {
@@ -21407,6 +21416,12 @@
         }
       }
     },
+    "Go live to see audio levels" : {
+
+    },
+    "Go live to see snapshot" : {
+
+    },
     "Good stability in most network conditions." : {
       "localizations" : {
         "de" : {
@@ -30422,6 +30437,7 @@
       }
     },
     "OBS Scene" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -30528,6 +30544,7 @@
       }
     },
     "OBS scene set to %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -30846,6 +30863,7 @@
       }
     },
     "OBS stream started" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -30952,6 +30970,7 @@
       }
     },
     "OBS stream stopped" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -37629,6 +37648,9 @@
         }
       }
     },
+    "Source name" : {
+
+    },
     "Speed" : {
       "localizations" : {
         "de" : {
@@ -39113,6 +39135,9 @@
         }
       }
     },
+    "Start streaming" : {
+
+    },
     "Start time" : {
       "localizations" : {
         "de" : {
@@ -39218,6 +39243,9 @@
           }
         }
       }
+    },
+    "Stop streaming" : {
+
     },
     "Stream" : {
       "localizations" : {

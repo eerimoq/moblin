@@ -131,6 +131,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var obsWebSocketEnabled: Bool? = true
     var obsWebSocketUrl: String? = ""
     var obsWebSocketPassword: String? = ""
+    var obsSourceName: String? = ""
     var resolution: SettingsStreamResolution = .r1920x1080
     var fps: Int = 30
     var bitrate: UInt32 = 5_000_000
@@ -168,6 +169,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
         stream.obsWebSocketEnabled = obsWebSocketEnabled
         stream.obsWebSocketUrl = obsWebSocketUrl
         stream.obsWebSocketPassword = obsWebSocketPassword
+        stream.obsSourceName = obsSourceName
         stream.resolution = resolution
         stream.fps = fps
         stream.bitrate = bitrate
@@ -1439,13 +1441,6 @@ private func addMissingGlobalButtons(database: Database) {
     addGlobalButtonIfMissing(database: database, button: button)
 }
 
-private func addDefaultRtmpServerStream(database: Database) {
-    let stream = SettingsRtmpServerStream()
-    stream.name = "DJI Mini 2 SE"
-    stream.streamKey = "dji-mini-2-se"
-    database.rtmpServer!.streams.append(stream)
-}
-
 private func addScenesToGameController(database: Database) {
     var button = database.gameControllers![0].buttons[0]
     button.function = .scene
@@ -1462,7 +1457,6 @@ private func createDefault() -> Database {
     addDefaultZoomPresets(database: database)
     addDefaultBitratePresets(database: database)
     addMissingGlobalButtons(database: database)
-    addDefaultRtmpServerStream(database: database)
     addScenesToGameController(database: database)
     return database
 }
@@ -1735,7 +1729,6 @@ final class Settings {
         }
         if realDatabase.rtmpServer == nil {
             realDatabase.rtmpServer = .init()
-            addDefaultRtmpServerStream(database: realDatabase)
             store()
         }
         for scene in realDatabase.scenes where scene.rtmpCameraId == nil {
@@ -1829,6 +1822,10 @@ final class Settings {
             }
             if button.systemImageNameOff != "camera" {
                 button.systemImageNameOff = "camera"
+                store()
+            }
+            for stream in realDatabase.streams where stream.obsSourceName == nil {
+                stream.obsSourceName = ""
                 store()
             }
         }

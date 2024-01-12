@@ -41,7 +41,7 @@ struct StreamVideoBitrateSettingsButtonView: View {
 
     var body: some View {
         Form {
-            Section("Bitrate") {
+            Section {
                 Picker("", selection: $selection) {
                     ForEach(model.database.bitratePresets) { preset in
                         Text(formatBytesPerSecond(speed: Int64(preset.bitrate)))
@@ -62,6 +62,7 @@ struct StreamVideoBitrateSettingsButtonView: View {
                 .labelsHidden()
             }
         }
+        .navigationTitle("Bitrate")
         .toolbar {
             QuickSettingsToolbar(done: done)
         }
