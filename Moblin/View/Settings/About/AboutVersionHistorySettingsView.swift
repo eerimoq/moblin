@@ -10,7 +10,7 @@ struct Version {
 private let versions = [
     Version(version: "0.146.0", date: "2024-01-11", changes: [
         "• Only send location to RealtimeIRL when live.",
-        "• Chinese (traditional) and german translations updated.",
+        "• Chinese (traditional) and German translations updated.",
         "• Show number of audio input channels in the UI next to the audio level meter.",
         "• Hide/show 3x3 alignment grid with quick button.",
         "• Do not show scroll bars for quick buttons and paused chat.",

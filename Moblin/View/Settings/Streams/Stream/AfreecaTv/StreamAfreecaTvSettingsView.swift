@@ -26,7 +26,8 @@ struct StreamAfreecaTvSettingsView: View {
                 NavigationLink(destination: TextEditView(
                     title: String(localized: "Channel name"),
                     value: stream.afreecaTvChannelName!,
-                    onSubmit: submitChannelName
+                    onSubmit: submitChannelName,
+                    capitalize: true
                 )) {
                     TextItemView(name: String(localized: "Channel name"), value: stream.afreecaTvChannelName!)
                 }

@@ -19,7 +19,6 @@ struct StreamWizardKickSettingsView: View {
         Form {
             Section {
                 TextField("MyChannel", text: $model.wizardKickChannelName)
-                    .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
             } header: {
                 Text("Channel name")

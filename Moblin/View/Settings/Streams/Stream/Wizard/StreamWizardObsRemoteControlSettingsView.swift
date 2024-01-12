@@ -34,6 +34,7 @@ struct StreamWizardObsRemoteControlSettingsView: View {
             if model.wizardObsRemoteControlEnabled {
                 Section {
                     TextField("ws://213.33.45.132:4567", text: $model.wizardObsRemoteControlUrl)
+                        .keyboardType(.URL)
                         .textInputAutocapitalization(.never)
                         .disableAutocorrection(true)
                         .onChange(of: model.wizardObsRemoteControlUrl) { _ in

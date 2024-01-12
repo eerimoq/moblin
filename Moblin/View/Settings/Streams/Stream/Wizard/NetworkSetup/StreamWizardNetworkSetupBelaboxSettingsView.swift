@@ -24,6 +24,7 @@ struct StreamWizardNetworkSetupBelaboxSettingsView: View {
                     "srtla://uk.srt.belabox.net:5000?streamid=jO4ijfFgrlpv4m2375msdoG3DDr2",
                     text: $model.wizardBelaboxUrl
                 )
+                .keyboardType(.URL)
                 .textInputAutocapitalization(.never)
                 .disableAutocorrection(true)
                 .onChange(of: model.wizardBelaboxUrl) { _ in

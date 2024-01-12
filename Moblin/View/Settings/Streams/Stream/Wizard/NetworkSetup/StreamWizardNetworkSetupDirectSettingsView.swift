@@ -26,6 +26,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
             if model.wizardPlatform == .twitch {
                 Section {
                     TextField("rtmp://arn03.contribute.live-video.net/app", text: $model.wizardDirectIngest)
+                        .keyboardType(.URL)
                         .textInputAutocapitalization(.never)
                         .disableAutocorrection(true)
                         .onChange(of: model.wizardDirectIngest) { _ in
@@ -65,6 +66,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                         "rtmps://fa723fc1b171.global-contribute.live-video.net",
                         text: $model.wizardDirectIngest
                     )
+                    .keyboardType(.URL)
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
                     .onChange(of: model.wizardDirectIngest) { _ in
@@ -100,6 +102,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                         "rtmp://a.rtmp.youtube.com/live2",
                         text: $model.wizardDirectIngest
                     )
+                    .keyboardType(.URL)
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
                     .onChange(of: model.wizardDirectIngest) { _ in

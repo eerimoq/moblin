@@ -7,7 +7,6 @@ struct StreamWizardAfreecaTvSettingsView: View {
         Form {
             Section {
                 TextField("MyChannel", text: $model.wizardAfreecaTvChannelName)
-                    .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
             } header: {
                 Text("Channel name")

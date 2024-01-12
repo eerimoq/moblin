@@ -20,6 +20,7 @@ struct WidgetBrowserUrlSettingsView: View {
                         submitUrl()
                     }
                 })
+                .keyboardType(.URL)
                 .textInputAutocapitalization(.never)
                 .disableAutocorrection(true)
                 .onSubmit {
