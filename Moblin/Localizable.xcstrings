@@ -49084,6 +49084,12 @@
         }
       }
     },
+    "Zoom in" : {
+
+    },
+    "Zoom out" : {
+
+    },
     "Zoom preset" : {
       "localizations" : {
         "de" : {

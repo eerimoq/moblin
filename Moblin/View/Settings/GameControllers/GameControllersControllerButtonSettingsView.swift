@@ -8,7 +8,7 @@ struct GameControllersControllerButtonSettingsView: View {
 
     private func onFunctionChange(function: String) {
         selection = function
-        button.function = SettingsGameControllerButtonFunction(rawValue: function)!
+        button.function = SettingsGameControllerButtonFunction.fromString(value: function)
         model.store()
     }
 

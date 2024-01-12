@@ -9,7 +9,7 @@ struct GameControllersControllerSettingsView: View {
         case .scene:
             return "\(model.getSceneName(id: button.sceneId)) scene"
         default:
-            return button.function.rawValue
+            return button.function.toString()
         }
     }
 
@@ -28,7 +28,7 @@ struct GameControllersControllerSettingsView: View {
                 ForEach(gameController.buttons) { button in
                     NavigationLink(destination: GameControllersControllerButtonSettingsView(
                         button: button,
-                        selection: button.function.rawValue,
+                        selection: button.function.toString(),
                         sceneSelection: button.sceneId
                     )) {
                         HStack {

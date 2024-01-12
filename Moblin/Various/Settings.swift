@@ -970,10 +970,65 @@ enum SettingsGameControllerButtonFunction: String, Codable, CaseIterable {
     case chat = "Chat"
     case pauseChat = "Pause chat"
     case scene = "Scene"
-    // case obsScene = "OBS scene"
+
+    static func fromString(value: String) -> SettingsGameControllerButtonFunction {
+        switch value {
+        case String(localized: "Unused"):
+            return .unused
+        case String(localized: "Record"):
+            return .record
+        case String(localized: "Stream"):
+            return .stream
+        case String(localized: "Zoom in"):
+            return .zoomIn
+        case String(localized: "Zoom out"):
+            return .zoomOut
+        case String(localized: "Mute"):
+            return .mute
+        case String(localized: "Torch"):
+            return .torch
+        case String(localized: "Black screen"):
+            return .blackScreen
+        case String(localized: "Chat"):
+            return .chat
+        case String(localized: "Pause chat"):
+            return .pauseChat
+        case String(localized: "Scene"):
+            return .scene
+        default:
+            return .unused
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .unused:
+            return String(localized: "Unused")
+        case .record:
+            return String(localized: "Record")
+        case .stream:
+            return String(localized: "Stream")
+        case .zoomIn:
+            return String(localized: "Zoom in")
+        case .zoomOut:
+            return String(localized: "Zoom out")
+        case .mute:
+            return String(localized: "Mute")
+        case .torch:
+            return String(localized: "Torch")
+        case .blackScreen:
+            return String(localized: "Black screen")
+        case .chat:
+            return String(localized: "Chat")
+        case .pauseChat:
+            return String(localized: "Pause chat")
+        case .scene:
+            return String(localized: "Scene")
+        }
+    }
 }
 
-var gameControllerButtonFunctions = SettingsGameControllerButtonFunction.allCases.map { $0.rawValue }
+var gameControllerButtonFunctions = SettingsGameControllerButtonFunction.allCases.map { $0.toString() }
 
 class SettingsGameControllerButton: Codable, Identifiable {
     var id: UUID = .init()
