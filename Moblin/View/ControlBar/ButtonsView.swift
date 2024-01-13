@@ -287,7 +287,7 @@ struct ObsView: View {
                 """)
             }
         }
-        .navigationTitle("OBS")
+        .navigationTitle("OBS remote control")
         .toolbar {
             QuickSettingsToolbar(done: done)
         }

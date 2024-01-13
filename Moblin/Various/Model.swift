@@ -2546,12 +2546,18 @@ final class Model: ObservableObject {
             guard let volume = volumes.first(where: { volume in
                 volume.name == self.stream.obsSourceName!
             }) else {
-                self.obsAudioVolumeLatest = "Source \(self.stream.obsSourceName!) not found"
+                self
+                    .obsAudioVolumeLatest =
+                    String(localized: "Source \(self.stream.obsSourceName!) not found")
                 return
             }
             var values: [String] = []
             for volume in volume.volumes {
-                values.append("\(formatOneDecimal(value: volume)) dB")
+                if volume.isInfinite {
+                    values.append(String(localized: "Muted"))
+                } else {
+                    values.append(String(localized: "\(formatOneDecimal(value: volume)) dB"))
+                }
             }
             self.obsAudioVolumeLatest = values.joined(separator: ", ")
         }

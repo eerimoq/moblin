@@ -1826,9 +1826,9 @@ final class Settings {
                 store()
             }
             let numberOfButtons = realDatabase.globalButtons!.count
-            realDatabase.globalButtons = realDatabase.globalButtons!.filter({ button in
+            realDatabase.globalButtons = realDatabase.globalButtons!.filter { button in
                 button.type != .obsScene && button.type != .obsStartStopStream
-            })
+            }
             if realDatabase.globalButtons!.count != numberOfButtons {
                 store()
             }
