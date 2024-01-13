@@ -268,7 +268,6 @@ private func startStopText(button: ButtonState) -> String {
 
 struct ButtonsView: View {
     @EnvironmentObject var model: Model
-    @State private var isPresentingObsStartStopConfirm: Bool = false
     @State private var isPresentingRecordConfirm: Bool = false
 
     private func getImage(state: ButtonState) -> String {
@@ -325,48 +324,6 @@ struct ButtonsView: View {
         model.updateButtonStates()
     }
 
-    private func obsSceneAction(state _: ButtonState) {
-        guard model.isObsRemoteControlConfigured() else {
-            model.makeErrorToast(
-                title: String(localized: "OBS remote control is not configured"),
-                subTitle: String(
-                    localized: """
-                    Configure it in Settings → Streams → \(model.stream.name) → \
-                    OBS remote control.
-                    """
-                )
-            )
-            return
-        }
-        model.listObsScenes(onComplete: { ok in
-            model.showingObs = ok
-            model.startObsSourceScreenshot()
-            model.startObsAudioVolume()
-        })
-    }
-
-    private func obsStartStopStreamAction(state: ButtonState) {
-        guard model.isObsRemoteControlConfigured() else {
-            model.makeErrorToast(
-                title: String(localized: "OBS remote control is not configured"),
-                subTitle: String(
-                    localized: """
-                    Configure it in Settings → Streams → \(model.stream.name) → \
-                    OBS remote control.
-                    """
-                )
-            )
-            return
-        }
-        if state.button.isOn {
-            model.obsStopStream()
-        } else {
-            model.obsStartStream()
-        }
-        model.updateButtonStates()
-        isPresentingObsStartStopConfirm = false
-    }
-
     private func recordAction(state _: ButtonState) {
         if !model.isRecording {
             model.startRecording()
@@ -420,6 +377,26 @@ struct ButtonsView: View {
         state.button.isOn.toggle()
         model.showingGrid.toggle()
         model.sceneUpdated(store: false)
+    }
+
+    private func obsAction(state _: ButtonState) {
+        guard model.isObsRemoteControlConfigured() else {
+            model.makeErrorToast(
+                title: String(localized: "OBS remote control is not configured"),
+                subTitle: String(
+                    localized: """
+                    Configure it in Settings → Streams → \(model.stream.name) → \
+                    OBS remote control.
+                    """
+                )
+            )
+            return
+        }
+        model.listObsScenes(onComplete: { ok in
+            model.showingObs = ok
+            model.startObsSourceScreenshot()
+            model.startObsAudioVolume()
+        })
     }
 
     var body: some View {
@@ -514,30 +491,9 @@ struct ButtonsView: View {
                                         )
                                     })
                                 case .obsScene:
-                                    Button(action: {
-                                        obsSceneAction(state: second)
-                                    }, label: {
-                                        ButtonImage(
-                                            image: getImage(state: second),
-                                            on: second.isOn,
-                                            buttonSize: buttonSize
-                                        )
-                                    })
+                                    ButtonPlaceholderImage()
                                 case .obsStartStopStream:
-                                    Button(action: {
-                                        isPresentingObsStartStopConfirm = true
-                                    }, label: {
-                                        ButtonImage(
-                                            image: getImage(state: second),
-                                            on: second.isOn,
-                                            buttonSize: buttonSize
-                                        )
-                                    })
-                                    .confirmationDialog("", isPresented: $isPresentingObsStartStopConfirm) {
-                                        Button(startStopText(button: second)) {
-                                            obsStartStopStreamAction(state: second)
-                                        }
-                                    }
+                                    ButtonPlaceholderImage()
                                 case .record:
                                     Button(action: {
                                         isPresentingRecordConfirm = true
@@ -643,6 +599,16 @@ struct ButtonsView: View {
                                             buttonSize: buttonSize
                                         )
                                     })
+                                case .obs:
+                                    Button(action: {
+                                        obsAction(state: second)
+                                    }, label: {
+                                        ButtonImage(
+                                            image: getImage(state: second),
+                                            on: second.isOn,
+                                            buttonSize: buttonSize
+                                        )
+                                    })
                                 }
                                 if model.database.quickButtons!.showName {
                                     Text(second.button.name)
@@ -739,30 +705,9 @@ struct ButtonsView: View {
                                     )
                                 })
                             case .obsScene:
-                                Button(action: {
-                                    obsSceneAction(state: pair.first)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: pair.first),
-                                        on: pair.first.isOn,
-                                        buttonSize: buttonSize
-                                    )
-                                })
+                                ButtonPlaceholderImage()
                             case .obsStartStopStream:
-                                Button(action: {
-                                    isPresentingObsStartStopConfirm = true
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: pair.first),
-                                        on: pair.first.isOn,
-                                        buttonSize: buttonSize
-                                    )
-                                })
-                                .confirmationDialog("", isPresented: $isPresentingObsStartStopConfirm) {
-                                    Button(startStopText(button: pair.first)) {
-                                        obsStartStopStreamAction(state: pair.first)
-                                    }
-                                }
+                                ButtonPlaceholderImage()
                             case .record:
                                 Button(action: {
                                     isPresentingRecordConfirm = true
@@ -868,6 +813,16 @@ struct ButtonsView: View {
                                         buttonSize: buttonSize
                                     )
                                 })
+                            case .obs:
+                                Button(action: {
+                                    obsAction(state: pair.first)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: pair.first),
+                                        on: pair.first.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
                             }
                             if model.database.quickButtons!.showName {
                                 Text(pair.first.button.name)
@@ -965,30 +920,9 @@ struct ButtonsView: View {
                                     )
                                 })
                             case .obsScene:
-                                Button(action: {
-                                    obsSceneAction(state: second)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: second),
-                                        on: second.isOn,
-                                        buttonSize: singleButtonSize
-                                    )
-                                })
+                                ButtonPlaceholderImage()
                             case .obsStartStopStream:
-                                Button(action: {
-                                    isPresentingObsStartStopConfirm = true
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: second),
-                                        on: second.isOn,
-                                        buttonSize: singleButtonSize
-                                    )
-                                })
-                                .confirmationDialog("", isPresented: $isPresentingObsStartStopConfirm) {
-                                    Button(startStopText(button: second)) {
-                                        obsStartStopStreamAction(state: second)
-                                    }
-                                }
+                                ButtonPlaceholderImage()
                             case .record:
                                 Button(action: {
                                     isPresentingRecordConfirm = true
@@ -1094,6 +1028,16 @@ struct ButtonsView: View {
                                         buttonSize: buttonSize
                                     )
                                 })
+                            case .obs:
+                                Button(action: {
+                                    obsAction(state: second)
+                                }, label: {
+                                    ButtonImage(
+                                        image: getImage(state: second),
+                                        on: second.isOn,
+                                        buttonSize: buttonSize
+                                    )
+                                })
                             }
                             if model.database.quickButtons!.showName {
                                 Text(second.button.name)
@@ -1190,30 +1134,9 @@ struct ButtonsView: View {
                                 )
                             })
                         case .obsScene:
-                            Button(action: {
-                                obsSceneAction(state: pair.first)
-                            }, label: {
-                                ButtonImage(
-                                    image: getImage(state: pair.first),
-                                    on: pair.first.isOn,
-                                    buttonSize: singleButtonSize
-                                )
-                            })
+                            ButtonPlaceholderImage()
                         case .obsStartStopStream:
-                            Button(action: {
-                                isPresentingObsStartStopConfirm = true
-                            }, label: {
-                                ButtonImage(
-                                    image: getImage(state: pair.first),
-                                    on: pair.first.isOn,
-                                    buttonSize: singleButtonSize
-                                )
-                            })
-                            .confirmationDialog("", isPresented: $isPresentingObsStartStopConfirm) {
-                                Button(startStopText(button: pair.first)) {
-                                    obsStartStopStreamAction(state: pair.first)
-                                }
-                            }
+                            ButtonPlaceholderImage()
                         case .record:
                             Button(action: {
                                 isPresentingRecordConfirm = true
@@ -1312,6 +1235,16 @@ struct ButtonsView: View {
                         case .grid:
                             Button(action: {
                                 gridAction(state: pair.first)
+                            }, label: {
+                                ButtonImage(
+                                    image: getImage(state: pair.first),
+                                    on: pair.first.isOn,
+                                    buttonSize: buttonSize
+                                )
+                            })
+                        case .obs:
+                            Button(action: {
+                                obsAction(state: pair.first)
                             }, label: {
                                 ButtonImage(
                                     image: getImage(state: pair.first),

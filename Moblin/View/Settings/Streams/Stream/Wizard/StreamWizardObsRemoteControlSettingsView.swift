@@ -73,6 +73,12 @@ struct StreamWizardObsRemoteControlSettingsView: View {
                         }
                     }
                 }
+                Section {
+                    TextField("My source", text: $model.wizardObsRemoteControlSourceName)
+                        .disableAutocorrection(true)
+                } header: {
+                    Text("Source name")
+                }
             }
             Section {
                 NavigationLink(destination: StreamWizardSummarySettingsView()) {

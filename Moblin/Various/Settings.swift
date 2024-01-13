@@ -637,6 +637,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case pixellate = "Pixellate"
     case stream = "Stream"
     case grid = "Grid"
+    case obs = "OBS"
 
     static func fromString(value: String) -> SettingsButtonType {
         switch value {
@@ -680,6 +681,8 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return .stream
         case String(localized: "Grid"):
             return .grid
+        case String(localized: "OBS"):
+            return .obs
         default:
             return .torch
         }
@@ -727,6 +730,8 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return String(localized: "Stream")
         case .grid:
             return String(localized: "Grid")
+        case .obs:
+            return String(localized: "OBS")
         }
     }
 }
@@ -1352,20 +1357,12 @@ private func addMissingGlobalButtons(database: Database) {
     button.systemImageNameOff = "sunset"
     addGlobalButtonIfMissing(database: database, button: button)
 
-    button = SettingsButton(name: String(localized: "OBS scene"))
+    button = SettingsButton(name: String(localized: "OBS"))
     button.id = UUID()
-    button.type = .obsScene
+    button.type = .obs
     button.imageType = "System name"
-    button.systemImageNameOn = "photo.on.rectangle"
-    button.systemImageNameOff = "photo.on.rectangle"
-    addGlobalButtonIfMissing(database: database, button: button)
-
-    button = SettingsButton(name: String(localized: "OBS start/stop stream"))
-    button.id = UUID()
-    button.type = .obsStartStopStream
-    button.imageType = "System name"
-    button.systemImageNameOn = "wifi.router"
-    button.systemImageNameOff = "wifi.router"
+    button.systemImageNameOn = "xserve"
+    button.systemImageNameOff = "xserve"
     addGlobalButtonIfMissing(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Record"))

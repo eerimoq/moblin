@@ -325,6 +325,7 @@ final class Model: ObservableObject {
     @Published var wizardObsRemoteControlEnabled = false
     @Published var wizardObsRemoteControlUrl = ""
     @Published var wizardObsRemoteControlPassword = ""
+    @Published var wizardObsRemoteControlSourceName = ""
     @Published var wizardDirectIngest = ""
     @Published var wizardDirectStreamKey = ""
     @Published var wizardChatBttv = true
@@ -454,6 +455,7 @@ final class Model: ObservableObject {
                     stream.obsWebSocketEnabled = true
                     stream.obsWebSocketUrl = url
                     stream.obsWebSocketPassword = wizardObsRemoteControlPassword.trim()
+                    stream.obsSourceName = wizardObsRemoteControlSourceName.trim()
                 }
             }
         }

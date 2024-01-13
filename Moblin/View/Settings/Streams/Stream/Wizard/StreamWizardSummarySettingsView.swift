@@ -120,6 +120,10 @@ struct StreamWizardSummarySettingsView: View {
                             name: String(localized: "Password"),
                             value: model.wizardObsRemoteControlPassword
                         )
+                        TextValueView(
+                            name: String(localized: "Source name"),
+                            value: model.wizardObsRemoteControlSourceName
+                        )
                     } header: {
                         Text("OBS remote control")
                     }
