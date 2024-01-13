@@ -99,6 +99,7 @@ private enum OpCode: Int, Codable {
 private struct ResponseRequestStatus: Codable {
     let result: Bool
     let code: Int
+    let comment: String?
 }
 
 private enum RequestType: String, Codable {
@@ -112,6 +113,8 @@ private enum RequestType: String, Codable {
     case stopRecord = "StopRecord"
     case getSourceScreenshot = "GetSourceScreenshot"
     case getVersion = "GetVersion"
+    case setInputAudioSyncOffset = "SetInputAudioSyncOffset"
+    case getInputAudioSyncOffset = "GetInputAudioSyncOffset"
 }
 
 private enum EventType: String, Codable {
@@ -121,6 +124,7 @@ private enum EventType: String, Codable {
     case streamStateChanged = "StreamStateChanged"
     case recordStateChanged = "RecordStateChanged"
     case inputVolumeMeters = "InputVolumeMeters"
+    case inputAudioSyncOffsetChanged = "InputAudioSyncOffsetChanged"
 }
 
 private struct Identify: Codable {
@@ -176,6 +180,19 @@ struct GetSourceScreenshot: Codable {
 
 struct GetSourceScreenshotResponse: Codable {
     let imageData: String
+}
+
+struct SetInputAudioSyncOffset: Codable {
+    let inputName: String
+    let inputAudioSyncOffset: Int
+}
+
+struct GetInputAudioSyncOffset: Codable {
+    let inputName: String
+}
+
+struct GetInputAudioSyncOffsetResponse: Codable {
+    let inputAudioSyncOffset: Int
 }
 
 struct SceneChangedEvent: Decodable {
@@ -513,6 +530,57 @@ class ObsWebSocket {
         })
     }
 
+    func setInputAudioSyncOffset(
+        name: String,
+        offsetInMs: Int,
+        onSuccess: @escaping () -> Void,
+        onError: @escaping (String) -> Void
+    ) {
+        var request: Data
+        do {
+            request = try JSONEncoder().encode(SetInputAudioSyncOffset(
+                inputName: name,
+                inputAudioSyncOffset: offsetInMs
+            ))
+        } catch {
+            onError("JSON encode failed")
+            return
+        }
+        performRequest(type: .setInputAudioSyncOffset, data: request, onSuccess: { _ in
+            onSuccess()
+        }, onError: { message in
+            onError(message)
+        })
+    }
+
+    func getInputAudioSyncOffset(
+        name: String,
+        onSuccess: @escaping (Int) -> Void,
+        onError: @escaping (String) -> Void
+    ) {
+        var request: Data
+        do {
+            request = try JSONEncoder().encode(GetInputAudioSyncOffset(inputName: name))
+        } catch {
+            onError("JSON encode failed")
+            return
+        }
+        performRequest(type: .getInputAudioSyncOffset, data: request, onSuccess: { response in
+            guard let response else {
+                onError("No data")
+                return
+            }
+            do {
+                let response = try JSONDecoder().decode(GetInputAudioSyncOffsetResponse.self, from: response)
+                onSuccess(response.inputAudioSyncOffset)
+            } catch {
+                onError("JSON decode failed")
+            }
+        }, onError: { message in
+            onError(message)
+        })
+    }
+
     private func performRequest(
         type: RequestType,
         data: Data?,
@@ -619,6 +687,8 @@ class ObsWebSocket {
             handleRecordChanged(data: data)
         case .inputVolumeMeters:
             handleInputVolumeMeters(data: data)
+        case .inputAudioSyncOffsetChanged:
+            handleInputAudioSyncOffsetChanged(data: data)
         case nil:
             break
         }
@@ -678,6 +748,8 @@ class ObsWebSocket {
         }
     }
 
+    private func handleInputAudioSyncOffsetChanged(data _: Data?) {}
+
     private func handleRequestResponse(data: Data) throws {
         let (requestId, status, data) = try unpackRequestResponse(data: data)
         guard let request = requests[requestId] else {
@@ -687,7 +759,7 @@ class ObsWebSocket {
         if status.result {
             request.onSuccess(data)
         } else {
-            request.onError("Operation failed")
+            request.onError("Operation failed: \(status.comment ?? "?")")
         }
     }
 

@@ -182,6 +182,13 @@ struct ObsView: View {
     @EnvironmentObject var model: Model
     var done: () -> Void
 
+    private func submitAudioDelay(value: String) {
+        guard let offset = Int(value) else {
+            return
+        }
+        model.setObsAudioDelay(offset: offset)
+    }
+
     var body: some View {
         Form {
             if model.obsStreamingState == .stopped {
@@ -280,10 +287,22 @@ struct ObsView: View {
                 } header: {
                     Text("\(model.stream.obsSourceName!) source audio levels")
                 }
+                Section {
+                    NavigationLink(destination: TextEditView(
+                        title: "Delay",
+                        value: "\(model.obsAudioDelay)",
+                        onSubmit: submitAudioDelay
+                    )) {
+                        TextItemView(name: "Delay", value: "\(model.obsAudioDelay) ms")
+                    }
+                } header: {
+                    Text("\(model.stream.obsSourceName!) source audio sync")
+                }
             } else {
                 Text("""
-                Cannot show snapshot and audio levels. Configure source name in \
-                Settings → Streams → \(model.stream.name) → OBS remote control
+                Configure source name in \
+                Settings → Streams → \(model.stream.name) → OBS remote control for \
+                snapshop and more.
                 """)
             }
         }
@@ -428,6 +447,7 @@ struct ButtonsView: View {
             model.showingObs = ok
             model.startObsSourceScreenshot()
             model.startObsAudioVolume()
+            model.updateObsAudioDelay()
         })
     }
 

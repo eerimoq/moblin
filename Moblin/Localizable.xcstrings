@@ -2001,6 +2001,9 @@
     "%@ source audio levels" : {
 
     },
+    "%@ source audio sync" : {
+
+    },
     "%@ source snapshot" : {
 
     },
@@ -10604,9 +10607,6 @@
         }
       }
     },
-    "Cannot show snapshot and audio levels. Configure source name in Settings → Streams → %@ → OBS remote control" : {
-
-    },
     "Channel id" : {
       "localizations" : {
         "de" : {
@@ -12302,6 +12302,9 @@
           }
         }
       }
+    },
+    "Configure source name in Settings → Streams → %@ → OBS remote control for snapshop and more." : {
+
     },
     "Controller" : {
       "localizations" : {

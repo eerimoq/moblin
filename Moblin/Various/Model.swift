@@ -280,6 +280,7 @@ final class Model: ObservableObject {
     @Published var showingObs = false
     @Published var obsScenes: [String] = []
     @Published var obsAudioVolume: String = noValue
+    @Published var obsAudioDelay: Int = 0
     private var obsAudioVolumeLatest: String = ""
     @Published var obsCurrentScene: String = ""
     @Published var obsCurrentSceneStatus: String = ""
@@ -2513,6 +2514,30 @@ final class Model: ObservableObject {
                 self.obsScreenshot = nil
                 self.obsSourceScreenshotIsFetching = false
             }
+        })
+    }
+
+    func setObsAudioDelay(offset: Int) {
+        guard !stream.obsSourceName!.isEmpty else {
+            return
+        }
+        obsWebSocket?.setInputAudioSyncOffset(name: stream.obsSourceName!, offsetInMs: offset, onSuccess: {
+            DispatchQueue.main.async {
+                self.updateObsAudioDelay()
+            }
+        }, onError: { _ in
+        })
+    }
+
+    func updateObsAudioDelay() {
+        guard !stream.obsSourceName!.isEmpty else {
+            return
+        }
+        obsWebSocket?.getInputAudioSyncOffset(name: stream.obsSourceName!, onSuccess: { offset in
+            DispatchQueue.main.async {
+                self.obsAudioDelay = offset
+            }
+        }, onError: { _ in
         })
     }
 
