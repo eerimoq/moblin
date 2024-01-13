@@ -182,8 +182,16 @@ struct SceneChangedEvent: Decodable {
     let sceneName: String
 }
 
+enum ObsOutputState: String {
+    case starting = "OBS_WEBSOCKET_OUTPUT_STARTING"
+    case started = "OBS_WEBSOCKET_OUTPUT_STARTED"
+    case stopping = "OBS_WEBSOCKET_OUTPUT_STOPPING"
+    case stopped = "OBS_WEBSOCKET_OUTPUT_STOPPED"
+}
+
 struct StreamStateChangedEvent: Decodable {
     let outputActive: Bool
+    let outputState: String
 }
 
 struct RecordStateChangedEvent: Decodable {
@@ -303,6 +311,7 @@ struct ObsSceneList {
 
 struct ObsStreamStatus {
     let active: Bool
+    let state: ObsOutputState? = nil
 }
 
 struct ObsRecordStatus {
@@ -319,7 +328,7 @@ class ObsWebSocket {
     private var requests: [String: Request] = [:]
     private var onConnected: () -> Void
     var onSceneChanged: ((String) -> Void)?
-    var onStreamStatusChanged: ((Bool) -> Void)?
+    var onStreamStatusChanged: ((Bool, ObsOutputState?) -> Void)?
     var onRecordStatusChanged: ((Bool) -> Void)?
     var onAudioVolume: (([ObsAudioInputVolume]) -> Void)?
     var connectionErrorMessage: String = ""
@@ -630,8 +639,12 @@ class ObsWebSocket {
             return
         }
         do {
-            let decoded = try JSONDecoder().decode(StreamStateChangedEvent.self, from: data)
-            onStreamStatusChanged?(decoded.outputActive)
+            let event = try JSONDecoder().decode(StreamStateChangedEvent.self, from: data)
+            if let state = ObsOutputState(rawValue: event.outputState) {
+                onStreamStatusChanged?(event.outputActive, state)
+            } else {
+                onStreamStatusChanged?(event.outputActive, .stopped)
+            }
         } catch {}
     }
 

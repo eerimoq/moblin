@@ -285,6 +285,7 @@ final class Model: ObservableObject {
     @Published var obsCurrentSceneStatus: String = ""
     @Published var currentStreamId = UUID()
     @Published var obsStreaming = false
+    @Published var obsStreamingState: ObsOutputState = .stopped
     @Published var obsScreenshot: CGImage?
     private var obsSourceFetchScreenshot = false
     private var obsSourceScreenshotIsFetching = false
@@ -976,8 +977,8 @@ final class Model: ObservableObject {
                 self.obsCurrentSceneStatus = "Unknown"
             }
         })
-        obsWebSocket?.getStreamStatus(onSuccess: { status in
-            self.handleObsStreamStatusChanged(active: status.active)
+        obsWebSocket?.getStreamStatus(onSuccess: { state in
+            self.handleObsStreamStatusChanged(active: state.active, state: state.state)
         }, onError: { _ in
             self.handleObsStreamStatusChanged(active: false)
         })
@@ -2521,9 +2522,16 @@ final class Model: ObservableObject {
         }
     }
 
-    private func handleObsStreamStatusChanged(active: Bool) {
+    private func handleObsStreamStatusChanged(active: Bool, state: ObsOutputState? = nil) {
         DispatchQueue.main.async {
             self.obsStreaming = active
+            if let state {
+                self.obsStreamingState = state
+            } else if active {
+                self.obsStreamingState = .started
+            } else {
+                self.obsStreamingState = .stopped
+            }
             self.setGlobalButtonState(type: .obsStartStopStream, isOn: active)
         }
     }

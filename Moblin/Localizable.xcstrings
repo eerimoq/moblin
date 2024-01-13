@@ -39247,7 +39247,13 @@
         }
       }
     },
+    "Starting..." : {
+
+    },
     "Stop streaming" : {
+
+    },
+    "Stopping..." : {
 
     },
     "Stream" : {
@@ -44550,6 +44556,9 @@
           }
         }
       }
+    },
+    "Unknown streaming state" : {
+
     },
     "Unknown," : {
       "localizations" : {

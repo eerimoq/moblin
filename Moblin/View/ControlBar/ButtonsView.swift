@@ -184,7 +184,33 @@ struct ObsView: View {
 
     var body: some View {
         Form {
-            if model.obsStreaming {
+            if model.obsStreamingState == .stopped {
+                Section {
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            model.obsStartStream()
+                        }, label: {
+                            Text("Start streaming")
+                        })
+                        Spacer()
+                    }
+                }
+                .listRowBackground(RoundedRectangle(cornerRadius: 10)
+                    .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
+                    .overlay(RoundedRectangle(cornerRadius: 10)
+                        .stroke(.blue, lineWidth: 2)))
+            } else if model.obsStreamingState == .starting {
+                Section {
+                    HStack {
+                        Spacer()
+                        Text("Starting...")
+                        Spacer()
+                    }
+                }
+                .foregroundColor(.white)
+                .listRowBackground(Color.gray)
+            } else if model.obsStreamingState == .started {
                 Section {
                     HStack {
                         Spacer()
@@ -198,15 +224,21 @@ struct ObsView: View {
                 }
                 .foregroundColor(.white)
                 .listRowBackground(Color.blue)
+            } else if model.obsStreamingState == .stopping {
+                Section {
+                    HStack {
+                        Spacer()
+                        Text("Stopping...")
+                        Spacer()
+                    }
+                }
+                .foregroundColor(.white)
+                .listRowBackground(Color.gray)
             } else {
                 Section {
                     HStack {
                         Spacer()
-                        Button(action: {
-                            model.obsStartStream()
-                        }, label: {
-                            Text("Start streaming")
-                        })
+                        Text("Unknown streaming state")
                         Spacer()
                     }
                 }
