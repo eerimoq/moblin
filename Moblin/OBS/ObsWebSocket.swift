@@ -1,6 +1,9 @@
 import CryptoKit
 import Foundation
 
+let obsMinimumAudioDelay = -950
+let obsMaximumAudioDelay = 20000
+
 private enum EventSubscription: UInt64 {
     case general = 0x1
     case config = 0x2

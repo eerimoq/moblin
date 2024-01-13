@@ -182,11 +182,12 @@ struct ObsView: View {
     @EnvironmentObject var model: Model
     var done: () -> Void
 
-    private func submitAudioDelay(value: String) {
-        guard let offset = Int(value) else {
-            return
-        }
+    private func submitAudioDelay(value: String) -> String {
+        let offsetDouble = Double(value) ?? 0
+        var offset = Int(offsetDouble)
+        offset = offset.clamped(to: obsMinimumAudioDelay ... obsMaximumAudioDelay)
         model.setObsAudioDelay(offset: offset)
+        return String(offset)
     }
 
     var body: some View {
@@ -266,6 +267,19 @@ struct ObsView: View {
             }
             if !model.stream.obsSourceName!.isEmpty {
                 Section {
+                    ValueEditView(
+                        title: "Delay",
+                        value: "\(model.obsAudioDelay)",
+                        minimum: Double(obsMinimumAudioDelay),
+                        maximum: Double(min(obsMaximumAudioDelay, 9999)),
+                        onSubmit: submitAudioDelay,
+                        increment: 10,
+                        unit: "ms"
+                    )
+                } header: {
+                    Text("\(model.stream.obsSourceName!) source audio sync")
+                }
+                Section {
                     if model.isLive {
                         if let image = model.obsScreenshot {
                             Image(image, scale: 1, label: Text(""))
@@ -286,17 +300,6 @@ struct ObsView: View {
                     }
                 } header: {
                     Text("\(model.stream.obsSourceName!) source audio levels")
-                }
-                Section {
-                    NavigationLink(destination: TextEditView(
-                        title: "Delay",
-                        value: "\(model.obsAudioDelay)",
-                        onSubmit: submitAudioDelay
-                    )) {
-                        TextItemView(name: "Delay", value: "\(model.obsAudioDelay) ms")
-                    }
-                } header: {
-                    Text("\(model.stream.obsSourceName!) source audio sync")
                 }
             } else {
                 Text("""

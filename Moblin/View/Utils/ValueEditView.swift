@@ -6,6 +6,8 @@ struct ValueEditView: View {
     var minimum: Double
     var maximum: Double
     var onSubmit: (String) -> String
+    var increment: Double = 1
+    var unit: String?
 
     func add(offset: Double) {
         if var value = Double(value) {
@@ -31,9 +33,12 @@ struct ValueEditView: View {
             .onSubmit {
                 value = onSubmit(value.trim())
             }
+            if let unit {
+                Text(unit)
+            }
             Divider()
             Button(action: {
-                add(offset: -1)
+                add(offset: -increment)
                 value = onSubmit(value.trim())
             }, label: {
                 Text("-")
@@ -42,7 +47,7 @@ struct ValueEditView: View {
             })
             Divider()
             Button(action: {
-                add(offset: 1)
+                add(offset: increment)
                 value = onSubmit(value.trim())
             }, label: {
                 Text("+")
