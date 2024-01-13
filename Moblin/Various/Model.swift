@@ -2532,7 +2532,6 @@ final class Model: ObservableObject {
             } else {
                 self.obsStreamingState = .stopped
             }
-            self.setGlobalButtonState(type: .obsStartStopStream, isOn: active)
         }
     }
 
