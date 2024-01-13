@@ -8,6 +8,15 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.147.0", date: "2024-01-13", changes: [
+        "• Upper case first letter in channel name by default.",
+        "• URL keyboard for URL:s.",
+        "• Spanish and Polish translations updated.",
+        "• Game controller settings localized.",
+        "• Replace OBS start/stop stream and OBS scene quick buttons with a OBS quick button.",
+        "  • The new quick button opens a panel where you can start/stop stream, change scene, see source snapshot and source audio levels.",
+        "  • Configure OBS scene name in Settings -> My stream -> OBS remote control for snapshot and audio levels.",
+    ]),
     Version(version: "0.146.0", date: "2024-01-11", changes: [
         "• Only send location to RealtimeIRL when live.",
         "• Chinese (traditional) and German translations updated.",
