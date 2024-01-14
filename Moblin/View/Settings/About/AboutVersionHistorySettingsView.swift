@@ -8,6 +8,14 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.148.0", date: "2024-01-14", changes: [
+        "- Configurable SRTLA connection priorities.",
+        "  - Often used to prioritize using one SIM card over another.",
+        "  - Settings -> Streams -> My stream -> SRT(LA) -> Connection priorities.",
+        "- OBS remote control audio sync.",
+        "- Configurable global quick button colors.",
+        "  - Configure per button in Settings -> Display -> Quick buttons.",
+    ]),
     Version(version: "0.147.0", date: "2024-01-13", changes: [
         "• Upper case first letter in channel name by default.",
         "• URL keyboard for URL:s.",
