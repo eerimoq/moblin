@@ -3,6 +3,8 @@ import SwiftUI
 struct GlobalQuickButtonsSettingsView: View {
     @EnvironmentObject var model: Model
 
+    private func onBackgroundColorChange() {}
+
     var body: some View {
         Form {
             Section {
@@ -36,20 +38,29 @@ struct GlobalQuickButtonsSettingsView: View {
             Section {
                 List {
                     ForEach(model.database.globalButtons!) { button in
-                        Toggle(isOn: Binding(get: {
-                            button.enabled!
-                        }, set: { value in
-                            button.enabled = value
-                            model.store()
-                            model.updateButtonStates()
-                        })) {
-                            HStack {
-                                DraggableItemPrefixView()
-                                IconAndTextView(
-                                    image: button.systemImageNameOff,
-                                    text: button.name
-                                )
-                                Spacer()
+                        NavigationLink(destination: GlobalQuickButtonsButtonSettingsView(
+                            name: button.name,
+                            color: button.backgroundColor!,
+                            red: Float(button.backgroundColor!.red),
+                            green: Float(button.backgroundColor!.green),
+                            blue: Float(button.backgroundColor!.blue),
+                            onChange: onBackgroundColorChange
+                        )) {
+                            Toggle(isOn: Binding(get: {
+                                button.enabled!
+                            }, set: { value in
+                                button.enabled = value
+                                model.store()
+                                model.updateButtonStates()
+                            })) {
+                                HStack {
+                                    DraggableItemPrefixView()
+                                    IconAndTextView(
+                                        image: button.systemImageNameOff,
+                                        text: button.name
+                                    )
+                                    Spacer()
+                                }
                             }
                         }
                     }

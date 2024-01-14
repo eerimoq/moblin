@@ -1,13 +1,13 @@
 import AVFoundation
 import SwiftUI
 
-private let imageBackground = Color(red: 0.25, green: 0.25, blue: 0.25)
 private let singleButtonSize: CGFloat = 45
 
 struct ButtonImage: View {
     var image: String
     var on: Bool
     var buttonSize: CGFloat
+    var backgroundColor: Color
     var slash: Bool = false
     var pause: Bool = false
     var overlayColor: Color = .white
@@ -16,7 +16,7 @@ struct ButtonImage: View {
         let image = Image(systemName: image)
             .frame(width: buttonSize, height: buttonSize)
             .foregroundColor(.white)
-            .background(imageBackground)
+            .background(backgroundColor)
             .clipShape(Circle())
         ZStack {
             if on {
@@ -33,11 +33,11 @@ struct ButtonImage: View {
                     .frame(width: buttonSize, height: buttonSize)
                     .foregroundColor(.white)
                     .rotationEffect(Angle(degrees: 90))
-                    .shadow(color: imageBackground, radius: 0, x: 1, y: 0)
-                    .shadow(color: imageBackground, radius: 0, x: -1, y: 0)
-                    .shadow(color: imageBackground, radius: 0, x: 0, y: 1)
-                    .shadow(color: imageBackground, radius: 0, x: 0, y: -1)
-                    .shadow(color: imageBackground, radius: 0, x: -2, y: -2)
+                    .shadow(color: backgroundColor, radius: 0, x: 1, y: 0)
+                    .shadow(color: backgroundColor, radius: 0, x: -1, y: 0)
+                    .shadow(color: backgroundColor, radius: 0, x: 0, y: 1)
+                    .shadow(color: backgroundColor, radius: 0, x: 0, y: -1)
+                    .shadow(color: backgroundColor, radius: 0, x: -2, y: -2)
             }
             if pause {
                 // Button press animation not perfect.
@@ -361,9 +361,9 @@ struct ButtonsView: View {
         model.sceneUpdated(store: false)
     }
 
-    private func pauseChatOverlayColor() -> Color {
+    private func pauseChatOverlayColor(state: ButtonState) -> Color {
         if model.chatPaused {
-            return imageBackground
+            return state.button.backgroundColor!.color()
         } else {
             return .white
         }
@@ -469,7 +469,8 @@ struct ButtonsView: View {
                                         ButtonImage(
                                             image: getImage(state: second),
                                             on: second.isOn,
-                                            buttonSize: buttonSize
+                                            buttonSize: buttonSize,
+                                            backgroundColor: second.button.backgroundColor!.color()
                                         )
                                     })
                                 case .mute:
@@ -479,7 +480,8 @@ struct ButtonsView: View {
                                         ButtonImage(
                                             image: getImage(state: second),
                                             on: second.isOn,
-                                            buttonSize: buttonSize
+                                            buttonSize: buttonSize,
+                                            backgroundColor: second.button.backgroundColor!.color()
                                         )
                                     })
                                 case .bitrate:
@@ -489,7 +491,8 @@ struct ButtonsView: View {
                                         ButtonImage(
                                             image: getImage(state: second),
                                             on: second.isOn,
-                                            buttonSize: buttonSize
+                                            buttonSize: buttonSize,
+                                            backgroundColor: second.button.backgroundColor!.color()
                                         )
                                     })
                                 case .widget:
@@ -499,7 +502,8 @@ struct ButtonsView: View {
                                         ButtonImage(
                                             image: getImage(state: second),
                                             on: second.isOn,
-                                            buttonSize: buttonSize
+                                            buttonSize: buttonSize,
+                                            backgroundColor: second.button.backgroundColor!.color()
                                         )
                                     })
                                 case .mic:
@@ -509,7 +513,8 @@ struct ButtonsView: View {
                                         ButtonImage(
                                             image: getImage(state: second),
                                             on: second.isOn,
-                                            buttonSize: buttonSize
+                                            buttonSize: buttonSize,
+                                            backgroundColor: second.button.backgroundColor!.color()
                                         )
                                     })
                                 case .chat:
@@ -520,6 +525,7 @@ struct ButtonsView: View {
                                             image: getImage(state: second),
                                             on: second.isOn,
                                             buttonSize: buttonSize,
+                                            backgroundColor: second.button.backgroundColor!.color(),
                                             slash: true
                                         )
                                     })
@@ -531,8 +537,9 @@ struct ButtonsView: View {
                                             image: getImage(state: second),
                                             on: second.isOn,
                                             buttonSize: buttonSize,
+                                            backgroundColor: second.button.backgroundColor!.color(),
                                             pause: true,
-                                            overlayColor: pauseChatOverlayColor()
+                                            overlayColor: pauseChatOverlayColor(state: second)
                                         )
                                     })
                                 case .blackScreen:
@@ -542,7 +549,8 @@ struct ButtonsView: View {
                                         ButtonImage(
                                             image: getImage(state: second),
                                             on: second.isOn,
-                                            buttonSize: buttonSize
+                                            buttonSize: buttonSize,
+                                            backgroundColor: second.button.backgroundColor!.color()
                                         )
                                     })
                                 case .obsScene:
@@ -556,7 +564,8 @@ struct ButtonsView: View {
                                         ButtonImage(
                                             image: getImage(state: second),
                                             on: second.isOn,
-                                            buttonSize: buttonSize
+                                            buttonSize: buttonSize,
+                                            backgroundColor: second.button.backgroundColor!.color()
                                         )
                                     })
                                     .confirmationDialog("", isPresented: $isPresentingRecordConfirm) {
@@ -571,7 +580,8 @@ struct ButtonsView: View {
                                         ButtonImage(
                                             image: getImage(state: second),
                                             on: second.isOn,
-                                            buttonSize: buttonSize
+                                            buttonSize: buttonSize,
+                                            backgroundColor: second.button.backgroundColor!.color()
                                         )
                                     })
                                 case .movie:
@@ -581,7 +591,8 @@ struct ButtonsView: View {
                                         ButtonImage(
                                             image: getImage(state: second),
                                             on: second.isOn,
-                                            buttonSize: buttonSize
+                                            buttonSize: buttonSize,
+                                            backgroundColor: second.button.backgroundColor!.color()
                                         )
                                     })
                                 case .grayScale:
@@ -591,7 +602,8 @@ struct ButtonsView: View {
                                         ButtonImage(
                                             image: getImage(state: second),
                                             on: second.isOn,
-                                            buttonSize: buttonSize
+                                            buttonSize: buttonSize,
+                                            backgroundColor: second.button.backgroundColor!.color()
                                         )
                                     })
                                 case .sepia:
@@ -601,7 +613,8 @@ struct ButtonsView: View {
                                         ButtonImage(
                                             image: getImage(state: second),
                                             on: second.isOn,
-                                            buttonSize: buttonSize
+                                            buttonSize: buttonSize,
+                                            backgroundColor: second.button.backgroundColor!.color()
                                         )
                                     })
                                 case .random:
@@ -611,7 +624,8 @@ struct ButtonsView: View {
                                         ButtonImage(
                                             image: getImage(state: second),
                                             on: second.isOn,
-                                            buttonSize: buttonSize
+                                            buttonSize: buttonSize,
+                                            backgroundColor: second.button.backgroundColor!.color()
                                         )
                                     })
                                 case .triple:
@@ -621,7 +635,8 @@ struct ButtonsView: View {
                                         ButtonImage(
                                             image: getImage(state: second),
                                             on: second.isOn,
-                                            buttonSize: buttonSize
+                                            buttonSize: buttonSize,
+                                            backgroundColor: second.button.backgroundColor!.color()
                                         )
                                     })
                                 case .pixellate:
@@ -631,7 +646,8 @@ struct ButtonsView: View {
                                         ButtonImage(
                                             image: getImage(state: second),
                                             on: second.isOn,
-                                            buttonSize: buttonSize
+                                            buttonSize: buttonSize,
+                                            backgroundColor: second.button.backgroundColor!.color()
                                         )
                                     })
                                 case .stream:
@@ -641,7 +657,8 @@ struct ButtonsView: View {
                                         ButtonImage(
                                             image: getImage(state: second),
                                             on: second.isOn,
-                                            buttonSize: buttonSize
+                                            buttonSize: buttonSize,
+                                            backgroundColor: second.button.backgroundColor!.color()
                                         )
                                     })
                                 case .grid:
@@ -651,7 +668,8 @@ struct ButtonsView: View {
                                         ButtonImage(
                                             image: getImage(state: second),
                                             on: second.isOn,
-                                            buttonSize: buttonSize
+                                            buttonSize: buttonSize,
+                                            backgroundColor: second.button.backgroundColor!.color()
                                         )
                                     })
                                 case .obs:
@@ -661,7 +679,8 @@ struct ButtonsView: View {
                                         ButtonImage(
                                             image: getImage(state: second),
                                             on: second.isOn,
-                                            buttonSize: buttonSize
+                                            buttonSize: buttonSize,
+                                            backgroundColor: second.button.backgroundColor!.color()
                                         )
                                     })
                                 }
@@ -683,7 +702,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: pair.first),
                                         on: pair.first.isOn,
-                                        buttonSize: buttonSize
+                                        buttonSize: buttonSize,
+                                        backgroundColor: pair.first.button.backgroundColor!.color()
                                     )
                                 })
                             case .mute:
@@ -693,7 +713,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: pair.first),
                                         on: pair.first.isOn,
-                                        buttonSize: buttonSize
+                                        buttonSize: buttonSize,
+                                        backgroundColor: pair.first.button.backgroundColor!.color()
                                     )
                                 })
                             case .bitrate:
@@ -703,7 +724,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: pair.first),
                                         on: pair.first.isOn,
-                                        buttonSize: buttonSize
+                                        buttonSize: buttonSize,
+                                        backgroundColor: pair.first.button.backgroundColor!.color()
                                     )
                                 })
                             case .widget:
@@ -713,7 +735,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: pair.first),
                                         on: pair.first.isOn,
-                                        buttonSize: buttonSize
+                                        buttonSize: buttonSize,
+                                        backgroundColor: pair.first.button.backgroundColor!.color()
                                     )
                                 })
                             case .mic:
@@ -723,7 +746,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: pair.first),
                                         on: pair.first.isOn,
-                                        buttonSize: buttonSize
+                                        buttonSize: buttonSize,
+                                        backgroundColor: pair.first.button.backgroundColor!.color()
                                     )
                                 })
                             case .chat:
@@ -734,6 +758,7 @@ struct ButtonsView: View {
                                         image: getImage(state: pair.first),
                                         on: pair.first.isOn,
                                         buttonSize: buttonSize,
+                                        backgroundColor: pair.first.button.backgroundColor!.color(),
                                         slash: true
                                     )
                                 })
@@ -745,8 +770,9 @@ struct ButtonsView: View {
                                         image: getImage(state: pair.first),
                                         on: pair.first.isOn,
                                         buttonSize: buttonSize,
+                                        backgroundColor: pair.first.button.backgroundColor!.color(),
                                         pause: true,
-                                        overlayColor: pauseChatOverlayColor()
+                                        overlayColor: pauseChatOverlayColor(state: pair.first)
                                     )
                                 })
                             case .blackScreen:
@@ -756,7 +782,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: pair.first),
                                         on: pair.first.isOn,
-                                        buttonSize: buttonSize
+                                        buttonSize: buttonSize,
+                                        backgroundColor: pair.first.button.backgroundColor!.color()
                                     )
                                 })
                             case .obsScene:
@@ -770,7 +797,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: pair.first),
                                         on: pair.first.isOn,
-                                        buttonSize: buttonSize
+                                        buttonSize: buttonSize,
+                                        backgroundColor: pair.first.button.backgroundColor!.color()
                                     )
                                 })
                                 .confirmationDialog("", isPresented: $isPresentingRecordConfirm) {
@@ -785,7 +813,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: pair.first),
                                         on: pair.first.isOn,
-                                        buttonSize: buttonSize
+                                        buttonSize: buttonSize,
+                                        backgroundColor: pair.first.button.backgroundColor!.color()
                                     )
                                 })
                             case .movie:
@@ -795,7 +824,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: pair.first),
                                         on: pair.first.isOn,
-                                        buttonSize: buttonSize
+                                        buttonSize: buttonSize,
+                                        backgroundColor: pair.first.button.backgroundColor!.color()
                                     )
                                 })
                             case .grayScale:
@@ -805,7 +835,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: pair.first),
                                         on: pair.first.isOn,
-                                        buttonSize: buttonSize
+                                        buttonSize: buttonSize,
+                                        backgroundColor: pair.first.button.backgroundColor!.color()
                                     )
                                 })
                             case .sepia:
@@ -815,7 +846,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: pair.first),
                                         on: pair.first.isOn,
-                                        buttonSize: buttonSize
+                                        buttonSize: buttonSize,
+                                        backgroundColor: pair.first.button.backgroundColor!.color()
                                     )
                                 })
                             case .random:
@@ -825,7 +857,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: pair.first),
                                         on: pair.first.isOn,
-                                        buttonSize: buttonSize
+                                        buttonSize: buttonSize,
+                                        backgroundColor: pair.first.button.backgroundColor!.color()
                                     )
                                 })
                             case .triple:
@@ -835,7 +868,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: pair.first),
                                         on: pair.first.isOn,
-                                        buttonSize: buttonSize
+                                        buttonSize: buttonSize,
+                                        backgroundColor: pair.first.button.backgroundColor!.color()
                                     )
                                 })
                             case .pixellate:
@@ -845,7 +879,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: pair.first),
                                         on: pair.first.isOn,
-                                        buttonSize: buttonSize
+                                        buttonSize: buttonSize,
+                                        backgroundColor: pair.first.button.backgroundColor!.color()
                                     )
                                 })
                             case .stream:
@@ -855,7 +890,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: pair.first),
                                         on: pair.first.isOn,
-                                        buttonSize: buttonSize
+                                        buttonSize: buttonSize,
+                                        backgroundColor: pair.first.button.backgroundColor!.color()
                                     )
                                 })
                             case .grid:
@@ -865,7 +901,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: pair.first),
                                         on: pair.first.isOn,
-                                        buttonSize: buttonSize
+                                        buttonSize: buttonSize,
+                                        backgroundColor: pair.first.button.backgroundColor!.color()
                                     )
                                 })
                             case .obs:
@@ -875,7 +912,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: pair.first),
                                         on: pair.first.isOn,
-                                        buttonSize: buttonSize
+                                        buttonSize: buttonSize,
+                                        backgroundColor: pair.first.button.backgroundColor!.color()
                                     )
                                 })
                             }
@@ -898,7 +936,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: second),
                                         on: second.isOn,
-                                        buttonSize: singleButtonSize
+                                        buttonSize: singleButtonSize,
+                                        backgroundColor: second.button.backgroundColor!.color()
                                     )
                                 })
                             case .mute:
@@ -908,7 +947,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: second),
                                         on: second.isOn,
-                                        buttonSize: singleButtonSize
+                                        buttonSize: singleButtonSize,
+                                        backgroundColor: second.button.backgroundColor!.color()
                                     )
                                 })
                             case .bitrate:
@@ -918,7 +958,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: second),
                                         on: second.isOn,
-                                        buttonSize: singleButtonSize
+                                        buttonSize: singleButtonSize,
+                                        backgroundColor: second.button.backgroundColor!.color()
                                     )
                                 })
                             case .widget:
@@ -928,7 +969,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: second),
                                         on: second.isOn,
-                                        buttonSize: singleButtonSize
+                                        buttonSize: singleButtonSize,
+                                        backgroundColor: second.button.backgroundColor!.color()
                                     )
                                 })
                             case .mic:
@@ -938,7 +980,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: second),
                                         on: second.isOn,
-                                        buttonSize: singleButtonSize
+                                        buttonSize: singleButtonSize,
+                                        backgroundColor: second.button.backgroundColor!.color()
                                     )
                                 })
                             case .chat:
@@ -949,6 +992,7 @@ struct ButtonsView: View {
                                         image: getImage(state: second),
                                         on: second.isOn,
                                         buttonSize: singleButtonSize,
+                                        backgroundColor: second.button.backgroundColor!.color(),
                                         slash: true
                                     )
                                 })
@@ -960,8 +1004,9 @@ struct ButtonsView: View {
                                         image: getImage(state: second),
                                         on: second.isOn,
                                         buttonSize: singleButtonSize,
+                                        backgroundColor: second.button.backgroundColor!.color(),
                                         pause: true,
-                                        overlayColor: pauseChatOverlayColor()
+                                        overlayColor: pauseChatOverlayColor(state: second)
                                     )
                                 })
                             case .blackScreen:
@@ -971,7 +1016,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: second),
                                         on: second.isOn,
-                                        buttonSize: singleButtonSize
+                                        buttonSize: singleButtonSize,
+                                        backgroundColor: second.button.backgroundColor!.color()
                                     )
                                 })
                             case .obsScene:
@@ -985,7 +1031,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: second),
                                         on: second.isOn,
-                                        buttonSize: buttonSize
+                                        buttonSize: buttonSize,
+                                        backgroundColor: second.button.backgroundColor!.color()
                                     )
                                 })
                                 .confirmationDialog("", isPresented: $isPresentingRecordConfirm) {
@@ -1000,7 +1047,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: second),
                                         on: second.isOn,
-                                        buttonSize: buttonSize
+                                        buttonSize: buttonSize,
+                                        backgroundColor: second.button.backgroundColor!.color()
                                     )
                                 })
                             case .movie:
@@ -1010,7 +1058,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: second),
                                         on: second.isOn,
-                                        buttonSize: buttonSize
+                                        buttonSize: buttonSize,
+                                        backgroundColor: second.button.backgroundColor!.color()
                                     )
                                 })
                             case .grayScale:
@@ -1020,7 +1069,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: second),
                                         on: second.isOn,
-                                        buttonSize: buttonSize
+                                        buttonSize: buttonSize,
+                                        backgroundColor: second.button.backgroundColor!.color()
                                     )
                                 })
                             case .sepia:
@@ -1030,7 +1080,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: second),
                                         on: second.isOn,
-                                        buttonSize: buttonSize
+                                        buttonSize: buttonSize,
+                                        backgroundColor: second.button.backgroundColor!.color()
                                     )
                                 })
                             case .random:
@@ -1040,7 +1091,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: second),
                                         on: second.isOn,
-                                        buttonSize: buttonSize
+                                        buttonSize: buttonSize,
+                                        backgroundColor: second.button.backgroundColor!.color()
                                     )
                                 })
                             case .triple:
@@ -1050,7 +1102,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: second),
                                         on: second.isOn,
-                                        buttonSize: buttonSize
+                                        buttonSize: buttonSize,
+                                        backgroundColor: second.button.backgroundColor!.color()
                                     )
                                 })
                             case .pixellate:
@@ -1060,7 +1113,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: second),
                                         on: second.isOn,
-                                        buttonSize: buttonSize
+                                        buttonSize: buttonSize,
+                                        backgroundColor: second.button.backgroundColor!.color()
                                     )
                                 })
                             case .stream:
@@ -1070,7 +1124,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: second),
                                         on: second.isOn,
-                                        buttonSize: buttonSize
+                                        buttonSize: buttonSize,
+                                        backgroundColor: second.button.backgroundColor!.color()
                                     )
                                 })
                             case .grid:
@@ -1080,7 +1135,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: second),
                                         on: second.isOn,
-                                        buttonSize: buttonSize
+                                        buttonSize: buttonSize,
+                                        backgroundColor: second.button.backgroundColor!.color()
                                     )
                                 })
                             case .obs:
@@ -1090,7 +1146,8 @@ struct ButtonsView: View {
                                     ButtonImage(
                                         image: getImage(state: second),
                                         on: second.isOn,
-                                        buttonSize: buttonSize
+                                        buttonSize: buttonSize,
+                                        backgroundColor: second.button.backgroundColor!.color()
                                     )
                                 })
                             }
@@ -1112,7 +1169,8 @@ struct ButtonsView: View {
                                 ButtonImage(
                                     image: getImage(state: pair.first),
                                     on: pair.first.isOn,
-                                    buttonSize: singleButtonSize
+                                    buttonSize: singleButtonSize,
+                                    backgroundColor: pair.first.button.backgroundColor!.color()
                                 )
                             })
                         case .mute:
@@ -1122,7 +1180,8 @@ struct ButtonsView: View {
                                 ButtonImage(
                                     image: getImage(state: pair.first),
                                     on: pair.first.isOn,
-                                    buttonSize: singleButtonSize
+                                    buttonSize: singleButtonSize,
+                                    backgroundColor: pair.first.button.backgroundColor!.color()
                                 )
                             })
                         case .bitrate:
@@ -1132,7 +1191,8 @@ struct ButtonsView: View {
                                 ButtonImage(
                                     image: getImage(state: pair.first),
                                     on: pair.first.isOn,
-                                    buttonSize: singleButtonSize
+                                    buttonSize: singleButtonSize,
+                                    backgroundColor: pair.first.button.backgroundColor!.color()
                                 )
                             })
                         case .widget:
@@ -1142,7 +1202,8 @@ struct ButtonsView: View {
                                 ButtonImage(
                                     image: getImage(state: pair.first),
                                     on: pair.first.isOn,
-                                    buttonSize: singleButtonSize
+                                    buttonSize: singleButtonSize,
+                                    backgroundColor: pair.first.button.backgroundColor!.color()
                                 )
                             })
                         case .mic:
@@ -1152,7 +1213,8 @@ struct ButtonsView: View {
                                 ButtonImage(
                                     image: getImage(state: pair.first),
                                     on: pair.first.isOn,
-                                    buttonSize: singleButtonSize
+                                    buttonSize: singleButtonSize,
+                                    backgroundColor: pair.first.button.backgroundColor!.color()
                                 )
                             })
                         case .chat:
@@ -1163,6 +1225,7 @@ struct ButtonsView: View {
                                     image: getImage(state: pair.first),
                                     on: pair.first.isOn,
                                     buttonSize: singleButtonSize,
+                                    backgroundColor: pair.first.button.backgroundColor!.color(),
                                     slash: true
                                 )
                             })
@@ -1174,8 +1237,9 @@ struct ButtonsView: View {
                                     image: getImage(state: pair.first),
                                     on: pair.first.isOn,
                                     buttonSize: singleButtonSize,
+                                    backgroundColor: pair.first.button.backgroundColor!.color(),
                                     pause: true,
-                                    overlayColor: pauseChatOverlayColor()
+                                    overlayColor: pauseChatOverlayColor(state: pair.first)
                                 )
                             })
                         case .blackScreen:
@@ -1185,7 +1249,8 @@ struct ButtonsView: View {
                                 ButtonImage(
                                     image: getImage(state: pair.first),
                                     on: pair.first.isOn,
-                                    buttonSize: singleButtonSize
+                                    buttonSize: singleButtonSize,
+                                    backgroundColor: pair.first.button.backgroundColor!.color()
                                 )
                             })
                         case .obsScene:
@@ -1199,7 +1264,8 @@ struct ButtonsView: View {
                                 ButtonImage(
                                     image: getImage(state: pair.first),
                                     on: pair.first.isOn,
-                                    buttonSize: buttonSize
+                                    buttonSize: buttonSize,
+                                    backgroundColor: pair.first.button.backgroundColor!.color()
                                 )
                             })
                             .confirmationDialog("", isPresented: $isPresentingRecordConfirm) {
@@ -1214,7 +1280,8 @@ struct ButtonsView: View {
                                 ButtonImage(
                                     image: getImage(state: pair.first),
                                     on: pair.first.isOn,
-                                    buttonSize: buttonSize
+                                    buttonSize: buttonSize,
+                                    backgroundColor: pair.first.button.backgroundColor!.color()
                                 )
                             })
                         case .movie:
@@ -1224,7 +1291,8 @@ struct ButtonsView: View {
                                 ButtonImage(
                                     image: getImage(state: pair.first),
                                     on: pair.first.isOn,
-                                    buttonSize: buttonSize
+                                    buttonSize: buttonSize,
+                                    backgroundColor: pair.first.button.backgroundColor!.color()
                                 )
                             })
                         case .grayScale:
@@ -1234,7 +1302,8 @@ struct ButtonsView: View {
                                 ButtonImage(
                                     image: getImage(state: pair.first),
                                     on: pair.first.isOn,
-                                    buttonSize: buttonSize
+                                    buttonSize: buttonSize,
+                                    backgroundColor: pair.first.button.backgroundColor!.color()
                                 )
                             })
                         case .sepia:
@@ -1244,7 +1313,8 @@ struct ButtonsView: View {
                                 ButtonImage(
                                     image: getImage(state: pair.first),
                                     on: pair.first.isOn,
-                                    buttonSize: buttonSize
+                                    buttonSize: buttonSize,
+                                    backgroundColor: pair.first.button.backgroundColor!.color()
                                 )
                             })
                         case .random:
@@ -1254,7 +1324,8 @@ struct ButtonsView: View {
                                 ButtonImage(
                                     image: getImage(state: pair.first),
                                     on: pair.first.isOn,
-                                    buttonSize: buttonSize
+                                    buttonSize: buttonSize,
+                                    backgroundColor: pair.first.button.backgroundColor!.color()
                                 )
                             })
                         case .triple:
@@ -1264,7 +1335,8 @@ struct ButtonsView: View {
                                 ButtonImage(
                                     image: getImage(state: pair.first),
                                     on: pair.first.isOn,
-                                    buttonSize: buttonSize
+                                    buttonSize: buttonSize,
+                                    backgroundColor: pair.first.button.backgroundColor!.color()
                                 )
                             })
                         case .pixellate:
@@ -1274,7 +1346,8 @@ struct ButtonsView: View {
                                 ButtonImage(
                                     image: getImage(state: pair.first),
                                     on: pair.first.isOn,
-                                    buttonSize: buttonSize
+                                    buttonSize: buttonSize,
+                                    backgroundColor: pair.first.button.backgroundColor!.color()
                                 )
                             })
                         case .stream:
@@ -1284,7 +1357,8 @@ struct ButtonsView: View {
                                 ButtonImage(
                                     image: getImage(state: pair.first),
                                     on: pair.first.isOn,
-                                    buttonSize: buttonSize
+                                    buttonSize: buttonSize,
+                                    backgroundColor: pair.first.button.backgroundColor!.color()
                                 )
                             })
                         case .grid:
@@ -1294,7 +1368,8 @@ struct ButtonsView: View {
                                 ButtonImage(
                                     image: getImage(state: pair.first),
                                     on: pair.first.isOn,
-                                    buttonSize: buttonSize
+                                    buttonSize: buttonSize,
+                                    backgroundColor: pair.first.button.backgroundColor!.color()
                                 )
                             })
                         case .obs:
@@ -1304,7 +1379,8 @@ struct ButtonsView: View {
                                 ButtonImage(
                                     image: getImage(state: pair.first),
                                     on: pair.first.isOn,
-                                    buttonSize: buttonSize
+                                    buttonSize: buttonSize,
+                                    backgroundColor: pair.first.button.backgroundColor!.color()
                                 )
                             })
                         }

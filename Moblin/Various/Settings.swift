@@ -793,6 +793,7 @@ class SettingsButton: Codable, Identifiable, Equatable, Hashable {
     var widget: SettingsButtonWidget = .init(widgetId: UUID())
     var isOn: Bool = false
     var enabled: Bool? = true
+    var backgroundColor: RgbColor? = RgbColor(red: 255 / 4, green: 255 / 4, blue: 255 / 4)
 
     init(name: String) {
         self.name = name
@@ -1857,21 +1858,25 @@ final class Settings {
                 button.systemImageNameOff = "camera"
                 store()
             }
-            for stream in realDatabase.streams where stream.obsSourceName == nil {
-                stream.obsSourceName = ""
-                store()
-            }
-            let numberOfButtons = realDatabase.globalButtons!.count
-            realDatabase.globalButtons = realDatabase.globalButtons!.filter { button in
-                button.type != .obsScene && button.type != .obsStartStopStream
-            }
-            if realDatabase.globalButtons!.count != numberOfButtons {
-                store()
-            }
-            for stream in realDatabase.streams where stream.srt.connectionPriorities == nil {
-                stream.srt.connectionPriorities = .init()
-                store()
-            }
+        }
+        for stream in realDatabase.streams where stream.obsSourceName == nil {
+            stream.obsSourceName = ""
+            store()
+        }
+        let numberOfButtons = realDatabase.globalButtons!.count
+        realDatabase.globalButtons = realDatabase.globalButtons!.filter { button in
+            button.type != .obsScene && button.type != .obsStartStopStream
+        }
+        if realDatabase.globalButtons!.count != numberOfButtons {
+            store()
+        }
+        for stream in realDatabase.streams where stream.srt.connectionPriorities == nil {
+            stream.srt.connectionPriorities = .init()
+            store()
+        }
+        for button in realDatabase.globalButtons! where button.backgroundColor == nil {
+            button.backgroundColor = RgbColor(red: 255 / 4, green: 255 / 4, blue: 255 / 4)
+            store()
         }
     }
 }
