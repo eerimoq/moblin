@@ -406,6 +406,22 @@ extension RgbColor {
     }
 }
 
+extension Color {
+    func toRgb() -> RgbColor? {
+        guard let components = UIColor(self).cgColor.components else {
+            return nil
+        }
+        guard components.count >= 3 else {
+            return nil
+        }
+        return RgbColor(
+            red: Int(255 * components[0]),
+            green: Int(255 * components[1]),
+            blue: Int(255 * components[2])
+        )
+    }
+}
+
 func getOrientation() -> UIDeviceOrientation {
     let orientation = UIDevice.current.orientation
     if orientation != .unknown {

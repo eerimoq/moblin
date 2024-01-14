@@ -3,7 +3,17 @@ import SwiftUI
 struct GlobalQuickButtonsSettingsView: View {
     @EnvironmentObject var model: Model
 
-    private func onBackgroundColorChange() {}
+    private func onBackgroundColorChange(button: SettingsButton, color: Color) {
+        guard let color = color.toRgb() else {
+            return
+        }
+        button.backgroundColor = color
+        model.updateButtonStates()
+    }
+
+    private func onBackgroundColorSubmit() {
+        model.store()
+    }
 
     var body: some View {
         Form {
@@ -40,11 +50,9 @@ struct GlobalQuickButtonsSettingsView: View {
                     ForEach(model.database.globalButtons!) { button in
                         NavigationLink(destination: GlobalQuickButtonsButtonSettingsView(
                             name: button.name,
-                            color: button.backgroundColor!,
-                            red: Float(button.backgroundColor!.red),
-                            green: Float(button.backgroundColor!.green),
-                            blue: Float(button.backgroundColor!.blue),
-                            onChange: onBackgroundColorChange
+                            background: button.backgroundColor!.color(),
+                            onChange: { color in onBackgroundColorChange(button: button, color: color) },
+                            onSubmit: onBackgroundColorSubmit
                         )) {
                             Toggle(isOn: Binding(get: {
                                 button.enabled!
