@@ -14,87 +14,6 @@ struct ColorCircle: View {
     }
 }
 
-struct ColorEditView: View {
-    @EnvironmentObject var model: Model
-    var color: RgbColor
-    @State var red: Float
-    @State var green: Float
-    @State var blue: Float
-    let onChange: () -> Void
-
-    var body: some View {
-        HStack {
-            Text("Red")
-                .frame(width: 60)
-            Slider(
-                value: $red,
-                in: 0 ... 255,
-                step: 1,
-                onEditingChanged: { begin in
-                    guard !begin else {
-                        return
-                    }
-                    color.red = Int(red)
-                    model.store()
-                    model.reloadChatMessages()
-                }
-            )
-            .onChange(of: red) { value in
-                color.red = Int(value)
-                onChange()
-            }
-            Text(String(Int(red)))
-                .frame(width: 35)
-        }
-        HStack {
-            Text("Green")
-                .frame(width: 60)
-            Slider(
-                value: $green,
-                in: 0 ... 255,
-                step: 1,
-                onEditingChanged: { begin in
-                    guard !begin else {
-                        return
-                    }
-                    color.green = Int(green)
-                    model.store()
-                    model.reloadChatMessages()
-                }
-            )
-            .onChange(of: green) { value in
-                color.green = Int(value)
-                onChange()
-            }
-            Text(String(Int(green)))
-                .frame(width: 35)
-        }
-        HStack {
-            Text("Blue")
-                .frame(width: 60)
-            Slider(
-                value: $blue,
-                in: 0 ... 255,
-                step: 1,
-                onEditingChanged: { begin in
-                    guard !begin else {
-                        return
-                    }
-                    color.blue = Int(blue)
-                    model.store()
-                    model.reloadChatMessages()
-                }
-            )
-            .onChange(of: blue) { value in
-                color.blue = Int(value)
-                onChange()
-            }
-            Text(String(Int(blue)))
-                .frame(width: 35)
-        }
-    }
-}
-
 struct LocalOverlaysChatSettingsView: View {
     @EnvironmentObject var model: Model
     @State var showTimestampColor: Bool = false
@@ -253,128 +172,61 @@ struct LocalOverlaysChatSettingsView: View {
                 }
             }
             Section {
-                Button {
-                    showTimestampColor.toggle()
-                } label: {
-                    HStack {
-                        Text("Timestamp")
-                        Spacer()
-                        ColorCircle(color: timestampColor)
-                    }
-                }
-                .foregroundColor(.primary)
-                if showTimestampColor {
-                    ColorEditView(color: model.database.chat.timestampColor,
-                                  red: Float(model.database.chat.timestampColor.red),
-                                  green: Float(model.database.chat.timestampColor.green),
-                                  blue: Float(model.database.chat.timestampColor.blue))
-                    {
-                        timestampColor = model.database.chat.timestampColor.color()
-                    }
-                }
-                Button {
-                    showUsernameColor.toggle()
-                } label: {
-                    HStack {
-                        Text("Username")
-                        Spacer()
-                        ColorCircle(color: usernameColor)
-                    }
-                }
-                .foregroundColor(.primary)
-                if showUsernameColor {
-                    ColorEditView(color: model.database.chat.usernameColor,
-                                  red: Float(model.database.chat
-                                      .usernameColor.red),
-                                  green: Float(model.database
-                                      .chat.usernameColor.green),
-                                  blue: Float(model.database.chat
-                                      .usernameColor.blue))
-                    {
-                        usernameColor = model.database.chat.usernameColor.color()
-                    }
-                }
-                Button {
-                    showMessageColor.toggle()
-                } label: {
-                    HStack {
-                        Text("Message")
-                        Spacer()
-                        ColorCircle(color: messageColor)
-                    }
-                }
-                .foregroundColor(.primary)
-                if showMessageColor {
-                    ColorEditView(color: model.database.chat.messageColor,
-                                  red: Float(model.database.chat
-                                      .messageColor.red),
-                                  green: Float(model.database
-                                      .chat.messageColor.green),
-                                  blue: Float(model.database.chat
-                                      .messageColor.blue))
-                    {
-                        messageColor = model.database.chat.messageColor.color()
-                    }
-                }
-                Button {
-                    showBackgroundColor.toggle()
-                } label: {
-                    Toggle(isOn: Binding(get: {
-                        model.database.chat.backgroundColorEnabled
-                    }, set: { value in
-                        model.database.chat.backgroundColorEnabled = value
-                        model.store()
-                        model.reloadChatMessages()
-                    })) {
-                        HStack {
-                            Text("Background")
-                            Spacer()
-                            ColorCircle(color: backgroundColor)
+                ColorPicker("Timestamp", selection: $timestampColor, supportsOpacity: false)
+                    .onChange(of: timestampColor) { _ in
+                        guard let color = timestampColor.toRgb() else {
+                            return
                         }
-                    }
-                }
-                .foregroundColor(.primary)
-                if showBackgroundColor {
-                    ColorEditView(color: model.database.chat.backgroundColor,
-                                  red: Float(model.database.chat
-                                      .backgroundColor.red),
-                                  green: Float(model.database
-                                      .chat.backgroundColor.green),
-                                  blue: Float(model.database.chat
-                                      .backgroundColor.blue))
-                    {
-                        backgroundColor = model.database.chat.backgroundColor.color()
-                    }
-                }
-                Button {
-                    showShadowColor.toggle()
-                } label: {
-                    Toggle(isOn: Binding(get: {
-                        model.database.chat.shadowColorEnabled
-                    }, set: { value in
-                        model.database.chat.shadowColorEnabled = value
-                        model.store()
+                        model.database.chat.timestampColor = color
                         model.reloadChatMessages()
-                    })) {
-                        HStack {
-                            Text("Border")
-                            Spacer()
-                            ColorCircle(color: shadowColor)
+                    }
+                ColorPicker("Username", selection: $usernameColor, supportsOpacity: false)
+                    .onChange(of: usernameColor) { _ in
+                        guard let color = usernameColor.toRgb() else {
+                            return
                         }
+                        model.database.chat.usernameColor = color
+                        model.reloadChatMessages()
                     }
+                ColorPicker("Message", selection: $messageColor, supportsOpacity: false)
+                    .onChange(of: messageColor) { _ in
+                        guard let color = messageColor.toRgb() else {
+                            return
+                        }
+                        model.database.chat.messageColor = color
+                        model.reloadChatMessages()
+                    }
+                Toggle(isOn: Binding(get: {
+                    model.database.chat.backgroundColorEnabled
+                }, set: { value in
+                    model.database.chat.backgroundColorEnabled = value
+                    model.store()
+                    model.reloadChatMessages()
+                })) {
+                    ColorPicker("Background", selection: $backgroundColor, supportsOpacity: false)
+                        .onChange(of: backgroundColor) { _ in
+                            guard let color = backgroundColor.toRgb() else {
+                                return
+                            }
+                            model.database.chat.backgroundColor = color
+                            model.reloadChatMessages()
+                        }
                 }
-                .foregroundColor(.primary)
-                if showShadowColor {
-                    ColorEditView(color: model.database.chat.shadowColor,
-                                  red: Float(model.database.chat
-                                      .shadowColor.red),
-                                  green: Float(model.database
-                                      .chat.shadowColor.green),
-                                  blue: Float(model.database.chat
-                                      .shadowColor.blue))
-                    {
-                        shadowColor = model.database.chat.shadowColor.color()
-                    }
+                Toggle(isOn: Binding(get: {
+                    model.database.chat.shadowColorEnabled
+                }, set: { value in
+                    model.database.chat.shadowColorEnabled = value
+                    model.store()
+                    model.reloadChatMessages()
+                })) {
+                    ColorPicker("Border", selection: $shadowColor, supportsOpacity: false)
+                        .onChange(of: shadowColor) { _ in
+                            guard let color = shadowColor.toRgb() else {
+                                return
+                            }
+                            model.database.chat.shadowColor = color
+                            model.reloadChatMessages()
+                        }
                 }
                 Toggle(isOn: Binding(get: {
                     model.database.chat.meInUsernameColor!
@@ -389,6 +241,9 @@ struct LocalOverlaysChatSettingsView: View {
             } footer: {
                 Text("Border is fairly CPU intensive. Disable for less power usage.")
             }
+        }
+        .onDisappear() {
+            model.store()
         }
         .navigationTitle("Chat")
         .toolbar {

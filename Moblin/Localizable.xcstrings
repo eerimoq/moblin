@@ -10390,6 +10390,7 @@
       }
     },
     "Blue" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -24166,6 +24167,7 @@
       }
     },
     "Green" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -37499,6 +37501,7 @@
       }
     },
     "Red" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
