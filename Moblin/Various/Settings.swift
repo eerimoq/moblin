@@ -2,6 +2,7 @@ import AVFoundation
 import SwiftUI
 
 let defaultStreamUrl = "srt://my_public_ip:4000"
+let defaultQuickButtonColor = RgbColor(red: 255 / 4, green: 255 / 4, blue: 255 / 4)
 
 enum SettingsStreamCodec: String, Codable, CaseIterable {
     case h265hevc = "H.265/HEVC"
@@ -793,7 +794,7 @@ class SettingsButton: Codable, Identifiable, Equatable, Hashable {
     var widget: SettingsButtonWidget = .init(widgetId: UUID())
     var isOn: Bool = false
     var enabled: Bool? = true
-    var backgroundColor: RgbColor? = RgbColor(red: 255 / 4, green: 255 / 4, blue: 255 / 4)
+    var backgroundColor: RgbColor? = defaultQuickButtonColor
 
     init(name: String) {
         self.name = name
@@ -1875,7 +1876,7 @@ final class Settings {
             store()
         }
         for button in realDatabase.globalButtons! where button.backgroundColor == nil {
-            button.backgroundColor = RgbColor(red: 255 / 4, green: 255 / 4, blue: 255 / 4)
+            button.backgroundColor = defaultQuickButtonColor
             store()
         }
     }

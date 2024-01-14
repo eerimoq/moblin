@@ -9,13 +9,28 @@ struct GlobalQuickButtonsButtonSettingsView: View {
 
     var body: some View {
         Form {
-            ColorPicker("Background", selection: $background, supportsOpacity: false)
-                .onChange(of: background) { _ in
+            Section {
+                ColorPicker("Color", selection: $background, supportsOpacity: false)
+                    .onChange(of: background) { _ in
+                        onChange(background)
+                    }
+                    .onDisappear {
+                        onSubmit()
+                    }
+                Button(action: {
+                    background = defaultQuickButtonColor.color()
                     onChange(background)
-                }
-                .onDisappear {
                     onSubmit()
-                }
+                }, label: {
+                    HStack {
+                        Spacer()
+                        Text("Reset")
+                        Spacer()
+                    }
+                })
+            } header: {
+                Text("Background")
+            }
         }
         .navigationTitle(name)
         .toolbar {

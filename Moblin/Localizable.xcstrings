@@ -11776,6 +11776,9 @@
         }
       }
     },
+    "Color" : {
+
+    },
     "Colors" : {
       "localizations" : {
         "de" : {
@@ -34167,6 +34170,9 @@
           }
         }
       }
+    },
+    "Reset" : {
+
     },
     "Reset settings" : {
       "localizations" : {
