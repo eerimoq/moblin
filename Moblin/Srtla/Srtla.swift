@@ -48,7 +48,7 @@ class Srtla {
         passThrough: Bool,
         mpegtsPacketsPerPacket: Int,
         networkInterfaceNames: [SettingsNetworkInterfaceName],
-        connectionPriorities: [SettingsStreamSrtConnectionPriority]
+        connectionPriorities: SettingsStreamSrtConnectionPriorities
     ) {
         self.delegate = delegate
         self.passThrough = passThrough
@@ -56,8 +56,10 @@ class Srtla {
         networkInterfaces = .init()
         self.connectionPriorities = .init()
         setNetworkInterfaceNames(networkInterfaceNames: networkInterfaceNames)
-        for connectionPriority in connectionPriorities {
-            self.connectionPriorities.append(connectionPriority.clone())
+        if connectionPriorities.enabled {
+            for connectionPriority in connectionPriorities.priorities {
+                self.connectionPriorities.append(connectionPriority.clone())
+            }
         }
         logger.info("srtla: SRT instead of SRTLA: \(passThrough)")
         if passThrough {

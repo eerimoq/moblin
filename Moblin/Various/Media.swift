@@ -86,7 +86,7 @@ final class Media: NSObject {
         overheadBandwidth: Int32,
         mpegtsPacketsPerPacket: Int,
         networkInterfaceNames: [SettingsNetworkInterfaceName],
-        connectionPriorities: [SettingsStreamSrtConnectionPriority]
+        connectionPriorities: SettingsStreamSrtConnectionPriorities
     ) {
         srtUrl = url
         self.latency = latency

@@ -38,30 +38,41 @@ class SettingsStreamSrtConnectionPriority: Codable, Identifiable {
     }
 
     func clone() -> SettingsStreamSrtConnectionPriority {
-        let connection = SettingsStreamSrtConnectionPriority(name: name)
-        connection.priority = priority
-        return connection
+        let new = SettingsStreamSrtConnectionPriority(name: name)
+        new.priority = priority
+        return new
+    }
+}
+
+class SettingsStreamSrtConnectionPriorities: Codable {
+    var enabled: Bool = false
+    var priorities: [SettingsStreamSrtConnectionPriority] = [
+        SettingsStreamSrtConnectionPriority(name: "Cellular"),
+        SettingsStreamSrtConnectionPriority(name: "WiFi"),
+    ]
+
+    func clone() -> SettingsStreamSrtConnectionPriorities {
+        let new = SettingsStreamSrtConnectionPriorities()
+        new.enabled = enabled
+        new.priorities.removeAll()
+        for priority in priorities {
+            new.priorities.append(priority.clone())
+        }
+        return new
     }
 }
 
 class SettingsStreamSrt: Codable {
     var latency: Int32 = 2000
     var mpegtsPacketsPerPacket: Int = 7
-    var connectionPriorities: [SettingsStreamSrtConnectionPriority]? = []
-
-    init() {
-        connectionPriorities!.append(SettingsStreamSrtConnectionPriority(name: "Cellular"))
-        connectionPriorities!.append(SettingsStreamSrtConnectionPriority(name: "WiFi"))
-    }
+    var connectionPriorities: SettingsStreamSrtConnectionPriorities? = .init()
 
     func clone() -> SettingsStreamSrt {
-        let srt = SettingsStreamSrt()
-        srt.latency = latency
-        srt.mpegtsPacketsPerPacket = mpegtsPacketsPerPacket
-        for connectionPriority in connectionPriorities! {
-            srt.connectionPriorities!.append(connectionPriority.clone())
-        }
-        return srt
+        let new = SettingsStreamSrt()
+        new.latency = latency
+        new.mpegtsPacketsPerPacket = mpegtsPacketsPerPacket
+        new.connectionPriorities = connectionPriorities!.clone()
+        return new
     }
 }
 
@@ -86,11 +97,11 @@ class SettingsStreamChat: Codable {
     var seventvEmotes: Bool = true
 
     func clone() -> SettingsStreamChat {
-        let chat = SettingsStreamChat()
-        chat.bttvEmotes = bttvEmotes
-        chat.ffzEmotes = ffzEmotes
-        chat.seventvEmotes = seventvEmotes
-        return chat
+        let new = SettingsStreamChat()
+        new.bttvEmotes = bttvEmotes
+        new.ffzEmotes = ffzEmotes
+        new.seventvEmotes = seventvEmotes
+        return new
     }
 }
 
@@ -100,11 +111,11 @@ class SettingsStreamRecording: Codable {
     var maxKeyFrameInterval: Int32 = 0
 
     func clone() -> SettingsStreamRecording {
-        let recording = SettingsStreamRecording()
-        recording.videoCodec = videoCodec
-        recording.videoBitrate = videoBitrate
-        recording.maxKeyFrameInterval = maxKeyFrameInterval
-        return recording
+        let new = SettingsStreamRecording()
+        new.videoCodec = videoCodec
+        new.videoBitrate = videoBitrate
+        new.maxKeyFrameInterval = maxKeyFrameInterval
+        return new
     }
 
     func videoCodecString() -> String {
@@ -178,39 +189,39 @@ class SettingsStream: Codable, Identifiable, Equatable {
     }
 
     func clone() -> SettingsStream {
-        let stream = SettingsStream(name: name)
-        stream.url = url
-        stream.twitchEnabled = twitchEnabled
-        stream.twitchChannelName = twitchChannelName
-        stream.twitchChannelId = twitchChannelId
-        stream.kickEnabled = kickEnabled
-        stream.kickChatroomId = kickChatroomId
-        stream.youTubeEnabled = youTubeEnabled
-        stream.youTubeApiKey = youTubeApiKey
-        stream.youTubeVideoId = youTubeVideoId
-        stream.afreecaTvEnabled = afreecaTvEnabled
-        stream.afreecaTvChannelName = afreecaTvChannelName
-        stream.afreecaTvStreamId = afreecaTvStreamId
-        stream.obsWebSocketEnabled = obsWebSocketEnabled
-        stream.obsWebSocketUrl = obsWebSocketUrl
-        stream.obsWebSocketPassword = obsWebSocketPassword
-        stream.obsSourceName = obsSourceName
-        stream.resolution = resolution
-        stream.fps = fps
-        stream.bitrate = bitrate
-        stream.codec = codec
-        stream.bFrames = bFrames
-        stream.adaptiveBitrate = adaptiveBitrate
-        stream.srt = srt.clone()
-        stream.captureSessionPresetEnabled = captureSessionPresetEnabled
-        stream.captureSessionPreset = captureSessionPreset
-        stream.maxKeyFrameInterval = maxKeyFrameInterval
-        stream.audioBitrate = audioBitrate
-        stream.chat = chat?.clone()
-        stream.recording = recording?.clone()
-        stream.realtimeIrlEnabled = realtimeIrlEnabled
-        stream.realtimeIrlPushKey = realtimeIrlPushKey
-        return stream
+        let new = SettingsStream(name: name)
+        new.url = url
+        new.twitchEnabled = twitchEnabled
+        new.twitchChannelName = twitchChannelName
+        new.twitchChannelId = twitchChannelId
+        new.kickEnabled = kickEnabled
+        new.kickChatroomId = kickChatroomId
+        new.youTubeEnabled = youTubeEnabled
+        new.youTubeApiKey = youTubeApiKey
+        new.youTubeVideoId = youTubeVideoId
+        new.afreecaTvEnabled = afreecaTvEnabled
+        new.afreecaTvChannelName = afreecaTvChannelName
+        new.afreecaTvStreamId = afreecaTvStreamId
+        new.obsWebSocketEnabled = obsWebSocketEnabled
+        new.obsWebSocketUrl = obsWebSocketUrl
+        new.obsWebSocketPassword = obsWebSocketPassword
+        new.obsSourceName = obsSourceName
+        new.resolution = resolution
+        new.fps = fps
+        new.bitrate = bitrate
+        new.codec = codec
+        new.bFrames = bFrames
+        new.adaptiveBitrate = adaptiveBitrate
+        new.srt = srt.clone()
+        new.captureSessionPresetEnabled = captureSessionPresetEnabled
+        new.captureSessionPreset = captureSessionPreset
+        new.maxKeyFrameInterval = maxKeyFrameInterval
+        new.audioBitrate = audioBitrate
+        new.chat = chat?.clone()
+        new.recording = recording?.clone()
+        new.realtimeIrlEnabled = realtimeIrlEnabled
+        new.realtimeIrlPushKey = realtimeIrlPushKey
+        return new
     }
 
     private func getScheme() -> String? {
@@ -311,13 +322,13 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable {
     }
 
     func clone() -> SettingsSceneWidget {
-        let widget = SettingsSceneWidget(widgetId: widgetId)
-        widget.enabled = enabled
-        widget.x = x
-        widget.y = y
-        widget.width = width
-        widget.height = height
-        return widget
+        let new = SettingsSceneWidget(widgetId: widgetId)
+        new.enabled = enabled
+        new.x = x
+        new.y = y
+        new.width = width
+        new.height = height
+        return new
     }
 }
 
@@ -335,9 +346,9 @@ class SettingsSceneButton: Codable, Identifiable, Equatable {
     }
 
     func clone() -> SettingsSceneButton {
-        let button = SettingsSceneButton(buttonId: buttonId)
-        button.enabled = enabled
-        return button
+        let new = SettingsSceneButton(buttonId: buttonId)
+        new.enabled = enabled
+        return new
     }
 }
 
@@ -409,12 +420,12 @@ class SettingsSceneCameraLayoutPip: Codable {
     var height: Double = 35.0
 
     func clone() -> SettingsSceneCameraLayoutPip {
-        let layout = SettingsSceneCameraLayoutPip()
-        layout.x = x
-        layout.y = y
-        layout.width = width
-        layout.height = height
-        return layout
+        let new = SettingsSceneCameraLayoutPip()
+        new.x = x
+        new.y = y
+        new.width = width
+        new.height = height
+        return new
     }
 }
 
@@ -443,20 +454,20 @@ class SettingsScene: Codable, Identifiable, Equatable {
     }
 
     func clone() -> SettingsScene {
-        let scene = SettingsScene(name: name)
-        scene.enabled = enabled
-        scene.cameraLayout = cameraLayout
-        scene.cameraType = cameraType
-        scene.cameraPosition = cameraPosition
-        scene.rtmpCameraId = rtmpCameraId
-        scene.cameraLayoutPip = cameraLayoutPip!.clone()
+        let new = SettingsScene(name: name)
+        new.enabled = enabled
+        new.cameraLayout = cameraLayout
+        new.cameraType = cameraType
+        new.cameraPosition = cameraPosition
+        new.rtmpCameraId = rtmpCameraId
+        new.cameraLayoutPip = cameraLayoutPip!.clone()
         for widget in widgets {
-            scene.widgets.append(widget.clone())
+            new.widgets.append(widget.clone())
         }
         for button in buttons {
-            scene.buttons.append(button.clone())
+            new.buttons.append(button.clone())
         }
-        return scene
+        return new
     }
 }
 
@@ -953,12 +964,12 @@ class SettingsRtmpServerStream: Codable, Identifiable {
     }
 
     func clone() -> SettingsRtmpServerStream {
-        let stream = SettingsRtmpServerStream()
-        stream.name = name
-        stream.streamKey = streamKey
-        stream.latency = latency
-        stream.fps = fps
-        return stream
+        let new = SettingsRtmpServerStream()
+        new.name = name
+        new.streamKey = streamKey
+        new.latency = latency
+        new.fps = fps
+        return new
     }
 }
 
@@ -968,13 +979,13 @@ class SettingsRtmpServer: Codable {
     var streams: [SettingsRtmpServerStream] = []
 
     func clone() -> SettingsRtmpServer {
-        let rtmpServer = SettingsRtmpServer()
-        rtmpServer.enabled = enabled
-        rtmpServer.port = port
+        let new = SettingsRtmpServer()
+        new.enabled = enabled
+        new.port = port
         for stream in streams {
-            rtmpServer.streams.append(stream.clone())
+            new.streams.append(stream.clone())
         }
-        return rtmpServer
+        return new
     }
 }
 
@@ -1858,9 +1869,7 @@ final class Settings {
                 store()
             }
             for stream in realDatabase.streams where stream.srt.connectionPriorities == nil {
-                stream.srt.connectionPriorities = []
-                stream.srt.connectionPriorities!.append(SettingsStreamSrtConnectionPriority(name: "Cellular"))
-                stream.srt.connectionPriorities!.append(SettingsStreamSrtConnectionPriority(name: "WiFi"))
+                stream.srt.connectionPriorities = .init()
                 store()
             }
         }

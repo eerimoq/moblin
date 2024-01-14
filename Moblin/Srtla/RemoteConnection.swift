@@ -24,7 +24,8 @@ private enum State {
 private let windowDefault = 20
 private let windowMinimum = 1
 private let windowMaximum = 60
-private let windowStable = 10
+private let windowStableMinimum = 10
+private let windowStableMaximum = 20
 private let windowMultiply = 1000
 private let windowDecrement = 100
 private let windowIncrement = 30
@@ -159,8 +160,13 @@ class RemoteConnection {
             return 1
         } else {
             let score = windowSize / (packetsInFlight.count + 1)
-            if windowSize > windowStable * windowMultiply {
+            if windowSize > windowStableMaximum * windowMultiply {
                 return Int(Float(score) * priority)
+            } else if windowSize > windowStableMinimum * windowMultiply {
+                var factor = Float(windowSize - windowStableMinimum * windowMultiply)
+                factor /= Float((windowStableMaximum - windowStableMinimum) * windowMultiply)
+                let scaledPriority = 1 + (priority - 1) * factor
+                return Int(Float(score) * scaledPriority)
             } else {
                 return score
             }

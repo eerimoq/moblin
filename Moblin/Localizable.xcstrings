@@ -4346,7 +4346,7 @@
         }
       }
     },
-    "A connection with high priority will be used more than a connection with low priority if the high priority connection is stable." : {
+    "A connection with high priority will be used more than a connection with low priority if the high priority connection is stable. Unstable connections will get lowset priority regardless of configured priority until they are stable again." : {
 
     },
     "A large number. Use developer tools (F11) in your browser. Look at websocket messages." : {
@@ -23346,6 +23346,7 @@
       }
     },
     "Interface" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -29601,6 +29602,9 @@
           }
         }
       }
+    },
+    "No known Ethernet network interfaces." : {
+
     },
     "Noise level" : {
       "localizations" : {

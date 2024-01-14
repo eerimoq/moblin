@@ -7,9 +7,13 @@ struct PriorityItemView: View {
     @State var prio: Float
 
     private func makeName() -> String {
-        return model.database.networkInterfaceNames!.first(where: { interface in
+        if let name = model.database.networkInterfaceNames!.first(where: { interface in
             interface.interfaceName == priority.name
-        })?.name ?? priority.name
+        })?.name, !name.isEmpty {
+            return name
+        } else {
+            return priority.name
+        }
     }
 
     var body: some View {
@@ -34,18 +38,31 @@ struct PriorityItemView: View {
 }
 
 struct StreamSrtConnectionPriorityView: View {
+    @EnvironmentObject var model: Model
     var stream: SettingsStream
 
     var body: some View {
         Form {
             Section {
-                ForEach(stream.srt.connectionPriorities!) { priority in
+                Toggle(isOn: Binding(get: {
+                    stream.srt.connectionPriorities!.enabled
+                }, set: { value in
+                    stream.srt.connectionPriorities!.enabled = value
+                    model.store()
+                })) {
+                    Text("Enabled")
+                }
+                .disabled(stream.enabled && model.isLive)
+            }
+            Section {
+                ForEach(stream.srt.connectionPriorities!.priorities) { priority in
                     PriorityItemView(stream: stream, priority: priority, prio: Float(priority.priority))
                 }
             } footer: {
                 Text("""
                 A connection with high priority will be used more than a connection with \
-                low priority if the high priority connection is stable.
+                low priority if the high priority connection is stable. Unstable connections \
+                will get lowset priority regardless of configured priority until they are stable again.
                 """)
             }
         }

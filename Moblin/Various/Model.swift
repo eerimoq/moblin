@@ -1091,12 +1091,20 @@ final class Model: ObservableObject {
             self.ipStatuses = statuses
             for status in statuses where status.interfaceType == .wiredEthernet {
                 for stream in self.database.streams
-                    where !stream.srt.connectionPriorities!.contains(where: { priority in
+                    where !stream.srt.connectionPriorities!.priorities.contains(where: { priority in
                         priority.name == status.name
                     })
                 {
-                    stream.srt.connectionPriorities!
+                    stream.srt.connectionPriorities!.priorities
                         .append(SettingsStreamSrtConnectionPriority(name: status.name))
+                    self.store()
+                }
+                if !self.database.networkInterfaceNames!.contains(where: { interface in
+                    interface.interfaceName == status.name
+                }) {
+                    var interface = SettingsNetworkInterfaceName()
+                    interface.interfaceName = status.name
+                    self.database.networkInterfaceNames!.append(interface)
                     self.store()
                 }
             }
