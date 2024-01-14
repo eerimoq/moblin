@@ -19,6 +19,7 @@ LANGUAGES = [
     ("pt-BR", "pt"),
     ("pt-PT", "pt"),
     ("id", "id"),
+    ("it", "it"),
     ("ja", "ja"),
     ("hi", "hi"),
     ("ko", "ko")
