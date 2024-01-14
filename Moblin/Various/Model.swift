@@ -1102,7 +1102,7 @@ final class Model: ObservableObject {
                 if !self.database.networkInterfaceNames!.contains(where: { interface in
                     interface.interfaceName == status.name
                 }) {
-                    var interface = SettingsNetworkInterfaceName()
+                    let interface = SettingsNetworkInterfaceName()
                     interface.interfaceName = status.name
                     self.database.networkInterfaceNames!.append(interface)
                     self.store()
