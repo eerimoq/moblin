@@ -490,7 +490,14 @@ final class Model: ObservableObject {
         stream.url = createStreamFromWizardUrl()
         switch wizardNetworkSetup {
         case .none:
-            break
+            switch wizardCustomProtocol {
+            case .none:
+                stream.codec = .h264avc
+            case .srt:
+                stream.codec = .h265hevc
+            case .rtmp:
+                stream.codec = .h264avc
+            }
         case .obs:
             stream.codec = .h265hevc
         case .belaboxCloudObs:
