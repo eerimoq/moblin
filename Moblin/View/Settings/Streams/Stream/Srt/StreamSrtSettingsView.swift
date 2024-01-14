@@ -50,6 +50,9 @@ struct StreamSrtSettingsView: View {
                     model.storeAndReloadStreamIfEnabled(stream: stream)
                 }))
                 .disabled(stream.enabled && model.isLive)
+                NavigationLink(destination: StreamSrtConnectionPriorityView(stream: stream)) {
+                    Text("Connection priorities")
+                }
             } footer: {
                 VStack(alignment: .leading) {
                     Text("Adaptive bitrate is experimental.")

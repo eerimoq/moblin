@@ -1089,6 +1089,17 @@ final class Model: ObservableObject {
         reloadRtmpServer()
         ipMonitor.pathUpdateHandler = { statuses in
             self.ipStatuses = statuses
+            for status in statuses where status.interfaceType == .wiredEthernet {
+                for stream in self.database.streams
+                    where !stream.srt.connectionPriorities!.contains(where: { priority in
+                        priority.name == status.name
+                    })
+                {
+                    stream.srt.connectionPriorities!
+                        .append(SettingsStreamSrtConnectionPriority(name: status.name))
+                    self.store()
+                }
+            }
         }
         ipMonitor.start()
         NotificationCenter.default.addObserver(self,
@@ -1557,6 +1568,7 @@ final class Model: ObservableObject {
             self.updateLocation()
             self.updateObsSourceScreenshot()
             self.updateObsAudioVolume()
+            self.media.logStatistics()
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
@@ -1994,7 +2006,8 @@ final class Model: ObservableObject {
                 latency: stream.srt.latency,
                 overheadBandwidth: database.debug!.srtOverheadBandwidth!,
                 mpegtsPacketsPerPacket: stream.srt.mpegtsPacketsPerPacket,
-                networkInterfaceNames: database.networkInterfaceNames!
+                networkInterfaceNames: database.networkInterfaceNames!,
+                connectionPriorities: stream.srt.connectionPriorities!
             )
         }
         updateSpeed(now: Date())

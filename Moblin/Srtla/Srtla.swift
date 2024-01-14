@@ -41,38 +41,47 @@ class Srtla {
 
     private var totalByteCount: Int64 = 0
     private var networkInterfaces: SrtlaNetworkInterfaces
+    private var connectionPriorities: [SettingsStreamSrtConnectionPriority]
 
     init(
         delegate: SrtlaDelegate,
         passThrough: Bool,
         mpegtsPacketsPerPacket: Int,
-        networkInterfaceNames: [SettingsNetworkInterfaceName]
+        networkInterfaceNames: [SettingsNetworkInterfaceName],
+        connectionPriorities: [SettingsStreamSrtConnectionPriority]
     ) {
         self.delegate = delegate
         self.passThrough = passThrough
         self.mpegtsPacketsPerPacket = mpegtsPacketsPerPacket
         networkInterfaces = .init()
+        self.connectionPriorities = .init()
         setNetworkInterfaceNames(networkInterfaceNames: networkInterfaceNames)
+        for connectionPriority in connectionPriorities {
+            self.connectionPriorities.append(connectionPriority.clone())
+        }
         logger.info("srtla: SRT instead of SRTLA: \(passThrough)")
         if passThrough {
             remoteConnections.append(RemoteConnection(
                 type: nil,
                 mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
                 interface: nil,
-                networkInterfaces: networkInterfaces
+                networkInterfaces: networkInterfaces,
+                priority: 1.0
             ))
         } else {
             remoteConnections.append(RemoteConnection(
                 type: .cellular,
                 mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
                 interface: nil,
-                networkInterfaces: networkInterfaces
+                networkInterfaces: networkInterfaces,
+                priority: getConnectionPriority(name: "Cellular")
             ))
             remoteConnections.append(RemoteConnection(
                 type: .wifi,
                 mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
                 interface: nil,
-                networkInterfaces: networkInterfaces
+                networkInterfaces: networkInterfaces,
+                priority: getConnectionPriority(name: "WiFi")
             ))
         }
     }
@@ -131,36 +140,38 @@ class Srtla {
         }
     }
 
+    private func getConnectionPriority(name: String) -> Float {
+        return Float(connectionPriorities.first { connection in
+            connection.name == name
+        }?.priority ?? 1)
+    }
+
     private func handleNetworkPathUpdate(path: NWPath) {
-        logger.info("srtla: interface: \(path.debugDescription)")
+        logger.debug("srtla: interface: \(path.debugDescription)")
         var newRemoteConnections: [RemoteConnection] = []
         for connection in remoteConnections {
             if let interface = connection.interface {
                 if path.availableInterfaces.contains(interface) {
-                    logger.info("srtla: interface: Re-adding ethernet \(interface)")
                     newRemoteConnections.append(connection)
                 } else {
-                    logger.info("srtla: interface: Removing ethernet \(interface)")
                     stopRemote(connection: connection)
                 }
             } else {
-                logger.info("srtla: interface: Re-adding non-ethernet")
                 newRemoteConnections.append(connection)
             }
         }
         for interface in path.availableInterfaces where interface.type == .wiredEthernet {
-            logger.info("srtla: interface: Available ethernet \(interface.name): \(interface.type)")
             guard !newRemoteConnections.contains(where: { connection in
                 connection.interface == interface
             }) else {
                 continue
             }
-            logger.info("srtla: interface: Adding ethernet \(interface)")
             newRemoteConnections.append(RemoteConnection(
                 type: .wiredEthernet,
                 mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
                 interface: interface,
-                networkInterfaces: self.networkInterfaces
+                networkInterfaces: self.networkInterfaces,
+                priority: getConnectionPriority(name: interface.name)
             ))
             startRemote(connection: newRemoteConnections.last!, host: host, port: port)
             if let groupId {

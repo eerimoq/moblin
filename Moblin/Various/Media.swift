@@ -85,7 +85,8 @@ final class Media: NSObject {
         latency: Int32,
         overheadBandwidth: Int32,
         mpegtsPacketsPerPacket: Int,
-        networkInterfaceNames: [SettingsNetworkInterfaceName]
+        networkInterfaceNames: [SettingsNetworkInterfaceName],
+        connectionPriorities: [SettingsStreamSrtConnectionPriority]
     ) {
         srtUrl = url
         self.latency = latency
@@ -97,7 +98,8 @@ final class Media: NSObject {
             delegate: self,
             passThrough: !isSrtla,
             mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
-            networkInterfaceNames: networkInterfaceNames
+            networkInterfaceNames: networkInterfaceNames,
+            connectionPriorities: connectionPriorities
         )
         if adaptiveBitrateEnabled {
             adaptiveBitrate = AdaptiveBitrate(

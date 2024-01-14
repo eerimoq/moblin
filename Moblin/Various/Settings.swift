@@ -28,14 +28,39 @@ enum SettingsStreamProtocol: String, Codable {
     case srt = "SRT"
 }
 
+class SettingsStreamSrtConnectionPriority: Codable, Identifiable {
+    var id: UUID = .init()
+    var name: String
+    var priority: Int = 1
+
+    init(name: String) {
+        self.name = name
+    }
+
+    func clone() -> SettingsStreamSrtConnectionPriority {
+        let connection = SettingsStreamSrtConnectionPriority(name: name)
+        connection.priority = priority
+        return connection
+    }
+}
+
 class SettingsStreamSrt: Codable {
     var latency: Int32 = 2000
     var mpegtsPacketsPerPacket: Int = 7
+    var connectionPriorities: [SettingsStreamSrtConnectionPriority]? = []
+
+    init() {
+        connectionPriorities!.append(SettingsStreamSrtConnectionPriority(name: "Cellular"))
+        connectionPriorities!.append(SettingsStreamSrtConnectionPriority(name: "WiFi"))
+    }
 
     func clone() -> SettingsStreamSrt {
         let srt = SettingsStreamSrt()
         srt.latency = latency
         srt.mpegtsPacketsPerPacket = mpegtsPacketsPerPacket
+        for connectionPriority in connectionPriorities! {
+            srt.connectionPriorities!.append(connectionPriority.clone())
+        }
         return srt
     }
 }
@@ -1830,6 +1855,12 @@ final class Settings {
                 button.type != .obsScene && button.type != .obsStartStopStream
             }
             if realDatabase.globalButtons!.count != numberOfButtons {
+                store()
+            }
+            for stream in realDatabase.streams where stream.srt.connectionPriorities == nil {
+                stream.srt.connectionPriorities = []
+                stream.srt.connectionPriorities!.append(SettingsStreamSrtConnectionPriority(name: "Cellular"))
+                stream.srt.connectionPriorities!.append(SettingsStreamSrtConnectionPriority(name: "WiFi"))
                 store()
             }
         }

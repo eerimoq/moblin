@@ -4346,6 +4346,9 @@
         }
       }
     },
+    "A connection with high priority will be used more than a connection with low priority if the high priority connection is stable." : {
+
+    },
     "A large number. Use developer tools (F11) in your browser. Look at websocket messages." : {
       "localizations" : {
         "de" : {
@@ -12304,6 +12307,9 @@
       }
     },
     "Configure source name in Settings → Streams → %@ → OBS remote control for snapshop and more." : {
+
+    },
+    "Connection priorities" : {
 
     },
     "Controller" : {

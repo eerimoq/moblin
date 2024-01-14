@@ -24,6 +24,7 @@ private enum State {
 private let windowDefault = 20
 private let windowMinimum = 1
 private let windowMaximum = 60
+private let windowStable = 10
 private let windowMultiply = 1000
 private let windowDecrement = 100
 private let windowIncrement = 30
@@ -47,6 +48,7 @@ class RemoteConnection {
     private var numberOfNonNullPacketsSent: UInt64 = 0
     private var hasGroupId: Bool = false
     private var groupId: Data!
+    private var priority: Float
     private var state = State.idle {
         didSet {
             logger.info("srtla: \(typeString): State \(oldValue) -> \(state)")
@@ -94,12 +96,14 @@ class RemoteConnection {
         type: NWInterface.InterfaceType?,
         mpegtsPacketsPerPacket: Int,
         interface: NWInterface?,
-        networkInterfaces: SrtlaNetworkInterfaces
+        networkInterfaces: SrtlaNetworkInterfaces,
+        priority: Float
     ) {
         self.type = type
         self.mpegtsPacketsPerPacket = mpegtsPacketsPerPacket
         self.interface = interface
         self.networkInterfaces = networkInterfaces
+        self.priority = priority
     }
 
     deinit {
@@ -154,7 +158,12 @@ class RemoteConnection {
         if type == nil {
             return 1
         } else {
-            return windowSize / (packetsInFlight.count + 1)
+            let score = windowSize / (packetsInFlight.count + 1)
+            if windowSize > windowStable * windowMultiply {
+                return Int(Float(score) * priority)
+            } else {
+                return score
+            }
         }
     }
 
@@ -482,7 +491,7 @@ class RemoteConnection {
                     """
                     srtla: \(typeString): Score: \(score()), In flight: \
                     \(packetsInFlight.count), Window size: \(windowSize), \
-                    Overhead: \(overhead) %
+                    Priority: \(priority), Overhead: \(overhead) %
                     """
                 )
         }
