@@ -1087,28 +1087,7 @@ final class Model: ObservableObject {
                                                object: nil)
         updateOrientation()
         reloadRtmpServer()
-        ipMonitor.pathUpdateHandler = { statuses in
-            self.ipStatuses = statuses
-            for status in statuses where status.interfaceType == .wiredEthernet {
-                for stream in self.database.streams
-                    where !stream.srt.connectionPriorities!.priorities.contains(where: { priority in
-                        priority.name == status.name
-                    })
-                {
-                    stream.srt.connectionPriorities!.priorities
-                        .append(SettingsStreamSrtConnectionPriority(name: status.name))
-                    self.store()
-                }
-                if !self.database.networkInterfaceNames!.contains(where: { interface in
-                    interface.interfaceName == status.name
-                }) {
-                    let interface = SettingsNetworkInterfaceName()
-                    interface.interfaceName = status.name
-                    self.database.networkInterfaceNames!.append(interface)
-                    self.store()
-                }
-            }
-        }
+        ipMonitor.pathUpdateHandler = handleIpStatusUpdate
         ipMonitor.start()
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(
@@ -1128,6 +1107,29 @@ final class Model: ObservableObject {
         GCController.startWirelessControllerDiscovery {}
         reloadLocation()
         currentStreamId = stream.id
+    }
+
+    private func handleIpStatusUpdate(statuses: [IPMonitor.Status]) {
+        ipStatuses = statuses
+        for status in statuses where status.interfaceType == .wiredEthernet {
+            for stream in database.streams
+                where !stream.srt.connectionPriorities!.priorities.contains(where: { priority in
+                    priority.name == status.name
+                })
+            {
+                stream.srt.connectionPriorities!.priorities
+                    .append(SettingsStreamSrtConnectionPriority(name: status.name))
+                store()
+            }
+            if !database.networkInterfaceNames!.contains(where: { interface in
+                interface.interfaceName == status.name
+            }) {
+                let interface = SettingsNetworkInterfaceName()
+                interface.interfaceName = status.name
+                database.networkInterfaceNames!.append(interface)
+                store()
+            }
+        }
     }
 
     private func updateLocation() {
