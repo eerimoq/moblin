@@ -108,6 +108,12 @@ Features
 
   - Start and stop the stream.
 
+  - Snapshot.
+
+  - Audio levels.
+
+  - Set audio sync.
+
 - Make phone screen black by pressing a button.
 
 - Supports UVC cameras on iPad.
