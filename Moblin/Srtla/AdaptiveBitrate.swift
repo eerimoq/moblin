@@ -117,16 +117,16 @@ class AdaptiveBitrate {
                 tempMaxBitrate -= minimumDecrease
                 logAdaptiveAcion(
                     actionTaken: """
-                    PIF: decreasing bitrate by \(minimumDecrease), \
-                    smoothpif \(smoothPif) > pifmax \(pifMax)
+                    PIF: decreasing bitrate by \(minimumDecrease / 1000)k, \
+                    smoothpif \(Int(smoothPif)) > pifmax \(Int(pifMax))
                     """
                 )
             } else {
                 tempMaxBitrate = Int32(Double(tempMaxBitrate) * factor)
                 logAdaptiveAcion(
                     actionTaken: """
-                    PIF: decreasing bitrate by \(100 * factor) %, \
-                    smoothpif \(smoothPif) > pifmax \(pifMax)
+                    PIF: decreasing bitrate by \(Int((100 * (1 - factor)).rounded()))%, \
+                    smoothpif \(Int(smoothPif)) > pifmax \(Int(pifMax))
                     """
                 )
             }
@@ -191,7 +191,8 @@ class AdaptiveBitrate {
     private func decreaseMaxRateIfRttDiffIsHigh(
         _ stats: SRTPerformanceData,
         factor: Double,
-        rttSpikeAllowed: Double, minimumDecrease: Int32
+        rttSpikeAllowed: Double,
+        minimumDecrease: Int32
     ) {
         if stats.msRTT > avgRtt + rttSpikeAllowed {
             let newMaxBitrate = Int32(Double(tempMaxBitrate) * factor)
@@ -200,16 +201,16 @@ class AdaptiveBitrate {
                 tempMaxBitrate -= minimumDecrease
                 logAdaptiveAcion(
                     actionTaken: """
-                    RTT: decreasing bitrate by \(minimumDecrease), msrtt \
-                    \(stats.msRTT) > avgrtt + allow \(avgRtt) + \(rttSpikeAllowed)
+                    RTT: decreasing bitrate by \(minimumDecrease / 1000)k, msrtt \
+                    \(Int(stats.msRTT)) > avgrtt + allow \(Int(avgRtt)) + \(Int(rttSpikeAllowed))
                     """
                 )
             } else {
                 tempMaxBitrate = newMaxBitrate
                 logAdaptiveAcion(
                     actionTaken: """
-                    RTT: decreasing bitrate by \(100 * factor) %, msrtt \(stats.msRTT) > \
-                    avgrtt + allow \(avgRtt) + \(rttSpikeAllowed)
+                    RTT: decreasing bitrate by \(Int((100 * (1 - factor)).rounded()))%, msrtt \(Int(stats.msRTT)) > \
+                    avgrtt + allow \(Int(avgRtt)) + \(Int(rttSpikeAllowed))
                     """
                 )
             }
