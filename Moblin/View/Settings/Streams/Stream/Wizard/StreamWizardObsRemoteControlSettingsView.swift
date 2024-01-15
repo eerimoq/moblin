@@ -78,6 +78,8 @@ struct StreamWizardObsRemoteControlSettingsView: View {
                         .disableAutocorrection(true)
                 } header: {
                     Text("Source name")
+                } footer: {
+                    Text("The name of the Source in OBS that receives the stream from Moblin.")
                 }
             }
             Section {

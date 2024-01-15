@@ -66,6 +66,8 @@ struct StreamObsSettingsView: View {
                 }
             } header: {
                 Text("WebSocket")
+            } footer: {
+                Text("Source name is the name of the Source in OBS that receives the stream from Moblin.")
             }
         }
         .navigationTitle("OBS remote control")

@@ -41648,6 +41648,9 @@
         }
       }
     },
+    "Source name is the name of the Source in OBS that receives the stream from Moblin." : {
+
+    },
     "Speed" : {
       "localizations" : {
         "de" : {
@@ -46463,6 +46466,9 @@
           }
         }
       }
+    },
+    "The name of the Source in OBS that receives the stream from Moblin." : {
+
     },
     "The name of your channel." : {
       "localizations" : {
