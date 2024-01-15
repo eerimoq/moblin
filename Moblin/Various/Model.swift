@@ -541,10 +541,6 @@ final class Model: ObservableObject {
         adaptiveBitratePacketsInFlightLimit = value
     }
 
-    func getAdaptiveBitratePacketsInFlight() -> Int32 {
-        return adaptiveBitratePacketsInFlightLimit
-    }
-
     @MainActor
     private func getProductsFromAppStore() async {
         do {
