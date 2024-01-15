@@ -8,13 +8,24 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.149.0", date: "2024-01-15", changes: [
+        "• Machine translation to Italian.",
+        "• Make custom RTMP(S) stream creation use H.264 video codec.",
+        "• Use iOS color picker for chat colors.",
+        "• Save SRT adaptive bitrate packets in flight config to disk.",
+        "• Set maxbw to follow input bandwidth by default in SRT protocol.",
+        "  • Seems to lower number of retransmissions with same video quality?",
+        "• Enable adaptive bitrate by default for SRT(LA).",
+        "  • Winging it.",
+        "• Assign colors to all buttons to fix crash.",
+    ]),
     Version(version: "0.148.0", date: "2024-01-14", changes: [
-        "- Configurable SRTLA connection priorities.",
-        "  - Often used to prioritize using one SIM card over another.",
-        "  - Settings -> Streams -> My stream -> SRT(LA) -> Connection priorities.",
-        "- OBS remote control audio sync.",
-        "- Configurable global quick button colors.",
-        "  - Configure per button in Settings -> Display -> Quick buttons.",
+        "• Configurable SRTLA connection priorities.",
+        "  • Often used to prioritize using one SIM card over another.",
+        "  • Settings → Streams → My stream → SRT(LA) → Connection priorities.",
+        "• OBS remote control audio sync.",
+        "• Configurable global quick button colors.",
+        "  • Configure per button in Settings → Display → Quick buttons.",
     ]),
     Version(version: "0.147.0", date: "2024-01-13", changes: [
         "• Upper case first letter in channel name by default.",
@@ -23,7 +34,7 @@ private let versions = [
         "• Game controller settings localized.",
         "• Replace OBS start/stop stream and OBS scene quick buttons with a OBS quick button.",
         "  • The new quick button opens a panel where you can start/stop stream, change scene, see source snapshot and source audio levels.",
-        "  • Configure OBS scene name in Settings -> My stream -> OBS remote control for snapshot and audio levels.",
+        "  • Configure OBS scene name in Settings → My stream → OBS remote control for snapshot and audio levels.",
     ]),
     Version(version: "0.146.0", date: "2024-01-11", changes: [
         "• Only send location to RealtimeIRL when live.",
