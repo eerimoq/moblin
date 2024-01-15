@@ -3,6 +3,7 @@ import SwiftUI
 
 struct DebugSettingsView: View {
     @EnvironmentObject var model: Model
+    @State var srtOverheadBandwidth: Float
     @State var cameraSwitchRemoveBlackish: Float
 
     private func onLogLevelChange(level: String) {
@@ -50,12 +51,34 @@ struct DebugSettingsView: View {
                 }))
             }
             Section {
+                Toggle("Max bandwidth follows input", isOn: Binding(get: {
+                    model.database.debug!.maximumBandwidthFollowInput!
+                }, set: { value in
+                    model.database.debug!.maximumBandwidthFollowInput = value
+                    model.store()
+                }))
+                HStack {
+                    Text("SRT oheadbw")
+                    Slider(
+                        value: $srtOverheadBandwidth,
+                        in: 5 ... 100,
+                        step: 5,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            model.database.debug!
+                                .srtOverheadBandwidth = Int32(srtOverheadBandwidth)
+                            model.store()
+                        }
+                    )
+                    Text(String(Int32(srtOverheadBandwidth)))
+                        .frame(width: 40)
+                }
                 NavigationLink(
                     destination: DebugAdaptiveBitrateSettingsView(
-                        srtOverheadBandwidth: Float(model.database.debug!
-                            .srtOverheadBandwidth!),
-                        packetsInFlight: Double(model
-                            .getAdaptiveBitratePacketsInFlight())
+                        packetsInFlight: Float(model.database.debug!
+                            .packetsInFlight!)
                     )
                 ) {
                     Text("Adaptive bitrate")

@@ -953,6 +953,7 @@ class SettingsDebug: Codable {
     var recordingsFolder: Bool? = false
     var cameraSwitchRemoveBlackish: Float? = 0.3
     var maximumBandwidthFollowInput: Bool? = true
+    var packetsInFlight: Int? = 200
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -1882,6 +1883,10 @@ final class Settings {
         }
         if realDatabase.debug!.maximumBandwidthFollowInput == nil {
             realDatabase.debug!.maximumBandwidthFollowInput = true
+            store()
+        }
+        if realDatabase.debug!.packetsInFlight == nil {
+            realDatabase.debug!.packetsInFlight = 200
             store()
         }
     }

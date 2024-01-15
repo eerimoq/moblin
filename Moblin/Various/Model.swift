@@ -1114,6 +1114,7 @@ final class Model: ObservableObject {
         GCController.startWirelessControllerDiscovery {}
         reloadLocation()
         currentStreamId = stream.id
+        setAdaptiveBitratePacketsInFlight(value: Int32(database.debug!.packetsInFlight!))
     }
 
     private func handleIpStatusUpdate(statuses: [IPMonitor.Status]) {

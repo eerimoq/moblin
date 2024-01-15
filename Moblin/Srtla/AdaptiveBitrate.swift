@@ -209,7 +209,8 @@ class AdaptiveBitrate {
                 tempMaxBitrate = newMaxBitrate
                 logAdaptiveAcion(
                     actionTaken: """
-                    RTT: decreasing bitrate by \(Int((100 * (1 - factor)).rounded()))%, msrtt \(Int(stats.msRTT)) > \
+                    RTT: decreasing bitrate by \(Int((100 * (1 - factor)).rounded()))%, msrtt \(Int(stats
+                            .msRTT)) > \
                     avgrtt + allow \(Int(avgRtt)) + \(Int(rttSpikeAllowed))
                     """
                 )
