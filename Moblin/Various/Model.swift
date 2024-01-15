@@ -1582,7 +1582,6 @@ final class Model: ObservableObject {
             self.updateLocation()
             self.updateObsSourceScreenshot()
             self.updateObsAudioVolume()
-            self.media.logStatistics()
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
