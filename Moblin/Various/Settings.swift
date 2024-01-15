@@ -1889,5 +1889,9 @@ final class Settings {
             realDatabase.debug!.packetsInFlight = 200
             store()
         }
+        for button in realDatabase.buttons where button.backgroundColor == nil {
+            button.backgroundColor = defaultQuickButtonColor
+            store()
+        }
     }
 }
