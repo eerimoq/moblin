@@ -2022,6 +2022,7 @@ final class Model: ObservableObject {
                 adaptiveBitrate: stream.adaptiveBitrate,
                 latency: stream.srt.latency,
                 overheadBandwidth: database.debug!.srtOverheadBandwidth!,
+                maximumBandwidthFollowInput: database.debug!.maximumBandwidthFollowInput!,
                 mpegtsPacketsPerPacket: stream.srt.mpegtsPacketsPerPacket,
                 networkInterfaceNames: database.networkInterfaceNames!,
                 connectionPriorities: stream.srt.connectionPriorities!

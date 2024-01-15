@@ -3,7 +3,6 @@ import SwiftUI
 
 struct DebugSettingsView: View {
     @EnvironmentObject var model: Model
-    @State var srtOverheadBandwidth: Float
     @State var cameraSwitchRemoveBlackish: Float
 
     private func onLogLevelChange(level: String) {
@@ -53,29 +52,13 @@ struct DebugSettingsView: View {
             Section {
                 NavigationLink(
                     destination: DebugAdaptiveBitrateSettingsView(
+                        srtOverheadBandwidth: Float(model.database.debug!
+                            .srtOverheadBandwidth!),
                         packetsInFlight: Double(model
                             .getAdaptiveBitratePacketsInFlight())
                     )
                 ) {
                     Text("Adaptive bitrate")
-                }
-                HStack {
-                    Text("SRT oheadbw")
-                    Slider(
-                        value: $srtOverheadBandwidth,
-                        in: 5 ... 50,
-                        step: 5,
-                        onEditingChanged: { begin in
-                            guard !begin else {
-                                return
-                            }
-                            model.database.debug!
-                                .srtOverheadBandwidth = Int32(srtOverheadBandwidth)
-                            model.store()
-                        }
-                    )
-                    Text(String(Int32(srtOverheadBandwidth)))
-                        .frame(width: 40)
                 }
                 Toggle("Mic per scene", isOn: Binding(get: {
                     model.database.debug!.sceneMic!

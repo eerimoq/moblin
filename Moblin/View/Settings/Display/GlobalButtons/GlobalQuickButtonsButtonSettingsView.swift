@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct GlobalQuickButtonsButtonSettingsView: View {
-    @EnvironmentObject var model: Model
     var name: String
     @State var background: Color
     let onChange: (Color) -> Void

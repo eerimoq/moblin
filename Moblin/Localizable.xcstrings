@@ -29096,6 +29096,9 @@
         }
       }
     },
+    "Max bandwidth follows input" : {
+
+    },
     "Maximum age" : {
       "localizations" : {
         "de" : {

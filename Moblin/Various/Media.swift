@@ -33,6 +33,7 @@ final class Media: NSObject {
     private var srtUrl: String = ""
     private var latency: Int32 = 2000
     private var overheadBandwidth: Int32 = 25
+    private var maximumBandwidthFollowInput: Bool = false
     var onSrtConnected: (() -> Void)!
     var onSrtDisconnected: ((_ reason: String) -> Void)!
     var onRtmpConnected: (() -> Void)!
@@ -84,6 +85,7 @@ final class Media: NSObject {
         adaptiveBitrate adaptiveBitrateEnabled: Bool,
         latency: Int32,
         overheadBandwidth: Int32,
+        maximumBandwidthFollowInput: Bool,
         mpegtsPacketsPerPacket: Int,
         networkInterfaceNames: [SettingsNetworkInterfaceName],
         connectionPriorities: SettingsStreamSrtConnectionPriorities
@@ -91,6 +93,7 @@ final class Media: NSObject {
         srtUrl = url
         self.latency = latency
         self.overheadBandwidth = overheadBandwidth
+        self.maximumBandwidthFollowInput = maximumBandwidthFollowInput
         srtTotalByteCount = 0
         srtPreviousTotalByteCount = 0
         srtla?.stop()
@@ -202,7 +205,8 @@ final class Media: NSObject {
         url: String,
         port: UInt16,
         latency: Int32,
-        overheadBandwidth: Int32
+        overheadBandwidth: Int32,
+        maximumBandwidthFollowInput: Bool
     ) -> URL? {
         guard let url = URL(string: url) else {
             return nil
@@ -214,11 +218,17 @@ final class Media: NSObject {
         urlComponents.query = url.query
         var queryItems: [URLQueryItem] = urlComponents.queryItems ?? []
         if !queryContains(queryItems: queryItems, name: "latency") {
-            logger.debug("Setting SRT latency to \(latency)")
+            logger.info("Setting SRT latency to \(latency)")
             queryItems.append(URLQueryItem(name: "latency", value: String(latency)))
         }
+        if !queryContains(queryItems: queryItems, name: "maxbw") {
+            if maximumBandwidthFollowInput {
+                logger.info("Setting SRT maxbw to 0 (follows input)")
+                queryItems.append(URLQueryItem(name: "maxbw", value: "0"))
+            }
+        }
         if !queryContains(queryItems: queryItems, name: "oheadbw") {
-            logger.debug("Setting SRT oheadbw to \(overheadBandwidth)")
+            logger.info("Setting SRT oheadbw to \(overheadBandwidth)")
             queryItems.append(URLQueryItem(
                 name: "oheadbw",
                 value: String(overheadBandwidth)
@@ -534,7 +544,8 @@ extension Media: SrtlaDelegate {
                         url: self.srtUrl,
                         port: port,
                         latency: self.latency,
-                        overheadBandwidth: self.overheadBandwidth
+                        overheadBandwidth: self.overheadBandwidth,
+                        maximumBandwidthFollowInput: self.maximumBandwidthFollowInput
                     )) { data in
                         if let srtla = self.srtla {
                             srtlaDispatchQueue.async {

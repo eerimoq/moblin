@@ -1,26 +1,7 @@
 import SwiftUI
 
-struct ColorCircle: View {
-    var color: Color
-
-    var body: some View {
-        Circle()
-            .frame(width: 30, height: 30)
-            .foregroundColor(color)
-            .overlay(
-                Circle()
-                    .stroke(.secondary, lineWidth: 2)
-            )
-    }
-}
-
 struct LocalOverlaysChatSettingsView: View {
     @EnvironmentObject var model: Model
-    @State var showTimestampColor: Bool = false
-    @State var showUsernameColor: Bool = false
-    @State var showMessageColor: Bool = false
-    @State var showBackgroundColor: Bool = false
-    @State var showShadowColor: Bool = false
     @State var timestampColor: Color
     @State var usernameColor: Color
     @State var messageColor: Color
@@ -242,7 +223,7 @@ struct LocalOverlaysChatSettingsView: View {
                 Text("Border is fairly CPU intensive. Disable for less power usage.")
             }
         }
-        .onDisappear() {
+        .onDisappear {
             model.store()
         }
         .navigationTitle("Chat")

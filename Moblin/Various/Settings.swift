@@ -952,6 +952,7 @@ class SettingsDebug: Codable {
     var sceneMic: Bool? = false
     var recordingsFolder: Bool? = false
     var cameraSwitchRemoveBlackish: Float? = 0.3
+    var maximumBandwidthFollowInput: Bool? = true
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -1877,6 +1878,10 @@ final class Settings {
         }
         for button in realDatabase.globalButtons! where button.backgroundColor == nil {
             button.backgroundColor = defaultQuickButtonColor
+            store()
+        }
+        if realDatabase.debug!.maximumBandwidthFollowInput == nil {
+            realDatabase.debug!.maximumBandwidthFollowInput = true
             store()
         }
     }

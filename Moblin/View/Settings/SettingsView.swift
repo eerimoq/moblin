@@ -128,10 +128,10 @@ struct SettingsView: View {
                     Text("About")
                 }
                 NavigationLink(
-                    destination: DebugSettingsView(srtOverheadBandwidth: Float(model
-                                                       .database.debug!.srtOverheadBandwidth!),
-                    cameraSwitchRemoveBlackish: model
-                        .database.debug!.cameraSwitchRemoveBlackish!)
+                    destination: DebugSettingsView(
+                        cameraSwitchRemoveBlackish: model
+                            .database.debug!.cameraSwitchRemoveBlackish!
+                    )
                 ) {
                     Text("Debug")
                 }
