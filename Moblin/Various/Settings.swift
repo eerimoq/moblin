@@ -174,7 +174,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var bitrate: UInt32 = 5_000_000
     var codec: SettingsStreamCodec = .h265hevc
     var bFrames: Bool? = false
-    var adaptiveBitrate: Bool = false
+    var adaptiveBitrate: Bool = true
     var srt: SettingsStreamSrt = .init()
     var captureSessionPresetEnabled: Bool = false
     var captureSessionPreset: SettingsCaptureSessionPreset = .medium
