@@ -50,6 +50,10 @@ final class Media: NSObject {
         return srtla?.connectionStatistics() ?? nil
     }
 
+    func setConnectionPriorities(connectionPriorities: SettingsStreamSrtConnectionPriorities) {
+        srtla?.setConnectionPriorities(connectionPriorities: connectionPriorities)
+    }
+
     func setNetStream(proto: SettingsStreamProtocol) {
         srtStopStream()
         rtmpStopStream()

@@ -314,10 +314,10 @@ struct ObsView: View {
                     }
                 } else {
                     Text("""
-                Configure source name in \
-                Settings → Streams → \(model.stream.name) → OBS remote control for \
-                snapshop and more.
-                """)
+                    Configure source name in \
+                    Settings → Streams → \(model.stream.name) → OBS remote control for \
+                    snapshop and more.
+                    """)
                 }
             }
         }

@@ -1689,6 +1689,10 @@ final class Model: ObservableObject {
         }
     }
 
+    func updateSrtlaPriorities() {
+        media.setConnectionPriorities(connectionPriorities: stream.srt.connectionPriorities!)
+    }
+
     private func removeOldChatMessages(now: Date) {
         guard database.chat.maximumAgeEnabled! else {
             return

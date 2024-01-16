@@ -31,7 +31,7 @@ private let windowDecrement = 100
 private let windowIncrement = 30
 
 class RemoteConnection {
-    private var type: NWInterface.InterfaceType?
+    var type: NWInterface.InterfaceType?
     private var connection: NWConnection? {
         didSet {
             oldValue?.stateUpdateHandler = nil
@@ -109,6 +109,10 @@ class RemoteConnection {
 
     deinit {
         logger.info("srtla: \(typeString): deinit remote connection")
+    }
+
+    func setPriority(priority: Float) {
+        self.priority = priority
     }
 
     func start(host: String, port: UInt16) {

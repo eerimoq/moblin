@@ -30,9 +30,9 @@ struct PriorityItemView: View {
                     }
                     priority.priority = Int(prio)
                     model.store()
+                    model.updateSrtlaPriorities()
                 }
             )
-            .disabled(stream.enabled && model.isLive)
         }
     }
 }
@@ -49,10 +49,10 @@ struct StreamSrtConnectionPriorityView: View {
                 }, set: { value in
                     stream.srt.connectionPriorities!.enabled = value
                     model.store()
+                    model.updateSrtlaPriorities()
                 })) {
                     Text("Enabled")
                 }
-                .disabled(stream.enabled && model.isLive)
             }
             Section {
                 ForEach(stream.srt.connectionPriorities!.priorities) { priority in

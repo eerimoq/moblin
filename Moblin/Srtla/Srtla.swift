@@ -56,11 +56,7 @@ class Srtla {
         networkInterfaces = .init()
         self.connectionPriorities = .init()
         setNetworkInterfaceNames(networkInterfaceNames: networkInterfaceNames)
-        if connectionPriorities.enabled {
-            for connectionPriority in connectionPriorities.priorities {
-                self.connectionPriorities.append(connectionPriority.clone())
-            }
-        }
+        updateConnectionPriorities(connectionPriorities: connectionPriorities)
         logger.info("srtla: SRT instead of SRTLA: \(passThrough)")
         if passThrough {
             remoteConnections.append(RemoteConnection(
@@ -134,10 +130,41 @@ class Srtla {
     }
 
     func setNetworkInterfaceNames(networkInterfaceNames: [SettingsNetworkInterfaceName]) {
-        srtlaDispatchQueue.sync {
+        srtlaDispatchQueue.async {
             self.networkInterfaces.names.removeAll()
             for interface in networkInterfaceNames {
                 self.networkInterfaces.names[interface.interfaceName] = interface.name
+            }
+        }
+    }
+
+    private func updateConnectionPriorities(connectionPriorities: SettingsStreamSrtConnectionPriorities) {
+        self.connectionPriorities = .init()
+        if connectionPriorities.enabled {
+            for connectionPriority in connectionPriorities.priorities {
+                self.connectionPriorities.append(connectionPriority.clone())
+            }
+        }
+    }
+
+    func setConnectionPriorities(connectionPriorities: SettingsStreamSrtConnectionPriorities) {
+        srtlaDispatchQueue.async {
+            self.updateConnectionPriorities(connectionPriorities: connectionPriorities)
+            for connection in self.remoteConnections {
+                var name: String
+                if let interface = connection.interface {
+                    name = interface.name
+                } else {
+                    switch connection.type {
+                    case .cellular:
+                        name = "Cellular"
+                    case .wifi:
+                        name = "WiFi"
+                    default:
+                        name = ""
+                    }
+                }
+                connection.setPriority(priority: self.getConnectionPriority(name: name))
             }
         }
     }
