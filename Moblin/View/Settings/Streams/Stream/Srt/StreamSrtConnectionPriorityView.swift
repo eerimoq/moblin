@@ -62,7 +62,7 @@ struct StreamSrtConnectionPriorityView: View {
                 Text("""
                 A connection with high priority will be used more than a connection with \
                 low priority if the high priority connection is stable. Unstable connections \
-                will get lowset priority regardless of configured priority until they are stable again.
+                will get lowest priority regardless of configured priority until they are stable again.
                 """)
             }
         }

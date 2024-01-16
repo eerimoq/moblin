@@ -994,6 +994,7 @@ final class Model: ObservableObject {
     }
 
     func setup() {
+        moblinServerTest()
         ioVideoUnitIgnoreFramesAfterAttachSeconds = Double(database.debug!.cameraSwitchRemoveBlackish!)
         let WebPCoder = SDImageWebPCoder.shared
         SDImageCodersManager.shared.addCoder(WebPCoder)

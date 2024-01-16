@@ -100,6 +100,7 @@
 		038DF9F12B387AC80027363A /* StreamWizardAfreecaTvSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038DF9F02B387AC80027363A /* StreamWizardAfreecaTvSettingsView.swift */; };
 		038ED3DB2B403664005DEC08 /* LocalOverlaysNetworkInterfaceNamesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038ED3DA2B403664005DEC08 /* LocalOverlaysNetworkInterfaceNamesSettingsView.swift */; };
 		0391BB3D2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0391BB3C2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift */; };
+		039ADE472B55C23600FE0F59 /* RemoteControlServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039ADE462B55C23600FE0F59 /* RemoteControlServer.swift */; };
 		03A08B7C2AC295620018BA95 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = 03A08B7B2AC295620018BA95 /* AlertToast */; };
 		03A08B802AC368860018BA95 /* Media.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A08B7F2AC368860018BA95 /* Media.swift */; };
 		03A14BE32ACC903E00D180FF /* ZoomSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A14BE22ACC903E00D180FF /* ZoomSettingsView.swift */; };
@@ -270,6 +271,7 @@
 		038DF9F02B387AC80027363A /* StreamWizardAfreecaTvSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardAfreecaTvSettingsView.swift; sourceTree = "<group>"; };
 		038ED3DA2B403664005DEC08 /* LocalOverlaysNetworkInterfaceNamesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalOverlaysNetworkInterfaceNamesSettingsView.swift; sourceTree = "<group>"; };
 		0391BB3C2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutVersionHistorySettingsView.swift; sourceTree = "<group>"; };
+		039ADE462B55C23600FE0F59 /* RemoteControlServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteControlServer.swift; sourceTree = "<group>"; };
 		03A08B7F2AC368860018BA95 /* Media.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Media.swift; sourceTree = "<group>"; };
 		03A14BE22ACC903E00D180FF /* ZoomSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomSettingsView.swift; sourceTree = "<group>"; };
 		03A173F02B37E5E600ACC4F8 /* FormFieldError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormFieldError.swift; sourceTree = "<group>"; };
@@ -622,6 +624,7 @@
 				03BC115B2AE4BD6200C38FC4 /* Emotes */,
 				030D487F2B35E4AF003B2014 /* Platforms */,
 				03BDE2202B24364700DF193A /* OBS */,
+				039ADE452B55C20800FE0F59 /* RemoteControl */,
 				03B374052AA0EA370028DDD5 /* VideoEffects */,
 				0315A3392AA2FA0A00295443 /* Srtla */,
 				03279CF02B4D2AD3006CEA5A /* RealtimeIrl */,
@@ -838,6 +841,14 @@
 				038ED3DA2B403664005DEC08 /* LocalOverlaysNetworkInterfaceNamesSettingsView.swift */,
 			);
 			path = NetworkInterfaceNames;
+			sourceTree = "<group>";
+		};
+		039ADE452B55C20800FE0F59 /* RemoteControl */ = {
+			isa = PBXGroup;
+			children = (
+				039ADE462B55C23600FE0F59 /* RemoteControlServer.swift */,
+			);
+			path = RemoteControl;
 			sourceTree = "<group>";
 		};
 		03A14BE02ACC902B00D180FF /* Zoom */ = {
@@ -1206,6 +1217,7 @@
 				038ED3DB2B403664005DEC08 /* LocalOverlaysNetworkInterfaceNamesSettingsView.swift in Sources */,
 				03A983712A9A0659008FF0DB /* TwitchPubSub.swift in Sources */,
 				034D26FF2B3A03620097C619 /* RtmpServer.swift in Sources */,
+				039ADE472B55C23600FE0F59 /* RemoteControlServer.swift in Sources */,
 				03A9836C2A9A05D7008FF0DB /* WidgetSettingsView.swift in Sources */,
 				03DBD0FF2B30091B004B0BE6 /* StreamWizardNetworkSetupSettingsView.swift in Sources */,
 				036BE2CC2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift in Sources */,
