@@ -74,13 +74,13 @@ struct LeftOverlayView: View {
             return String(localized: "Not configured")
         } else if model.isObsConnected() {
             if model.obsStreaming && model.obsRecording {
-                return "\(model.obsCurrentSceneStatus) (Streaming, Recording)"
+                return "\(model.obsCurrentScene) (Streaming, Recording)"
             } else if model.obsStreaming {
-                return "\(model.obsCurrentSceneStatus) (Streaming)"
+                return "\(model.obsCurrentScene) (Streaming)"
             } else if model.obsRecording {
-                return "\(model.obsCurrentSceneStatus) (Recording)"
+                return "\(model.obsCurrentScene) (Recording)"
             } else {
-                return model.obsCurrentSceneStatus
+                return model.obsCurrentScene
             }
         } else {
             return model.obsConnectionErrorMessage()

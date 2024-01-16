@@ -282,8 +282,8 @@ final class Model: ObservableObject {
     @Published var obsAudioVolume: String = noValue
     @Published var obsAudioDelay: Int = 0
     private var obsAudioVolumeLatest: String = ""
+    @Published var obsCurrentScenePicker: String = ""
     @Published var obsCurrentScene: String = ""
-    @Published var obsCurrentSceneStatus: String = ""
     @Published var currentStreamId = UUID()
     @Published var obsStreaming = false
     @Published var obsStreamingState: ObsOutputState = .stopped
@@ -936,28 +936,21 @@ final class Model: ObservableObject {
         return obsWebSocket?.connectionErrorMessage ?? ""
     }
 
-    func listObsScenes(onComplete: ((Bool) -> Void)? = nil) {
-        obsCurrentScene = ""
-        obsScenes = []
+    func listObsScenes() {
         obsWebSocket?.getSceneList(onSuccess: { list in
             DispatchQueue.main.async {
+                self.obsCurrentScenePicker = list.current
                 self.obsCurrentScene = list.current
                 self.obsScenes = list.scenes
-                onComplete?(true)
             }
-        }, onError: { message in
-            DispatchQueue.main.async {
-                self.makeErrorToast(title: String(localized: "Failed to fetch OBS scenes"),
-                                    subTitle: message)
-                onComplete?(false)
-            }
+        }, onError: { _ in
         })
     }
 
     func setObsScene(name: String) {
         obsWebSocket?.setCurrentProgramScene(name: name, onSuccess: {
             DispatchQueue.main.async {
-                self.obsCurrentSceneStatus = name
+                self.obsCurrentScene = name
             }
         }, onError: { message in
             DispatchQueue.main.async {
@@ -972,15 +965,6 @@ final class Model: ObservableObject {
             obsAudioVolumeLatest = noValue
             return
         }
-        obsWebSocket?.getSceneList(onSuccess: { list in
-            DispatchQueue.main.async {
-                self.obsCurrentSceneStatus = list.current
-            }
-        }, onError: { _ in
-            DispatchQueue.main.async {
-                self.obsCurrentSceneStatus = "Unknown"
-            }
-        })
         obsWebSocket?.getStreamStatus(onSuccess: { state in
             self.handleObsStreamStatusChanged(active: state.active, state: state.state)
         }, onError: { _ in
@@ -991,6 +975,7 @@ final class Model: ObservableObject {
         }, onError: { _ in
             self.handleObsRecordStatusChanged(active: false)
         })
+        listObsScenes()
     }
 
     func setup() {
@@ -2571,7 +2556,7 @@ final class Model: ObservableObject {
 
     private func handleObsSceneChanged(name: String) {
         DispatchQueue.main.async {
-            self.obsCurrentSceneStatus = name
+            self.obsCurrentScene = name
         }
     }
 

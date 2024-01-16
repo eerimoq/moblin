@@ -19915,6 +19915,7 @@
       }
     },
     "Failed to fetch OBS scenes" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -33134,6 +33135,9 @@
           }
         }
       }
+    },
+    "Not connected to the OBS server." : {
+
     },
     "OBS" : {
       "localizations" : {

@@ -192,121 +192,127 @@ struct ObsView: View {
 
     var body: some View {
         Form {
-            if model.obsStreamingState == .stopped {
+            if !model.isObsConnected() {
                 Section {
-                    HStack {
-                        Spacer()
-                        Button(action: {
-                            model.obsStartStream()
-                        }, label: {
-                            Text("Start streaming")
-                        })
-                        Spacer()
-                    }
+                    Text("Not connected to the OBS server.")
                 }
-                .listRowBackground(RoundedRectangle(cornerRadius: 10)
-                    .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
-                    .overlay(RoundedRectangle(cornerRadius: 10)
-                        .stroke(.blue, lineWidth: 2)))
-            } else if model.obsStreamingState == .starting {
-                Section {
-                    HStack {
-                        Spacer()
-                        Text("Starting...")
-                        Spacer()
-                    }
-                }
-                .foregroundColor(.white)
-                .listRowBackground(Color.gray)
-            } else if model.obsStreamingState == .started {
-                Section {
-                    HStack {
-                        Spacer()
-                        Button(action: {
-                            model.obsStopStream()
-                        }, label: {
-                            Text("Stop streaming")
-                        })
-                        Spacer()
-                    }
-                }
-                .foregroundColor(.white)
-                .listRowBackground(Color.blue)
-            } else if model.obsStreamingState == .stopping {
-                Section {
-                    HStack {
-                        Spacer()
-                        Text("Stopping...")
-                        Spacer()
-                    }
-                }
-                .foregroundColor(.white)
-                .listRowBackground(Color.gray)
             } else {
-                Section {
-                    HStack {
-                        Spacer()
-                        Text("Unknown streaming state")
-                        Spacer()
-                    }
-                }
-            }
-            Section {
-                Picker("", selection: $model.obsCurrentScene) {
-                    ForEach(model.obsScenes, id: \.self) { scene in
-                        Text(scene)
-                    }
-                }
-                .onChange(of: model.obsCurrentScene) { _ in
-                    model.setObsScene(name: model.obsCurrentScene)
-                }
-                .pickerStyle(.inline)
-                .labelsHidden()
-            } header: {
-                Text("Scenes")
-            }
-            if !model.stream.obsSourceName!.isEmpty {
-                Section {
-                    ValueEditView(
-                        title: "Delay",
-                        value: "\(model.obsAudioDelay)",
-                        minimum: Double(obsMinimumAudioDelay),
-                        maximum: Double(min(obsMaximumAudioDelay, 9999)),
-                        onSubmit: submitAudioDelay,
-                        increment: 10,
-                        unit: "ms"
-                    )
-                } header: {
-                    Text("\(model.stream.obsSourceName!) source audio sync")
-                }
-                Section {
-                    if model.isLive {
-                        if let image = model.obsScreenshot {
-                            Image(image, scale: 1, label: Text(""))
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
+                if model.obsStreamingState == .stopped {
+                    Section {
+                        HStack {
+                            Spacer()
+                            Button(action: {
+                                model.obsStartStream()
+                            }, label: {
+                                Text("Start streaming")
+                            })
+                            Spacer()
                         }
-                    } else {
-                        Text("Go live to see snapshot")
                     }
-                } header: {
-                    Text("\(model.stream.obsSourceName!) source snapshot")
+                    .listRowBackground(RoundedRectangle(cornerRadius: 10)
+                        .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
+                        .overlay(RoundedRectangle(cornerRadius: 10)
+                            .stroke(.blue, lineWidth: 2)))
+                } else if model.obsStreamingState == .starting {
+                    Section {
+                        HStack {
+                            Spacer()
+                            Text("Starting...")
+                            Spacer()
+                        }
+                    }
+                    .foregroundColor(.white)
+                    .listRowBackground(Color.gray)
+                } else if model.obsStreamingState == .started {
+                    Section {
+                        HStack {
+                            Spacer()
+                            Button(action: {
+                                model.obsStopStream()
+                            }, label: {
+                                Text("Stop streaming")
+                            })
+                            Spacer()
+                        }
+                    }
+                    .foregroundColor(.white)
+                    .listRowBackground(Color.blue)
+                } else if model.obsStreamingState == .stopping {
+                    Section {
+                        HStack {
+                            Spacer()
+                            Text("Stopping...")
+                            Spacer()
+                        }
+                    }
+                    .foregroundColor(.white)
+                    .listRowBackground(Color.gray)
+                } else {
+                    Section {
+                        HStack {
+                            Spacer()
+                            Text("Unknown streaming state")
+                            Spacer()
+                        }
+                    }
                 }
                 Section {
-                    if model.isLive && !model.obsAudioVolume.isEmpty {
-                        Text(model.obsAudioVolume)
-                    } else {
-                        Text("Go live to see audio levels")
+                    Picker("", selection: $model.obsCurrentScenePicker) {
+                        ForEach(model.obsScenes, id: \.self) { scene in
+                            Text(scene)
+                        }
                     }
+                    .onChange(of: model.obsCurrentScenePicker) { _ in
+                        model.setObsScene(name: model.obsCurrentScenePicker)
+                    }
+                    .pickerStyle(.inline)
+                    .labelsHidden()
                 } header: {
-                    Text("\(model.stream.obsSourceName!) source audio levels")
+                    Text("Scenes")
                 }
-            } else {
-                Text("""
+                if !model.stream.obsSourceName!.isEmpty {
+                    Section {
+                        ValueEditView(
+                            title: "Delay",
+                            value: "\(model.obsAudioDelay)",
+                            minimum: Double(obsMinimumAudioDelay),
+                            maximum: Double(min(obsMaximumAudioDelay, 9999)),
+                            onSubmit: submitAudioDelay,
+                            increment: 10,
+                            unit: "ms"
+                        )
+                    } header: {
+                        Text("\(model.stream.obsSourceName!) source audio sync")
+                    }
+                    Section {
+                        if model.isLive {
+                            if let image = model.obsScreenshot {
+                                Image(image, scale: 1, label: Text(""))
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                            }
+                        } else {
+                            Text("Go live to see snapshot")
+                        }
+                    } header: {
+                        Text("\(model.stream.obsSourceName!) source snapshot")
+                    }
+                    Section {
+                        if model.isLive && !model.obsAudioVolume.isEmpty {
+                            Text(model.obsAudioVolume)
+                        } else {
+                            Text("Go live to see audio levels")
+                        }
+                    } header: {
+                        Text("\(model.stream.obsSourceName!) source audio levels")
+                    }
+                } else {
+                    Text("""
                 Configure source name in \
                 Settings → Streams → \(model.stream.name) → OBS remote control for \
                 snapshop and more.
                 """)
+                }
             }
         }
         .navigationTitle("OBS remote control")
@@ -446,12 +452,11 @@ struct ButtonsView: View {
             )
             return
         }
-        model.listObsScenes(onComplete: { ok in
-            model.showingObs = ok
-            model.startObsSourceScreenshot()
-            model.startObsAudioVolume()
-            model.updateObsAudioDelay()
-        })
+        model.showingObs = true
+        model.listObsScenes()
+        model.startObsSourceScreenshot()
+        model.startObsAudioVolume()
+        model.updateObsAudioDelay()
     }
 
     var body: some View {
