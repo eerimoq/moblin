@@ -194,7 +194,7 @@ struct ObsView: View {
         Form {
             if !model.isObsConnected() {
                 Section {
-                    Text("Not connected to the OBS server.")
+                    Text("Trying to connect to the OBS server...")
                 }
             } else {
                 if model.obsStreamingState == .stopped {
@@ -251,7 +251,7 @@ struct ObsView: View {
                     Section {
                         HStack {
                             Spacer()
-                            Text("Unknown streaming state")
+                            Text("Unknown streaming state.")
                             Spacer()
                         }
                     }
@@ -290,18 +290,24 @@ struct ObsView: View {
                                 Image(image, scale: 1, label: Text(""))
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
+                            } else {
+                                Text("No snapshot received yet.")
                             }
                         } else {
-                            Text("Go live to see snapshot")
+                            Text("Go live to see snapshot.")
                         }
                     } header: {
                         Text("\(model.stream.obsSourceName!) source snapshot")
                     }
                     Section {
-                        if model.isLive && !model.obsAudioVolume.isEmpty {
-                            Text(model.obsAudioVolume)
+                        if model.isLive {
+                            if !model.obsAudioVolume.isEmpty {
+                                Text(model.obsAudioVolume)
+                            } else {
+                                Text("No audio levels received yet.")
+                            }
                         } else {
-                            Text("Go live to see audio levels")
+                            Text("Go live to see audio levels.")
                         }
                     } header: {
                         Text("\(model.stream.obsSourceName!) source audio levels")

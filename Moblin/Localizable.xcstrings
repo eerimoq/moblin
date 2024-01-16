@@ -23612,6 +23612,7 @@
       }
     },
     "Go live to see audio levels" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -23723,7 +23724,11 @@
         }
       }
     },
+    "Go live to see audio levels." : {
+
+    },
     "Go live to see snapshot" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -23834,6 +23839,9 @@
           }
         }
       }
+    },
+    "Go live to see snapshot." : {
+
     },
     "Good stability in most network conditions." : {
       "localizations" : {
@@ -32688,6 +32696,9 @@
         }
       }
     },
+    "No audio levels received yet." : {
+
+    },
     "No known Ethernet network interfaces." : {
       "localizations" : {
         "de" : {
@@ -32799,6 +32810,9 @@
           }
         }
       }
+    },
+    "No snapshot received yet." : {
+
     },
     "Noise level" : {
       "localizations" : {
@@ -33135,9 +33149,6 @@
           }
         }
       }
-    },
-    "Not connected to the OBS server." : {
-
     },
     "OBS" : {
       "localizations" : {
@@ -48830,6 +48841,9 @@
         }
       }
     },
+    "Trying to connect to the OBS server..." : {
+
+    },
     "Twitch" : {
       "localizations" : {
         "de" : {
@@ -49392,6 +49406,7 @@
       }
     },
     "Unknown streaming state" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -49502,6 +49517,9 @@
           }
         }
       }
+    },
+    "Unknown streaming state." : {
+
     },
     "Unknown," : {
       "localizations" : {

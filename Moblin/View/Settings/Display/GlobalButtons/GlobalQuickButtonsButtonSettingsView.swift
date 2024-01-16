@@ -9,7 +9,7 @@ struct GlobalQuickButtonsButtonSettingsView: View {
     var body: some View {
         Form {
             Section {
-                ColorPicker("Color", selection: $background, supportsOpacity: false)
+                ColorPicker("Background", selection: $background, supportsOpacity: false)
                     .onChange(of: background) { _ in
                         onChange(background)
                     }
@@ -28,7 +28,7 @@ struct GlobalQuickButtonsButtonSettingsView: View {
                     }
                 })
             } header: {
-                Text("Background")
+                Text("Color")
             }
         }
         .navigationTitle(name)
