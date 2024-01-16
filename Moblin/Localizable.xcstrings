@@ -2057,7 +2057,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@ dB"
           }
         },
@@ -2393,8 +2393,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ källljudnivåer"
+            "state" : "translated",
+            "value" : "%@ ljudnivåer"
           }
         },
         "tr" : {
@@ -2505,8 +2505,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ källljudsynkronisering"
+            "state" : "translated",
+            "value" : "%@ ljudsynkronisering"
           }
         },
         "tr" : {
@@ -2617,8 +2617,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ källöversiktsbild"
+            "state" : "translated",
+            "value" : "%@ översiktsbild"
           }
         },
         "tr" : {
@@ -5119,7 +5119,116 @@
       }
     },
     "A connection with high priority will be used more than a connection with low priority if the high priority connection is stable. Unstable connections will get lowest priority regardless of configured priority until they are stable again." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Eine Verbindung mit hoher Priorität wird häufiger genutzt als eine Verbindung mit niedriger Priorität, wenn die Verbindung mit hoher Priorität stabil ist. Instabile Verbindungen erhalten unabhängig von der konfigurierten Priorität die niedrigste Priorität, bis sie wieder stabil sind."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Μια σύνδεση με υψηλή προτεραιότητα θα χρησιμοποιηθεί περισσότερο από μια σύνδεση χαμηλής προτεραιότητας εάν η σύνδεση υψηλής προτεραιότητας είναι σταθερή. Οι ασταθείς συνδέσεις θα έχουν τη χαμηλότερη προτεραιότητα ανεξάρτητα από τη διαμορφωμένη προτεραιότητα μέχρι να σταθεροποιηθούν ξανά."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Una conexión con alta prioridad se utilizará más que una conexión con baja prioridad si la conexión de alta prioridad es estable. Las conexiones inestables tendrán la prioridad más baja independientemente de la prioridad configurada hasta que vuelvan a ser estables."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Une connexion avec une priorité élevée sera plus utilisée qu'une connexion avec une priorité faible si la connexion à priorité élevée est stable. Les connexions instables auront la priorité la plus basse, quelle que soit la priorité configurée, jusqu'à ce qu'elles soient à nouveau stables."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "यदि उच्च प्राथमिकता वाला कनेक्शन स्थिर है तो उच्च प्राथमिकता वाले कनेक्शन का उपयोग कम प्राथमिकता वाले कनेक्शन से अधिक किया जाएगा। जब तक वे फिर से स्थिर नहीं हो जाते, तब तक अस्थिर कनेक्शन को कॉन्फ़िगर की गई प्राथमिकता की परवाह किए बिना सबसे कम प्राथमिकता मिलेगी।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Koneksi dengan prioritas tinggi akan lebih banyak digunakan dibandingkan koneksi dengan prioritas rendah jika koneksi prioritas tinggi stabil. Koneksi yang tidak stabil akan mendapatkan prioritas terendah terlepas dari prioritas yang dikonfigurasi hingga koneksi tersebut stabil kembali."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Una connessione con priorità alta verrà utilizzata più di una connessione con priorità bassa se la connessione ad alta priorità è stabile. Le connessioni instabili avranno la priorità più bassa indipendentemente dalla priorità configurata finché non saranno nuovamente stabili."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "優先度の高い接続が安定している場合、優先度の高い接続は優先度の低い接続よりも多く使用されます。不安定な接続は、再び安定するまで、設定された優先順位に関係なく、最低の優先順位になります。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "우선순위가 높은 연결이 안정적인 경우 우선순위가 낮은 연결보다 우선순위가 높은 연결이 더 많이 사용됩니다. 불안정한 연결은 다시 안정될 때까지 구성된 우선순위에 관계없이 가장 낮은 우선순위를 갖습니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Een verbinding met hoge prioriteit zal meer worden gebruikt dan een verbinding met lage prioriteit als de verbinding met hoge prioriteit stabiel is. Onstabiele verbindingen krijgen de laagste prioriteit, ongeacht de geconfigureerde prioriteit, totdat ze weer stabiel zijn."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Jeśli połączenie o wysokim priorytecie jest stabilne, częściej będzie używane połączenie o wysokim priorytecie niż połączenie o niskim priorytecie. Niestabilne połączenia otrzymają najniższy priorytet niezależnie od skonfigurowanego priorytetu, dopóki nie staną się ponownie stabilne."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Uma conexão com alta prioridade será mais usada do que uma conexão com baixa prioridade se a conexão de alta prioridade for estável. Conexões instáveis ​​terão a prioridade mais baixa, independentemente da prioridade configurada, até que fiquem estáveis ​​novamente."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Uma conexão com alta prioridade será mais usada do que uma conexão com baixa prioridade se a conexão de alta prioridade for estável. Conexões instáveis ​​terão a prioridade mais baixa, independentemente da prioridade configurada, até que fiquem estáveis ​​novamente."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En anslutning med hög prioritet kommer att användas mer än en anslutning med låg prioritet om den högprioriterade anslutningen är stabil. Instabila anslutningar kommer att få lägsta prioritet oavsett konfigurerad prioritet tills de är stabila igen."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Yüksek öncelikli bağlantı kararlıysa, yüksek öncelikli bir bağlantı, düşük öncelikli bir bağlantıdan daha fazla kullanılacaktır. Kararsız bağlantılar, yeniden kararlı hale gelene kadar yapılandırılmış önceliğe bakılmaksızın en düşük önceliğe sahip olacaktır."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Kết nối có mức ưu tiên cao sẽ được sử dụng nhiều hơn kết nối có mức ưu tiên thấp nếu kết nối có mức ưu tiên cao ổn định. Các kết nối không ổn định sẽ có mức độ ưu tiên thấp nhất bất kể mức độ ưu tiên được định cấu hình cho đến khi chúng ổn định trở lại."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "如果高优先级连接稳定，则高优先级连接将比低优先级连接使用更多。无论配置的优先级如何，不稳定的连接都将获得最低优先级，直到它们再次稳定为止。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "如果高優先權連線穩定，則高優先權連線將比低優先權連線使用更多。無論配置的優先權如何，不穩定的連線都將獲得最低優先權，直到它們再次穩定為止。"
+          }
+        }
+      }
     },
     "A connection with high priority will be used more than a connection with low priority if the high priority connection is stable. Unstable connections will get lowset priority regardless of configured priority until they are stable again." : {
       "extractionState" : "stale",
@@ -13164,7 +13273,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Färg"
           }
         },
@@ -13836,8 +13945,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Konfigurera källnamnet i Inställningar → Strömmar → %@ → OBS-fjärrkontroll för snapshop och mer."
+            "state" : "translated",
+            "value" : "Konfigurera källnamnet i Inställningar → Strömmar → %@ → OBS-fjärrkontroll för ögonblicksbild och mer."
           }
         },
         "tr" : {
@@ -13948,7 +14057,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Anslutningsprioriteringar"
           }
         },
@@ -23725,7 +23834,116 @@
       }
     },
     "Go live to see audio levels." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Gehen Sie live, um die Audiopegel zu sehen."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Μεταβείτε ζωντανά για να δείτε τα επίπεδα ήχου."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Vaya en vivo para ver los niveles de audio."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Allez en direct pour voir les niveaux audio."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ऑडियो स्तर देखने के लिए लाइव हों।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tayangkan langsung untuk melihat level audio."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Vai in diretta per vedere i livelli audio."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ライブ配信してオーディオレベルを確認してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "실시간으로 오디오 레벨을 확인하세요."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ga live om de audioniveaus te bekijken."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Rozpocznij transmisję na żywo, aby zobaczyć poziomy dźwięku."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Transmita ao vivo para ver os níveis de áudio."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Transmita ao vivo para ver os níveis de áudio."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gå live för att se ljudnivåer."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ses seviyelerini görmek için canlı yayına geçin."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Phát trực tiếp để xem mức âm thanh."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "实时查看音频电平。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "即時查看音訊電平。"
+          }
+        }
+      }
     },
     "Go live to see snapshot" : {
       "extractionState" : "stale",
@@ -23841,7 +24059,116 @@
       }
     },
     "Go live to see snapshot." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Gehen Sie live, um den Schnappschuss anzusehen."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Μεταβείτε ζωντανά για να δείτε στιγμιότυπο."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Vaya en vivo para ver la instantánea."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Allez en direct pour voir l'instantané."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "स्नैपशॉट देखने के लिए लाइव हों."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Siarkan langsung untuk melihat cuplikannya."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Vai in diretta per vedere l'istantanea."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ライブに移動してスナップショットを確認します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "실시간으로 전환하여 스냅샷을 확인하세요."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ga live om de momentopname te zien."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Przejdź na żywo, aby zobaczyć migawkę."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Transmita ao vivo para ver o instantâneo."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Transmita ao vivo para ver o instantâneo."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gå live för att se ögonblicksbild."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Anlık görüntüyü görmek için canlı yayına geçin."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Hãy phát trực tiếp để xem ảnh chụp nhanh."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "实时查看快照。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "即時查看快照。"
+          }
+        }
+      }
     },
     "Good stability in most network conditions." : {
       "localizations" : {
@@ -24374,7 +24701,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Rutnät"
           }
         },
@@ -29110,7 +29437,116 @@
       }
     },
     "Max bandwidth follows input" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Die maximale Bandbreite folgt der Eingabe"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Το μέγιστο εύρος ζώνης ακολουθεί την είσοδο"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "El ancho de banda máximo sigue la entrada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "La bande passante maximale suit l'entrée"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "अधिकतम बैंडविड्थ इनपुट का अनुसरण करता है"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bandwidth maks mengikuti input"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "La larghezza di banda massima segue l'input"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "最大帯域幅は入力に従う"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "최대 대역폭은 입력을 따릅니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Maximale bandbreedte volgt invoer"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Maksymalna przepustowość podąża za danymi wejściowymi"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Largura de banda máxima segue a entrada"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Largura de banda máxima segue a entrada"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Max bandbredd följer ingång"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Maksimum bant genişliği girişi takip eder"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Băng thông tối đa theo đầu vào"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "最大带宽跟随输入"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "最大頻寬跟隨輸入"
+          }
+        }
+      }
     },
     "Maximum age" : {
       "localizations" : {
@@ -32697,7 +33133,116 @@
       }
     },
     "No audio levels received yet." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Es wurden noch keine Audiopegel empfangen."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Δεν έχουν ληφθεί ακόμη επίπεδα ήχου."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aún no se han recibido niveles de audio."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aucun niveau audio reçu pour l'instant."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "अभी तक कोई ऑडियो स्तर प्राप्त नहीं हुआ."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Belum ada level audio yang diterima."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nessun livello audio ancora ricevuto."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "音声レベルはまだ受信されていません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "아직 수신된 오디오 레벨이 없습니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nog geen audioniveaus ontvangen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nie odebrano jeszcze żadnych poziomów dźwięku."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nenhum nível de áudio recebido ainda."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nenhum nível de áudio recebido ainda."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inga ljudnivåer har tagits emot ännu."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Henüz ses düzeyi alınmadı."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Chưa nhận được mức âm thanh nào."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "尚未收到音频电平。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "尚未收到音頻電平。"
+          }
+        }
+      }
     },
     "No known Ethernet network interfaces." : {
       "localizations" : {
@@ -32781,7 +33326,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Inga kända Ethernet-nätverksgränssnitt."
           }
         },
@@ -32812,7 +33357,116 @@
       }
     },
     "No snapshot received yet." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Noch kein Schnappschuss erhalten."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Δεν έχει ληφθεί ακόμη στιγμιότυπο."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aún no se ha recibido ninguna instantánea."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aucun instantané reçu pour l'instant."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "अभी तक कोई स्नैपशॉट प्राप्त नहीं हुआ."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Belum ada cuplikan yang diterima."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nessuno snapshot ancora ricevuto."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "まだスナップショットを受信して​​いません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "아직 스냅샷이 수신되지 않았습니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nog geen momentopname ontvangen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nie otrzymano jeszcze żadnego zrzutu ekranu."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nenhum instantâneo recebido ainda."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nenhum instantâneo recebido ainda."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingen ögonblicksbild har tagits emot ännu."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Henüz anlık görüntü alınmadı."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Chưa nhận được ảnh chụp nhanh."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "尚未收到快照。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "尚未收到快照。"
+          }
+        }
+      }
     },
     "Noise level" : {
       "localizations" : {
@@ -37636,7 +38290,116 @@
       }
     },
     "Remote control" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fernbedienung"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Τηλεχειριστήριο"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Control remoto"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Télécommande"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "रिमोट कंट्रोल"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Kendali jarak jauh"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Telecomando"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "リモコン"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "리모콘"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Afstandsbediening"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pilot"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Controle remoto"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Controle remoto"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fjärrkontroll"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Uzaktan kumanda"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Điều khiển từ xa"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "遥控"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "遙控"
+          }
+        }
+      }
     },
     "Reset" : {
       "localizations" : {
@@ -41528,7 +42291,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Källa %@ hittades inte"
           }
         },
@@ -41671,7 +42434,116 @@
       }
     },
     "Source name is the name of the Source in OBS that receives the stream from Moblin." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Quellname ist der Name der Quelle in OBS, die den Stream von Moblin empfängt."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Το όνομα πηγής είναι το όνομα της πηγής στο OBS που λαμβάνει τη ροή από το Moblin."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nombre de la fuente es el nombre de la fuente en OBS que recibe la transmisión de Moblin."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Le nom de la source est le nom de la source dans OBS qui reçoit le flux de Moblin."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "स्रोत का नाम ओबीएस में उस स्रोत का नाम है जो मोबलिन से स्ट्रीम प्राप्त करता है।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nama sumber adalah nama Sumber di OBS yang menerima aliran dari Moblin."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Il nome della sorgente è il nome della sorgente in OBS che riceve lo streaming da Moblin."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ソース名は、Moblin からストリームを受信する OBS 内のソースの名前です。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "소스 이름은 Moblin에서 스트림을 수신하는 OBS의 소스 이름입니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bronnaam is de naam van de bron in OBS die de stream van Moblin ontvangt."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nazwa źródła to nazwa źródła w OBS, które odbiera strumień z Moblina."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nome da fonte é o nome da fonte no OBS que recebe o stream do Moblin."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nome da fonte é o nome da fonte no OBS que recebe o stream do Moblin."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Källnamn är namnet på källan i OBS som tar emot strömmen från Moblin."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Kaynak adı, OBS'de Moblin'den akışı alan Kaynağın adıdır."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tên nguồn là tên của Source trong OBS nhận luồng từ Moblin."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "源名称是 OBS 中从 Moblin 接收流的源的名称。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "來源名稱是 OBS 中從 Moblin 接收流的來源的名稱。"
+          }
+        }
+      }
     },
     "Speed" : {
       "localizations" : {
@@ -43771,7 +44643,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Stoppar..."
           }
         },
@@ -46490,7 +47362,116 @@
       }
     },
     "The name of the Source in OBS that receives the stream from Moblin." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Der Name der Quelle in OBS, die den Stream von Moblin empfängt."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Το όνομα της πηγής στο OBS που λαμβάνει τη ροή από το Moblin."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "El nombre de la Fuente en OBS que recibe la transmisión de Moblin."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Le nom de la source dans OBS qui reçoit le flux de Moblin."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ओबीएस में स्रोत का नाम जो मोबलिन से स्ट्रीम प्राप्त करता है।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nama Sumber di OBS yang menerima aliran dari Moblin."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Il nome della sorgente in OBS che riceve lo streaming da Moblin."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Moblin からストリームを受信する OBS のソースの名前。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Moblin에서 스트림을 수신하는 OBS의 소스 이름입니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "De naam van de bron in OBS die de stream van Moblin ontvangt."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nazwa źródła w OBS, które odbiera strumień z Moblina."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O nome da fonte no OBS que recebe o stream do Moblin."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O nome da fonte no OBS que recebe o stream do Moblin."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Namnet på källan i OBS som tar emot strömmen från Moblin."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Moblin'den akışı alan OBS'deki Kaynağın adı."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tên của Nguồn trong OBS nhận luồng từ Moblin."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "OBS 中从 Moblin 接收流的源的名称。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "OBS 中從 Moblin 接收流的來源的名稱。"
+          }
+        }
+      }
     },
     "The name of your channel." : {
       "localizations" : {
@@ -48845,7 +49826,116 @@
       }
     },
     "Trying to connect to the OBS server..." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Versuche, eine Verbindung zum OBS-Server herzustellen ..."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Προσπάθεια σύνδεσης στον διακομιστή OBS..."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Intentando conectarse al servidor OBS..."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "J'essaie de me connecter au serveur OBS..."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "OBS सर्वर से कनेक्ट करने का प्रयास किया जा रहा है..."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mencoba menyambung ke server OBS..."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tentativo di connessione al server OBS..."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "OBS サーバーに接続しようとしています..."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "OBS 서버에 연결하는 중입니다..."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Probeert verbinding te maken met de OBS-server..."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Próbuję połączyć się z serwerem OBS..."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tentando se conectar ao servidor OBS..."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tentando se conectar ao servidor OBS..."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Försöker ansluta till OBS-servern..."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "OBS sunucusuna bağlanmaya çalışıyorum..."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Đang cố gắng kết nối với máy chủ OBS..."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "正在尝试连接OBS服务器..."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "正在嘗試連接OBS伺服器..."
+          }
+        }
+      }
     },
     "Twitch" : {
       "localizations" : {
@@ -49522,7 +50612,116 @@
       }
     },
     "Unknown streaming state." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Unbekannter Streaming-Status."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Άγνωστη κατάσταση ροής."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Estado de transmisión desconocido."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "État de diffusion inconnu."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "अज्ञात स्ट्रीमिंग स्थिति."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Status streaming tidak diketahui."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Stato dello streaming sconosciuto."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "不明なストリーミング状態。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "알 수 없는 스트리밍 상태입니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Onbekende streamingstatus."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nieznany stan przesyłania strumieniowego."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Estado de streaming desconhecido."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Estado de streaming desconhecido."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Okänd strömningsstatus."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bilinmeyen akış durumu."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Trạng thái phát trực tuyến không xác định."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "未知的流状态。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "未知的流狀態。"
+          }
+        }
+      }
     },
     "Unknown," : {
       "localizations" : {
