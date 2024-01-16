@@ -4,13 +4,32 @@ private let apiVersion = "0.1"
 
 private enum MoblinRequest: Codable {
     case identify(authentication: String)
-    case setTorch(on: Bool)
-    case setMute(on: Bool)
     case getStatus
 }
 
+struct MoblinStatusTopLeft: Codable {
+    var stream: String
+    var camera: String
+    var mic: String
+    var zoom: String
+    var obs: String
+    var chat: String
+    var viewers: String
+}
+
+struct MoblinStatusTopRight: Codable {
+    var audioLevel: String
+    var rtmpServer: String
+    var gameController: String
+    var bitrate: String
+    var uptime: String
+    var location: String
+    var srtla: String
+    var recording: String
+}
+
 private enum MoblinResponse: Codable {
-    case getStatus(isLive: Bool, bitrate: Float)
+    case getStatus(topLeft: MoblinStatusTopLeft, topRight: MoblinStatusTopRight)
 }
 
 private enum MoblinEvent: Codable {
@@ -66,8 +85,7 @@ private enum MoblinMessageToClient: Codable {
 }
 
 protocol RemoteControlServerDelegate: AnyObject {
-    func setTorch(on: Bool)
-    func setMute(on: Bool)
+    func getStatus(onComplete: (MoblinStatusTopLeft, MoblinStatusTopRight) -> Void)
 }
 
 class RemoteControlServer {
@@ -156,29 +174,39 @@ class RemoteControlServer {
     }
 
     private func handleRequest(id: Int, data: MoblinRequest) {
-        var result: MoblinResult = .ok
+        guard let delegate else {
+            return
+        }
+        var result: MoblinResult?
         if clientIdentified {
             switch data {
-            case let .setTorch(on: on):
-                delegate?.setTorch(on: on)
-            case let .setMute(on: on):
-                delegate?.setMute(on: on)
+            case .getStatus:
+                delegate.getStatus { topLeft, topRight in
+                    self.send(message: .response(
+                        id: id,
+                        result: .ok,
+                        data: .getStatus(topLeft: topLeft, topRight: topRight)
+                    ))
+                }
             default:
-                return
+                break
             }
         } else {
             switch data {
             case let .identify(authentication: authentication):
                 if authentication == password {
                     clientIdentified = true
+                    result = .ok
                 } else {
                     result = .wrongPassword
                 }
             default:
-                return
+                break
             }
         }
-        send(message: .response(id: id, result: result, data: nil))
+        if let result {
+            send(message: .response(id: id, result: result, data: nil))
+        }
     }
 }
 
