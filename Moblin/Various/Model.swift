@@ -278,6 +278,7 @@ final class Model: ObservableObject {
     @Published var showingStreamSwitcher = false
     @Published var showingGrid = false
     @Published var showingObs = false
+    @Published var showingRemoteControl = false
     @Published var obsScenes: [String] = []
     @Published var obsAudioVolume: String = noValue
     @Published var obsAudioDelay: Int = 0
@@ -338,6 +339,22 @@ final class Model: ObservableObject {
     @Published var wizardCustomSrtStreamId = ""
     @Published var wizardCustomRtmpUrl = ""
     @Published var wizardCustomRtmpStreamKey = ""
+
+    @Published var remoteControlStream = "Twitch (1080p, 30, SRTLA, H.265 <5 Mbps, AAC 128 Kbps)"
+    @Published var remoteControlCamera = "Back"
+    @Published var remoteControlMic = "Bottom"
+    @Published var remoteControlZoom = "1.0"
+    @Published var remoteControlObs = "Could not connect to the server."
+    @Published var remoteControlChat = "1.0/min (5 total)"
+    @Published var remoteControlViewers = "37"
+    @Published var remoteControlAudioLevel = "-56.3 dB, 1 ch"
+    @Published var remoteControlRtmpServer = ""
+    @Published var remoteControlGameController = ""
+    @Published var remoteControlBitrate = "3.4 Mbps (10 MB)"
+    @Published var remoteControlUptime = "1m 34s"
+    @Published var remoteControlLocation = ""
+    @Published var remoteControlSrtla = "Cellular 25%, WiFi 75%"
+    @Published var remoteControlRecording = ""
 
     var cameraDevice: AVCaptureDevice?
     var cameraZoomLevelToXScale: Float = 1.0

@@ -163,6 +163,17 @@ struct MainView: View {
                     .frame(width: settingsHalfWidth)
                 }
             }
+            if model.showingRemoteControl {
+                HStack {
+                    Spacer()
+                    NavigationStack {
+                        RemoteControlView {
+                            model.showingRemoteControl = false
+                        }
+                    }
+                    .frame(width: settingsHalfWidth)
+                }
+            }
             if model.database.debug!.letItSnow! {
                 SpriteView(scene: scene, options: [.allowsTransparency])
                     .ignoresSafeArea()

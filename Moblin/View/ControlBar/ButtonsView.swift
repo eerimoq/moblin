@@ -328,6 +328,63 @@ struct ObsView: View {
     }
 }
 
+struct StatusItemView: View {
+    var icon: String
+    var message: String
+    var color: Color = .primary
+
+    var body: some View {
+        HStack {
+            Image(systemName: icon)
+                .foregroundColor(color)
+                .frame(width: 20)
+            Text(message)
+        }
+        .font(smallFont)
+    }
+}
+
+struct RemoteControlView: View {
+    @EnvironmentObject var model: Model
+    var done: () -> Void
+
+    var body: some View {
+        Form {
+            Section {
+                VStack(alignment: .leading, spacing: 3) {
+                    StatusItemView(icon: "dot.radiowaves.left.and.right", message: model.remoteControlStream)
+                    StatusItemView(icon: "camera", message: model.remoteControlCamera)
+                    StatusItemView(icon: "music.mic", message: model.remoteControlMic)
+                    StatusItemView(icon: "magnifyingglass", message: model.remoteControlZoom)
+                    StatusItemView(icon: "xserve", message: model.remoteControlObs, color: .red)
+                    StatusItemView(icon: "message", message: model.remoteControlChat)
+                    StatusItemView(icon: "eye", message: model.remoteControlViewers)
+                }
+            } header: {
+                Text("Top left")
+            }
+            Section {
+                VStack(alignment: .leading, spacing: 3) {
+                    StatusItemView(icon: "waveform", message: model.remoteControlAudioLevel)
+                    StatusItemView(icon: "server.rack", message: model.remoteControlRtmpServer)
+                    StatusItemView(icon: "gamecontroller", message: model.remoteControlGameController)
+                    StatusItemView(icon: "speedometer", message: model.remoteControlBitrate)
+                    StatusItemView(icon: "deskclock", message: model.remoteControlUptime)
+                    StatusItemView(icon: "location", message: model.remoteControlLocation)
+                    StatusItemView(icon: "phone.connection", message: model.remoteControlSrtla)
+                    StatusItemView(icon: "record.circle", message: model.remoteControlRecording)
+                }
+            } header: {
+                Text("Top right")
+            }
+        }
+        .navigationTitle("Remote control")
+        .toolbar {
+            QuickSettingsToolbar(done: done)
+        }
+    }
+}
+
 private func startStopText(button: ButtonState) -> String {
     return button.isOn ? "Stop" : "Start"
 }
