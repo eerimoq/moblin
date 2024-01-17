@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.150.0", date: "2024-01-17", changes: [
+        "• OBS remote control styling.",
+        "• Allow changing connection priorities when live.",
+        "• Fix RTMP server crash on extened timestamp for type 3 chunks.",
+    ]),
     Version(version: "0.149.0", date: "2024-01-15", changes: [
         "• Machine translation to Italian.",
         "• Make custom RTMP(S) stream creation use H.264 video codec.",
