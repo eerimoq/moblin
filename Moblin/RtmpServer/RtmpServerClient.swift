@@ -145,7 +145,7 @@ class RtmpServerClient {
         case .data:
             handleDataHandshakeDoneData(data: data)
         default:
-            fatalError("Bad state \(chunkState) when not waiting for extended header")
+            stopInternal(reason: "Bad state \(chunkState) when not waiting for extended header")
         }
     }
 
@@ -273,7 +273,6 @@ class RtmpServerClient {
     private func receiveMessageHeaderType3() {
         if chunkStream.extendedTimestampPresentInType3 {
             receiveExtendedTimestamp()
-            chunkState = .messageHeaderType3
         } else {
             receiveChunkData()
         }
