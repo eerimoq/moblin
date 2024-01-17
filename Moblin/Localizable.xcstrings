@@ -281,8 +281,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%lld canal"
+            "state" : "translated",
+            "value" : "%lld ch"
           }
         },
         "fr" : {
@@ -1991,8 +1991,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@dB"
+            "state" : "translated",
+            "value" : "%@ dB"
           }
         },
         "fr" : {
@@ -2327,8 +2327,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ niveles de audio de origen"
+            "state" : "translated",
+            "value" : "%@: Nivel de audio"
           }
         },
         "fr" : {
@@ -2439,8 +2439,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ sincronización de audio de origen"
+            "state" : "translated",
+            "value" : "%@: Sincronización de audio"
           }
         },
         "fr" : {
@@ -2551,8 +2551,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ instantánea de origen"
+            "state" : "translated",
+            "value" : "%@: Instantánea"
           }
         },
         "fr" : {
@@ -5021,7 +5021,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Una conexión con alta prioridad se utilizará más que una conexión con baja prioridad si la conexión de alta prioridad es estable. Las conexiones inestables tendrán la prioridad más baja independientemente de la prioridad configurada hasta que vuelvan a ser estables."
           }
         },
@@ -12761,7 +12761,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Color"
           }
         },
@@ -13433,8 +13433,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Configure el nombre de la fuente en Configuración → Streams → %@ → Control remoto OBS para snapshop y más."
+            "state" : "translated",
+            "value" : "Configura el nombre de la fuente en Ajustes → Transmisiones → %@ → Control remoto de OBS para instantánea y más."
           }
         },
         "fr" : {
@@ -13545,7 +13545,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Prioridades de conexión"
           }
         },
@@ -23177,8 +23177,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Vaya en vivo para ver los niveles de audio."
+            "state" : "translated",
+            "value" : "Inicia la transmisión para ver los niveles de audio."
           }
         },
         "fr" : {
@@ -23289,8 +23289,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Vaya en vivo para ver la instantánea."
+            "state" : "translated",
+            "value" : "Inicia la transmisión para ver la instantánea."
           }
         },
         "fr" : {
@@ -23737,8 +23737,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Red"
+            "state" : "translated",
+            "value" : "Rejilla"
           }
         },
         "fr" : {
@@ -28441,8 +28441,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "El ancho de banda máximo sigue la entrada"
+            "state" : "translated",
+            "value" : "El ancho de banda máximo sigue la entrada (maxbw=0)"
           }
         },
         "fr" : {
@@ -30793,8 +30793,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "mi fuente"
+            "state" : "translated",
+            "value" : "Mi fuente"
           }
         },
         "fr" : {
@@ -32137,7 +32137,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Aún no se han recibido niveles de audio."
           }
         },
@@ -32249,8 +32249,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "No se conocen interfaces de red Ethernet."
+            "state" : "translated",
+            "value" : "No hay interfaces de red Ethernet conocidas."
           }
         },
         "fr" : {
@@ -32361,7 +32361,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Aún no se ha recibido ninguna instantánea."
           }
         },
@@ -36729,7 +36729,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Control remoto"
           }
         },
@@ -36841,7 +36841,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Reiniciar"
           }
         },
@@ -40652,7 +40652,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Fuente %@ no encontrada"
           }
         },
@@ -40764,7 +40764,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nombre de la fuente"
           }
         },
@@ -40876,7 +40876,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nombre de la fuente es el nombre de la fuente en OBS que recibe la transmisión de Moblin."
           }
         },
@@ -42556,7 +42556,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Iniciar transmisión"
           }
         },
@@ -42780,8 +42780,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "A partir de..."
+            "state" : "translated",
+            "value" : "Iniciando..."
           }
         },
         "fr" : {
@@ -42892,8 +42892,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "dejar de transmitir"
+            "state" : "translated",
+            "value" : "Detener transmisión"
           }
         },
         "fr" : {
@@ -43004,8 +43004,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Parada..."
+            "state" : "translated",
+            "value" : "Deteniendo..."
           }
         },
         "fr" : {
@@ -45804,7 +45804,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "El nombre de la Fuente en OBS que recibe la transmisión de Moblin."
           }
         },
@@ -48268,8 +48268,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Intentando conectarse al servidor OBS..."
+            "state" : "translated",
+            "value" : "Intentando conectarse al servidor de OBS..."
           }
         },
         "fr" : {
@@ -48828,8 +48828,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Estado de transmisión desconocido."
+            "state" : "translated",
+            "value" : "Estado de la transmisión desconocido."
           }
         },
         "fr" : {
@@ -51965,7 +51965,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wide"
+            "value" : "Wide (Estándar)"
           }
         },
         "fr" : {
@@ -52077,7 +52077,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wide dual (auto)"
+            "value" : "Wide dual (Estándar auto)"
           }
         },
         "fr" : {
@@ -53762,8 +53762,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Acercarse"
+            "state" : "translated",
+            "value" : "Acercar zoom"
           }
         },
         "fr" : {
@@ -53874,8 +53874,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Disminuir el zoom"
+            "state" : "translated",
+            "value" : "Alejar zoom"
           }
         },
         "fr" : {
