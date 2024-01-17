@@ -143,8 +143,6 @@ class RtmpServerClient {
             handleExtendedTimestamp(data: data)
         case .data:
             handleDataHandshakeDoneData(data: data)
-        default:
-            stopInternal(reason: "Bad state \(chunkState) when not waiting for extended header")
         }
     }
 
