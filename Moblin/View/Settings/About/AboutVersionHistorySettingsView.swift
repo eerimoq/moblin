@@ -11,7 +11,7 @@ private let versions = [
     Version(version: "0.150.0", date: "2024-01-17", changes: [
         "• OBS remote control styling.",
         "• Allow changing connection priorities when live.",
-        "• Fix RTMP server crash on extened timestamp for type 3 chunks.",
+        "• Fix RTMP server crash on extended timestamp for type 3 chunks.",
         "• Spanish, German, Polish and Swedish translations updated.",
     ]),
     Version(version: "0.149.0", date: "2024-01-15", changes: [
