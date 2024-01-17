@@ -17,7 +17,6 @@ private enum ChunkState {
     case messageHeaderType0
     case messageHeaderType1
     case messageHeaderType2
-    case messageHeaderType3
     case extendedTimestamp
     case data
 }
