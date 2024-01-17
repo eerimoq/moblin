@@ -316,7 +316,7 @@ struct ObsView: View {
                     Text("""
                     Configure source name in \
                     Settings → Streams → \(model.stream.name) → OBS remote control for \
-                    snapshop and more.
+                    snapshot and more.
                     """)
                 }
             }

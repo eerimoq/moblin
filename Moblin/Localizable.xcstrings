@@ -13418,6 +13418,7 @@
       }
     },
     "Configure source name in Settings → Streams → %@ → OBS remote control for snapshop and more." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -13525,6 +13526,34 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "在設定 → 流 → %@ → OBS 遠端控制中配置快照商店等的來源名稱。"
+          }
+        }
+      }
+    },
+    "Configure source name in Settings → Streams → %@ → OBS remote control for snapshot and more." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Konfiguriere den Quellnamen unter Einstellungen → Streams → %@ → OBS-Fernbedienung für Snapshot und mehr."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configura el nombre de la fuente en Ajustes → Transmisiones → %@ → Control remoto de OBS para instantánea y más."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skonfiguruj nazwę źródła w Ustawieniach → Strumienie → %@ → Pilot OBS dla Snapshop i nie tylko."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Konfigurera källnamnet i Inställningar → Strömmar → %@ → OBS-fjärrkontroll för ögonblicksbild och mer."
           }
         }
       }
