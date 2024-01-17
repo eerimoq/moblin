@@ -329,7 +329,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%lld rozdz"
           }
         },
@@ -2039,7 +2039,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@ dB"
           }
         },
@@ -2263,7 +2263,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@ S"
           }
         },
@@ -2375,8 +2375,8 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ poziomy dźwięku źródła"
+            "state" : "translated",
+            "value" : "%@ poziom dźwięku źródłowego"
           }
         },
         "pt-BR" : {
@@ -2487,7 +2487,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@ synchronizacja źródła dźwięku"
           }
         },
@@ -2599,7 +2599,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@ migawka źródłowa"
           }
         },
@@ -3166,7 +3166,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "• %@"
           }
         },
@@ -3390,7 +3390,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "⚠️ Dźwięk nie jest jeszcze zaimplementowany."
           }
         },
@@ -4958,7 +4958,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "18529305"
           }
         },
@@ -5182,8 +5182,8 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Jeśli połączenie o wysokim priorytecie jest stabilne, częściej będzie używane połączenie o wysokim priorytecie niż połączenie o niskim priorytecie. Niestabilne połączenia otrzymają najniższy priorytet niezależnie od skonfigurowanego priorytetu, dopóki nie staną się ponownie stabilne."
+            "state" : "translated",
+            "value" : "Połączenie o wysokim priorytecie będzie używane bardziej niż połączenie o niskim priorytecie, jeśli połączenie o wysokim priorytecie jest stabilne. Niestabilne połączenia otrzymają najniższy priorytet, niezależnie od skonfigurowanego priorytetu, dopóki ponownie nie staną się stabilne."
           }
         },
         "pt-BR" : {
@@ -5295,8 +5295,8 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Jeśli połączenie o wysokim priorytecie jest stabilne, częściej będzie używane połączenie o wysokim priorytecie niż połączenie o niskim priorytecie. Niestabilne połączenia otrzymają niski priorytet niezależnie od skonfigurowanego priorytetu, dopóki nie staną się ponownie stabilne."
+            "state" : "translated",
+            "value" : "Połączenie o wysokim priorytecie będzie używane bardziej niż połączenie o niskim priorytecie, jeśli połączenie o wysokim priorytecie jest stabilne. Niestabilne połączenia otrzymają najniższy priorytet, niezależnie od skonfigurowanego priorytetu, dopóki ponownie nie staną się stabilne."
           }
         },
         "pt-BR" : {
@@ -5520,7 +5520,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Lista wszystkich przycisków scen, często służąca do ukrywania i pokazywania widżetów. Przycisku sceny można używać w przypadku zera lub większej liczby scen."
           }
         },
@@ -5632,7 +5632,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Lista wszystkich szybkich przycisków sceny, często służąca do ukrywania i pokazywania widżetów. Przycisku sceny można używać w przypadku zera lub większej liczby scen."
           }
         },
@@ -5744,7 +5744,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Lista wszystkich widżetów. Widget może być używany w zerowej lub większej liczbie scen."
           }
         },
@@ -8105,7 +8105,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Automatycznie uruchamia się po przełączeniu strumienia."
           }
         },
@@ -12922,7 +12922,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Koło"
           }
         },
@@ -13261,7 +13261,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kolor"
           }
         },
@@ -13597,7 +13597,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Skonfiguruj w Ustawieniach → Strumienie → %@ → Adres URL."
           }
         },
@@ -13933,7 +13933,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Skonfiguruj nazwę źródła w Ustawieniach → Strumienie → %@ → Pilot OBS dla Snapshop i nie tylko."
           }
         },
@@ -14045,7 +14045,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Priorytety połączeń"
           }
         },
@@ -14157,7 +14157,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kontroler"
           }
         },
@@ -14269,7 +14269,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kontroler %lld"
           }
         },
@@ -16285,7 +16285,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Wyłącz serwer RTMP, aby zmienić jego ustawienia."
           }
         },
@@ -17069,7 +17069,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "W dół"
           }
         },
@@ -17517,7 +17517,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Każdy strumień może odbierać wideo od jednego wydawcy RTMP, zazwyczaj jest to dron."
           }
         },
@@ -17741,7 +17741,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Włącz opcję „Wibracja”, aby urządzenie wibrowało, gdy pojawią się następujące komunikaty:"
           }
         },
@@ -18189,7 +18189,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Wprowadź jeden z adresów URL w urządzeniu wydawcy RTMP, aby wysłać wideo do tego strumienia. Zwykle wprowadź adres URL Wi-Fi."
           }
         },
@@ -19533,7 +19533,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Eksperymentalny"
           }
         },
@@ -19757,8 +19757,8 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Błąd ekspozycji"
+            "state" : "translated",
+            "value" : "Kompensacja ekspozycji"
           }
         },
         "pt-BR" : {
@@ -19869,8 +19869,8 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Zastąpienie mikrofonu zewnętrznego następuje po przełączeniu sceny"
+            "state" : "translated",
+            "value" : "Zewnętrzny mikrofon nadpisuje przełącznik śledzenia sceny"
           }
         },
         "pt-BR" : {
@@ -22222,7 +22222,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Wymuś zadany FPS lub ustaw na 0, aby użyć FPS wydawcy. Klatki B nie działają z wymuszonym FPS. W przypadku dronów DJI zwykle potrzebny jest wymuszony FPS."
           }
         },
@@ -22894,8 +22894,8 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Funkcjonować"
+            "state" : "translated",
+            "value" : "Funkcja"
           }
         },
         "pt-BR" : {
@@ -23006,7 +23006,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Przycisk kontrolera gier"
           }
         },
@@ -23118,7 +23118,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kontrolery gier"
           }
         },
@@ -23791,8 +23791,8 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Rozpocznij transmisję na żywo, aby zobaczyć poziomy dźwięku"
+            "state" : "translated",
+            "value" : "Rozpocznij transmisję na żywo, aby zobaczyć poziom dźwięku"
           }
         },
         "pt-BR" : {
@@ -23903,8 +23903,8 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Rozpocznij transmisję na żywo, aby zobaczyć poziomy dźwięku."
+            "state" : "translated",
+            "value" : "Rozpocznij transmisję na żywo, aby zobaczyć poziom dźwięku."
           }
         },
         "pt-BR" : {
@@ -24016,7 +24016,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Przejdź na żywo, aby zobaczyć migawkę"
           }
         },
@@ -24128,7 +24128,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Przejdź na żywo, aby zobaczyć migawkę."
           }
         },
@@ -24689,7 +24689,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Siatka"
           }
         },
@@ -26370,7 +26370,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Interfejs"
           }
         },
@@ -27378,7 +27378,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Lewy"
           }
         },
@@ -28050,7 +28050,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Lokalizacja"
           }
         },
@@ -28386,7 +28386,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Niski poziom baterii"
           }
         },
@@ -28498,7 +28498,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Niski bitrate"
           }
         },
@@ -28610,8 +28610,8 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ostrzeżenie o niskim przepływności"
+            "state" : "translated",
+            "value" : "Ostrzeżenie o niskim bitrate"
           }
         },
         "pt-BR" : {
@@ -28834,7 +28834,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Aby wibracje działały, upewnij się, że tryb cichy jest wyłączony."
           }
         },
@@ -29506,7 +29506,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Maksymalna przepustowość podąża za danymi wejściowymi"
           }
         },
@@ -30290,7 +30290,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mikrofon podąża za sceną"
           }
         },
@@ -30626,7 +30626,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mikrofon na scenę"
           }
         },
@@ -30738,7 +30738,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mikrofon używany w tej scenie, gdy włączony jest przełącznik „Mikrofon podąża za sceną”."
           }
         },
@@ -31858,7 +31858,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Moje źródło"
           }
         },
@@ -32866,7 +32866,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nazwy interfejsów sieciowych"
           }
         },
@@ -33202,7 +33202,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nie odebrano jeszcze żadnych poziomów dźwięku."
           }
         },
@@ -33314,7 +33314,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Brak znanych interfejsów sieciowych Ethernet."
           }
         },
@@ -33426,7 +33426,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nie otrzymano jeszcze żadnego zrzutu ekranu."
           }
         },
@@ -35446,7 +35446,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Można usunąć tylko nieużywane szybkie przyciski."
           }
         },
@@ -36230,8 +36230,8 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pixelat"
+            "state" : "translated",
+            "value" : "Pixelizacja"
           }
         },
         "pt-BR" : {
@@ -37238,7 +37238,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Publikuj adresy URL"
           }
         },
@@ -37350,7 +37350,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Naciśnij klawisz"
           }
         },
@@ -37574,7 +37574,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Szybkie przyciski pojawiają się od dołu do góry."
           }
         },
@@ -37798,8 +37798,8 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Czas rzeczywistyIRL"
+            "state" : "translated",
+            "value" : "RealtimeIRL"
           }
         },
         "pt-BR" : {
@@ -38359,8 +38359,8 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pilot"
+            "state" : "translated",
+            "value" : "Zdalne sterowanie"
           }
         },
         "pt-BR" : {
@@ -38471,8 +38471,8 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Resetowanie"
+            "state" : "translated",
+            "value" : "Reset"
           }
         },
         "pt-BR" : {
@@ -38807,7 +38807,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Rozdzielczość i liczba klatek na sekundę są takie same jak w przypadku transmisji na żywo."
           }
         },
@@ -38919,7 +38919,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Przywróć zakupy"
           }
         },
@@ -39143,8 +39143,8 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Prawidłowy"
+            "state" : "translated",
+            "value" : "Prawy"
           }
         },
         "pt-BR" : {
@@ -39255,7 +39255,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "RTMP"
           }
         },
@@ -39815,7 +39815,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "rtmp://arn03.contribute.live-video.net/app/"
           }
         },
@@ -39927,7 +39927,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "RTMP(S)"
           }
         },
@@ -40599,7 +40599,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Wyszukaj „pokój rozmów” na tej stronie. 18529305 to identyfikator pokoju rozmów na przykładowym zrzucie ekranu poniżej."
           }
         },
@@ -40823,7 +40823,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Wyślij swoją lokalizację na https://rtirl.com, aby widzowie wiedzieli, gdzie jesteś."
           }
         },
@@ -42058,8 +42058,8 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pominąć"
+            "state" : "translated",
+            "value" : "Pomiń"
           }
         },
         "pt-BR" : {
@@ -42282,7 +42282,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nie znaleziono źródła %@"
           }
         },
@@ -42394,7 +42394,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nazwa źródła"
           }
         },
@@ -42506,8 +42506,8 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Nazwa źródła to nazwa źródła w OBS, które odbiera strumień z Moblina."
+            "state" : "translated",
+            "value" : "Nazwa źródła to nazwa źródła w OBS, które odbiera strumień z Moblin."
           }
         },
         "pt-BR" : {
@@ -42730,7 +42730,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kwadrat"
           }
         },
@@ -43514,7 +43514,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "srt://107.32.12.132:5000"
           }
         },
@@ -44186,8 +44186,8 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Rozpocznij transmisję strumieniową"
+            "state" : "translated",
+            "value" : "Rozpocznij stream"
           }
         },
         "pt-BR" : {
@@ -44410,8 +44410,8 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Startowy..."
+            "state" : "translated",
+            "value" : "Rozpoczynanie..."
           }
         },
         "pt-BR" : {
@@ -44522,8 +44522,8 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Zatrzymaj transmisję strumieniową"
+            "state" : "translated",
+            "value" : "Zatrzymaj stream"
           }
         },
         "pt-BR" : {
@@ -44634,8 +44634,8 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Zatrzymanie..."
+            "state" : "translated",
+            "value" : "Zatrzymywanie..."
           }
         },
         "pt-BR" : {
@@ -44858,8 +44858,8 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Identyfikator strumienia"
+            "state" : "translated",
+            "value" : "Identyfikator streama"
           }
         },
         "pt-BR" : {
@@ -45082,7 +45082,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Brak klucza do transmisji"
           }
         },
@@ -47434,8 +47434,8 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Nazwa źródła w OBS, które odbiera strumień z Moblina."
+            "state" : "translated",
+            "value" : "Nazwa źródła w OBS, które odbiera strumień z Moblin."
           }
         },
         "pt-BR" : {
@@ -47770,7 +47770,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Serwer RTMP umożliwia firmie Moblin odbieranie strumieni wideo przez sieć. Pozwala to na wykorzystanie niektórych dronów i innych kamer jako źródeł."
           }
         },
@@ -47882,7 +47882,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nazwa strumienia wyświetlana jest na liście kamer w ustawieniach sceny."
           }
         },
@@ -47994,8 +47994,8 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Port TCP, na którym serwer RTMP nasłuchuje wydawców RTMP."
+            "state" : "translated",
+            "value" : "Port TCP, na którym serwer RTMP nasłuchuje nadawców RTMP."
           }
         },
         "pt-BR" : {
@@ -49562,7 +49562,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Trójkąt"
           }
         },
@@ -49898,7 +49898,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Próbuję połączyć się z serwerem OBS..."
           }
         },
@@ -50572,7 +50572,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nieznany stan przesyłania strumieniowego"
           }
         },
@@ -50684,7 +50684,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nieznany stan przesyłania strumieniowego."
           }
         },
@@ -51132,7 +51132,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "W górę"
           }
         },
@@ -51244,7 +51244,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Do 50Mbps. Ustaw na 0 dla trybu automatycznego."
           }
         },
@@ -51468,7 +51468,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Adres URL"
           }
         },
@@ -52588,7 +52588,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Wibrować"
           }
         },
@@ -52812,8 +52812,8 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Szybkość transmisji wideo"
+            "state" : "translated",
+            "value" : "Bitrate wideo"
           }
         },
         "pt-BR" : {
@@ -52924,8 +52924,8 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Wideo jest czarniawe"
+            "state" : "translated",
+            "value" : "Zaciemnione wideo"
           }
         },
         "pt-BR" : {
@@ -53036,7 +53036,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kodek wideo"
           }
         },
@@ -54604,7 +54604,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ws://213.33.45.132:4567"
           }
         },
@@ -54716,7 +54716,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Znak X"
           }
         },
@@ -55282,7 +55282,7 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Zero lub więcej milisekund."
           }
         },
@@ -55618,8 +55618,8 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Zbliżenie"
+            "state" : "translated",
+            "value" : "Przybliż"
           }
         },
         "pt-BR" : {
@@ -55730,8 +55730,8 @@
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pomniejsz"
+            "state" : "translated",
+            "value" : "Oddal"
           }
         },
         "pt-BR" : {
