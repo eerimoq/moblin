@@ -269,8 +269,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%lld ch"
+            "state" : "translated",
+            "value" : "%lld Kanal"
           }
         },
         "el" : {
@@ -1979,7 +1979,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@ dB"
           }
         },
@@ -2315,7 +2315,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@ Audiopegel der Quelle"
           }
         },
@@ -2427,7 +2427,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@ Quell-Audio-Synchronisierung"
           }
         },
@@ -2539,8 +2539,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ Quell-Snapshot"
+            "state" : "translated",
+            "value" : "%@ Quellen-Schnappschuss"
           }
         },
         "el" : {
@@ -5122,7 +5122,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Eine Verbindung mit hoher Priorität wird häufiger genutzt als eine Verbindung mit niedriger Priorität, wenn die Verbindung mit hoher Priorität stabil ist. Instabile Verbindungen erhalten unabhängig von der konfigurierten Priorität die niedrigste Priorität, bis sie wieder stabil sind."
           }
         },
@@ -5235,7 +5235,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Eine Verbindung mit hoher Priorität wird häufiger genutzt als eine Verbindung mit niedriger Priorität, wenn die Verbindung mit hoher Priorität stabil ist. Instabile Verbindungen erhalten unabhängig von der konfigurierten Priorität eine niedrige Priorität, bis sie wieder stabil sind."
           }
         },
@@ -13201,7 +13201,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Farbe"
           }
         },
@@ -13873,8 +13873,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Konfigurieren Sie den Quellnamen unter Einstellungen → Streams → %@ → OBS-Fernbedienung für Snapshop und mehr."
+            "state" : "translated",
+            "value" : "Konfiguriere den Quellnamen unter Einstellungen → Streams → %@ → OBS-Fernbedienung für Snapshop und mehr."
           }
         },
         "el" : {
@@ -13985,7 +13985,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Verbindungsprioritäten"
           }
         },
@@ -23731,8 +23731,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Gehen Sie live, um die Audiopegel zu sehen"
+            "state" : "translated",
+            "value" : "Geh live, um die Audiopegel zu sehen"
           }
         },
         "el" : {
@@ -23843,8 +23843,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Gehen Sie live, um die Audiopegel zu sehen."
+            "state" : "translated",
+            "value" : "Geh live, um die Audiopegel zu sehen."
           }
         },
         "el" : {
@@ -23956,8 +23956,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Gehen Sie live, um den Schnappschuss anzusehen"
+            "state" : "translated",
+            "value" : "Geh live, um den Schnappschuss anzusehen"
           }
         },
         "el" : {
@@ -24068,8 +24068,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Gehen Sie live, um den Schnappschuss anzusehen."
+            "state" : "translated",
+            "value" : "Geh live, um den Schnappschuss anzusehen."
           }
         },
         "el" : {
@@ -24629,8 +24629,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Netz"
+            "state" : "translated",
+            "value" : "Gitter"
           }
         },
         "el" : {
@@ -29446,7 +29446,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Die maximale Bandbreite folgt der Eingabe"
           }
         },
@@ -31798,7 +31798,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Meine Quelle"
           }
         },
@@ -33142,8 +33142,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Es wurden noch keine Audiopegel empfangen."
+            "state" : "translated",
+            "value" : "Es wurde noch kein Audiopegel empfangen."
           }
         },
         "el" : {
@@ -33254,7 +33254,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Keine bekannten Ethernet-Netzwerkschnittstellen."
           }
         },
@@ -33366,7 +33366,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Noch kein Schnappschuss erhalten."
           }
         },
@@ -38299,7 +38299,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Fernbedienung"
           }
         },
@@ -38411,7 +38411,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Zurücksetzen"
           }
         },
@@ -40764,7 +40764,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Senden deinen Standort an https://rtirl.com, damit deine Zuschauer wissen, wo du dich befindest."
+            "value" : "Sende deinen Standort an https://rtirl.com, damit deine Zuschauer wissen, wo du dich befindest."
           }
         },
         "el" : {
@@ -42222,7 +42222,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Quelle %@ nicht gefunden"
           }
         },
@@ -42334,7 +42334,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Quellenname"
           }
         },
@@ -42446,8 +42446,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Quellname ist der Name der Quelle in OBS, die den Stream von Moblin empfängt."
+            "state" : "translated",
+            "value" : "Quellenname ist der Name der Quelle in OBS, die den Stream von Moblin empfängt."
           }
         },
         "el" : {
@@ -44126,8 +44126,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Beginnen Sie mit dem Streaming"
+            "state" : "translated",
+            "value" : "Starte Streaming"
           }
         },
         "el" : {
@@ -44350,8 +44350,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Beginnend..."
+            "state" : "translated",
+            "value" : "Starten..."
           }
         },
         "el" : {
@@ -44462,8 +44462,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Stoppen Sie das Streaming"
+            "state" : "translated",
+            "value" : "Stoppe Streaming"
           }
         },
         "el" : {
@@ -44574,7 +44574,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Stoppen..."
           }
         },
@@ -47374,7 +47374,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Der Name der Quelle in OBS, die den Stream von Moblin empfängt."
           }
         },
@@ -49838,8 +49838,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Versuche, eine Verbindung zum OBS-Server herzustellen ..."
+            "state" : "translated",
+            "value" : "Versuche, eine Verbindung zum OBS-Server herzustellen..."
           }
         },
         "el" : {
@@ -50512,7 +50512,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Unbekannter Streaming-Status"
           }
         },
@@ -50624,7 +50624,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Unbekannter Streaming-Status."
           }
         },
@@ -55558,7 +55558,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Hineinzoomen"
           }
         },
@@ -55670,7 +55670,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Rauszoomen"
           }
         },
