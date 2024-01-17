@@ -43,6 +43,40 @@ struct RemoteControlSettingsView: View {
         Form {
             Section {
                 Toggle(isOn: Binding(get: {
+                    model.database.remoteControl!.server.enabled
+                }, set: { value in
+                    model.database.remoteControl!.server.enabled = value
+                    model.store()
+                })) {
+                    Text("Enabled")
+                }
+                NavigationLink(destination: TextEditView(
+                    title: String(localized: "URL"),
+                    value: model.database.remoteControl!.server.url,
+                    onSubmit: submitServerUrl,
+                    keyboardType: .URL
+                )) {
+                    TextItemView(
+                        name: String(localized: "URL"),
+                        value: model.database.remoteControl!.server.url
+                    )
+                }
+                NavigationLink(destination: TextEditView(
+                    title: String(localized: "Password"),
+                    value: model.database.remoteControl!.server.password,
+                    onSubmit: submitServerPassword
+                )) {
+                    TextItemView(
+                        name: String(localized: "Password"),
+                        value: model.database.remoteControl!.server.password,
+                        sensitive: true
+                    )
+                }
+            } header: {
+                Text("Server")
+            }
+            Section {
+                Toggle(isOn: Binding(get: {
                     model.database.remoteControl!.client.enabled
                 }, set: { value in
                     model.database.remoteControl!.client.enabled = value
@@ -83,40 +117,6 @@ struct RemoteControlSettingsView: View {
                 }
             } header: {
                 Text("Client")
-            }
-            Section {
-                Toggle(isOn: Binding(get: {
-                    model.database.remoteControl!.server.enabled
-                }, set: { value in
-                    model.database.remoteControl!.server.enabled = value
-                    model.store()
-                })) {
-                    Text("Enabled")
-                }
-                NavigationLink(destination: TextEditView(
-                    title: String(localized: "URL"),
-                    value: model.database.remoteControl!.server.url,
-                    onSubmit: submitServerUrl,
-                    keyboardType: .URL
-                )) {
-                    TextItemView(
-                        name: String(localized: "URL"),
-                        value: model.database.remoteControl!.server.url
-                    )
-                }
-                NavigationLink(destination: TextEditView(
-                    title: String(localized: "Password"),
-                    value: model.database.remoteControl!.server.password,
-                    onSubmit: submitServerPassword
-                )) {
-                    TextItemView(
-                        name: String(localized: "Password"),
-                        value: model.database.remoteControl!.server.password,
-                        sensitive: true
-                    )
-                }
-            } header: {
-                Text("Server")
             }
         }
         .navigationTitle("Remote control")
