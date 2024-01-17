@@ -356,6 +356,9 @@ final class Model: ObservableObject {
     @Published var remoteControlSrtla = "Cellular 25%, WiFi 75%"
     @Published var remoteControlRecording = ""
 
+    private var remoteControlServer: RemoteControlServer?
+    private var remoteControlClient: RemoteControlClient?
+
     var cameraDevice: AVCaptureDevice?
     var cameraZoomLevelToXScale: Float = 1.0
     var cameraZoomXMinimum: Float = 1.0
@@ -2097,6 +2100,8 @@ final class Model: ObservableObject {
         reloadChats()
         reloadTwitchPubSub()
         reloadObsWebSocket()
+        reloadRemoteControlServer()
+        reloadRemoteControlClient()
     }
 
     func storeAndReloadStreamIfEnabled(stream: SettingsStream) {
@@ -2400,6 +2405,47 @@ final class Model: ObservableObject {
         obsWebSocket!.onRecordStatusChanged = handleObsRecordStatusChanged
         obsWebSocket!.onAudioVolume = handleAudioVolume
         obsWebSocket!.start()
+    }
+
+    private func reloadRemoteControlServer() {
+        remoteControlServer?.stop()
+        remoteControlServer = nil
+        guard isRemoteControlServerConfigured() else {
+            return
+        }
+        remoteControlServer = RemoteControlServer(
+            clientUrl: URL(string: "ws://test:4563")!,
+            password: "test",
+            delegate: self
+        )
+        remoteControlServer!.start()
+    }
+
+    func isRemoteControlServerConfigured() -> Bool {
+        return false
+    }
+
+    func reloadRemoteControlClient() {
+        remoteControlClient?.stop()
+        remoteControlClient = nil
+        guard isRemoteControlClientConfigured() else {
+            return
+        }
+        remoteControlClient = RemoteControlClient(
+            url: URL(string: "ws://test:4563")!,
+            password: "test",
+            onConnected: handleRemoteControlClientConnected
+        )
+        remoteControlClient!.start()
+    }
+
+    private func handleRemoteControlClientConnected() {
+        logger.info("connected!")
+        remoteControlClient?.getStatus()
+    }
+
+    func isRemoteControlClientConfigured() -> Bool {
+        return false
     }
 
     func twitchEnabledUpdated() {
@@ -3531,5 +3577,35 @@ final class Model: ObservableObject {
             maxX = 1.0
         }
         return (minX, maxX)
+    }
+
+    func isShowingStatusStream() -> Bool {
+        return database.show.stream && isStreamConfigured()
+    }
+
+    func statusStreamText() -> String {
+        let proto = stream.protocolString()
+        let resolution = stream.resolutionString()
+        let codec = stream.codecString()
+        let bitrate = stream.bitrateString()
+        let audioCodec = stream.audioCodecString()
+        let audioBitrate = stream.audioBitrateString()
+        return """
+        \(stream.name) (\(resolution), \(stream.fps), \(proto), \(codec) \(bitrate), \
+        \(audioCodec) \(audioBitrate))
+        """
+    }
+}
+
+extension Model: RemoteControlServerDelegate {
+    func getStatus(onComplete: @escaping (RemoteControlStatusTopLeft, RemoteControlStatusTopRight) -> Void) {
+        DispatchQueue.main.async {
+            var topLeft = RemoteControlStatusTopLeft()
+            if self.isShowingStatusStream() {
+                topLeft.stream = RemoteControlStatusItem(message: self.statusStreamText())
+            }
+            let topRight = RemoteControlStatusTopRight()
+            onComplete(topLeft, topRight)
+        }
     }
 }

@@ -1,91 +1,7 @@
 import Foundation
 
-private let apiVersion = "0.1"
-
-private enum MoblinRequest: Codable {
-    case identify(authentication: String)
-    case getStatus
-}
-
-struct MoblinStatusTopLeft: Codable {
-    var stream: String
-    var camera: String
-    var mic: String
-    var zoom: String
-    var obs: String
-    var chat: String
-    var viewers: String
-}
-
-struct MoblinStatusTopRight: Codable {
-    var audioLevel: String
-    var rtmpServer: String
-    var gameController: String
-    var bitrate: String
-    var uptime: String
-    var location: String
-    var srtla: String
-    var recording: String
-}
-
-private enum MoblinResponse: Codable {
-    case getStatus(topLeft: MoblinStatusTopLeft, topRight: MoblinStatusTopRight)
-}
-
-private enum MoblinEvent: Codable {
-    case hello(apiVersion: String, authentication: MoblinAuthentication)
-}
-
-private enum MoblinResult: Codable {
-    case ok
-    case wrongPassword
-}
-
-private struct MoblinAuthentication: Codable {
-    var challenge: String
-    var salt: String
-}
-
-private enum MoblinMessageToServer: Codable {
-    case request(id: Int, data: MoblinRequest)
-
-    func toJson() -> String? {
-        do {
-            return try String(bytes: JSONEncoder().encode(self), encoding: .utf8)
-        } catch {
-            return nil
-        }
-    }
-
-    static func fromJson(data: String) throws -> MoblinMessageToServer {
-        guard let data = data.data(using: .utf8) else {
-            throw "Not a UTF-8 string"
-        }
-        return try JSONDecoder().decode(MoblinMessageToServer.self, from: data)
-    }
-}
-
-private enum MoblinMessageToClient: Codable {
-    case response(id: Int, result: MoblinResult, data: MoblinResponse?)
-    case event(data: MoblinEvent)
-
-    func toJson() throws -> String {
-        guard let encoded = try String(bytes: JSONEncoder().encode(self), encoding: .utf8) else {
-            throw "Encode failed"
-        }
-        return encoded
-    }
-
-    static func fromJson(data: String) throws -> MoblinMessageToClient {
-        guard let data = data.data(using: .utf8) else {
-            throw "Not a UTF-8 string"
-        }
-        return try JSONDecoder().decode(MoblinMessageToClient.self, from: data)
-    }
-}
-
 protocol RemoteControlServerDelegate: AnyObject {
-    func getStatus(onComplete: (MoblinStatusTopLeft, MoblinStatusTopRight) -> Void)
+    func getStatus(onComplete: @escaping (RemoteControlStatusTopLeft, RemoteControlStatusTopRight) -> Void)
 }
 
 class RemoteControlServer {
@@ -135,13 +51,13 @@ class RemoteControlServer {
         webSocket = URLSession.shared.webSocketTask(with: clientUrl)
         webSocket.resume()
         send(message: .event(data: .hello(
-            apiVersion: apiVersion,
+            apiVersion: remoteControlApiVersion,
             authentication: .init(challenge: "test", salt: "test")
         )))
         clientIdentified = false
     }
 
-    private func send(message: MoblinMessageToClient) {
+    private func send(message: RemoteControlMessageToClient) {
         do {
             try webSocket.send(.string(message.toJson())) { _ in }
         } catch {
@@ -160,7 +76,7 @@ class RemoteControlServer {
                 logger.debug("moblin-server: Got data \(message)")
             case let .string(message):
                 do {
-                    switch try MoblinMessageToServer.fromJson(data: message) {
+                    switch try RemoteControlMessageToServer.fromJson(data: message) {
                     case let .request(id: id, data: data):
                         handleRequest(id: id, data: data)
                     }
@@ -173,11 +89,11 @@ class RemoteControlServer {
         }
     }
 
-    private func handleRequest(id: Int, data: MoblinRequest) {
+    private func handleRequest(id: Int, data: RemoteControlRequest) {
         guard let delegate else {
             return
         }
-        var result: MoblinResult?
+        var result: RemoteControlResult?
         if clientIdentified {
             switch data {
             case .getStatus:
@@ -212,8 +128,8 @@ class RemoteControlServer {
 
 func moblinServerTest() {
     do {
-        let hello = MoblinMessageToClient.event(data: .hello(
-            apiVersion: apiVersion,
+        let hello = RemoteControlMessageToClient.event(data: .hello(
+            apiVersion: remoteControlApiVersion,
             authentication: .init(challenge: "hi", salt: "ho")
         ))
         try print("moblin-server:", hello.toJson())

@@ -1189,6 +1189,24 @@ class SettingsGameController: Codable, Identifiable {
     }
 }
 
+class SettingsRemoteControlClient: Codable {
+    var enabled: Bool = false
+    var address: String = ""
+    var port: UInt16 = 2345
+    var password: String = ""
+}
+
+class SettingsRemoteControlServer: Codable {
+    var enabled: Bool = false
+    var url: String = ""
+    var password: String = ""
+}
+
+class SettingsRemoteControl: Codable {
+    var client: SettingsRemoteControlClient = .init()
+    var server: SettingsRemoteControlServer = .init()
+}
+
 class Database: Codable {
     var streams: [SettingsStream] = []
     var scenes: [SettingsScene] = []
@@ -1214,6 +1232,7 @@ class Database: Codable {
     var lowBitrateWarning: Bool? = true
     var vibrate: Bool? = false
     var gameControllers: [SettingsGameController]? = [.init()]
+    var remoteControl: SettingsRemoteControl? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -1891,6 +1910,10 @@ final class Settings {
         }
         for button in realDatabase.buttons where button.backgroundColor == nil {
             button.backgroundColor = defaultQuickButtonColor
+            store()
+        }
+        if realDatabase.remoteControl == nil {
+            realDatabase.remoteControl = .init()
             store()
         }
     }

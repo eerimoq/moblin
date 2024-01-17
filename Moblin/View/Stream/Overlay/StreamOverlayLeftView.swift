@@ -8,23 +8,6 @@ struct LeftOverlayView: View {
         model.settings.database
     }
 
-    var stream: SettingsStream {
-        model.stream
-    }
-
-    func streamText() -> String {
-        let proto = stream.protocolString()
-        let resolution = stream.resolutionString()
-        let codec = stream.codecString()
-        let bitrate = stream.bitrateString()
-        let audioCodec = stream.audioCodecString()
-        let audioBitrate = stream.audioBitrateString()
-        return """
-        \(stream.name) (\(resolution), \(stream.fps), \(proto), \(codec) \(bitrate), \
-        \(audioCodec) \(audioBitrate))
-        """
-    }
-
     func viewersText() -> String {
         if !model.isViewersConfigured() {
             return String(localized: "Not configured")
@@ -99,10 +82,10 @@ struct LeftOverlayView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 1) {
-            if database.show.stream && model.isStreamConfigured() {
+            if model.isShowingStatusStream() {
                 StreamOverlayIconAndTextView(
                     icon: "dot.radiowaves.left.and.right",
-                    text: streamText()
+                    text: model.statusStreamText()
                 )
             }
             if database.show.cameras! {

@@ -51,6 +51,9 @@
 		0332EF612B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0332EF602B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift */; };
 		03403DF62AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */; };
 		0344AFE72B00023E00C177DB /* AboutDesignedBySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0344AFE62B00023E00C177DB /* AboutDesignedBySettingsView.swift */; };
+		034844EF2B579D4C0089B874 /* RemoteControlClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034844EE2B579D4C0089B874 /* RemoteControlClient.swift */; };
+		034844F22B579DF30089B874 /* RemoteControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034844F12B579DF30089B874 /* RemoteControl.swift */; };
+		034844F52B57AB840089B874 /* RemoteControlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034844F42B57AB840089B874 /* RemoteControlSettingsView.swift */; };
 		03487F242B334AD0003D9ED9 /* StreamingHistorySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03487F232B334AD0003D9ED9 /* StreamingHistorySettingsView.swift */; };
 		03487F262B334B63003D9ED9 /* StreamingHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03487F252B334B63003D9ED9 /* StreamingHistory.swift */; };
 		03487F2B2B33535A003D9ED9 /* StreamingHistoryStreamSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03487F2A2B33535A003D9ED9 /* StreamingHistoryStreamSettingsView.swift */; };
@@ -221,6 +224,9 @@
 		0332EF602B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpServerStreamSettingsView.swift; sourceTree = "<group>"; };
 		03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBrowserSettingsView.swift; sourceTree = "<group>"; };
 		0344AFE62B00023E00C177DB /* AboutDesignedBySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutDesignedBySettingsView.swift; sourceTree = "<group>"; };
+		034844EE2B579D4C0089B874 /* RemoteControlClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteControlClient.swift; sourceTree = "<group>"; };
+		034844F12B579DF30089B874 /* RemoteControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteControl.swift; sourceTree = "<group>"; };
+		034844F42B57AB840089B874 /* RemoteControlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteControlSettingsView.swift; sourceTree = "<group>"; };
 		03487F232B334AD0003D9ED9 /* StreamingHistorySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamingHistorySettingsView.swift; sourceTree = "<group>"; };
 		03487F252B334B63003D9ED9 /* StreamingHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamingHistory.swift; sourceTree = "<group>"; };
 		03487F2A2B33535A003D9ED9 /* StreamingHistoryStreamSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamingHistoryStreamSettingsView.swift; sourceTree = "<group>"; };
@@ -563,6 +569,14 @@
 			path = Browser;
 			sourceTree = "<group>";
 		};
+		034844F32B57AB5B0089B874 /* RemoteControl */ = {
+			isa = PBXGroup;
+			children = (
+				034844F42B57AB840089B874 /* RemoteControlSettingsView.swift */,
+			);
+			path = RemoteControl;
+			sourceTree = "<group>";
+		};
 		03487F222B334AB4003D9ED9 /* StreamingHistory */ = {
 			isa = PBXGroup;
 			children = (
@@ -846,7 +860,9 @@
 		039ADE452B55C20800FE0F59 /* RemoteControl */ = {
 			isa = PBXGroup;
 			children = (
+				034844F12B579DF30089B874 /* RemoteControl.swift */,
 				039ADE462B55C23600FE0F59 /* RemoteControlServer.swift */,
+				034844EE2B579D4C0089B874 /* RemoteControlClient.swift */,
 			);
 			path = RemoteControl;
 			sourceTree = "<group>";
@@ -918,6 +934,7 @@
 				0379BBA82AAD951400B718B6 /* HelpAndSupport */,
 				032A49B62AC54DAD00ED3916 /* ImportExport */,
 				03B16A222B35610100E5AB07 /* Recordings */,
+				034844F32B57AB5B0089B874 /* RemoteControl */,
 				0379BBB02AAD97EA00B718B6 /* Reset */,
 				0332EF5B2B3CAED000BC3C16 /* RtmpServer */,
 				0379BB972AAD802C00B718B6 /* Scenes */,
@@ -1217,6 +1234,7 @@
 				038ED3DB2B403664005DEC08 /* LocalOverlaysNetworkInterfaceNamesSettingsView.swift in Sources */,
 				03A983712A9A0659008FF0DB /* TwitchPubSub.swift in Sources */,
 				034D26FF2B3A03620097C619 /* RtmpServer.swift in Sources */,
+				034844F22B579DF30089B874 /* RemoteControl.swift in Sources */,
 				039ADE472B55C23600FE0F59 /* RemoteControlServer.swift in Sources */,
 				03A9836C2A9A05D7008FF0DB /* WidgetSettingsView.swift in Sources */,
 				03DBD0FF2B30091B004B0BE6 /* StreamWizardNetworkSetupSettingsView.swift in Sources */,
@@ -1331,6 +1349,7 @@
 				031A4DC72B2CED460053F67D /* StreamAudioSettingsView.swift in Sources */,
 				03E95AC62ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift in Sources */,
 				03A983632A9A05D7008FF0DB /* SettingsView.swift in Sources */,
+				034844EF2B579D4C0089B874 /* RemoteControlClient.swift in Sources */,
 				036BE2D22ABD518E0048F9C5 /* StreamKickSettingsView.swift in Sources */,
 				03FB4B312AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift in Sources */,
 				0302F0832B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift in Sources */,
@@ -1360,6 +1379,7 @@
 				0318391B2AF79DDF00320FB2 /* DebugAdaptiveBitrateSettingsView.swift in Sources */,
 				03F5A8E52AD6FF8E00F354D2 /* StreamOverlayDebugView.swift in Sources */,
 				030399132AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift in Sources */,
+				034844F52B57AB840089B874 /* RemoteControlSettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

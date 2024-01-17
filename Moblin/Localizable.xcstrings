@@ -6240,6 +6240,9 @@
         }
       }
     },
+    "Address" : {
+
+    },
     "AfreecaTV" : {
       "localizations" : {
         "de" : {
@@ -12966,6 +12969,9 @@
           }
         }
       }
+    },
+    "Client" : {
+
     },
     "Close" : {
       "localizations" : {
@@ -40976,6 +40982,9 @@
           }
         }
       }
+    },
+    "Server" : {
+
     },
     "Settings" : {
       "localizations" : {
