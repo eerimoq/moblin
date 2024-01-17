@@ -389,8 +389,10 @@ private func startStopText(button: ButtonState) -> String {
     return button.isOn ? "Stop" : "Start"
 }
 
-struct ButtonsView: View {
+struct ButtonsInnerView: View {
     @EnvironmentObject var model: Model
+    var state: ButtonState
+    var size: CGFloat
     @State private var isPresentingRecordConfirm: Bool = false
 
     private func getImage(state: ButtonState) -> String {
@@ -522,943 +524,279 @@ struct ButtonsView: View {
         model.updateObsAudioDelay()
     }
 
+    private func remoteAction(state _: ButtonState) {
+        model.showingRemoteControl = true
+    }
+
+    var body: some View {
+        VStack {
+            switch state.button.type {
+            case .torch:
+                Button(action: {
+                    torchAction(state: state)
+                }, label: {
+                    ButtonImage(
+                        image: getImage(state: state),
+                        on: state.isOn,
+                        buttonSize: size,
+                        backgroundColor: state.button.backgroundColor!.color()
+                    )
+                })
+            case .mute:
+                Button(action: {
+                    muteAction(state: state)
+                }, label: {
+                    ButtonImage(
+                        image: getImage(state: state),
+                        on: state.isOn,
+                        buttonSize: size,
+                        backgroundColor: state.button.backgroundColor!.color()
+                    )
+                })
+            case .bitrate:
+                Button(action: {
+                    model.showingBitrate = true
+                }, label: {
+                    ButtonImage(
+                        image: getImage(state: state),
+                        on: state.isOn,
+                        buttonSize: size,
+                        backgroundColor: state.button.backgroundColor!.color()
+                    )
+                })
+            case .widget:
+                Button(action: {
+                    widgetAction(state: state)
+                }, label: {
+                    ButtonImage(
+                        image: getImage(state: state),
+                        on: state.isOn,
+                        buttonSize: size,
+                        backgroundColor: state.button.backgroundColor!.color()
+                    )
+                })
+            case .mic:
+                Button(action: {
+                    model.showingMic = true
+                }, label: {
+                    ButtonImage(
+                        image: getImage(state: state),
+                        on: state.isOn,
+                        buttonSize: size,
+                        backgroundColor: state.button.backgroundColor!.color()
+                    )
+                })
+            case .chat:
+                Button(action: {
+                    chatAction(state: state)
+                }, label: {
+                    ButtonImage(
+                        image: getImage(state: state),
+                        on: state.isOn,
+                        buttonSize: size,
+                        backgroundColor: state.button.backgroundColor!.color(),
+                        slash: true
+                    )
+                })
+            case .pauseChat:
+                Button(action: {
+                    pauseChatAction(state: state)
+                }, label: {
+                    ButtonImage(
+                        image: getImage(state: state),
+                        on: state.isOn,
+                        buttonSize: size,
+                        backgroundColor: state.button.backgroundColor!.color(),
+                        pause: true,
+                        overlayColor: pauseChatOverlayColor(state: state)
+                    )
+                })
+            case .blackScreen:
+                Button(action: {
+                    blackScreenAction(state: state)
+                }, label: {
+                    ButtonImage(
+                        image: getImage(state: state),
+                        on: state.isOn,
+                        buttonSize: size,
+                        backgroundColor: state.button.backgroundColor!.color()
+                    )
+                })
+            case .obsScene:
+                ButtonPlaceholderImage()
+            case .obsStartStopStream:
+                ButtonPlaceholderImage()
+            case .record:
+                Button(action: {
+                    isPresentingRecordConfirm = true
+                }, label: {
+                    ButtonImage(
+                        image: getImage(state: state),
+                        on: state.isOn,
+                        buttonSize: size,
+                        backgroundColor: state.button.backgroundColor!.color()
+                    )
+                })
+                .confirmationDialog("", isPresented: $isPresentingRecordConfirm) {
+                    Button(startStopText(button: state)) {
+                        recordAction(state: state)
+                    }
+                }
+            case .image:
+                Button(action: {
+                    model.showingImage = true
+                }, label: {
+                    ButtonImage(
+                        image: getImage(state: state),
+                        on: state.isOn,
+                        buttonSize: size,
+                        backgroundColor: state.button.backgroundColor!.color()
+                    )
+                })
+            case .movie:
+                Button(action: {
+                    movieAction(state: state)
+                }, label: {
+                    ButtonImage(
+                        image: getImage(state: state),
+                        on: state.isOn,
+                        buttonSize: size,
+                        backgroundColor: state.button.backgroundColor!.color()
+                    )
+                })
+            case .grayScale:
+                Button(action: {
+                    grayScaleAction(state: state)
+                }, label: {
+                    ButtonImage(
+                        image: getImage(state: state),
+                        on: state.isOn,
+                        buttonSize: size,
+                        backgroundColor: state.button.backgroundColor!.color()
+                    )
+                })
+            case .sepia:
+                Button(action: {
+                    sepiaAction(state: state)
+                }, label: {
+                    ButtonImage(
+                        image: getImage(state: state),
+                        on: state.isOn,
+                        buttonSize: size,
+                        backgroundColor: state.button.backgroundColor!.color()
+                    )
+                })
+            case .random:
+                Button(action: {
+                    randomAction(state: state)
+                }, label: {
+                    ButtonImage(
+                        image: getImage(state: state),
+                        on: state.isOn,
+                        buttonSize: size,
+                        backgroundColor: state.button.backgroundColor!.color()
+                    )
+                })
+            case .triple:
+                Button(action: {
+                    tripleAction(state: state)
+                }, label: {
+                    ButtonImage(
+                        image: getImage(state: state),
+                        on: state.isOn,
+                        buttonSize: size,
+                        backgroundColor: state.button.backgroundColor!.color()
+                    )
+                })
+            case .pixellate:
+                Button(action: {
+                    pixellateAction(state: state)
+                }, label: {
+                    ButtonImage(
+                        image: getImage(state: state),
+                        on: state.isOn,
+                        buttonSize: size,
+                        backgroundColor: state.button.backgroundColor!.color()
+                    )
+                })
+            case .stream:
+                Button(action: {
+                    streamAction(state: state)
+                }, label: {
+                    ButtonImage(
+                        image: getImage(state: state),
+                        on: state.isOn,
+                        buttonSize: size,
+                        backgroundColor: state.button.backgroundColor!.color()
+                    )
+                })
+            case .grid:
+                Button(action: {
+                    gridAction(state: state)
+                }, label: {
+                    ButtonImage(
+                        image: getImage(state: state),
+                        on: state.isOn,
+                        buttonSize: size,
+                        backgroundColor: state.button.backgroundColor!.color()
+                    )
+                })
+            case .obs:
+                Button(action: {
+                    obsAction(state: state)
+                }, label: {
+                    ButtonImage(
+                        image: getImage(state: state),
+                        on: state.isOn,
+                        buttonSize: size,
+                        backgroundColor: state.button.backgroundColor!.color()
+                    )
+                })
+            case .remote:
+                Button(action: {
+                    remoteAction(state: state)
+                }, label: {
+                    ButtonImage(
+                        image: getImage(state: state),
+                        on: state.isOn,
+                        buttonSize: size,
+                        backgroundColor: state.button.backgroundColor!.color()
+                    )
+                })
+            }
+            if model.database.quickButtons!.showName {
+                Text(state.button.name)
+                    .foregroundColor(.white)
+                    .font(.system(size: 10))
+            }
+        }
+    }
+}
+
+struct ButtonsView: View {
+    @EnvironmentObject var model: Model
+
     var body: some View {
         VStack {
             ForEach(model.buttonPairs) { pair in
                 if model.database.quickButtons!.twoColumns {
                     HStack(alignment: .top) {
                         if let second = pair.second {
-                            VStack {
-                                switch second.button.type {
-                                case .torch:
-                                    Button(action: {
-                                        torchAction(state: second)
-                                    }, label: {
-                                        ButtonImage(
-                                            image: getImage(state: second),
-                                            on: second.isOn,
-                                            buttonSize: buttonSize,
-                                            backgroundColor: second.button.backgroundColor!.color()
-                                        )
-                                    })
-                                case .mute:
-                                    Button(action: {
-                                        muteAction(state: second)
-                                    }, label: {
-                                        ButtonImage(
-                                            image: getImage(state: second),
-                                            on: second.isOn,
-                                            buttonSize: buttonSize,
-                                            backgroundColor: second.button.backgroundColor!.color()
-                                        )
-                                    })
-                                case .bitrate:
-                                    Button(action: {
-                                        model.showingBitrate = true
-                                    }, label: {
-                                        ButtonImage(
-                                            image: getImage(state: second),
-                                            on: second.isOn,
-                                            buttonSize: buttonSize,
-                                            backgroundColor: second.button.backgroundColor!.color()
-                                        )
-                                    })
-                                case .widget:
-                                    Button(action: {
-                                        widgetAction(state: second)
-                                    }, label: {
-                                        ButtonImage(
-                                            image: getImage(state: second),
-                                            on: second.isOn,
-                                            buttonSize: buttonSize,
-                                            backgroundColor: second.button.backgroundColor!.color()
-                                        )
-                                    })
-                                case .mic:
-                                    Button(action: {
-                                        model.showingMic = true
-                                    }, label: {
-                                        ButtonImage(
-                                            image: getImage(state: second),
-                                            on: second.isOn,
-                                            buttonSize: buttonSize,
-                                            backgroundColor: second.button.backgroundColor!.color()
-                                        )
-                                    })
-                                case .chat:
-                                    Button(action: {
-                                        chatAction(state: second)
-                                    }, label: {
-                                        ButtonImage(
-                                            image: getImage(state: second),
-                                            on: second.isOn,
-                                            buttonSize: buttonSize,
-                                            backgroundColor: second.button.backgroundColor!.color(),
-                                            slash: true
-                                        )
-                                    })
-                                case .pauseChat:
-                                    Button(action: {
-                                        pauseChatAction(state: second)
-                                    }, label: {
-                                        ButtonImage(
-                                            image: getImage(state: second),
-                                            on: second.isOn,
-                                            buttonSize: buttonSize,
-                                            backgroundColor: second.button.backgroundColor!.color(),
-                                            pause: true,
-                                            overlayColor: pauseChatOverlayColor(state: second)
-                                        )
-                                    })
-                                case .blackScreen:
-                                    Button(action: {
-                                        blackScreenAction(state: second)
-                                    }, label: {
-                                        ButtonImage(
-                                            image: getImage(state: second),
-                                            on: second.isOn,
-                                            buttonSize: buttonSize,
-                                            backgroundColor: second.button.backgroundColor!.color()
-                                        )
-                                    })
-                                case .obsScene:
-                                    ButtonPlaceholderImage()
-                                case .obsStartStopStream:
-                                    ButtonPlaceholderImage()
-                                case .record:
-                                    Button(action: {
-                                        isPresentingRecordConfirm = true
-                                    }, label: {
-                                        ButtonImage(
-                                            image: getImage(state: second),
-                                            on: second.isOn,
-                                            buttonSize: buttonSize,
-                                            backgroundColor: second.button.backgroundColor!.color()
-                                        )
-                                    })
-                                    .confirmationDialog("", isPresented: $isPresentingRecordConfirm) {
-                                        Button(startStopText(button: second)) {
-                                            recordAction(state: second)
-                                        }
-                                    }
-                                case .image:
-                                    Button(action: {
-                                        model.showingImage = true
-                                    }, label: {
-                                        ButtonImage(
-                                            image: getImage(state: second),
-                                            on: second.isOn,
-                                            buttonSize: buttonSize,
-                                            backgroundColor: second.button.backgroundColor!.color()
-                                        )
-                                    })
-                                case .movie:
-                                    Button(action: {
-                                        movieAction(state: second)
-                                    }, label: {
-                                        ButtonImage(
-                                            image: getImage(state: second),
-                                            on: second.isOn,
-                                            buttonSize: buttonSize,
-                                            backgroundColor: second.button.backgroundColor!.color()
-                                        )
-                                    })
-                                case .grayScale:
-                                    Button(action: {
-                                        grayScaleAction(state: second)
-                                    }, label: {
-                                        ButtonImage(
-                                            image: getImage(state: second),
-                                            on: second.isOn,
-                                            buttonSize: buttonSize,
-                                            backgroundColor: second.button.backgroundColor!.color()
-                                        )
-                                    })
-                                case .sepia:
-                                    Button(action: {
-                                        sepiaAction(state: second)
-                                    }, label: {
-                                        ButtonImage(
-                                            image: getImage(state: second),
-                                            on: second.isOn,
-                                            buttonSize: buttonSize,
-                                            backgroundColor: second.button.backgroundColor!.color()
-                                        )
-                                    })
-                                case .random:
-                                    Button(action: {
-                                        randomAction(state: second)
-                                    }, label: {
-                                        ButtonImage(
-                                            image: getImage(state: second),
-                                            on: second.isOn,
-                                            buttonSize: buttonSize,
-                                            backgroundColor: second.button.backgroundColor!.color()
-                                        )
-                                    })
-                                case .triple:
-                                    Button(action: {
-                                        tripleAction(state: second)
-                                    }, label: {
-                                        ButtonImage(
-                                            image: getImage(state: second),
-                                            on: second.isOn,
-                                            buttonSize: buttonSize,
-                                            backgroundColor: second.button.backgroundColor!.color()
-                                        )
-                                    })
-                                case .pixellate:
-                                    Button(action: {
-                                        pixellateAction(state: second)
-                                    }, label: {
-                                        ButtonImage(
-                                            image: getImage(state: second),
-                                            on: second.isOn,
-                                            buttonSize: buttonSize,
-                                            backgroundColor: second.button.backgroundColor!.color()
-                                        )
-                                    })
-                                case .stream:
-                                    Button(action: {
-                                        streamAction(state: second)
-                                    }, label: {
-                                        ButtonImage(
-                                            image: getImage(state: second),
-                                            on: second.isOn,
-                                            buttonSize: buttonSize,
-                                            backgroundColor: second.button.backgroundColor!.color()
-                                        )
-                                    })
-                                case .grid:
-                                    Button(action: {
-                                        gridAction(state: second)
-                                    }, label: {
-                                        ButtonImage(
-                                            image: getImage(state: second),
-                                            on: second.isOn,
-                                            buttonSize: buttonSize,
-                                            backgroundColor: second.button.backgroundColor!.color()
-                                        )
-                                    })
-                                case .obs:
-                                    Button(action: {
-                                        obsAction(state: second)
-                                    }, label: {
-                                        ButtonImage(
-                                            image: getImage(state: second),
-                                            on: second.isOn,
-                                            buttonSize: buttonSize,
-                                            backgroundColor: second.button.backgroundColor!.color()
-                                        )
-                                    })
-                                }
-                                if model.database.quickButtons!.showName {
-                                    Text(second.button.name)
-                                        .foregroundColor(.white)
-                                        .font(.system(size: 10))
-                                }
-                            }
+                            ButtonsInnerView(state: second, size: buttonSize)
                         } else {
                             ButtonPlaceholderImage()
                         }
-                        VStack {
-                            switch pair.first.button.type {
-                            case .torch:
-                                Button(action: {
-                                    torchAction(state: pair.first)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: pair.first),
-                                        on: pair.first.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: pair.first.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .mute:
-                                Button(action: {
-                                    muteAction(state: pair.first)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: pair.first),
-                                        on: pair.first.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: pair.first.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .bitrate:
-                                Button(action: {
-                                    model.showingBitrate = true
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: pair.first),
-                                        on: pair.first.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: pair.first.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .widget:
-                                Button(action: {
-                                    widgetAction(state: pair.first)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: pair.first),
-                                        on: pair.first.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: pair.first.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .mic:
-                                Button(action: {
-                                    model.showingMic = true
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: pair.first),
-                                        on: pair.first.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: pair.first.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .chat:
-                                Button(action: {
-                                    chatAction(state: pair.first)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: pair.first),
-                                        on: pair.first.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: pair.first.button.backgroundColor!.color(),
-                                        slash: true
-                                    )
-                                })
-                            case .pauseChat:
-                                Button(action: {
-                                    pauseChatAction(state: pair.first)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: pair.first),
-                                        on: pair.first.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: pair.first.button.backgroundColor!.color(),
-                                        pause: true,
-                                        overlayColor: pauseChatOverlayColor(state: pair.first)
-                                    )
-                                })
-                            case .blackScreen:
-                                Button(action: {
-                                    blackScreenAction(state: pair.first)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: pair.first),
-                                        on: pair.first.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: pair.first.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .obsScene:
-                                ButtonPlaceholderImage()
-                            case .obsStartStopStream:
-                                ButtonPlaceholderImage()
-                            case .record:
-                                Button(action: {
-                                    isPresentingRecordConfirm = true
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: pair.first),
-                                        on: pair.first.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: pair.first.button.backgroundColor!.color()
-                                    )
-                                })
-                                .confirmationDialog("", isPresented: $isPresentingRecordConfirm) {
-                                    Button(startStopText(button: pair.first)) {
-                                        recordAction(state: pair.first)
-                                    }
-                                }
-                            case .image:
-                                Button(action: {
-                                    model.showingImage = true
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: pair.first),
-                                        on: pair.first.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: pair.first.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .movie:
-                                Button(action: {
-                                    movieAction(state: pair.first)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: pair.first),
-                                        on: pair.first.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: pair.first.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .grayScale:
-                                Button(action: {
-                                    grayScaleAction(state: pair.first)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: pair.first),
-                                        on: pair.first.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: pair.first.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .sepia:
-                                Button(action: {
-                                    sepiaAction(state: pair.first)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: pair.first),
-                                        on: pair.first.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: pair.first.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .random:
-                                Button(action: {
-                                    randomAction(state: pair.first)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: pair.first),
-                                        on: pair.first.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: pair.first.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .triple:
-                                Button(action: {
-                                    tripleAction(state: pair.first)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: pair.first),
-                                        on: pair.first.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: pair.first.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .pixellate:
-                                Button(action: {
-                                    pixellateAction(state: pair.first)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: pair.first),
-                                        on: pair.first.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: pair.first.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .stream:
-                                Button(action: {
-                                    streamAction(state: pair.first)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: pair.first),
-                                        on: pair.first.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: pair.first.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .grid:
-                                Button(action: {
-                                    gridAction(state: pair.first)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: pair.first),
-                                        on: pair.first.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: pair.first.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .obs:
-                                Button(action: {
-                                    obsAction(state: pair.first)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: pair.first),
-                                        on: pair.first.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: pair.first.button.backgroundColor!.color()
-                                    )
-                                })
-                            }
-                            if model.database.quickButtons!.showName {
-                                Text(pair.first.button.name)
-                                    .foregroundColor(.white)
-                                    .font(.system(size: 10))
-                            }
-                        }
+                        ButtonsInnerView(state: pair.first, size: buttonSize)
                     }
                     .id(pair.first.button.id)
                 } else {
                     if let second = pair.second {
-                        VStack {
-                            switch second.button.type {
-                            case .torch:
-                                Button(action: {
-                                    torchAction(state: second)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: second),
-                                        on: second.isOn,
-                                        buttonSize: singleButtonSize,
-                                        backgroundColor: second.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .mute:
-                                Button(action: {
-                                    muteAction(state: second)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: second),
-                                        on: second.isOn,
-                                        buttonSize: singleButtonSize,
-                                        backgroundColor: second.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .bitrate:
-                                Button(action: {
-                                    model.showingBitrate = true
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: second),
-                                        on: second.isOn,
-                                        buttonSize: singleButtonSize,
-                                        backgroundColor: second.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .widget:
-                                Button(action: {
-                                    widgetAction(state: second)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: second),
-                                        on: second.isOn,
-                                        buttonSize: singleButtonSize,
-                                        backgroundColor: second.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .mic:
-                                Button(action: {
-                                    model.showingMic = true
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: second),
-                                        on: second.isOn,
-                                        buttonSize: singleButtonSize,
-                                        backgroundColor: second.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .chat:
-                                Button(action: {
-                                    chatAction(state: second)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: second),
-                                        on: second.isOn,
-                                        buttonSize: singleButtonSize,
-                                        backgroundColor: second.button.backgroundColor!.color(),
-                                        slash: true
-                                    )
-                                })
-                            case .pauseChat:
-                                Button(action: {
-                                    pauseChatAction(state: second)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: second),
-                                        on: second.isOn,
-                                        buttonSize: singleButtonSize,
-                                        backgroundColor: second.button.backgroundColor!.color(),
-                                        pause: true,
-                                        overlayColor: pauseChatOverlayColor(state: second)
-                                    )
-                                })
-                            case .blackScreen:
-                                Button(action: {
-                                    blackScreenAction(state: second)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: second),
-                                        on: second.isOn,
-                                        buttonSize: singleButtonSize,
-                                        backgroundColor: second.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .obsScene:
-                                ButtonPlaceholderImage()
-                            case .obsStartStopStream:
-                                ButtonPlaceholderImage()
-                            case .record:
-                                Button(action: {
-                                    isPresentingRecordConfirm = true
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: second),
-                                        on: second.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: second.button.backgroundColor!.color()
-                                    )
-                                })
-                                .confirmationDialog("", isPresented: $isPresentingRecordConfirm) {
-                                    Button(startStopText(button: second)) {
-                                        recordAction(state: second)
-                                    }
-                                }
-                            case .image:
-                                Button(action: {
-                                    model.showingImage = true
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: second),
-                                        on: second.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: second.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .movie:
-                                Button(action: {
-                                    movieAction(state: second)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: second),
-                                        on: second.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: second.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .grayScale:
-                                Button(action: {
-                                    grayScaleAction(state: second)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: second),
-                                        on: second.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: second.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .sepia:
-                                Button(action: {
-                                    sepiaAction(state: second)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: second),
-                                        on: second.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: second.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .random:
-                                Button(action: {
-                                    randomAction(state: second)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: second),
-                                        on: second.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: second.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .triple:
-                                Button(action: {
-                                    tripleAction(state: second)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: second),
-                                        on: second.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: second.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .pixellate:
-                                Button(action: {
-                                    pixellateAction(state: second)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: second),
-                                        on: second.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: second.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .stream:
-                                Button(action: {
-                                    streamAction(state: second)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: second),
-                                        on: second.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: second.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .grid:
-                                Button(action: {
-                                    gridAction(state: second)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: second),
-                                        on: second.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: second.button.backgroundColor!.color()
-                                    )
-                                })
-                            case .obs:
-                                Button(action: {
-                                    obsAction(state: second)
-                                }, label: {
-                                    ButtonImage(
-                                        image: getImage(state: second),
-                                        on: second.isOn,
-                                        buttonSize: buttonSize,
-                                        backgroundColor: second.button.backgroundColor!.color()
-                                    )
-                                })
-                            }
-                            if model.database.quickButtons!.showName {
-                                Text(second.button.name)
-                                    .foregroundColor(.white)
-                                    .font(.system(size: 10))
-                            }
-                        }
+                        ButtonsInnerView(state: second, size: singleButtonSize)
                     } else {
                         EmptyView()
                     }
-                    VStack {
-                        switch pair.first.button.type {
-                        case .torch:
-                            Button(action: {
-                                torchAction(state: pair.first)
-                            }, label: {
-                                ButtonImage(
-                                    image: getImage(state: pair.first),
-                                    on: pair.first.isOn,
-                                    buttonSize: singleButtonSize,
-                                    backgroundColor: pair.first.button.backgroundColor!.color()
-                                )
-                            })
-                        case .mute:
-                            Button(action: {
-                                muteAction(state: pair.first)
-                            }, label: {
-                                ButtonImage(
-                                    image: getImage(state: pair.first),
-                                    on: pair.first.isOn,
-                                    buttonSize: singleButtonSize,
-                                    backgroundColor: pair.first.button.backgroundColor!.color()
-                                )
-                            })
-                        case .bitrate:
-                            Button(action: {
-                                model.showingBitrate = true
-                            }, label: {
-                                ButtonImage(
-                                    image: getImage(state: pair.first),
-                                    on: pair.first.isOn,
-                                    buttonSize: singleButtonSize,
-                                    backgroundColor: pair.first.button.backgroundColor!.color()
-                                )
-                            })
-                        case .widget:
-                            Button(action: {
-                                widgetAction(state: pair.first)
-                            }, label: {
-                                ButtonImage(
-                                    image: getImage(state: pair.first),
-                                    on: pair.first.isOn,
-                                    buttonSize: singleButtonSize,
-                                    backgroundColor: pair.first.button.backgroundColor!.color()
-                                )
-                            })
-                        case .mic:
-                            Button(action: {
-                                model.showingMic = true
-                            }, label: {
-                                ButtonImage(
-                                    image: getImage(state: pair.first),
-                                    on: pair.first.isOn,
-                                    buttonSize: singleButtonSize,
-                                    backgroundColor: pair.first.button.backgroundColor!.color()
-                                )
-                            })
-                        case .chat:
-                            Button(action: {
-                                chatAction(state: pair.first)
-                            }, label: {
-                                ButtonImage(
-                                    image: getImage(state: pair.first),
-                                    on: pair.first.isOn,
-                                    buttonSize: singleButtonSize,
-                                    backgroundColor: pair.first.button.backgroundColor!.color(),
-                                    slash: true
-                                )
-                            })
-                        case .pauseChat:
-                            Button(action: {
-                                pauseChatAction(state: pair.first)
-                            }, label: {
-                                ButtonImage(
-                                    image: getImage(state: pair.first),
-                                    on: pair.first.isOn,
-                                    buttonSize: singleButtonSize,
-                                    backgroundColor: pair.first.button.backgroundColor!.color(),
-                                    pause: true,
-                                    overlayColor: pauseChatOverlayColor(state: pair.first)
-                                )
-                            })
-                        case .blackScreen:
-                            Button(action: {
-                                blackScreenAction(state: pair.first)
-                            }, label: {
-                                ButtonImage(
-                                    image: getImage(state: pair.first),
-                                    on: pair.first.isOn,
-                                    buttonSize: singleButtonSize,
-                                    backgroundColor: pair.first.button.backgroundColor!.color()
-                                )
-                            })
-                        case .obsScene:
-                            ButtonPlaceholderImage()
-                        case .obsStartStopStream:
-                            ButtonPlaceholderImage()
-                        case .record:
-                            Button(action: {
-                                isPresentingRecordConfirm = true
-                            }, label: {
-                                ButtonImage(
-                                    image: getImage(state: pair.first),
-                                    on: pair.first.isOn,
-                                    buttonSize: buttonSize,
-                                    backgroundColor: pair.first.button.backgroundColor!.color()
-                                )
-                            })
-                            .confirmationDialog("", isPresented: $isPresentingRecordConfirm) {
-                                Button(startStopText(button: pair.first)) {
-                                    recordAction(state: pair.first)
-                                }
-                            }
-                        case .image:
-                            Button(action: {
-                                model.showingImage = true
-                            }, label: {
-                                ButtonImage(
-                                    image: getImage(state: pair.first),
-                                    on: pair.first.isOn,
-                                    buttonSize: buttonSize,
-                                    backgroundColor: pair.first.button.backgroundColor!.color()
-                                )
-                            })
-                        case .movie:
-                            Button(action: {
-                                movieAction(state: pair.first)
-                            }, label: {
-                                ButtonImage(
-                                    image: getImage(state: pair.first),
-                                    on: pair.first.isOn,
-                                    buttonSize: buttonSize,
-                                    backgroundColor: pair.first.button.backgroundColor!.color()
-                                )
-                            })
-                        case .grayScale:
-                            Button(action: {
-                                grayScaleAction(state: pair.first)
-                            }, label: {
-                                ButtonImage(
-                                    image: getImage(state: pair.first),
-                                    on: pair.first.isOn,
-                                    buttonSize: buttonSize,
-                                    backgroundColor: pair.first.button.backgroundColor!.color()
-                                )
-                            })
-                        case .sepia:
-                            Button(action: {
-                                sepiaAction(state: pair.first)
-                            }, label: {
-                                ButtonImage(
-                                    image: getImage(state: pair.first),
-                                    on: pair.first.isOn,
-                                    buttonSize: buttonSize,
-                                    backgroundColor: pair.first.button.backgroundColor!.color()
-                                )
-                            })
-                        case .random:
-                            Button(action: {
-                                randomAction(state: pair.first)
-                            }, label: {
-                                ButtonImage(
-                                    image: getImage(state: pair.first),
-                                    on: pair.first.isOn,
-                                    buttonSize: buttonSize,
-                                    backgroundColor: pair.first.button.backgroundColor!.color()
-                                )
-                            })
-                        case .triple:
-                            Button(action: {
-                                tripleAction(state: pair.first)
-                            }, label: {
-                                ButtonImage(
-                                    image: getImage(state: pair.first),
-                                    on: pair.first.isOn,
-                                    buttonSize: buttonSize,
-                                    backgroundColor: pair.first.button.backgroundColor!.color()
-                                )
-                            })
-                        case .pixellate:
-                            Button(action: {
-                                pixellateAction(state: pair.first)
-                            }, label: {
-                                ButtonImage(
-                                    image: getImage(state: pair.first),
-                                    on: pair.first.isOn,
-                                    buttonSize: buttonSize,
-                                    backgroundColor: pair.first.button.backgroundColor!.color()
-                                )
-                            })
-                        case .stream:
-                            Button(action: {
-                                streamAction(state: pair.first)
-                            }, label: {
-                                ButtonImage(
-                                    image: getImage(state: pair.first),
-                                    on: pair.first.isOn,
-                                    buttonSize: buttonSize,
-                                    backgroundColor: pair.first.button.backgroundColor!.color()
-                                )
-                            })
-                        case .grid:
-                            Button(action: {
-                                gridAction(state: pair.first)
-                            }, label: {
-                                ButtonImage(
-                                    image: getImage(state: pair.first),
-                                    on: pair.first.isOn,
-                                    buttonSize: buttonSize,
-                                    backgroundColor: pair.first.button.backgroundColor!.color()
-                                )
-                            })
-                        case .obs:
-                            Button(action: {
-                                obsAction(state: pair.first)
-                            }, label: {
-                                ButtonImage(
-                                    image: getImage(state: pair.first),
-                                    on: pair.first.isOn,
-                                    buttonSize: buttonSize,
-                                    backgroundColor: pair.first.button.backgroundColor!.color()
-                                )
-                            })
-                        }
-                        if model.database.quickButtons!.showName {
-                            Text(pair.first.button.name)
-                                .foregroundColor(.white)
-                                .font(.system(size: 10))
-                        }
-                    }
-                    .id(pair.first.button.id)
+                    ButtonsInnerView(state: pair.first, size: singleButtonSize)
+                        .id(pair.first.button.id)
                 }
             }
         }
