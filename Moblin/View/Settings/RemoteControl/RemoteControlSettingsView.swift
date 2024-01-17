@@ -24,6 +24,15 @@ struct RemoteControlSettingsView: View {
         model.reloadRemoteControlClient()
     }
 
+    private func submitServerUrl(value: String) {
+        guard isValidWebSocketUrl(url: value) == nil else {
+            return
+        }
+        model.database.remoteControl!.server.url = value
+        model.store()
+        model.reloadRemoteControlClient()
+    }
+
     private func submitServerPassword(value: String) {
         model.database.remoteControl!.server.password = value.trim()
         model.store()
@@ -68,7 +77,8 @@ struct RemoteControlSettingsView: View {
                 )) {
                     TextItemView(
                         name: String(localized: "Password"),
-                        value: model.database.remoteControl!.client.password
+                        value: model.database.remoteControl!.client.password,
+                        sensitive: true
                     )
                 }
             } header: {
@@ -83,7 +93,17 @@ struct RemoteControlSettingsView: View {
                 })) {
                     Text("Enabled")
                 }
-                Text("URL")
+                NavigationLink(destination: TextEditView(
+                    title: String(localized: "URL"),
+                    value: model.database.remoteControl!.server.url,
+                    onSubmit: submitServerUrl,
+                    keyboardType: .URL
+                )) {
+                    TextItemView(
+                        name: String(localized: "URL"),
+                        value: model.database.remoteControl!.server.url
+                    )
+                }
                 NavigationLink(destination: TextEditView(
                     title: String(localized: "Password"),
                     value: model.database.remoteControl!.server.password,
@@ -91,7 +111,8 @@ struct RemoteControlSettingsView: View {
                 )) {
                     TextItemView(
                         name: String(localized: "Password"),
-                        value: model.database.remoteControl!.server.password
+                        value: model.database.remoteControl!.server.password,
+                        sensitive: true
                     )
                 }
             } header: {
