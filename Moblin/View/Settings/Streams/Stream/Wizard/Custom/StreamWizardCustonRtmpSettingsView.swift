@@ -14,7 +14,12 @@ struct StreamWizardCustonRtmpSettingsView: View {
         if url.isEmpty {
             urlError = ""
         } else {
-            urlError = isValidUrl(url: url, allowedSchemes: ["rtmp", "rtmps"]) ?? ""
+            urlError = isValidUrl(
+                url: url,
+                allowedSchemes: ["rtmp", "rtmps"],
+                rtmpStreamKeyRequired: false
+            ) ??
+                ""
         }
     }
 

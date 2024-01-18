@@ -1429,15 +1429,15 @@ private func addMissingGlobalButtons(database: Database) {
     button.systemImageNameOff = "xserve"
     addGlobalButtonIfMissing(database: database, button: button)
 
-    button = SettingsButton(name: String(localized: "Remote"))
-    button.id = UUID()
-    button.type = .remote
-    button.imageType = "System name"
-    button.systemImageNameOn = "appletvremote.gen1"
-    button.systemImageNameOff = "appletvremote.gen1"
-    button.enabled = false
-    addGlobalButtonIfMissing(database: database, button: button)
-
+    /* button = SettingsButton(name: String(localized: "Remote"))
+     button.id = UUID()
+     button.type = .remote
+     button.imageType = "System name"
+     button.systemImageNameOn = "appletvremote.gen1"
+     button.systemImageNameOff = "appletvremote.gen1"
+     button.enabled = false
+     addGlobalButtonIfMissing(database: database, button: button)
+     */
     button = SettingsButton(name: String(localized: "Record"))
     button.id = UUID()
     button.type = .record

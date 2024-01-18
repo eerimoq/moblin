@@ -17,7 +17,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
         if url.isEmpty {
             ingestError = ""
         } else {
-            ingestError = isValidUrl(url: url) ?? ""
+            ingestError = isValidUrl(url: url, rtmpStreamKeyRequired: false) ?? ""
         }
     }
 

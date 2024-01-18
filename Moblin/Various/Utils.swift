@@ -65,7 +65,10 @@ func makeRtmpStreamName(url: String) -> String {
     return String(parts[parts.count - 1])
 }
 
-func isValidRtmpUrl(url: String) -> String? {
+func isValidRtmpUrl(url: String, rtmpStreamKeyRequired: Bool) -> String? {
+    if !rtmpStreamKeyRequired {
+        return nil
+    }
     if makeRtmpUri(url: url) == "" {
         return String(localized: "Malformed RTMP URL")
     }
@@ -94,7 +97,9 @@ func cleanUrl(url value: String) -> String {
     return components.string!
 }
 
-func isValidUrl(url value: String, allowedSchemes: [String]? = nil) -> String? {
+func isValidUrl(url value: String, allowedSchemes: [String]? = nil,
+                rtmpStreamKeyRequired: Bool = true) -> String?
+{
     guard let url = URL(string: value) else {
         return String(localized: "Malformed URL")
     }
@@ -111,11 +116,11 @@ func isValidUrl(url value: String, allowedSchemes: [String]? = nil) -> String? {
     }
     switch url.scheme {
     case "rtmp":
-        if let message = isValidRtmpUrl(url: value) {
+        if let message = isValidRtmpUrl(url: value, rtmpStreamKeyRequired: rtmpStreamKeyRequired) {
             return message
         }
     case "rtmps":
-        if let message = isValidRtmpUrl(url: value) {
+        if let message = isValidRtmpUrl(url: value, rtmpStreamKeyRequired: rtmpStreamKeyRequired) {
             return message
         }
     case "srt":
