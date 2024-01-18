@@ -4,6 +4,10 @@ protocol RemoteControlServerDelegate: AnyObject {
     func getStatus(onComplete: @escaping (RemoteControlStatusTopLeft, RemoteControlStatusTopRight) -> Void)
 }
 
+private func randomString() -> String {
+    return Data.random(length: 64).base64EncodedString()
+}
+
 class RemoteControlServer {
     private var clientUrl: URL
     private var password: String
@@ -11,6 +15,8 @@ class RemoteControlServer {
     private var webSocket: URLSessionWebSocketTask
     private var task: Task<Void, Error>?
     private var clientIdentified: Bool = false
+    private var challenge: String = ""
+    private var salt: String = ""
 
     init(clientUrl: URL, password: String, delegate: RemoteControlServerDelegate) {
         self.clientUrl = clientUrl
@@ -50,9 +56,11 @@ class RemoteControlServer {
     private func setupConnection() {
         webSocket = URLSession.shared.webSocketTask(with: clientUrl)
         webSocket.resume()
+        challenge = randomString()
+        salt = randomString()
         send(message: .event(data: .hello(
             apiVersion: remoteControlApiVersion,
-            authentication: .init(challenge: "test", salt: "test")
+            authentication: .init(challenge: challenge, salt: salt)
         )))
         clientIdentified = false
     }
@@ -110,7 +118,11 @@ class RemoteControlServer {
         } else {
             switch data {
             case let .identify(authentication: authentication):
-                if authentication == password {
+                if authentication == remoteControlHashPassword(
+                    challenge: challenge,
+                    salt: salt,
+                    password: password
+                ) {
                     clientIdentified = true
                     result = .ok
                 } else {

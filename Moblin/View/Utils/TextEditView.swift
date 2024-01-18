@@ -8,6 +8,7 @@ struct TextEditView: View {
     var footer: Text = .init("")
     var capitalize: Bool = false
     var keyboardType: UIKeyboardType = .default
+    var placeholder: String = ""
     @State private var changed = false
     @State private var submitted = false
 
@@ -20,7 +21,7 @@ struct TextEditView: View {
     var body: some View {
         Form {
             Section {
-                TextField("", text: $value)
+                TextField(placeholder, text: $value)
                     .keyboardType(keyboardType)
                     .textInputAutocapitalization(capitalize ? .sentences : .never)
                     .disableAutocorrection(true)

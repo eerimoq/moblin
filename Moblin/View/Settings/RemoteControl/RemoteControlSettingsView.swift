@@ -1,5 +1,55 @@
 import SwiftUI
 
+struct PasswordView: View {
+    @Environment(\.dismiss) var dismiss
+    @State var value: String
+    var onSubmit: (String) -> Void
+    @State private var changed = false
+    @State private var submitted = false
+
+    private func submit() {
+        submitted = true
+        value = value.trim()
+        onSubmit(value)
+    }
+
+    var body: some View {
+        Form {
+            Section {
+                TextField("", text: $value)
+                    .textInputAutocapitalization(.never)
+                    .disableAutocorrection(true)
+                    .onChange(of: value) { _ in
+                        changed = true
+                    }
+                    .onSubmit {
+                        submit()
+                        dismiss()
+                    }
+                    .submitLabel(.done)
+                    .onDisappear {
+                        if changed && !submitted {
+                            submit()
+                        }
+                    }
+                Button {
+                    value = randomHumanString()
+                } label: {
+                    HStack {
+                        Spacer()
+                        Text("Generate")
+                        Spacer()
+                    }
+                }
+            }
+        }
+        .navigationTitle("Password")
+        .toolbar {
+            SettingsToolbar()
+        }
+    }
+}
+
 struct RemoteControlSettingsView: View {
     @EnvironmentObject var model: Model
 
@@ -30,13 +80,13 @@ struct RemoteControlSettingsView: View {
         }
         model.database.remoteControl!.server.url = value
         model.store()
-        model.reloadRemoteControlClient()
+        model.reloadRemoteControlServer()
     }
 
     private func submitServerPassword(value: String) {
         model.database.remoteControl!.server.password = value.trim()
         model.store()
-        model.reloadRemoteControlClient()
+        model.reloadRemoteControlServer()
     }
 
     var body: some View {
@@ -47,6 +97,7 @@ struct RemoteControlSettingsView: View {
                 }, set: { value in
                     model.database.remoteControl!.server.enabled = value
                     model.store()
+                    model.reloadRemoteControlServer()
                 })) {
                     Text("Enabled")
                 }
@@ -54,15 +105,15 @@ struct RemoteControlSettingsView: View {
                     title: String(localized: "URL"),
                     value: model.database.remoteControl!.server.url,
                     onSubmit: submitServerUrl,
-                    keyboardType: .URL
+                    keyboardType: .URL,
+                    placeholder: "ws://32.143.32.12:2345"
                 )) {
                     TextItemView(
                         name: String(localized: "URL"),
                         value: model.database.remoteControl!.server.url
                     )
                 }
-                NavigationLink(destination: TextEditView(
-                    title: String(localized: "Password"),
+                NavigationLink(destination: PasswordView(
                     value: model.database.remoteControl!.server.password,
                     onSubmit: submitServerPassword
                 )) {
@@ -83,13 +134,15 @@ struct RemoteControlSettingsView: View {
                 }, set: { value in
                     model.database.remoteControl!.client.enabled = value
                     model.store()
+                    model.reloadRemoteControlClient()
                 })) {
                     Text("Enabled")
                 }
                 NavigationLink(destination: TextEditView(
                     title: String(localized: "Address"),
                     value: model.database.remoteControl!.client.address,
-                    onSubmit: submitClientAddress
+                    onSubmit: submitClientAddress,
+                    placeholder: "32.143.32.12"
                 )) {
                     TextItemView(
                         name: String(localized: "Address"),
@@ -99,7 +152,8 @@ struct RemoteControlSettingsView: View {
                 NavigationLink(destination: TextEditView(
                     title: String(localized: "Port"),
                     value: String(model.database.remoteControl!.client.port),
-                    onSubmit: submitClientPort
+                    onSubmit: submitClientPort,
+                    placeholder: "2345"
                 )) {
                     TextItemView(
                         name: String(localized: "Port"),

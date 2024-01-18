@@ -112,14 +112,14 @@ struct RightOverlayView: View {
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
-            if database.show.audioLevel {
+            if model.isShowingStatusAudioLevel() {
                 AudioLevelView(
                     showBar: database.show.audioBar,
                     level: model.audioLevel,
                     channels: model.numberOfAudioChannels
                 )
             }
-            if database.show.rtmpSpeed! && model.rtmpServerEnabled() {
+            if model.isShowingStatusRtmpServer() {
                 StreamOverlayIconAndTextView(
                     icon: "server.rack",
                     text: model.rtmpSpeedAndTotal,
@@ -127,7 +127,7 @@ struct RightOverlayView: View {
                     color: .white
                 )
             }
-            if database.show.gameController! && model.isGameControllerConnected() {
+            if model.isShowingStatusGameController() {
                 StreamOverlayIconAndTextView(
                     icon: "gamecontroller",
                     text: model.gameControllersTotal,
@@ -135,7 +135,7 @@ struct RightOverlayView: View {
                     color: .white
                 )
             }
-            if database.show.speed && model.isLive {
+            if model.isShowingStatusBitrate() {
                 StreamOverlayIconAndTextView(
                     icon: "speedometer",
                     text: model.speedAndTotal,
@@ -143,7 +143,7 @@ struct RightOverlayView: View {
                     color: netStreamColor()
                 )
             }
-            if database.show.uptime && model.isLive {
+            if model.isShowingStatusUptime() {
                 StreamOverlayIconAndTextView(
                     icon: "deskclock",
                     text: model.uptime,
@@ -151,7 +151,7 @@ struct RightOverlayView: View {
                     color: netStreamColor()
                 )
             }
-            if database.show.location! && model.isLocationEnabled() {
+            if model.isShowingStatusLocation() {
                 StreamOverlayIconAndTextView(
                     icon: "location",
                     text: model.location,
@@ -159,7 +159,7 @@ struct RightOverlayView: View {
                     color: .white
                 )
             }
-            if model.stream.isSrtla() && model.isLive {
+            if model.isShowingStatusSrtla() {
                 StreamOverlayIconAndTextView(
                     icon: "phone.connection",
                     text: model.srtlaConnectionStatistics,
@@ -167,7 +167,7 @@ struct RightOverlayView: View {
                     color: netStreamColor()
                 )
             }
-            if model.isRecording {
+            if model.isShowingStatusRecording() {
                 StreamOverlayIconAndTextView(
                     icon: "record.circle",
                     text: model.recordingLength,

@@ -102,10 +102,8 @@ struct SettingsView: View {
                 NavigationLink(destination: GameControllersSettingsView()) {
                     Text("Game controllers")
                 }
-                if false {
-                    NavigationLink(destination: RemoteControlSettingsView()) {
-                        Text("Remote control")
-                    }
+                NavigationLink(destination: RemoteControlSettingsView()) {
+                    Text("Remote control")
                 }
             }
             Section {

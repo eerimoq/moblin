@@ -1,10 +1,4 @@
-//
-//  RemoteControl.swift
-//  Moblin
-//
-//  Created by Erik Moqvist on 2024-01-17.
-//
-
+import CryptoKit
 import Foundation
 
 let remoteControlApiVersion = "0.1"
@@ -94,4 +88,12 @@ enum RemoteControlMessageToClient: Codable {
         }
         return try JSONDecoder().decode(RemoteControlMessageToClient.self, from: data)
     }
+}
+
+func remoteControlHashPassword(challenge: String, salt: String, password: String) -> String {
+    var concatenated = "\(password)\(salt)"
+    var hash = Data(SHA256.hash(data: Data(concatenated.utf8)))
+    concatenated = "\(hash.base64EncodedString())\(challenge)"
+    hash = Data(SHA256.hash(data: Data(concatenated.utf8)))
+    return hash.base64EncodedString()
 }

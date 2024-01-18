@@ -8,16 +8,6 @@ struct LeftOverlayView: View {
         model.settings.database
     }
 
-    func viewersText() -> String {
-        if !model.isViewersConfigured() {
-            return String(localized: "Not configured")
-        } else if model.isTwitchPubSubConnected() {
-            return model.numberOfViewers
-        } else {
-            return ""
-        }
-    }
-
     func viewersColor() -> Color {
         if model.stream.twitchChannelId == "" {
             return .white
@@ -28,20 +18,6 @@ struct LeftOverlayView: View {
         }
     }
 
-    func messageText() -> String {
-        if !model.isChatConfigured() {
-            return String(localized: "Not configured")
-        } else if model.isChatConnected() {
-            return String(
-                format: String(localized: "%@ (%@ total)"),
-                model.chatPostsRate,
-                countFormatter.format(model.chatPostsTotal)
-            )
-        } else {
-            return ""
-        }
-    }
-
     func messageColor() -> Color {
         if !model.isChatConfigured() {
             return .white
@@ -49,24 +25,6 @@ struct LeftOverlayView: View {
             return .white
         } else {
             return .red
-        }
-    }
-
-    func obsStatusText() -> String {
-        if !model.isObsRemoteControlConfigured() {
-            return String(localized: "Not configured")
-        } else if model.isObsConnected() {
-            if model.obsStreaming && model.obsRecording {
-                return "\(model.obsCurrentScene) (Streaming, Recording)"
-            } else if model.obsStreaming {
-                return "\(model.obsCurrentScene) (Streaming)"
-            } else if model.obsRecording {
-                return "\(model.obsCurrentScene) (Recording)"
-            } else {
-                return model.obsCurrentScene
-            }
-        } else {
-            return model.obsConnectionErrorMessage()
         }
     }
 
@@ -88,42 +46,42 @@ struct LeftOverlayView: View {
                     text: model.statusStreamText()
                 )
             }
-            if database.show.cameras! {
+            if model.isShowingStatusCamera() {
                 StreamOverlayIconAndTextView(
                     icon: "camera",
-                    text: model.getCameraPosition(scene: model.findEnabledScene(id: model.selectedSceneId))
+                    text: model.statusCameraText()
                 )
             }
-            if database.show.microphone {
+            if model.isShowingStatusMic() {
                 StreamOverlayIconAndTextView(
                     icon: "music.mic",
-                    text: model.mic.name
+                    text: model.statusMicText()
                 )
             }
-            if database.show.zoom && model.hasZoom {
+            if model.isShowingStatusZoom() {
                 StreamOverlayIconAndTextView(
                     icon: "magnifyingglass",
-                    text: String(format: "%.1f", model.zoomX)
+                    text: model.statusZoomText()
                 )
             }
-            if model.database.show.obsStatus! && model.isObsRemoteControlConfigured() {
+            if model.isShowingStatusObs() {
                 StreamOverlayIconAndTextView(
                     icon: "xserve",
-                    text: obsStatusText(),
+                    text: model.statusObsText(),
                     color: obsStatusColor()
                 )
             }
-            if model.database.show.chat && model.isChatConfigured() {
+            if model.isShowingStatusChat() {
                 StreamOverlayIconAndTextView(
                     icon: "message",
-                    text: messageText(),
+                    text: model.statusChatText(),
                     color: messageColor()
                 )
             }
-            if database.show.viewers && model.isViewersConfigured() {
+            if model.isShowingStatusViewers() {
                 StreamOverlayIconAndTextView(
                     icon: "eye",
-                    text: viewersText(),
+                    text: model.statusViewersText(),
                     color: viewersColor()
                 )
             }

@@ -1,5 +1,6 @@
 import CryptoKit
 import Foundation
+import Telegraph
 
 private struct RemoteControlRequestResponse {
     let onSuccess: (RemoteControlResponse?) -> Void
@@ -10,52 +11,36 @@ class RemoteControlClient {
     private let address: String
     private let port: UInt16
     private let password: String
-    private var task: Task<Void, Error>?
     private var connected: Bool = false
-    private var webSocket: URLSessionWebSocketTask
     private var nextId: Int = 0
     private var requests: [Int: RemoteControlRequestResponse] = [:]
     private var onConnected: () -> Void
+    private var server: Server
     var connectionErrorMessage: String = ""
+    private var websocket: Telegraph.WebSocket?
 
     init(address: String, port: UInt16, password: String, onConnected: @escaping () -> Void) {
         self.address = address
         self.port = port
         self.password = password
         self.onConnected = onConnected
-        webSocket = URLSession(configuration: .default).webSocketTask(with: URL(string: "ws://12345")!)
+        server = Server()
+        server.webSocketDelegate = self
     }
 
     func start() {
         stop()
         logger.info("remote-control-client: start")
-        task = Task.init {
-            while true {
-                setupConnection()
-                do {
-                    try await receiveMessages()
-                } catch {
-                    logger.debug("remote-control-client: error: \(error.localizedDescription)")
-                    connectionErrorMessage = error.localizedDescription
-                }
-                if Task.isCancelled {
-                    logger.debug("remote-control-client: Cancelled")
-                    connected = false
-                    connectionErrorMessage = ""
-                    break
-                }
-                logger.debug("remote-control-client: Disconnected")
-                connected = false
-                try await Task.sleep(nanoseconds: 5_000_000_000)
-                logger.debug("remote-control-client: Reconnecting")
-            }
+        do {
+            try server.start(port: Endpoint.Port(port), interface: address)
+        } catch {
+            logger.info("remote-control-client: Failed to start server with error \(error)")
         }
     }
 
     func stop() {
         logger.info("remote-control-client: stop")
-        task?.cancel()
-        task = nil
+        server.stop(immediately: true)
     }
 
     func isConnected() -> Bool {
@@ -76,31 +61,32 @@ class RemoteControlClient {
         }
     }
 
-    private func setupConnection() {
-        webSocket = URLSession.shared.webSocketTask(with: URL(string: "ws://12345")!)
-        webSocket.resume()
+    private func handleConnected(webSocket: Telegraph.WebSocket) {
+        logger.info("remote-control-client: Server connected \(webSocket)")
+        websocket = webSocket
     }
 
-    private func receiveMessages() async throws {
-        while true {
-            let message = try await webSocket.receive()
-            if Task.isCancelled {
-                break
-            }
+    private func handleDisconnected(webSocket: Telegraph.WebSocket, error: Error?) {
+        if let error {
+            logger.info("remote-control-client: Server disconnected \(webSocket) \(error)")
+        } else {
+            logger.info("remote-control-client: Server disconnected \(webSocket)")
+        }
+        websocket = nil
+    }
+
+    private func handleStringMessage(webSocket: Telegraph.WebSocket, message: String) {
+        logger.info("remote-control-client: Got message \(webSocket) \(message)")
+        do {
+            let message = try RemoteControlMessageToClient.fromJson(data: message)
             switch message {
-            case let .data(message):
-                logger.debug("remote-control-client: Got data \(message)")
-            case let .string(message):
-                let message = try RemoteControlMessageToClient.fromJson(data: message)
-                switch message {
-                case let .event(data: data):
-                    try handleEvent(data: data)
-                case let .response(id: id, result: result, data: data):
-                    handleResponse(id: id, result: result, data: data)
-                }
-            default:
-                logger.debug("remote-control-client: ???")
+            case let .event(data: data):
+                try handleEvent(data: data)
+            case let .response(id: id, result: result, data: data):
+                handleResponse(id: id, result: result, data: data)
             }
+        } catch {
+            logger.info("remote-control-client: Failed to process message with error \(error)")
         }
     }
 
@@ -125,12 +111,13 @@ class RemoteControlClient {
     }
 
     private func handleHelloEvent(apiVersion _: String, authentication: RemoteControlAuthentication) throws {
-        var concatenated = "\(password)\(authentication.salt)"
-        var hash = Data(SHA256.hash(data: Data(concatenated.utf8)))
-        concatenated = "\(hash.base64EncodedString())\(authentication.challenge)"
-        hash = Data(SHA256.hash(data: Data(concatenated.utf8)))
-        performRequest(data: .identify(authentication: hash.base64EncodedString())) { _ in
-            self.connected = true
+        let hash = remoteControlHashPassword(
+            challenge: authentication.challenge,
+            salt: authentication.salt,
+            password: password
+        )
+        connected = true
+        performRequest(data: .identify(authentication: hash)) { _ in
             self.onConnected()
         } onError: { message in
             logger.info("remote-control-client: error: \(message)")
@@ -152,11 +139,47 @@ class RemoteControlClient {
             return
         }
         requests[id] = RemoteControlRequestResponse(onSuccess: onSuccess, onError: onError)
-        webSocket.send(.string(message)) { _ in }
+        websocket?.send(text: message)
     }
 
     private func getNextId() -> Int {
         nextId += 1
         return nextId
+    }
+}
+
+extension RemoteControlClient: ServerWebSocketDelegate {
+    func server(
+        _: Telegraph.Server,
+        webSocketDidConnect webSocket: Telegraph.WebSocket,
+        handshake _: Telegraph.HTTPRequest
+    ) {
+        DispatchQueue.main.async {
+            self.handleConnected(webSocket: webSocket)
+        }
+    }
+
+    func server(_: Telegraph.Server, webSocketDidDisconnect webSocket: Telegraph.WebSocket, error: Error?) {
+        DispatchQueue.main.async {
+            self.handleDisconnected(webSocket: webSocket, error: error)
+        }
+    }
+
+    func server(
+        _: Telegraph.Server,
+        webSocket: Telegraph.WebSocket,
+        didReceiveMessage message: Telegraph.WebSocketMessage
+    ) {
+        guard message.opcode == .textFrame else {
+            return
+        }
+        switch message.payload {
+        case let .text(data):
+            DispatchQueue.main.async {
+                self.handleStringMessage(webSocket: webSocket, message: data)
+            }
+        default:
+            return
+        }
     }
 }

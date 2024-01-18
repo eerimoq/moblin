@@ -1579,6 +1579,7 @@ final class Model: ObservableObject {
             self.updateBatteryLevel()
             self.media.logStatistics()
             self.updateObsStatus()
+            self.updateRemoteControlClientStatus()
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
             self.updateSrtDebugLines()
@@ -2393,7 +2394,7 @@ final class Model: ObservableObject {
         obsWebSocket!.start()
     }
 
-    private func reloadRemoteControlServer() {
+    func reloadRemoteControlServer() {
         remoteControlServer?.stop()
         remoteControlServer = nil
         guard isRemoteControlServerConfigured() else {
@@ -3583,7 +3584,31 @@ final class Model: ObservableObject {
     func isShowingStatusStream() -> Bool {
         return database.show.stream && isStreamConfigured()
     }
-
+    
+    func isShowingStatusCamera() -> Bool {
+        return database.show.cameras!
+    }
+    
+    func isShowingStatusMic() -> Bool {
+        return database.show.microphone
+    }
+    
+    func isShowingStatusZoom() -> Bool {
+        return database.show.zoom && hasZoom
+    }
+    
+    func isShowingStatusObs() -> Bool {
+        return database.show.obsStatus! && isObsRemoteControlConfigured()
+    }
+    
+    func isShowingStatusChat() -> Bool {
+        return database.show.chat && isChatConfigured()
+    }
+    
+    func isShowingStatusViewers() -> Bool {
+        return database.show.viewers && isViewersConfigured()
+    }
+    
     func statusStreamText() -> String {
         let proto = stream.protocolString()
         let resolution = stream.resolutionString()
@@ -3596,6 +3621,92 @@ final class Model: ObservableObject {
         \(audioCodec) \(audioBitrate))
         """
     }
+    
+    func statusCameraText() -> String {
+        return getCameraPosition(scene: findEnabledScene(id: selectedSceneId))
+    }
+    
+    func statusMicText() -> String {
+        return mic.name
+    }
+    
+    func statusZoomText() -> String {
+        return String(format: "%.1f", zoomX)
+    }
+    
+    func statusObsText() -> String {
+        if !isObsRemoteControlConfigured() {
+            return String(localized: "Not configured")
+        } else if isObsConnected() {
+            if obsStreaming && obsRecording {
+                return "\(obsCurrentScene) (Streaming, Recording)"
+            } else if obsStreaming {
+                return "\(obsCurrentScene) (Streaming)"
+            } else if obsRecording {
+                return "\(obsCurrentScene) (Recording)"
+            } else {
+                return obsCurrentScene
+            }
+        } else {
+            return obsConnectionErrorMessage()
+        }
+    }
+    
+    func statusChatText() -> String {
+        if !isChatConfigured() {
+            return String(localized: "Not configured")
+        } else if isChatConnected() {
+            return String(
+                format: String(localized: "%@ (%@ total)"),
+                chatPostsRate,
+                countFormatter.format(chatPostsTotal)
+            )
+        } else {
+            return ""
+        }
+    }
+    
+    func statusViewersText() -> String {
+        if !isViewersConfigured() {
+            return String(localized: "Not configured")
+        } else if isTwitchPubSubConnected() {
+            return numberOfViewers
+        } else {
+            return ""
+        }
+    }
+    
+    func isShowingStatusAudioLevel() -> Bool {
+        return database.show.audioLevel
+    }
+    
+    func isShowingStatusRtmpServer() -> Bool {
+        return database.show.rtmpSpeed! && rtmpServerEnabled()
+    }
+    
+    func isShowingStatusGameController() -> Bool {
+        return database.show.gameController! && isGameControllerConnected()
+    }
+    
+    func isShowingStatusBitrate() -> Bool {
+        return database.show.speed && isLive
+    }
+    
+    func isShowingStatusUptime() -> Bool {
+        return database.show.uptime && isLive
+    }
+    
+    func isShowingStatusLocation() -> Bool {
+        return database.show.location! && isLocationEnabled()
+    }
+    
+    func isShowingStatusSrtla() -> Bool {
+        return stream.isSrtla() && isLive
+    }
+    
+    func isShowingStatusRecording() -> Bool {
+        return isRecording
+    }
 }
 
 extension Model: RemoteControlServerDelegate {
@@ -3605,7 +3716,49 @@ extension Model: RemoteControlServerDelegate {
             if self.isShowingStatusStream() {
                 topLeft.stream = RemoteControlStatusItem(message: self.statusStreamText())
             }
-            let topRight = RemoteControlStatusTopRight()
+            if self.isShowingStatusCamera() {
+                topLeft.camera = RemoteControlStatusItem(message: self.statusCameraText())
+            }
+            if self.isShowingStatusMic() {
+                topLeft.mic = RemoteControlStatusItem(message: self.statusMicText())
+            }
+            if self.isShowingStatusZoom() {
+                topLeft.zoom = RemoteControlStatusItem(message: self.statusZoomText())
+            }
+            if self.isShowingStatusObs() {
+                topLeft.obs = RemoteControlStatusItem(message: self.statusObsText())
+            }
+            if self.isShowingStatusChat() {
+                topLeft.chat = RemoteControlStatusItem(message: self.statusChatText())
+            }
+            if self.isShowingStatusViewers() {
+                topLeft.viewers = RemoteControlStatusItem(message: self.statusViewersText())
+            }
+            var topRight = RemoteControlStatusTopRight()
+            if self.isShowingStatusAudioLevel() {
+                topRight.audioLevel = RemoteControlStatusItem(message: "?")
+            }
+            if self.isShowingStatusRtmpServer() {
+                topRight.rtmpServer = RemoteControlStatusItem(message: "?")
+            }
+            if self.isShowingStatusGameController() {
+                topRight.gameController = RemoteControlStatusItem(message: "?")
+            }
+            if self.isShowingStatusBitrate() {
+                topRight.bitrate = RemoteControlStatusItem(message: "?")
+            }
+            if self.isShowingStatusUptime() {
+                topRight.uptime = RemoteControlStatusItem(message: "?")
+            }
+            if self.isShowingStatusLocation() {
+                topRight.location = RemoteControlStatusItem(message: "?")
+            }
+            if self.isShowingStatusSrtla() {
+                topRight.srtla = RemoteControlStatusItem(message: "?")
+            }
+            if self.isShowingStatusRecording() {
+                topRight.recording = RemoteControlStatusItem(message: "?")
+            }
             onComplete(topLeft, topRight)
         }
     }

@@ -352,6 +352,14 @@ extension Data {
     }
 }
 
+func randomHumanString() -> String {
+    return Data.random(length: 10).base64EncodedString().replacingOccurrences(
+        of: "[+/=]",
+        with: "",
+        options: .regularExpression
+    )
+}
+
 extension AVCaptureSession.InterruptionReason {
     func toString() -> String {
         switch self {
