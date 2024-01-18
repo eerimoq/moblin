@@ -7,7 +7,8 @@ private struct RemoteControlRequestResponse {
 }
 
 class RemoteControlClient {
-    private let url: URL
+    private let address: String
+    private let port: UInt16
     private let password: String
     private var task: Task<Void, Error>?
     private var connected: Bool = false
@@ -17,11 +18,12 @@ class RemoteControlClient {
     private var onConnected: () -> Void
     var connectionErrorMessage: String = ""
 
-    init(url: URL, password: String, onConnected: @escaping () -> Void) {
-        self.url = url
+    init(address: String, port: UInt16, password: String, onConnected: @escaping () -> Void) {
+        self.address = address
+        self.port = port
         self.password = password
         self.onConnected = onConnected
-        webSocket = URLSession(configuration: .default).webSocketTask(with: url)
+        webSocket = URLSession(configuration: .default).webSocketTask(with: URL(string: "ws://12345")!)
     }
 
     func start() {
@@ -60,21 +62,22 @@ class RemoteControlClient {
         return connected
     }
 
-    func getStatus() {
+    func getStatus(onSuccess: @escaping (RemoteControlStatusTopLeft, RemoteControlStatusTopRight) -> Void) {
         performRequest(data: .getStatus) { response in
             guard let response else {
                 return
             }
             switch response {
             case let .getStatus(topLeft: topLeft, topRight: topRight):
-                logger.info("\(topLeft) \(topRight)")
+                onSuccess(topLeft, topRight)
             }
         } onError: { _ in
+            logger.info("remote-control-client: get status error")
         }
     }
 
     private func setupConnection() {
-        webSocket = URLSession.shared.webSocketTask(with: url)
+        webSocket = URLSession.shared.webSocketTask(with: URL(string: "ws://12345")!)
         webSocket.resume()
     }
 

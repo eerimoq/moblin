@@ -74,6 +74,8 @@ struct RemoteControlSettingsView: View {
                 }
             } header: {
                 Text("Server")
+            } footer: {
+                Text("The streamer's device is the server.")
             }
             Section {
                 Toggle(isOn: Binding(get: {
@@ -117,6 +119,8 @@ struct RemoteControlSettingsView: View {
                 }
             } header: {
                 Text("Client")
+            } footer: {
+                Text("The assistant's device is the client.")
             }
         }
         .navigationTitle("Remote control")

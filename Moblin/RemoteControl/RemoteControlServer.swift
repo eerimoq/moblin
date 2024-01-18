@@ -21,28 +21,28 @@ class RemoteControlServer {
 
     func start() {
         stop()
-        logger.info("moblin-server: start")
+        logger.info("remote-control-server: start")
         task = Task.init {
             while true {
                 setupConnection()
                 do {
                     try await receiveMessages()
                 } catch {
-                    logger.debug("moblin-server: error: \(error.localizedDescription)")
+                    logger.debug("remote-control-server: error: \(error.localizedDescription)")
                 }
                 if Task.isCancelled {
-                    logger.debug("moblin-server: Cancelled")
+                    logger.debug("remote-control-server: Cancelled")
                     break
                 }
-                logger.debug("moblin-server: Disconnected")
+                logger.debug("remote-control-server: Disconnected")
                 try await Task.sleep(nanoseconds: 5_000_000_000)
-                logger.debug("moblin-server: Reconnecting")
+                logger.debug("remote-control-server: Reconnecting")
             }
         }
     }
 
     func stop() {
-        logger.info("moblin-server: stop")
+        logger.info("remote-control-server: stop")
         task?.cancel()
         task = nil
     }
@@ -61,7 +61,7 @@ class RemoteControlServer {
         do {
             try webSocket.send(.string(message.toJson())) { _ in }
         } catch {
-            logger.info("moblin-server: Encode failed")
+            logger.info("remote-control-server: Encode failed")
         }
     }
 
@@ -73,7 +73,7 @@ class RemoteControlServer {
             }
             switch message {
             case let .data(message):
-                logger.debug("moblin-server: Got data \(message)")
+                logger.debug("remote-control-server: Got data \(message)")
             case let .string(message):
                 do {
                     switch try RemoteControlMessageToServer.fromJson(data: message) {
@@ -81,10 +81,10 @@ class RemoteControlServer {
                         handleRequest(id: id, data: data)
                     }
                 } catch {
-                    logger.info("moblin-server: Decode failed")
+                    logger.info("remote-control-server: Decode failed")
                 }
             default:
-                logger.debug("moblin-server: ???")
+                logger.debug("remote-control-server: ???")
             }
         }
     }
@@ -124,14 +124,4 @@ class RemoteControlServer {
             send(message: .response(id: id, result: result, data: nil))
         }
     }
-}
-
-func moblinServerTest() {
-    do {
-        let hello = RemoteControlMessageToClient.event(data: .hello(
-            apiVersion: remoteControlApiVersion,
-            authentication: .init(challenge: "hi", salt: "ho")
-        ))
-        try print("moblin-server:", hello.toJson())
-    } catch {}
 }

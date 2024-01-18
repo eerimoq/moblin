@@ -330,17 +330,20 @@ struct ObsView: View {
 
 struct StatusItemView: View {
     var icon: String
-    var message: String
-    var color: Color = .primary
+    var status: RemoteControlStatusItem?
 
     var body: some View {
-        HStack {
-            Image(systemName: icon)
-                .foregroundColor(color)
-                .frame(width: 20)
-            Text(message)
+        if let status {
+            HStack {
+                Image(systemName: icon)
+                    .foregroundColor(status.ok ? .primary : .red)
+                    .frame(width: 20)
+                Text(status.message)
+            }
+            .font(smallFont)
+        } else {
+            EmptyView()
         }
-        .font(smallFont)
     }
 }
 
@@ -351,31 +354,35 @@ struct RemoteControlView: View {
     var body: some View {
         Form {
             Section {
-                VStack(alignment: .leading, spacing: 3) {
-                    StatusItemView(icon: "dot.radiowaves.left.and.right", message: model.remoteControlStream)
-                    StatusItemView(icon: "camera", message: model.remoteControlCamera)
-                    StatusItemView(icon: "music.mic", message: model.remoteControlMic)
-                    StatusItemView(icon: "magnifyingglass", message: model.remoteControlZoom)
-                    StatusItemView(icon: "xserve", message: model.remoteControlObs, color: .red)
-                    StatusItemView(icon: "message", message: model.remoteControlChat)
-                    StatusItemView(icon: "eye", message: model.remoteControlViewers)
+                if let status = model.remoteControlTopLeft {
+                    VStack(alignment: .leading, spacing: 3) {
+                        StatusItemView(icon: "dot.radiowaves.left.and.right", status: status.stream)
+                        StatusItemView(icon: "camera", status: status.camera)
+                        StatusItemView(icon: "music.mic", status: status.mic)
+                        StatusItemView(icon: "magnifyingglass", status: status.zoom)
+                        StatusItemView(icon: "xserve", status: status.obs)
+                        StatusItemView(icon: "message", status: status.chat)
+                        StatusItemView(icon: "eye", status: status.viewers)
+                    }
+                } else {
+                    Text("No status received yet.")
                 }
-            } header: {
-                Text("Top left")
             }
             Section {
-                VStack(alignment: .leading, spacing: 3) {
-                    StatusItemView(icon: "waveform", message: model.remoteControlAudioLevel)
-                    StatusItemView(icon: "server.rack", message: model.remoteControlRtmpServer)
-                    StatusItemView(icon: "gamecontroller", message: model.remoteControlGameController)
-                    StatusItemView(icon: "speedometer", message: model.remoteControlBitrate)
-                    StatusItemView(icon: "deskclock", message: model.remoteControlUptime)
-                    StatusItemView(icon: "location", message: model.remoteControlLocation)
-                    StatusItemView(icon: "phone.connection", message: model.remoteControlSrtla)
-                    StatusItemView(icon: "record.circle", message: model.remoteControlRecording)
+                if let status = model.remoteControlTopRight {
+                    VStack(alignment: .leading, spacing: 3) {
+                        StatusItemView(icon: "waveform", status: status.audioLevel)
+                        StatusItemView(icon: "server.rack", status: status.rtmpServer)
+                        StatusItemView(icon: "gamecontroller", status: status.gameController)
+                        StatusItemView(icon: "speedometer", status: status.bitrate)
+                        StatusItemView(icon: "deskclock", status: status.uptime)
+                        StatusItemView(icon: "location", status: status.location)
+                        StatusItemView(icon: "phone.connection", status: status.srtla)
+                        StatusItemView(icon: "record.circle", status: status.recording)
+                    }
+                } else {
+                    Text("No status received yet.")
                 }
-            } header: {
-                Text("Top right")
             }
         }
         .navigationTitle("Remote control")

@@ -32486,6 +32486,9 @@
         }
       }
     },
+    "No status received yet." : {
+
+    },
     "Noise level" : {
       "localizations" : {
         "de" : {
@@ -45596,6 +45599,9 @@
         }
       }
     },
+    "The assistant's device is the client." : {
+
+    },
     "The browser widget is experimental does not work very well yet." : {
       "localizations" : {
         "de" : {
@@ -46379,6 +46385,9 @@
           }
         }
       }
+    },
+    "The streamer's device is the server." : {
+
     },
     "The TCP port the RTMP server listens for RTMP publishers on." : {
       "localizations" : {

@@ -340,21 +340,8 @@ final class Model: ObservableObject {
     @Published var wizardCustomRtmpUrl = ""
     @Published var wizardCustomRtmpStreamKey = ""
 
-    @Published var remoteControlStream = "Twitch (1080p, 30, SRTLA, H.265 <5 Mbps, AAC 128 Kbps)"
-    @Published var remoteControlCamera = "Back"
-    @Published var remoteControlMic = "Bottom"
-    @Published var remoteControlZoom = "1.0"
-    @Published var remoteControlObs = "Could not connect to the server."
-    @Published var remoteControlChat = "1.0/min (5 total)"
-    @Published var remoteControlViewers = "37"
-    @Published var remoteControlAudioLevel = "-56.3 dB, 1 ch"
-    @Published var remoteControlRtmpServer = ""
-    @Published var remoteControlGameController = ""
-    @Published var remoteControlBitrate = "3.4 Mbps (10 MB)"
-    @Published var remoteControlUptime = "1m 34s"
-    @Published var remoteControlLocation = ""
-    @Published var remoteControlSrtla = "Cellular 25%, WiFi 75%"
-    @Published var remoteControlRecording = ""
+    @Published var remoteControlTopLeft: RemoteControlStatusTopLeft?
+    @Published var remoteControlTopRight: RemoteControlStatusTopRight?
 
     private var remoteControlServer: RemoteControlServer?
     private var remoteControlClient: RemoteControlClient?
@@ -999,7 +986,6 @@ final class Model: ObservableObject {
     }
 
     func setup() {
-        moblinServerTest()
         ioVideoUnitIgnoreFramesAfterAttachSeconds = Double(database.debug!.cameraSwitchRemoveBlackish!)
         let WebPCoder = SDImageWebPCoder.shared
         SDImageCodersManager.shared.addCoder(WebPCoder)
@@ -2413,16 +2399,21 @@ final class Model: ObservableObject {
         guard isRemoteControlServerConfigured() else {
             return
         }
+        let server = database.remoteControl!.server
+        guard let url = URL(string: server.url) else {
+            return
+        }
         remoteControlServer = RemoteControlServer(
-            clientUrl: URL(string: "ws://test:4563")!,
-            password: "test",
+            clientUrl: url,
+            password: server.password,
             delegate: self
         )
         remoteControlServer!.start()
     }
 
     func isRemoteControlServerConfigured() -> Bool {
-        return false
+        let server = database.remoteControl!.server
+        return server.enabled && !server.url.isEmpty && !server.password.isEmpty
     }
 
     func reloadRemoteControlClient() {
@@ -2431,9 +2422,11 @@ final class Model: ObservableObject {
         guard isRemoteControlClientConfigured() else {
             return
         }
+        let client = database.remoteControl!.client
         remoteControlClient = RemoteControlClient(
-            url: URL(string: "ws://test:4563")!,
-            password: "test",
+            address: client.address,
+            port: client.port,
+            password: client.password,
             onConnected: handleRemoteControlClientConnected
         )
         remoteControlClient!.start()
@@ -2441,11 +2434,19 @@ final class Model: ObservableObject {
 
     private func handleRemoteControlClientConnected() {
         logger.info("connected!")
-        remoteControlClient?.getStatus()
+        updateRemoteControlClientStatus()
+    }
+
+    private func updateRemoteControlClientStatus() {
+        remoteControlClient?.getStatus { topLeft, topRight in
+            self.remoteControlTopLeft = topLeft
+            self.remoteControlTopRight = topRight
+        }
     }
 
     func isRemoteControlClientConfigured() -> Bool {
-        return false
+        let client = database.remoteControl!.client
+        return client.enabled && !client.address.isEmpty && client.port > 0 && !client.password.isEmpty
     }
 
     func twitchEnabledUpdated() {
