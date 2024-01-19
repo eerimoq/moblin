@@ -7,7 +7,7 @@ private struct RemoteControlRequestResponse {
     let onError: (String) -> Void
 }
 
-class RemoteControlClient {
+class RemoteControlAssistant {
     private let address: String
     private let port: UInt16
     private let password: String
@@ -40,16 +40,16 @@ class RemoteControlClient {
 
     func start() {
         stop()
-        logger.info("remote-control-client: start")
+        logger.info("remote-control-assistant: start")
         do {
             try server.start(port: Endpoint.Port(port), interface: address)
         } catch {
-            logger.info("remote-control-client: Failed to start server with error \(error)")
+            logger.info("remote-control-assistant: Failed to start server with error \(error)")
         }
     }
 
     func stop() {
-        logger.info("remote-control-client: stop")
+        logger.info("remote-control-assistant: stop")
         server.stop(immediately: true)
     }
 
@@ -65,22 +65,40 @@ class RemoteControlClient {
             switch response {
             case let .getStatus(topLeft: topLeft, topRight: topRight):
                 onSuccess(topLeft, topRight)
+            default:
+                logger.info("remote-control-assistant: Wrong response to getStatus")
             }
         } onError: { error in
-            logger.info("remote-control-client: Get status failed with \(error)")
+            logger.info("remote-control-assistant: Get status failed with \(error)")
+        }
+    }
+
+    func getSettings(onSuccess: @escaping (RemoteControlSettings) -> Void) {
+        performRequest(data: .getSettings) { response in
+            guard let response else {
+                return
+            }
+            switch response {
+            case let .getSettings(data: data):
+                onSuccess(data)
+            default:
+                logger.info("remote-control-assistant: Wrong response to getSettings")
+            }
+        } onError: { error in
+            logger.info("remote-control-assistant: Get settings failed with \(error)")
         }
     }
 
     private func handleConnected(webSocket: Telegraph.WebSocket) {
-        logger.info("remote-control-client: Server connected")
+        logger.info("remote-control-assistant: Server connected")
         websocket = webSocket
     }
 
     private func handleDisconnected(webSocket _: Telegraph.WebSocket, error: Error?) {
         if let error {
-            logger.info("remote-control-client: Server disconnected \(error)")
+            logger.info("remote-control-assistant: Server disconnected \(error)")
         } else {
-            logger.info("remote-control-client: Server disconnected")
+            logger.info("remote-control-assistant: Server disconnected")
         }
         websocket = nil
         connected = false
@@ -88,7 +106,7 @@ class RemoteControlClient {
     }
 
     private func handleStringMessage(webSocket _: Telegraph.WebSocket, message: String) {
-        logger.debug("remote-control-client: Got message \(message)")
+        logger.debug("remote-control-assistant: Got message \(message)")
         do {
             let message = try RemoteControlMessageToClient.fromJson(data: message)
             switch message {
@@ -98,7 +116,7 @@ class RemoteControlClient {
                 handleResponse(id: id, result: result, data: data)
             }
         } catch {
-            logger.info("remote-control-client: Failed to process message with error \(error)")
+            logger.info("remote-control-assistant: Failed to process message with error \(error)")
         }
     }
 
@@ -111,7 +129,7 @@ class RemoteControlClient {
 
     private func handleResponse(id: Int, result: RemoteControlResult, data: RemoteControlResponse?) {
         guard let request = requests[id] else {
-            logger.debug("remote-control-client: Unexpected id in response")
+            logger.debug("remote-control-assistant: Unexpected id in response")
             return
         }
         switch result {
@@ -119,6 +137,12 @@ class RemoteControlClient {
             request.onSuccess(data)
         case .wrongPassword:
             request.onError("Wrong password")
+        case .notIdentified:
+            logger.info("remote-control-assistant: Not identified")
+        case .alreadyIdentified:
+            logger.info("remote-control-assistant: Already identified")
+        case .unknownRequest:
+            logger.info("remote-control-assistant: Unknown request")
         }
     }
 
@@ -132,7 +156,7 @@ class RemoteControlClient {
         performRequest(data: .identify(authentication: hash)) { _ in
             self.onConnected()
         } onError: { message in
-            logger.info("remote-control-client: error: \(message)")
+            logger.info("remote-control-assistant: error: \(message)")
         }
     }
 
@@ -141,7 +165,7 @@ class RemoteControlClient {
         onSuccess: @escaping (RemoteControlResponse?) -> Void,
         onError: @escaping (String) -> Void
     ) {
-        logger.debug("remote-control-client: Perform request")
+        logger.debug("remote-control-assistant: Perform request")
         guard connected else {
             onError("Not connected to server")
             return
@@ -161,7 +185,7 @@ class RemoteControlClient {
     }
 }
 
-extension RemoteControlClient: ServerWebSocketDelegate {
+extension RemoteControlAssistant: ServerWebSocketDelegate {
     func server(
         _: Telegraph.Server,
         webSocketDidConnect webSocket: Telegraph.WebSocket,

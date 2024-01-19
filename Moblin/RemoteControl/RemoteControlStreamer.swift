@@ -8,7 +8,7 @@ private func randomString() -> String {
     return Data.random(length: 64).base64EncodedString()
 }
 
-class RemoteControlServer {
+class RemoteControlStreamer {
     private var clientUrl: URL
     private var password: String
     private weak var delegate: (any RemoteControlServerDelegate)?
@@ -27,28 +27,28 @@ class RemoteControlServer {
 
     func start() {
         stop()
-        logger.info("remote-control-server: start")
+        logger.info("remote-control-streamer: start")
         task = Task.init {
             while true {
                 setupConnection()
                 do {
                     try await receiveMessages()
                 } catch {
-                    logger.debug("remote-control-server: error: \(error.localizedDescription)")
+                    logger.debug("remote-control-streamer: error: \(error.localizedDescription)")
                 }
                 if Task.isCancelled {
-                    logger.debug("remote-control-server: Cancelled")
+                    logger.debug("remote-control-streamer: Cancelled")
                     break
                 }
-                logger.debug("remote-control-server: Disconnected")
+                logger.debug("remote-control-streamer: Disconnected")
                 try await Task.sleep(nanoseconds: 5_000_000_000)
-                logger.debug("remote-control-server: Reconnecting")
+                logger.debug("remote-control-streamer: Reconnecting")
             }
         }
     }
 
     func stop() {
-        logger.info("remote-control-server: stop")
+        logger.info("remote-control-streamer: stop")
         task?.cancel()
         task = nil
     }
@@ -69,7 +69,7 @@ class RemoteControlServer {
         do {
             try webSocket.send(.string(message.toJson())) { _ in }
         } catch {
-            logger.info("remote-control-server: Encode failed")
+            logger.info("remote-control-streamer: Encode failed")
         }
     }
 
@@ -81,19 +81,19 @@ class RemoteControlServer {
             }
             switch message {
             case let .data(message):
-                logger.debug("remote-control-server: Got data \(message)")
+                logger.debug("remote-control-streamer: Got data \(message)")
             case let .string(message):
-                logger.debug("remote-control-server: Got message \(message)")
+                logger.debug("remote-control-streamer: Got message \(message)")
                 do {
                     switch try RemoteControlMessageToServer.fromJson(data: message) {
                     case let .request(id: id, data: data):
                         handleRequest(id: id, data: data)
                     }
                 } catch {
-                    logger.info("remote-control-server: Decode failed")
+                    logger.info("remote-control-streamer: Decode failed")
                 }
             default:
-                logger.debug("remote-control-server: ???")
+                logger.debug("remote-control-streamer: ???")
             }
         }
     }
@@ -113,8 +113,10 @@ class RemoteControlServer {
                         data: .getStatus(topLeft: topLeft, topRight: topRight)
                     ))
                 }
+            case .identify:
+                result = .alreadyIdentified
             default:
-                break
+                result = .unknownRequest
             }
         } else {
             switch data {
@@ -130,7 +132,7 @@ class RemoteControlServer {
                     result = .wrongPassword
                 }
             default:
-                break
+                result = .notIdentified
             }
         }
         if let result {

@@ -343,8 +343,8 @@ final class Model: ObservableObject {
     @Published var remoteControlTopLeft: RemoteControlStatusTopLeft?
     @Published var remoteControlTopRight: RemoteControlStatusTopRight?
 
-    private var remoteControlServer: RemoteControlServer?
-    private var remoteControlClient: RemoteControlClient?
+    private var remoteControlStreamer: RemoteControlStreamer?
+    private var remoteControlAssistant: RemoteControlAssistant?
 
     var cameraDevice: AVCaptureDevice?
     var cameraZoomLevelToXScale: Float = 1.0
@@ -2395,8 +2395,8 @@ final class Model: ObservableObject {
     }
 
     func reloadRemoteControlServer() {
-        remoteControlServer?.stop()
-        remoteControlServer = nil
+        remoteControlStreamer?.stop()
+        remoteControlStreamer = nil
         guard isRemoteControlServerConfigured() else {
             return
         }
@@ -2404,12 +2404,12 @@ final class Model: ObservableObject {
         guard let url = URL(string: server.url) else {
             return
         }
-        remoteControlServer = RemoteControlServer(
+        remoteControlStreamer = RemoteControlStreamer(
             clientUrl: url,
             password: server.password,
             delegate: self
         )
-        remoteControlServer!.start()
+        remoteControlStreamer!.start()
     }
 
     func isRemoteControlServerConfigured() -> Bool {
@@ -2418,24 +2418,24 @@ final class Model: ObservableObject {
     }
 
     func reloadRemoteControlClient() {
-        remoteControlClient?.stop()
-        remoteControlClient = nil
+        remoteControlAssistant?.stop()
+        remoteControlAssistant = nil
         guard isRemoteControlClientConfigured() else {
             return
         }
         let client = database.remoteControl!.client
-        remoteControlClient = RemoteControlClient(
+        remoteControlAssistant = RemoteControlAssistant(
             address: client.address,
             port: client.port,
             password: client.password,
             onConnected: handleRemoteControlClientConnected,
             onDisconnected: handleRemoteControlClientDisconnected
         )
-        remoteControlClient!.start()
+        remoteControlAssistant!.start()
     }
 
     func isRemoteControlClientConnected() -> Bool {
-        return remoteControlClient?.isConnected() ?? false
+        return remoteControlAssistant?.isConnected() ?? false
     }
 
     private func handleRemoteControlClientConnected() {
@@ -2448,12 +2448,15 @@ final class Model: ObservableObject {
     }
 
     func updateRemoteControlClientStatus() {
-        guard showingRemoteControl && remoteControlClient?.isConnected() == true else {
+        guard showingRemoteControl && remoteControlAssistant?.isConnected() == true else {
             return
         }
-        remoteControlClient?.getStatus { topLeft, topRight in
+        remoteControlAssistant?.getStatus { topLeft, topRight in
             self.remoteControlTopLeft = topLeft
             self.remoteControlTopRight = topRight
+        }
+        remoteControlAssistant?.getSettings { settings in
+            logger.info("Assistant got settings: \(settings)")
         }
     }
 

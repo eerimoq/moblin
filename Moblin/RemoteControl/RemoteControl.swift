@@ -69,6 +69,9 @@ enum RemoteControlEvent: Codable {
 enum RemoteControlResult: Codable {
     case ok
     case wrongPassword
+    case unknownRequest
+    case notIdentified
+    case alreadyIdentified
 }
 
 struct RemoteControlAuthentication: Codable {
