@@ -6,6 +6,14 @@ let remoteControlApiVersion = "0.1"
 enum RemoteControlRequest: Codable {
     case identify(authentication: String)
     case getStatus
+    case getSettings
+    case setRecord(on: Bool)
+    case setStream(on: Bool)
+    case setZoom(x: Float)
+    case setMute(on: Bool)
+    case setTorch(on: Bool)
+    case setScene(id: UUID)
+    case setBitratePreset(id: UUID)
 }
 
 struct RemoteControlStatusItem: Codable {
@@ -34,8 +42,24 @@ struct RemoteControlStatusTopRight: Codable {
     var recording: RemoteControlStatusItem?
 }
 
+struct RemoteControlSettingsScene: Codable {
+    var id: UUID
+    var name: String
+}
+
+struct RemoteControlSettingsBitratePreset: Codable {
+    var id: UUID
+    var bitrate: UInt32
+}
+
+struct RemoteControlSettings: Codable {
+    var scenes: [RemoteControlSettingsScene]
+    var bitratePresets: [RemoteControlSettingsBitratePreset]
+}
+
 enum RemoteControlResponse: Codable {
     case getStatus(topLeft: RemoteControlStatusTopLeft, topRight: RemoteControlStatusTopRight)
+    case getSettings(data: RemoteControlSettings)
 }
 
 enum RemoteControlEvent: Codable {
