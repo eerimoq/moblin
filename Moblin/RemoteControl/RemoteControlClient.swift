@@ -15,16 +15,26 @@ class RemoteControlClient {
     private var nextId: Int = 0
     private var requests: [Int: RemoteControlRequestResponse] = [:]
     private var onConnected: () -> Void
+    private var onDisconnected: () -> Void
     private var server: Server
     var connectionErrorMessage: String = ""
     private var websocket: Telegraph.WebSocket?
 
-    init(address: String, port: UInt16, password: String, onConnected: @escaping () -> Void) {
+    init(
+        address: String,
+        port: UInt16,
+        password: String,
+        onConnected: @escaping () -> Void,
+        onDisconnected: @escaping () -> Void
+    ) {
         self.address = address
         self.port = port
         self.password = password
         self.onConnected = onConnected
+        self.onDisconnected = onDisconnected
         server = Server()
+        server.webSocketConfig.pingInterval = 30
+        server.webSocketConfig.readTimeout = 60
         server.webSocketDelegate = self
     }
 
@@ -56,27 +66,29 @@ class RemoteControlClient {
             case let .getStatus(topLeft: topLeft, topRight: topRight):
                 onSuccess(topLeft, topRight)
             }
-        } onError: { _ in
-            logger.info("remote-control-client: get status error")
+        } onError: { error in
+            logger.info("remote-control-client: Get status failed with \(error)")
         }
     }
 
     private func handleConnected(webSocket: Telegraph.WebSocket) {
-        logger.info("remote-control-client: Server connected \(webSocket)")
+        logger.info("remote-control-client: Server connected")
         websocket = webSocket
     }
 
-    private func handleDisconnected(webSocket: Telegraph.WebSocket, error: Error?) {
+    private func handleDisconnected(webSocket _: Telegraph.WebSocket, error: Error?) {
         if let error {
-            logger.info("remote-control-client: Server disconnected \(webSocket) \(error)")
+            logger.info("remote-control-client: Server disconnected \(error)")
         } else {
-            logger.info("remote-control-client: Server disconnected \(webSocket)")
+            logger.info("remote-control-client: Server disconnected")
         }
         websocket = nil
+        connected = false
+        onDisconnected()
     }
 
-    private func handleStringMessage(webSocket: Telegraph.WebSocket, message: String) {
-        logger.info("remote-control-client: Got message \(webSocket) \(message)")
+    private func handleStringMessage(webSocket _: Telegraph.WebSocket, message: String) {
+        logger.debug("remote-control-client: Got message \(message)")
         do {
             let message = try RemoteControlMessageToClient.fromJson(data: message)
             switch message {
@@ -129,6 +141,7 @@ class RemoteControlClient {
         onSuccess: @escaping (RemoteControlResponse?) -> Void,
         onError: @escaping (String) -> Void
     ) {
+        logger.debug("remote-control-client: Perform request")
         guard connected else {
             onError("Not connected to server")
             return

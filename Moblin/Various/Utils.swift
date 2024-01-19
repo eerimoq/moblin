@@ -674,3 +674,11 @@ func createThumbnail(path: URL) -> UIImage? {
         return nil
     }
 }
+
+func formatAudioLevelDb(level: Float) -> String {
+    return String(localized: "\(Int(level)) dB,")
+}
+
+func formatAudioLevelChannels(channels: Int) -> String {
+    return String(localized: " \(channels) ch")
+}

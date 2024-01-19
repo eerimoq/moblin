@@ -83,6 +83,7 @@ class RemoteControlServer {
             case let .data(message):
                 logger.debug("remote-control-server: Got data \(message)")
             case let .string(message):
+                logger.debug("remote-control-server: Got message \(message)")
                 do {
                     switch try RemoteControlMessageToServer.fromJson(data: message) {
                     case let .request(id: id, data: data):

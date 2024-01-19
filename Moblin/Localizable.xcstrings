@@ -51880,6 +51880,9 @@
         }
       }
     },
+    "Waiting for the remote control server to connect..." : {
+
+    },
     "WebSocket" : {
       "localizations" : {
         "de" : {

@@ -353,35 +353,41 @@ struct RemoteControlView: View {
 
     var body: some View {
         Form {
-            Section {
-                if let status = model.remoteControlTopLeft {
-                    VStack(alignment: .leading, spacing: 3) {
-                        StatusItemView(icon: "dot.radiowaves.left.and.right", status: status.stream)
-                        StatusItemView(icon: "camera", status: status.camera)
-                        StatusItemView(icon: "music.mic", status: status.mic)
-                        StatusItemView(icon: "magnifyingglass", status: status.zoom)
-                        StatusItemView(icon: "xserve", status: status.obs)
-                        StatusItemView(icon: "message", status: status.chat)
-                        StatusItemView(icon: "eye", status: status.viewers)
-                    }
-                } else {
-                    Text("No status received yet.")
+            if !model.isRemoteControlClientConnected() {
+                Section {
+                    Text("Waiting for the remote control server to connect...")
                 }
-            }
-            Section {
-                if let status = model.remoteControlTopRight {
-                    VStack(alignment: .leading, spacing: 3) {
-                        StatusItemView(icon: "waveform", status: status.audioLevel)
-                        StatusItemView(icon: "server.rack", status: status.rtmpServer)
-                        StatusItemView(icon: "gamecontroller", status: status.gameController)
-                        StatusItemView(icon: "speedometer", status: status.bitrate)
-                        StatusItemView(icon: "deskclock", status: status.uptime)
-                        StatusItemView(icon: "location", status: status.location)
-                        StatusItemView(icon: "phone.connection", status: status.srtla)
-                        StatusItemView(icon: "record.circle", status: status.recording)
+            } else {
+                Section {
+                    if let status = model.remoteControlTopLeft {
+                        VStack(alignment: .leading, spacing: 3) {
+                            StatusItemView(icon: "dot.radiowaves.left.and.right", status: status.stream)
+                            StatusItemView(icon: "camera", status: status.camera)
+                            StatusItemView(icon: "music.mic", status: status.mic)
+                            StatusItemView(icon: "magnifyingglass", status: status.zoom)
+                            StatusItemView(icon: "xserve", status: status.obs)
+                            StatusItemView(icon: "message", status: status.chat)
+                            StatusItemView(icon: "eye", status: status.viewers)
+                        }
+                    } else {
+                        Text("No status received yet.")
                     }
-                } else {
-                    Text("No status received yet.")
+                }
+                Section {
+                    if let status = model.remoteControlTopRight {
+                        VStack(alignment: .leading, spacing: 3) {
+                            StatusItemView(icon: "waveform", status: status.audioLevel)
+                            StatusItemView(icon: "server.rack", status: status.rtmpServer)
+                            StatusItemView(icon: "gamecontroller", status: status.gameController)
+                            StatusItemView(icon: "speedometer", status: status.bitrate)
+                            StatusItemView(icon: "deskclock", status: status.uptime)
+                            StatusItemView(icon: "location", status: status.location)
+                            StatusItemView(icon: "phone.connection", status: status.srtla)
+                            StatusItemView(icon: "record.circle", status: status.recording)
+                        }
+                    } else {
+                        Text("No status received yet.")
+                    }
                 }
             }
         }
@@ -533,6 +539,7 @@ struct ButtonsInnerView: View {
 
     private func remoteAction(state _: ButtonState) {
         model.showingRemoteControl = true
+        model.updateRemoteControlClientStatus()
     }
 
     var body: some View {

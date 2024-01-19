@@ -4,10 +4,6 @@ import WebKit
 struct LeftOverlayView: View {
     @EnvironmentObject var model: Model
 
-    var database: Database {
-        model.settings.database
-    }
-
     func viewersColor() -> Color {
         if model.stream.twitchChannelId == "" {
             return .white
@@ -55,7 +51,7 @@ struct LeftOverlayView: View {
             if model.isShowingStatusMic() {
                 StreamOverlayIconAndTextView(
                     icon: "music.mic",
-                    text: model.statusMicText()
+                    text: model.mic.name
                 )
             }
             if model.isShowingStatusZoom() {

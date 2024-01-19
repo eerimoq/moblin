@@ -64,11 +64,11 @@ struct AudioLevelView: View {
                         .padding([.bottom], 2)
                         .bold()
                     } else {
-                        Text("\(Int(level)) dB,")
+                        Text(formatAudioLevelDb(level: level))
                             .foregroundColor(.white)
                     }
                 }
-                Text(" \(channels) ch")
+                Text(formatAudioLevelChannels(channels: channels))
                     .foregroundColor(.white)
             }
             .padding([.leading, .trailing], 2)

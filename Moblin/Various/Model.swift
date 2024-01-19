@@ -2428,17 +2428,29 @@ final class Model: ObservableObject {
             address: client.address,
             port: client.port,
             password: client.password,
-            onConnected: handleRemoteControlClientConnected
+            onConnected: handleRemoteControlClientConnected,
+            onDisconnected: handleRemoteControlClientDisconnected
         )
         remoteControlClient!.start()
     }
 
+    func isRemoteControlClientConnected() -> Bool {
+        return remoteControlClient?.isConnected() ?? false
+    }
+
     private func handleRemoteControlClientConnected() {
-        logger.info("connected!")
         updateRemoteControlClientStatus()
     }
 
-    private func updateRemoteControlClientStatus() {
+    private func handleRemoteControlClientDisconnected() {
+        remoteControlTopLeft = nil
+        remoteControlTopRight = nil
+    }
+
+    func updateRemoteControlClientStatus() {
+        guard showingRemoteControl && remoteControlClient?.isConnected() == true else {
+            return
+        }
         remoteControlClient?.getStatus { topLeft, topRight in
             self.remoteControlTopLeft = topLeft
             self.remoteControlTopRight = topRight
@@ -3584,31 +3596,31 @@ final class Model: ObservableObject {
     func isShowingStatusStream() -> Bool {
         return database.show.stream && isStreamConfigured()
     }
-    
+
     func isShowingStatusCamera() -> Bool {
         return database.show.cameras!
     }
-    
+
     func isShowingStatusMic() -> Bool {
         return database.show.microphone
     }
-    
+
     func isShowingStatusZoom() -> Bool {
         return database.show.zoom && hasZoom
     }
-    
+
     func isShowingStatusObs() -> Bool {
         return database.show.obsStatus! && isObsRemoteControlConfigured()
     }
-    
+
     func isShowingStatusChat() -> Bool {
         return database.show.chat && isChatConfigured()
     }
-    
+
     func isShowingStatusViewers() -> Bool {
         return database.show.viewers && isViewersConfigured()
     }
-    
+
     func statusStreamText() -> String {
         let proto = stream.protocolString()
         let resolution = stream.resolutionString()
@@ -3621,19 +3633,15 @@ final class Model: ObservableObject {
         \(audioCodec) \(audioBitrate))
         """
     }
-    
+
     func statusCameraText() -> String {
         return getCameraPosition(scene: findEnabledScene(id: selectedSceneId))
     }
-    
-    func statusMicText() -> String {
-        return mic.name
-    }
-    
+
     func statusZoomText() -> String {
         return String(format: "%.1f", zoomX)
     }
-    
+
     func statusObsText() -> String {
         if !isObsRemoteControlConfigured() {
             return String(localized: "Not configured")
@@ -3651,7 +3659,7 @@ final class Model: ObservableObject {
             return obsConnectionErrorMessage()
         }
     }
-    
+
     func statusChatText() -> String {
         if !isChatConfigured() {
             return String(localized: "Not configured")
@@ -3665,7 +3673,7 @@ final class Model: ObservableObject {
             return ""
         }
     }
-    
+
     func statusViewersText() -> String {
         if !isViewersConfigured() {
             return String(localized: "Not configured")
@@ -3675,35 +3683,35 @@ final class Model: ObservableObject {
             return ""
         }
     }
-    
+
     func isShowingStatusAudioLevel() -> Bool {
         return database.show.audioLevel
     }
-    
+
     func isShowingStatusRtmpServer() -> Bool {
         return database.show.rtmpSpeed! && rtmpServerEnabled()
     }
-    
+
     func isShowingStatusGameController() -> Bool {
         return database.show.gameController! && isGameControllerConnected()
     }
-    
+
     func isShowingStatusBitrate() -> Bool {
         return database.show.speed && isLive
     }
-    
+
     func isShowingStatusUptime() -> Bool {
         return database.show.uptime && isLive
     }
-    
+
     func isShowingStatusLocation() -> Bool {
         return database.show.location! && isLocationEnabled()
     }
-    
+
     func isShowingStatusSrtla() -> Bool {
         return stream.isSrtla() && isLive
     }
-    
+
     func isShowingStatusRecording() -> Bool {
         return isRecording
     }
@@ -3720,7 +3728,7 @@ extension Model: RemoteControlServerDelegate {
                 topLeft.camera = RemoteControlStatusItem(message: self.statusCameraText())
             }
             if self.isShowingStatusMic() {
-                topLeft.mic = RemoteControlStatusItem(message: self.statusMicText())
+                topLeft.mic = RemoteControlStatusItem(message: self.mic.name)
             }
             if self.isShowingStatusZoom() {
                 topLeft.zoom = RemoteControlStatusItem(message: self.statusZoomText())
@@ -3736,28 +3744,30 @@ extension Model: RemoteControlServerDelegate {
             }
             var topRight = RemoteControlStatusTopRight()
             if self.isShowingStatusAudioLevel() {
-                topRight.audioLevel = RemoteControlStatusItem(message: "?")
+                let level = formatAudioLevelDb(level: self.audioLevel) +
+                    formatAudioLevelChannels(channels: self.numberOfAudioChannels)
+                topRight.audioLevel = RemoteControlStatusItem(message: level)
             }
             if self.isShowingStatusRtmpServer() {
-                topRight.rtmpServer = RemoteControlStatusItem(message: "?")
+                topRight.rtmpServer = RemoteControlStatusItem(message: self.rtmpSpeedAndTotal)
             }
             if self.isShowingStatusGameController() {
-                topRight.gameController = RemoteControlStatusItem(message: "?")
+                topRight.gameController = RemoteControlStatusItem(message: self.gameControllersTotal)
             }
             if self.isShowingStatusBitrate() {
-                topRight.bitrate = RemoteControlStatusItem(message: "?")
+                topRight.bitrate = RemoteControlStatusItem(message: self.speedAndTotal)
             }
             if self.isShowingStatusUptime() {
-                topRight.uptime = RemoteControlStatusItem(message: "?")
+                topRight.uptime = RemoteControlStatusItem(message: self.uptime)
             }
             if self.isShowingStatusLocation() {
-                topRight.location = RemoteControlStatusItem(message: "?")
+                topRight.location = RemoteControlStatusItem(message: self.location)
             }
             if self.isShowingStatusSrtla() {
-                topRight.srtla = RemoteControlStatusItem(message: "?")
+                topRight.srtla = RemoteControlStatusItem(message: self.srtlaConnectionStatistics)
             }
             if self.isShowingStatusRecording() {
-                topRight.recording = RemoteControlStatusItem(message: "?")
+                topRight.recording = RemoteControlStatusItem(message: self.recordingLength)
             }
             onComplete(topLeft, topRight)
         }
