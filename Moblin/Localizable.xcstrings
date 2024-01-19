@@ -12969,6 +12969,9 @@
         }
       }
     },
+    "Configure it in Settings → Remote control" : {
+
+    },
     "Configure it in Settings → Streams → %@ → OBS remote control." : {
       "localizations" : {
         "de" : {
@@ -36872,6 +36875,9 @@
     "Remote control assistant" : {
 
     },
+    "Remote control assistant is not configured" : {
+
+    },
     "Reset" : {
       "localizations" : {
         "de" : {
@@ -51892,7 +51898,7 @@
         }
       }
     },
-    "Waiting for the remote control server to connect..." : {
+    "Waiting for the remote control streamer to connect..." : {
 
     },
     "WebSocket" : {

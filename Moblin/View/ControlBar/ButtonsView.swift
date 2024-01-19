@@ -355,7 +355,7 @@ struct RemoteControlView: View {
         Form {
             if !model.isRemoteControlClientConnected() {
                 Section {
-                    Text("Waiting for the remote control server to connect...")
+                    Text("Waiting for the remote control streamer to connect...")
                 }
             } else {
                 Section {
@@ -542,6 +542,13 @@ struct ButtonsInnerView: View {
     }
 
     private func remoteAction(state _: ButtonState) {
+        guard model.isRemoteControlClientConfigured() else {
+            model.makeErrorToast(
+                title: String(localized: "Remote control assistant is not configured"),
+                subTitle: String(localized: "Configure it in Settings → Remote control")
+            )
+            return
+        }
         model.showingRemoteControl = true
         model.updateRemoteControlClientStatus()
     }

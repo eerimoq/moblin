@@ -127,9 +127,9 @@ struct RemoteControlSettingsView: View {
                 Text("Streamer")
             } footer: {
                 Text("""
-                     Enable to allow an assistant to monitor and control this device from a \
-                     different device.
-                     """)
+                Enable to allow an assistant to monitor and control this device from a \
+                different device.
+                """)
             }
             Section {
                 Toggle(isOn: Binding(get: {
@@ -178,9 +178,9 @@ struct RemoteControlSettingsView: View {
                 Text("Assistant")
             } footer: {
                 Text("""
-                     Enable to let a streamer device connect to this device. Once connected, \
-                     this device can monitor and control the streamer device.
-                     """)
+                Enable to let a streamer device connect to this device. Once connected, \
+                this device can monitor and control the streamer device.
+                """)
             }
         }
         .navigationTitle("Remote control")
