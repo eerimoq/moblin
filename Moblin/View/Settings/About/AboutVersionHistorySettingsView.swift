@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.152.0", date: "2024-01-19", changes: [
+        "• Default chat height set to 70% instead of 100% of screen.",
+        "• Remote control that shows streamer's device status.",
+        "  • Typically run Moblin on a Mac to see streamer's Moblin status.",
+    ]),
     Version(version: "0.151.0", date: "2024-01-18", changes: [
         "• Fix RTMP Kick and Custom validation.",
     ]),
