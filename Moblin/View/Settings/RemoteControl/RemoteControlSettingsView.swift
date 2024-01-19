@@ -102,14 +102,14 @@ struct RemoteControlSettingsView: View {
                     Text("Enabled")
                 }
                 NavigationLink(destination: TextEditView(
-                    title: String(localized: "URL"),
+                    title: String(localized: "Assistant URL"),
                     value: model.database.remoteControl!.server.url,
                     onSubmit: submitServerUrl,
                     keyboardType: .URL,
                     placeholder: "ws://32.143.32.12:2345"
                 )) {
                     TextItemView(
-                        name: String(localized: "URL"),
+                        name: String(localized: "Assistant URL"),
                         value: model.database.remoteControl!.server.url
                     )
                 }
@@ -124,9 +124,12 @@ struct RemoteControlSettingsView: View {
                     )
                 }
             } header: {
-                Text("Server")
+                Text("Streamer")
             } footer: {
-                Text("The streamer's device is the server.")
+                Text("""
+                     Enable to allow an assistant to monitor and control this device from a \
+                     different device.
+                     """)
             }
             Section {
                 Toggle(isOn: Binding(get: {
@@ -139,42 +142,45 @@ struct RemoteControlSettingsView: View {
                     Text("Enabled")
                 }
                 NavigationLink(destination: TextEditView(
-                    title: String(localized: "Address"),
+                    title: String(localized: "Server address"),
                     value: model.database.remoteControl!.client.address,
                     onSubmit: submitClientAddress,
                     placeholder: "32.143.32.12"
                 )) {
                     TextItemView(
-                        name: String(localized: "Address"),
+                        name: String(localized: "Server address"),
                         value: model.database.remoteControl!.client.address
                     )
                 }
                 NavigationLink(destination: TextEditView(
-                    title: String(localized: "Port"),
+                    title: String(localized: "Server port"),
                     value: String(model.database.remoteControl!.client.port),
                     onSubmit: submitClientPort,
                     placeholder: "2345"
                 )) {
                     TextItemView(
-                        name: String(localized: "Port"),
+                        name: String(localized: "Server port"),
                         value: String(model.database.remoteControl!.client.port)
                     )
                 }
                 NavigationLink(destination: TextEditView(
-                    title: String(localized: "Password"),
+                    title: String(localized: "Streamer password"),
                     value: model.database.remoteControl!.client.password,
                     onSubmit: submitClientPassword
                 )) {
                     TextItemView(
-                        name: String(localized: "Password"),
+                        name: String(localized: "Streamer password"),
                         value: model.database.remoteControl!.client.password,
                         sensitive: true
                     )
                 }
             } header: {
-                Text("Client")
+                Text("Assistant")
             } footer: {
-                Text("The assistant's device is the client.")
+                Text("""
+                     Enable to let a streamer device connect to this device. Once connected, \
+                     this device can monitor and control the streamer device.
+                     """)
             }
         }
         .navigationTitle("Remote control")

@@ -372,6 +372,8 @@ struct RemoteControlView: View {
                     } else {
                         Text("No status received yet.")
                     }
+                } header: {
+                    Text("Top left")
                 }
                 Section {
                     if let status = model.remoteControlTopRight {
@@ -388,10 +390,12 @@ struct RemoteControlView: View {
                     } else {
                         Text("No status received yet.")
                     }
+                } header: {
+                    Text("Top right")
                 }
             }
         }
-        .navigationTitle("Remote control")
+        .navigationTitle("Remote control assistant")
         .toolbar {
             QuickSettingsToolbar(done: done)
         }

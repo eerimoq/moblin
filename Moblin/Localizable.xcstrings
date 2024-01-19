@@ -5901,9 +5901,6 @@
         }
       }
     },
-    "Address" : {
-
-    },
     "AfreecaTV" : {
       "localizations" : {
         "de" : {
@@ -7029,6 +7026,12 @@
           }
         }
       }
+    },
+    "Assistant" : {
+
+    },
+    "Assistant URL" : {
+
     },
     "Attempting again in %lld seconds." : {
       "localizations" : {
@@ -12518,9 +12521,6 @@
         }
       }
     },
-    "Client" : {
-
-    },
     "Close" : {
       "localizations" : {
         "de" : {
@@ -17365,6 +17365,12 @@
           }
         }
       }
+    },
+    "Enable to allow an assistant to monitor and control this device from a different device." : {
+
+    },
+    "Enable to let a streamer device connect to this device. Once connected, this device can monitor and control the streamer device." : {
+
     },
     "Enabled" : {
       "localizations" : {
@@ -36863,6 +36869,9 @@
         }
       }
     },
+    "Remote control assistant" : {
+
+    },
     "Reset" : {
       "localizations" : {
         "de" : {
@@ -39439,7 +39448,10 @@
         }
       }
     },
-    "Server" : {
+    "Server address" : {
+
+    },
+    "Server port" : {
 
     },
     "Settings" : {
@@ -44034,6 +44046,12 @@
         }
       }
     },
+    "Streamer" : {
+
+    },
+    "Streamer password" : {
+
+    },
     "Streaming history" : {
       "localizations" : {
         "de" : {
@@ -45602,9 +45620,6 @@
         }
       }
     },
-    "The assistant's device is the client." : {
-
-    },
     "The browser widget is experimental does not work very well yet." : {
       "localizations" : {
         "de" : {
@@ -46388,9 +46403,6 @@
           }
         }
       }
-    },
-    "The streamer's device is the server." : {
-
     },
     "The TCP port the RTMP server listens for RTMP publishers on." : {
       "localizations" : {
