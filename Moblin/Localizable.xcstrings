@@ -13673,6 +13673,9 @@
         }
       }
     },
+    "Control" : {
+
+    },
     "Controller" : {
       "localizations" : {
         "de" : {
@@ -25442,6 +25445,12 @@
         }
       }
     },
+    "Inline picker to select bitrate." : {
+
+    },
+    "Inline picker to select scene." : {
+
+    },
     "Interval" : {
       "localizations" : {
         "de" : {
@@ -32385,6 +32394,9 @@
           }
         }
       }
+    },
+    "No settings received yet." : {
+
     },
     "No snapshot received yet." : {
       "localizations" : {
@@ -45513,6 +45525,9 @@
           }
         }
       }
+    },
+    "Text field to set zoom" : {
+
     },
     "The actual bitrate may be lower if the device does not support it." : {
       "localizations" : {

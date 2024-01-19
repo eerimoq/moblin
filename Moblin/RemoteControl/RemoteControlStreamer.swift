@@ -2,6 +2,7 @@ import Foundation
 
 protocol RemoteControlServerDelegate: AnyObject {
     func getStatus(onComplete: @escaping (RemoteControlStatusTopLeft, RemoteControlStatusTopRight) -> Void)
+    func getSettings(onComplete: @escaping (RemoteControlSettings) -> Void)
 }
 
 private func randomString() -> String {
@@ -112,6 +113,10 @@ class RemoteControlStreamer {
                         result: .ok,
                         data: .getStatus(topLeft: topLeft, topRight: topRight)
                     ))
+                }
+            case .getSettings:
+                delegate.getSettings { data in
+                    self.send(message: .response(id: id, result: .ok, data: .getSettings(data: data)))
                 }
             case .identify:
                 result = .alreadyIdentified

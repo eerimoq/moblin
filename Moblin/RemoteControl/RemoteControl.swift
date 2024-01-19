@@ -53,8 +53,8 @@ struct RemoteControlSettingsBitratePreset: Codable {
 }
 
 struct RemoteControlSettings: Codable {
-    var scenes: [RemoteControlSettingsScene]
-    var bitratePresets: [RemoteControlSettingsBitratePreset]
+    var scenes: [RemoteControlSettingsScene] = []
+    var bitratePresets: [RemoteControlSettingsBitratePreset] = []
 }
 
 enum RemoteControlResponse: Codable {

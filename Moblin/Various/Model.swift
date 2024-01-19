@@ -342,6 +342,7 @@ final class Model: ObservableObject {
 
     @Published var remoteControlTopLeft: RemoteControlStatusTopLeft?
     @Published var remoteControlTopRight: RemoteControlStatusTopRight?
+    @Published var remoteControlSettings: RemoteControlSettings?
 
     private var remoteControlStreamer: RemoteControlStreamer?
     private var remoteControlAssistant: RemoteControlAssistant?
@@ -2456,7 +2457,7 @@ final class Model: ObservableObject {
             self.remoteControlTopRight = topRight
         }
         remoteControlAssistant?.getSettings { settings in
-            logger.info("Assistant got settings: \(settings)")
+            self.remoteControlSettings = settings
         }
     }
 
@@ -3773,6 +3774,19 @@ extension Model: RemoteControlServerDelegate {
                 topRight.recording = RemoteControlStatusItem(message: self.recordingLength)
             }
             onComplete(topLeft, topRight)
+        }
+    }
+
+    func getSettings(onComplete: @escaping (RemoteControlSettings) -> Void) {
+        DispatchQueue.main.async {
+            var settings = RemoteControlSettings()
+            settings.scenes = self.database.scenes.map { scene in
+                RemoteControlSettingsScene(id: scene.id, name: scene.name)
+            }
+            settings.bitratePresets = self.database.bitratePresets.map { preset in
+                RemoteControlSettingsBitratePreset(id: preset.id, bitrate: preset.bitrate)
+            }
+            onComplete(settings)
         }
     }
 }

@@ -393,6 +393,19 @@ struct RemoteControlView: View {
                 } header: {
                     Text("Top right")
                 }
+                if false {
+                    Section {
+                        if let settings = model.remoteControlSettings {
+                            Text("Inline picker to select scene.")
+                            Text("Inline picker to select bitrate.")
+                            Text("Text field to set zoom")
+                        } else {
+                            Text("No settings received yet.")
+                        }
+                    } header: {
+                        Text("Control")
+                    }
+                }
             }
         }
         .navigationTitle("Remote control assistant")
