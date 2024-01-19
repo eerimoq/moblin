@@ -89,6 +89,34 @@ class RemoteControlAssistant {
         }
     }
 
+    func setRecord(on: Bool, onSuccess: @escaping () -> Void) {
+        performRequestNoResponseData(data: .setRecord(on: on), onSuccess: onSuccess)
+    }
+
+    func setStream(on: Bool, onSuccess: @escaping () -> Void) {
+        performRequestNoResponseData(data: .setStream(on: on), onSuccess: onSuccess)
+    }
+
+    func setZoom(x: Float, onSuccess: @escaping () -> Void) {
+        performRequestNoResponseData(data: .setZoom(x: x), onSuccess: onSuccess)
+    }
+
+    func setMute(on: Bool, onSuccess: @escaping () -> Void) {
+        performRequestNoResponseData(data: .setMute(on: on), onSuccess: onSuccess)
+    }
+
+    func setTorch(on: Bool, onSuccess: @escaping () -> Void) {
+        performRequestNoResponseData(data: .setTorch(on: on), onSuccess: onSuccess)
+    }
+
+    func setScene(id: UUID, onSuccess: @escaping () -> Void) {
+        performRequestNoResponseData(data: .setScene(id: id), onSuccess: onSuccess)
+    }
+
+    func setBitratePreset(id: UUID, onSuccess: @escaping () -> Void) {
+        performRequestNoResponseData(data: .setBitratePreset(id: id), onSuccess: onSuccess)
+    }
+
     private func handleConnected(webSocket: Telegraph.WebSocket) {
         logger.info("remote-control-assistant: Server connected")
         websocket = webSocket
@@ -177,6 +205,13 @@ class RemoteControlAssistant {
         }
         requests[id] = RemoteControlRequestResponse(onSuccess: onSuccess, onError: onError)
         websocket?.send(text: message)
+    }
+
+    private func performRequestNoResponseData(data: RemoteControlRequest, onSuccess: @escaping () -> Void) {
+        performRequest(data: data) { _ in
+            onSuccess()
+        } onError: { _ in
+        }
     }
 
     private func getNextId() -> Int {

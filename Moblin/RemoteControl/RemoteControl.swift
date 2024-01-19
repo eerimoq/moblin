@@ -16,6 +16,15 @@ enum RemoteControlRequest: Codable {
     case setBitratePreset(id: UUID)
 }
 
+enum RemoteControlResponse: Codable {
+    case getStatus(topLeft: RemoteControlStatusTopLeft, topRight: RemoteControlStatusTopRight)
+    case getSettings(data: RemoteControlSettings)
+}
+
+enum RemoteControlEvent: Codable {
+    case hello(apiVersion: String, authentication: RemoteControlAuthentication)
+}
+
 struct RemoteControlStatusItem: Codable {
     var message: String
     var ok: Bool = true
@@ -57,13 +66,9 @@ struct RemoteControlSettings: Codable {
     var bitratePresets: [RemoteControlSettingsBitratePreset] = []
 }
 
-enum RemoteControlResponse: Codable {
-    case getStatus(topLeft: RemoteControlStatusTopLeft, topRight: RemoteControlStatusTopRight)
-    case getSettings(data: RemoteControlSettings)
-}
-
-enum RemoteControlEvent: Codable {
-    case hello(apiVersion: String, authentication: RemoteControlAuthentication)
+struct RemoteControlAuthentication: Codable {
+    var challenge: String
+    var salt: String
 }
 
 enum RemoteControlResult: Codable {
@@ -72,11 +77,6 @@ enum RemoteControlResult: Codable {
     case unknownRequest
     case notIdentified
     case alreadyIdentified
-}
-
-struct RemoteControlAuthentication: Codable {
-    var challenge: String
-    var salt: String
 }
 
 enum RemoteControlMessageToServer: Codable {
