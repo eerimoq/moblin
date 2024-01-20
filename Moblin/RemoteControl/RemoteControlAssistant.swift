@@ -19,6 +19,7 @@ class RemoteControlAssistant {
     private var server: Server
     var connectionErrorMessage: String = ""
     private var websocket: Telegraph.WebSocket?
+    private var retryStartTimer: DispatchSourceTimer?
 
     init(
         address: String,
@@ -41,16 +42,13 @@ class RemoteControlAssistant {
     func start() {
         stop()
         logger.info("remote-control-assistant: start")
-        do {
-            try server.start(port: Endpoint.Port(port), interface: address)
-        } catch {
-            logger.info("remote-control-assistant: Failed to start server with error \(error)")
-        }
+        startInternal()
     }
 
     func stop() {
         logger.info("remote-control-assistant: stop")
         server.stop(immediately: true)
+        stopRetryStartTimer()
     }
 
     func isConnected() -> Bool {
@@ -117,16 +115,40 @@ class RemoteControlAssistant {
         performRequestNoResponseData(data: .setBitratePreset(id: id), onSuccess: onSuccess)
     }
 
+    private func startInternal() {
+        do {
+            try server.start(port: Endpoint.Port(port), interface: address)
+            stopRetryStartTimer()
+        } catch {
+            logger.debug("remote-control-assistant: Failed to start server with error \(error)")
+            startRetryStartTimer()
+        }
+    }
+
+    private func startRetryStartTimer() {
+        retryStartTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.main)
+        retryStartTimer!.schedule(deadline: .now() + 5)
+        retryStartTimer!.setEventHandler {
+            self.startInternal()
+        }
+        retryStartTimer!.activate()
+    }
+
+    private func stopRetryStartTimer() {
+        retryStartTimer?.cancel()
+        retryStartTimer = nil
+    }
+
     private func handleConnected(webSocket: Telegraph.WebSocket) {
-        logger.info("remote-control-assistant: Server connected")
+        logger.info("remote-control-assistant: Streamer connected")
         websocket = webSocket
     }
 
     private func handleDisconnected(webSocket _: Telegraph.WebSocket, error: Error?) {
         if let error {
-            logger.info("remote-control-assistant: Server disconnected \(error)")
+            logger.info("remote-control-assistant: Streamer disconnected \(error)")
         } else {
-            logger.info("remote-control-assistant: Server disconnected")
+            logger.info("remote-control-assistant: Streamer disconnected")
         }
         websocket = nil
         connected = false
@@ -195,7 +217,7 @@ class RemoteControlAssistant {
     ) {
         logger.debug("remote-control-assistant: Perform request")
         guard connected else {
-            onError("Not connected to server")
+            onError("Not connected to streamer")
             return
         }
         let id = getNextId()
