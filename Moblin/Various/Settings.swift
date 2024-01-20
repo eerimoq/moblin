@@ -1360,8 +1360,8 @@ private func addMissingGlobalButtons(database: Database) {
     button.id = UUID()
     button.type = .torch
     button.imageType = "System name"
-    button.systemImageNameOn = "lightbulb.fill"
-    button.systemImageNameOff = "lightbulb"
+    button.systemImageNameOn = "flashlight.on.fill"
+    button.systemImageNameOff = "flashlight.off.fill"
     addGlobalButtonIfMissing(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Mute"))

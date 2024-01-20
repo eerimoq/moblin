@@ -45,6 +45,8 @@ var imageSystemNames = [
     "flashlight.off.fill",
     "lightbulb",
     "lightbulb.fill",
+    "flashlight.off.fill",
+    "flashlight.on.fill",
     "moonphase.waxing.crescent",
     "moonphase.waning.crescent",
     "drop",
