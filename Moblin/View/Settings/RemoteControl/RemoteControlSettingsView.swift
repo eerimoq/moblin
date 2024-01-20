@@ -56,7 +56,7 @@ struct RemoteControlSettingsView: View {
     private func submitClientAddress(value: String) {
         model.database.remoteControl!.client.address = value.trim()
         model.store()
-        model.reloadRemoteControlClient()
+        model.reloadRemoteControlAssistant()
     }
 
     private func submitClientPort(value: String) {
@@ -65,13 +65,13 @@ struct RemoteControlSettingsView: View {
         }
         model.database.remoteControl!.client.port = port
         model.store()
-        model.reloadRemoteControlClient()
+        model.reloadRemoteControlAssistant()
     }
 
     private func submitClientPassword(value: String) {
         model.database.remoteControl!.client.password = value.trim()
         model.store()
-        model.reloadRemoteControlClient()
+        model.reloadRemoteControlAssistant()
     }
 
     private func submitServerUrl(value: String) {
@@ -80,13 +80,13 @@ struct RemoteControlSettingsView: View {
         }
         model.database.remoteControl!.server.url = value
         model.store()
-        model.reloadRemoteControlServer()
+        model.reloadRemoteControlStreamer()
     }
 
     private func submitServerPassword(value: String) {
         model.database.remoteControl!.server.password = value.trim()
         model.store()
-        model.reloadRemoteControlServer()
+        model.reloadRemoteControlStreamer()
     }
 
     var body: some View {
@@ -97,7 +97,7 @@ struct RemoteControlSettingsView: View {
                 }, set: { value in
                     model.database.remoteControl!.server.enabled = value
                     model.store()
-                    model.reloadRemoteControlServer()
+                    model.reloadRemoteControlStreamer()
                 })) {
                     Text("Enabled")
                 }
@@ -137,7 +137,7 @@ struct RemoteControlSettingsView: View {
                 }, set: { value in
                     model.database.remoteControl!.client.enabled = value
                     model.store()
-                    model.reloadRemoteControlClient()
+                    model.reloadRemoteControlAssistant()
                 })) {
                     Text("Enabled")
                 }

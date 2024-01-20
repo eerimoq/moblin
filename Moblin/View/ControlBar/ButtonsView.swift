@@ -347,13 +347,24 @@ struct StatusItemView: View {
     }
 }
 
+private var noId = UUID()
+
 struct RemoteControlView: View {
     @EnvironmentObject var model: Model
     var done: () -> Void
+    @State var sceneId = noId
+    @State var bitratePresetId = noId
+
+    private func submitZoom(value: String) {
+        guard let x = Float(value) else {
+            return
+        }
+        model.remoteControlAssistantSetZoom(x: x)
+    }
 
     var body: some View {
         Form {
-            if !model.isRemoteControlClientConnected() {
+            if !model.isRemoteControlAssistantConnected() {
                 Section {
                     Text("Waiting for the remote control streamer to connect...")
                 }
@@ -393,18 +404,56 @@ struct RemoteControlView: View {
                 } header: {
                     Text("Top right")
                 }
-                if false {
-                    Section {
-                        if let settings = model.remoteControlSettings {
-                            Text("Inline picker to select scene.")
-                            Text("Inline picker to select bitrate.")
-                            Text("Text field to set zoom")
-                        } else {
-                            Text("No settings received yet.")
+                Section {
+                    if let settings = model.remoteControlSettings {
+                        Picker(selection: $sceneId) {
+                            ForEach([RemoteControlSettingsScene(id: noId, name: "Unknown")] + settings
+                                .scenes)
+                            { scene in
+                                Text(scene.name)
+                                    .tag(scene.id)
+                            }
+                        } label: {
+                            Text("Scene")
                         }
-                    } header: {
-                        Text("Control")
+                        .onChange(of: sceneId) { _ in
+                            guard sceneId != noId else {
+                                return
+                            }
+                            model.remoteControlAssistantSetScene(id: sceneId)
+                            sceneId = noId
+                        }
+                        Picker(selection: $bitratePresetId) {
+                            ForEach([RemoteControlSettingsBitratePreset(id: noId, bitrate: 0)] + settings
+                                .bitratePresets)
+                            { preset in
+                                Text(preset
+                                    .bitrate > 0 ? formatBytesPerSecond(speed: Int64(preset.bitrate)) :
+                                    "Unknown")
+                                    .tag(preset.id)
+                            }
+                        } label: {
+                            Text("Bitrate")
+                        }
+                        .onChange(of: bitratePresetId) { _ in
+                            guard bitratePresetId != noId else {
+                                return
+                            }
+                            model.remoteControlAssistantSetBitratePreset(id: bitratePresetId)
+                            bitratePresetId = noId
+                        }
+                        NavigationLink(destination: TextEditView(
+                            title: "Zoom",
+                            value: "",
+                            onSubmit: submitZoom
+                        )) {
+                            TextItemView(name: "Zoom", value: "Unknown")
+                        }
+                    } else {
+                        Text("No settings received yet.")
                     }
+                } header: {
+                    Text("Control")
                 }
             }
         }
@@ -555,7 +604,7 @@ struct ButtonsInnerView: View {
     }
 
     private func remoteAction(state _: ButtonState) {
-        guard model.isRemoteControlClientConfigured() else {
+        guard model.isRemoteControlAssistantConfigured() else {
             model.makeErrorToast(
                 title: String(localized: "Remote control assistant is not configured"),
                 subTitle: String(localized: "Configure it in Settings → Remote control")
@@ -563,7 +612,7 @@ struct ButtonsInnerView: View {
             return
         }
         model.showingRemoteControl = true
-        model.updateRemoteControlClientStatus()
+        model.updateRemoteControlAssistantStatus()
     }
 
     var body: some View {

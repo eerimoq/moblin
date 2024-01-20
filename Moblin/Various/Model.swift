@@ -1580,7 +1580,7 @@ final class Model: ObservableObject {
             self.updateBatteryLevel()
             self.media.logStatistics()
             self.updateObsStatus()
-            self.updateRemoteControlClientStatus()
+            self.updateRemoteControlAssistantStatus()
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
             self.updateSrtDebugLines()
@@ -2088,8 +2088,8 @@ final class Model: ObservableObject {
         reloadChats()
         reloadTwitchPubSub()
         reloadObsWebSocket()
-        reloadRemoteControlServer()
-        reloadRemoteControlClient()
+        reloadRemoteControlStreamer()
+        reloadRemoteControlAssistant()
     }
 
     func storeAndReloadStreamIfEnabled(stream: SettingsStream) {
@@ -2395,10 +2395,10 @@ final class Model: ObservableObject {
         obsWebSocket!.start()
     }
 
-    func reloadRemoteControlServer() {
+    func reloadRemoteControlStreamer() {
         remoteControlStreamer?.stop()
         remoteControlStreamer = nil
-        guard isRemoteControlServerConfigured() else {
+        guard isRemoteControlStreamerConfigured() else {
             return
         }
         let server = database.remoteControl!.server
@@ -2413,15 +2413,15 @@ final class Model: ObservableObject {
         remoteControlStreamer!.start()
     }
 
-    func isRemoteControlServerConfigured() -> Bool {
+    func isRemoteControlStreamerConfigured() -> Bool {
         let server = database.remoteControl!.server
         return server.enabled && !server.url.isEmpty && !server.password.isEmpty
     }
 
-    func reloadRemoteControlClient() {
+    func reloadRemoteControlAssistant() {
         remoteControlAssistant?.stop()
         remoteControlAssistant = nil
-        guard isRemoteControlClientConfigured() else {
+        guard isRemoteControlAssistantConfigured() else {
             return
         }
         let client = database.remoteControl!.client
@@ -2429,26 +2429,26 @@ final class Model: ObservableObject {
             address: client.address,
             port: client.port,
             password: client.password,
-            onConnected: handleRemoteControlClientConnected,
-            onDisconnected: handleRemoteControlClientDisconnected
+            onConnected: handleRemoteControlAssistantConnected,
+            onDisconnected: handleRemoteControlAssistantDisconnected
         )
         remoteControlAssistant!.start()
     }
 
-    func isRemoteControlClientConnected() -> Bool {
+    func isRemoteControlAssistantConnected() -> Bool {
         return remoteControlAssistant?.isConnected() ?? false
     }
 
-    private func handleRemoteControlClientConnected() {
-        updateRemoteControlClientStatus()
+    private func handleRemoteControlAssistantConnected() {
+        updateRemoteControlAssistantStatus()
     }
 
-    private func handleRemoteControlClientDisconnected() {
+    private func handleRemoteControlAssistantDisconnected() {
         remoteControlTopLeft = nil
         remoteControlTopRight = nil
     }
 
-    func updateRemoteControlClientStatus() {
+    func updateRemoteControlAssistantStatus() {
         guard showingRemoteControl && remoteControlAssistant?.isConnected() == true else {
             return
         }
@@ -2461,9 +2461,21 @@ final class Model: ObservableObject {
         }
     }
 
-    func isRemoteControlClientConfigured() -> Bool {
+    func isRemoteControlAssistantConfigured() -> Bool {
         let client = database.remoteControl!.client
         return client.enabled && !client.address.isEmpty && client.port > 0 && !client.password.isEmpty
+    }
+
+    func remoteControlAssistantSetScene(id: UUID) {
+        remoteControlAssistant?.setScene(id: id) {}
+    }
+
+    func remoteControlAssistantSetZoom(x: Float) {
+        remoteControlAssistant?.setZoom(x: x) {}
+    }
+
+    func remoteControlAssistantSetBitratePreset(id: UUID) {
+        remoteControlAssistant?.setBitratePreset(id: id) {}
     }
 
     func twitchEnabledUpdated() {
@@ -3721,7 +3733,7 @@ final class Model: ObservableObject {
     }
 }
 
-extension Model: RemoteControlServerDelegate {
+extension Model: RemoteControlStreamerDelegate {
     func getStatus(onComplete: @escaping (RemoteControlStatusTopLeft, RemoteControlStatusTopRight) -> Void) {
         DispatchQueue.main.async {
             var topLeft = RemoteControlStatusTopLeft()
@@ -3787,6 +3799,43 @@ extension Model: RemoteControlServerDelegate {
                 RemoteControlSettingsBitratePreset(id: preset.id, bitrate: preset.bitrate)
             }
             onComplete(settings)
+        }
+    }
+
+    func setScene(id: UUID, onComplete: @escaping () -> Void) {
+        DispatchQueue.main.async {
+            if let index = self.enabledScenes.firstIndex(where: { scene in
+                scene.id == id
+            }) {
+                self.sceneIndex = index
+                self.selectedSceneId = id
+                self.sceneUpdated(scrollQuickButtons: true)
+            }
+            onComplete()
+        }
+    }
+
+    func setBitratePreset(id: UUID, onComplete: @escaping () -> Void) {
+        DispatchQueue.main.async {
+            guard let preset = self.database.bitratePresets.first(where: { preset in
+                preset.id == id
+            }) else {
+                return
+            }
+            self.stream.bitrate = preset.bitrate
+            if self.stream.enabled {
+                self.setStreamBitrate(stream: self.stream)
+            }
+            onComplete()
+        }
+    }
+
+    func setZoom(x: Float, onComplete: @escaping () -> Void) {
+        DispatchQueue.main.async {
+            if let x = self.setCameraZoomX(x: x, rate: self.database.zoom.speed!) {
+                self.setZoomX(x: x)
+            }
+            onComplete()
         }
     }
 }

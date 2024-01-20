@@ -51,12 +51,12 @@ struct RemoteControlStatusTopRight: Codable {
     var recording: RemoteControlStatusItem?
 }
 
-struct RemoteControlSettingsScene: Codable {
+struct RemoteControlSettingsScene: Codable, Identifiable {
     var id: UUID
     var name: String
 }
 
-struct RemoteControlSettingsBitratePreset: Codable {
+struct RemoteControlSettingsBitratePreset: Codable, Identifiable {
     var id: UUID
     var bitrate: UInt32
 }

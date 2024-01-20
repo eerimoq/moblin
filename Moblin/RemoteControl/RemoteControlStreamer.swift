@@ -1,8 +1,11 @@
 import Foundation
 
-protocol RemoteControlServerDelegate: AnyObject {
+protocol RemoteControlStreamerDelegate: AnyObject {
     func getStatus(onComplete: @escaping (RemoteControlStatusTopLeft, RemoteControlStatusTopRight) -> Void)
     func getSettings(onComplete: @escaping (RemoteControlSettings) -> Void)
+    func setScene(id: UUID, onComplete: @escaping () -> Void)
+    func setBitratePreset(id: UUID, onComplete: @escaping () -> Void)
+    func setZoom(x: Float, onComplete: @escaping () -> Void)
 }
 
 private func randomString() -> String {
@@ -12,14 +15,14 @@ private func randomString() -> String {
 class RemoteControlStreamer {
     private var clientUrl: URL
     private var password: String
-    private weak var delegate: (any RemoteControlServerDelegate)?
+    private weak var delegate: (any RemoteControlStreamerDelegate)?
     private var webSocket: URLSessionWebSocketTask
     private var task: Task<Void, Error>?
     private var clientIdentified: Bool = false
     private var challenge: String = ""
     private var salt: String = ""
 
-    init(clientUrl: URL, password: String, delegate: RemoteControlServerDelegate) {
+    init(clientUrl: URL, password: String, delegate: RemoteControlStreamerDelegate) {
         self.clientUrl = clientUrl
         self.password = password
         self.delegate = delegate
@@ -117,6 +120,18 @@ class RemoteControlStreamer {
             case .getSettings:
                 delegate.getSettings { data in
                     self.send(message: .response(id: id, result: .ok, data: .getSettings(data: data)))
+                }
+            case let .setScene(id: sceneId):
+                delegate.setScene(id: sceneId) {
+                    self.send(message: .response(id: id, result: .ok, data: nil))
+                }
+            case let .setBitratePreset(id: bitratePresetId):
+                delegate.setBitratePreset(id: bitratePresetId) {
+                    self.send(message: .response(id: id, result: .ok, data: nil))
+                }
+            case let .setZoom(x: x):
+                delegate.setZoom(x: x) {
+                    self.send(message: .response(id: id, result: .ok, data: nil))
                 }
             case .identify:
                 result = .alreadyIdentified
