@@ -48881,7 +48881,7 @@
         }
       }
     },
-    "Unable to connect the the OBS server. Retrying every 5 seconds." : {
+    "Unable to connect the OBS server. Retrying every 5 seconds." : {
 
     },
     "Unknown streaming state." : {

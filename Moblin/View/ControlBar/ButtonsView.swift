@@ -354,6 +354,7 @@ struct RemoteControlView: View {
     var done: () -> Void
     @State var sceneId = noId
     @State var bitratePresetId = noId
+    @State var zoom = "Unknown"
 
     private func submitZoom(value: String) {
         guard let x = Float(value) else {
@@ -442,12 +443,18 @@ struct RemoteControlView: View {
                             model.remoteControlAssistantSetBitratePreset(id: bitratePresetId)
                             bitratePresetId = noId
                         }
-                        NavigationLink(destination: TextEditView(
-                            title: "Zoom",
-                            value: "",
-                            onSubmit: submitZoom
-                        )) {
-                            TextItemView(name: "Zoom", value: "Unknown")
+                        HStack {
+                            Text("Zoom")
+                            Spacer()
+                            TextField("", text: $zoom)
+                                .multilineTextAlignment(.trailing)
+                                .onSubmit {
+                                    guard zoom != "Unknown" else {
+                                        return
+                                    }
+                                    submitZoom(value: zoom)
+                                    zoom = "Unknown"
+                                }
                         }
                     } else {
                         Text("No settings received yet.")
