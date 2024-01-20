@@ -5,6 +5,7 @@ struct WidgetBrowserSettingsView: View {
 
     var body: some View {
         Section {
+            // Dismiss when hitting done. Use other view.
             NavigationLink(destination: WidgetBrowserUrlSettingsView(
                 widget: widget,
                 value: widget.browser.url

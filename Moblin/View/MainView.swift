@@ -2,6 +2,16 @@ import SpriteKit
 import SwiftUI
 import WebKit
 
+struct BrowserView: UIViewRepresentable {
+    var browser: Browser
+
+    func makeUIView(context _: Context) -> WKWebView {
+        return browser.browserEffect.wkwebView
+    }
+
+    func updateUIView(_: WKWebView, context _: Context) {}
+}
+
 class SnowScene: SKScene {
     let snowEmitterNode = SKEmitterNode(fileNamed: "Snow.sks")
 
@@ -179,6 +189,10 @@ struct MainView: View {
                     .ignoresSafeArea()
                     .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
                     .allowsHitTesting(false)
+            }
+            ForEach(model.browsers) { browser in
+                BrowserView(browser: browser)
+                    .opacity(0)
             }
             if model.blackScreen {
                 Text("")

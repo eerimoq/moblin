@@ -14,6 +14,16 @@ import StoreKit
 import SwiftUI
 import TwitchChat
 import VideoToolbox
+import WebKit
+
+class Browser: Identifiable {
+    var id: UUID = .init()
+    var browserEffect: BrowserEffect
+
+    init(browserEffect: BrowserEffect) {
+        self.browserEffect = browserEffect
+    }
+}
 
 private let noValue = ""
 private let maximumNumberOfChatMessages = 50
@@ -256,6 +266,7 @@ final class Model: ObservableObject {
     private var imageEffects: [UUID: ImageEffect] = [:]
     private var videoEffects: [UUID: VideoEffect] = [:]
     private var browserEffects: [UUID: BrowserEffect] = [:]
+    @Published var browsers: [Browser] = []
     @Published var sceneIndex = 0
     private var isTorchOn = false
     private var isMuteOn = false
@@ -1602,25 +1613,17 @@ final class Model: ObservableObject {
 
     private func takeBrowserSnapshots() {
         // Take browser snapshots at about 5 Hz for now.
-        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false, block: { _ in
-            var finisedBrowserEffects = 0
-            let browserEffects = self.browserEffectsInCurrentScene()
-            if browserEffects.isEmpty {
-                self.takeBrowserSnapshots()
-                return
-            }
-            for browserEffect in browserEffects {
-                browserEffect.browser.wkwebView.takeSnapshot(with: nil) { image, error in
+        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
+            for browser in self.browserEffectsInCurrentScene() {
+                let configuration = WKSnapshotConfiguration()
+                configuration.snapshotWidth = NSNumber(value: browser.width)
+                browser.wkwebView.takeSnapshot(with: configuration) { image, error in
                     if let error {
                         logger.warning("Browser snapshot error: \(error)")
                     } else if let image {
-                        browserEffect.setImage(image: image)
+                        browser.setImage(image: image)
                     } else {
                         logger.warning("No browser image")
-                    }
-                    finisedBrowserEffects += 1
-                    if finisedBrowserEffects == browserEffects.count {
-                        self.takeBrowserSnapshots()
                     }
                 }
             }
@@ -1858,6 +1861,9 @@ final class Model: ObservableObject {
                     )
                 }
             }
+        }
+        browsers = browserEffects.values.map { browser in
+            Browser(browserEffect: browser)
         }
         sceneUpdated(imageEffectChanged: true, store: false)
     }

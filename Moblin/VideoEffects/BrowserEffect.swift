@@ -6,53 +6,32 @@ import WebKit
 
 private let browserQueue = DispatchQueue(label: "com.eerimoq.widget.browser")
 
-struct Browser: UIViewRepresentable {
+final class BrowserEffect: VideoEffect {
+    private let filter = CIFilter.sourceOverCompositing()
     let wkwebView: WKWebView
+    var overlay: CIImage?
+    var image: UIImage?
+    let x: Double
+    let y: Double
+    let width: Double
+    let height: Double
 
-    init(url: URL, frame: CGRect) {
+    init(url: URL, widget: SettingsSceneWidget, videoSize: CGSize) {
+        x = (videoSize.width * widget.x) / 100
+        y = (videoSize.height * widget.y) / 100
+        width = (videoSize.width * widget.width) / 100
+        height = (videoSize.height * widget.height) / 100
         let configuration = WKWebViewConfiguration()
         configuration.allowsInlineMediaPlayback = true
-        configuration.allowsAirPlayForMediaPlayback = true
-        configuration.allowsPictureInPictureMediaPlayback = false
         configuration.mediaTypesRequiringUserActionForPlayback = []
         wkwebView = WKWebView(
-            frame: frame,
+            frame: CGRect(x: 0, y: 0, width: width, height: height),
             configuration: configuration
         )
         wkwebView.isOpaque = false
         wkwebView.backgroundColor = .clear
         wkwebView.scrollView.backgroundColor = .clear
-        let request = URLRequest(url: url)
-        wkwebView.load(request)
-    }
-
-    func makeUIView(context _: Context) -> WKWebView {
-        return wkwebView
-    }
-
-    func updateUIView(_: WKWebView, context _: Context) {}
-}
-
-final class BrowserEffect: VideoEffect {
-    private let filter = CIFilter.sourceOverCompositing()
-    let browser: Browser
-    var overlay: CIImage?
-    var image: UIImage?
-    let x: Double
-    let y: Double
-
-    init(url: URL, widget: SettingsSceneWidget, videoSize: CGSize) {
-        x = (videoSize.width * widget.x) / 100
-        y = (videoSize.height * widget.y) / 100
-        browser = Browser(
-            url: url,
-            frame: CGRect(
-                x: 0,
-                y: 0,
-                width: (videoSize.width * widget.width) / 100,
-                height: (videoSize.height * widget.height) / 100
-            )
-        )
+        wkwebView.load(URLRequest(url: url))
     }
 
     func setImage(image: UIImage) {
