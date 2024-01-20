@@ -8,6 +8,12 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.153.0", date: "2024-01-20", changes: [
+        "• Flashlight icon for torch.",
+        "• Make front camera work after settings reset.",
+        "• Remote control assistant can change scene, set zoom and change bitrate.",
+        "• Change OBS cannot connect message.",
+    ]),
     Version(version: "0.152.0", date: "2024-01-19", changes: [
         "• Default chat height set to 70% instead of 100% of screen.",
         "• Remote control that shows streamer's device status.",
