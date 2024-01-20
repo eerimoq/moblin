@@ -194,7 +194,7 @@ struct ObsView: View {
         Form {
             if !model.isObsConnected() {
                 Section {
-                    Text("Unable to connect the the OBS server. Retrying every 5 seconds.")
+                    Text("Unable to connect the OBS server. Retrying every 5 seconds.")
                 }
             } else {
                 if model.obsStreamingState == .stopped {
