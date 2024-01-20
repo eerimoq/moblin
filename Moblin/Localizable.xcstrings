@@ -48321,6 +48321,7 @@
       }
     },
     "Trying to connect to the OBS server..." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -48879,6 +48880,9 @@
           }
         }
       }
+    },
+    "Unable to connect the the OBS server. Retrying every 5 seconds." : {
+
     },
     "Unknown streaming state." : {
       "localizations" : {
