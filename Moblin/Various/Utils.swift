@@ -552,11 +552,25 @@ func getBestBackCameraDevice() -> AVCaptureDevice? {
     if device == nil {
         device = AVCaptureDevice.default(.builtInDualCamera, for: .video, position: .back)
     }
+    if device == nil {
+        device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
+    }
     return device
+}
+
+func getBestFrontCameraDevice() -> AVCaptureDevice? {
+    return AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front)
 }
 
 func getBestBackCameraId() -> String {
     guard let device = getBestBackCameraDevice() else {
+        return ""
+    }
+    return device.uniqueID
+}
+
+func getBestFrontCameraId() -> String {
+    guard let device = getBestFrontCameraDevice() else {
         return ""
     }
     return device.uniqueID

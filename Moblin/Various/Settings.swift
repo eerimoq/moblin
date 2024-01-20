@@ -1522,6 +1522,7 @@ private func addScenesToGameController(database: Database) {
 private func createDefault() -> Database {
     let database = Database()
     database.backCameraId = getBestBackCameraId()
+    database.frontCameraId = getBestFrontCameraId()
     addDefaultScenes(database: database)
     addDefaultZoomPresets(database: database)
     addDefaultBitratePresets(database: database)
