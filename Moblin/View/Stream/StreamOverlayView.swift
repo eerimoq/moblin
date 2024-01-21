@@ -64,21 +64,19 @@ struct StreamOverlayView: View {
                 Spacer()
             }
             .allowsHitTesting(false)
-            if model.database.show.chat {
-                if model.showChatMessages {
-                    ZStack {
-                        GeometryReader { metrics in
-                            StreamOverlayChatView()
-                                .frame(width: metrics.size.width * 0.95)
-                                .allowsHitTesting(model.chatPaused)
-                        }
-                        if model.chatPaused {
-                            ChatWarning(message: String(localized: "Chat is paused"))
-                        }
+            if model.showChatMessages {
+                ZStack {
+                    GeometryReader { metrics in
+                        StreamOverlayChatView()
+                            .frame(width: metrics.size.width * 0.95)
+                            .allowsHitTesting(model.chatPaused)
                     }
-                } else {
-                    ChatWarning(message: String(localized: "Chat is hidden"))
+                    if model.chatPaused {
+                        ChatWarning(message: String(localized: "Chat is paused"))
+                    }
                 }
+            } else {
+                ChatWarning(message: String(localized: "Chat is hidden"))
             }
             HStack {
                 StreamOverlayDebugView()
