@@ -5,7 +5,7 @@ struct WidgetBrowserSettingsView: View {
     var widget: SettingsWidget
 
     private func submitUrl(value: String) {
-        guard let url = URL(string: value.trim()) else {
+        guard URL(string: value.trim()) != nil else {
             return
         }
         widget.browser.url = value.trim()
