@@ -1,6 +1,8 @@
 import Foundation
 
 protocol RemoteControlStreamerDelegate: AnyObject {
+    func connected()
+    func disconnected()
     func getStatus(onComplete: @escaping (RemoteControlStatusTopLeft, RemoteControlStatusTopRight) -> Void)
     func getSettings(onComplete: @escaping (RemoteControlSettings) -> Void)
     func setScene(id: UUID, onComplete: @escaping () -> Void)
@@ -21,6 +23,7 @@ class RemoteControlStreamer {
     private var clientIdentified: Bool = false
     private var challenge: String = ""
     private var salt: String = ""
+    private var connected = false
 
     init(clientUrl: URL, password: String, delegate: RemoteControlStreamerDelegate) {
         self.clientUrl = clientUrl
@@ -44,6 +47,10 @@ class RemoteControlStreamer {
                     logger.debug("remote-control-streamer: Cancelled")
                     break
                 }
+                if connected {
+                    delegate?.disconnected()
+                    connected = false
+                }
                 logger.debug("remote-control-streamer: Disconnected")
                 try await Task.sleep(nanoseconds: 5_000_000_000)
                 logger.debug("remote-control-streamer: Reconnecting")
@@ -55,6 +62,7 @@ class RemoteControlStreamer {
         logger.info("remote-control-streamer: stop")
         task?.cancel()
         task = nil
+        connected = false
     }
 
     private func setupConnection() {
@@ -147,6 +155,8 @@ class RemoteControlStreamer {
                     password: password
                 ) {
                     clientIdentified = true
+                    connected = true
+                    delegate.connected()
                     result = .ok
                 } else {
                     result = .wrongPassword

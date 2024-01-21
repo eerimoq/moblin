@@ -2434,10 +2434,12 @@ final class Model: ObservableObject {
     }
 
     private func handleRemoteControlAssistantConnected() {
+        makeToast(title: "Remote control streamer connected")
         updateRemoteControlAssistantStatus()
     }
 
     private func handleRemoteControlAssistantDisconnected() {
+        makeToast(title: "Remote control streamer disconnected")
         remoteControlTopLeft = nil
         remoteControlTopRight = nil
     }
@@ -3734,6 +3736,18 @@ final class Model: ObservableObject {
 }
 
 extension Model: RemoteControlStreamerDelegate {
+    func connected() {
+        DispatchQueue.main.async {
+            self.makeToast(title: "Remote control assistant connected")
+        }
+    }
+
+    func disconnected() {
+        DispatchQueue.main.async {
+            self.makeToast(title: "Remote control assistant disconnected")
+        }
+    }
+
     func getStatus(onComplete: @escaping (RemoteControlStatusTopLeft, RemoteControlStatusTopRight) -> Void) {
         DispatchQueue.main.async {
             var topLeft = RemoteControlStatusTopLeft()
