@@ -40,19 +40,30 @@ struct WidgetBrowserSettingsView: View {
             )) {
                 TextItemView(name: "URL", value: widget.browser.url)
             }
-            NavigationLink(destination: TextEditView(
-                title: "Width",
-                value: String(widget.browser.width),
-                onSubmit: submitWidth
-            )) {
-                TextItemView(name: "Width", value: String(widget.browser.width))
+            Toggle(isOn: Binding(get: {
+                widget.browser.audioOnly!
+            }, set: { value in
+                widget.browser.audioOnly = value
+                model.store()
+                model.resetSelectedScene()
+            })) {
+                Text("Audio only")
             }
-            NavigationLink(destination: TextEditView(
-                title: "Height",
-                value: String(widget.browser.height),
-                onSubmit: submitHeight
-            )) {
-                TextItemView(name: "Height", value: String(widget.browser.height))
+            if !widget.browser.audioOnly! {
+                NavigationLink(destination: TextEditView(
+                    title: "Width",
+                    value: String(widget.browser.width),
+                    onSubmit: submitWidth
+                )) {
+                    TextItemView(name: "Width", value: String(widget.browser.width))
+                }
+                NavigationLink(destination: TextEditView(
+                    title: "Height",
+                    value: String(widget.browser.height),
+                    onSubmit: submitHeight
+                )) {
+                    TextItemView(name: "Height", value: String(widget.browser.height))
+                }
             }
         } header: {
             Text("Browser")

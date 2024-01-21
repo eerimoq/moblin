@@ -1613,7 +1613,7 @@ final class Model: ObservableObject {
 
     private func takeBrowserSnapshots() {
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
-            for browser in self.browserEffectsInCurrentScene() {
+            for browser in self.browserEffectsInCurrentScene() where !browser.audioOnly {
                 let configuration = WKSnapshotConfiguration()
                 configuration.snapshotWidth = NSNumber(value: browser.width)
                 browser.webView.takeSnapshot(with: configuration) { image, error in
@@ -2956,7 +2956,9 @@ final class Model: ObservableObject {
             case .browser:
                 if let browserEffect = browserEffects[widget.id] {
                     browserEffect.setSceneWidget(sceneWidget: sceneWidget)
-                    media.registerEffect(browserEffect)
+                    if !browserEffect.audioOnly {
+                        media.registerEffect(browserEffect)
+                    }
                     usedBrowserEffects.append(browserEffect)
                 }
             }

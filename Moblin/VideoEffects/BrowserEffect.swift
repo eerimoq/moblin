@@ -9,16 +9,17 @@ private let browserQueue = DispatchQueue(label: "com.eerimoq.widget.browser")
 final class BrowserEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
     let webView: WKWebView
-    var overlay: CIImage?
-    var image: UIImage?
-    let videoSize: CGSize
-    var x: Double
-    var y: Double
+    private var overlay: CIImage?
+    private var image: UIImage?
+    private let videoSize: CGSize
+    private var x: Double
+    private var y: Double
     let width: Double
-    let height: Double
-    let url: URL
-    var isLoaded: Bool
-    var frameSize: CGSize?
+    private let height: Double
+    private let url: URL
+    private var isLoaded: Bool
+    private var frameSize: CGSize?
+    let audioOnly: Bool
 
     init(url: URL, widget: SettingsWidgetBrowser, videoSize: CGSize) {
         self.url = url
@@ -26,8 +27,14 @@ final class BrowserEffect: VideoEffect {
         isLoaded = false
         x = .nan
         y = .nan
-        width = Double(widget.width)
-        height = Double(widget.height)
+        audioOnly = widget.audioOnly!
+        if audioOnly {
+            width = 1
+            height = 1
+        } else {
+            width = Double(widget.width)
+            height = Double(widget.height)
+        }
         let configuration = WKWebViewConfiguration()
         configuration.allowsInlineMediaPlayback = true
         configuration.mediaTypesRequiringUserActionForPlayback = []

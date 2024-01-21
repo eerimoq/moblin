@@ -7593,6 +7593,9 @@
         }
       }
     },
+    "Audio only" : {
+
+    },
     "Auto cameras use more energy as multiple cameras are powered on, even if only one is used at a time. This allows the phone to quickly change camera when zooming." : {
       "localizations" : {
         "de" : {

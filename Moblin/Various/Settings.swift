@@ -492,8 +492,7 @@ class SettingsWidgetBrowser: Codable {
     var url: String = "https://google.com"
     var width: Int = 500
     var height: Int = 500
-    var customCss: String =
-        "body { background-color: rgba(0, 0, 0, 0); margin: 0px auto; overflow: hidden; }"
+    var audioOnly: Bool? = false
 }
 
 enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
@@ -1929,6 +1928,12 @@ final class Settings {
         if realDatabase.remoteControl == nil {
             realDatabase.remoteControl = .init()
             store()
+        }
+        for widget in realDatabase.widgets where widget.type == .browser {
+            if widget.browser.audioOnly == nil {
+                widget.browser.audioOnly = false
+                store()
+            }
         }
     }
 }
