@@ -4,9 +4,11 @@ import WebKit
 
 struct BrowserView: UIViewRepresentable {
     var browser: Browser
+    var size: CGSize
 
     func makeUIView(context _: Context) -> WKWebView {
-        return browser.browserEffect.wkwebView
+        browser.browserEffect.setFrameSize(size: size)
+        return browser.browserEffect.webView
     }
 
     func updateUIView(_: WKWebView, context _: Context) {}
@@ -82,6 +84,12 @@ struct MainView: View {
                         if model.showingGrid {
                             StreamGridView()
                                 .ignoresSafeArea()
+                        }
+                        ForEach(model.browsers) { browser in
+                            GeometryReader { metrics in
+                                BrowserView(browser: browser, size: metrics.size)
+                                    .opacity(0)
+                            }
                         }
                     }
                     StreamOverlayView()
@@ -189,10 +197,6 @@ struct MainView: View {
                     .ignoresSafeArea()
                     .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
                     .allowsHitTesting(false)
-            }
-            ForEach(model.browsers) { browser in
-                BrowserView(browser: browser)
-                    .opacity(0)
             }
             if model.blackScreen {
                 Text("")

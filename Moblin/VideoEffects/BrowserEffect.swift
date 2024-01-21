@@ -8,30 +8,62 @@ private let browserQueue = DispatchQueue(label: "com.eerimoq.widget.browser")
 
 final class BrowserEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
-    let wkwebView: WKWebView
+    let webView: WKWebView
     var overlay: CIImage?
     var image: UIImage?
-    let x: Double
-    let y: Double
+    let videoSize: CGSize
+    var x: Double
+    var y: Double
     let width: Double
     let height: Double
+    let url: URL
+    var isLoaded: Bool
+    var frameSize: CGSize?
 
-    init(url: URL, widget: SettingsSceneWidget, videoSize: CGSize) {
-        x = (videoSize.width * widget.x) / 100
-        y = (videoSize.height * widget.y) / 100
-        width = (videoSize.width * widget.width) / 100
-        height = (videoSize.height * widget.height) / 100
+    init(url: URL, widget: SettingsWidgetBrowser, videoSize: CGSize) {
+        self.url = url
+        self.videoSize = videoSize
+        isLoaded = false
+        x = .nan
+        y = .nan
+        width = Double(widget.width)
+        height = Double(widget.height)
         let configuration = WKWebViewConfiguration()
         configuration.allowsInlineMediaPlayback = true
         configuration.mediaTypesRequiringUserActionForPlayback = []
-        wkwebView = WKWebView(
+        webView = WKWebView(
             frame: CGRect(x: 0, y: 0, width: width, height: height),
             configuration: configuration
         )
-        wkwebView.isOpaque = false
-        wkwebView.backgroundColor = .clear
-        wkwebView.scrollView.backgroundColor = .clear
-        wkwebView.load(URLRequest(url: url))
+        webView.isOpaque = false
+        webView.backgroundColor = .clear
+        webView.scrollView.backgroundColor = .clear
+    }
+
+    func setFrameSize(size: CGSize) {
+        browserQueue.sync {
+            frameSize = size
+            webView.pageZoom = frameSize!.height / height
+            print("xxx", webView.pageZoom)
+        }
+    }
+
+    func setSceneWidget(sceneWidget: SettingsSceneWidget?) {
+        browserQueue.sync {
+            if let sceneWidget {
+                x = (videoSize.width * sceneWidget.x) / 100
+                y = (videoSize.height * sceneWidget.y) / 100
+                if !isLoaded {
+                    webView.load(URLRequest(url: url))
+                    isLoaded = true
+                }
+            } else {
+                x = .nan
+                y = .nan
+                webView.loadHTMLString("", baseURL: nil)
+                isLoaded = false
+            }
+        }
     }
 
     func setImage(image: UIImage) {
@@ -49,6 +81,9 @@ final class BrowserEffect: VideoEffect {
             }
         }
         guard let newImage else {
+            return
+        }
+        guard x != .nan && y != .nan else {
             return
         }
         UIGraphicsBeginImageContext(size)

@@ -1612,15 +1612,15 @@ final class Model: ObservableObject {
     }
 
     private func takeBrowserSnapshots() {
-        // Take browser snapshots at about 5 Hz for now.
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
             for browser in self.browserEffectsInCurrentScene() {
                 let configuration = WKSnapshotConfiguration()
                 configuration.snapshotWidth = NSNumber(value: browser.width)
-                browser.wkwebView.takeSnapshot(with: configuration) { image, error in
+                browser.webView.takeSnapshot(with: configuration) { image, error in
                     if let error {
                         logger.warning("Browser snapshot error: \(error)")
                     } else if let image {
+                        // print("xxx", image.size)
                         browser.setImage(image: image)
                     } else {
                         logger.warning("No browser image")
@@ -1642,7 +1642,7 @@ final class Model: ObservableObject {
             if realWidget.type != .browser {
                 continue
             }
-            if let browserEffect = browserEffects[widget.id] {
+            if let browserEffect = browserEffects[widget.widgetId] {
                 sceneBrowserEffects.append(browserEffect)
             } else {
                 logger.warning("Browser effect not found")
@@ -1819,20 +1819,14 @@ final class Model: ObservableObject {
             media.unregisterEffect(videoEffect)
         }
         videoEffects.removeAll()
-        for widget in database.widgets {
-            if widget.type != .videoEffect {
-                continue
-            }
+        for widget in database.widgets where widget.type == .videoEffect {
             addVideoEffect(widget: widget)
         }
         for textEffect in textEffects.values {
             media.unregisterEffect(textEffect)
         }
         textEffects.removeAll()
-        for widget in database.widgets {
-            if widget.type != .time {
-                continue
-            }
+        for widget in database.widgets where widget.type == .time {
             textEffects[widget.id] = TextEffect(
                 format: widget.text.formatString,
                 fontSize: 40
@@ -1842,25 +1836,20 @@ final class Model: ObservableObject {
             media.unregisterEffect(browserEffect)
         }
         browserEffects.removeAll()
-        for widget in database.widgets {
-            if widget.type != .browser {
+        for widget in database.widgets where widget.type == .browser {
+            let mediaVideoSize = media.getVideoSize()
+            let videoSize = CGSize(
+                width: Double(mediaVideoSize.width),
+                height: Double(mediaVideoSize.height)
+            )
+            guard let url = URL(string: widget.browser.url) else {
                 continue
             }
-            for scene in enabledScenes {
-                for sceneWidget in scene.widgets
-                    where sceneWidget.widgetId == widget.id
-                {
-                    let videoSize = media.getVideoSize()
-                    browserEffects[sceneWidget.id] = BrowserEffect(
-                        url: URL(string: widget.browser.url)!,
-                        widget: sceneWidget,
-                        videoSize: CGSize(
-                            width: Double(videoSize.width),
-                            height: Double(videoSize.height)
-                        )
-                    )
-                }
-            }
+            browserEffects[widget.id] = BrowserEffect(
+                url: url,
+                widget: widget.browser,
+                videoSize: videoSize
+            )
         }
         browsers = browserEffects.values.map { browser in
             Browser(browserEffect: browser)
@@ -2928,6 +2917,7 @@ final class Model: ObservableObject {
             attachPipLayout(scene: scene)
         }
         registerGlobalVideoEffects()
+        var usedBrowserEffects: [BrowserEffect] = []
         for sceneWidget in scene.widgets.filter({ widget in widget.enabled }) {
             guard let widget = findWidget(id: sceneWidget.widgetId) else {
                 logger.error("Widget not found")
@@ -2963,10 +2953,15 @@ final class Model: ObservableObject {
                     media.registerEffect(videoEffect)
                 }
             case .browser:
-                if let browserEffect = browserEffects[sceneWidget.id] {
+                if let browserEffect = browserEffects[widget.id] {
+                    browserEffect.setSceneWidget(sceneWidget: sceneWidget)
                     media.registerEffect(browserEffect)
+                    usedBrowserEffects.append(browserEffect)
                 }
             }
+        }
+        for browserEffect in browserEffects.values where !usedBrowserEffects.contains(browserEffect) {
+            browserEffect.setSceneWidget(sceneWidget: nil)
         }
     }
 

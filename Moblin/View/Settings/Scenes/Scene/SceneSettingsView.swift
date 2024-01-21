@@ -33,7 +33,7 @@ struct SceneSettingsView: View {
 
     private func widgetHasSize(id: UUID) -> Bool {
         if let widget = model.findWidget(id: id) {
-            return widget.type == .image || widget.type == .browser
+            return widget.type == .image
         } else {
             logger.error("Unable to find widget type")
             return false
@@ -49,9 +49,6 @@ struct SceneSettingsView: View {
             sceneWidget.width = 8
             sceneWidget.height = 5
         case .image:
-            sceneWidget.width = 30
-            sceneWidget.height = 40
-        case .browser:
             sceneWidget.width = 30
             sceneWidget.height = 40
         default:
