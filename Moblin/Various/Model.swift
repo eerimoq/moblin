@@ -1620,7 +1620,6 @@ final class Model: ObservableObject {
                     if let error {
                         logger.warning("Browser snapshot error: \(error)")
                     } else if let image {
-                        // print("xxx", image.size)
                         browser.setImage(image: image)
                     } else {
                         logger.warning("No browser image")

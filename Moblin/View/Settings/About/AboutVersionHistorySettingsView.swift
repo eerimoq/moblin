@@ -8,6 +8,16 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.154.0", date: "2024-01-21", changes: [
+        "• Initial support for browser widgets.",
+        "  • Your phone will likely overheat and/or lag.",
+        "  • Audio level is probably too low. Not sure how to increase it.",
+        "  • Just as image widgets, browser widgets are mirrored on screen when front camera is used. No easy fix, unless not mirroring front camera on screen, which will make you confused because left and right are wrong.",
+        "  • The browser content is often lower resolution than expected.",
+        "  • Scaling of text may seem odd.",
+        "  • They are only 5 FPS.",
+        "  • And probably more quirks.",
+    ]),
     Version(version: "0.153.0", date: "2024-01-20", changes: [
         "• Flashlight icon for torch.",
         "• Make front camera work after settings reset.",

@@ -44,7 +44,6 @@ final class BrowserEffect: VideoEffect {
         browserQueue.sync {
             frameSize = size
             webView.pageZoom = frameSize!.height / height
-            print("xxx", webView.pageZoom)
         }
     }
 
