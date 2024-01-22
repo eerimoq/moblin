@@ -23,6 +23,7 @@ enum RemoteControlResponse: Codable {
 
 enum RemoteControlEvent: Codable {
     case hello(apiVersion: String, authentication: RemoteControlAuthentication)
+    case state(data: RemoteControlState)
 }
 
 struct RemoteControlStatusItem: Codable {
@@ -64,6 +65,12 @@ struct RemoteControlSettingsBitratePreset: Codable, Identifiable {
 struct RemoteControlSettings: Codable {
     var scenes: [RemoteControlSettingsScene] = []
     var bitratePresets: [RemoteControlSettingsBitratePreset] = []
+}
+
+struct RemoteControlState: Codable {
+    var scene: UUID?
+    var bitrate: UUID?
+    var zoom: Float?
 }
 
 struct RemoteControlAuthentication: Codable {

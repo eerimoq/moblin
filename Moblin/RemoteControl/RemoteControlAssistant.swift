@@ -2,6 +2,12 @@ import CryptoKit
 import Foundation
 import Telegraph
 
+protocol RemoteControlAssistantDelegate: AnyObject {
+    func assistantConnected()
+    func assistantDisconnected()
+    func assistantStateChanged(state: RemoteControlState)
+}
+
 private struct RemoteControlRequestResponse {
     let onSuccess: (RemoteControlResponse?) -> Void
     let onError: (String) -> Void
@@ -14,25 +20,22 @@ class RemoteControlAssistant {
     private var connected: Bool = false
     private var nextId: Int = 0
     private var requests: [Int: RemoteControlRequestResponse] = [:]
-    private var onConnected: () -> Void
-    private var onDisconnected: () -> Void
     private var server: Server
     var connectionErrorMessage: String = ""
     private var websocket: Telegraph.WebSocket?
     private var retryStartTimer: DispatchSourceTimer?
+    private weak var delegate: (any RemoteControlAssistantDelegate)?
 
     init(
         address: String,
         port: UInt16,
         password: String,
-        onConnected: @escaping () -> Void,
-        onDisconnected: @escaping () -> Void
+        delegate: RemoteControlAssistantDelegate
     ) {
         self.address = address
         self.port = port
         self.password = password
-        self.onConnected = onConnected
-        self.onDisconnected = onDisconnected
+        self.delegate = delegate
         server = Server()
         server.webSocketConfig.pingInterval = 30
         server.webSocketConfig.readTimeout = 60
@@ -152,7 +155,7 @@ class RemoteControlAssistant {
         }
         websocket = nil
         connected = false
-        onDisconnected()
+        delegate?.assistantDisconnected()
     }
 
     private func handleStringMessage(webSocket _: Telegraph.WebSocket, message: String) {
@@ -174,6 +177,8 @@ class RemoteControlAssistant {
         switch data {
         case let .hello(apiVersion: apiVersion, authentication: authentication):
             try handleHelloEvent(apiVersion: apiVersion, authentication: authentication)
+        case let .state(data: state):
+            handleStateEvent(state: state)
         }
     }
 
@@ -204,10 +209,14 @@ class RemoteControlAssistant {
         )
         connected = true
         performRequest(data: .identify(authentication: hash)) { _ in
-            self.onConnected()
+            self.delegate?.assistantConnected()
         } onError: { message in
             logger.info("remote-control-assistant: error: \(message)")
         }
+    }
+
+    private func handleStateEvent(state: RemoteControlState) {
+        delegate?.assistantStateChanged(state: state)
     }
 
     private func performRequest(

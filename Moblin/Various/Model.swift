@@ -237,7 +237,7 @@ final class Model: ObservableObject {
     @Published var numberOfAudioChannels: Int = 0
     var settings = Settings()
     @Published var digitalClock = noValue
-    var selectedSceneId = UUID()
+    private var selectedSceneId = UUID()
     private var twitchChat: TwitchChatMoblin!
     private var twitchPubSub: TwitchPubSub?
     private var kickPusher: KickPusher?
@@ -354,6 +354,10 @@ final class Model: ObservableObject {
     @Published var remoteControlTopLeft: RemoteControlStatusTopLeft?
     @Published var remoteControlTopRight: RemoteControlStatusTopRight?
     @Published var remoteControlSettings: RemoteControlSettings?
+    var remoteControlState = RemoteControlState()
+    @Published var remoteControlScene = UUID()
+    @Published var remoteControlBitrate = UUID()
+    @Published var remoteControlZoom = ""
 
     private var remoteControlStreamer: RemoteControlStreamer?
     private var remoteControlAssistant: RemoteControlAssistant?
@@ -1259,13 +1263,7 @@ final class Model: ObservableObject {
             }
         case .scene:
             if !pressed {
-                if let index = enabledScenes.firstIndex(where: { scene in
-                    scene.id == button.sceneId
-                }) {
-                    sceneIndex = index
-                    selectedSceneId = button.sceneId
-                    sceneUpdated(scrollQuickButtons: true)
-                }
+                selectScene(id: button.sceneId)
             }
         }
     }
@@ -1810,7 +1808,7 @@ final class Model: ObservableObject {
 
     func resetSelectedScene(changeScene: Bool = true) {
         if !enabledScenes.isEmpty && changeScene {
-            selectedSceneId = enabledScenes[0].id
+            setSceneId(id: enabledScenes[0].id)
             sceneIndex = 0
         }
         unregisterGlobalVideoEffects()
@@ -2423,25 +2421,13 @@ final class Model: ObservableObject {
             address: client.address,
             port: client.port,
             password: client.password,
-            onConnected: handleRemoteControlAssistantConnected,
-            onDisconnected: handleRemoteControlAssistantDisconnected
+            delegate: self
         )
         remoteControlAssistant!.start()
     }
 
     func isRemoteControlAssistantConnected() -> Bool {
         return remoteControlAssistant?.isConnected() ?? false
-    }
-
-    private func handleRemoteControlAssistantConnected() {
-        makeToast(title: "Remote control streamer connected")
-        updateRemoteControlAssistantStatus()
-    }
-
-    private func handleRemoteControlAssistantDisconnected() {
-        makeToast(title: "Remote control streamer disconnected")
-        remoteControlTopLeft = nil
-        remoteControlTopRight = nil
     }
 
     func updateRemoteControlAssistantStatus() {
@@ -2968,6 +2954,21 @@ final class Model: ObservableObject {
         }
     }
 
+    func setSceneId(id: UUID) {
+        selectedSceneId = id
+        remoteControlStreamer?.stateChanged(state: RemoteControlState(scene: id))
+    }
+
+    private func selectScene(id: UUID) {
+        if let index = enabledScenes.firstIndex(where: { scene in
+            scene.id == id
+        }) {
+            sceneIndex = index
+            setSceneId(id: id)
+            sceneUpdated(scrollQuickButtons: true)
+        }
+    }
+
     func sceneUpdated(imageEffectChanged: Bool = false, store: Bool = true,
                       scrollQuickButtons: Bool = false)
     {
@@ -3232,7 +3233,7 @@ final class Model: ObservableObject {
             onSuccess: {
                 self.videoView.isMirrored = isMirrored
                 if let x = self.setCameraZoomX(x: self.zoomX) {
-                    self.zoomX = x
+                    self.setZoomX(x: x)
                 }
                 if let device = self.cameraDevice {
                     self.setMaxAutoExposure(device: device)
@@ -3356,6 +3357,7 @@ final class Model: ObservableObject {
             break
         }
         zoomX = x
+        remoteControlStreamer?.stateChanged(state: RemoteControlState(zoom: x))
         if setPinch {
             zoomXPinch = zoomX
         }
@@ -3820,13 +3822,7 @@ extension Model: RemoteControlStreamerDelegate {
 
     func setScene(id: UUID, onComplete: @escaping () -> Void) {
         DispatchQueue.main.async {
-            if let index = self.enabledScenes.firstIndex(where: { scene in
-                scene.id == id
-            }) {
-                self.sceneIndex = index
-                self.selectedSceneId = id
-                self.sceneUpdated(scrollQuickButtons: true)
-            }
+            self.selectScene(id: id)
             onComplete()
         }
     }
@@ -3852,6 +3848,34 @@ extension Model: RemoteControlStreamerDelegate {
                 self.setZoomX(x: x)
             }
             onComplete()
+        }
+    }
+}
+
+extension Model: RemoteControlAssistantDelegate {
+    func assistantConnected() {
+        makeToast(title: "Remote control streamer connected")
+        updateRemoteControlAssistantStatus()
+    }
+
+    func assistantDisconnected() {
+        makeToast(title: "Remote control streamer disconnected")
+        remoteControlTopLeft = nil
+        remoteControlTopRight = nil
+    }
+
+    func assistantStateChanged(state: RemoteControlState) {
+        if let scene = state.scene {
+            remoteControlState.scene = scene
+            remoteControlScene = scene
+        }
+        if let bitrate = state.bitrate {
+            remoteControlState.bitrate = bitrate
+            remoteControlBitrate = bitrate
+        }
+        if let zoom = state.zoom {
+            remoteControlState.zoom = zoom
+            remoteControlZoom = String(zoom)
         }
     }
 }

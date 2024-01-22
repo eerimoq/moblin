@@ -65,6 +65,10 @@ class RemoteControlStreamer {
         connected = false
     }
 
+    func stateChanged(state: RemoteControlState) {
+        send(message: .event(data: .state(data: state)))
+    }
+
     private func setupConnection() {
         webSocket = URLSession.shared.webSocketTask(with: clientUrl)
         webSocket.resume()

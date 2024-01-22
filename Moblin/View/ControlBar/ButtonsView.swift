@@ -347,17 +347,15 @@ struct StatusItemView: View {
     }
 }
 
-private var noId = UUID()
-
 struct RemoteControlView: View {
     @EnvironmentObject var model: Model
     var done: () -> Void
-    @State var sceneId = noId
-    @State var bitratePresetId = noId
-    @State var zoom = "Unknown"
 
     private func submitZoom(value: String) {
         guard let x = Float(value) else {
+            if let zoom = model.remoteControlState.zoom {
+                model.remoteControlZoom = String(zoom)
+            }
             return
         }
         model.remoteControlAssistantSetZoom(x: x)
@@ -407,27 +405,23 @@ struct RemoteControlView: View {
                 }
                 Section {
                     if let settings = model.remoteControlSettings {
-                        Picker(selection: $sceneId) {
-                            ForEach([RemoteControlSettingsScene(id: noId, name: "Unknown")] + settings
-                                .scenes)
-                            { scene in
+                        Picker(selection: $model.remoteControlScene) {
+                            ForEach(settings.scenes) { scene in
                                 Text(scene.name)
                                     .tag(scene.id)
                             }
                         } label: {
                             Text("Scene")
                         }
-                        .onChange(of: sceneId) { _ in
-                            guard sceneId != noId else {
+                        .onChange(of: model.remoteControlScene) { _ in
+                            guard model.remoteControlScene != model.remoteControlState.scene else {
+                                print("remote a")
                                 return
                             }
-                            model.remoteControlAssistantSetScene(id: sceneId)
-                            sceneId = noId
+                            model.remoteControlAssistantSetScene(id: model.remoteControlScene)
                         }
-                        Picker(selection: $bitratePresetId) {
-                            ForEach([RemoteControlSettingsBitratePreset(id: noId, bitrate: 0)] + settings
-                                .bitratePresets)
-                            { preset in
+                        Picker(selection: $model.remoteControlBitrate) {
+                            ForEach(settings.bitratePresets) { preset in
                                 Text(preset
                                     .bitrate > 0 ? formatBytesPerSecond(speed: Int64(preset.bitrate)) :
                                     "Unknown")
@@ -436,24 +430,26 @@ struct RemoteControlView: View {
                         } label: {
                             Text("Bitrate")
                         }
-                        .onChange(of: bitratePresetId) { _ in
-                            guard bitratePresetId != noId else {
+                        .onChange(of: model.remoteControlBitrate) { _ in
+                            guard model.remoteControlBitrate != model.remoteControlState.bitrate else {
                                 return
                             }
-                            model.remoteControlAssistantSetBitratePreset(id: bitratePresetId)
-                            bitratePresetId = noId
+                            model.remoteControlAssistantSetBitratePreset(id: model.remoteControlBitrate)
                         }
                         HStack {
                             Text("Zoom")
                             Spacer()
-                            TextField("", text: $zoom)
+                            TextField("", text: $model.remoteControlZoom)
                                 .multilineTextAlignment(.trailing)
+                                .disableAutocorrection(true)
                                 .onSubmit {
-                                    guard zoom != "Unknown" else {
+                                    guard let zoom = model.remoteControlState.zoom else {
                                         return
                                     }
-                                    submitZoom(value: zoom)
-                                    zoom = "Unknown"
+                                    guard model.remoteControlZoom != String(zoom) else {
+                                        return
+                                    }
+                                    submitZoom(value: model.remoteControlZoom)
                                 }
                         }
                     } else {
