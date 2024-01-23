@@ -80,9 +80,15 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
                     )
                 }
             } footer: {
-                Text("Use Fast IRL unless you know what you are doing!")
+                Text("Use the Fast IRL algorithm unless you know what you are doing!")
             }
             if adaptiveBitrate.algorithm == .customIrl {
+                Section {
+                    HStack {
+                        Text("⚠️")
+                        Text("Finding good parameters is hard. You are on you own! =)")
+                    }
+                }
                 Section {
                     SliderView(value: adaptiveBitrate.customSettings.pifDiffIncreaseFactor,
                                minimum: 25,

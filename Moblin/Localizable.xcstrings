@@ -3213,6 +3213,9 @@
         }
       }
     },
+    "⚠️" : {
+
+    },
     "⚠️ Audio is not yet implemented." : {
       "localizations" : {
         "de" : {
@@ -21207,6 +21210,9 @@
           }
         }
       }
+    },
+    "Finding good parameters is hard. You are on you own! =)" : {
+
     },
     "First time chatter" : {
       "localizations" : {
@@ -50275,6 +50281,9 @@
           }
         }
       }
+    },
+    "Use the Fast IRL algorithm unless you know what you are doing!" : {
+
     },
     "Use your public IP address if streaming over the internet." : {
       "localizations" : {
