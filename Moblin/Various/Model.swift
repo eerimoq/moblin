@@ -572,8 +572,8 @@ final class Model: ObservableObject {
                 packetsInFlight: customSettings.packetsInFlight,
                 rttDiffHighFactor: Double(customSettings.pifDiffIncreaseFactor),
                 rttDiffHighAllowedSpike: Double(customSettings.rttDiffHighAllowedSpike),
-                rttDiffHighMinDecrease: Int32(customSettings.rttDiffHighMinimumDecrease),
-                pifDiffIncreaseFactor: Int32(customSettings.pifDiffIncreaseFactor)
+                rttDiffHighMinDecrease: Int32(customSettings.rttDiffHighMinimumDecrease * 1000),
+                pifDiffIncreaseFactor: Int32(customSettings.pifDiffIncreaseFactor * 1000)
             ))
         }
     }
