@@ -25,7 +25,7 @@
 		0315A37C2AA439B500295443 /* NameEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A37B2AA439B500295443 /* NameEditView.swift */; };
 		0315A37E2AA43DCC00295443 /* TextEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A37D2AA43DCC00295443 /* TextEditView.swift */; };
 		031839172AF6A03100320FB2 /* DebugAudioSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031839162AF6A03100320FB2 /* DebugAudioSettingsView.swift */; };
-		0318391B2AF79DDF00320FB2 /* DebugAdaptiveBitrateSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0318391A2AF79DDF00320FB2 /* DebugAdaptiveBitrateSettingsView.swift */; };
+		0318391B2AF79DDF00320FB2 /* StreamSrtAdaptiveBitrateSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0318391A2AF79DDF00320FB2 /* StreamSrtAdaptiveBitrateSettingsView.swift */; };
 		0318514D2B5392A1006A7943 /* StreamSrtConnectionPriorityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0318514C2B5392A1006A7943 /* StreamSrtConnectionPriorityView.swift */; };
 		031852A62B21890A00AEAD0D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 031852A42B21890A00AEAD0D /* InfoPlist.strings */; };
 		031A2E002ADBE34F005CE350 /* DraggableItemPrefixView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031A2DFF2ADBE34F005CE350 /* DraggableItemPrefixView.swift */; };
@@ -198,7 +198,7 @@
 		0315A37B2AA439B500295443 /* NameEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameEditView.swift; sourceTree = "<group>"; };
 		0315A37D2AA43DCC00295443 /* TextEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditView.swift; sourceTree = "<group>"; };
 		031839162AF6A03100320FB2 /* DebugAudioSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugAudioSettingsView.swift; sourceTree = "<group>"; };
-		0318391A2AF79DDF00320FB2 /* DebugAdaptiveBitrateSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugAdaptiveBitrateSettingsView.swift; sourceTree = "<group>"; };
+		0318391A2AF79DDF00320FB2 /* StreamSrtAdaptiveBitrateSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamSrtAdaptiveBitrateSettingsView.swift; sourceTree = "<group>"; };
 		0318514C2B5392A1006A7943 /* StreamSrtConnectionPriorityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamSrtConnectionPriorityView.swift; sourceTree = "<group>"; };
 		031852A52B21890A00AEAD0D /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		031A2DFF2ADBE34F005CE350 /* DraggableItemPrefixView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraggableItemPrefixView.swift; sourceTree = "<group>"; };
@@ -512,6 +512,7 @@
 			isa = PBXGroup;
 			children = (
 				032469A82AE1B3040097B18B /* StreamSrtSettingsView.swift */,
+				0318391A2AF79DDF00320FB2 /* StreamSrtAdaptiveBitrateSettingsView.swift */,
 				0318514C2B5392A1006A7943 /* StreamSrtConnectionPriorityView.swift */,
 			);
 			path = Srt;
@@ -769,7 +770,6 @@
 				0379BB8D2AA90D1900B718B6 /* DebugLogSettingsView.swift */,
 				0379BBAE2AAD96B200B718B6 /* DebugSettingsView.swift */,
 				031839162AF6A03100320FB2 /* DebugAudioSettingsView.swift */,
-				0318391A2AF79DDF00320FB2 /* DebugAdaptiveBitrateSettingsView.swift */,
 			);
 			path = Debug;
 			sourceTree = "<group>";
@@ -1376,7 +1376,7 @@
 				0315A33B2AA2FA7100295443 /* LocalListener.swift in Sources */,
 				035D37372AB230E700045B92 /* StreamVideoBitrateSettingsView.swift in Sources */,
 				032FDBFC2B0B1183007BE85E /* ValueEditView.swift in Sources */,
-				0318391B2AF79DDF00320FB2 /* DebugAdaptiveBitrateSettingsView.swift in Sources */,
+				0318391B2AF79DDF00320FB2 /* StreamSrtAdaptiveBitrateSettingsView.swift in Sources */,
 				03F5A8E52AD6FF8E00F354D2 /* StreamOverlayDebugView.swift in Sources */,
 				030399132AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift in Sources */,
 				034844F52B57AB840089B874 /* RemoteControlSettingsView.swift in Sources */,

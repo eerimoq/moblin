@@ -5678,6 +5678,7 @@
       }
     },
     "Adaptive bitrate is experimental." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -6013,6 +6014,9 @@
         }
       }
     },
+    "Algorithm" : {
+
+    },
     "Allowed range is %@ - %@." : {
       "localizations" : {
         "de" : {
@@ -6130,6 +6134,9 @@
           }
         }
       }
+    },
+    "Allowed spike: 50-200 ms" : {
+
     },
     "Amplitude" : {
       "localizations" : {
@@ -15023,6 +15030,9 @@
         }
       }
     },
+    "Custom IRL" : {
+
+    },
     "Debug" : {
       "localizations" : {
         "de" : {
@@ -15246,6 +15256,12 @@
           }
         }
       }
+    },
+    "Decrease speed: 5-50 %/sec" : {
+
+    },
+    "Decrease threshold: 50-500 pkts" : {
+
     },
     "Delete" : {
       "localizations" : {
@@ -20517,6 +20533,9 @@
         }
       }
     },
+    "Fast IRL" : {
+
+    },
     "Feel free to join Moblin Discord server or write an issue on Github if you need help or want to give feedback." : {
       "localizations" : {
         "de" : {
@@ -25336,6 +25355,9 @@
         }
       }
     },
+    "Increase speed: 25-500 Kbps/sec" : {
+
+    },
     "Ingest URL" : {
       "localizations" : {
         "de" : {
@@ -29816,6 +29838,9 @@
         }
       }
     },
+    "Minimum decrease: 25-1250 Kbps/sec" : {
+
+    },
     "Moblin" : {
       "localizations" : {
         "de" : {
@@ -34190,6 +34215,9 @@
         }
       }
     },
+    "Overhead bandwidth" : {
+
+    },
     "Packets in flight" : {
       "localizations" : {
         "de" : {
@@ -37671,6 +37699,9 @@
         }
       }
     },
+    "Round trip time (RTT)" : {
+
+    },
     "RTMP" : {
       "localizations" : {
         "de" : {
@@ -40589,6 +40620,9 @@
         }
       }
     },
+    "Slow IRL" : {
+
+    },
     "Small camera" : {
       "localizations" : {
         "de" : {
@@ -41710,6 +41744,7 @@
       }
     },
     "SRT oheadbw" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

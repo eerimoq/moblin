@@ -8,6 +8,27 @@ protocol AdaptiveBitrateDelegate: AnyObject {
 
 var adaptiveBitratePacketsInFlightLimit: Int32 = 200
 
+struct AdaptiveBitrateSettings {
+    var rttDiffHighFactor: Double
+    var rttDiffHighAllowedSpike: Double
+    var rttDiffHighMinDecrease: Int32
+    var pifDiffIncreaseFactor: Int32
+}
+
+let adaptiveBitrateFastSettings = AdaptiveBitrateSettings(
+    rttDiffHighFactor: 0.9,
+    rttDiffHighAllowedSpike: 50,
+    rttDiffHighMinDecrease: 250_000,
+    pifDiffIncreaseFactor: 100_000
+)
+
+let adaptiveBitrateSlowSettings = AdaptiveBitrateSettings(
+    rttDiffHighFactor: 0.95,
+    rttDiffHighAllowedSpike: 100,
+    rttDiffHighMinDecrease: 100_000,
+    pifDiffIncreaseFactor: 5000
+)
+
 class AdaptiveBitrate {
     private var avgRtt: Double = 0.0
     private var fastRtt: Double = 0.0
@@ -19,6 +40,7 @@ class AdaptiveBitrate {
     private var fastPif: Double = 0
     private weak var delegate: (any AdaptiveBitrateDelegate)!
     private var adaptiveActionsTaken: [String] = []
+    private var settings = adaptiveBitrateFastSettings
 
     init(targetBitrate: UInt32, delegate: AdaptiveBitrateDelegate) {
         self.targetBitrate = Int32(targetBitrate)
@@ -26,8 +48,11 @@ class AdaptiveBitrate {
     }
 
     func setTargetBitrate(bitrate: UInt32) {
-        logger.debug("srtla: adaptive-bitrate: New target bitrate \(bitrate)")
         targetBitrate = Int32(bitrate)
+    }
+
+    func setSettings(settings: AdaptiveBitrateSettings) {
+        self.settings = settings
     }
 
     private func calcRtts(stats: SRTPerformanceData) {
@@ -81,7 +106,7 @@ class AdaptiveBitrate {
            fastRtt <= avgRtt + allowedRttJitter
         {
             if stats.pktFlightSize - Int32(pif) < allowedPifJitter {
-                tempMaxBitrate += (100_000 * pifDiffThing) /
+                tempMaxBitrate += (settings.pifDiffIncreaseFactor * pifDiffThing) /
                     adaptiveBitratePacketsInFlightLimit
                 if tempMaxBitrate > targetBitrate {
                     tempMaxBitrate = targetBitrate
@@ -290,9 +315,9 @@ class AdaptiveBitrate {
         decreaseMaxRateIfRttIsHigh(factor: 0.9, rttMax: 250, minimumDecrease: 250_000)
         decreaseMaxRateIfRttDiffIsHigh(
             stats,
-            factor: 0.9,
-            rttSpikeAllowed: 50,
-            minimumDecrease: 250_000
+            factor: settings.rttDiffHighFactor,
+            rttSpikeAllowed: settings.rttDiffHighAllowedSpike,
+            minimumDecrease: settings.rttDiffHighMinDecrease
         )
         calculateCurrentBitrate(stats)
         if prevBitrate != curBitrate {

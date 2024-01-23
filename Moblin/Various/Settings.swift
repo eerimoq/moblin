@@ -63,16 +63,84 @@ class SettingsStreamSrtConnectionPriorities: Codable {
     }
 }
 
+enum SettingsStreamSrtAdaptiveBitrateAlgorithm: Codable, CaseIterable {
+    case fastIrl
+    case slowIrl
+    case customIrl
+
+    static func fromString(value: String) -> SettingsStreamSrtAdaptiveBitrateAlgorithm {
+        switch value {
+        case String(localized: "Fast IRL"):
+            return .fastIrl
+        case String(localized: "Slow IRL"):
+            return .slowIrl
+        case String(localized: "Custom IRL"):
+            return .customIrl
+        default:
+            return .fastIrl
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .fastIrl:
+            return String(localized: "Fast IRL")
+        case .slowIrl:
+            return String(localized: "Slow IRL")
+        case .customIrl:
+            return String(localized: "Custom IRL")
+        }
+    }
+}
+
+let adaptiveBitrateAlgorithms = SettingsStreamSrtAdaptiveBitrateAlgorithm.allCases.map { $0.toString() }
+
+class SettingsStreamSrtAdaptiveBitrateCustomSettings: Codable {
+    var packetsInFlight: Int32 = 200
+    var pifDiffIncreaseFactor: Int32 = 100_000
+    var rttDiffHighDecreaseFactor: Float = 0.9
+    var rttDiffHighAllowedSpike: Float = 50
+    var rttDiffHighMinimumDecrease: Int32 = 250_000
+
+    func clone() -> SettingsStreamSrtAdaptiveBitrateCustomSettings {
+        let new = SettingsStreamSrtAdaptiveBitrateCustomSettings()
+        new.pifDiffIncreaseFactor = pifDiffIncreaseFactor
+        new.rttDiffHighDecreaseFactor = rttDiffHighDecreaseFactor
+        new.rttDiffHighAllowedSpike = rttDiffHighAllowedSpike
+        new.rttDiffHighMinimumDecrease = rttDiffHighMinimumDecrease
+        new.packetsInFlight = packetsInFlight
+        return new
+    }
+}
+
+class SettingsStreamSrtAdaptiveBitrate: Codable {
+    var algorithm: SettingsStreamSrtAdaptiveBitrateAlgorithm = .fastIrl
+    var customSettings: SettingsStreamSrtAdaptiveBitrateCustomSettings = .init()
+
+    func clone() -> SettingsStreamSrtAdaptiveBitrate {
+        let new = SettingsStreamSrtAdaptiveBitrate()
+        new.algorithm = algorithm
+        new.customSettings = customSettings.clone()
+        return new
+    }
+}
+
 class SettingsStreamSrt: Codable {
     var latency: Int32 = 2000
-    var mpegtsPacketsPerPacket: Int = 7
+    var maximumBandwidthFollowInput: Bool? = true
+    var overheadBandwidth: Int32? = 25
+    var adaptiveBitrate: SettingsStreamSrtAdaptiveBitrate? = .init()
     var connectionPriorities: SettingsStreamSrtConnectionPriorities? = .init()
+    var mpegtsPacketsPerPacket: Int = 7
 
     func clone() -> SettingsStreamSrt {
         let new = SettingsStreamSrt()
         new.latency = latency
-        new.mpegtsPacketsPerPacket = mpegtsPacketsPerPacket
+        new.overheadBandwidth = overheadBandwidth
+        new.maximumBandwidthFollowInput = maximumBandwidthFollowInput
+        new.adaptiveBitrate = adaptiveBitrate!.clone()
         new.connectionPriorities = connectionPriorities!.clone()
+        new.mpegtsPacketsPerPacket = mpegtsPacketsPerPacket
         return new
     }
 }
@@ -957,7 +1025,6 @@ class SettingsDebug: Codable {
     var recordingsFolder: Bool? = false
     var cameraSwitchRemoveBlackish: Float? = 0.3
     var maximumBandwidthFollowInput: Bool? = true
-    var packetsInFlight: Int? = 200
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -1917,10 +1984,6 @@ final class Settings {
             realDatabase.debug!.maximumBandwidthFollowInput = true
             store()
         }
-        if realDatabase.debug!.packetsInFlight == nil {
-            realDatabase.debug!.packetsInFlight = 200
-            store()
-        }
         for button in realDatabase.buttons where button.backgroundColor == nil {
             button.backgroundColor = defaultQuickButtonColor
             store()
@@ -1934,6 +1997,18 @@ final class Settings {
                 widget.browser.audioOnly = false
                 store()
             }
+        }
+        for stream in realDatabase.streams where stream.srt.overheadBandwidth == nil {
+            stream.srt.overheadBandwidth = realDatabase.debug!.srtOverheadBandwidth!
+            store()
+        }
+        for stream in realDatabase.streams where stream.srt.maximumBandwidthFollowInput == nil {
+            stream.srt.maximumBandwidthFollowInput = realDatabase.debug!.maximumBandwidthFollowInput!
+            store()
+        }
+        for stream in realDatabase.streams where stream.srt.adaptiveBitrate == nil {
+            stream.srt.adaptiveBitrate = .init()
+            store()
         }
     }
 }

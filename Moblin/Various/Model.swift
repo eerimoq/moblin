@@ -564,6 +564,8 @@ final class Model: ObservableObject {
         adaptiveBitratePacketsInFlightLimit = value
     }
 
+    func setAdaptiveBitrateAlgorithm(algorithm _: SettingsStreamSrtAdaptiveBitrateAlgorithm) {}
+
     @MainActor
     private func getProductsFromAppStore() async {
         do {
@@ -1118,7 +1120,7 @@ final class Model: ObservableObject {
         GCController.startWirelessControllerDiscovery {}
         reloadLocation()
         currentStreamId = stream.id
-        setAdaptiveBitratePacketsInFlight(value: Int32(database.debug!.packetsInFlight!))
+        setAdaptiveBitratePacketsInFlight(value: stream.srt.adaptiveBitrate!.customSettings.packetsInFlight)
     }
 
     private func handleIpStatusUpdate(statuses: [IPMonitor.Status]) {

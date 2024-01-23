@@ -15,6 +15,17 @@ struct StreamSrtSettingsView: View {
         model.storeAndReloadStreamIfEnabled(stream: stream)
     }
 
+    func submitOverheadBandwidth(value: String) {
+        guard let overheadBandwidth = Int32(value) else {
+            return
+        }
+        guard overheadBandwidth >= 5 && overheadBandwidth <= 100 else {
+            return
+        }
+        stream.srt.overheadBandwidth = overheadBandwidth
+        model.store()
+    }
+
     var body: some View {
         Form {
             Section {
@@ -32,6 +43,39 @@ struct StreamSrtSettingsView: View {
                     TextItemView(name: String(localized: "Latency"), value: "\(stream.srt.latency) ms")
                 }
                 .disabled(stream.enabled && model.isLive)
+                NavigationLink(destination: StreamSrtAdaptiveBitrateSettingsView(
+                    stream: stream,
+                    packetsInFlight: Float(stream.srt.adaptiveBitrate!.customSettings.packetsInFlight)
+                )) {
+                    Toggle("Adaptive bitrate", isOn: Binding(get: {
+                        stream.adaptiveBitrate
+                    }, set: { value in
+                        stream.adaptiveBitrate = value
+                        model.storeAndReloadStreamIfEnabled(stream: stream)
+                    }))
+                    .disabled(stream.enabled && model.isLive)
+                }
+                NavigationLink(destination: StreamSrtConnectionPriorityView(stream: stream)) {
+                    Text("Connection priorities")
+                }
+                Toggle("Max bandwidth follows input", isOn: Binding(get: {
+                    stream.srt.maximumBandwidthFollowInput!
+                }, set: { value in
+                    stream.srt.maximumBandwidthFollowInput = value
+                    model.storeAndReloadStreamIfEnabled(stream: stream)
+                }))
+                .disabled(stream.enabled && model.isLive)
+                NavigationLink(destination: TextEditView(
+                    title: String(localized: "Overhead bandwidth"),
+                    value: String(stream.srt.overheadBandwidth!),
+                    onSubmit: submitOverheadBandwidth
+                )) {
+                    TextItemView(
+                        name: String(localized: "Overhead bandwidth"),
+                        value: String(stream.srt.overheadBandwidth!)
+                    )
+                }
+                .disabled(stream.enabled && model.isLive)
                 Toggle("Big packets", isOn: Binding(get: {
                     stream.srt.mpegtsPacketsPerPacket == 7
                 }, set: { value in
@@ -43,20 +87,8 @@ struct StreamSrtSettingsView: View {
                     model.storeAndReloadStreamIfEnabled(stream: stream)
                 }))
                 .disabled(stream.enabled && model.isLive)
-                Toggle("Adaptive bitrate", isOn: Binding(get: {
-                    stream.adaptiveBitrate
-                }, set: { value in
-                    stream.adaptiveBitrate = value
-                    model.storeAndReloadStreamIfEnabled(stream: stream)
-                }))
-                .disabled(stream.enabled && model.isLive)
-                NavigationLink(destination: StreamSrtConnectionPriorityView(stream: stream)) {
-                    Text("Connection priorities")
-                }
             } footer: {
                 VStack(alignment: .leading) {
-                    Text("Adaptive bitrate is experimental.")
-                    Text("")
                     Text(
                         """
                         Big packets means 7 MPEG-TS packets per SRT packet, 6 otherwise. \
