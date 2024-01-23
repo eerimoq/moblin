@@ -6,9 +6,8 @@ protocol AdaptiveBitrateDelegate: AnyObject {
     func adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32)
 }
 
-var adaptiveBitratePacketsInFlightLimit: Int32 = 200
-
 struct AdaptiveBitrateSettings {
+    var packetsInFlight: Int32
     var rttDiffHighFactor: Double
     var rttDiffHighAllowedSpike: Double
     var rttDiffHighMinDecrease: Int32
@@ -16,6 +15,7 @@ struct AdaptiveBitrateSettings {
 }
 
 let adaptiveBitrateFastSettings = AdaptiveBitrateSettings(
+    packetsInFlight: 200,
     rttDiffHighFactor: 0.9,
     rttDiffHighAllowedSpike: 50,
     rttDiffHighMinDecrease: 250_000,
@@ -23,6 +23,7 @@ let adaptiveBitrateFastSettings = AdaptiveBitrateSettings(
 )
 
 let adaptiveBitrateSlowSettings = AdaptiveBitrateSettings(
+    packetsInFlight: 200,
     rttDiffHighFactor: 0.95,
     rttDiffHighAllowedSpike: 100,
     rttDiffHighMinDecrease: 100_000,
@@ -97,18 +98,17 @@ class AdaptiveBitrate {
         if pifDiffThing < 0 {
             pifDiffThing = 0
         }
-        if pifDiffThing > adaptiveBitratePacketsInFlightLimit {
-            pifDiffThing = adaptiveBitratePacketsInFlightLimit
+        if pifDiffThing > settings.packetsInFlight {
+            pifDiffThing = settings.packetsInFlight
         }
         // statDeci just used for display on screen
         // statDeci = pifDiffThing
-        pifDiffThing = adaptiveBitratePacketsInFlightLimit - pifDiffThing
-        if pif < Double(adaptiveBitratePacketsInFlightLimit),
+        pifDiffThing = settings.packetsInFlight - pifDiffThing
+        if pif < Double(settings.packetsInFlight),
            fastRtt <= avgRtt + allowedRttJitter
         {
             if stats.pktFlightSize - Int32(pif) < allowedPifJitter {
-                tempMaxBitrate += (settings.pifDiffIncreaseFactor * pifDiffThing) /
-                    adaptiveBitratePacketsInFlightLimit
+                tempMaxBitrate += (settings.pifDiffIncreaseFactor * pifDiffThing) /                settings.packetsInFlight
                 if tempMaxBitrate > targetBitrate {
                     tempMaxBitrate = targetBitrate
                 }
@@ -247,29 +247,29 @@ class AdaptiveBitrate {
     private func calculateCurrentBitrate(_: SRTPerformanceData) {
         var pifDiffThing = Int32(fastPif) - Int32(smoothPif)
         // lazy decrease
-        if pifDiffThing > adaptiveBitratePacketsInFlightLimit {
+        if pifDiffThing > settings.packetsInFlight {
             logAdaptiveAcion(
-                actionTaken: "Lazy dec pifdiff \(pifDiffThing) > limit \(adaptiveBitratePacketsInFlightLimit)"
+                actionTaken: "Lazy dec pifdiff \(pifDiffThing) > limit \(settings.packetsInFlight)"
             )
             tempMaxBitrate = Int32(Double(tempMaxBitrate) * 0.95)
         }
-        if pifDiffThing <= (adaptiveBitratePacketsInFlightLimit / 5) {
+        if pifDiffThing <= (settings.packetsInFlight / 5) {
             pifDiffThing = 0
         }
         if pifDiffThing < 0 {
             pifDiffThing = 0
         }
-        if pifDiffThing > adaptiveBitratePacketsInFlightLimit {
-            pifDiffThing = adaptiveBitratePacketsInFlightLimit
+        if pifDiffThing > settings.packetsInFlight {
+            pifDiffThing = settings.packetsInFlight
         }
         // harder decrease
-        if pifDiffThing == adaptiveBitratePacketsInFlightLimit {
+        if pifDiffThing == settings.packetsInFlight {
             tempMaxBitrate -= 500_000
             logAdaptiveAcion(
-                actionTaken: "-500 dec pifdiff \(pifDiffThing) = limit \(adaptiveBitratePacketsInFlightLimit)"
+                actionTaken: "-500 dec pifdiff \(pifDiffThing) = limit \(settings.packetsInFlight)"
             )
         }
-        pifDiffThing = adaptiveBitratePacketsInFlightLimit - pifDiffThing
+        pifDiffThing = settings.packetsInFlight - pifDiffThing
         if tempMaxBitrate < 250_000 {
             tempMaxBitrate = 250_000
         }
@@ -277,13 +277,13 @@ class AdaptiveBitrate {
         var tempBitrate: Int64
         tempBitrate = Int64(tempMaxBitrate)
         tempBitrate *= Int64(pifDiffThing)
-        tempBitrate /= Int64(adaptiveBitratePacketsInFlightLimit)
+        tempBitrate /= Int64(settings.packetsInFlight)
         curBitrate = Int32(tempBitrate)
         if curBitrate < 50000 {
             curBitrate = 50000
         }
         // pif running away do a quick lower of bitrate temporarily
-        if Int32(fastPif) - Int32(smoothPif) > adaptiveBitratePacketsInFlightLimit * 2 {
+        if Int32(fastPif) - Int32(smoothPif) > settings.packetsInFlight * 2 {
             curBitrate = 50000
         }
     }

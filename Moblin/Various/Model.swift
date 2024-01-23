@@ -560,10 +560,6 @@ final class Model: ObservableObject {
         wizardBelaboxUrl = ""
     }
 
-    func setAdaptiveBitratePacketsInFlight(value: Int32) {
-        adaptiveBitratePacketsInFlightLimit = value
-    }
-
     func updateAdaptiveBitrateIfEnabled(stream: SettingsStream) {
         switch stream.srt.adaptiveBitrate!.algorithm {
         case .fastIrl:
@@ -573,6 +569,7 @@ final class Model: ObservableObject {
         case .customIrl:
             let customSettings = stream.srt.adaptiveBitrate!.customSettings
             media.setAdaptiveBitrateAlgorithm(settings: AdaptiveBitrateSettings(
+                packetsInFlight: customSettings.packetsInFlight,
                 rttDiffHighFactor: Double(customSettings.pifDiffIncreaseFactor),
                 rttDiffHighAllowedSpike: Double(customSettings.rttDiffHighAllowedSpike),
                 rttDiffHighMinDecrease: Int32(customSettings.rttDiffHighMinimumDecrease),
@@ -1135,7 +1132,6 @@ final class Model: ObservableObject {
         GCController.startWirelessControllerDiscovery {}
         reloadLocation()
         currentStreamId = stream.id
-        setAdaptiveBitratePacketsInFlight(value: stream.srt.adaptiveBitrate!.customSettings.packetsInFlight)
     }
 
     private func handleIpStatusUpdate(statuses: [IPMonitor.Status]) {

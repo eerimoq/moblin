@@ -104,11 +104,11 @@ class SettingsStreamSrtAdaptiveBitrateCustomSettings: Codable {
 
     func clone() -> SettingsStreamSrtAdaptiveBitrateCustomSettings {
         let new = SettingsStreamSrtAdaptiveBitrateCustomSettings()
+        new.packetsInFlight = packetsInFlight
         new.pifDiffIncreaseFactor = pifDiffIncreaseFactor
         new.rttDiffHighDecreaseFactor = rttDiffHighDecreaseFactor
         new.rttDiffHighAllowedSpike = rttDiffHighAllowedSpike
         new.rttDiffHighMinimumDecrease = rttDiffHighMinimumDecrease
-        new.packetsInFlight = packetsInFlight
         return new
     }
 }
