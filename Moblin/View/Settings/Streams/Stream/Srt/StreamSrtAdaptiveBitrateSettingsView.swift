@@ -79,6 +79,8 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
                         value: adaptiveBitrate.algorithm.toString()
                     )
                 }
+            } footer: {
+                Text("Use Fast IRL unless you know what you are doing!")
             }
             if adaptiveBitrate.algorithm == .customIrl {
                 Section {

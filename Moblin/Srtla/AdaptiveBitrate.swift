@@ -108,7 +108,7 @@ class AdaptiveBitrate {
            fastRtt <= avgRtt + allowedRttJitter
         {
             if stats.pktFlightSize - Int32(pif) < allowedPifJitter {
-                tempMaxBitrate += (settings.pifDiffIncreaseFactor * pifDiffThing) /                settings.packetsInFlight
+                tempMaxBitrate += (settings.pifDiffIncreaseFactor * pifDiffThing) / settings.packetsInFlight
                 if tempMaxBitrate > targetBitrate {
                     tempMaxBitrate = targetBitrate
                 }
