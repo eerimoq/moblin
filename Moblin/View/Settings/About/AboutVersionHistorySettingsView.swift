@@ -8,6 +8,16 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.156.0", date: "2024-01-21", changes: [
+        "• Make Settings → Display → Local overlays → Chat only hide/show the top left chat icon and info, not chat itself.",
+        "• Three adaptive bitrate algorithms.",
+        "  • Fast IRL - The default and battle tested algorithm",
+        "  • Slow IRL - Same algorithm as Fast IRL, but changes bitrate slower.",
+        "  • Custom URL - Same algorithm as Fast IRL, the the user configures various parameters.",
+        "• Adaptive bitrate settings per stream.",
+        "  • Less settings in Settings → Debug.",
+        "• Remote control improvements.",
+    ]),
     Version(version: "0.155.0", date: "2024-01-21", changes: [
         "• Remote control connect/disconnect toasts.",
         "• Audio only browser widgets.",
