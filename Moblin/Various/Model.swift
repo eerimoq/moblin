@@ -2186,6 +2186,20 @@ final class Model: ObservableObject {
         media.setVideoStreamBitrate(bitrate: stream.bitrate)
     }
 
+    private func getBitratePresetByBitrate(bitrate: UInt32) -> SettingsBitratePreset? {
+        return database.bitratePresets.first(where: { preset in
+            preset.bitrate == bitrate
+        })
+    }
+
+    func setBitrate(bitrate: UInt32) {
+        stream.bitrate = bitrate
+        guard let preset = getBitratePresetByBitrate(bitrate: bitrate) else {
+            return
+        }
+        remoteControlStreamer?.stateChanged(state: RemoteControlState(bitrate: preset.id))
+    }
+
     func setAudioStreamBitrate(stream: SettingsStream) {
         media.setAudioStreamBitrate(bitrate: stream.audioBitrate!)
     }
@@ -3761,6 +3775,15 @@ extension Model: RemoteControlStreamerDelegate {
     func connected() {
         DispatchQueue.main.async {
             self.makeToast(title: "Remote control assistant connected")
+            var state = RemoteControlState()
+            if self.sceneIndex < self.enabledScenes.count {
+                state.scene = self.enabledScenes[self.sceneIndex].id
+            }
+            if let preset = self.getBitratePresetByBitrate(bitrate: self.stream.bitrate) {
+                state.bitrate = preset.id
+            }
+            state.zoom = self.zoomX
+            self.remoteControlStreamer?.stateChanged(state: state)
         }
     }
 
@@ -3852,7 +3875,7 @@ extension Model: RemoteControlStreamerDelegate {
             }) else {
                 return
             }
-            self.stream.bitrate = preset.bitrate
+            self.setBitrate(bitrate: preset.bitrate)
             if self.stream.enabled {
                 self.setStreamBitrate(stream: self.stream)
             }

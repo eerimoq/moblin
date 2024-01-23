@@ -415,7 +415,6 @@ struct RemoteControlView: View {
                         }
                         .onChange(of: model.remoteControlScene) { _ in
                             guard model.remoteControlScene != model.remoteControlState.scene else {
-                                print("remote a")
                                 return
                             }
                             model.remoteControlAssistantSetScene(id: model.remoteControlScene)
