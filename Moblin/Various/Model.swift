@@ -564,7 +564,22 @@ final class Model: ObservableObject {
         adaptiveBitratePacketsInFlightLimit = value
     }
 
-    func setAdaptiveBitrateAlgorithm(algorithm _: SettingsStreamSrtAdaptiveBitrateAlgorithm) {}
+    func updateAdaptiveBitrateIfEnabled(stream: SettingsStream) {
+        switch stream.srt.adaptiveBitrate!.algorithm {
+        case .fastIrl:
+            media.setAdaptiveBitrateAlgorithm(settings: adaptiveBitrateFastSettings)
+        case .slowIrl:
+            media.setAdaptiveBitrateAlgorithm(settings: adaptiveBitrateSlowSettings)
+        case .customIrl:
+            let customSettings = stream.srt.adaptiveBitrate!.customSettings
+            media.setAdaptiveBitrateAlgorithm(settings: AdaptiveBitrateSettings(
+                rttDiffHighFactor: Double(customSettings.pifDiffIncreaseFactor),
+                rttDiffHighAllowedSpike: Double(customSettings.rttDiffHighAllowedSpike),
+                rttDiffHighMinDecrease: Int32(customSettings.rttDiffHighMinimumDecrease),
+                pifDiffIncreaseFactor: Int32(customSettings.pifDiffIncreaseFactor)
+            ))
+        }
+    }
 
     @MainActor
     private func getProductsFromAppStore() async {
@@ -2015,6 +2030,7 @@ final class Model: ObservableObject {
                 networkInterfaceNames: database.networkInterfaceNames!,
                 connectionPriorities: stream.srt.connectionPriorities!
             )
+            updateAdaptiveBitrateIfEnabled(stream: stream)
         }
         updateSpeed(now: Date())
     }

@@ -4,7 +4,6 @@ import SwiftUI
 struct ZoomPresetSettingsView: View {
     @EnvironmentObject var model: Model
     var preset: SettingsZoomPreset
-    var position: AVCaptureDevice.Position
     let minX: Float
     let maxX: Float
 

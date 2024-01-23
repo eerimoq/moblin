@@ -43,10 +43,7 @@ struct StreamSrtSettingsView: View {
                     TextItemView(name: String(localized: "Latency"), value: "\(stream.srt.latency) ms")
                 }
                 .disabled(stream.enabled && model.isLive)
-                NavigationLink(destination: StreamSrtAdaptiveBitrateSettingsView(
-                    stream: stream,
-                    packetsInFlight: Float(stream.srt.adaptiveBitrate!.customSettings.packetsInFlight)
-                )) {
+                NavigationLink(destination: StreamSrtAdaptiveBitrateSettingsView(stream: stream)) {
                     Toggle("Adaptive bitrate", isOn: Binding(get: {
                         stream.adaptiveBitrate
                     }, set: { value in

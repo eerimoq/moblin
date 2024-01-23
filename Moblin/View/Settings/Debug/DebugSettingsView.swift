@@ -3,7 +3,6 @@ import SwiftUI
 
 struct DebugSettingsView: View {
     @EnvironmentObject var model: Model
-    @State var srtOverheadBandwidth: Float
     @State var cameraSwitchRemoveBlackish: Float
 
     private func onLogLevelChange(level: String) {

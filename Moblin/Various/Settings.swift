@@ -97,10 +97,10 @@ let adaptiveBitrateAlgorithms = SettingsStreamSrtAdaptiveBitrateAlgorithm.allCas
 
 class SettingsStreamSrtAdaptiveBitrateCustomSettings: Codable {
     var packetsInFlight: Int32 = 200
-    var pifDiffIncreaseFactor: Int32 = 100_000
+    var pifDiffIncreaseFactor: Float = 100
     var rttDiffHighDecreaseFactor: Float = 0.9
     var rttDiffHighAllowedSpike: Float = 50
-    var rttDiffHighMinimumDecrease: Int32 = 250_000
+    var rttDiffHighMinimumDecrease: Float = 250
 
     func clone() -> SettingsStreamSrtAdaptiveBitrateCustomSettings {
         let new = SettingsStreamSrtAdaptiveBitrateCustomSettings()

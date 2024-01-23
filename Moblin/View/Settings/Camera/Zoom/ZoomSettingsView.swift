@@ -30,7 +30,6 @@ struct ZoomSettingsView: View {
                     ForEach(model.database.zoom.back) { preset in
                         NavigationLink(destination: ZoomPresetSettingsView(
                             preset: preset,
-                            position: .back,
                             minX: model.getMinMaxZoomX(position: .back).0,
                             maxX: model.getMinMaxZoomX(position: .back).1
                         )) {
@@ -68,7 +67,6 @@ struct ZoomSettingsView: View {
                     ForEach(model.database.zoom.front) { preset in
                         NavigationLink(destination: ZoomPresetSettingsView(
                             preset: preset,
-                            position: .front,
                             minX: model.getMinMaxZoomX(position: .front).0,
                             maxX: model.getMinMaxZoomX(position: .front).1
                         )) {

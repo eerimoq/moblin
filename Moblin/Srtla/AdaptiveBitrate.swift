@@ -52,6 +52,7 @@ class AdaptiveBitrate {
     }
 
     func setSettings(settings: AdaptiveBitrateSettings) {
+        logger.info("srtla: adaptive-bitrate: Using settings \(settings)")
         self.settings = settings
     }
 

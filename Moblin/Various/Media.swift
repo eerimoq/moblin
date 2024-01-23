@@ -54,6 +54,10 @@ final class Media: NSObject {
         srtla?.setConnectionPriorities(connectionPriorities: connectionPriorities)
     }
 
+    func setAdaptiveBitrateAlgorithm(settings: AdaptiveBitrateSettings) {
+        adaptiveBitrate?.setSettings(settings: settings)
+    }
+
     func setNetStream(proto: SettingsStreamProtocol) {
         srtStopStream()
         rtmpStopStream()

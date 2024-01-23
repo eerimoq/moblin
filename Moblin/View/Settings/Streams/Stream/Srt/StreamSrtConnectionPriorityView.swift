@@ -2,7 +2,6 @@ import SwiftUI
 
 struct PriorityItemView: View {
     @EnvironmentObject var model: Model
-    var stream: SettingsStream
     var priority: SettingsStreamSrtConnectionPriority
     @State var prio: Float
 
@@ -56,7 +55,7 @@ struct StreamSrtConnectionPriorityView: View {
             }
             Section {
                 ForEach(stream.srt.connectionPriorities!.priorities) { priority in
-                    PriorityItemView(stream: stream, priority: priority, prio: Float(priority.priority))
+                    PriorityItemView(priority: priority, prio: Float(priority.priority))
                 }
             } footer: {
                 Text("""
