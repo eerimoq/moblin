@@ -729,7 +729,11 @@ struct ButtonsInnerView: View {
                 ButtonPlaceholderImage()
             case .record:
                 Button(action: {
-                    isPresentingRecordConfirm = true
+                    if model.database.startStopRecordingConfirmations! {
+                        isPresentingRecordConfirm = true
+                    } else {
+                        recordAction(state: state)
+                    }
                 }, label: {
                     ButtonImage(
                         image: getImage(state: state),

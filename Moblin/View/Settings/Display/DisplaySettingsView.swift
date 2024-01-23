@@ -70,6 +70,12 @@ struct DisplaySettingsView: View {
                     model.store()
                     model.setAllowHapticsAndSystemSoundsDuringRecording()
                 }))
+                Toggle("Recording confirmations", isOn: Binding(get: {
+                    model.database.startStopRecordingConfirmations!
+                }, set: { value in
+                    model.database.startStopRecordingConfirmations = value
+                    model.store()
+                }))
             } footer: {
                 VStack(alignment: .leading) {
                     Text("Enable \"Vibrate\" to vibrate the device when the following toasts appear:")

@@ -1304,6 +1304,7 @@ class Database: Codable {
     var vibrate: Bool? = false
     var gameControllers: [SettingsGameController]? = [.init()]
     var remoteControl: SettingsRemoteControl? = .init()
+    var startStopRecordingConfirmations: Bool? = true
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -2008,6 +2009,10 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.srt.adaptiveBitrate == nil {
             stream.srt.adaptiveBitrate = .init()
+            store()
+        }
+        if realDatabase.startStopRecordingConfirmations == nil {
+            realDatabase.startStopRecordingConfirmations = true
             store()
         }
     }
