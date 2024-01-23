@@ -42644,6 +42644,9 @@
         }
       }
     },
+    "Start" : {
+
+    },
     "Start streaming" : {
       "localizations" : {
         "de" : {
@@ -42979,6 +42982,9 @@
           }
         }
       }
+    },
+    "Stop" : {
+
     },
     "Stop streaming" : {
       "localizations" : {

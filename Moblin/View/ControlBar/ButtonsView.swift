@@ -181,6 +181,8 @@ struct ImageView: View {
 struct ObsView: View {
     @EnvironmentObject var model: Model
     var done: () -> Void
+    @State private var isPresentingStartStreamingConfirm: Bool = false
+    @State private var isPresentingStopStreamingConfirm: Bool = false
 
     private func submitAudioDelay(value: String) -> String {
         let offsetDouble = Double(value) ?? 0
@@ -202,10 +204,15 @@ struct ObsView: View {
                         HStack {
                             Spacer()
                             Button(action: {
-                                model.obsStartStream()
+                                isPresentingStartStreamingConfirm = true
                             }, label: {
                                 Text("Start streaming")
                             })
+                            .confirmationDialog("", isPresented: $isPresentingStartStreamingConfirm) {
+                                Button("Start") {
+                                    model.obsStartStream()
+                                }
+                            }
                             Spacer()
                         }
                     }
@@ -228,10 +235,15 @@ struct ObsView: View {
                         HStack {
                             Spacer()
                             Button(action: {
-                                model.obsStopStream()
+                                isPresentingStopStreamingConfirm = true
                             }, label: {
                                 Text("Stop streaming")
                             })
+                            .confirmationDialog("", isPresented: $isPresentingStopStreamingConfirm) {
+                                Button("Stop") {
+                                    model.obsStopStream()
+                                }
+                            }
                             Spacer()
                         }
                     }
