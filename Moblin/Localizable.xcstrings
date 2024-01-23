@@ -4333,6 +4333,9 @@
         }
       }
     },
+    "5-50 %/sec" : {
+
+    },
     "7TV emotes" : {
       "localizations" : {
         "de" : {
@@ -4444,6 +4447,15 @@
           }
         }
       }
+    },
+    "25-500 Kbps/sec" : {
+
+    },
+    "25-1250 Kbps/sec" : {
+
+    },
+    "50-500 pkts" : {
+
     },
     "128 Kpbs or higher is recommended." : {
       "localizations" : {
@@ -6134,6 +6146,9 @@
           }
         }
       }
+    },
+    "Allowed RTT spike" : {
+
     },
     "Allowed spike: 50-200 ms" : {
 
@@ -9730,6 +9745,12 @@
           }
         }
       }
+    },
+    "Bitrate decrease speed" : {
+
+    },
+    "Bitrate increase speed" : {
+
     },
     "Bitrate must be greater than zero" : {
       "localizations" : {
@@ -15256,12 +15277,6 @@
           }
         }
       }
-    },
-    "Decrease speed: 5-50 %/sec" : {
-
-    },
-    "Decrease threshold: 50-500 pkts" : {
-
     },
     "Delete" : {
       "localizations" : {
@@ -25355,9 +25370,6 @@
         }
       }
     },
-    "Increase speed: 25-500 Kbps/sec" : {
-
-    },
     "Ingest URL" : {
       "localizations" : {
         "de" : {
@@ -29838,9 +29850,6 @@
         }
       }
     },
-    "Minimum decrease: 25-1250 Kbps/sec" : {
-
-    },
     "Moblin" : {
       "localizations" : {
         "de" : {
@@ -34219,6 +34228,7 @@
 
     },
     "Packets in flight" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -34329,6 +34339,9 @@
           }
         }
       }
+    },
+    "Packets in flight decrease threshold" : {
+
     },
     "Parameters" : {
       "localizations" : {
@@ -37699,9 +37712,6 @@
         }
       }
     },
-    "Round trip time (RTT)" : {
-
-    },
     "RTMP" : {
       "localizations" : {
         "de" : {
@@ -38597,6 +38607,9 @@
           }
         }
       }
+    },
+    "RTT diff minimum decrease" : {
+
     },
     "Scene" : {
       "localizations" : {
@@ -45670,6 +45683,9 @@
         }
       }
     },
+    "The bitrate will decrease quickly when the number of packets in flight are above this value." : {
+
+    },
     "The browser widget is experimental does not work very well yet." : {
       "localizations" : {
         "de" : {
@@ -45893,6 +45909,12 @@
           }
         }
       }
+    },
+    "The maximum allowed RTT spike before decreasing the bitrate" : {
+
+    },
+    "The minimum rate at which the bitrate will decrease when RTT is too high" : {
+
     },
     "The name of the Source in OBS that receives the stream from Moblin." : {
       "localizations" : {

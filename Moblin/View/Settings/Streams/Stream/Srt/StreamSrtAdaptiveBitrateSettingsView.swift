@@ -32,17 +32,38 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
             }
             if adaptiveBitrate.algorithm == .customIrl {
                 Section {
-                    Text("Decrease threshold: 50-500 pkts")
-                    Text("Increase speed: 25-500 Kbps/sec")
+                    Text("25-500 Kbps/sec")
                 } header: {
-                    Text("Packets in flight")
+                    Text("Bitrate increase speed")
                 }
                 Section {
-                    Text("Decrease speed: 5-50 %/sec")
-                    Text("Allowed spike: 50-200 ms")
-                    Text("Minimum decrease: 25-1250 Kbps/sec")
+                    Text("5-50 %/sec")
                 } header: {
-                    Text("Round trip time (RTT)")
+                    Text("Bitrate decrease speed")
+                }
+                Section {
+                    Text("50-500 pkts")
+                } header: {
+                    Text("Packets in flight decrease threshold")
+                } footer: {
+                    Text("""
+                    The bitrate will decrease quickly when the number of packets \
+                    in flight are above this value.
+                    """)
+                }
+                Section {
+                    Text("Allowed spike: 50-200 ms")
+                } header: {
+                    Text("Allowed RTT spike")
+                } footer: {
+                    Text("The maximum allowed RTT spike before decreasing the bitrate")
+                }
+                Section {
+                    Text("25-1250 Kbps/sec")
+                } header: {
+                    Text("RTT diff minimum decrease")
+                } footer: {
+                    Text("The minimum rate at which the bitrate will decrease when RTT is too high")
                 }
             }
         }
