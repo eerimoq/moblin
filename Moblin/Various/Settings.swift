@@ -1264,18 +1264,17 @@ class SettingsRemoteControlClient: Codable {
     var enabled: Bool = false
     var address: String = ""
     var port: UInt16 = 2345
-    var password: String = ""
 }
 
 class SettingsRemoteControlServer: Codable {
     var enabled: Bool = false
     var url: String = ""
-    var password: String = ""
 }
 
 class SettingsRemoteControl: Codable {
     var client: SettingsRemoteControlClient = .init()
     var server: SettingsRemoteControlServer = .init()
+    var password: String? = ""
 }
 
 class Database: Codable {
@@ -2015,6 +2014,10 @@ final class Settings {
         }
         if realDatabase.startStopRecordingConfirmations == nil {
             realDatabase.startStopRecordingConfirmations = true
+            store()
+        }
+        if realDatabase.remoteControl!.password == nil {
+            realDatabase.remoteControl!.password = ""
             store()
         }
     }

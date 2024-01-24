@@ -68,12 +68,6 @@ struct RemoteControlSettingsView: View {
         model.reloadRemoteControlAssistant()
     }
 
-    private func submitClientPassword(value: String) {
-        model.database.remoteControl!.client.password = value.trim()
-        model.store()
-        model.reloadRemoteControlAssistant()
-    }
-
     private func submitServerUrl(value: String) {
         guard isValidWebSocketUrl(url: value) == nil else {
             return
@@ -83,14 +77,28 @@ struct RemoteControlSettingsView: View {
         model.reloadRemoteControlStreamer()
     }
 
-    private func submitServerPassword(value: String) {
-        model.database.remoteControl!.server.password = value.trim()
+    private func submitPassword(value: String) {
+        model.database.remoteControl!.password = value.trim()
         model.store()
         model.reloadRemoteControlStreamer()
     }
 
     var body: some View {
         Form {
+            Section {
+                NavigationLink(destination: PasswordView(
+                    value: model.database.remoteControl!.password!,
+                    onSubmit: submitPassword
+                )) {
+                    TextItemView(
+                        name: String(localized: "Password"),
+                        value: model.database.remoteControl!.password!,
+                        sensitive: true
+                    )
+                }
+            } footer: {
+                Text("Used by both streamer and assistant.")
+            }
             Section {
                 Toggle(isOn: Binding(get: {
                     model.database.remoteControl!.server.enabled
@@ -111,16 +119,6 @@ struct RemoteControlSettingsView: View {
                     TextItemView(
                         name: String(localized: "Assistant URL"),
                         value: model.database.remoteControl!.server.url
-                    )
-                }
-                NavigationLink(destination: PasswordView(
-                    value: model.database.remoteControl!.server.password,
-                    onSubmit: submitServerPassword
-                )) {
-                    TextItemView(
-                        name: String(localized: "Password"),
-                        value: model.database.remoteControl!.server.password,
-                        sensitive: true
                     )
                 }
             } header: {
@@ -161,17 +159,6 @@ struct RemoteControlSettingsView: View {
                     TextItemView(
                         name: String(localized: "Server port"),
                         value: String(model.database.remoteControl!.client.port)
-                    )
-                }
-                NavigationLink(destination: TextEditView(
-                    title: String(localized: "Streamer password"),
-                    value: model.database.remoteControl!.client.password,
-                    onSubmit: submitClientPassword
-                )) {
-                    TextItemView(
-                        name: String(localized: "Streamer password"),
-                        value: model.database.remoteControl!.client.password,
-                        sensitive: true
                     )
                 }
             } header: {

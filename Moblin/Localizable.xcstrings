@@ -44130,9 +44130,6 @@
     "Streamer" : {
 
     },
-    "Streamer password" : {
-
-    },
     "Streaming history" : {
       "localizations" : {
         "de" : {
@@ -50423,6 +50420,9 @@
           }
         }
       }
+    },
+    "Used by both streamer and assistant." : {
+
     },
     "Username" : {
       "localizations" : {

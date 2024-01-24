@@ -13,6 +13,10 @@ private struct RemoteControlRequestResponse {
     let onError: (String) -> Void
 }
 
+private func randomString() -> String {
+    return Data.random(length: 64).base64EncodedString()
+}
+
 class RemoteControlAssistant {
     private let address: String
     private let port: UInt16
@@ -25,6 +29,9 @@ class RemoteControlAssistant {
     private var websocket: Telegraph.WebSocket?
     private var retryStartTimer: DispatchSourceTimer?
     private weak var delegate: (any RemoteControlAssistantDelegate)?
+    private var streamerIdentified: Bool = false
+    private var challenge: String = ""
+    private var salt: String = ""
 
     init(
         address: String,
@@ -145,6 +152,13 @@ class RemoteControlAssistant {
     private func handleConnected(webSocket: Telegraph.WebSocket) {
         logger.info("remote-control-assistant: Streamer connected")
         websocket = webSocket
+        challenge = randomString()
+        salt = randomString()
+        send(message: .hello(
+            apiVersion: remoteControlApiVersion,
+            authentication: .init(challenge: challenge, salt: salt)
+        ))
+        streamerIdentified = false
     }
 
     private func handleDisconnected(webSocket _: Telegraph.WebSocket, error: Error?) {
@@ -161,8 +175,10 @@ class RemoteControlAssistant {
     private func handleStringMessage(webSocket _: Telegraph.WebSocket, message: String) {
         logger.debug("remote-control-assistant: Got message \(message)")
         do {
-            let message = try RemoteControlMessageToClient.fromJson(data: message)
+            let message = try RemoteControlMessageToAssistant.fromJson(data: message)
             switch message {
+            case let .identify(authentication: authentication):
+                handleIdentify(authentication: authentication)
             case let .event(data: data):
                 try handleEvent(data: data)
             case let .response(id: id, result: result, data: data):
@@ -173,10 +189,20 @@ class RemoteControlAssistant {
         }
     }
 
+    private func handleIdentify(authentication: String) {
+        if authentication == remoteControlHashPassword(
+            challenge: challenge,
+            salt: salt,
+            password: password
+        ) {
+            streamerIdentified = true
+            connected = true
+            delegate?.assistantConnected()
+        }
+    }
+
     private func handleEvent(data: RemoteControlEvent) throws {
         switch data {
-        case let .hello(apiVersion: apiVersion, authentication: authentication):
-            try handleHelloEvent(apiVersion: apiVersion, authentication: authentication)
         case let .state(data: state):
             handleStateEvent(state: state)
         }
@@ -201,20 +227,6 @@ class RemoteControlAssistant {
         }
     }
 
-    private func handleHelloEvent(apiVersion _: String, authentication: RemoteControlAuthentication) throws {
-        let hash = remoteControlHashPassword(
-            challenge: authentication.challenge,
-            salt: authentication.salt,
-            password: password
-        )
-        connected = true
-        performRequest(data: .identify(authentication: hash)) { _ in
-            self.delegate?.assistantConnected()
-        } onError: { message in
-            logger.info("remote-control-assistant: error: \(message)")
-        }
-    }
-
     private func handleStateEvent(state: RemoteControlState) {
         delegate?.assistantStateChanged(state: state)
     }
@@ -230,12 +242,8 @@ class RemoteControlAssistant {
             return
         }
         let id = getNextId()
-        let request: RemoteControlMessageToServer = .request(id: id, data: data)
-        guard let message = request.toJson() else {
-            return
-        }
         requests[id] = RemoteControlRequestResponse(onSuccess: onSuccess, onError: onError)
-        websocket?.send(text: message)
+        send(message: .request(id: id, data: data))
     }
 
     private func performRequestNoResponseData(data: RemoteControlRequest, onSuccess: @escaping () -> Void) {
@@ -248,6 +256,13 @@ class RemoteControlAssistant {
     private func getNextId() -> Int {
         nextId += 1
         return nextId
+    }
+
+    private func send(message: RemoteControlMessageToStreamer) {
+        guard let text = message.toJson() else {
+            return
+        }
+        websocket?.send(text: text)
     }
 }
 

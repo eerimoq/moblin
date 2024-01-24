@@ -4,7 +4,6 @@ import Foundation
 let remoteControlApiVersion = "0.1"
 
 enum RemoteControlRequest: Codable {
-    case identify(authentication: String)
     case getStatus
     case getSettings
     case setRecord(on: Bool)
@@ -22,7 +21,6 @@ enum RemoteControlResponse: Codable {
 }
 
 enum RemoteControlEvent: Codable {
-    case hello(apiVersion: String, authentication: RemoteControlAuthentication)
     case state(data: RemoteControlState)
 }
 
@@ -86,7 +84,8 @@ enum RemoteControlResult: Codable {
     case alreadyIdentified
 }
 
-enum RemoteControlMessageToServer: Codable {
+enum RemoteControlMessageToStreamer: Codable {
+    case hello(apiVersion: String, authentication: RemoteControlAuthentication)
     case request(id: Int, data: RemoteControlRequest)
 
     func toJson() -> String? {
@@ -97,15 +96,16 @@ enum RemoteControlMessageToServer: Codable {
         }
     }
 
-    static func fromJson(data: String) throws -> RemoteControlMessageToServer {
+    static func fromJson(data: String) throws -> RemoteControlMessageToStreamer {
         guard let data = data.data(using: .utf8) else {
             throw "Not a UTF-8 string"
         }
-        return try JSONDecoder().decode(RemoteControlMessageToServer.self, from: data)
+        return try JSONDecoder().decode(RemoteControlMessageToStreamer.self, from: data)
     }
 }
 
-enum RemoteControlMessageToClient: Codable {
+enum RemoteControlMessageToAssistant: Codable {
+    case identify(authentication: String)
     case response(id: Int, result: RemoteControlResult, data: RemoteControlResponse?)
     case event(data: RemoteControlEvent)
 
@@ -116,11 +116,11 @@ enum RemoteControlMessageToClient: Codable {
         return encoded
     }
 
-    static func fromJson(data: String) throws -> RemoteControlMessageToClient {
+    static func fromJson(data: String) throws -> RemoteControlMessageToAssistant {
         guard let data = data.data(using: .utf8) else {
             throw "Not a UTF-8 string"
         }
-        return try JSONDecoder().decode(RemoteControlMessageToClient.self, from: data)
+        return try JSONDecoder().decode(RemoteControlMessageToAssistant.self, from: data)
     }
 }
 

@@ -2429,7 +2429,7 @@ final class Model: ObservableObject {
         }
         remoteControlStreamer = RemoteControlStreamer(
             clientUrl: url,
-            password: server.password,
+            password: database.remoteControl!.password!,
             delegate: self
         )
         remoteControlStreamer!.start()
@@ -2437,7 +2437,7 @@ final class Model: ObservableObject {
 
     func isRemoteControlStreamerConfigured() -> Bool {
         let server = database.remoteControl!.server
-        return server.enabled && !server.url.isEmpty && !server.password.isEmpty
+        return server.enabled && !server.url.isEmpty && !database.remoteControl!.password!.isEmpty
     }
 
     func reloadRemoteControlAssistant() {
@@ -2450,7 +2450,7 @@ final class Model: ObservableObject {
         remoteControlAssistant = RemoteControlAssistant(
             address: client.address,
             port: client.port,
-            password: client.password,
+            password: database.remoteControl!.password!,
             delegate: self
         )
         remoteControlAssistant!.start()
@@ -2475,7 +2475,8 @@ final class Model: ObservableObject {
 
     func isRemoteControlAssistantConfigured() -> Bool {
         let client = database.remoteControl!.client
-        return client.enabled && !client.address.isEmpty && client.port > 0 && !client.password.isEmpty
+        return client.enabled && !client.address.isEmpty && client.port > 0 && !database.remoteControl!
+            .password!.isEmpty
     }
 
     func remoteControlAssistantSetScene(id: UUID) {

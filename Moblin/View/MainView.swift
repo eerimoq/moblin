@@ -224,7 +224,9 @@ struct MainView: View {
         .alert("⚠️ Deleting old settings ⚠️", isPresented: $showAreYouReallySure) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text("Immediately install the old version of the app to keep your old settings. This is the last warning!")
+            Text(
+                "Immediately install the old version of the app to keep your old settings. This is the last warning!"
+            )
         }
     }
 }
