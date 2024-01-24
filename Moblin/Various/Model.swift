@@ -384,9 +384,11 @@ final class Model: ObservableObject {
     @Published var gameControllersTotal = noValue
 
     @Published var location = noValue
+    private var originalSettings: String?
+    @Published var showLoadSettingsFailed = false
 
     init() {
-        settings.load()
+        showLoadSettingsFailed = !settings.load()
         streamingHistory.load()
         recordingsStorage.load()
     }

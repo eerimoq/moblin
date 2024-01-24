@@ -3328,6 +3328,12 @@
         }
       }
     },
+    "⚠️ Deleting old settings ⚠️" : {
+
+    },
+    "⚠️ Failed to load settings ⚠️" : {
+
+    },
     "🎉 You are LIVE at %@ 🎉" : {
       "localizations" : {
         "de" : {
@@ -15378,6 +15384,9 @@
         }
       }
     },
+    "Delete old settings and continue" : {
+
+    },
     "Designed by" : {
       "localizations" : {
         "de" : {
@@ -25025,6 +25034,12 @@
         }
       }
     },
+    "Immediately install the old version of the app to keep your old settings." : {
+
+    },
+    "Immediately install the old version of the app to keep your old settings. This is the last warning!" : {
+
+    },
     "Import and export settings" : {
       "localizations" : {
         "de" : {
@@ -33881,6 +33896,9 @@
           }
         }
       }
+    },
+    "OK" : {
+
     },
     "On" : {
       "localizations" : {

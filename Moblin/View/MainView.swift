@@ -39,6 +39,7 @@ class SnowScene: SKScene {
 struct MainView: View {
     @EnvironmentObject var model: Model
     var streamView: StreamView
+    @State var showAreYouReallySure = false
 
     private var scene: SKScene {
         let scene = SnowScene()
@@ -212,6 +213,18 @@ struct MainView: View {
         }
         .toast(isPresenting: $model.showingToast, duration: 5) {
             model.toast
+        }
+        .alert("⚠️ Failed to load settings ⚠️", isPresented: $model.showLoadSettingsFailed) {
+            Button("Delete old settings and continue", role: .cancel) {
+                showAreYouReallySure = true
+            }
+        } message: {
+            Text("Immediately install the old version of the app to keep your old settings.")
+        }
+        .alert("⚠️ Deleting old settings ⚠️", isPresented: $showAreYouReallySure) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Immediately install the old version of the app to keep your old settings. This is the last warning!")
         }
     }
 }
