@@ -74,6 +74,11 @@ struct DebugSettingsView: View {
                     Text("\(formatOneDecimal(value: cameraSwitchRemoveBlackish)) s")
                         .frame(width: 40)
                 }
+                Toggle("Global tone mapping", isOn: Binding(get: {
+                    model.getGlobalToneMappingOn()
+                }, set: { value in
+                    model.setGlobalToneMapping(on: value)
+                }))
             } header: {
                 Text("Experimental")
             }

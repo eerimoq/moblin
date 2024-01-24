@@ -23130,6 +23130,9 @@
         }
       }
     },
+    "Global tone mapping" : {
+
+    },
     "Go Live" : {
       "localizations" : {
         "de" : {

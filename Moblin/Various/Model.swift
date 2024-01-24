@@ -3182,7 +3182,28 @@ final class Model: ObservableObject {
             videoMirrored: getVideoMirrored()
         )
     }
-
+    
+    func setGlobalToneMapping(on: Bool) {
+        guard let cameraDevice else {
+            return
+        }
+        guard cameraDevice.activeFormat.isGlobalToneMappingSupported else {
+            logger.info("Global tone mapping is not supported")
+            return
+        }
+        do {
+            try cameraDevice.lockForConfiguration()
+            cameraDevice.isGlobalToneMappingEnabled = on
+            cameraDevice.unlockForConfiguration()
+        } catch {
+            logger.info("Failed to set global tone mapping")
+        }
+    }
+        
+    func getGlobalToneMappingOn() -> Bool {
+        return cameraDevice?.isGlobalToneMappingEnabled ?? false
+    }
+    
     private func getVideoMirrored() -> Bool {
         return false
     }
