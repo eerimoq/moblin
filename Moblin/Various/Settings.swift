@@ -557,10 +557,12 @@ class SettingsWidgetChat: Codable {}
 class SettingsWidgetRecording: Codable {}
 
 class SettingsWidgetBrowser: Codable {
-    var url: String = "https://google.com"
+    var url: String = ""
     var width: Int = 500
     var height: Int = 500
     var audioOnly: Bool? = false
+    var zoom: Float? = 1.0
+    var fps: Float? = 5.0
 }
 
 enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
@@ -2018,6 +2020,14 @@ final class Settings {
         }
         if realDatabase.remoteControl!.password == nil {
             realDatabase.remoteControl!.password = ""
+            store()
+        }
+        for widget in realDatabase.widgets where widget.browser.zoom == nil {
+            widget.browser.zoom = 1.0
+            store()
+        }
+        for widget in realDatabase.widgets where widget.browser.fps == nil {
+            widget.browser.fps = 5.0
             store()
         }
     }

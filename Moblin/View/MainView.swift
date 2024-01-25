@@ -4,10 +4,8 @@ import WebKit
 
 struct BrowserView: UIViewRepresentable {
     var browser: Browser
-    var size: CGSize
 
     func makeUIView(context _: Context) -> WKWebView {
-        browser.browserEffect.setFrameSize(size: size)
         return browser.browserEffect.webView
     }
 
@@ -87,10 +85,15 @@ struct MainView: View {
                                 .ignoresSafeArea()
                         }
                         ForEach(model.browsers) { browser in
-                            GeometryReader { metrics in
-                                BrowserView(browser: browser, size: metrics.size)
-                                    .opacity(0)
-                            }
+                            BrowserView(browser: browser)
+                                .frame(width: metrics.size.width - 1, height: metrics.size.width / 16 * 9)
+                                .opacity(browser.opacity)
+                                .overlay(
+                                    Rectangle()
+                                        .stroke(.gray)
+                                        .foregroundColor(.gray)
+                                        .opacity(browser.opacity)
+                                )
                         }
                     }
                     StreamOverlayView()

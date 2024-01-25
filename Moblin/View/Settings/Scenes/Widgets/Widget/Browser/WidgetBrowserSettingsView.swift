@@ -31,6 +31,28 @@ struct WidgetBrowserSettingsView: View {
         model.resetSelectedScene()
     }
 
+    private func submitZoom(value: String) {
+        guard let zoom = Float(value) else {
+            return
+        }
+        guard zoom > 0 else {
+            return
+        }
+        widget.browser.zoom = zoom
+        model.store()
+        model.resetSelectedScene()
+    }
+
+    private func submitFps(value: Float) {
+        widget.browser.fps = value
+        model.store()
+        model.resetSelectedScene()
+    }
+
+    private func formatFps(value: Float) -> String {
+        return formatOneDecimal(value: value)
+    }
+
     var body: some View {
         Section {
             NavigationLink(destination: TextEditView(
@@ -39,6 +61,14 @@ struct WidgetBrowserSettingsView: View {
                 onSubmit: submitUrl
             )) {
                 TextItemView(name: "URL", value: widget.browser.url)
+            }
+            Toggle(isOn: Binding(get: {
+                model.isBrowserInteractive(widgetId: widget.id)
+            }, set: { value in
+                model.setBrowserInteractive(widgetId: widget.id, on: value)
+                model.objectWillChange.send()
+            })) {
+                Text("Interactive")
             }
             Toggle(isOn: Binding(get: {
                 widget.browser.audioOnly!
@@ -63,6 +93,25 @@ struct WidgetBrowserSettingsView: View {
                     onSubmit: submitHeight
                 )) {
                     TextItemView(name: "Height", value: String(widget.browser.height))
+                }
+                NavigationLink(destination: TextEditView(
+                    title: "Zoom",
+                    value: String(widget.browser.zoom!),
+                    onSubmit: submitZoom
+                )) {
+                    TextItemView(name: "Zoom", value: String(widget.browser.zoom!))
+                }
+                HStack {
+                    Text("FPS")
+                    SliderView(
+                        value: widget.browser.fps!,
+                        minimum: 0.5,
+                        maximum: 5,
+                        step: 0.5,
+                        onSubmit: submitFps,
+                        width: 60,
+                        format: formatFps
+                    )
                 }
             }
         } header: {

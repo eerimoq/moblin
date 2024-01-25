@@ -17,10 +17,13 @@ import VideoToolbox
 import WebKit
 
 class Browser: Identifiable {
-    var id: UUID = .init()
+    // Widget id
+    var id: UUID
     var browserEffect: BrowserEffect
+    var opacity: CGFloat = 0
 
-    init(browserEffect: BrowserEffect) {
+    init(id: UUID, browserEffect: BrowserEffect) {
+        self.id = id
         self.browserEffect = browserEffect
     }
 }
@@ -384,7 +387,6 @@ final class Model: ObservableObject {
     @Published var gameControllersTotal = noValue
 
     @Published var location = noValue
-    private var originalSettings: String?
     @Published var showLoadSettingsFailed = false
 
     init() {
@@ -1613,7 +1615,6 @@ final class Model: ObservableObject {
             }
             self.updateChat()
         })
-        takeBrowserSnapshots()
     }
 
     private func updateSrtDebugLines() {
@@ -1622,45 +1623,6 @@ final class Model: ObservableObject {
         } else if !srtDebugLines.isEmpty {
             srtDebugLines = []
         }
-    }
-
-    private func takeBrowserSnapshots() {
-        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
-            for browser in self.browserEffectsInCurrentScene() where !browser.audioOnly {
-                let configuration = WKSnapshotConfiguration()
-                configuration.snapshotWidth = NSNumber(value: browser.width)
-                browser.webView.takeSnapshot(with: configuration) { image, error in
-                    if let error {
-                        logger.warning("Browser snapshot error: \(error)")
-                    } else if let image {
-                        browser.setImage(image: image)
-                    } else {
-                        logger.warning("No browser image")
-                    }
-                }
-            }
-        })
-    }
-
-    private func browserEffectsInCurrentScene() -> [BrowserEffect] {
-        guard let scene = findEnabledScene(id: selectedSceneId) else {
-            return []
-        }
-        var sceneBrowserEffects: [BrowserEffect] = []
-        for widget in scene.widgets where widget.enabled {
-            guard let realWidget = findWidget(id: widget.widgetId) else {
-                continue
-            }
-            if realWidget.type != .browser {
-                continue
-            }
-            if let browserEffect = browserEffects[widget.widgetId] {
-                sceneBrowserEffects.append(browserEffect)
-            } else {
-                logger.warning("Browser effect not found")
-            }
-        }
-        return sceneBrowserEffects
     }
 
     private func removeUnusedImages() {
@@ -1863,10 +1825,24 @@ final class Model: ObservableObject {
                 videoSize: videoSize
             )
         }
-        browsers = browserEffects.values.map { browser in
-            Browser(browserEffect: browser)
+        browsers = browserEffects.map { id, browser in
+            Browser(id: id, browserEffect: browser)
         }
         sceneUpdated(imageEffectChanged: true, store: false)
+    }
+
+    private func findBrowser(widgetId: UUID) -> Browser? {
+        return browsers.first(where: { browser in
+            browser.id == widgetId
+        })
+    }
+
+    func isBrowserInteractive(widgetId: UUID) -> Bool {
+        return findBrowser(widgetId: widgetId)?.opacity == 1
+    }
+
+    func setBrowserInteractive(widgetId: UUID, on: Bool) {
+        findBrowser(widgetId: widgetId)?.opacity = on ? 1 : 0
     }
 
     func store() {
@@ -3182,7 +3158,7 @@ final class Model: ObservableObject {
             videoMirrored: getVideoMirrored()
         )
     }
-    
+
     func setGlobalToneMapping(on: Bool) {
         guard let cameraDevice else {
             return
@@ -3199,11 +3175,11 @@ final class Model: ObservableObject {
             logger.info("Failed to set global tone mapping")
         }
     }
-        
+
     func getGlobalToneMappingOn() -> Bool {
         return cameraDevice?.isGlobalToneMappingEnabled ?? false
     }
-    
+
     private func getVideoMirrored() -> Bool {
         return false
     }
