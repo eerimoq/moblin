@@ -15,14 +15,16 @@ final class BrowserEffect: VideoEffect {
     private var x: Double
     private var y: Double
     let width: Double
-    private let height: Double
+    let height: Double
     private let url: URL
     var isLoaded: Bool
     let audioOnly: Bool
     var fps: Float
+    private var scaleToFitVideo: Bool
     private var snapshotTimer: Timer?
 
     init(url: URL, widget: SettingsWidgetBrowser, videoSize: CGSize) {
+        scaleToFitVideo = widget.scaleToFitVideo!
         self.url = url
         self.videoSize = videoSize
         fps = widget.fps!
@@ -40,13 +42,13 @@ final class BrowserEffect: VideoEffect {
         let configuration = WKWebViewConfiguration()
         configuration.allowsInlineMediaPlayback = true
         configuration.mediaTypesRequiringUserActionForPlayback = []
-        webView = WKWebView(frame: .zero, configuration: configuration)
+        webView = WKWebView(frame: CGRect(x: 0, y: 0, width: width, height: height),
+                            configuration: configuration)
         webView.isOpaque = false
         webView.backgroundColor = .clear
         webView.scrollView.backgroundColor = .clear
         webView.scrollView.showsVerticalScrollIndicator = false
         webView.scrollView.showsHorizontalScrollIndicator = false
-        webView.pageZoom = CGFloat(widget.zoom!)
     }
 
     deinit {
@@ -62,11 +64,12 @@ final class BrowserEffect: VideoEffect {
                     webView.load(URLRequest(url: url))
                     isLoaded = true
                 }
-            } else {
+            } else if isLoaded {
                 x = .nan
                 y = .nan
+                image = nil
                 overlay = nil
-                webView.loadHTMLString("", baseURL: nil)
+                webView.loadHTMLString("<html></html>", baseURL: nil)
                 isLoaded = false
             }
         }
@@ -79,7 +82,9 @@ final class BrowserEffect: VideoEffect {
     private func startTakeSnapshots() {
         snapshotTimer = Timer.scheduledTimer(withTimeInterval: Double(1 / fps), repeats: true, block: { _ in
             let configuration = WKSnapshotConfiguration()
-            configuration.snapshotWidth = NSNumber(value: self.width)
+            if self.scaleToFitVideo {
+                configuration.snapshotWidth = NSNumber(value: self.videoSize.width)
+            }
             self.webView.takeSnapshot(with: configuration) { image, error in
                 if let error {
                     logger.warning("Browser snapshot error: \(error)")

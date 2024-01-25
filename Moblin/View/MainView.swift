@@ -86,14 +86,11 @@ struct MainView: View {
                         }
                         ForEach(model.browsers) { browser in
                             BrowserView(browser: browser)
-                                .frame(width: metrics.size.width - 1, height: metrics.size.width / 16 * 9)
-                                .opacity(browser.opacity)
-                                .overlay(
-                                    Rectangle()
-                                        .stroke(.gray)
-                                        .foregroundColor(.gray)
-                                        .opacity(browser.opacity)
+                                .frame(
+                                    width: browser.browserEffect.width,
+                                    height: browser.browserEffect.height
                                 )
+                                .opacity(0)
                         }
                     }
                     StreamOverlayView()

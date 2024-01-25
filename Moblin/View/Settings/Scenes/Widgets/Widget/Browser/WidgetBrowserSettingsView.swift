@@ -10,7 +10,7 @@ struct WidgetBrowserSettingsView: View {
         }
         widget.browser.url = value.trim()
         model.store()
-        model.resetSelectedScene()
+        model.resetSelectedScene(changeScene: false)
     }
 
     private func submitWidth(value: String) {
@@ -19,7 +19,7 @@ struct WidgetBrowserSettingsView: View {
         }
         widget.browser.width = width
         model.store()
-        model.resetSelectedScene()
+        model.resetSelectedScene(changeScene: false)
     }
 
     private func submitHeight(value: String) {
@@ -28,25 +28,13 @@ struct WidgetBrowserSettingsView: View {
         }
         widget.browser.height = height
         model.store()
-        model.resetSelectedScene()
-    }
-
-    private func submitZoom(value: String) {
-        guard let zoom = Float(value) else {
-            return
-        }
-        guard zoom > 0 else {
-            return
-        }
-        widget.browser.zoom = zoom
-        model.store()
-        model.resetSelectedScene()
+        model.resetSelectedScene(changeScene: false)
     }
 
     private func submitFps(value: Float) {
         widget.browser.fps = value
         model.store()
-        model.resetSelectedScene()
+        model.resetSelectedScene(changeScene: false)
     }
 
     private func formatFps(value: Float) -> String {
@@ -63,19 +51,11 @@ struct WidgetBrowserSettingsView: View {
                 TextItemView(name: "URL", value: widget.browser.url)
             }
             Toggle(isOn: Binding(get: {
-                model.isBrowserInteractive(widgetId: widget.id)
-            }, set: { value in
-                model.setBrowserInteractive(widgetId: widget.id, on: value)
-                model.objectWillChange.send()
-            })) {
-                Text("Interactive")
-            }
-            Toggle(isOn: Binding(get: {
                 widget.browser.audioOnly!
             }, set: { value in
                 widget.browser.audioOnly = value
                 model.store()
-                model.resetSelectedScene()
+                model.resetSelectedScene(changeScene: false)
             })) {
                 Text("Audio only")
             }
@@ -94,12 +74,14 @@ struct WidgetBrowserSettingsView: View {
                 )) {
                     TextItemView(name: "Height", value: String(widget.browser.height))
                 }
-                NavigationLink(destination: TextEditView(
-                    title: "Zoom",
-                    value: String(widget.browser.zoom!),
-                    onSubmit: submitZoom
-                )) {
-                    TextItemView(name: "Zoom", value: String(widget.browser.zoom!))
+                Toggle(isOn: Binding(get: {
+                    widget.browser.scaleToFitVideo!
+                }, set: { value in
+                    widget.browser.scaleToFitVideo = value
+                    model.store()
+                    model.resetSelectedScene(changeScene: false)
+                })) {
+                    Text("Scale to fit video")
                 }
                 HStack {
                     Text("FPS")

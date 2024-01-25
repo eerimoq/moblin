@@ -561,7 +561,7 @@ class SettingsWidgetBrowser: Codable {
     var width: Int = 500
     var height: Int = 500
     var audioOnly: Bool? = false
-    var zoom: Float? = 1.0
+    var scaleToFitVideo: Bool? = false
     var fps: Float? = 5.0
 }
 
@@ -2022,8 +2022,8 @@ final class Settings {
             realDatabase.remoteControl!.password = ""
             store()
         }
-        for widget in realDatabase.widgets where widget.browser.zoom == nil {
-            widget.browser.zoom = 1.0
+        for widget in realDatabase.widgets where widget.browser.scaleToFitVideo == nil {
+            widget.browser.scaleToFitVideo = false
             store()
         }
         for widget in realDatabase.widgets where widget.browser.fps == nil {
