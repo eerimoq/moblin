@@ -8,6 +8,23 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.157.0", date: "2024-01-25", changes: [
+        "• OBS start and stop streaming confirmations.",
+        "• Start/stop recording confirmations toggle.",
+        "  • Settings → Display → Recording confirmations.",
+        "• Show alert when settings are about to be reset on startup.",
+        "• New remote control authentication. Not backwards compatible.",
+        "  • Your remote control password will be lost.",
+        "• Experimental global tone mapping toggle.",
+        "  • Settings → Debug.",
+        "• Default audio to speaker.",
+        "  • Should make browser widget sound volume higher.",
+        "  • Should use Bluetooth speaker if connected.",
+        "• Tons of browser widget changes.",
+        "  • Scale to fit video.",
+        "  • Width and height are actually used as browser window size.",
+        "  • FPS configuration.",
+    ]),
     Version(version: "0.156.0", date: "2024-01-21", changes: [
         "• Make Settings → Display → Local overlays → Chat only hide/show the top left chat icon and info, not chat itself.",
         "• Three adaptive bitrate algorithms.",
