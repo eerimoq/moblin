@@ -797,7 +797,7 @@ final class Model: ObservableObject {
         do {
             try session.setCategory(
                 .playAndRecord,
-                options: [.mixWithOthers, .allowBluetooth]
+                options: [.mixWithOthers, .allowBluetooth, .defaultToSpeaker]
             )
             try session.setActive(true)
         } catch {
