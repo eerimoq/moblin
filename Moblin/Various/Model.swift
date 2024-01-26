@@ -2048,6 +2048,10 @@ final class Model: ObservableObject {
         setStreamKeyFrameInterval()
         setStreamBitrate(stream: stream)
         setAudioStreamBitrate(stream: stream)
+        setAudioChannelsMap(channelsMap: [
+            0: database.debug!.audioOutputToInputChannelsMap!.channel0,
+            1: database.debug!.audioOutputToInputChannelsMap!.channel1,
+        ])
         reloadConnections()
         resetChat()
         reloadLocation()
@@ -2168,6 +2172,10 @@ final class Model: ObservableObject {
 
     func setAudioStreamBitrate(stream: SettingsStream) {
         media.setAudioStreamBitrate(bitrate: stream.audioBitrate!)
+    }
+
+    func setAudioChannelsMap(channelsMap: [Int: Int]) {
+        media.setAudioChannelsMap(channelsMap: channelsMap)
     }
 
     private func setStreamCodec() {

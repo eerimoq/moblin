@@ -343,6 +343,10 @@ final class Media: NSObject {
         netStream.audioSettings.bitRate = bitrate
     }
 
+    func setAudioChannelsMap(channelsMap: [Int: Int]) {
+        netStream.audioSettings.outputChannelsMap = channelsMap
+    }
+
     func setCameraZoomLevel(level: Float, rate: Float?) -> Float? {
         guard let device = netStream.videoCapture()?.device else {
             logger.warning("Device not ready to zoom")

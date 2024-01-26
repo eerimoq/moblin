@@ -1020,6 +1020,11 @@ enum SettingsLogLevel: String, Codable, CaseIterable {
 
 let logLevels = SettingsLogLevel.allCases.map { $0.rawValue }
 
+class SettingsDebugAudioOutputToInputChannelsMap: Codable {
+    var channel0: Int = 0
+    var channel1: Int = 1
+}
+
 class SettingsDebug: Codable {
     var logLevel: SettingsLogLevel = .error
     var srtOverlay: Bool = false
@@ -1029,6 +1034,7 @@ class SettingsDebug: Codable {
     var recordingsFolder: Bool? = false
     var cameraSwitchRemoveBlackish: Float? = 0.3
     var maximumBandwidthFollowInput: Bool? = true
+    var audioOutputToInputChannelsMap: SettingsDebugAudioOutputToInputChannelsMap? = .init()
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -2039,6 +2045,10 @@ final class Settings {
                 priority.enabled = true
                 store()
             }
+        }
+        if realDatabase.debug!.audioOutputToInputChannelsMap == nil {
+            realDatabase.debug!.audioOutputToInputChannelsMap = .init()
+            store()
         }
     }
 }

@@ -6,8 +6,38 @@ private let audioGenerators = ["Off", "Square wave"]
 struct DebugAudioSettingsView: View {
     @EnvironmentObject var model: Model
 
+    private func submitChannel0(value: String) {
+        guard let channel = Int(value) else {
+            return
+        }
+        model.database.debug!.audioOutputToInputChannelsMap!.channel0 = channel
+        model.store()
+    }
+
+    private func submitChannel1(value: String) {
+        guard let channel = Int(value) else {
+            return
+        }
+        model.database.debug!.audioOutputToInputChannelsMap!.channel1 = channel
+        model.store()
+    }
+
     var body: some View {
         Form {
+            Section {
+                TextEditNavigationView(
+                    title: "Output channel 0",
+                    value: String(model.database.debug!.audioOutputToInputChannelsMap!.channel0),
+                    onSubmit: submitChannel0
+                )
+                TextEditNavigationView(
+                    title: "Output channel 1",
+                    value: String(model.database.debug!.audioOutputToInputChannelsMap!.channel1),
+                    onSubmit: submitChannel0
+                )
+            } header: {
+                Text("Channels mapping")
+            }
             Section {
                 Picker("", selection: $model.audioGenerator) {
                     ForEach(audioGenerators, id: \.self) { mode in
