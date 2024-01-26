@@ -8,6 +8,14 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.158.0", date: "2024-01-26", changes: [
+        "• Disable connection toggle.",
+        "  • Settings → Streams → My stream → SRT(LA) → Connection priorities.",
+        "• Browser widget performance improvements.",
+        "  • For some reason the browser snapshots were 3 times bigger then expected. Dividing them by 3 greatly reduces power usage.",
+        "  • Often uses GPU instead of CPU now.",
+        "  • For some reason browsers behave badly after settings change. Out of sync and slow.",
+    ]),
     Version(version: "0.157.0", date: "2024-01-25", changes: [
         "• OBS start and stop streaming confirmations.",
         "• Start/stop recording confirmations toggle.",
