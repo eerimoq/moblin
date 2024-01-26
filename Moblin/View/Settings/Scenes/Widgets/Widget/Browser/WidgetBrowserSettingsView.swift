@@ -76,7 +76,7 @@ struct WidgetBrowserSettingsView: View {
                     SliderView(
                         value: widget.browser.fps!,
                         minimum: 1,
-                        maximum: 30,
+                        maximum: 15,
                         step: 1,
                         onSubmit: submitFps,
                         width: 60,
