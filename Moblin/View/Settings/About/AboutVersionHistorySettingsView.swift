@@ -8,6 +8,10 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.159.0", date: "2024-01-26", changes: [
+        "• Audio channels mapping.",
+        "  • Settings → Debug → Audio.",
+    ]),
     Version(version: "0.158.0", date: "2024-01-26", changes: [
         "• Disable connection toggle.",
         "  • Settings → Streams → My stream → SRT(LA) → Connection priorities.",

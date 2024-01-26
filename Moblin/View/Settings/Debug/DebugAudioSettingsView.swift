@@ -33,7 +33,7 @@ struct DebugAudioSettingsView: View {
                 TextEditNavigationView(
                     title: "Output channel 1",
                     value: String(model.database.debug!.audioOutputToInputChannelsMap!.channel1),
-                    onSubmit: submitChannel0
+                    onSubmit: submitChannel1
                 )
             } header: {
                 Text("Channels mapping")
