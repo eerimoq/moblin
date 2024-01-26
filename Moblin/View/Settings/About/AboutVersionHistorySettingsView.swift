@@ -11,6 +11,7 @@ private let versions = [
     Version(version: "0.159.0", date: "2024-01-26", changes: [
         "• Audio channels mapping.",
         "  • Settings → Debug → Audio.",
+        "• New Custom IRL adaptive bitrate parameter ranges.",
     ]),
     Version(version: "0.158.0", date: "2024-01-26", changes: [
         "• Disable connection toggle.",
