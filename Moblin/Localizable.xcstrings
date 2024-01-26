@@ -15947,6 +15947,9 @@
         }
       }
     },
+    "Disabled connections will not be used." : {
+
+    },
     "Discord" : {
       "localizations" : {
         "de" : {

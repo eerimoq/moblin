@@ -162,6 +162,8 @@ class RemoteConnection {
 
         if type == nil {
             return 1
+        } else if priority == 0 {
+            return -1
         } else {
             let score = windowSize / (packetsInFlight.count + 1)
             if windowSize > windowStableMaximum * windowMultiply {
@@ -175,6 +177,10 @@ class RemoteConnection {
                 return score
             }
         }
+    }
+
+    func isEnabled() -> Bool {
+        return priority > 0
     }
 
     private func cancelAllTimers() {

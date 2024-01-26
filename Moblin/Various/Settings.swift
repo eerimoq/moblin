@@ -33,6 +33,7 @@ class SettingsStreamSrtConnectionPriority: Codable, Identifiable {
     var id: UUID = .init()
     var name: String
     var priority: Int = 1
+    var enabled: Bool? = true
 
     init(name: String) {
         self.name = name
@@ -41,6 +42,7 @@ class SettingsStreamSrtConnectionPriority: Codable, Identifiable {
     func clone() -> SettingsStreamSrtConnectionPriority {
         let new = SettingsStreamSrtConnectionPriority(name: name)
         new.priority = priority
+        new.enabled = enabled
         return new
     }
 }
@@ -2031,6 +2033,12 @@ final class Settings {
         for widget in realDatabase.widgets where widget.browser.fps == nil {
             widget.browser.fps = 5.0
             store()
+        }
+        for stream in realDatabase.streams {
+            for priority in stream.srt.connectionPriorities!.priorities where priority.enabled == nil {
+                priority.enabled = true
+                store()
+            }
         }
     }
 }

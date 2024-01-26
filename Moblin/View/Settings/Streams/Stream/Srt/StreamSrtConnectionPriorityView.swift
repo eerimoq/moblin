@@ -16,22 +16,30 @@ struct PriorityItemView: View {
     }
 
     var body: some View {
-        HStack {
-            Text(makeName())
-                .frame(width: 90)
-            Slider(
-                value: $prio,
-                in: 1 ... 10,
-                step: 1,
-                onEditingChanged: { begin in
-                    guard !begin else {
-                        return
+        Toggle(isOn: Binding(get: {
+            priority.enabled!
+        }, set: { value in
+            priority.enabled = value
+            model.store()
+            model.updateSrtlaPriorities()
+        })) {
+            HStack {
+                Text(makeName())
+                    .frame(width: 90)
+                Slider(
+                    value: $prio,
+                    in: 1 ... 10,
+                    step: 1,
+                    onEditingChanged: { begin in
+                        guard !begin else {
+                            return
+                        }
+                        priority.priority = Int(prio)
+                        model.store()
+                        model.updateSrtlaPriorities()
                     }
-                    priority.priority = Int(prio)
-                    model.store()
-                    model.updateSrtlaPriorities()
-                }
-            )
+                )
+            }
         }
     }
 }
@@ -49,20 +57,25 @@ struct StreamSrtConnectionPriorityView: View {
                     stream.srt.connectionPriorities!.enabled = value
                     model.store()
                     model.updateSrtlaPriorities()
+                    model.objectWillChange.send()
                 })) {
                     Text("Enabled")
                 }
             }
-            Section {
-                ForEach(stream.srt.connectionPriorities!.priorities) { priority in
-                    PriorityItemView(priority: priority, prio: Float(priority.priority))
+            if stream.srt.connectionPriorities!.enabled {
+                Section {
+                    ForEach(stream.srt.connectionPriorities!.priorities) { priority in
+                        PriorityItemView(priority: priority, prio: Float(priority.priority))
+                    }
+                } footer: {
+                    Text("""
+                    A connection with high priority will be used more than a connection with \
+                    low priority if the high priority connection is stable. Unstable connections \
+                    will get lowest priority regardless of configured priority until they are stable again.
+                    """)
+                    Text("")
+                    Text("Disabled connections will not be used.")
                 }
-            } footer: {
-                Text("""
-                A connection with high priority will be used more than a connection with \
-                low priority if the high priority connection is stable. Unstable connections \
-                will get lowest priority regardless of configured priority until they are stable again.
-                """)
             }
         }
         .navigationTitle("Connection priorities")

@@ -140,10 +140,22 @@ class Srtla {
 
     private func updateConnectionPriorities(connectionPriorities: SettingsStreamSrtConnectionPriorities) {
         self.connectionPriorities = .init()
-        if connectionPriorities.enabled {
-            for connectionPriority in connectionPriorities.priorities {
-                self.connectionPriorities.append(connectionPriority.clone())
-            }
+        guard connectionPriorities.enabled else {
+            return
+        }
+        guard let lowestPriority = connectionPriorities.priorities
+            .filter({ priority in priority.enabled! })
+            .min(by: { first, second in
+                first.priority < second.priority
+            })
+        else {
+            return
+        }
+        for connectionPriority in connectionPriorities.priorities {
+            var prioroty = connectionPriority.clone()
+            prioroty.priority -= lowestPriority.priority
+            prioroty.priority += 1
+            self.connectionPriorities.append(prioroty)
         }
     }
 
@@ -170,9 +182,16 @@ class Srtla {
     }
 
     private func getConnectionPriority(name: String) -> Float {
-        return Float(connectionPriorities.first { connection in
+        guard let priority = connectionPriorities.first(where: { connection in
             connection.name == name
-        }?.priority ?? 1)
+        }) else {
+            return 1
+        }
+        if priority.enabled! {
+            return Float(priority.priority)
+        } else {
+            return 0
+        }
     }
 
     private func handleNetworkPathUpdate(path: NWPath) {
@@ -218,7 +237,7 @@ class Srtla {
         var byteCounts: [ByteCount] = []
         var totalByteCount: UInt64 = 0
         srtlaDispatchQueue.sync {
-            for connection in remoteConnections {
+            for connection in remoteConnections where connection.isEnabled() {
                 guard let byteCount = connection.getDataSentDelta() else {
                     continue
                 }
