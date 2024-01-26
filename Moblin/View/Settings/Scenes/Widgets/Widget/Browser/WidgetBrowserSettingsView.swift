@@ -81,15 +81,15 @@ struct WidgetBrowserSettingsView: View {
                     model.store()
                     model.resetSelectedScene(changeScene: false)
                 })) {
-                    Text("Scale to fit video")
+                    Text("Scale to fit video width")
                 }
                 HStack {
                     Text("FPS")
                     SliderView(
                         value: widget.browser.fps!,
-                        minimum: 0.5,
-                        maximum: 5,
-                        step: 0.5,
+                        minimum: 1,
+                        maximum: 30,
+                        step: 1,
                         onSubmit: submitFps,
                         width: 60,
                         format: formatFps

@@ -82,8 +82,11 @@ final class BrowserEffect: VideoEffect {
     private func startTakeSnapshots() {
         snapshotTimer = Timer.scheduledTimer(withTimeInterval: Double(1 / fps), repeats: true, block: { _ in
             let configuration = WKSnapshotConfiguration()
+            // Why is scale needed? Is it always 3?
             if self.scaleToFitVideo {
-                configuration.snapshotWidth = NSNumber(value: self.videoSize.width)
+                configuration.snapshotWidth = NSNumber(value: self.videoSize.width / 3)
+            } else {
+                configuration.snapshotWidth = NSNumber(value: self.width / 3)
             }
             self.webView.takeSnapshot(with: configuration) { image, error in
                 if let error {
@@ -108,7 +111,7 @@ final class BrowserEffect: VideoEffect {
         }
     }
 
-    private func updateOverlay(size: CGSize) {
+    private func updateOverlay() {
         var newImage: UIImage?
         browserQueue.sync {
             if self.image != nil {
@@ -122,17 +125,17 @@ final class BrowserEffect: VideoEffect {
         guard x != .nan && y != .nan else {
             return
         }
-        UIGraphicsBeginImageContext(size)
-        newImage.draw(at: CGPoint(x: x, y: y))
-        overlay = CIImage(
-            image: UIGraphicsGetImageFromCurrentImageContext()!,
-            options: nil
-        )
-        UIGraphicsEndImageContext()
+        overlay = CIImage(image: newImage)
+        if !scaleToFitVideo && overlay != nil {
+            overlay = overlay!.transformed(by: CGAffineTransform(
+                translationX: x,
+                y: videoSize.height - height - y
+            ))
+        }
     }
 
     override func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {
-        updateOverlay(size: image.extent.size)
+        updateOverlay()
         filter.inputImage = overlay
         filter.backgroundImage = image
         return filter.outputImage ?? image
