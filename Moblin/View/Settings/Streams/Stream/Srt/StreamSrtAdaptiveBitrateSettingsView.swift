@@ -91,7 +91,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
                 }
                 Section {
                     SliderView(value: adaptiveBitrate.customSettings.pifDiffIncreaseFactor,
-                               minimum: 25,
+                               minimum: 5,
                                maximum: 500,
                                step: 5,
                                onSubmit: submitBitrateIncreaseSpeed,
@@ -131,7 +131,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
                 Section {
                     SliderView(value: Float(adaptiveBitrate.customSettings.packetsInFlight),
                                minimum: 50,
-                               maximum: 500,
+                               maximum: 5000,
                                step: 5,
                                onSubmit: submitPacketsInFlight,
                                width: 100,
@@ -147,7 +147,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
                 Section {
                     SliderView(value: adaptiveBitrate.customSettings.rttDiffHighAllowedSpike,
                                minimum: 25,
-                               maximum: 200,
+                               maximum: 1000,
                                step: 5,
                                onSubmit: submitAllowedRttSpike,
                                width: 80,
