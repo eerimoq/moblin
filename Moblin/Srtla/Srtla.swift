@@ -152,10 +152,10 @@ class Srtla {
             return
         }
         for connectionPriority in connectionPriorities.priorities {
-            var prioroty = connectionPriority.clone()
-            prioroty.priority -= lowestPriority.priority
-            prioroty.priority += 1
-            self.connectionPriorities.append(prioroty)
+            let priority = connectionPriority.clone()
+            priority.priority -= lowestPriority.priority
+            priority.priority += 1
+            self.connectionPriorities.append(priority)
         }
     }
 

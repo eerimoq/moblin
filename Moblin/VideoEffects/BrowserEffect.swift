@@ -55,23 +55,29 @@ final class BrowserEffect: VideoEffect {
         stopTakeSnapshots()
     }
 
+    func stop() {
+        stopTakeSnapshots()
+    }
+
+    func reload() {
+        webView.reload()
+    }
+
     func setSceneWidget(sceneWidget: SettingsSceneWidget?) {
-        browserQueue.sync {
-            if let sceneWidget {
-                x = (videoSize.width * sceneWidget.x) / 100
-                y = (videoSize.height * sceneWidget.y) / 100
-                if !isLoaded {
-                    webView.load(URLRequest(url: url))
-                    isLoaded = true
-                }
-            } else if isLoaded {
-                x = .nan
-                y = .nan
-                image = nil
-                overlay = nil
-                webView.loadHTMLString("<html></html>", baseURL: nil)
-                isLoaded = false
+        if let sceneWidget {
+            x = (videoSize.width * sceneWidget.x) / 100
+            y = (videoSize.height * sceneWidget.y) / 100
+            if !isLoaded {
+                webView.load(URLRequest(url: url))
+                isLoaded = true
             }
+        } else if isLoaded {
+            x = .nan
+            y = .nan
+            image = nil
+            overlay = nil
+            webView.loadHTMLString("<html></html>", baseURL: nil)
+            isLoaded = false
         }
         stopTakeSnapshots()
         if sceneWidget != nil {

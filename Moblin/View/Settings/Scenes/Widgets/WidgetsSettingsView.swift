@@ -25,6 +25,17 @@ struct WidgetsSettingsView: View {
         Form {
             Text("A list of all widgets. A widget can be used in zero or more scenes.")
             Section {
+                Button {
+                    model.reloadBrowserWidgets()
+                } label: {
+                    HStack {
+                        Spacer()
+                        Text("Reload browsers")
+                        Spacer()
+                    }
+                }
+            }
+            Section {
                 ForEach(database.widgets) { widget in
                     NavigationLink(destination: WidgetSettingsView(
                         widget: widget

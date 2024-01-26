@@ -20,7 +20,6 @@ class Browser: Identifiable {
     // Widget id
     var id: UUID
     var browserEffect: BrowserEffect
-    var opacity: CGFloat = 0
 
     init(id: UUID, browserEffect: BrowserEffect) {
         self.id = id
@@ -1808,6 +1807,7 @@ final class Model: ObservableObject {
         }
         for browserEffect in browserEffects.values {
             media.unregisterEffect(browserEffect)
+            browserEffect.stop()
         }
         browserEffects.removeAll()
         for widget in database.widgets where widget.type == .browser {
@@ -1831,20 +1831,6 @@ final class Model: ObservableObject {
         sceneUpdated(imageEffectChanged: true, store: false)
     }
 
-    private func findBrowser(widgetId: UUID) -> Browser? {
-        return browsers.first(where: { browser in
-            browser.id == widgetId
-        })
-    }
-
-    func isBrowserInteractive(widgetId: UUID) -> Bool {
-        return findBrowser(widgetId: widgetId)?.opacity == 1
-    }
-
-    func setBrowserInteractive(widgetId: UUID, on: Bool) {
-        findBrowser(widgetId: widgetId)?.opacity = on ? 1 : 0
-    }
-
     func store() {
         settings.store()
     }
@@ -1858,6 +1844,12 @@ final class Model: ObservableObject {
             stopRecording()
         } else {
             startRecording()
+        }
+    }
+
+    func reloadBrowserWidgets() {
+        for browser in browsers {
+            browser.browserEffect.reload()
         }
     }
 
@@ -2825,6 +2817,7 @@ final class Model: ObservableObject {
         }
         for browserEffect in browserEffects.values {
             media.unregisterEffect(browserEffect)
+            browserEffect.stop()
         }
     }
 
