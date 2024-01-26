@@ -18,17 +18,12 @@ struct StreamRealtimeIrlSettingsView: View {
                 Text("Send your location to https://rtirl.com, to let your viewers know where you are.")
             }
             Section {
-                NavigationLink(destination: TextEditView(
+                TextEditNavigationView(
                     title: String(localized: "Push key"),
                     value: stream.realtimeIrlPushKey!,
-                    onSubmit: submitPushKey
-                )) {
-                    TextItemView(
-                        name: String(localized: "Push key"),
-                        value: stream.realtimeIrlPushKey!,
-                        sensitive: true
-                    )
-                }
+                    onSubmit: submitPushKey,
+                    sensitive: true
+                )
             }
         }
         .navigationTitle("RealtimeIRL")

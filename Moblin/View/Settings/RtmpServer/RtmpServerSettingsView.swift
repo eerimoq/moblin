@@ -43,16 +43,11 @@ struct RtmpServerSettingsView: View {
                 }
             }
             Section {
-                NavigationLink(destination: TextEditView(
+                TextEditNavigationView(
                     title: String(localized: "Port"),
                     value: String(model.database.rtmpServer!.port),
                     onSubmit: submitPort
-                )) {
-                    TextItemView(
-                        name: String(localized: "Port"),
-                        value: String(model.database.rtmpServer!.port)
-                    )
-                }
+                )
                 .disabled(model.rtmpServerEnabled())
             } footer: {
                 Text("The TCP port the RTMP server listens for RTMP publishers on.")

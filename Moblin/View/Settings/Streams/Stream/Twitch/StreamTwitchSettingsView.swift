@@ -23,25 +23,21 @@ struct StreamTwitchSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: TextEditView(
+                TextEditNavigationView(
                     title: String(localized: "Channel name"),
                     value: stream.twitchChannelName,
                     onSubmit: submitChannelName,
                     capitalize: true
-                )) {
-                    TextItemView(name: String(localized: "Channel name"), value: stream.twitchChannelName)
-                }
+                )
             } footer: {
                 Text("The name of your channel.")
             }
             Section {
-                NavigationLink(destination: TextEditView(
+                TextEditNavigationView(
                     title: String(localized: "Channel id"),
                     value: stream.twitchChannelId,
                     onSubmit: submitChannelId
-                )) {
-                    TextItemView(name: String(localized: "Channel id"), value: stream.twitchChannelId)
-                }
+                )
             } footer: {
                 Text(
                     "A large number. Use developer tools (F11) in your browser. Look at websocket messages."

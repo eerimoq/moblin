@@ -109,18 +109,13 @@ struct RemoteControlSettingsView: View {
                 })) {
                     Text("Enabled")
                 }
-                NavigationLink(destination: TextEditView(
+                TextEditNavigationView(
                     title: String(localized: "Assistant URL"),
                     value: model.database.remoteControl!.server.url,
                     onSubmit: submitServerUrl,
                     keyboardType: .URL,
                     placeholder: "ws://32.143.32.12:2345"
-                )) {
-                    TextItemView(
-                        name: String(localized: "Assistant URL"),
-                        value: model.database.remoteControl!.server.url
-                    )
-                }
+                )
             } header: {
                 Text("Streamer")
             } footer: {
@@ -139,28 +134,18 @@ struct RemoteControlSettingsView: View {
                 })) {
                     Text("Enabled")
                 }
-                NavigationLink(destination: TextEditView(
+                TextEditNavigationView(
                     title: String(localized: "Server address"),
                     value: model.database.remoteControl!.client.address,
                     onSubmit: submitClientAddress,
                     placeholder: "32.143.32.12"
-                )) {
-                    TextItemView(
-                        name: String(localized: "Server address"),
-                        value: model.database.remoteControl!.client.address
-                    )
-                }
-                NavigationLink(destination: TextEditView(
+                )
+                TextEditNavigationView(
                     title: String(localized: "Server port"),
                     value: String(model.database.remoteControl!.client.port),
                     onSubmit: submitClientPort,
                     placeholder: "2345"
-                )) {
-                    TextItemView(
-                        name: String(localized: "Server port"),
-                        value: String(model.database.remoteControl!.client.port)
-                    )
-                }
+                )
             } header: {
                 Text("Assistant")
             } footer: {

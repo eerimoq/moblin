@@ -15,13 +15,11 @@ struct StreamKickSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: TextEditView(
+                TextEditNavigationView(
                     title: String(localized: "Chatroom id"),
                     value: stream.kickChatroomId,
                     onSubmit: submitChannelId
-                )) {
-                    TextItemView(name: String(localized: "Chatroom id"), value: stream.kickChatroomId)
-                }
+                )
             } footer: {
                 Text(
                     """

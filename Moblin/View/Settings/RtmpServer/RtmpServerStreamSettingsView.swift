@@ -73,22 +73,18 @@ struct RtmpServerStreamSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: TextEditView(
+                TextEditNavigationView(
                     title: String(localized: "Name"),
                     value: stream.name,
                     onSubmit: submitName,
                     capitalize: true
-                )) {
-                    TextItemView(name: String(localized: "Name"), value: stream.name)
-                }
+                )
                 .disabled(model.rtmpServerEnabled())
-                NavigationLink(destination: TextEditView(
+                TextEditNavigationView(
                     title: String(localized: "Stream key"),
                     value: stream.streamKey,
                     onSubmit: submitStreamKey
-                )) {
-                    TextItemView(name: String(localized: "Stream key"), value: stream.streamKey)
-                }
+                )
                 .disabled(model.rtmpServerEnabled())
                 NavigationLink(destination: TextEditView(
                     title: String(localized: "Latency"),
@@ -99,7 +95,7 @@ struct RtmpServerStreamSettingsView: View {
                     TextItemView(name: String(localized: "Latency"), value: "\(stream.latency!) ms")
                 }
                 .disabled(model.rtmpServerEnabled())
-                NavigationLink(destination: TextEditView(
+                TextEditNavigationView(
                     title: String(localized: "FPS"),
                     value: String(stream.fps!),
                     onSubmit: submitFps,
@@ -107,9 +103,7 @@ struct RtmpServerStreamSettingsView: View {
                     Force given FPS, or set to 0 to use the publisher's FPS. B-frames \
                     does not work with forced FPS. Forced FPS is typically needed for DJI drones.
                     """)
-                )) {
-                    TextItemView(name: String(localized: "FPS"), value: "\(stream.fps!)")
-                }
+                )
                 .disabled(model.rtmpServerEnabled())
             } footer: {
                 Text("The stream name is shown in the list of cameras in scene settings.")

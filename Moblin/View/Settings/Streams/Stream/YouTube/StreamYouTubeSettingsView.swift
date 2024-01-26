@@ -23,20 +23,16 @@ struct StreamYouTubeSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: TextEditView(
+                TextEditNavigationView(
                     title: String(localized: "API key"),
                     value: stream.youTubeApiKey!,
                     onSubmit: submitApiKey
-                )) {
-                    TextItemView(name: String(localized: "API key"), value: stream.youTubeApiKey!)
-                }
-                NavigationLink(destination: TextEditView(
+                )
+                TextEditNavigationView(
                     title: String(localized: "Video id"),
                     value: stream.youTubeVideoId!,
                     onSubmit: submitVideoId
-                )) {
-                    TextItemView(name: String(localized: "Video id"), value: stream.youTubeVideoId!)
-                }
+                )
             } footer: {
                 Text("Very experimental and very secret!")
             }

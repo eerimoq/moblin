@@ -62,16 +62,11 @@ struct StreamSrtSettingsView: View {
                     model.storeAndReloadStreamIfEnabled(stream: stream)
                 }))
                 .disabled(stream.enabled && model.isLive)
-                NavigationLink(destination: TextEditView(
+                TextEditNavigationView(
                     title: String(localized: "Overhead bandwidth"),
                     value: String(stream.srt.overheadBandwidth!),
                     onSubmit: submitOverheadBandwidth
-                )) {
-                    TextItemView(
-                        name: String(localized: "Overhead bandwidth"),
-                        value: String(stream.srt.overheadBandwidth!)
-                    )
-                }
+                )
                 .disabled(stream.enabled && model.isLive)
                 Toggle("Big packets", isOn: Binding(get: {
                     stream.srt.mpegtsPacketsPerPacket == 7

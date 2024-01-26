@@ -16,14 +16,12 @@ struct LocalOverlaysNetworkInterfaceNamesSettingsView: View {
                 } else {
                     List {
                         ForEach(model.database.networkInterfaceNames!) { interface in
-                            NavigationLink(destination: TextEditView(
+                            TextEditNavigationView(
                                 title: interface.interfaceName,
                                 value: interface.name,
                                 onSubmit: { value in onSubmit(interface: interface, value: value) },
                                 capitalize: true
-                            )) {
-                                TextItemView(name: interface.interfaceName, value: interface.name)
-                            }
+                            )
                         }
                         .onDelete { indexes in
                             model.database.networkInterfaceNames!.remove(atOffsets: indexes)

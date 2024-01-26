@@ -33,37 +33,25 @@ struct StreamObsSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: TextEditView(
+                TextEditNavigationView(
                     title: String(localized: "URL"),
                     value: stream.obsWebSocketUrl!,
                     onSubmit: submitWebSocketUrl,
                     footer: Text("For example ws://232.32.45.332:4567."),
                     keyboardType: .URL
-                )) {
-                    TextItemView(name: String(localized: "URL"), value: stream.obsWebSocketUrl!)
-                }
-                NavigationLink(destination: TextEditView(
+                )
+                TextEditNavigationView(
                     title: String(localized: "Password"),
                     value: stream.obsWebSocketPassword!,
-                    onSubmit: submitWebSocketPassword
-                )) {
-                    TextItemView(
-                        name: String(localized: "Password"),
-                        value: stream.obsWebSocketPassword!,
-                        sensitive: true
-                    )
-                }
-                NavigationLink(destination: TextEditView(
+                    onSubmit: submitWebSocketPassword,
+                    sensitive: true
+                )
+                TextEditNavigationView(
                     title: String(localized: "Source name"),
                     value: stream.obsSourceName!,
                     onSubmit: submitSourceName,
                     capitalize: true
-                )) {
-                    TextItemView(
-                        name: String(localized: "Source name"),
-                        value: stream.obsSourceName!
-                    )
-                }
+                )
             } header: {
                 Text("WebSocket")
             } footer: {

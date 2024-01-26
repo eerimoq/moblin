@@ -23,21 +23,17 @@ struct StreamAfreecaTvSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: TextEditView(
+                TextEditNavigationView(
                     title: String(localized: "Channel name"),
                     value: stream.afreecaTvChannelName!,
                     onSubmit: submitChannelName,
                     capitalize: true
-                )) {
-                    TextItemView(name: String(localized: "Channel name"), value: stream.afreecaTvChannelName!)
-                }
-                NavigationLink(destination: TextEditView(
+                )
+                TextEditNavigationView(
                     title: String(localized: "Video id"),
                     value: stream.afreecaTvStreamId!,
                     onSubmit: submitStreamId
-                )) {
-                    TextItemView(name: String(localized: "Video id"), value: stream.afreecaTvStreamId!)
-                }
+                )
             } footer: {
                 VStack(alignment: .leading) {
                     Text("Very experimental and very secret!")

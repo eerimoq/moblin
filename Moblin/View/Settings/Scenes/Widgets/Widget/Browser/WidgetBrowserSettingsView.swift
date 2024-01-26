@@ -43,13 +43,7 @@ struct WidgetBrowserSettingsView: View {
 
     var body: some View {
         Section {
-            NavigationLink(destination: TextEditView(
-                title: "URL",
-                value: widget.browser.url,
-                onSubmit: submitUrl
-            )) {
-                TextItemView(name: "URL", value: widget.browser.url)
-            }
+            TextEditNavigationView(title: "URL", value: widget.browser.url, onSubmit: submitUrl)
             Toggle(isOn: Binding(get: {
                 widget.browser.audioOnly!
             }, set: { value in
@@ -60,20 +54,14 @@ struct WidgetBrowserSettingsView: View {
                 Text("Audio only")
             }
             if !widget.browser.audioOnly! {
-                NavigationLink(destination: TextEditView(
+                TextEditNavigationView(
                     title: "Width",
                     value: String(widget.browser.width),
                     onSubmit: submitWidth
-                )) {
-                    TextItemView(name: "Width", value: String(widget.browser.width))
-                }
-                NavigationLink(destination: TextEditView(
-                    title: "Height",
-                    value: String(widget.browser.height),
-                    onSubmit: submitHeight
-                )) {
-                    TextItemView(name: "Height", value: String(widget.browser.height))
-                }
+                )
+                TextEditNavigationView(title: "Height",
+                                       value: String(widget.browser.height),
+                                       onSubmit: submitHeight)
                 Toggle(isOn: Binding(get: {
                     widget.browser.scaleToFitVideo!
                 }, set: { value in
