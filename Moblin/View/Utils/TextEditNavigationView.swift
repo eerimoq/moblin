@@ -10,6 +10,7 @@ struct TextEditNavigationView: View {
     var placeholder: String = ""
     var sensitive: Bool = false
     var color: Color = .gray
+    var valueFormat: ((String) -> String)?
 
     var body: some View {
         NavigationLink(destination: TextEditView(
@@ -21,7 +22,7 @@ struct TextEditNavigationView: View {
             keyboardType: keyboardType,
             placeholder: placeholder
         )) {
-            TextItemView(name: title, value: value, sensitive: sensitive, color: color)
+            TextItemView(name: title, value: valueFormat?(value) ?? value, sensitive: sensitive, color: color)
         }
     }
 }
