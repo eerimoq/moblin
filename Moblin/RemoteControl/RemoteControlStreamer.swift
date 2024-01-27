@@ -7,7 +7,11 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func getSettings(onComplete: @escaping (RemoteControlSettings) -> Void)
     func setScene(id: UUID, onComplete: @escaping () -> Void)
     func setBitratePreset(id: UUID, onComplete: @escaping () -> Void)
+    func setRecord(on: Bool, onComplete: @escaping () -> Void)
+    func setStream(on: Bool, onComplete: @escaping () -> Void)
     func setZoom(x: Float, onComplete: @escaping () -> Void)
+    func setMute(on: Bool, onComplete: @escaping () -> Void)
+    func setTorch(on: Bool, onComplete: @escaping () -> Void)
 }
 
 class RemoteControlStreamer {
@@ -138,12 +142,26 @@ class RemoteControlStreamer {
             delegate.setBitratePreset(id: bitratePresetId) {
                 self.send(message: .response(id: id, result: .ok, data: nil))
             }
+        case let .setRecord(on: on):
+            delegate.setRecord(on: on) {
+                self.send(message: .response(id: id, result: .ok, data: nil))
+            }
+        case let .setStream(on: on):
+            delegate.setStream(on: on) {
+                self.send(message: .response(id: id, result: .ok, data: nil))
+            }
         case let .setZoom(x: x):
             delegate.setZoom(x: x) {
                 self.send(message: .response(id: id, result: .ok, data: nil))
             }
-        default:
-            send(message: .response(id: id, result: .unknownRequest, data: nil))
+        case let .setMute(on: on):
+            delegate.setMute(on: on) {
+                self.send(message: .response(id: id, result: .ok, data: nil))
+            }
+        case let .setTorch(on: on):
+            delegate.setTorch(on: on) {
+                self.send(message: .response(id: id, result: .ok, data: nil))
+            }
         }
     }
 }

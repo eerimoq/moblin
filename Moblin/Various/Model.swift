@@ -3887,11 +3887,35 @@ extension Model: RemoteControlStreamerDelegate {
         }
     }
 
+    func setRecord(on _: Bool, onComplete: @escaping () -> Void) {
+        DispatchQueue.main.async {
+            onComplete()
+        }
+    }
+
+    func setStream(on _: Bool, onComplete: @escaping () -> Void) {
+        DispatchQueue.main.async {
+            onComplete()
+        }
+    }
+
     func setZoom(x: Float, onComplete: @escaping () -> Void) {
         DispatchQueue.main.async {
             if let x = self.setCameraZoomX(x: x, rate: self.database.zoom.speed!) {
                 self.setZoomX(x: x)
             }
+            onComplete()
+        }
+    }
+
+    func setMute(on _: Bool, onComplete: @escaping () -> Void) {
+        DispatchQueue.main.async {
+            onComplete()
+        }
+    }
+
+    func setTorch(on _: Bool, onComplete: @escaping () -> Void) {
+        DispatchQueue.main.async {
             onComplete()
         }
     }

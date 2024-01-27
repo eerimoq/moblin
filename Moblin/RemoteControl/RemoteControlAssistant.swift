@@ -26,7 +26,7 @@ class RemoteControlAssistant {
     private var requests: [Int: RemoteControlRequestResponse] = [:]
     private var server: Server
     var connectionErrorMessage: String = ""
-    private var websocket: Telegraph.WebSocket?
+    private var streamerWebSocket: Telegraph.WebSocket?
     private var retryStartTimer: DispatchSourceTimer?
     private weak var delegate: (any RemoteControlAssistantDelegate)?
     private var streamerIdentified: Bool = false
@@ -151,7 +151,7 @@ class RemoteControlAssistant {
 
     private func handleConnected(webSocket: Telegraph.WebSocket) {
         logger.info("remote-control-assistant: Streamer connected")
-        websocket = webSocket
+        streamerWebSocket = webSocket
         challenge = randomString()
         salt = randomString()
         send(message: .hello(
@@ -167,7 +167,7 @@ class RemoteControlAssistant {
         } else {
             logger.info("remote-control-assistant: Streamer disconnected")
         }
-        websocket = nil
+        streamerWebSocket = nil
         connected = false
         delegate?.assistantDisconnected()
     }
@@ -182,7 +182,7 @@ class RemoteControlAssistant {
             case let .event(data: data):
                 try handleEvent(data: data)
             case let .response(id: id, result: result, data: data):
-                handleResponse(id: id, result: result, data: data)
+                try handleResponse(id: id, result: result, data: data)
             }
         } catch {
             logger.info("remote-control-assistant: Failed to process message with error \(error)")
@@ -202,13 +202,19 @@ class RemoteControlAssistant {
     }
 
     private func handleEvent(data: RemoteControlEvent) throws {
+        guard streamerIdentified else {
+            throw "Streamer not identified"
+        }
         switch data {
         case let .state(data: state):
             handleStateEvent(state: state)
         }
     }
 
-    private func handleResponse(id: Int, result: RemoteControlResult, data: RemoteControlResponse?) {
+    private func handleResponse(id: Int, result: RemoteControlResult, data: RemoteControlResponse?) throws {
+        guard streamerIdentified else {
+            throw "Streamer not identified"
+        }
         guard let request = requests[id] else {
             logger.debug("remote-control-assistant: Unexpected id in response")
             return
@@ -262,7 +268,7 @@ class RemoteControlAssistant {
         guard let text = message.toJson() else {
             return
         }
-        websocket?.send(text: text)
+        streamerWebSocket?.send(text: text)
     }
 }
 
@@ -288,7 +294,7 @@ extension RemoteControlAssistant: ServerWebSocketDelegate {
         webSocket: Telegraph.WebSocket,
         didReceiveMessage message: Telegraph.WebSocketMessage
     ) {
-        guard message.opcode == .textFrame else {
+        guard webSocket.isSame(other: streamerWebSocket) else {
             return
         }
         switch message.payload {
@@ -299,5 +305,11 @@ extension RemoteControlAssistant: ServerWebSocketDelegate {
         default:
             return
         }
+    }
+}
+
+extension Telegraph.WebSocket {
+    func isSame(other: Telegraph.WebSocket?) -> Bool {
+        return localEndpoint == other?.localEndpoint && remoteEndpoint == other?.remoteEndpoint
     }
 }
