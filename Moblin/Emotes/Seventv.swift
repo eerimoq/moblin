@@ -2,7 +2,7 @@ import Foundation
 
 private struct SeventvFile: Codable {
     var name: String
-    var size: Int64
+    // var size: Int64
 }
 
 private struct SeventvHost: Codable {
@@ -24,7 +24,7 @@ private struct SeventvEmoteSet: Codable {
 }
 
 private struct SeventvUser: Codable {
-    var id: String
+    // var id: String
     var emote_set: SeventvEmoteSet
 }
 

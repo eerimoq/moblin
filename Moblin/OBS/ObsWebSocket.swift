@@ -101,7 +101,7 @@ private enum OpCode: Int, Codable {
 
 private struct ResponseRequestStatus: Codable {
     let result: Bool
-    let code: Int
+    // let code: Int
     let comment: String?
 }
 

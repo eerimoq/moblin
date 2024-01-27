@@ -674,10 +674,10 @@ class SettingsWidget: Codable, Identifiable, Equatable {
     var id: UUID = .init()
     var type: SettingsWidgetType = .videoEffect
     var text: SettingsWidgetText = .init()
-    var image: SettingsWidgetImage = .init()
-    var video: SettingsWidgetVideo = .init()
-    var chat: SettingsWidgetChat = .init()
-    var recording: SettingsWidgetRecording = .init()
+    var image: SettingsWidgetImage? = .init()
+    var video: SettingsWidgetVideo? = .init()
+    var chat: SettingsWidgetChat? = .init()
+    var recording: SettingsWidgetRecording? = .init()
     var browser: SettingsWidgetBrowser = .init()
     var videoEffect: SettingsWidgetVideoEffect = .init()
 
@@ -864,7 +864,7 @@ class SettingsButton: Codable, Identifiable, Equatable, Hashable {
     var name: String
     var id: UUID = .init()
     var type: SettingsButtonType = .widget
-    var imageType: String = "System name"
+    var imageType: String? = "System name"
     var systemImageNameOn: String = "mic.slash"
     var systemImageNameOff: String = "mic"
     var widget: SettingsButtonWidget = .init(widgetId: UUID())
@@ -993,7 +993,7 @@ class SettingsChat: Codable {
     var backgroundColorEnabled: Bool = true
     var shadowColor: RgbColor = .init(red: 0, green: 0, blue: 0)
     var shadowColorEnabled: Bool = false
-    var alignedMessages: Bool = false
+    var alignedMessages: Bool? = false
     var boldUsername: Bool = false
     var boldMessage: Bool = false
     var animatedEmotes: Bool = false
@@ -1293,7 +1293,7 @@ class Database: Codable {
     var streams: [SettingsStream] = []
     var scenes: [SettingsScene] = []
     var widgets: [SettingsWidget] = []
-    var variables: [SettingsVariable] = []
+    var variables: [SettingsVariable]? = []
     var buttons: [SettingsButton] = []
     var show: SettingsShow = .init()
     var zoom: SettingsZoom = .init()
