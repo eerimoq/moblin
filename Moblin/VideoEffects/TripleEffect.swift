@@ -17,11 +17,11 @@ final class TripleEffect: VideoEffect {
             width: width,
             height: height
         ))
-        var leftImage = centerImage.transformed(by: CGAffineTransform(
+        let leftImage = centerImage.transformed(by: CGAffineTransform(
             translationX: -width,
             y: 0
         ))
-        var rightImage = centerImage.transformed(by: CGAffineTransform(
+        let rightImage = centerImage.transformed(by: CGAffineTransform(
             translationX: width,
             y: 0
         ))

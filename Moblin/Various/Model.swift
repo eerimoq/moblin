@@ -390,6 +390,8 @@ final class Model: ObservableObject {
     @Published var location = noValue
     @Published var showLoadSettingsFailed = false
 
+    @Published var remoteControlStatus = noValue
+
     init() {
         showLoadSettingsFailed = !settings.load()
         streamingHistory.load()
@@ -1615,6 +1617,7 @@ final class Model: ObservableObject {
             self.media.logStatistics()
             self.updateObsStatus()
             self.updateRemoteControlAssistantStatus()
+            self.updateRemoteControlStatus()
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
             self.updateSrtDebugLines()
@@ -2420,9 +2423,35 @@ final class Model: ObservableObject {
         remoteControlStreamer!.start()
     }
 
+    private func updateRemoteControlStatus() {
+        if isRemoteControlAssistantConnected() && isRemoteControlStreamerConnected() {
+            remoteControlStatus = String(localized: "Assistant and streamer")
+        } else if isRemoteControlAssistantConnected() {
+            remoteControlStatus = String(localized: "Assistant")
+        } else if isRemoteControlStreamerConnected() {
+            remoteControlStatus = String(localized: "Streamer")
+        } else {
+            let assistantError = remoteControlAssistant?.connectionErrorMessage ?? ""
+            let streamerError = remoteControlStreamer?.connectionErrorMessage ?? ""
+            if isRemoteControlAssistantConfigured() && isRemoteControlStreamerConfigured() {
+                remoteControlStatus = "\(assistantError), \(streamerError)"
+            } else if isRemoteControlAssistantConfigured() {
+                remoteControlStatus = assistantError
+            } else if isRemoteControlStreamerConfigured() {
+                remoteControlStatus = streamerError
+            } else {
+                remoteControlStatus = noValue
+            }
+        }
+    }
+
     func isRemoteControlStreamerConfigured() -> Bool {
         let server = database.remoteControl!.server
         return server.enabled && !server.url.isEmpty && !database.remoteControl!.password!.isEmpty
+    }
+
+    func isRemoteControlStreamerConnected() -> Bool {
+        return remoteControlStreamer?.isConnected() ?? false
     }
 
     func reloadRemoteControlAssistant() {
@@ -3753,6 +3782,11 @@ final class Model: ObservableObject {
         return database.show.rtmpSpeed! && rtmpServerEnabled()
     }
 
+    func isShowingStatusRemoteControl() -> Bool {
+        return database.show
+            .remoteControl! && (isRemoteControlStreamerConfigured() || isRemoteControlAssistantConfigured())
+    }
+
     func isShowingStatusGameController() -> Bool {
         return database.show.gameController! && isGameControllerConnected()
     }
@@ -3782,6 +3816,7 @@ extension Model: RemoteControlStreamerDelegate {
     func connected() {
         DispatchQueue.main.async {
             self.makeToast(title: "Remote control assistant connected")
+            self.updateRemoteControlStatus()
             var state = RemoteControlState()
             if self.sceneIndex < self.enabledScenes.count {
                 state.scene = self.enabledScenes[self.sceneIndex].id
@@ -3797,6 +3832,7 @@ extension Model: RemoteControlStreamerDelegate {
     func disconnected() {
         DispatchQueue.main.async {
             self.makeToast(title: "Remote control assistant disconnected")
+            self.updateRemoteControlStatus()
         }
     }
 
@@ -3974,6 +4010,7 @@ extension Model: RemoteControlStreamerDelegate {
 extension Model: RemoteControlAssistantDelegate {
     func assistantConnected() {
         makeToast(title: "Remote control streamer connected")
+        updateRemoteControlStatus()
         updateRemoteControlAssistantStatus()
     }
 
@@ -3981,6 +4018,7 @@ extension Model: RemoteControlAssistantDelegate {
         makeToast(title: "Remote control streamer disconnected")
         remoteControlTopLeft = nil
         remoteControlTopRight = nil
+        updateRemoteControlStatus()
     }
 
     func assistantStateChanged(state: RemoteControlState) {

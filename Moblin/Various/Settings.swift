@@ -906,6 +906,7 @@ class SettingsShow: Codable {
     var rtmpSpeed: Bool? = true
     var gameController: Bool? = true
     var location: Bool? = true
+    var remoteControl: Bool? = true
 }
 
 class SettingsZoomPreset: Codable, Identifiable {
@@ -2064,6 +2065,10 @@ final class Settings {
         }
         if realDatabase.debug!.audioOutputToInputChannelsMap == nil {
             realDatabase.debug!.audioOutputToInputChannelsMap = .init()
+            store()
+        }
+        if realDatabase.show.remoteControl == nil {
+            realDatabase.show.remoteControl = true
             store()
         }
     }

@@ -194,7 +194,7 @@ func widgetImage(widget: SettingsWidget) -> String {
     case .videoEffect:
         return "camera.filters"
     case .browser:
-        return "photo.stack"
+        return "globe"
     case .time:
         return "calendar.badge.clock"
     }

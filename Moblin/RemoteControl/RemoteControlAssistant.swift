@@ -135,6 +135,7 @@ class RemoteControlAssistant {
             stopRetryStartTimer()
         } catch {
             logger.debug("remote-control-assistant: Failed to start server with error \(error)")
+            connectionErrorMessage = error.localizedDescription
             startRetryStartTimer()
         }
     }
@@ -202,6 +203,12 @@ class RemoteControlAssistant {
             streamerIdentified = true
             connected = true
             delegate?.assistantConnected()
+            send(message: .identified(result: .ok))
+        } else {
+            logger.info("remote-control-assistant: Streamer sent wrong password")
+            send(message: .identified(result: .wrongPassword))
+            streamerWebSocket?.close(immediately: false)
+            streamerWebSocket = nil
         }
     }
 

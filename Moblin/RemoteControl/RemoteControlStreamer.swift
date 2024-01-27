@@ -25,6 +25,7 @@ class RemoteControlStreamer {
     private var webSocket: URLSessionWebSocketTask
     private var task: Task<Void, Error>?
     private var connected = false
+    var connectionErrorMessage: String = ""
 
     init(clientUrl: URL, password: String, delegate: RemoteControlStreamerDelegate) {
         self.clientUrl = clientUrl
@@ -43,6 +44,7 @@ class RemoteControlStreamer {
                     try await receiveMessages()
                 } catch {
                     logger.debug("remote-control-streamer: error: \(error.localizedDescription)")
+                    connectionErrorMessage = error.localizedDescription
                 }
                 if Task.isCancelled {
                     logger.debug("remote-control-streamer: Cancelled")
@@ -64,6 +66,10 @@ class RemoteControlStreamer {
         task?.cancel()
         task = nil
         connected = false
+    }
+
+    func isConnected() -> Bool {
+        return connected
     }
 
     func stateChanged(state: RemoteControlState) {
@@ -100,11 +106,17 @@ class RemoteControlStreamer {
                     switch try RemoteControlMessageToStreamer.fromJson(data: message) {
                     case let .hello(apiVersion: apiVersion, authentication: authentication):
                         handleHello(apiVersion: apiVersion, authentication: authentication)
+                    case let .identified(result: result):
+                        if !handleIdentified(result: result) {
+                            logger.debug("remote-control-streamer: Failed to identify")
+                            return
+                        }
                     case let .request(id: id, data: data):
                         handleRequest(id: id, data: data)
                     }
                 } catch {
                     logger.info("remote-control-streamer: Decode failed")
+                    connectionErrorMessage = error.localizedDescription
                 }
             default:
                 logger.debug("remote-control-streamer: ???")
@@ -119,8 +131,20 @@ class RemoteControlStreamer {
             password: password
         )
         send(message: .identify(authentication: hash))
-        connected = true
-        delegate?.connected()
+    }
+
+    private func handleIdentified(result: RemoteControlResult) -> Bool {
+        switch result {
+        case .ok:
+            connected = true
+            delegate?.connected()
+            return true
+        case .wrongPassword:
+            connectionErrorMessage = "Wrong password"
+        default:
+            connectionErrorMessage = "Failed to identify"
+        }
+        return false
     }
 
     private func handleRequest(id: Int, data: RemoteControlRequest) {

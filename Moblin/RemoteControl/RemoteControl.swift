@@ -102,6 +102,7 @@ enum RemoteControlResult: Codable {
 
 enum RemoteControlMessageToStreamer: Codable {
     case hello(apiVersion: String, authentication: RemoteControlAuthentication)
+    case identified(result: RemoteControlResult)
     case request(id: Int, data: RemoteControlRequest)
 
     func toJson() -> String? {

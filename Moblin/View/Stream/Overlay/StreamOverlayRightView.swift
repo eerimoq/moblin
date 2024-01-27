@@ -110,6 +110,15 @@ struct RightOverlayView: View {
         }
     }
 
+    private func remoteControlColor() -> Color {
+        if model.isRemoteControlStreamerConfigured() && !model.isRemoteControlStreamerConnected() {
+            return .red
+        } else if model.isRemoteControlAssistantConfigured() && !model.isRemoteControlAssistantConnected() {
+            return .red
+        }
+        return .white
+    }
+
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
             if model.isShowingStatusAudioLevel() {
@@ -125,6 +134,14 @@ struct RightOverlayView: View {
                     text: model.rtmpSpeedAndTotal,
                     textFirst: true,
                     color: .white
+                )
+            }
+            if model.isShowingStatusRemoteControl() {
+                StreamOverlayIconAndTextView(
+                    icon: "appletvremote.gen1",
+                    text: model.remoteControlStatus,
+                    textFirst: true,
+                    color: remoteControlColor()
                 )
             }
             if model.isShowingStatusGameController() {
