@@ -184,6 +184,13 @@ struct RightOverlayView: View {
                 textFirst: true,
                 color: .white
             )
+            StreamOverlayIconAndTextView(
+                show: model.isShowingStatusBrowserWidgets(),
+                icon: "globe",
+                text: model.browserWidgetsStatus,
+                textFirst: true,
+                color: .white
+            )
             Spacer()
             if database.show.zoomPresets && model.hasZoom {
                 if model.cameraPosition == .front {

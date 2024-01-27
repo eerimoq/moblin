@@ -907,6 +907,7 @@ class SettingsShow: Codable {
     var gameController: Bool? = true
     var location: Bool? = true
     var remoteControl: Bool? = true
+    var browserWidgets: Bool? = true
 }
 
 class SettingsZoomPreset: Codable, Identifiable {
@@ -2069,6 +2070,10 @@ final class Settings {
         }
         if realDatabase.show.remoteControl == nil {
             realDatabase.show.remoteControl = true
+            store()
+        }
+        if realDatabase.show.browserWidgets == nil {
+            realDatabase.show.browserWidgets = true
             store()
         }
     }

@@ -17,12 +17,10 @@ import VideoToolbox
 import WebKit
 
 class Browser: Identifiable {
-    // Widget id
-    var id: UUID
+    var id: UUID = .init()
     var browserEffect: BrowserEffect
 
-    init(id: UUID, browserEffect: BrowserEffect) {
-        self.id = id
+    init(browserEffect: BrowserEffect) {
         self.browserEffect = browserEffect
     }
 }
@@ -232,6 +230,8 @@ final class Model: ObservableObject {
     @Published var isRecording = false
     private var currentRecording: Recording?
     @Published var recordingLength = noValue
+    @Published var browserWidgetsStatus = noValue
+    private var browserWidgetsStatusChanged = Date()
     private var subscriptions = Set<AnyCancellable>()
     @Published var uptime = noValue
     @Published var srtlaConnectionStatistics = noValue
@@ -1611,6 +1611,7 @@ final class Model: ObservableObject {
             self.updateLocation()
             self.updateObsSourceScreenshot()
             self.updateObsAudioVolume()
+            self.updateBrowserWidgetStatus()
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
@@ -1837,8 +1838,8 @@ final class Model: ObservableObject {
                 videoSize: videoSize
             )
         }
-        browsers = browserEffects.map { id, browser in
-            Browser(id: id, browserEffect: browser)
+        browsers = browserEffects.map { _, browser in
+            Browser(browserEffect: browser)
         }
         sceneUpdated(imageEffectChanged: true, store: false)
     }
@@ -2617,6 +2618,32 @@ final class Model: ObservableObject {
     private func updateObsAudioVolume() {
         if obsAudioVolumeLatest != obsAudioVolume {
             obsAudioVolume = obsAudioVolumeLatest
+        }
+    }
+
+    func updateBrowserWidgetStatus() {
+        var anyProgressNot100Percent = false
+        var messages: [String] = []
+        for browser in browsers {
+            let progress = browser.browserEffect.progress
+            if browser.browserEffect.isLoaded {
+                messages.append("\(browser.browserEffect.host): \(progress)%")
+                if progress != 100 {
+                    anyProgressNot100Percent = true
+                }
+            }
+        }
+        var message: String
+        if messages.isEmpty {
+            message = noValue
+        } else {
+            message = messages.joined(separator: ", ")
+        }
+        if browserWidgetsStatus != message {
+            browserWidgetsStatus = message
+        }
+        if anyProgressNot100Percent {
+            browserWidgetsStatusChanged = Date()
         }
     }
 
@@ -3809,6 +3836,11 @@ final class Model: ObservableObject {
 
     func isShowingStatusRecording() -> Bool {
         return isRecording
+    }
+
+    func isShowingStatusBrowserWidgets() -> Bool {
+        return database.show.browserWidgets! && !browserWidgetsStatus
+            .isEmpty && browserWidgetsStatusChanged + 5 > Date()
     }
 }
 

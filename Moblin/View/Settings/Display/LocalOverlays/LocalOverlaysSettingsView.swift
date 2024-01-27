@@ -96,6 +96,12 @@ struct LocalOverlaysSettingsView: View {
                     show.uptime = value
                     model.store()
                 }))
+                Toggle("Browser widgets", isOn: Binding(get: {
+                    show.browserWidgets!
+                }, set: { value in
+                    show.browserWidgets = value
+                    model.store()
+                }))
             }
             Section {
                 Toggle("Zoom presets", isOn: Binding(get: {

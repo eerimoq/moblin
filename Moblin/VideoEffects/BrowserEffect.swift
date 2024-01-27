@@ -16,7 +16,7 @@ final class BrowserEffect: VideoEffect {
     private var y: Double
     let width: Double
     let height: Double
-    private let url: URL
+    let url: URL
     var isLoaded: Bool
     let audioOnly: Bool
     var fps: Float
@@ -49,9 +49,20 @@ final class BrowserEffect: VideoEffect {
         webView.scrollView.backgroundColor = .clear
         webView.scrollView.showsVerticalScrollIndicator = false
         webView.scrollView.showsHorizontalScrollIndicator = false
+        // super.init()
+        // logger.debug("browser-widget: \(host): Init")
+    }
+
+    var host: String {
+        url.host() ?? "?"
+    }
+
+    var progress: Int {
+        Int(100 * webView.estimatedProgress)
     }
 
     deinit {
+        // logger.debug("browser-widget: \(host): Deinit")
         stopTakeSnapshots()
     }
 
@@ -76,6 +87,7 @@ final class BrowserEffect: VideoEffect {
             y = .nan
             image = nil
             overlay = nil
+            // logger.debug("browser-widget: \(self.host): Loading empty page")
             webView.loadHTMLString("<html></html>", baseURL: nil)
             isLoaded = false
         }
@@ -87,8 +99,14 @@ final class BrowserEffect: VideoEffect {
 
     private func startTakeSnapshots() {
         snapshotTimer = Timer.scheduledTimer(withTimeInterval: Double(1 / fps), repeats: true, block: { _ in
+            // if self.webView.isLoading {
+            // logger.debug("browser-widget: \(self.host): \(self.progress)% loaded")
+            // }
+            guard !self.audioOnly else {
+                return
+            }
             let configuration = WKSnapshotConfiguration()
-            // Why is scale needed? Is it always 3?
+            // Why is scale needed? Is it always 3? Probably makes resolution 1/3 of actual.
             if self.scaleToFitVideo {
                 configuration.snapshotWidth = NSNumber(value: self.videoSize.width / 3)
             } else {
