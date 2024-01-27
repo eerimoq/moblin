@@ -908,12 +908,10 @@ final class Model: ObservableObject {
                     where dataSource.orientation == wantedOrientation
                 {
                     do {
+                        try setBuiltInMicAudioMode(dataSource: dataSource)
                         try inputPort.setPreferredDataSource(dataSource)
                     } catch {
-                        logger
-                            .error(
-                                "Failed to set bottom mic as preferred with error \(error)"
-                            )
+                        logger.error("Failed to set mic as preferred with error \(error)")
                     }
                 }
             }
@@ -949,6 +947,7 @@ final class Model: ObservableObject {
                         if dataSourceID != dataSource.dataSourceID {
                             continue
                         }
+                        try setBuiltInMicAudioMode(dataSource: dataSource)
                         try session.setInputDataSource(dataSource)
                     }
                 }
@@ -960,6 +959,14 @@ final class Model: ObservableObject {
                 title: String(localized: "Failed to select mic"),
                 subTitle: error.localizedDescription
             )
+        }
+    }
+
+    private func setBuiltInMicAudioMode(dataSource: AVAudioSessionDataSourceDescription) throws {
+        if false && dataSource.supportedPolarPatterns?.contains(.stereo) == true {
+            try dataSource.setPreferredPolarPattern(.stereo)
+        } else {
+            try dataSource.setPreferredPolarPattern(.none)
         }
     }
 
