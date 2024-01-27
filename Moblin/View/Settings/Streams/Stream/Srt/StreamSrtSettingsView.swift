@@ -29,7 +29,7 @@ struct StreamSrtSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: TextEditView(
+                TextEditNavigationView(
                     title: String(localized: "Latency"),
                     value: String(stream.srt.latency),
                     onSubmit: submitLatency,
@@ -38,10 +38,9 @@ struct StreamSrtSettingsView: View {
                         Zero or more milliseconds. Any latency parameter given in the URL \
                         overrides this value.
                         """
-                    )
-                )) {
-                    TextItemView(name: String(localized: "Latency"), value: "\(stream.srt.latency) ms")
-                }
+                    ),
+                    valueFormat: { "\($0) ms" }
+                )
                 .disabled(stream.enabled && model.isLive)
                 NavigationLink(destination: StreamSrtAdaptiveBitrateSettingsView(stream: stream)) {
                     Toggle("Adaptive bitrate", isOn: Binding(get: {
@@ -66,7 +65,7 @@ struct StreamSrtSettingsView: View {
                     title: String(localized: "Overhead bandwidth"),
                     value: String(stream.srt.overheadBandwidth!),
                     onSubmit: submitOverheadBandwidth,
-                    valueFormat: {"\($0)%"}
+                    valueFormat: { "\($0)%" }
                 )
                 .disabled(stream.enabled && model.isLive)
                 Toggle("Big packets", isOn: Binding(get: {

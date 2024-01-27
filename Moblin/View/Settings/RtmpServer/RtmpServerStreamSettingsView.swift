@@ -86,14 +86,13 @@ struct RtmpServerStreamSettingsView: View {
                     onSubmit: submitStreamKey
                 )
                 .disabled(model.rtmpServerEnabled())
-                NavigationLink(destination: TextEditView(
+                TextEditNavigationView(
                     title: String(localized: "Latency"),
                     value: String(stream.latency!),
                     onSubmit: submitLatency,
-                    footer: Text("Zero or more milliseconds.")
-                )) {
-                    TextItemView(name: String(localized: "Latency"), value: "\(stream.latency!) ms")
-                }
+                    footer: Text("Zero or more milliseconds."),
+                    valueFormat: { "\($0) ms" }
+                )
                 .disabled(model.rtmpServerEnabled())
                 TextEditNavigationView(
                     title: String(localized: "FPS"),
