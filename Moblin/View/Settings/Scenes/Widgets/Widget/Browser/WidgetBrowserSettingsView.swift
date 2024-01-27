@@ -84,8 +84,6 @@ struct WidgetBrowserSettingsView: View {
                     )
                 }
             }
-        } header: {
-            Text("Browser")
         }
     }
 }

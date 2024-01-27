@@ -45720,6 +45720,7 @@
 
     },
     "The browser widget is experimental does not work very well yet." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

@@ -15,7 +15,7 @@ struct WidgetImageSettingsView: View {
     }
 
     var body: some View {
-        Section(widget.type.toString()) {
+        Section {
             let image = loadImage()
             PhotosPicker(selection: $selectedImageItem, matching: .images) {
                 if let image {

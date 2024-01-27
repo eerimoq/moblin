@@ -8,7 +8,7 @@ struct WidgetVideoEffectSettingsView: View {
     @State var sharpness: Float
 
     var body: some View {
-        Section("Video effect") {
+        Section {
             Picker("", selection: $selection) {
                 ForEach(videoEffects, id: \.self) { videoEffect in
                     Text(videoEffect)

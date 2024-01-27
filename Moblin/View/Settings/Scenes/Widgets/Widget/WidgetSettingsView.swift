@@ -11,30 +11,28 @@ struct WidgetSettingsView: View {
 
     var body: some View {
         Form {
-            NavigationLink(destination: NameEditView(
-                name: widget.name,
-                onSubmit: submitName
-            )) {
-                TextItemView(name: String(localized: "Name"), value: widget.name)
-            }
             Section {
-                Picker("", selection: Binding(get: {
-                    widget.type.toString()
-                }, set: { value in
-                    widget.type = SettingsWidgetType.fromString(value: value)
-                    model.store()
-                    model.resetSelectedScene()
-                })) {
-                    ForEach(widgetTypes, id: \.self) {
-                        Text($0)
+                NavigationLink(destination: NameEditView(
+                    name: widget.name,
+                    onSubmit: submitName
+                )) {
+                    TextItemView(name: String(localized: "Name"), value: widget.name)
+                }
+                HStack {
+                    Text("Type")
+                    Spacer()
+                    Picker("", selection: Binding(get: {
+                        widget.type.toString()
+                    }, set: { value in
+                        widget.type = SettingsWidgetType.fromString(value: value)
+                        model.store()
+                        model.resetSelectedScene()
+                    })) {
+                        ForEach(widgetTypes, id: \.self) {
+                            Text($0)
+                        }
                     }
                 }
-                .pickerStyle(.inline)
-                .labelsHidden()
-            } header: {
-                Text("Type")
-            } footer: {
-                Text("The browser widget is experimental does not work very well yet.")
             }
             switch widget.type {
             case .image:

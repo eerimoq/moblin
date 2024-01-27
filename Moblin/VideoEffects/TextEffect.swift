@@ -54,15 +54,15 @@ final class TextEffect: VideoEffect {
         guard let newImage else {
             return
         }
-        UIGraphicsBeginImageContext(size)
         let x = (size.width * self.x) / 100
         let y = (size.height * self.y) / 100
-        newImage.draw(at: CGPoint(x: x, y: y))
-        overlay = CIImage(
-            image: UIGraphicsGetImageFromCurrentImageContext()!,
-            options: nil
-        )
-        UIGraphicsEndImageContext()
+        overlay = CIImage(image: newImage)
+        if overlay != nil {
+            overlay = overlay!.transformed(by: CGAffineTransform(
+                translationX: x,
+                y: size.height - newImage.size.height - y
+            ))
+        }
     }
 
     override func execute(_ image: CIImage, info: CMSampleBuffer?) -> CIImage {
