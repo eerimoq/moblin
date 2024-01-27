@@ -31,15 +31,27 @@ private let layoutMenuItems = [
 struct SettingsToolbar: ToolbarContent {
     @EnvironmentObject var model: Model
 
+    private func layoutImage() -> String {
+        return layoutMenuItems.first { item in
+            item.layout == model.settingsLayout
+        }!.image
+    }
+
     var body: some ToolbarContent {
         ToolbarItem(placement: .navigationBarTrailing) {
             HStack {
-                Picker("", selection: $model.settingsLayout) {
-                    ForEach(layoutMenuItems, id: \.layout) { item in
-                        Image(systemName: item.image)
+                Menu {
+                    Picker("", selection: $model.settingsLayout) {
+                        ForEach(layoutMenuItems, id: \.layout) { item in
+                            HStack {
+                                Image(systemName: item.image)
+                                Text(item.text)
+                            }
+                        }
                     }
+                } label: {
+                    Image(systemName: layoutImage())
                 }
-                .padding([.trailing], -10)
                 Button(action: {
                     model.showingSettings = false
                 }, label: {
