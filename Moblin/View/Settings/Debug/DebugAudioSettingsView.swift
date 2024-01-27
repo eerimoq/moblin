@@ -6,19 +6,19 @@ private let audioGenerators = ["Off", "Square wave"]
 struct DebugAudioSettingsView: View {
     @EnvironmentObject var model: Model
 
-    private func submitChannel0(value: String) {
+    private func submitOutputChannel1(value: String) {
         guard let channel = Int(value) else {
             return
         }
-        model.database.debug!.audioOutputToInputChannelsMap!.channel0 = channel
+        model.database.debug!.audioOutputToInputChannelsMap!.channel0 = max(channel - 1, -1)
         model.store()
     }
 
-    private func submitChannel1(value: String) {
+    private func submitOutputChannel2(value: String) {
         guard let channel = Int(value) else {
             return
         }
-        model.database.debug!.audioOutputToInputChannelsMap!.channel1 = channel
+        model.database.debug!.audioOutputToInputChannelsMap!.channel1 = max(channel - 1, -1)
         model.store()
     }
 
@@ -26,14 +26,14 @@ struct DebugAudioSettingsView: View {
         Form {
             Section {
                 TextEditNavigationView(
-                    title: "Output channel 0",
-                    value: String(model.database.debug!.audioOutputToInputChannelsMap!.channel0),
-                    onSubmit: submitChannel0
+                    title: "Output channel 1",
+                    value: String(model.database.debug!.audioOutputToInputChannelsMap!.channel0 + 1),
+                    onSubmit: submitOutputChannel1
                 )
                 TextEditNavigationView(
-                    title: "Output channel 1",
-                    value: String(model.database.debug!.audioOutputToInputChannelsMap!.channel1),
-                    onSubmit: submitChannel1
+                    title: "Output channel 2",
+                    value: String(model.database.debug!.audioOutputToInputChannelsMap!.channel1 + 1),
+                    onSubmit: submitOutputChannel2
                 )
             } header: {
                 Text("Channels mapping")
