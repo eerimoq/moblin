@@ -10,6 +10,7 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     ) -> Void)
     func getSettings(onComplete: @escaping (RemoteControlSettings) -> Void)
     func setScene(id: UUID, onComplete: @escaping () -> Void)
+    func setMic(id: String, onComplete: @escaping () -> Void)
     func setBitratePreset(id: UUID, onComplete: @escaping () -> Void)
     func setRecord(on: Bool, onComplete: @escaping () -> Void)
     func setStream(on: Bool, onComplete: @escaping () -> Void)
@@ -166,6 +167,10 @@ class RemoteControlStreamer {
             }
         case let .setScene(id: sceneId):
             delegate.setScene(id: sceneId) {
+                self.send(message: .response(id: id, result: .ok, data: nil))
+            }
+        case let .setMic(id: micId):
+            delegate.setMic(id: micId) {
                 self.send(message: .response(id: id, result: .ok, data: nil))
             }
         case let .setBitratePreset(id: bitratePresetId):

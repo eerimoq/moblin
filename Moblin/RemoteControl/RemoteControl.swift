@@ -13,6 +13,7 @@ enum RemoteControlRequest: Codable {
     case setTorch(on: Bool)
     case setScene(id: UUID)
     case setBitratePreset(id: UUID)
+    case setMic(id: String)
 }
 
 enum RemoteControlResponse: Codable {
@@ -76,13 +77,20 @@ struct RemoteControlSettingsBitratePreset: Codable, Identifiable {
     var bitrate: UInt32
 }
 
+struct RemoteControlSettingsMic: Codable, Identifiable {
+    var id: String
+    var name: String
+}
+
 struct RemoteControlSettings: Codable {
     var scenes: [RemoteControlSettingsScene] = []
     var bitratePresets: [RemoteControlSettingsBitratePreset] = []
+    var mics: [RemoteControlSettingsMic] = []
 }
 
 struct RemoteControlState: Codable {
     var scene: UUID?
+    var mic: String?
     var bitrate: UUID?
     var zoom: Float?
 }

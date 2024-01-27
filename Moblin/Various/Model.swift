@@ -360,6 +360,7 @@ final class Model: ObservableObject {
     @Published var remoteControlSettings: RemoteControlSettings?
     var remoteControlState = RemoteControlState()
     @Published var remoteControlScene = UUID()
+    @Published var remoteControlMic = ""
     @Published var remoteControlBitrate = UUID()
     @Published var remoteControlZoom = ""
 
@@ -957,6 +958,7 @@ final class Model: ObservableObject {
                 }
             }
             self.mic = mic
+            remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
         } catch {
             logger.error("Failed to select mic: \(error)")
             makeErrorToast(
@@ -2499,6 +2501,10 @@ final class Model: ObservableObject {
         remoteControlAssistant?.setScene(id: id) {}
     }
 
+    func remoteControlAssistantSetMic(id: String) {
+        remoteControlAssistant?.setMic(id: id) {}
+    }
+
     func remoteControlAssistantSetZoom(x: Float) {
         remoteControlAssistant?.setZoom(x: x) {}
     }
@@ -3850,6 +3856,7 @@ extension Model: RemoteControlStreamerDelegate {
             if self.sceneIndex < self.enabledScenes.count {
                 state.scene = self.enabledScenes[self.sceneIndex].id
             }
+            state.mic = self.mic.id
             if let preset = self.getBitratePresetByBitrate(bitrate: self.stream.bitrate) {
                 state.bitrate = preset.id
             }
@@ -3945,6 +3952,9 @@ extension Model: RemoteControlStreamerDelegate {
             settings.scenes = self.database.scenes.map { scene in
                 RemoteControlSettingsScene(id: scene.id, name: scene.name)
             }
+            settings.mics = self.listMics().map { mic in
+                RemoteControlSettingsMic(id: mic.id, name: mic.name)
+            }
             settings.bitratePresets = self.database.bitratePresets.map { preset in
                 RemoteControlSettingsBitratePreset(id: preset.id, bitrate: preset.bitrate)
             }
@@ -3955,6 +3965,13 @@ extension Model: RemoteControlStreamerDelegate {
     func setScene(id: UUID, onComplete: @escaping () -> Void) {
         DispatchQueue.main.async {
             self.selectScene(id: id)
+            onComplete()
+        }
+    }
+
+    func setMic(id: String, onComplete: @escaping () -> Void) {
+        DispatchQueue.main.async {
+            self.selectMicById(id: id)
             onComplete()
         }
     }
@@ -4054,6 +4071,10 @@ extension Model: RemoteControlAssistantDelegate {
         if let scene = state.scene {
             remoteControlState.scene = scene
             remoteControlScene = scene
+        }
+        if let mic = state.mic {
+            remoteControlState.mic = mic
+            remoteControlMic = mic
         }
         if let bitrate = state.bitrate {
             remoteControlState.bitrate = bitrate

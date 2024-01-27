@@ -459,6 +459,22 @@ struct RemoteControlView: View {
                 }
                 Section {
                     if let settings = model.remoteControlSettings {
+                        HStack {
+                            Text("Zoom")
+                            Spacer()
+                            TextField("", text: $model.remoteControlZoom)
+                                .multilineTextAlignment(.trailing)
+                                .disableAutocorrection(true)
+                                .onSubmit {
+                                    guard let zoom = model.remoteControlState.zoom else {
+                                        return
+                                    }
+                                    guard model.remoteControlZoom != String(zoom) else {
+                                        return
+                                    }
+                                    submitZoom(value: model.remoteControlZoom)
+                                }
+                        }
                         Picker(selection: $model.remoteControlScene) {
                             ForEach(settings.scenes) { scene in
                                 Text(scene.name)
@@ -472,6 +488,20 @@ struct RemoteControlView: View {
                                 return
                             }
                             model.remoteControlAssistantSetScene(id: model.remoteControlScene)
+                        }
+                        Picker(selection: $model.remoteControlMic) {
+                            ForEach(settings.mics) { mic in
+                                Text(mic.name)
+                                    .tag(mic.id)
+                            }
+                        } label: {
+                            Text("Mic")
+                        }
+                        .onChange(of: model.remoteControlMic) { _ in
+                            guard model.remoteControlMic != model.remoteControlState.mic else {
+                                return
+                            }
+                            model.remoteControlAssistantSetMic(id: model.remoteControlMic)
                         }
                         Picker(selection: $model.remoteControlBitrate) {
                             ForEach(settings.bitratePresets) { preset in
@@ -488,22 +518,6 @@ struct RemoteControlView: View {
                                 return
                             }
                             model.remoteControlAssistantSetBitratePreset(id: model.remoteControlBitrate)
-                        }
-                        HStack {
-                            Text("Zoom")
-                            Spacer()
-                            TextField("", text: $model.remoteControlZoom)
-                                .multilineTextAlignment(.trailing)
-                                .disableAutocorrection(true)
-                                .onSubmit {
-                                    guard let zoom = model.remoteControlState.zoom else {
-                                        return
-                                    }
-                                    guard model.remoteControlZoom != String(zoom) else {
-                                        return
-                                    }
-                                    submitZoom(value: model.remoteControlZoom)
-                                }
                         }
                     } else {
                         Text("No settings received yet.")
