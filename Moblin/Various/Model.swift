@@ -287,6 +287,7 @@ final class Model: ObservableObject {
 
     @Published var showingBitrate = false
     @Published var showingMic = false
+    @Published var showingRecordings = false
     @Published var showingImage = false
     @Published var showingStreamSwitcher = false
     @Published var showingGrid = false

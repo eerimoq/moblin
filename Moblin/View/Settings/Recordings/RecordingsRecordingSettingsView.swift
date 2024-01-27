@@ -2,6 +2,7 @@ import SwiftUI
 
 struct RecordingsRecordingSettingsView: View {
     var recording: Recording
+    var quickDone: (() -> Void)?
 
     var body: some View {
         VStack {
@@ -55,7 +56,7 @@ struct RecordingsRecordingSettingsView: View {
         }
         .navigationTitle("Recording")
         .toolbar {
-            SettingsToolbar()
+            SettingsToolbar(quickDone: quickDone)
         }
     }
 }

@@ -193,6 +193,17 @@ struct MainView: View {
                     .frame(width: settingsHalfWidth)
                 }
             }
+            if model.showingRecordings {
+                HStack {
+                    Spacer()
+                    NavigationStack {
+                        RecordingsSettingsView(quickDone: {
+                            model.showingRecordings = false
+                        })
+                    }
+                    .frame(width: settingsHalfWidth)
+                }
+            }
             if model.database.debug!.letItSnow! {
                 SpriteView(scene: scene, options: [.allowsTransparency])
                     .ignoresSafeArea()

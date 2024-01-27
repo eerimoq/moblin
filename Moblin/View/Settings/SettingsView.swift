@@ -30,6 +30,7 @@ private let layoutMenuItems = [
 
 struct SettingsToolbar: ToolbarContent {
     @EnvironmentObject var model: Model
+    var quickDone: (() -> Void)?
 
     private func layoutImage() -> String {
         return layoutMenuItems.first { item in
@@ -38,40 +39,36 @@ struct SettingsToolbar: ToolbarContent {
     }
 
     var body: some ToolbarContent {
-        ToolbarItem(placement: .navigationBarTrailing) {
-            HStack {
-                Menu {
-                    Picker("", selection: $model.settingsLayout) {
-                        ForEach(layoutMenuItems, id: \.layout) { item in
-                            HStack {
-                                Image(systemName: item.image)
-                                Text(item.text)
-                            }
-                        }
-                    }
-                } label: {
-                    Image(systemName: layoutImage())
-                }
+        if let quickDone {
+            ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
-                    model.showingSettings = false
+                    quickDone()
                 }, label: {
                     Text("Close")
                 })
             }
-        }
-    }
-}
-
-struct QuickSettingsToolbar: ToolbarContent {
-    let done: () -> Void
-
-    var body: some ToolbarContent {
-        ToolbarItem(placement: .navigationBarTrailing) {
-            Button(action: {
-                done()
-            }, label: {
-                Text("Close")
-            })
+        } else {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                HStack {
+                    Menu {
+                        Picker("", selection: $model.settingsLayout) {
+                            ForEach(layoutMenuItems, id: \.layout) { item in
+                                HStack {
+                                    Image(systemName: item.image)
+                                    Text(item.text)
+                                }
+                            }
+                        }
+                    } label: {
+                        Image(systemName: layoutImage())
+                    }
+                    Button(action: {
+                        model.showingSettings = false
+                    }, label: {
+                        Text("Close")
+                    })
+                }
+            }
         }
     }
 }

@@ -4,22 +4,32 @@ import SwiftUI
 private let singleButtonSize: CGFloat = 45
 
 struct ButtonImage: View {
-    var image: String
-    var on: Bool
+    var state: ButtonState
     var buttonSize: CGFloat
-    var backgroundColor: Color
     var slash: Bool = false
     var pause: Bool = false
     var overlayColor: Color = .white
 
+    private func getImage(state: ButtonState) -> String {
+        if state.isOn {
+            return state.button.systemImageNameOn
+        } else {
+            return state.button.systemImageNameOff
+        }
+    }
+
+    private var backgroundColor: Color {
+        state.button.backgroundColor!.color()
+    }
+
     var body: some View {
-        let image = Image(systemName: image)
+        let image = Image(systemName: getImage(state: state))
             .frame(width: buttonSize, height: buttonSize)
             .foregroundColor(.white)
             .background(backgroundColor)
             .clipShape(Circle())
         ZStack {
-            if on {
+            if state.isOn {
                 image.overlay(
                     Circle()
                         .stroke(.white)
@@ -98,7 +108,7 @@ struct MicButtonView: View {
         }
         .navigationTitle("Mic")
         .toolbar {
-            QuickSettingsToolbar(done: done)
+            SettingsToolbar(quickDone: done)
         }
     }
 }
@@ -139,7 +149,7 @@ struct StreamSwitcherView: View {
         }
         .navigationTitle("Stream")
         .toolbar {
-            QuickSettingsToolbar(done: done)
+            SettingsToolbar(quickDone: done)
         }
     }
 }
@@ -173,7 +183,7 @@ struct ImageView: View {
         }
         .navigationTitle("Camera")
         .toolbar {
-            QuickSettingsToolbar(done: done)
+            SettingsToolbar(quickDone: done)
         }
     }
 }
@@ -335,7 +345,7 @@ struct ObsView: View {
         }
         .navigationTitle("OBS remote control")
         .toolbar {
-            QuickSettingsToolbar(done: done)
+            SettingsToolbar(quickDone: done)
         }
     }
 }
@@ -505,7 +515,7 @@ struct RemoteControlView: View {
         }
         .navigationTitle("Remote control assistant")
         .toolbar {
-            QuickSettingsToolbar(done: done)
+            SettingsToolbar(quickDone: done)
         }
     }
 }
@@ -519,14 +529,6 @@ struct ButtonsInnerView: View {
     var state: ButtonState
     var size: CGFloat
     @State private var isPresentingRecordConfirm: Bool = false
-
-    private func getImage(state: ButtonState) -> String {
-        if state.isOn {
-            return state.button.systemImageNameOn
-        } else {
-            return state.button.systemImageNameOff
-        }
-    }
 
     private func torchAction(state: ButtonState) {
         state.button.isOn.toggle()
@@ -668,92 +670,51 @@ struct ButtonsInnerView: View {
                 Button(action: {
                     torchAction(state: state)
                 }, label: {
-                    ButtonImage(
-                        image: getImage(state: state),
-                        on: state.isOn,
-                        buttonSize: size,
-                        backgroundColor: state.button.backgroundColor!.color()
-                    )
+                    ButtonImage(state: state, buttonSize: size)
                 })
             case .mute:
                 Button(action: {
                     muteAction(state: state)
                 }, label: {
-                    ButtonImage(
-                        image: getImage(state: state),
-                        on: state.isOn,
-                        buttonSize: size,
-                        backgroundColor: state.button.backgroundColor!.color()
-                    )
+                    ButtonImage(state: state, buttonSize: size)
                 })
             case .bitrate:
                 Button(action: {
                     model.showingBitrate = true
                 }, label: {
-                    ButtonImage(
-                        image: getImage(state: state),
-                        on: state.isOn,
-                        buttonSize: size,
-                        backgroundColor: state.button.backgroundColor!.color()
-                    )
+                    ButtonImage(state: state, buttonSize: size)
                 })
             case .widget:
                 Button(action: {
                     widgetAction(state: state)
                 }, label: {
-                    ButtonImage(
-                        image: getImage(state: state),
-                        on: state.isOn,
-                        buttonSize: size,
-                        backgroundColor: state.button.backgroundColor!.color()
-                    )
+                    ButtonImage(state: state, buttonSize: size)
                 })
             case .mic:
                 Button(action: {
                     model.showingMic = true
                 }, label: {
-                    ButtonImage(
-                        image: getImage(state: state),
-                        on: state.isOn,
-                        buttonSize: size,
-                        backgroundColor: state.button.backgroundColor!.color()
-                    )
+                    ButtonImage(state: state, buttonSize: size)
                 })
             case .chat:
                 Button(action: {
                     chatAction(state: state)
                 }, label: {
-                    ButtonImage(
-                        image: getImage(state: state),
-                        on: state.isOn,
-                        buttonSize: size,
-                        backgroundColor: state.button.backgroundColor!.color(),
-                        slash: true
-                    )
+                    ButtonImage(state: state, buttonSize: size, slash: true)
                 })
             case .pauseChat:
                 Button(action: {
                     pauseChatAction(state: state)
                 }, label: {
-                    ButtonImage(
-                        image: getImage(state: state),
-                        on: state.isOn,
-                        buttonSize: size,
-                        backgroundColor: state.button.backgroundColor!.color(),
-                        pause: true,
-                        overlayColor: pauseChatOverlayColor(state: state)
-                    )
+                    ButtonImage(state: state, buttonSize: size,
+                                pause: true,
+                                overlayColor: pauseChatOverlayColor(state: state))
                 })
             case .blackScreen:
                 Button(action: {
                     blackScreenAction(state: state)
                 }, label: {
-                    ButtonImage(
-                        image: getImage(state: state),
-                        on: state.isOn,
-                        buttonSize: size,
-                        backgroundColor: state.button.backgroundColor!.color()
-                    )
+                    ButtonImage(state: state, buttonSize: size)
                 })
             case .obsScene:
                 ButtonPlaceholderImage()
@@ -767,138 +728,84 @@ struct ButtonsInnerView: View {
                         recordAction(state: state)
                     }
                 }, label: {
-                    ButtonImage(
-                        image: getImage(state: state),
-                        on: state.isOn,
-                        buttonSize: size,
-                        backgroundColor: state.button.backgroundColor!.color()
-                    )
+                    ButtonImage(state: state, buttonSize: size)
                 })
                 .confirmationDialog("", isPresented: $isPresentingRecordConfirm) {
                     Button(startStopText(button: state)) {
                         recordAction(state: state)
                     }
                 }
+            case .recordings:
+                Button(action: {
+                    model.showingRecordings = true
+                }, label: {
+                    ButtonImage(state: state, buttonSize: size)
+                })
             case .image:
                 Button(action: {
                     model.showingImage = true
                 }, label: {
-                    ButtonImage(
-                        image: getImage(state: state),
-                        on: state.isOn,
-                        buttonSize: size,
-                        backgroundColor: state.button.backgroundColor!.color()
-                    )
+                    ButtonImage(state: state, buttonSize: size)
                 })
             case .movie:
                 Button(action: {
                     movieAction(state: state)
                 }, label: {
-                    ButtonImage(
-                        image: getImage(state: state),
-                        on: state.isOn,
-                        buttonSize: size,
-                        backgroundColor: state.button.backgroundColor!.color()
-                    )
+                    ButtonImage(state: state, buttonSize: size)
                 })
             case .grayScale:
                 Button(action: {
                     grayScaleAction(state: state)
                 }, label: {
-                    ButtonImage(
-                        image: getImage(state: state),
-                        on: state.isOn,
-                        buttonSize: size,
-                        backgroundColor: state.button.backgroundColor!.color()
-                    )
+                    ButtonImage(state: state, buttonSize: size)
                 })
             case .sepia:
                 Button(action: {
                     sepiaAction(state: state)
                 }, label: {
-                    ButtonImage(
-                        image: getImage(state: state),
-                        on: state.isOn,
-                        buttonSize: size,
-                        backgroundColor: state.button.backgroundColor!.color()
-                    )
+                    ButtonImage(state: state, buttonSize: size)
                 })
             case .random:
                 Button(action: {
                     randomAction(state: state)
                 }, label: {
-                    ButtonImage(
-                        image: getImage(state: state),
-                        on: state.isOn,
-                        buttonSize: size,
-                        backgroundColor: state.button.backgroundColor!.color()
-                    )
+                    ButtonImage(state: state, buttonSize: size)
                 })
             case .triple:
                 Button(action: {
                     tripleAction(state: state)
                 }, label: {
-                    ButtonImage(
-                        image: getImage(state: state),
-                        on: state.isOn,
-                        buttonSize: size,
-                        backgroundColor: state.button.backgroundColor!.color()
-                    )
+                    ButtonImage(state: state, buttonSize: size)
                 })
             case .pixellate:
                 Button(action: {
                     pixellateAction(state: state)
                 }, label: {
-                    ButtonImage(
-                        image: getImage(state: state),
-                        on: state.isOn,
-                        buttonSize: size,
-                        backgroundColor: state.button.backgroundColor!.color()
-                    )
+                    ButtonImage(state: state, buttonSize: size)
                 })
             case .stream:
                 Button(action: {
                     streamAction(state: state)
                 }, label: {
-                    ButtonImage(
-                        image: getImage(state: state),
-                        on: state.isOn,
-                        buttonSize: size,
-                        backgroundColor: state.button.backgroundColor!.color()
-                    )
+                    ButtonImage(state: state, buttonSize: size)
                 })
             case .grid:
                 Button(action: {
                     gridAction(state: state)
                 }, label: {
-                    ButtonImage(
-                        image: getImage(state: state),
-                        on: state.isOn,
-                        buttonSize: size,
-                        backgroundColor: state.button.backgroundColor!.color()
-                    )
+                    ButtonImage(state: state, buttonSize: size)
                 })
             case .obs:
                 Button(action: {
                     obsAction(state: state)
                 }, label: {
-                    ButtonImage(
-                        image: getImage(state: state),
-                        on: state.isOn,
-                        buttonSize: size,
-                        backgroundColor: state.button.backgroundColor!.color()
-                    )
+                    ButtonImage(state: state, buttonSize: size)
                 })
             case .remote:
                 Button(action: {
                     remoteAction(state: state)
                 }, label: {
-                    ButtonImage(
-                        image: getImage(state: state),
-                        on: state.isOn,
-                        buttonSize: size,
-                        backgroundColor: state.button.backgroundColor!.color()
-                    )
+                    ButtonImage(state: state, buttonSize: size)
                 })
             }
             if model.database.quickButtons!.showName {

@@ -63,7 +63,7 @@ struct StreamVideoBitrateSettingsButtonView: View {
         }
         .navigationTitle("Bitrate")
         .toolbar {
-            QuickSettingsToolbar(done: done)
+            SettingsToolbar(quickDone: done)
         }
     }
 }

@@ -736,6 +736,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case obsScene = "OBS scene"
     case obsStartStopStream = "OBS start/stop stream"
     case record = "Record"
+    case recordings = "Recrodings"
     case image = "Image"
     case movie = "Movie"
     case grayScale = "Gray scale"
@@ -772,6 +773,8 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return .obsStartStopStream
         case String(localized: "Record"):
             return .record
+        case String(localized: "Recordings"):
+            return .recordings
         case String(localized: "Image"):
             return .image
         case String(localized: "Movie"):
@@ -823,6 +826,8 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return String(localized: "OBS start/stop stream")
         case .record:
             return String(localized: "Record")
+        case .recordings:
+            return String(localized: "Recordings")
         case .image:
             return String(localized: "Image")
         case .movie:
@@ -1532,6 +1537,14 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "dot.radiowaves.left.and.right"
     button.systemImageNameOff = "dot.radiowaves.left.and.right"
+    updateGlobalButton(database: database, button: button)
+
+    button = SettingsButton(name: String(localized: "Recordings"))
+    button.id = UUID()
+    button.type = .recordings
+    button.imageType = "System name"
+    button.systemImageNameOn = "photo.on.rectangle.angled"
+    button.systemImageNameOff = "photo.on.rectangle.angled"
     updateGlobalButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Grid"))

@@ -3,6 +3,7 @@ import SwiftUI
 struct RecordingsSettingsView: View {
     @EnvironmentObject var model: Model
     @State var isPresentingBrowse = false
+    var quickDone: (() -> Void)?
 
     var recordingsStorage: RecordingsStorage {
         model.recordingsStorage
@@ -84,7 +85,10 @@ struct RecordingsSettingsView: View {
                     List {
                         ForEach(recordingsStorage.database.recordings) { recording in
                             NavigationLink(
-                                destination: RecordingsRecordingSettingsView(recording: recording)
+                                destination: RecordingsRecordingSettingsView(
+                                    recording: recording,
+                                    quickDone: quickDone
+                                )
                             ) {
                                 HStack {
                                     if let image = createThumbnail(path: recording.url()) {
@@ -118,7 +122,7 @@ struct RecordingsSettingsView: View {
         }
         .navigationTitle("Recordings")
         .toolbar {
-            SettingsToolbar()
+            SettingsToolbar(quickDone: quickDone)
         }
     }
 }
