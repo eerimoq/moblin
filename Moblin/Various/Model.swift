@@ -231,7 +231,7 @@ final class Model: ObservableObject {
     private var currentRecording: Recording?
     @Published var recordingLength = noValue
     @Published var browserWidgetsStatus = noValue
-    private var browserWidgetsStatusChanged = Date()
+    private var browserWidgetsStatusChanged = false
     private var subscriptions = Set<AnyCancellable>()
     @Published var uptime = noValue
     @Published var srtlaConnectionStatistics = noValue
@@ -2622,14 +2622,14 @@ final class Model: ObservableObject {
     }
 
     func updateBrowserWidgetStatus() {
-        var anyProgressNot100Percent = false
+        browserWidgetsStatusChanged = false
         var messages: [String] = []
         for browser in browsers {
             let progress = browser.browserEffect.progress
             if browser.browserEffect.isLoaded {
                 messages.append("\(browser.browserEffect.host): \(progress)%")
-                if progress != 100 {
-                    anyProgressNot100Percent = true
+                if progress != 100 || browser.browserEffect.startLoadingTime + 5 > Date() {
+                    browserWidgetsStatusChanged = true
                 }
             }
         }
@@ -2641,9 +2641,6 @@ final class Model: ObservableObject {
         }
         if browserWidgetsStatus != message {
             browserWidgetsStatus = message
-        }
-        if anyProgressNot100Percent {
-            browserWidgetsStatusChanged = Date()
         }
     }
 
@@ -3840,7 +3837,7 @@ final class Model: ObservableObject {
 
     func isShowingStatusBrowserWidgets() -> Bool {
         return database.show.browserWidgets! && !browserWidgetsStatus
-            .isEmpty && browserWidgetsStatusChanged + 5 > Date()
+            .isEmpty && browserWidgetsStatusChanged
     }
 }
 

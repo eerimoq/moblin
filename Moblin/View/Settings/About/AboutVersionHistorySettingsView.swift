@@ -8,6 +8,20 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.161.0", date: "2024-01-27", changes: [
+        "- Fix bad browser widget behavior after settings change.",
+        "- Browser widget loading status in top right of UI.",
+        "  - Disappears when at 100% for 5 seconds.",
+    ]),
+    Version(version: "0.160.0", date: "2024-01-27", changes: [
+        "- Make settings layout picker nicer.",
+        "- Show battery level and flame color in remote control assistant.",
+        "- Filled recording button when recording.",
+        "- Quick button to show recordings.",
+        "- Time and triple widgets optimizations.",
+        "- Remote control info in top right of UI and identified response message.",
+        "  - Another non-backwards compatible change in the remote control protocol. Update to latest versions everywhere.",
+    ]),
     Version(version: "0.159.0", date: "2024-01-26", changes: [
         "• Audio channels mapping.",
         "  • Settings → Debug → Audio.",

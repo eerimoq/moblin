@@ -22,6 +22,7 @@ final class BrowserEffect: VideoEffect {
     var fps: Float
     private var scaleToFitVideo: Bool
     private var snapshotTimer: Timer?
+    var startLoadingTime = Date()
 
     init(url: URL, widget: SettingsWidgetBrowser, videoSize: CGSize) {
         scaleToFitVideo = widget.scaleToFitVideo!
@@ -79,6 +80,7 @@ final class BrowserEffect: VideoEffect {
             x = (videoSize.width * sceneWidget.x) / 100
             y = (videoSize.height * sceneWidget.y) / 100
             if !isLoaded {
+                startLoadingTime = Date()
                 webView.load(URLRequest(url: url))
                 isLoaded = true
             }
