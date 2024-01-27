@@ -128,70 +128,62 @@ struct RightOverlayView: View {
                     channels: model.numberOfAudioChannels
                 )
             }
-            if model.isShowingStatusRtmpServer() {
-                StreamOverlayIconAndTextView(
-                    icon: "server.rack",
-                    text: model.rtmpSpeedAndTotal,
-                    textFirst: true,
-                    color: .white
-                )
-            }
-            if model.isShowingStatusRemoteControl() {
-                StreamOverlayIconAndTextView(
-                    icon: "appletvremote.gen1",
-                    text: model.remoteControlStatus,
-                    textFirst: true,
-                    color: remoteControlColor()
-                )
-            }
-            if model.isShowingStatusGameController() {
-                StreamOverlayIconAndTextView(
-                    icon: "gamecontroller",
-                    text: model.gameControllersTotal,
-                    textFirst: true,
-                    color: .white
-                )
-            }
-            if model.isShowingStatusBitrate() {
-                StreamOverlayIconAndTextView(
-                    icon: "speedometer",
-                    text: model.speedAndTotal,
-                    textFirst: true,
-                    color: netStreamColor()
-                )
-            }
-            if model.isShowingStatusUptime() {
-                StreamOverlayIconAndTextView(
-                    icon: "deskclock",
-                    text: model.uptime,
-                    textFirst: true,
-                    color: netStreamColor()
-                )
-            }
-            if model.isShowingStatusLocation() {
-                StreamOverlayIconAndTextView(
-                    icon: "location",
-                    text: model.location,
-                    textFirst: true,
-                    color: .white
-                )
-            }
-            if model.isShowingStatusSrtla() {
-                StreamOverlayIconAndTextView(
-                    icon: "phone.connection",
-                    text: model.srtlaConnectionStatistics,
-                    textFirst: true,
-                    color: netStreamColor()
-                )
-            }
-            if model.isShowingStatusRecording() {
-                StreamOverlayIconAndTextView(
-                    icon: "record.circle",
-                    text: model.recordingLength,
-                    textFirst: true,
-                    color: .white
-                )
-            }
+            StreamOverlayIconAndTextView(
+                show: model.isShowingStatusRtmpServer(),
+                icon: "server.rack",
+                text: model.rtmpSpeedAndTotal,
+                textFirst: true,
+                color: .white
+            )
+            StreamOverlayIconAndTextView(
+                show: model.isShowingStatusRemoteControl(),
+                icon: "appletvremote.gen1",
+                text: model.remoteControlStatus,
+                textFirst: true,
+                color: remoteControlColor()
+            )
+            StreamOverlayIconAndTextView(
+                show: model.isShowingStatusGameController(),
+                icon: "gamecontroller",
+                text: model.gameControllersTotal,
+                textFirst: true,
+                color: .white
+            )
+            StreamOverlayIconAndTextView(
+                show: model.isShowingStatusBitrate(),
+                icon: "speedometer",
+                text: model.speedAndTotal,
+                textFirst: true,
+                color: netStreamColor()
+            )
+            StreamOverlayIconAndTextView(
+                show: model.isShowingStatusUptime(),
+                icon: "deskclock",
+                text: model.uptime,
+                textFirst: true,
+                color: netStreamColor()
+            )
+            StreamOverlayIconAndTextView(
+                show: model.isShowingStatusLocation(),
+                icon: "location",
+                text: model.location,
+                textFirst: true,
+                color: .white
+            )
+            StreamOverlayIconAndTextView(
+                show: model.isShowingStatusSrtla(),
+                icon: "phone.connection",
+                text: model.srtlaConnectionStatistics,
+                textFirst: true,
+                color: netStreamColor()
+            )
+            StreamOverlayIconAndTextView(
+                show: model.isShowingStatusRecording(),
+                icon: "record.circle",
+                text: model.recordingLength,
+                textFirst: true,
+                color: .white
+            )
             Spacer()
             if database.show.zoomPresets && model.hasZoom {
                 if model.cameraPosition == .front {

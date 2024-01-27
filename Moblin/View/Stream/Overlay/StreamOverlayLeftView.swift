@@ -36,51 +36,44 @@ struct LeftOverlayView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 1) {
-            if model.isShowingStatusStream() {
-                StreamOverlayIconAndTextView(
-                    icon: "dot.radiowaves.left.and.right",
-                    text: model.statusStreamText()
-                )
-            }
-            if model.isShowingStatusCamera() {
-                StreamOverlayIconAndTextView(
-                    icon: "camera",
-                    text: model.statusCameraText()
-                )
-            }
-            if model.isShowingStatusMic() {
-                StreamOverlayIconAndTextView(
-                    icon: "music.mic",
-                    text: model.mic.name
-                )
-            }
-            if model.isShowingStatusZoom() {
-                StreamOverlayIconAndTextView(
-                    icon: "magnifyingglass",
-                    text: model.statusZoomText()
-                )
-            }
-            if model.isShowingStatusObs() {
-                StreamOverlayIconAndTextView(
-                    icon: "xserve",
-                    text: model.statusObsText(),
-                    color: obsStatusColor()
-                )
-            }
-            if model.isShowingStatusChat() {
-                StreamOverlayIconAndTextView(
-                    icon: "message",
-                    text: model.statusChatText(),
-                    color: messageColor()
-                )
-            }
-            if model.isShowingStatusViewers() {
-                StreamOverlayIconAndTextView(
-                    icon: "eye",
-                    text: model.statusViewersText(),
-                    color: viewersColor()
-                )
-            }
+            StreamOverlayIconAndTextView(
+                show: model.isShowingStatusStream(),
+                icon: "dot.radiowaves.left.and.right",
+                text: model.statusStreamText()
+            )
+            StreamOverlayIconAndTextView(
+                show: model.isShowingStatusCamera(),
+                icon: "camera",
+                text: model.statusCameraText()
+            )
+            StreamOverlayIconAndTextView(
+                show: model.isShowingStatusMic(),
+                icon: "music.mic",
+                text: model.mic.name
+            )
+            StreamOverlayIconAndTextView(
+                show: model.isShowingStatusZoom(),
+                icon: "magnifyingglass",
+                text: model.statusZoomText()
+            )
+            StreamOverlayIconAndTextView(
+                show: model.isShowingStatusObs(),
+                icon: "xserve",
+                text: model.statusObsText(),
+                color: obsStatusColor()
+            )
+            StreamOverlayIconAndTextView(
+                show: model.isShowingStatusChat(),
+                icon: "message",
+                text: model.statusChatText(),
+                color: messageColor()
+            )
+            StreamOverlayIconAndTextView(
+                show: model.isShowingStatusViewers(),
+                icon: "eye",
+                text: model.statusViewersText(),
+                color: viewersColor()
+            )
             Spacer()
         }
     }
