@@ -9,18 +9,20 @@ struct WidgetVideoEffectSettingsView: View {
 
     var body: some View {
         Section {
-            Picker("", selection: $selection) {
-                ForEach(videoEffects, id: \.self) { videoEffect in
-                    Text(videoEffect)
+            HStack {
+                Text("Video effect")
+                Spacer()
+                Picker("", selection: $selection) {
+                    ForEach(videoEffects, id: \.self) { videoEffect in
+                        Text(videoEffect)
+                    }
+                }
+                .onChange(of: selection) { type in
+                    widget.videoEffect.type = SettingsWidgetVideoEffectType.fromString(value: type)
+                    model.resetSelectedScene()
+                    model.sceneUpdated()
                 }
             }
-            .onChange(of: selection) { type in
-                widget.videoEffect.type = SettingsWidgetVideoEffectType.fromString(value: type)
-                model.resetSelectedScene()
-                model.sceneUpdated()
-            }
-            .pickerStyle(.inline)
-            .labelsHidden()
         }
         if widget.videoEffect.type == .noiseReduction {
             Section("Parameters") {
