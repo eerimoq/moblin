@@ -177,7 +177,7 @@ class RemoteControlAssistant {
     }
 
     private func handleStringMessage(webSocket _: Telegraph.WebSocket, message: String) {
-        logger.debug("remote-control-assistant: Got message \(message)")
+        // logger.debug("remote-control-assistant: Got message \(message)")
         do {
             let message = try RemoteControlMessageToAssistant.fromJson(data: message)
             switch message {
