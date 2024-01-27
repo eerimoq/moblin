@@ -1522,7 +1522,7 @@ private func addMissingGlobalButtons(database: Database) {
     button.id = UUID()
     button.type = .record
     button.imageType = "System name"
-    button.systemImageNameOn = "record.circle"
+    button.systemImageNameOn = "record.circle.fill"
     button.systemImageNameOff = "record.circle"
     updateGlobalButton(database: database, button: button)
 
