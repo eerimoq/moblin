@@ -16,7 +16,11 @@ enum RemoteControlRequest: Codable {
 }
 
 enum RemoteControlResponse: Codable {
-    case getStatus(topLeft: RemoteControlStatusTopLeft, topRight: RemoteControlStatusTopRight)
+    case getStatus(
+        general: RemoteControlStatusGeneral?,
+        topLeft: RemoteControlStatusTopLeft,
+        topRight: RemoteControlStatusTopRight
+    )
     case getSettings(data: RemoteControlSettings)
 }
 
@@ -27,6 +31,18 @@ enum RemoteControlEvent: Codable {
 struct RemoteControlStatusItem: Codable {
     var message: String
     var ok: Bool = true
+}
+
+enum RemoteControlStatusGeneralFlame: String, Codable {
+    case white = "White"
+    case yellow = "Yellow"
+    case red = "Red"
+}
+
+struct RemoteControlStatusGeneral: Codable {
+    var batteryCharging: Bool?
+    var batteryLevel: Int?
+    var flame: RemoteControlStatusGeneralFlame?
 }
 
 struct RemoteControlStatusTopLeft: Codable {

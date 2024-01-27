@@ -353,6 +353,7 @@ final class Model: ObservableObject {
     @Published var wizardCustomRtmpUrl = ""
     @Published var wizardCustomRtmpStreamKey = ""
 
+    @Published var remoteControlGeneral: RemoteControlStatusGeneral?
     @Published var remoteControlTopLeft: RemoteControlStatusTopLeft?
     @Published var remoteControlTopRight: RemoteControlStatusTopRight?
     @Published var remoteControlSettings: RemoteControlSettings?
@@ -2447,7 +2448,8 @@ final class Model: ObservableObject {
         guard showingRemoteControl && remoteControlAssistant?.isConnected() == true else {
             return
         }
-        remoteControlAssistant?.getStatus { topLeft, topRight in
+        remoteControlAssistant?.getStatus { general, topLeft, topRight in
+            self.remoteControlGeneral = general
             self.remoteControlTopLeft = topLeft
             self.remoteControlTopRight = topRight
         }
@@ -3797,8 +3799,27 @@ extension Model: RemoteControlStreamerDelegate {
         }
     }
 
-    func getStatus(onComplete: @escaping (RemoteControlStatusTopLeft, RemoteControlStatusTopRight) -> Void) {
+    func getStatus(onComplete: @escaping (
+        RemoteControlStatusGeneral,
+        RemoteControlStatusTopLeft,
+        RemoteControlStatusTopRight
+    ) -> Void) {
         DispatchQueue.main.async {
+            var general = RemoteControlStatusGeneral()
+            general.batteryCharging = self.isBatteryCharging()
+            general.batteryLevel = Int(100 * self.batteryLevel)
+            switch self.thermalState {
+            case .nominal:
+                general.flame = .white
+            case .fair:
+                general.flame = .white
+            case .serious:
+                general.flame = .yellow
+            case .critical:
+                general.flame = .red
+            @unknown default:
+                general.flame = .red
+            }
             var topLeft = RemoteControlStatusTopLeft()
             if self.isShowingStatusStream() {
                 topLeft.stream = RemoteControlStatusItem(message: self.statusStreamText())
@@ -3848,7 +3869,7 @@ extension Model: RemoteControlStreamerDelegate {
             if self.isShowingStatusRecording() {
                 topRight.recording = RemoteControlStatusItem(message: self.recordingLength)
             }
-            onComplete(topLeft, topRight)
+            onComplete(general, topLeft, topRight)
         }
     }
 
@@ -3887,14 +3908,26 @@ extension Model: RemoteControlStreamerDelegate {
         }
     }
 
-    func setRecord(on _: Bool, onComplete: @escaping () -> Void) {
+    func setRecord(on: Bool, onComplete: @escaping () -> Void) {
         DispatchQueue.main.async {
+            if on {
+                self.startRecording()
+            } else {
+                self.stopRecording()
+            }
+            self.updateButtonStates()
             onComplete()
         }
     }
 
-    func setStream(on _: Bool, onComplete: @escaping () -> Void) {
+    func setStream(on: Bool, onComplete: @escaping () -> Void) {
         DispatchQueue.main.async {
+            if on {
+                self.startStream()
+            } else {
+                self.stopStream()
+            }
+            self.updateButtonStates()
             onComplete()
         }
     }
@@ -3908,14 +3941,30 @@ extension Model: RemoteControlStreamerDelegate {
         }
     }
 
-    func setMute(on _: Bool, onComplete: @escaping () -> Void) {
+    func setMute(on: Bool, onComplete: @escaping () -> Void) {
         DispatchQueue.main.async {
+            if on {
+                self.isTorchOn = true
+            } else {
+                self.isTorchOn = false
+            }
+            self.updateTorch()
+            self.toggleGlobalButton(type: .torch)
+            self.updateButtonStates()
             onComplete()
         }
     }
 
-    func setTorch(on _: Bool, onComplete: @escaping () -> Void) {
+    func setTorch(on: Bool, onComplete: @escaping () -> Void) {
         DispatchQueue.main.async {
+            if on {
+                self.isMuteOn = true
+            } else {
+                self.isMuteOn = false
+            }
+            self.updateMute()
+            self.toggleGlobalButton(type: .mute)
+            self.updateButtonStates()
             onComplete()
         }
     }

@@ -65,14 +65,18 @@ class RemoteControlAssistant {
         return connected
     }
 
-    func getStatus(onSuccess: @escaping (RemoteControlStatusTopLeft, RemoteControlStatusTopRight) -> Void) {
+    func getStatus(onSuccess: @escaping (
+        RemoteControlStatusGeneral?,
+        RemoteControlStatusTopLeft,
+        RemoteControlStatusTopRight
+    ) -> Void) {
         performRequest(data: .getStatus) { response in
             guard let response else {
                 return
             }
             switch response {
-            case let .getStatus(topLeft: topLeft, topRight: topRight):
-                onSuccess(topLeft, topRight)
+            case let .getStatus(general: general, topLeft: topLeft, topRight: topRight):
+                onSuccess(general, topLeft, topRight)
             default:
                 logger.info("remote-control-assistant: Wrong response to getStatus")
             }

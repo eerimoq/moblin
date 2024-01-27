@@ -3,7 +3,11 @@ import Foundation
 protocol RemoteControlStreamerDelegate: AnyObject {
     func connected()
     func disconnected()
-    func getStatus(onComplete: @escaping (RemoteControlStatusTopLeft, RemoteControlStatusTopRight) -> Void)
+    func getStatus(onComplete: @escaping (
+        RemoteControlStatusGeneral,
+        RemoteControlStatusTopLeft,
+        RemoteControlStatusTopRight
+    ) -> Void)
     func getSettings(onComplete: @escaping (RemoteControlSettings) -> Void)
     func setScene(id: UUID, onComplete: @escaping () -> Void)
     func setBitratePreset(id: UUID, onComplete: @escaping () -> Void)
@@ -73,7 +77,9 @@ class RemoteControlStreamer {
 
     private func send(message: RemoteControlMessageToAssistant) {
         do {
-            try webSocket.send(.string(message.toJson())) { _ in }
+            let message = try message.toJson()
+            logger.debug("remote-control-streamer: Sending message \(message)")
+            webSocket.send(.string(message)) { _ in }
         } catch {
             logger.info("remote-control-streamer: Encode failed")
         }
@@ -123,11 +129,11 @@ class RemoteControlStreamer {
         }
         switch data {
         case .getStatus:
-            delegate.getStatus { topLeft, topRight in
+            delegate.getStatus { general, topLeft, topRight in
                 self.send(message: .response(
                     id: id,
                     result: .ok,
-                    data: .getStatus(topLeft: topLeft, topRight: topRight)
+                    data: .getStatus(general: general, topLeft: topLeft, topRight: topRight)
                 ))
             }
         case .getSettings:

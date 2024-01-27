@@ -373,6 +373,26 @@ struct RemoteControlView: View {
         model.remoteControlAssistantSetZoom(x: x)
     }
 
+    private func batteryStatus(status: RemoteControlStatusGeneral) -> RemoteControlStatusItem? {
+        guard let charging = status.batteryCharging, let level = status.batteryLevel else {
+            return nil
+        }
+        var message = "\(level)%"
+        if charging {
+            message += ", Charging"
+        } else {
+            message += ", Not charging"
+        }
+        return RemoteControlStatusItem(message: message)
+    }
+
+    private func flameStatus(status: RemoteControlStatusGeneral) -> RemoteControlStatusItem? {
+        guard let flame = status.flame else {
+            return nil
+        }
+        return RemoteControlStatusItem(message: flame.rawValue)
+    }
+
     var body: some View {
         Form {
             if !model.isRemoteControlAssistantConnected() {
@@ -380,6 +400,18 @@ struct RemoteControlView: View {
                     Text("Waiting for the remote control streamer to connect...")
                 }
             } else {
+                Section {
+                    if let status = model.remoteControlGeneral {
+                        VStack(alignment: .leading, spacing: 3) {
+                            StatusItemView(icon: "battery.0", status: batteryStatus(status: status))
+                            StatusItemView(icon: "flame", status: flameStatus(status: status))
+                        }
+                    } else {
+                        Text("No status received yet.")
+                    }
+                } header: {
+                    Text("General")
+                }
                 Section {
                     if let status = model.remoteControlTopLeft {
                         VStack(alignment: .leading, spacing: 3) {
