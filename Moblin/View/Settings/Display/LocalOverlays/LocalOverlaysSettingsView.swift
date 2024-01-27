@@ -72,6 +72,12 @@ struct LocalOverlaysSettingsView: View {
                     show.rtmpSpeed = value
                     model.store()
                 }))
+                Toggle("Remote control", isOn: Binding(get: {
+                    show.remoteControl!
+                }, set: { value in
+                    show.remoteControl = value
+                    model.store()
+                }))
                 Toggle("Game controllers", isOn: Binding(get: {
                     show.gameController!
                 }, set: { value in
