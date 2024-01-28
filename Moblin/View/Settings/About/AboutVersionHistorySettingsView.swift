@@ -8,6 +8,18 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.162.0", date: "2024-01-28", changes: [
+        "• Video effect picker rework.",
+        "• Change mic using remote control.",
+        "• Smaller styling changes.",
+        "• Two columns in remote control assistant.",
+        "• Remote control assistant receives log messages.",
+        "  • Stores up to 100,000 entries, so many more than locally on the streamer's device.",
+        "• Fix crash on iPhone 12 Mini when changing URL and pressing Done more than once?",
+        "  • Changing the URL can sometimes make the UI unresponsive.",
+        "  • Could probably happen on any device.",
+        "• Log SRT overlay.",
+    ]),
     Version(version: "0.161.0", date: "2024-01-27", changes: [
         "• Fix bad browser widget behavior after settings change.",
         "• Browser widget loading status in top right of UI.",
