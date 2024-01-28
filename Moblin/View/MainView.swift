@@ -220,6 +220,7 @@ struct MainView: View {
                     .onTapGesture(count: 2) { _ in
                         model.toggleBlackScreen()
                     }
+                    .persistentSystemOverlays(.hidden)
             }
         }
         .onAppear {
