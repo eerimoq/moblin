@@ -53,22 +53,14 @@ struct PasswordView: View {
 struct RemoteControlSettingsView: View {
     @EnvironmentObject var model: Model
 
-    private func submitClientAddress(value: String) {
-        model.database.remoteControl!.client.address = value.trim()
+    private func submitPassword(value: String) {
+        model.database.remoteControl!.password = value.trim()
         model.store()
+        model.reloadRemoteControlStreamer()
         model.reloadRemoteControlAssistant()
     }
 
-    private func submitClientPort(value: String) {
-        guard let port = UInt16(value.trim()) else {
-            return
-        }
-        model.database.remoteControl!.client.port = port
-        model.store()
-        model.reloadRemoteControlAssistant()
-    }
-
-    private func submitServerUrl(value: String) {
+    private func submitStreamerUrl(value: String) {
         guard isValidWebSocketUrl(url: value) == nil else {
             return
         }
@@ -77,10 +69,19 @@ struct RemoteControlSettingsView: View {
         model.reloadRemoteControlStreamer()
     }
 
-    private func submitPassword(value: String) {
-        model.database.remoteControl!.password = value.trim()
+    private func submitAssistantAddress(value: String) {
+        model.database.remoteControl!.client.address = value.trim()
         model.store()
-        model.reloadRemoteControlStreamer()
+        model.reloadRemoteControlAssistant()
+    }
+
+    private func submitAssistantPort(value: String) {
+        guard let port = UInt16(value.trim()) else {
+            return
+        }
+        model.database.remoteControl!.client.port = port
+        model.store()
+        model.reloadRemoteControlAssistant()
     }
 
     var body: some View {
@@ -112,7 +113,7 @@ struct RemoteControlSettingsView: View {
                 TextEditNavigationView(
                     title: String(localized: "Assistant URL"),
                     value: model.database.remoteControl!.server.url,
-                    onSubmit: submitServerUrl,
+                    onSubmit: submitStreamerUrl,
                     keyboardType: .URL,
                     placeholder: "ws://32.143.32.12:2345"
                 )
@@ -137,13 +138,13 @@ struct RemoteControlSettingsView: View {
                 TextEditNavigationView(
                     title: String(localized: "Server address"),
                     value: model.database.remoteControl!.client.address,
-                    onSubmit: submitClientAddress,
+                    onSubmit: submitAssistantAddress,
                     placeholder: "32.143.32.12"
                 )
                 TextEditNavigationView(
                     title: String(localized: "Server port"),
                     value: String(model.database.remoteControl!.client.port),
-                    onSubmit: submitClientPort,
+                    onSubmit: submitAssistantPort,
                     placeholder: "2345"
                 )
             } header: {
