@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct Line: Identifiable {
+struct DrawOnStreamLine: Identifiable {
     let id = UUID()
     var points: [CGPoint]
     var width: CGFloat
@@ -10,41 +10,24 @@ struct Line: Identifiable {
 struct DrawOnStreamView: View {
     @EnvironmentObject var model: Model
 
-    private func createPath(for line: [CGPoint]) -> Path {
-        var path = Path()
-        if let firstPoint = line.first {
-            path.move(to: firstPoint)
-        }
-        if line.count > 2 {
-            for index in 1 ..< line.count {
-                let mid = calculateMidPoint(line[index - 1], line[index])
-                path.addQuadCurve(to: mid, control: line[index - 1])
-            }
-        }
-        if let last = line.last {
-            path.addLine(to: last)
-        }
-        return path
-    }
-
-    private func calculateMidPoint(_ point1: CGPoint, _ point2: CGPoint) -> CGPoint {
-        return CGPoint(x: (point1.x + point2.x) / 2, y: (point1.y + point2.y) / 2)
-    }
-
     var body: some View {
         ZStack {
-            Canvas { context, _ in
+            Canvas { context, size in
                 for line in model.drawOnStreamLines {
-                    let path = createPath(for: line.points)
-                    context.stroke(path, with: .color(line.color), lineWidth: line.width)
+                    context.stroke(
+                        drawOnStreamCreatePath(points: line.points),
+                        with: .color(line.color),
+                        lineWidth: line.width
+                    )
                 }
+                model.drawOnStreamSize = size
             }
             .gesture(
                 DragGesture(minimumDistance: 0)
                     .onChanged { value in
                         let position = value.location
                         if value.translation == .zero {
-                            model.drawOnStreamLines.append(Line(
+                            model.drawOnStreamLines.append(DrawOnStreamLine(
                                 points: [position],
                                 width: model.drawOnStreamSelectedWidth,
                                 color: model.drawOnStreamSelectedColor
@@ -56,13 +39,17 @@ struct DrawOnStreamView: View {
                             model.drawOnStreamLines[lastIdx].points.append(position)
                         }
                     }
+                    .onEnded { _ in
+                        model.drawOnStreamLineComplete()
+                    }
             )
+            .ignoresSafeArea()
             VStack {
                 Spacer()
                 HStack {
                     HStack {
                         Button {
-                            model.drawOnStreamLines = []
+                            model.drawOnStreamWipe()
                         } label: {
                             Image(systemName: "trash.fill")
                                 .font(.largeTitle)

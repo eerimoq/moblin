@@ -694,7 +694,7 @@ struct ButtonsInnerView: View {
         state.button.isOn.toggle()
         model.setGlobalButtonState(type: .draw, isOn: state.button.isOn)
         model.updateButtonStates()
-        model.showDrawOnStream.toggle()
+        model.toggleDrawOnStream()
     }
 
     var body: some View {

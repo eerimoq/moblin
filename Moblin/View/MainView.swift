@@ -96,9 +96,9 @@ struct MainView: View {
                                 )
                                 .opacity(0)
                         }
-                    }
-                    if model.showDrawOnStream {
-                        DrawOnStreamView()
+                        if model.showDrawOnStream {
+                            DrawOnStreamView()
+                        }
                     }
                     StreamOverlayView()
                 }

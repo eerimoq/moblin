@@ -112,6 +112,7 @@
 		03A173F12B37E5E600ACC4F8 /* FormFieldError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A173F02B37E5E600ACC4F8 /* FormFieldError.swift */; };
 		03A173FA2B38312E00ACC4F8 /* Snow.sks in Resources */ = {isa = PBXBuildFile; fileRef = 03A173F92B38312E00ACC4F8 /* Snow.sks */; };
 		03A3F4C72AF4C0AD00F465D1 /* AdaptiveBitrate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A3F4C62AF4C0AD00F465D1 /* AdaptiveBitrate.swift */; };
+		03A5991A2B66A94B002E7EE8 /* DrawOnStreamEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A599192B66A94B002E7EE8 /* DrawOnStreamEffect.swift */; };
 		03A974282AC137A000610E21 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 03A974272AC137A000610E21 /* Collections */; };
 		03A983422A9A03D3008FF0DB /* TwitchChat in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983412A9A03D3008FF0DB /* TwitchChat */; };
 		03A983452A9A03EA008FF0DB /* HaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983442A9A03EA008FF0DB /* HaishinKit */; };
@@ -287,6 +288,7 @@
 		03A173F02B37E5E600ACC4F8 /* FormFieldError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormFieldError.swift; sourceTree = "<group>"; };
 		03A173F92B38312E00ACC4F8 /* Snow.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Snow.sks; sourceTree = "<group>"; };
 		03A3F4C62AF4C0AD00F465D1 /* AdaptiveBitrate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveBitrate.swift; sourceTree = "<group>"; };
+		03A599192B66A94B002E7EE8 /* DrawOnStreamEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawOnStreamEffect.swift; sourceTree = "<group>"; };
 		03A983552A9A05D7008FF0DB /* StreamsSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamsSettingsView.swift; sourceTree = "<group>"; };
 		03A983562A9A05D7008FF0DB /* MainView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		03A983572A9A05D7008FF0DB /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -978,16 +980,17 @@
 		03B374052AA0EA370028DDD5 /* VideoEffects */ = {
 			isa = PBXGroup;
 			children = (
-				03B374012AA0354C0028DDD5 /* GrayScaleEffect.swift */,
-				03B374062AA0EA650028DDD5 /* MovieEffect.swift */,
-				03B374082AA0EA700028DDD5 /* ImageEffect.swift */,
-				0379BB932AACF16600B718B6 /* SepiaEffect.swift */,
-				032815DB2AC915AE001F8A85 /* RandomEffect.swift */,
-				032815DE2AC9885C001F8A85 /* TripleEffect.swift */,
-				031CCE2C2ACA76CF00CB5D46 /* NoiseReductionEffect.swift */,
 				03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */,
-				03F3BF182ADAAA94009A8D3E /* TextEffect.swift */,
+				03A599192B66A94B002E7EE8 /* DrawOnStreamEffect.swift */,
+				03B374012AA0354C0028DDD5 /* GrayScaleEffect.swift */,
+				03B374082AA0EA700028DDD5 /* ImageEffect.swift */,
+				03B374062AA0EA650028DDD5 /* MovieEffect.swift */,
+				031CCE2C2ACA76CF00CB5D46 /* NoiseReductionEffect.swift */,
 				03085C0E2B487D950009DAB6 /* PixellateEffect.swift */,
+				032815DB2AC915AE001F8A85 /* RandomEffect.swift */,
+				0379BB932AACF16600B718B6 /* SepiaEffect.swift */,
+				03F3BF182ADAAA94009A8D3E /* TextEffect.swift */,
+				032815DE2AC9885C001F8A85 /* TripleEffect.swift */,
 			);
 			path = VideoEffects;
 			sourceTree = "<group>";
@@ -1364,6 +1367,7 @@
 				034844EF2B579D4C0089B874 /* RemoteControlAssistant.swift in Sources */,
 				036BE2D22ABD518E0048F9C5 /* StreamKickSettingsView.swift in Sources */,
 				03FB4B312AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift in Sources */,
+				03A5991A2B66A94B002E7EE8 /* DrawOnStreamEffect.swift in Sources */,
 				0302F0832B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift in Sources */,
 				03B374132AA277570028DDD5 /* Srtla.swift in Sources */,
 				0379BB902AABA7DC00B718B6 /* Log.swift in Sources */,

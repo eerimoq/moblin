@@ -268,6 +268,7 @@ final class Model: ObservableObject {
     private var imageEffects: [UUID: ImageEffect] = [:]
     private var videoEffects: [UUID: VideoEffect] = [:]
     private var browserEffects: [UUID: BrowserEffect] = [:]
+    private var drawOnStreamEffect = DrawOnStreamEffect()
     @Published var browsers: [Browser] = []
     @Published var sceneIndex = 0
     private var isTorchOn = false
@@ -325,9 +326,10 @@ final class Model: ObservableObject {
     }
 
     @Published var showDrawOnStream: Bool = false
-    @Published var drawOnStreamLines: [Line] = []
+    @Published var drawOnStreamLines: [DrawOnStreamLine] = []
     @Published var drawOnStreamSelectedColor: Color = .pink
     @Published var drawOnStreamSelectedWidth: CGFloat = 4
+    var drawOnStreamSize: CGSize = .zero
 
     @Published var isPresentingWizard: Bool = false
     @Published var isPresentingSetupWizard: Bool = false
@@ -433,6 +435,25 @@ final class Model: ObservableObject {
     private var pixellateEffect = PixellateEffect()
     private var locationManager = Location()
     private var realtimeIrl: RealtimeIrl?
+
+    func drawOnStreamLineComplete() {
+        drawOnStreamEffect.updateOverlay(
+            videoSize: media.getVideoSize(),
+            size: drawOnStreamSize,
+            lines: drawOnStreamLines
+        )
+        media.registerEffect(drawOnStreamEffect)
+    }
+
+    func drawOnStreamWipe() {
+        drawOnStreamLines = []
+        drawOnStreamEffect.updateOverlay(
+            videoSize: media.getVideoSize(),
+            size: drawOnStreamSize,
+            lines: drawOnStreamLines
+        )
+        media.unregisterEffect(drawOnStreamEffect)
+    }
 
     private func cleanWizardUrl(url: String) -> String {
         var cleanedUrl = cleanUrl(url: url)
@@ -1625,7 +1646,6 @@ final class Model: ObservableObject {
             self.updateObsSourceScreenshot()
             self.updateObsAudioVolume()
             self.updateBrowserWidgetStatus()
-            self.updateDrawOnStream()
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
@@ -1841,11 +1861,7 @@ final class Model: ObservableObject {
         }
         browserEffects.removeAll()
         for widget in database.widgets where widget.type == .browser {
-            let mediaVideoSize = media.getVideoSize()
-            let videoSize = CGSize(
-                width: Double(mediaVideoSize.width),
-                height: Double(mediaVideoSize.height)
-            )
+            let videoSize = media.getVideoSize()
             guard let url = URL(string: widget.browser.url) else {
                 continue
             }
@@ -2665,7 +2681,9 @@ final class Model: ObservableObject {
         }
     }
 
-    private func updateDrawOnStream() {}
+    func toggleDrawOnStream() {
+        showDrawOnStream.toggle()
+    }
 
     func startObsSourceScreenshot() {
         obsScreenshot = nil
@@ -2913,6 +2931,7 @@ final class Model: ObservableObject {
             media.unregisterEffect(browserEffect)
             browserEffect.stop()
         }
+        media.unregisterEffect(drawOnStreamEffect)
     }
 
     private func attachSingleLayout(scene: SettingsScene) {
@@ -3042,6 +3061,9 @@ final class Model: ObservableObject {
                     usedBrowserEffects.append(browserEffect)
                 }
             }
+        }
+        if !drawOnStreamLines.isEmpty {
+            media.registerEffect(drawOnStreamEffect)
         }
         for browserEffect in browserEffects.values where !usedBrowserEffects.contains(browserEffect) {
             browserEffect.setSceneWidget(sceneWidget: nil)

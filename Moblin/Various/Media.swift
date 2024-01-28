@@ -298,7 +298,7 @@ final class Media: NSObject {
 
     func registerEffect(_ effect: VideoEffect) {
         if !netStream.registerVideoEffect(effect) {
-            logger.info("Failed to register video effect")
+            logger.debug("Failed to register video effect")
         }
     }
 
@@ -314,8 +314,9 @@ final class Media: NSObject {
         netStream.videoSettings.videoSize = size
     }
 
-    func getVideoSize() -> VideoSize {
-        return netStream.videoSettings.videoSize
+    func getVideoSize() -> CGSize {
+        let size = netStream.videoSettings.videoSize
+        return CGSize(width: CGFloat(size.width), height: CGFloat(size.height))
     }
 
     func setStreamFPS(fps: Int) {

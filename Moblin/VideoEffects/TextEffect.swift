@@ -2,7 +2,6 @@ import AVFoundation
 import HaishinKit
 import SwiftUI
 import UIKit
-import WebKit
 
 private let textQueue = DispatchQueue(label: "com.eerimoq.widget.text")
 
