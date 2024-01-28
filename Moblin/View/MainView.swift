@@ -97,6 +97,7 @@ struct MainView: View {
                                 .opacity(0)
                         }
                     }
+                    // DrawOnStreamView()
                     StreamOverlayView()
                 }
                 .gesture(
