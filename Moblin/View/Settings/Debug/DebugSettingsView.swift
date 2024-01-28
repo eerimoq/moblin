@@ -17,7 +17,11 @@ struct DebugSettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: DebugLogSettingsView()) {
+                NavigationLink(destination: DebugLogSettingsView(
+                    log: model.log,
+                    formatLog: { model.formatLog(log: model.log) },
+                    clearLog: { model.clearLog() }
+                )) {
                     Text("Log")
                 }
                 NavigationLink(destination: InlinePickerView(title: String(localized: "Log level"),

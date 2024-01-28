@@ -27,6 +27,7 @@ enum RemoteControlResponse: Codable {
 
 enum RemoteControlEvent: Codable {
     case state(data: RemoteControlState)
+    case log(entry: String)
 }
 
 struct RemoteControlStatusItem: Codable {

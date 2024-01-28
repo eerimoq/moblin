@@ -187,14 +187,10 @@ struct MainView: View {
                 }
             }
             if model.showingRemoteControl {
-                HStack {
-                    Spacer()
-                    NavigationStack {
-                        RemoteControlView {
-                            model.showingRemoteControl = false
-                        }
+                NavigationStack {
+                    RemoteControlView {
+                        model.showingRemoteControl = false
                     }
-                    .frame(width: settingsHalfWidth)
                 }
             }
             if model.showingRecordings {

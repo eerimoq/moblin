@@ -6,6 +6,7 @@ protocol RemoteControlAssistantDelegate: AnyObject {
     func assistantConnected()
     func assistantDisconnected()
     func assistantStateChanged(state: RemoteControlState)
+    func assistantLog(entry: String)
 }
 
 private struct RemoteControlRequestResponse {
@@ -194,7 +195,7 @@ class RemoteControlAssistant {
                 try handleResponse(id: id, result: result, data: data)
             }
         } catch {
-            logger.info("remote-control-assistant: Failed to process message with error \(error)")
+            logger.debug("remote-control-assistant: Failed to process message with error \(error)")
         }
     }
 
@@ -223,6 +224,8 @@ class RemoteControlAssistant {
         switch data {
         case let .state(data: state):
             handleStateEvent(state: state)
+        case let .log(entry: entry):
+            handleLogEvent(entry: entry)
         }
     }
 
@@ -252,12 +255,15 @@ class RemoteControlAssistant {
         delegate?.assistantStateChanged(state: state)
     }
 
+    private func handleLogEvent(entry: String) {
+        delegate?.assistantLog(entry: entry)
+    }
+
     private func performRequest(
         data: RemoteControlRequest,
         onSuccess: @escaping (RemoteControlResponse?) -> Void,
         onError: @escaping (String) -> Void
     ) {
-        logger.debug("remote-control-assistant: Perform request")
         guard connected else {
             onError("Not connected to streamer")
             return

@@ -74,7 +74,17 @@ class RemoteControlStreamer {
     }
 
     func stateChanged(state: RemoteControlState) {
+        guard connected else {
+            return
+        }
         send(message: .event(data: .state(data: state)))
+    }
+
+    func log(entry: String) {
+        guard connected else {
+            return
+        }
+        send(message: .event(data: .log(entry: entry)))
     }
 
     private func setupConnection() {

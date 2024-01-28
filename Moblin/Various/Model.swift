@@ -273,6 +273,7 @@ final class Model: ObservableObject {
     private var isTorchOn = false
     private var isMuteOn = false
     var log: Deque<LogEntry> = []
+    var remoteControlAssistantLog: Deque<LogEntry> = []
     var imageStorage = ImageStorage()
     @Published var buttonPairs: [ButtonPair] = []
     private var reconnectTimer: Timer?
@@ -777,6 +778,7 @@ final class Model: ObservableObject {
             }
             self.log.append(LogEntry(id: self.logId, message: message))
             self.logId += 1
+            self.remoteControlStreamer?.log(entry: message)
         }
     }
 
@@ -784,11 +786,15 @@ final class Model: ObservableObject {
         log = []
     }
 
-    func formatLog() -> String {
+    func formatLog(log: Deque<LogEntry>) -> String {
         var data = "Version: \(version())\n"
         data += "Debug: \(logger.debugEnabled)\n\n"
         data += log.map { e in e.message }.joined(separator: "\n")
         return data
+    }
+
+    func clearRemoteControlAssistantLog() {
+        remoteControlAssistantLog = []
     }
 
     func setAllowHapticsAndSystemSoundsDuringRecording() {
@@ -4084,5 +4090,13 @@ extension Model: RemoteControlAssistantDelegate {
             remoteControlState.zoom = zoom
             remoteControlZoom = String(zoom)
         }
+    }
+
+    func assistantLog(entry: String) {
+        if remoteControlAssistantLog.count > 100_000 {
+            remoteControlAssistantLog.removeFirst()
+        }
+        logId += 1
+        remoteControlAssistantLog.append(LogEntry(id: logId, message: entry))
     }
 }

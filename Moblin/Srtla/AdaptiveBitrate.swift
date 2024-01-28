@@ -322,7 +322,6 @@ class AdaptiveBitrate {
         )
         calculateCurrentBitrate(stats)
         if prevBitrate != curBitrate {
-            logger.debug("srtla: adaptive-bitrate: Setting bitrate \(curBitrate)")
             delegate.adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32(curBitrate))
         }
         prevBitrate = curBitrate
