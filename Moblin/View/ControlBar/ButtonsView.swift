@@ -554,6 +554,7 @@ struct ButtonsInnerView: View {
     @EnvironmentObject var model: Model
     var state: ButtonState
     var size: CGFloat
+    var nameSize: CGFloat
     @State private var isPresentingRecordConfirm: Bool = false
 
     private func torchAction(state: ButtonState) {
@@ -837,7 +838,7 @@ struct ButtonsInnerView: View {
             if model.database.quickButtons!.showName {
                 Text(state.button.name)
                     .foregroundColor(.white)
-                    .font(.system(size: 10))
+                    .font(.system(size: nameSize))
             }
         }
     }
@@ -852,20 +853,20 @@ struct ButtonsView: View {
                 if model.database.quickButtons!.twoColumns {
                     HStack(alignment: .top) {
                         if let second = pair.second {
-                            ButtonsInnerView(state: second, size: buttonSize)
+                            ButtonsInnerView(state: second, size: buttonSize, nameSize: 10)
                         } else {
                             ButtonPlaceholderImage()
                         }
-                        ButtonsInnerView(state: pair.first, size: buttonSize)
+                        ButtonsInnerView(state: pair.first, size: buttonSize, nameSize: 10)
                     }
                     .id(pair.first.button.id)
                 } else {
                     if let second = pair.second {
-                        ButtonsInnerView(state: second, size: singleButtonSize)
+                        ButtonsInnerView(state: second, size: singleButtonSize, nameSize: 12)
                     } else {
                         EmptyView()
                     }
-                    ButtonsInnerView(state: pair.first, size: singleButtonSize)
+                    ButtonsInnerView(state: pair.first, size: singleButtonSize, nameSize: 12)
                         .id(pair.first.button.id)
                 }
             }
