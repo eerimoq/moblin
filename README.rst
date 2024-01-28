@@ -60,8 +60,7 @@ Features
 
   - Time widget. Show local (phone) time on stream.
 
-  - Browser widget (not yet fully functional). Show a web page on
-    stream.
+  - Browser widget. Show a web page on stream.
 
 - Back or front camera.
 
@@ -175,6 +174,22 @@ Features
 
 - Configurable bitrate presets.
 
+- Adaptive bitrate for SRT(LA).
+
+- Optionally remote control the streamer's Moblin app over the network.
+
+  - Shows basic status information.
+
+  - Change scene.
+
+  - Change mic.
+
+  - Change bitrate.
+
+  - Change zoom.
+
+  - Show logs.
+
 - Torch.
 
 - Mute audio.
@@ -188,8 +203,6 @@ Features
 
 ToDo
 ====
-
-- Improve the browser widget.
 
 Ideas/plan
 ==========
@@ -210,8 +223,6 @@ Ideas/plan
     clipping), and a noise gate would be my top 3 requested audio
     filters when you have the time. I think that would be the same
     order in terms of complexity to implement as well.
-
-- Use external UVC camera. Looks like iOS 17 supports them.
 
 - Reintroduce settings in portrait.
 
