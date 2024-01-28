@@ -97,7 +97,9 @@ struct MainView: View {
                                 .opacity(0)
                         }
                     }
-                    // DrawOnStreamView()
+                    if model.showDrawOnStream {
+                        DrawOnStreamView()
+                    }
                     StreamOverlayView()
                 }
                 .gesture(

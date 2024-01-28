@@ -324,6 +324,11 @@ final class Model: ObservableObject {
         settings.database
     }
 
+    @Published var showDrawOnStream: Bool = false
+    @Published var drawOnStreamLines: [Line] = []
+    @Published var drawOnStreamSelectedColor: Color = .pink
+    @Published var drawOnStreamSelectedWidth: CGFloat = 4
+
     @Published var isPresentingWizard: Bool = false
     @Published var isPresentingSetupWizard: Bool = false
     var wizardPlatform: WizardPlatform = .custom
@@ -1620,6 +1625,7 @@ final class Model: ObservableObject {
             self.updateObsSourceScreenshot()
             self.updateObsAudioVolume()
             self.updateBrowserWidgetStatus()
+            self.updateDrawOnStream()
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
@@ -2658,6 +2664,8 @@ final class Model: ObservableObject {
             browserWidgetsStatus = message
         }
     }
+
+    private func updateDrawOnStream() {}
 
     func startObsSourceScreenshot() {
         obsScreenshot = nil

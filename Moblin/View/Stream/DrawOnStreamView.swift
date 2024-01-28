@@ -8,9 +8,7 @@ struct Line: Identifiable {
 }
 
 struct DrawOnStreamView: View {
-    @State var lines: [Line] = []
-    @State var selectedColor: Color = .pink
-    @State var selectedWidth: CGFloat = 4
+    @EnvironmentObject var model: Model
 
     private func createPath(for line: [CGPoint]) -> Path {
         var path = Path()
@@ -36,7 +34,7 @@ struct DrawOnStreamView: View {
     var body: some View {
         ZStack {
             Canvas { context, _ in
-                for line in lines {
+                for line in model.drawOnStreamLines {
                     let path = createPath(for: line.points)
                     context.stroke(path, with: .color(line.color), lineWidth: line.width)
                 }
@@ -46,12 +44,16 @@ struct DrawOnStreamView: View {
                     .onChanged { value in
                         let position = value.location
                         if value.translation == .zero {
-                            lines.append(Line(points: [position], width: selectedWidth, color: selectedColor))
+                            model.drawOnStreamLines.append(Line(
+                                points: [position],
+                                width: model.drawOnStreamSelectedWidth,
+                                color: model.drawOnStreamSelectedColor
+                            ))
                         } else {
-                            guard let lastIdx = lines.indices.last else {
+                            guard let lastIdx = model.drawOnStreamLines.indices.last else {
                                 return
                             }
-                            lines[lastIdx].points.append(position)
+                            model.drawOnStreamLines[lastIdx].points.append(position)
                         }
                     }
             )
@@ -60,18 +62,18 @@ struct DrawOnStreamView: View {
                 HStack {
                     HStack {
                         Button {
-                            lines = []
+                            model.drawOnStreamLines = []
                         } label: {
                             Image(systemName: "trash.fill")
                                 .font(.largeTitle)
                                 .foregroundColor(.white)
                         }
-                        ColorPicker("Color", selection: $selectedColor)
+                        ColorPicker("Color", selection: $model.drawOnStreamSelectedColor)
                             .font(.largeTitle)
                             .labelsHidden()
-                        Slider(value: $selectedWidth, in: 1 ... 20)
+                        Slider(value: $model.drawOnStreamSelectedWidth, in: 1 ... 20)
                             .frame(width: 150)
-                            .accentColor(selectedColor)
+                            .accentColor(model.drawOnStreamSelectedColor)
                     }
                     Spacer()
                 }

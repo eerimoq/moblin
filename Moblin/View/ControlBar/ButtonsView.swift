@@ -690,6 +690,13 @@ struct ButtonsInnerView: View {
         model.updateRemoteControlAssistantStatus()
     }
 
+    private func drawAction(state _: ButtonState) {
+        state.button.isOn.toggle()
+        model.setGlobalButtonState(type: .draw, isOn: state.button.isOn)
+        model.updateButtonStates()
+        model.showDrawOnStream.toggle()
+    }
+
     var body: some View {
         VStack {
             switch state.button.type {
@@ -831,6 +838,12 @@ struct ButtonsInnerView: View {
             case .remote:
                 Button(action: {
                     remoteAction(state: state)
+                }, label: {
+                    ButtonImage(state: state, buttonSize: size)
+                })
+            case .draw:
+                Button(action: {
+                    drawAction(state: state)
                 }, label: {
                     ButtonImage(state: state, buttonSize: size)
                 })
