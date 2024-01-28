@@ -1640,6 +1640,9 @@ final class Model: ObservableObject {
     private func updateSrtDebugLines() {
         if let lines = media.getSrtStats(overlay: database.debug!.srtOverlay) {
             srtDebugLines = lines
+            if logger.debugEnabled {
+                logger.debug(lines.joined(separator: ", "))
+            }
         } else if !srtDebugLines.isEmpty {
             srtDebugLines = []
         }
