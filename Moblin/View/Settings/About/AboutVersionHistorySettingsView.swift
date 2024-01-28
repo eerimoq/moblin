@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.163.0", date: "2024-01-28", changes: [
+        "• Slightly bigger quick button name font when using single column.",
+        "• Draw on stream.",
+        "  • Toggle draw mode with the draw quick button.",
+    ]),
     Version(version: "0.162.0", date: "2024-01-28", changes: [
         "• Video effect picker rework.",
         "• Change mic using remote control.",
