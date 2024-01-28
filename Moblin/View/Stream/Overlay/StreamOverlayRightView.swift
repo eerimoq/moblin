@@ -1,12 +1,13 @@
 import SwiftUI
 
 private let barsPerDb: Float = 0.3
+private let clippingThresholdDb: Float = -1.0
 private let redThresholdDb: Float = -8.5
 private let yellowThresholdDb: Float = -20
 private let zeroThresholdDb: Float = -60
 
-// Approx 40 * 0.3 = 12
-private let maxBars = "|||||||||||||||"
+// Approx 60 * 0.3 = 20
+private let maxBars = "||||||||||||||||||||"
 
 struct AudioLevelView: View {
     var showBar: Bool
@@ -16,6 +17,15 @@ struct AudioLevelView: View {
     private func bars(count: Float) -> Substring {
         let barCount = Int(count.rounded(.toNearestOrAwayFromZero))
         return maxBars.prefix(barCount)
+    }
+
+    private func isClipping() -> Bool {
+        return level > clippingThresholdDb
+    }
+
+    private func clippingText() -> Substring {
+        let db = -zeroThresholdDb
+        return bars(count: db * barsPerDb)
     }
 
     private func redText() -> Substring {
@@ -54,12 +64,17 @@ struct AudioLevelView: View {
                 } else {
                     if showBar {
                         HStack(spacing: 0) {
-                            Text(redText())
-                                .foregroundColor(.red)
-                            Text(yellowText())
-                                .foregroundColor(.yellow)
-                            Text(greenText())
-                                .foregroundColor(.green)
+                            if isClipping() {
+                                Text(clippingText())
+                                    .foregroundColor(.red)
+                            } else {
+                                Text(redText())
+                                    .foregroundColor(.red)
+                                Text(yellowText())
+                                    .foregroundColor(.yellow)
+                                Text(greenText())
+                                    .foregroundColor(.green)
+                            }
                         }
                         .padding([.bottom], 2)
                         .bold()
