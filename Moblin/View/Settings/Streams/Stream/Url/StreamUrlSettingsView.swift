@@ -11,6 +11,9 @@ struct StreamUrlSettingsView: View {
     @State var error = ""
 
     func submitUrl() {
+        guard !submitted else {
+            return
+        }
         value = cleanUrl(url: value)
         if let message = isValidUrl(url: value) {
             error = message
