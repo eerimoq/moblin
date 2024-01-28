@@ -15,7 +15,7 @@ struct MoblinApp: App {
         WindowGroup {
             MainView(streamView: StreamView())
                 .environmentObject(model)
-                // .persistentSystemOverlays(.hidden)
+            // .persistentSystemOverlays(.hidden)
         }
     }
 }
