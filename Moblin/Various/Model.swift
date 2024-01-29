@@ -269,6 +269,7 @@ final class Model: ObservableObject {
     private var videoEffects: [UUID: VideoEffect] = [:]
     private var browserEffects: [UUID: BrowserEffect] = [:]
     private var drawOnStreamEffect = DrawOnStreamEffect()
+    private var cubeLutEffect = CubeLutEffect()
     @Published var browsers: [Browser] = []
     @Published var sceneIndex = 0
     private var isTorchOn = false
@@ -1659,6 +1660,11 @@ final class Model: ObservableObject {
             self.updateObsStatus()
             self.updateRemoteControlAssistantStatus()
             self.updateRemoteControlStatus()
+            /* if let cameraDevice = self.cameraDevice {
+                 print("xxx ISO:", cameraDevice.iso)
+                 print("xxx FPS:", cameraDevice.fps)
+                 print("xxx color space:", cameraDevice.colorSpace)
+             } */
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
             self.updateSrtDebugLines()
@@ -2938,6 +2944,7 @@ final class Model: ObservableObject {
             browserEffect.stop()
         }
         media.unregisterEffect(drawOnStreamEffect)
+        media.unregisterEffect(cubeLutEffect)
     }
 
     private func attachSingleLayout(scene: SettingsScene) {
@@ -3022,6 +3029,7 @@ final class Model: ObservableObject {
         case .pip:
             attachPipLayout(scene: scene)
         }
+        // media.registerEffect(cubeLutEffect)
         registerGlobalVideoEffects()
         var usedBrowserEffects: [BrowserEffect] = []
         for sceneWidget in scene.widgets.filter({ widget in widget.enabled }) {
