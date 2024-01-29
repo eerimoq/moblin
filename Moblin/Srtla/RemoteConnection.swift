@@ -358,6 +358,9 @@ class RemoteConnection {
     private func handleSrtlaKeepalive() {}
 
     private func handleSrtlaAck(packet: Data) {
+        guard (packet.count % 4) == 0 else {
+            return
+        }
         for offset in stride(from: 4, to: packet.count, by: 4) {
             onSrtlaAck?(packet.getUInt32Be(offset: offset))
         }
@@ -375,10 +378,10 @@ class RemoteConnection {
     private func handleSrtlaReg2(packet: Data) {
         logger.info("srtla: \(typeString): Got reg 2 (group created)")
         guard packet.count == 258 else {
-            logger
-                .warning(
-                    "srtla: \(typeString): Wrong reg 2 packet length \(packet.count)"
-                )
+            logger.warning("srtla: \(typeString): Wrong reg 2 packet length \(packet.count)")
+            return
+        }
+        guard groupId.count == 256 else {
             return
         }
         guard packet[2 ..< groupId.count / 2 + 2] == groupId[0 ..< groupId.count / 2]

@@ -515,6 +515,25 @@ extension AVCaptureDevice {
         let factor = getZoomFactorScale(hasUltraWideCamera: hasUltraWideCamera)
         return (Float(minAvailableVideoZoomFactor) * factor, Float(maxAvailableVideoZoomFactor) * factor)
     }
+
+    var colorSpace: String {
+        switch activeColorSpace {
+        case .sRGB:
+            return "srgb"
+        case .P3_D65:
+            return "P3 D65"
+        case .HLG_BT2020:
+            return "HLG BT2020"
+        case .appleLog:
+            return "appleLog"
+        @unknown default:
+            return "unknown"
+        }
+    }
+
+    var fps: (Double, Double) {
+        (1 / activeVideoMinFrameDuration.seconds, 1 / activeVideoMaxFrameDuration.seconds)
+    }
 }
 
 func cameraName(device: AVCaptureDevice?) -> String {

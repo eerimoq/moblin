@@ -39,6 +39,16 @@ struct DebugAudioSettingsView: View {
                 Text("Channels mapping")
             }
             Section {
+                Toggle("Bluetooth output only", isOn: Binding(get: {
+                    model.database.debug!.bluetoothOutputOnly!
+                }, set: { value in
+                    model.database.debug!.bluetoothOutputOnly = value
+                    model.store()
+                }))
+            } footer: {
+                Text("App restart needed to take effect.")
+            }
+            Section {
                 Picker("", selection: $model.audioGenerator) {
                     ForEach(audioGenerators, id: \.self) { mode in
                         Text(mode)

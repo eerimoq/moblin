@@ -6819,6 +6819,9 @@
         }
       }
     },
+    "App restart needed to take effect." : {
+
+    },
     "Appearence" : {
       "localizations" : {
         "de" : {
@@ -10197,6 +10200,9 @@
         }
       }
     },
+    "Bluetooth output only" : {
+
+    },
     "Bold message" : {
       "localizations" : {
         "de" : {
@@ -12890,6 +12896,9 @@
           }
         }
       }
+    },
+    "Color space" : {
+
     },
     "Colors" : {
       "localizations" : {
@@ -19215,6 +19224,9 @@
           }
         }
       }
+    },
+    "Experimental and does not yet work!" : {
+
     },
     "Export to clipboard" : {
       "localizations" : {

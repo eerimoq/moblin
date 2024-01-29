@@ -895,6 +895,13 @@ class SettingsButton: Codable, Identifiable, Equatable, Hashable {
     }
 }
 
+enum SettingsColorSpace: String, CaseIterable {
+    case srgb = "Standard RGB"
+    case appleLog = "Apple Log"
+}
+
+var colorSpaces = SettingsColorSpace.allCases.map { $0.rawValue }
+
 class SettingsShow: Codable {
     var chat: Bool = true
     var viewers: Bool = true
@@ -1047,6 +1054,7 @@ class SettingsDebug: Codable {
     var cameraSwitchRemoveBlackish: Float? = 0.3
     var maximumBandwidthFollowInput: Bool? = true
     var audioOutputToInputChannelsMap: SettingsDebugAudioOutputToInputChannelsMap? = .init()
+    var bluetoothOutputOnly: Bool? = false
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -2087,6 +2095,10 @@ final class Settings {
         }
         if realDatabase.show.browserWidgets == nil {
             realDatabase.show.browserWidgets = true
+            store()
+        }
+        if realDatabase.debug!.bluetoothOutputOnly == nil {
+            realDatabase.debug!.bluetoothOutputOnly = false
             store()
         }
     }

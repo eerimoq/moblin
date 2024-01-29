@@ -290,7 +290,7 @@ final class Model: ObservableObject {
     @Published var showingBitrate = false
     @Published var showingMic = false
     @Published var showingRecordings = false
-    @Published var showingImage = false
+    @Published var showingCamera = false
     @Published var showingStreamSwitcher = false
     @Published var showingGrid = false
     @Published var showingObs = false
@@ -830,12 +830,18 @@ final class Model: ObservableObject {
         } catch {}
     }
 
-    func setupAudioSession() {
+    private func setupAudioSession() {
         let session = AVAudioSession.sharedInstance()
         do {
+            let bluetoothOption: AVAudioSession.CategoryOptions
+            if database.debug!.bluetoothOutputOnly! {
+                bluetoothOption = .allowBluetoothA2DP
+            } else {
+                bluetoothOption = .allowBluetooth
+            }
             try session.setCategory(
                 .playAndRecord,
-                options: [.mixWithOthers, .allowBluetooth, .defaultToSpeaker]
+                options: [.mixWithOthers, bluetoothOption, .defaultToSpeaker]
             )
             try session.setActive(true)
         } catch {

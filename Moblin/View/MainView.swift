@@ -165,12 +165,12 @@ struct MainView: View {
                     .frame(width: settingsHalfWidth)
                 }
             }
-            if model.showingImage {
+            if model.showingCamera {
                 HStack {
                     Spacer()
                     NavigationStack {
-                        ImageView {
-                            model.showingImage = false
+                        CameraView {
+                            model.showingCamera = false
                         }
                     }
                     .frame(width: settingsHalfWidth)
