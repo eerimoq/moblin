@@ -8,6 +8,15 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.164.0", date: "2024-01-29", changes: [
+        "• Make whole audio level bar red if clipping (above -1.0 dB).",
+        "• Hide system overlays (long bar at bottom of screen) when showing black screen.",
+        "• Experimental support for Bluetooth speaker and external non-Bluetooth mic (or built-in mic).",
+        "  • Enable Settings → Debug → Audio → Bluetooth output only.",
+        "• UI for Apple Log started. It does absolutely nothing!",
+        "  • Press Camera quick button to see it.",
+        "• Add support for 25 and 50 FPS.",
+    ]),
     Version(version: "0.163.0", date: "2024-01-28", changes: [
         "• Slightly bigger quick button name font when using single column.",
         "• Draw on stream.",
