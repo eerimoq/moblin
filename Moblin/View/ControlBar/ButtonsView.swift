@@ -154,17 +154,9 @@ struct StreamSwitcherView: View {
     }
 }
 
-private var appleLogLuts = [
-    "V1",
-    "Foo",
-    "Bar",
-]
-
 struct CameraView: View {
     @EnvironmentObject var model: Model
     var done: () -> Void
-    @State var colorSpace: String = "Standard RGB"
-    @State var appleLogLut: String = "V1"
 
     var body: some View {
         Form {
@@ -187,29 +179,6 @@ struct CameraView: View {
                     Text("\(formatOneDecimal(value: model.bias)) EV")
                         .frame(width: 60)
                 }
-            }
-            Section {
-                HStack {
-                    Text("Color space")
-                    Spacer()
-                    Picker("", selection: $colorSpace) {
-                        ForEach(colorSpaces, id: \.self) {
-                            Text($0)
-                        }
-                    }
-                }
-                if SettingsColorSpace(rawValue: colorSpace) == .appleLog {
-                    NavigationLink(destination: InlinePickerView(
-                        title: "Apple Log LUT",
-                        onChange: { value in appleLogLut = value },
-                        items: InlinePickerItem.fromStrings(values: appleLogLuts),
-                        selectedId: appleLogLut
-                    )) {
-                        TextItemView(name: "Apple Log LUT", value: appleLogLut)
-                    }
-                }
-            } footer: {
-                Text("Experimental and does not yet work!")
             }
         }
         .navigationTitle("Camera")

@@ -14,6 +14,14 @@ struct DebugSettingsView: View {
         model.store()
     }
 
+    private func submitLogLines(value: String) {
+        guard let lines = Int(value) else {
+            return
+        }
+        model.database.debug!.maximumLogLines = min(max(1, lines), 100_000)
+        model.store()
+    }
+
     var body: some View {
         Form {
             Section {
@@ -37,6 +45,11 @@ struct DebugSettingsView: View {
                         value: model.database.debug!.logLevel.rawValue
                     )
                 }
+                TextEditNavigationView(
+                    title: "Maximum log lines",
+                    value: String(model.database.debug!.maximumLogLines!),
+                    onSubmit: submitLogLines
+                )
                 NavigationLink(destination: DebugAudioSettingsView()) {
                     Text("Audio")
                 }

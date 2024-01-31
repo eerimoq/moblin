@@ -17,6 +17,13 @@ struct CameraSettingsView: View {
         return cameras.first(where: { $0.id == id })?.name ?? ""
     }
 
+    private func submitAppleLogLut(id: String) {
+        model.database.color!.appleLogLut = UUID(uuidString: id)!
+        model.store()
+        model.appleLogLutUpdated()
+        model.objectWillChange.send()
+    }
+
     var body: some View {
         Form {
             Section {
@@ -62,6 +69,37 @@ struct CameraSettingsView: View {
                 }
                 VideoStabilizationSettingsView()
                 TapScreenToFocusSettingsView()
+            }
+            Section {
+                Toggle("Enabled", isOn: Binding(get: {
+                    model.database.color!.appleLog
+                }, set: { value in
+                    model.database.color!.appleLog = value
+                    model.store()
+                    model.appleLogUpdated()
+                    model.objectWillChange.send()
+                }))
+                if model.database.color!.appleLog {
+                    NavigationLink(destination: InlinePickerView(
+                        title: "Apple Log LUT",
+                        onChange: submitAppleLogLut,
+                        items: model.database.color!.appleLogBundledLuts.map { lut in
+                            InlinePickerItem(id: lut.id.uuidString, text: lut.name)
+                        },
+                        selectedId: model.database.color!.appleLogLut.uuidString
+                    )) {
+                        HStack {
+                            Text("LUT")
+                            Spacer()
+                            Text(model.getAppleLogLutById(id: model.database.color!.appleLogLut)?
+                                .name ?? "")
+                        }
+                    }
+                }
+            } header: {
+                Text("Apple Log")
+            } footer: {
+                Text("Experimental and does not yet work!")
             }
         }
         .navigationTitle("Camera")

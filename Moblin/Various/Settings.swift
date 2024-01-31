@@ -895,12 +895,25 @@ class SettingsButton: Codable, Identifiable, Equatable, Hashable {
     }
 }
 
-enum SettingsColorSpace: String, CaseIterable {
-    case srgb = "Standard RGB"
-    case appleLog = "Apple Log"
+enum SettingsColorAppleLogLutType: Codable {
+    case bundled
+    case disk
 }
 
-var colorSpaces = SettingsColorSpace.allCases.map { $0.rawValue }
+struct SettingsColorAppleLogLut: Codable, Identifiable {
+    var id: UUID
+    var type: SettingsColorAppleLogLutType = .bundled
+    var name: String = ""
+}
+
+class SettingsColor: Codable {
+    var appleLog: Bool = false
+    var appleLogLut: UUID = .init()
+    var appleLogBundledLuts = [
+        SettingsColorAppleLogLut(id: UUID(), type: .bundled, name: "AppleLogToRec709"),
+        SettingsColorAppleLogLut(id: UUID(), type: .bundled, name: "MoblinMeme"),
+    ]
+}
 
 class SettingsShow: Codable {
     var chat: Bool = true
@@ -1055,6 +1068,7 @@ class SettingsDebug: Codable {
     var maximumBandwidthFollowInput: Bool? = true
     var audioOutputToInputChannelsMap: SettingsDebugAudioOutputToInputChannelsMap? = .init()
     var bluetoothOutputOnly: Bool? = false
+    var maximumLogLines: Int? = 500
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -1336,6 +1350,7 @@ class Database: Codable {
     var gameControllers: [SettingsGameController]? = [.init()]
     var remoteControl: SettingsRemoteControl? = .init()
     var startStopRecordingConfirmations: Bool? = true
+    var color: SettingsColor? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -2099,6 +2114,14 @@ final class Settings {
         }
         if realDatabase.debug!.bluetoothOutputOnly == nil {
             realDatabase.debug!.bluetoothOutputOnly = false
+            store()
+        }
+        if realDatabase.debug!.maximumLogLines == nil {
+            realDatabase.debug!.maximumLogLines = 500
+            store()
+        }
+        if realDatabase.color == nil {
+            realDatabase.color = .init()
             store()
         }
     }

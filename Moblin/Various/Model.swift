@@ -269,7 +269,7 @@ final class Model: ObservableObject {
     private var videoEffects: [UUID: VideoEffect] = [:]
     private var browserEffects: [UUID: BrowserEffect] = [:]
     private var drawOnStreamEffect = DrawOnStreamEffect()
-    private var cubeLutEffect = CubeLutEffect()
+    private var appleLogLutEffect = AppleLogLutEffect()
     @Published var browsers: [Browser] = []
     @Published var sceneIndex = 0
     private var isTorchOn = false
@@ -800,7 +800,7 @@ final class Model: ObservableObject {
 
     func debugLog(message: String) {
         DispatchQueue.main.async {
-            if self.log.count > 500 {
+            if self.log.count > self.database.debug!.maximumLogLines! {
                 self.log.removeFirst()
             }
             self.log.append(LogEntry(id: self.logId, message: message))
@@ -1187,6 +1187,8 @@ final class Model: ObservableObject {
         GCController.startWirelessControllerDiscovery {}
         reloadLocation()
         currentStreamId = stream.id
+        database.color!.appleLogLut = database.color!.appleLogBundledLuts[0].id
+        appleLogLutUpdated()
     }
 
     private func handleIpStatusUpdate(statuses: [IPMonitor.Status]) {
@@ -1675,10 +1677,40 @@ final class Model: ObservableObject {
         })
     }
 
+    func appleLogUpdated() {
+        if database.color!.appleLog {
+            guard let lut = getAppleLogLutById(id: database.color!.appleLogLut) else {
+                return
+            }
+            appleLogLutEffect.setLut(name: lut.name)
+            registerAppleLogLutEffect()
+        } else {
+            media.unregisterEffect(appleLogLutEffect)
+        }
+    }
+
+    func appleLogLutUpdated() {
+        guard let lut = getAppleLogLutById(id: database.color!.appleLogLut) else {
+            return
+        }
+        appleLogLutEffect.setLut(name: lut.name)
+    }
+
+    func getAppleLogLutById(id: UUID) -> SettingsColorAppleLogLut? {
+        return database.color!.appleLogBundledLuts.first { lut in
+            lut.id == id
+        }
+    }
+
+    private func registerAppleLogLutEffect() {
+        logger.info("Aple log LUT disabled")
+        // media.registerEffect(appleLogLutEffect)
+    }
+
     private func updateSrtDebugLines() {
         if let lines = media.getSrtStats(overlay: database.debug!.srtOverlay) {
             srtDebugLines = lines
-            if logger.debugEnabled {
+            if logger.debugEnabled && isLive {
                 logger.debug(lines.joined(separator: ", "))
             }
         } else if !srtDebugLines.isEmpty {
@@ -2944,7 +2976,7 @@ final class Model: ObservableObject {
             browserEffect.stop()
         }
         media.unregisterEffect(drawOnStreamEffect)
-        media.unregisterEffect(cubeLutEffect)
+        media.unregisterEffect(appleLogLutEffect)
     }
 
     private func attachSingleLayout(scene: SettingsScene) {
@@ -3029,7 +3061,7 @@ final class Model: ObservableObject {
         case .pip:
             attachPipLayout(scene: scene)
         }
-        // media.registerEffect(cubeLutEffect)
+        registerAppleLogLutEffect()
         registerGlobalVideoEffects()
         var usedBrowserEffects: [BrowserEffect] = []
         for sceneWidget in scene.widgets.filter({ widget in widget.enabled }) {

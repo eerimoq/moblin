@@ -6934,6 +6934,9 @@
         }
       }
     },
+    "Apple Log" : {
+
+    },
     "Are you sure?" : {
       "localizations" : {
         "de" : {
@@ -12896,9 +12899,6 @@
           }
         }
       }
-    },
-    "Color space" : {
-
     },
     "Colors" : {
       "localizations" : {
@@ -27869,6 +27869,9 @@
           }
         }
       }
+    },
+    "LUT" : {
+
     },
     "Make sure silent mode is off for vibrations to work." : {
       "localizations" : {
