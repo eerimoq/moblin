@@ -2,30 +2,30 @@ import AVFoundation
 import HaishinKit
 import UIKit
 
-private let appleLogLutQueue = DispatchQueue(label: "com.eerimoq.widget.cubeLut")
+private let lutQueue = DispatchQueue(label: "com.eerimoq.widget.cubeLut")
 
 private func convertLut(image: UIImage) -> (Float, Data)? {
     let width = image.size.width * image.scale
     let height = image.size.height * image.scale
     let dimension = Int(cbrt(Double(width * height)))
     guard Int(width) % dimension == 0, Int(height) % dimension == 0 else {
-        logger.info("apple-log-lut: Image is not a cube")
+        logger.info("lut: Image is not a cube")
         return nil
     }
     guard dimension * dimension * dimension == Int(width * height) else {
-        logger.info("apple-log-lut: Image is not a cube")
+        logger.info("lut: Image is not a cube")
         return nil
     }
     guard image.cgImage?.bitsPerComponent == 8 else {
-        logger.info("apple-log-lut: Image is not 8 bits per component")
+        logger.info("lut: Image is not 8 bits per component")
         return nil
     }
     guard let data = image.cgImage?.dataProvider?.data else {
-        logger.info("apple-log-lut: Failed to get data")
+        logger.info("lut: Failed to get data")
         return nil
     }
     guard var pixels = CFDataGetBytePtr(data) else {
-        logger.info("apple-log-lut: Failed to get pixels")
+        logger.info("lut: Failed to get pixels")
         return nil
     }
     let length = CFDataGetLength(data)
@@ -63,33 +63,33 @@ private func convertLut(image: UIImage) -> (Float, Data)? {
     return (Float(dimension), Data(bytes: origCube, count: length * 4))
 }
 
-final class AppleLogLutEffect: VideoEffect {
+final class LutEffect: VideoEffect {
     private var filter = CIFilter.colorCube()
 
     func setLut(name: String) {
         guard let path = Bundle.main.path(forResource: "LUTs.bundle/\(name).png", ofType: nil) else {
-            logger.info("apple-log-lut: Image \(name) does not exist")
+            logger.info("lut: Image \(name) does not exist")
             return
         }
         guard let image = UIImage(contentsOfFile: path) else {
-            logger.info("apple-log-lut: Failed to load image \(name)")
+            logger.info("lut: Failed to load image \(name)")
             return
         }
         guard let (dimension, data) = convertLut(image: image) else {
             return
         }
         logger
-            .info("apple-log-lut: Applying filter \(name) with dimension \(dimension) and data \(data.count)")
+            .info("lut: Applying filter \(name) with dimension \(dimension) and data \(data.count)")
         let filter = CIFilter.colorCube()
         filter.cubeDimension = dimension
         filter.cubeData = data
-        appleLogLutQueue.sync {
+        lutQueue.sync {
             self.filter = filter
         }
     }
 
     override func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {
-        let filter = appleLogLutQueue.sync {
+        let filter = lutQueue.sync {
             self.filter
         }
         filter.inputImage = image

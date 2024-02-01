@@ -269,7 +269,7 @@ final class Model: ObservableObject {
     private var videoEffects: [UUID: VideoEffect] = [:]
     private var browserEffects: [UUID: BrowserEffect] = [:]
     private var drawOnStreamEffect = DrawOnStreamEffect()
-    private var appleLogLutEffect = AppleLogLutEffect()
+    private var lutEffect = LutEffect()
     @Published var browsers: [Browser] = []
     @Published var sceneIndex = 0
     private var isTorchOn = false
@@ -1187,8 +1187,7 @@ final class Model: ObservableObject {
         GCController.startWirelessControllerDiscovery {}
         reloadLocation()
         currentStreamId = stream.id
-        database.color!.appleLogLut = database.color!.appleLogBundledLuts[0].id
-        appleLogLutUpdated()
+        lutUpdated()
     }
 
     private func handleIpStatusUpdate(statuses: [IPMonitor.Status]) {
@@ -1662,11 +1661,6 @@ final class Model: ObservableObject {
             self.updateObsStatus()
             self.updateRemoteControlAssistantStatus()
             self.updateRemoteControlStatus()
-            /* if let cameraDevice = self.cameraDevice {
-                 print("xxx ISO:", cameraDevice.iso)
-                 print("xxx FPS:", cameraDevice.fps)
-                 print("xxx color space:", cameraDevice.colorSpace)
-             } */
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
             self.updateSrtDebugLines()
@@ -1677,34 +1671,30 @@ final class Model: ObservableObject {
         })
     }
 
-    func appleLogUpdated() {
-        if database.color!.appleLog {
-            guard let lut = getAppleLogLutById(id: database.color!.appleLogLut) else {
-                return
-            }
-            appleLogLutEffect.setLut(name: lut.name)
-            registerAppleLogLutEffect()
+    func colorSpaceUpdated() {
+        setColorSpace()
+    }
+    
+    func lutEnabledUpdated() {
+        if database.color!.lutEnabled {
+            media.registerEffect(lutEffect)
         } else {
-            media.unregisterEffect(appleLogLutEffect)
+            media.unregisterEffect(lutEffect)
         }
     }
 
-    func appleLogLutUpdated() {
-        guard let lut = getAppleLogLutById(id: database.color!.appleLogLut) else {
+    func lutUpdated() {
+        guard let lut = getLogLutById(id: database.color!.lut) else {
+            media.unregisterEffect(lutEffect)
             return
         }
-        appleLogLutEffect.setLut(name: lut.name)
+        lutEffect.setLut(name: lut.name)
     }
 
-    func getAppleLogLutById(id: UUID) -> SettingsColorAppleLogLut? {
-        return database.color!.appleLogBundledLuts.first { lut in
+    func getLogLutById(id: UUID) -> SettingsColorAppleLogLut? {
+        return database.color!.bundledLuts.first { lut in
             lut.id == id
         }
-    }
-
-    private func registerAppleLogLutEffect() {
-        logger.info("Aple log LUT disabled")
-        // media.registerEffect(appleLogLutEffect)
     }
 
     private func updateSrtDebugLines() {
@@ -2134,6 +2124,7 @@ final class Model: ObservableObject {
         setNetStream()
         setStreamResolution()
         setStreamFPS()
+        setColorSpace()
         setStreamCodec()
         setStreamKeyFrameInterval()
         setStreamBitrate(stream: stream)
@@ -2240,6 +2231,31 @@ final class Model: ObservableObject {
 
     func setStreamFPS() {
         media.setStreamFPS(fps: stream.fps)
+    }
+
+    func setColorSpace() {
+        var colorSpace: AVCaptureColorSpace
+        switch database.color!.space {
+        case .srgb:
+            colorSpace = .sRGB
+        case .p3D65:
+            colorSpace = .P3_D65
+        case .hlgBt2020:
+            colorSpace = .HLG_BT2020
+        case .appleLog:
+            if #available(iOS 17.0, *) {
+                colorSpace = .appleLog
+            } else {
+                colorSpace = .sRGB
+            }
+        }
+        media.setColorSpace(colorSpace: colorSpace, onComplete: {
+            DispatchQueue.main.async {
+                if let x = self.setCameraZoomX(x: self.zoomX) {
+                    self.setZoomX(x: x)
+                }
+            }
+        })
     }
 
     func setStreamBitrate(stream: SettingsStream) {
@@ -2976,7 +2992,7 @@ final class Model: ObservableObject {
             browserEffect.stop()
         }
         media.unregisterEffect(drawOnStreamEffect)
-        media.unregisterEffect(appleLogLutEffect)
+        media.unregisterEffect(lutEffect)
     }
 
     private func attachSingleLayout(scene: SettingsScene) {
@@ -3061,7 +3077,9 @@ final class Model: ObservableObject {
         case .pip:
             attachPipLayout(scene: scene)
         }
-        registerAppleLogLutEffect()
+        if database.color!.lutEnabled {
+            media.registerEffect(lutEffect)
+        }
         registerGlobalVideoEffects()
         var usedBrowserEffects: [BrowserEffect] = []
         for sceneWidget in scene.widgets.filter({ widget in widget.enabled }) {

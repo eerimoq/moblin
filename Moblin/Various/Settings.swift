@@ -906,12 +906,24 @@ struct SettingsColorAppleLogLut: Codable, Identifiable {
     var name: String = ""
 }
 
+
+enum SettingsColorSpace: String, Codable, CaseIterable {
+    case srgb = "Standard RGB"
+    case p3D65 = "P3 D65"
+    case hlgBt2020 = "HLG BT2020"
+    case appleLog = "Apple Log"
+}
+
+let colorSpaces = SettingsColorSpace.allCases.map { $0.rawValue }
+
 class SettingsColor: Codable {
-    var appleLog: Bool = false
-    var appleLogLut: UUID = .init()
-    var appleLogBundledLuts = [
-        SettingsColorAppleLogLut(id: UUID(), type: .bundled, name: "AppleLogToRec709"),
-        SettingsColorAppleLogLut(id: UUID(), type: .bundled, name: "MoblinMeme"),
+    var space: SettingsColorSpace = .srgb
+    var lutEnabled: Bool = false
+    var lut: UUID = .init()
+    var bundledLuts = [
+        SettingsColorAppleLogLut(id: UUID(), type: .bundled, name: "Neutral"),
+        SettingsColorAppleLogLut(id: UUID(), type: .bundled, name: "Apple Log To Rec 709"),
+        SettingsColorAppleLogLut(id: UUID(), type: .bundled, name: "Moblin Meme"),
     ]
 }
 

@@ -323,6 +323,10 @@ final class Media: NSObject {
         netStream.frameRate = Double(fps)
     }
 
+    func setColorSpace(colorSpace: AVCaptureColorSpace, onComplete: @escaping () -> Void) {
+        netStream.setColorSpace(colorSpace: colorSpace, onComplete: onComplete)
+    }
+
     func setVideoStreamBitrate(bitrate: UInt32) {
         adaptiveBitrate?.setTargetBitrate(bitrate: bitrate)
         netStream.videoSettings.bitRate = bitrate

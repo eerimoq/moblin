@@ -17,10 +17,10 @@ struct CameraSettingsView: View {
         return cameras.first(where: { $0.id == id })?.name ?? ""
     }
 
-    private func submitAppleLogLut(id: String) {
-        model.database.color!.appleLogLut = UUID(uuidString: id)!
+    private func submitLut(id: String) {
+        model.database.color!.lut = UUID(uuidString: id)!
         model.store()
-        model.appleLogLutUpdated()
+        model.lutUpdated()
         model.objectWillChange.send()
     }
 
@@ -69,37 +69,40 @@ struct CameraSettingsView: View {
                 }
                 VideoStabilizationSettingsView()
                 TapScreenToFocusSettingsView()
-            }
-            Section {
-                Toggle("Enabled", isOn: Binding(get: {
-                    model.database.color!.appleLog
+                Picker("Color space", selection: Binding(get: {
+                    model.database.color!.space.rawValue
                 }, set: { value in
-                    model.database.color!.appleLog = value
+                    model.database.color!.space = SettingsColorSpace(rawValue: value)!
                     model.store()
-                    model.appleLogUpdated()
+                    model.colorSpaceUpdated()
                     model.objectWillChange.send()
-                }))
-                if model.database.color!.appleLog {
-                    NavigationLink(destination: InlinePickerView(
-                        title: "Apple Log LUT",
-                        onChange: submitAppleLogLut,
-                        items: model.database.color!.appleLogBundledLuts.map { lut in
-                            InlinePickerItem(id: lut.id.uuidString, text: lut.name)
-                        },
-                        selectedId: model.database.color!.appleLogLut.uuidString
-                    )) {
+                })) {
+                    ForEach(colorSpaces, id: \.self) { space in
+                        Text(space)
+                    }
+                }
+                NavigationLink(destination: InlinePickerView(
+                    title: "LUT",
+                    onChange: submitLut,
+                    items: model.database.color!.bundledLuts.map { lut in
+                        InlinePickerItem(id: lut.id.uuidString, text: lut.name)
+                    },
+                    selectedId: model.database.color!.lut.uuidString
+                )) {
+                    Toggle(isOn: Binding(get: {
+                        model.database.color!.lutEnabled
+                    }, set: { value in
+                        model.database.color!.lutEnabled = value
+                        model.lutEnabledUpdated()
+                        model.store()
+                    })) {
                         HStack {
                             Text("LUT")
                             Spacer()
-                            Text(model.getAppleLogLutById(id: model.database.color!.appleLogLut)?
-                                .name ?? "")
+                            Text(model.getLogLutById(id: model.database.color!.lut)?.name ?? "")
                         }
                     }
                 }
-            } header: {
-                Text("Apple Log")
-            } footer: {
-                Text("Experimental and does not yet work!")
             }
         }
         .navigationTitle("Camera")
