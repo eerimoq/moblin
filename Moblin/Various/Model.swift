@@ -1674,7 +1674,7 @@ final class Model: ObservableObject {
     func colorSpaceUpdated() {
         setColorSpace()
     }
-    
+
     func lutEnabledUpdated() {
         if database.color!.lutEnabled {
             media.registerEffect(lutEffect)

@@ -8,6 +8,15 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.165.0", date: "2024-02-01", changes: [
+        "• Configurable maximum number of log lines (1-100k).",
+        "• Configurable color spaces and LUT.",
+        "  • In Settings → Camera.",
+        "  • sRGB, P3 D65, HLG BT2020 and Apple Log.",
+        "  • 3 bundled LUTs.",
+        "    • It is not possible to upload your own LUTs yet.",
+        "  • Known bug: LUTs are applied multiple times when switch camera giving weird image effects. This applies to other video effects as well.",
+    ]),
     Version(version: "0.164.0", date: "2024-01-29", changes: [
         "• Make whole audio level bar red if clipping (above -1.0 dB).",
         "• Hide system overlays (long bar at bottom of screen) when showing black screen.",

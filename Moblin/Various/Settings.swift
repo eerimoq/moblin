@@ -906,7 +906,6 @@ struct SettingsColorAppleLogLut: Codable, Identifiable {
     var name: String = ""
 }
 
-
 enum SettingsColorSpace: String, Codable, CaseIterable {
     case srgb = "Standard RGB"
     case p3D65 = "P3 D65"
