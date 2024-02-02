@@ -36,7 +36,7 @@ struct WidgetImageSettingsView: View {
                 }
             }
             .onChange(of: selectedImageItem) { imageItem in
-                imageItem!.loadTransferable(type: Data.self) { result in
+                imageItem?.loadTransferable(type: Data.self) { result in
                     switch result {
                     case let .success(data?):
                         model.imageStorage.write(id: widget.id, data: data)
@@ -60,7 +60,7 @@ struct WidgetImageSettingsView: View {
             }
         }
         .onAppear {
-            model.checkDeviceAuthorization()
+            model.checkPhotoLibraryAuthorization()
         }
     }
 }

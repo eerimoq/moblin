@@ -1688,13 +1688,35 @@ final class Model: ObservableObject {
             media.unregisterEffect(lutEffect)
             return
         }
-        lutEffect.setLut(name: lut.name)
+        var image: UIImage?
+        switch lut.type {
+        case .bundled:
+            guard let path = Bundle.main.path(forResource: "LUTs.bundle/\(lut.name).png", ofType: nil) else {
+                return
+            }
+            image = UIImage(contentsOfFile: path)
+        case .disk:
+            if let data = try? Data(contentsOf: imageStorage.makePath(id: lut.id)) {
+                image = UIImage(data: data)
+            }
+        }
+        guard let image else {
+            logger.info("Failed to load LUT image \(lut.name)")
+            return
+        }
+        lutEffect.setLut(name: lut.name, image: image)
+    }
+
+    func addLut(data: Data) {
+        let lut = SettingsColorAppleLogLut(type: .disk, name: "My LUT")
+        imageStorage.write(id: lut.id, data: data)
+        database.color!.diskLuts!.append(lut)
+        store()
     }
 
     func getLogLutById(id: UUID) -> SettingsColorAppleLogLut? {
-        return database.color!.bundledLuts.first { lut in
-            lut.id == id
-        }
+        let luts = database.color!.bundledLuts + database.color!.diskLuts!
+        return luts.first { $0.id == id }
     }
 
     private func updateSrtDebugLines() {
@@ -1716,6 +1738,12 @@ final class Model: ObservableObject {
                     continue
                 }
                 if widget.id == id {
+                    used = true
+                    break
+                }
+            }
+            for lut in database.color!.diskLuts! {
+                if lut.id == id {
                     used = true
                     break
                 }
@@ -3288,7 +3316,7 @@ final class Model: ObservableObject {
         return rtmpServer != nil
     }
 
-    func checkDeviceAuthorization() {
+    func checkPhotoLibraryAuthorization() {
         PHPhotoLibrary
             .requestAuthorization(for: .readWrite) { authorizationStatus in
                 switch authorizationStatus {

@@ -900,10 +900,15 @@ enum SettingsColorAppleLogLutType: Codable {
     case disk
 }
 
-struct SettingsColorAppleLogLut: Codable, Identifiable {
-    var id: UUID
+class SettingsColorAppleLogLut: Codable, Identifiable {
+    var id: UUID = .init()
     var type: SettingsColorAppleLogLutType = .bundled
     var name: String = ""
+
+    init(type: SettingsColorAppleLogLutType, name: String) {
+        self.type = type
+        self.name = name
+    }
 }
 
 enum SettingsColorSpace: String, Codable, CaseIterable {
@@ -920,10 +925,11 @@ class SettingsColor: Codable {
     var lutEnabled: Bool = false
     var lut: UUID = .init()
     var bundledLuts = [
-        SettingsColorAppleLogLut(id: UUID(), type: .bundled, name: "Neutral"),
-        SettingsColorAppleLogLut(id: UUID(), type: .bundled, name: "Apple Log To Rec 709"),
-        SettingsColorAppleLogLut(id: UUID(), type: .bundled, name: "Moblin Meme"),
+        SettingsColorAppleLogLut(type: .bundled, name: "Neutral"),
+        SettingsColorAppleLogLut(type: .bundled, name: "Apple Log To Rec 709"),
+        SettingsColorAppleLogLut(type: .bundled, name: "Moblin Meme"),
     ]
+    var diskLuts: [SettingsColorAppleLogLut]? = []
 }
 
 class SettingsShow: Codable {
@@ -2133,6 +2139,10 @@ final class Settings {
         }
         if realDatabase.color == nil {
             realDatabase.color = .init()
+            store()
+        }
+        if realDatabase.color!.diskLuts == nil {
+            realDatabase.color!.diskLuts = []
             store()
         }
     }

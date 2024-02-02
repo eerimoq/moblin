@@ -66,15 +66,7 @@ private func convertLut(image: UIImage) -> (Float, Data)? {
 final class LutEffect: VideoEffect {
     private var filter = CIFilter.colorCube()
 
-    func setLut(name: String) {
-        guard let path = Bundle.main.path(forResource: "LUTs.bundle/\(name).png", ofType: nil) else {
-            logger.info("lut: Image \(name) does not exist")
-            return
-        }
-        guard let image = UIImage(contentsOfFile: path) else {
-            logger.info("lut: Failed to load image \(name)")
-            return
-        }
+    func setLut(name: String, image: UIImage) {
         guard let (dimension, data) = convertLut(image: image) else {
             return
         }

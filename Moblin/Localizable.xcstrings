@@ -10990,9 +10990,6 @@
         }
       }
     },
-    "Bundled" : {
-
-    },
     "Button" : {
       "localizations" : {
         "de" : {
@@ -15067,6 +15064,12 @@
       }
     },
     "Custom IRL" : {
+
+    },
+    "Custom LUT" : {
+
+    },
+    "Custom luts" : {
 
     },
     "Debug" : {
