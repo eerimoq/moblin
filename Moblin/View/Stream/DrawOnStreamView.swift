@@ -10,6 +10,14 @@ struct DrawOnStreamLine: Identifiable {
 struct DrawOnStreamView: View {
     @EnvironmentObject var model: Model
 
+    private func buttonColor() -> Color {
+        if model.drawOnStreamLines.isEmpty {
+            return .gray
+        } else {
+            return .white
+        }
+    }
+
     var body: some View {
         ZStack {
             Canvas { context, size in
@@ -52,11 +60,20 @@ struct DrawOnStreamView: View {
                             model.drawOnStreamWipe()
                         } label: {
                             Image(systemName: "trash.fill")
-                                .font(.largeTitle)
-                                .foregroundColor(.white)
+                                .font(.title)
+                                .foregroundColor(buttonColor())
                         }
+                        .disabled(model.drawOnStreamLines.isEmpty)
+                        Button {
+                            model.drawOnStreamUndo()
+                        } label: {
+                            Image(systemName: "arrow.uturn.backward")
+                                .font(.title)
+                                .foregroundColor(buttonColor())
+                        }
+                        .disabled(model.drawOnStreamLines.isEmpty)
                         ColorPicker("Color", selection: $model.drawOnStreamSelectedColor)
-                            .font(.largeTitle)
+                            .font(.title)
                             .labelsHidden()
                         Slider(value: $model.drawOnStreamSelectedWidth, in: 1 ... 20)
                             .frame(width: 150)

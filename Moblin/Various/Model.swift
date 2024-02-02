@@ -456,6 +456,21 @@ final class Model: ObservableObject {
         media.unregisterEffect(drawOnStreamEffect)
     }
 
+    func drawOnStreamUndo() {
+        guard !drawOnStreamLines.isEmpty else {
+            return
+        }
+        drawOnStreamLines.removeLast()
+        drawOnStreamEffect.updateOverlay(
+            videoSize: media.getVideoSize(),
+            size: drawOnStreamSize,
+            lines: drawOnStreamLines
+        )
+        if drawOnStreamLines.isEmpty {
+            media.unregisterEffect(drawOnStreamEffect)
+        }
+    }
+
     private func cleanWizardUrl(url: String) -> String {
         var cleanedUrl = cleanUrl(url: url)
         if isValidUrl(url: cleanedUrl) != nil {
