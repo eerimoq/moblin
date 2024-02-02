@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.166.0", date: "2024-02-02", changes: [
+        "• Do not apply video effects multiple times when switching camera.",
+        "• User defined LUTs.",
+        "• Draw on stream undo button.",
+    ]),
     Version(version: "0.165.0", date: "2024-02-01", changes: [
         "• Configurable maximum number of log lines (1-100k).",
         "• Configurable color spaces and LUT.",
