@@ -1,4 +1,52 @@
+import PhotosUI
 import SwiftUI
+
+struct CameraSettingsLutsView: View {
+    @EnvironmentObject var model: Model
+    @State var selectedId: UUID
+
+    private func submitLut(id: UUID) {
+        model.database.color!.lut = id
+        model.store()
+        model.lutUpdated()
+        model.objectWillChange.send()
+    }
+
+    var body: some View {
+        Form {
+            Section {
+                Toggle(isOn: Binding(get: {
+                    model.database.color!.lutEnabled
+                }, set: { value in
+                    model.database.color!.lutEnabled = value
+                    model.lutEnabledUpdated()
+                    model.store()
+                })) {
+                    Text("Enabled")
+                }
+            }
+            Section {
+                Picker("", selection: $selectedId) {
+                    ForEach(model.database.color!.bundledLuts) { lut in
+                        Text(lut.name)
+                            .tag(lut.id)
+                    }
+                }
+                .onChange(of: selectedId) { id in
+                    submitLut(id: id)
+                }
+                .pickerStyle(.inline)
+                .labelsHidden()
+            } header: {
+                Text("Bundled")
+            }
+        }
+        .navigationTitle("LUT")
+        .toolbar {
+            SettingsToolbar()
+        }
+    }
+}
 
 struct CameraSettingsView: View {
     @EnvironmentObject var model: Model
@@ -17,11 +65,12 @@ struct CameraSettingsView: View {
         return cameras.first(where: { $0.id == id })?.name ?? ""
     }
 
-    private func submitLut(id: String) {
-        model.database.color!.lut = UUID(uuidString: id)!
-        model.store()
-        model.lutUpdated()
-        model.objectWillChange.send()
+    private func currentLut() -> String {
+        if model.database.color!.lutEnabled {
+            return model.getLogLutById(id: model.database.color!.lut)?.name ?? ""
+        } else {
+            return ""
+        }
     }
 
     var body: some View {
@@ -81,26 +130,11 @@ struct CameraSettingsView: View {
                         Text(space)
                     }
                 }
-                NavigationLink(destination: InlinePickerView(
-                    title: "LUT",
-                    onChange: submitLut,
-                    items: model.database.color!.bundledLuts.map { lut in
-                        InlinePickerItem(id: lut.id.uuidString, text: lut.name)
-                    },
-                    selectedId: model.database.color!.lut.uuidString
-                )) {
-                    Toggle(isOn: Binding(get: {
-                        model.database.color!.lutEnabled
-                    }, set: { value in
-                        model.database.color!.lutEnabled = value
-                        model.lutEnabledUpdated()
-                        model.store()
-                    })) {
-                        HStack {
-                            Text("LUT")
-                            Spacer()
-                            Text(model.getLogLutById(id: model.database.color!.lut)?.name ?? "")
-                        }
+                NavigationLink(destination: CameraSettingsLutsView(selectedId: model.database.color!.lut)) {
+                    HStack {
+                        Text("LUT")
+                        Spacer()
+                        Text(currentLut())
                     }
                 }
             }
