@@ -345,29 +345,6 @@ Rendered on stream:
    msRTT: 33.1
    pktFlightSize: 3
 
-Create stream wizard
---------------------
-
-1. Select target platform
-
-   - Twitch
-
-   - Kick
-
-   - ...
-
-2. Select setup
-
-   - Moblin -> OBS server -> Platform
-
-   - Moblin -> BELABOX cloud -> OBS server -> Platform
-
-   - Moblin -> Platform
-
-   - ...
-
-3. Enter stream key, username, etc. based on 1 and 2.
-
 Similar software
 ================
 
