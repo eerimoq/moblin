@@ -8,6 +8,12 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.167.0", date: "2024-02-03", changes: [
+        "• Chat rework.",
+        "  • Replace pause quick button with an interactive chat quick button.",
+        "  • Pause chat when scrolling.",
+        "• Fix bitrate overshoot when using flat bitrate in SRT(LA).",
+    ]),
     Version(version: "0.166.0", date: "2024-02-02", changes: [
         "• Do not apply video effects multiple times when switching camera.",
         "• User defined LUTs.",
