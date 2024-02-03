@@ -96,11 +96,11 @@ struct MainView: View {
                                 )
                                 .opacity(0)
                         }
-                        if model.showDrawOnStream {
-                            DrawOnStreamView()
-                        }
                     }
                     StreamOverlayView()
+                    if model.showDrawOnStream {
+                        DrawOnStreamView()
+                    }
                 }
                 .gesture(
                     MagnificationGesture()

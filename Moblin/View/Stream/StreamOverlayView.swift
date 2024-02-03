@@ -55,6 +55,19 @@ struct StreamOverlayView: View {
                     .allowsHitTesting(false)
                 }
             }
+            ZStack {
+                GeometryReader { metrics in
+                    StreamOverlayChatView()
+                        .frame(width: metrics.size.width * 0.95)
+                }
+                .opacity(model.showChatMessages ? 1 : 0)
+                if !model.showChatMessages {
+                    ChatWarning(message: String(localized: "Chat is hidden"))
+                } else if model.chatPaused {
+                    ChatWarning(message: String(localized: "Chat is paused"))
+                }
+            }
+            .allowsHitTesting(model.interactiveChat)
             HStack {
                 Spacer()
                 RightOverlayView()
@@ -64,20 +77,6 @@ struct StreamOverlayView: View {
                 Spacer()
             }
             .allowsHitTesting(false)
-            if model.showChatMessages {
-                ZStack {
-                    GeometryReader { metrics in
-                        StreamOverlayChatView()
-                            .frame(width: metrics.size.width * 0.95)
-                            .allowsHitTesting(model.chatPaused)
-                    }
-                    if model.chatPaused {
-                        ChatWarning(message: String(localized: "Chat is paused"))
-                    }
-                }
-            } else {
-                ChatWarning(message: String(localized: "Chat is hidden"))
-            }
             HStack {
                 StreamOverlayDebugView()
                 Spacer()

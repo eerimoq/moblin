@@ -218,6 +218,7 @@ final class Model: ObservableObject {
     @Published var settingsLayout: SettingsLayout = .right
     @Published var showChatMessages = true
     @Published var chatPaused = false
+    @Published var interactiveChat = false
     @Published var audioGenerator = "Off"
     @Published var squareWaveGeneratorAmplitude = 200.0
     @Published var squareWaveGeneratorInterval = 60.0
@@ -1339,12 +1340,7 @@ final class Model: ObservableObject {
                 updateButtonStates()
             }
         case .pauseChat:
-            if !pressed {
-                toggleChatPaused()
-                toggleGlobalButton(type: .pauseChat)
-                sceneUpdated(store: false)
-                updateButtonStates()
-            }
+            break
         case .scene:
             if !pressed {
                 selectScene(id: button.sceneId)
@@ -1757,11 +1753,10 @@ final class Model: ObservableObject {
                     break
                 }
             }
-            for lut in database.color!.diskLuts! {
-                if lut.id == id {
-                    used = true
-                    break
-                }
+            if database.color!.diskLuts!.contains(where: { lut in
+                lut.id == id
+            }) {
+                used = true
             }
             if !used {
                 logger.info("Removing unused image \(id)")
@@ -1804,7 +1799,45 @@ final class Model: ObservableObject {
         media.setConnectionPriorities(connectionPriorities: stream.srt.connectionPriorities!)
     }
 
+    func endOfChatReachedWhenPaused() {
+        var numberOfPostsAppended = 0
+        while numberOfPostsAppended < 5, let post = pausedChatPosts.popFirst() {
+            if post.user == nil {
+                if let lastPost = chatPosts.last, lastPost.user == nil {
+                    continue
+                }
+                if pausedChatPosts.isEmpty {
+                    continue
+                }
+            }
+            chatPosts.append(post)
+            numberOfChatPostsPerTick += 1
+            streamTotalChatMessages += 1
+            numberOfPostsAppended += 1
+        }
+        if numberOfPostsAppended == 0 {
+            chatPaused = false
+        }
+    }
+
+    func pauseChat() {
+        chatPaused = true
+        appendChatMessage(
+            user: nil,
+            userColor: nil,
+            segments: [],
+            timestamp: "",
+            timestampDate: Date(),
+            isAction: false,
+            isAnnouncement: false,
+            isFirstMessage: false
+        )
+    }
+
     private func removeOldChatMessages(now: Date) {
+        if chatPaused {
+            return
+        }
         guard database.chat.maximumAgeEnabled! else {
             return
         }
@@ -2928,14 +2961,8 @@ final class Model: ObservableObject {
         )
         chatPostId += 1
         if chatPaused {
-            if pausedChatPosts.count > maximumNumberOfChatMessages - 1 {
-                pausedChatPosts.removeFirst()
-            }
             pausedChatPosts.append(post)
         } else {
-            if newChatPosts.count > maximumNumberOfChatMessages - 1 {
-                newChatPosts.removeFirst()
-            }
             newChatPosts.append(post)
         }
     }
@@ -2952,34 +2979,8 @@ final class Model: ObservableObject {
         blackScreen.toggle()
     }
 
-    func toggleChatPaused() {
-        chatPaused.toggle()
-        if chatPaused {
-            return
-        }
-        chatPosts = chatPosts.filter { post in
-            post.user != nil
-        }
-        if !chatPosts.isEmpty {
-            appendChatPost(post: chatPosts.popLast()!)
-        }
-        if !pausedChatPosts.isEmpty {
-            appendChatMessage(
-                user: nil,
-                userColor: nil,
-                segments: [],
-                timestamp: "",
-                timestampDate: Date(),
-                isAction: false,
-                isAnnouncement: false,
-                isFirstMessage: false
-            )
-        }
-        for post in pausedChatPosts {
-            appendChatPost(post: post)
-        }
-        pausedChatPosts = []
-        updateChat()
+    func toggleInteractiveChat() {
+        interactiveChat.toggle()
     }
 
     func findWidget(id: UUID) -> SettingsWidget? {

@@ -580,18 +580,10 @@ struct ButtonsInnerView: View {
         model.sceneUpdated(store: false)
     }
 
-    private func pauseChatAction(state: ButtonState) {
+    private func interactiveChatAction(state: ButtonState) {
         state.button.isOn.toggle()
-        model.toggleChatPaused()
+        model.toggleInteractiveChat()
         model.sceneUpdated(store: false)
-    }
-
-    private func pauseChatOverlayColor(state: ButtonState) -> Color {
-        if model.chatPaused {
-            return state.button.backgroundColor!.color()
-        } else {
-            return .white
-        }
     }
 
     private func blackScreenAction(state _: ButtonState) {
@@ -738,11 +730,9 @@ struct ButtonsInnerView: View {
                 })
             case .pauseChat:
                 Button(action: {
-                    pauseChatAction(state: state)
+                    interactiveChatAction(state: state)
                 }, label: {
-                    ButtonImage(state: state, buttonSize: size,
-                                pause: true,
-                                overlayColor: pauseChatOverlayColor(state: state))
+                    ButtonImage(state: state, buttonSize: size)
                 })
             case .blackScreen:
                 Button(action: {

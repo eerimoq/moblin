@@ -207,88 +207,166 @@ struct LineView: View {
     }
 }
 
+struct ViewOffsetKey: PreferenceKey {
+    typealias Value = CGFloat
+    static var defaultValue = CGFloat.zero
+    static func reduce(value: inout Value, nextValue: () -> Value) {
+        value += nextValue()
+    }
+}
+
+struct ChildSizeReader<Content: View>: View {
+    @Binding var size: CGSize
+    let content: () -> Content
+
+    var body: some View {
+        ZStack {
+            content()
+                .background(
+                    GeometryReader { proxy in
+                        Color.clear.preference(
+                            key: SizePreferenceKey.self,
+                            value: proxy.size
+                        )
+                    }
+                )
+        }
+        .onPreferenceChange(SizePreferenceKey.self) { preferences in
+            self.size = preferences
+        }
+    }
+}
+
+struct SizePreferenceKey: PreferenceKey {
+    typealias Value = CGSize
+    static var defaultValue: Value = .zero
+
+    static func reduce(value _: inout Value, nextValue: () -> Value) {
+        _ = nextValue()
+    }
+}
+
+private var previousOffset = 0.0
+private let chatId = 1
+
 struct StreamOverlayChatView: View {
     @EnvironmentObject var model: Model
+    let spaceName = "scroll"
+
+    @State var wholeSize: CGSize = .zero
+    @State var scrollViewSize: CGSize = .zero
 
     var body: some View {
         GeometryReader { fullMetrics in
             VStack {
                 Spacer(minLength: 0)
                 GeometryReader { metrics in
-                    ScrollView(showsIndicators: false) {
-                        ScrollViewReader { reader in
-                            VStack {
-                                Spacer(minLength: 0)
-                                LazyVStack(alignment: .leading, spacing: 1) {
-                                    ForEach(model.chatPosts) { post in
-                                        if post.user != nil {
-                                            if post.isAnnouncement {
-                                                HStack(spacing: 0) {
-                                                    Rectangle()
-                                                        .frame(width: 3)
-                                                        .foregroundColor(.green)
-                                                    VStack(alignment: .leading) {
-                                                        AnnouncementView(chat: model.database.chat)
+                    ChildSizeReader(size: $wholeSize) {
+                        ScrollView(showsIndicators: false) {
+                            ChildSizeReader(size: $scrollViewSize) {
+                                ScrollViewReader { reader in
+                                    VStack {
+                                        Spacer(minLength: 0)
+                                        LazyVStack(alignment: .leading, spacing: 1) {
+                                            ForEach(model.chatPosts) { post in
+                                                if post.user != nil {
+                                                    if post.isAnnouncement {
+                                                        HStack(spacing: 0) {
+                                                            Rectangle()
+                                                                .frame(width: 3)
+                                                                .foregroundColor(.green)
+                                                            VStack(alignment: .leading) {
+                                                                AnnouncementView(chat: model.database.chat)
+                                                                LineView(
+                                                                    post: post,
+                                                                    chat: model.database.chat
+                                                                )
+                                                            }
+                                                        }
+                                                        .id(post)
+                                                    } else if post.isFirstMessage {
+                                                        HStack(spacing: 0) {
+                                                            Rectangle()
+                                                                .frame(width: 3)
+                                                                .foregroundColor(.yellow)
+                                                            VStack(alignment: .leading) {
+                                                                FirstMessageView(chat: model.database.chat)
+                                                                LineView(
+                                                                    post: post,
+                                                                    chat: model.database.chat
+                                                                )
+                                                            }
+                                                        }
+                                                        .id(post)
+                                                    } else {
                                                         LineView(
                                                             post: post,
                                                             chat: model.database.chat
                                                         )
+                                                        .padding([.leading], 3)
+                                                        .id(post)
                                                     }
-                                                }
-                                                .id(post)
-                                            } else if post.isFirstMessage {
-                                                HStack(spacing: 0) {
+                                                } else {
                                                     Rectangle()
-                                                        .frame(width: 3)
-                                                        .foregroundColor(.yellow)
-                                                    VStack(alignment: .leading) {
-                                                        FirstMessageView(chat: model.database.chat)
-                                                        LineView(
-                                                            post: post,
-                                                            chat: model.database.chat
+                                                        .fill(.red)
+                                                        .frame(
+                                                            width: metrics.size.width,
+                                                            height: 1.5
                                                         )
-                                                    }
+                                                        .padding(2)
+                                                        .id(post)
                                                 }
-                                                .id(post)
-                                            } else {
-                                                LineView(
-                                                    post: post,
-                                                    chat: model.database.chat
-                                                )
-                                                .padding([.leading], 3)
-                                                .id(post)
                                             }
-                                        } else {
-                                            Rectangle()
-                                                .fill(.red)
-                                                .frame(
-                                                    width: metrics.size.width,
-                                                    height: 1.5
-                                                )
-                                                .padding(2)
-                                                .id(post)
+                                        }
+                                        .id(chatId)
+                                    }
+                                    .background(
+                                        GeometryReader { proxy in
+                                            Color.clear.preference(
+                                                key: ViewOffsetKey.self,
+                                                value: -1 * proxy.frame(in: .named(spaceName)).origin.y
+                                            )
+                                        }
+                                    )
+                                    .onPreferenceChange(
+                                        ViewOffsetKey.self,
+                                        perform: { scrollViewOffsetFromTop in
+                                            let offset = max(scrollViewOffsetFromTop, 0)
+                                            if offset >= scrollViewSize.height - wholeSize.height - 20 {
+                                                if model.chatPaused, offset >= previousOffset {
+                                                    model.endOfChatReachedWhenPaused()
+                                                }
+                                            } else if !model.chatPaused {
+                                                if !model.chatPosts.isEmpty {
+                                                    model.pauseChat()
+                                                }
+                                            }
+                                            previousOffset = offset
+                                        }
+                                    )
+                                    .onChange(of: model.chatPosts) { _ in
+                                        if !model.chatPaused {
+                                            if let lastPost = model.chatPosts.last {
+                                                reader.scrollTo(lastPost, anchor: .bottom)
+                                            } else {
+                                                reader.scrollTo(chatId, anchor: .bottom)
+                                            }
+                                        }
+                                    }
+                                    .frame(minHeight: metrics.size.height)
+                                    .onAppear {
+                                        if !model.chatPaused {
+                                            if let lastPost = model.chatPosts.last {
+                                                reader.scrollTo(lastPost, anchor: .bottom)
+                                            } else {
+                                                reader.scrollTo(chatId, anchor: .bottom)
+                                            }
                                         }
                                     }
                                 }
                             }
-                            .onChange(of: model.chatPosts) { _ in
-                                if !model.chatPaused {
-                                    reader.scrollTo(
-                                        model.chatPosts.last,
-                                        anchor: .bottom
-                                    )
-                                }
-                            }
-                            .frame(minHeight: metrics.size.height)
-                            .onAppear {
-                                if !model.chatPaused {
-                                    reader.scrollTo(
-                                        model.chatPosts.last,
-                                        anchor: .bottom
-                                    )
-                                }
-                            }
                         }
+                        .coordinateSpace(name: spaceName)
                     }
                 }
                 .frame(width: fullMetrics.size.width * model.database.chat.width!,
