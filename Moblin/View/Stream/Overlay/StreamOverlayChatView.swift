@@ -208,9 +208,9 @@ struct LineView: View {
 }
 
 struct ViewOffsetKey: PreferenceKey {
-    typealias Value = CGFloat
     static var defaultValue = CGFloat.zero
-    static func reduce(value: inout Value, nextValue: () -> Value) {
+
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
         value += nextValue()
     }
 }
@@ -224,10 +224,7 @@ struct ChildSizeReader<Content: View>: View {
             content()
                 .background(
                     GeometryReader { proxy in
-                        Color.clear.preference(
-                            key: SizePreferenceKey.self,
-                            value: proxy.size
-                        )
+                        Color.clear.preference(key: SizePreferenceKey.self, value: proxy.size)
                     }
                 )
         }
@@ -238,10 +235,9 @@ struct ChildSizeReader<Content: View>: View {
 }
 
 struct SizePreferenceKey: PreferenceKey {
-    typealias Value = CGSize
-    static var defaultValue: Value = .zero
+    static var defaultValue: CGSize = .zero
 
-    static func reduce(value _: inout Value, nextValue: () -> Value) {
+    static func reduce(value _: inout CGSize, nextValue: () -> CGSize) {
         _ = nextValue()
     }
 }
@@ -251,8 +247,7 @@ private let chatId = 1
 
 struct StreamOverlayChatView: View {
     @EnvironmentObject var model: Model
-    let spaceName = "scroll"
-
+    private let spaceName = "scroll"
     @State var wholeSize: CGSize = .zero
     @State var scrollViewSize: CGSize = .zero
 
@@ -299,20 +294,14 @@ struct StreamOverlayChatView: View {
                                                         }
                                                         .id(post)
                                                     } else {
-                                                        LineView(
-                                                            post: post,
-                                                            chat: model.database.chat
-                                                        )
-                                                        .padding([.leading], 3)
-                                                        .id(post)
+                                                        LineView(post: post, chat: model.database.chat)
+                                                            .padding([.leading], 3)
+                                                            .id(post)
                                                     }
                                                 } else {
                                                     Rectangle()
                                                         .fill(.red)
-                                                        .frame(
-                                                            width: metrics.size.width,
-                                                            height: 1.5
-                                                        )
+                                                        .frame(width: metrics.size.width, height: 1.5)
                                                         .padding(2)
                                                         .id(post)
                                                 }
