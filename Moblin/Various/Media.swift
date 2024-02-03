@@ -395,7 +395,6 @@ final class Media: NSObject {
         onSuccess: (() -> Void)? = nil
     ) {
         netStream.videoCapture()?.preferredVideoStabilizationMode = videoStabilizationMode
-        netStream.multiVideoCapture()?.preferredVideoStabilizationMode = videoStabilizationMode
         netStream.videoCapture()?.isVideoMirrored = videoMirrored
         netStream.attachCamera(device, onError: { error in
             logger.error("stream: Attach camera error: \(error)")
