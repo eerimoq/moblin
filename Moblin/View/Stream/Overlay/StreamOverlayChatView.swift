@@ -220,17 +220,15 @@ struct ChildSizeReader<Content: View>: View {
     let content: () -> Content
 
     var body: some View {
-        ZStack {
-            content()
-                .background(
-                    GeometryReader { proxy in
-                        Color.clear.preference(key: SizePreferenceKey.self, value: proxy.size)
-                    }
-                )
-        }
-        .onPreferenceChange(SizePreferenceKey.self) { preferences in
-            self.size = preferences
-        }
+        content()
+            .background(
+                GeometryReader { proxy in
+                    Color.clear.preference(key: SizePreferenceKey.self, value: proxy.size)
+                }
+            )
+            .onPreferenceChange(SizePreferenceKey.self) { preferences in
+                self.size = preferences
+            }
     }
 }
 
@@ -250,6 +248,16 @@ struct StreamOverlayChatView: View {
     private let spaceName = "scroll"
     @State var wholeSize: CGSize = .zero
     @State var scrollViewSize: CGSize = .zero
+
+    private func scrollToBottom(reader: ScrollViewProxy) {
+        if !model.chatPaused {
+            if let lastPost = model.chatPosts.last {
+                reader.scrollTo(lastPost, anchor: .bottom)
+            } else {
+                reader.scrollTo(chatId, anchor: .bottom)
+            }
+        }
+    }
 
     var body: some View {
         GeometryReader { fullMetrics in
@@ -334,23 +342,11 @@ struct StreamOverlayChatView: View {
                                         }
                                     )
                                     .onChange(of: model.chatPosts) { _ in
-                                        if !model.chatPaused {
-                                            if let lastPost = model.chatPosts.last {
-                                                reader.scrollTo(lastPost, anchor: .bottom)
-                                            } else {
-                                                reader.scrollTo(chatId, anchor: .bottom)
-                                            }
-                                        }
+                                        scrollToBottom(reader: reader)
                                     }
                                     .frame(minHeight: metrics.size.height)
                                     .onAppear {
-                                        if !model.chatPaused {
-                                            if let lastPost = model.chatPosts.last {
-                                                reader.scrollTo(lastPost, anchor: .bottom)
-                                            } else {
-                                                reader.scrollTo(chatId, anchor: .bottom)
-                                            }
-                                        }
+                                        scrollToBottom(reader: reader)
                                     }
                                 }
                             }
