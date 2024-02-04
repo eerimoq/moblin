@@ -1368,6 +1368,7 @@ class Database: Codable {
     var remoteControl: SettingsRemoteControl? = .init()
     var startStopRecordingConfirmations: Bool? = true
     var color: SettingsColor? = .init()
+    var mirrorFrontCameraOnStream: Bool? = false
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -2143,6 +2144,10 @@ final class Settings {
         }
         if realDatabase.color!.diskLuts == nil {
             realDatabase.color!.diskLuts = []
+            store()
+        }
+        if realDatabase.mirrorFrontCameraOnStream == nil {
+            realDatabase.mirrorFrontCameraOnStream = false
             store()
         }
     }

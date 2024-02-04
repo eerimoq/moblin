@@ -14,6 +14,7 @@ enum RemoteControlRequest: Codable {
     case setScene(id: UUID)
     case setBitratePreset(id: UUID)
     case setMic(id: String)
+    case reloadBrowserWidgets
 }
 
 enum RemoteControlResponse: Codable {
@@ -60,12 +61,14 @@ struct RemoteControlStatusTopLeft: Codable {
 struct RemoteControlStatusTopRight: Codable {
     var audioLevel: RemoteControlStatusItem?
     var rtmpServer: RemoteControlStatusItem?
+    var remoteControl: RemoteControlStatusItem?
     var gameController: RemoteControlStatusItem?
     var bitrate: RemoteControlStatusItem?
     var uptime: RemoteControlStatusItem?
     var location: RemoteControlStatusItem?
     var srtla: RemoteControlStatusItem?
     var recording: RemoteControlStatusItem?
+    var browserWidgets: RemoteControlStatusItem?
 }
 
 struct RemoteControlSettingsScene: Codable, Identifiable {

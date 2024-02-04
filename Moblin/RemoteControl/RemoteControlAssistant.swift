@@ -134,6 +134,10 @@ class RemoteControlAssistant {
         performRequestNoResponseData(data: .setBitratePreset(id: id), onSuccess: onSuccess)
     }
 
+    func reloadBrowserWidgets(onSuccess: @escaping () -> Void) {
+        performRequestNoResponseData(data: .reloadBrowserWidgets, onSuccess: onSuccess)
+    }
+
     private func startInternal() {
         do {
             try server.start(port: Endpoint.Port(port), interface: address)

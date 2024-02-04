@@ -445,12 +445,14 @@ struct RemoteControlView: View {
                             VStack(alignment: .leading, spacing: 3) {
                                 StatusItemView(icon: "waveform", status: status.audioLevel)
                                 StatusItemView(icon: "server.rack", status: status.rtmpServer)
+                                StatusItemView(icon: "appletvremote.gen1", status: status.remoteControl)
                                 StatusItemView(icon: "gamecontroller", status: status.gameController)
                                 StatusItemView(icon: "speedometer", status: status.bitrate)
                                 StatusItemView(icon: "deskclock", status: status.uptime)
                                 StatusItemView(icon: "location", status: status.location)
                                 StatusItemView(icon: "phone.connection", status: status.srtla)
                                 StatusItemView(icon: "record.circle", status: status.recording)
+                                StatusItemView(icon: "globe", status: status.browserWidgets)
                             }
                         } else {
                             Text("No status received yet.")
@@ -521,6 +523,28 @@ struct RemoteControlView: View {
                                     return
                                 }
                                 model.remoteControlAssistantSetBitratePreset(id: model.remoteControlBitrate)
+                            }
+                            Button {
+                                model.remoteControlAssistantReloadBrowserWidgets()
+                            } label: {
+                                HStack {
+                                    Text("")
+                                    Spacer()
+                                    Text("Reload browser widgets")
+                                    Spacer()
+                                }
+                            }
+                            Section {
+                                Button {
+                                    model.updateRemoteControlAssistantStatus()
+                                } label: {
+                                    HStack {
+                                        Text("")
+                                        Spacer()
+                                        Text("Refresh status")
+                                        Spacer()
+                                    }
+                                }
                             }
                             NavigationLink(destination: DebugLogSettingsView(
                                 log: model.remoteControlAssistantLog,

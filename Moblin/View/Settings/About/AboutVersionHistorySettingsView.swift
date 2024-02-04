@@ -8,6 +8,16 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.168.0", date: "2024-02-04", changes: [
+        "• Detect cameras plugged in after app starts.",
+        "• Support for Cam Link 4K on iPad.",
+        "  • For some reason the FPS is always 59.",
+        "• Reload browser widgets using remote control assistant.",
+        "• Refresh streamer status using remote control assistant.",
+        "• Toggle to mirror front camera on stream.",
+        "  • Rotate video in OBS for poor mans portrait streaming.",
+        "  • Settings → Camera → Mirror front camera on stream",
+    ]),
     Version(version: "0.167.0", date: "2024-02-03", changes: [
         "• Chat rework.",
         "  • Replace pause quick button with an interactive chat quick button.",

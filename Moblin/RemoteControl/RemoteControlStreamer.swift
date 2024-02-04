@@ -17,6 +17,7 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func setZoom(x: Float, onComplete: @escaping () -> Void)
     func setMute(on: Bool, onComplete: @escaping () -> Void)
     func setTorch(on: Bool, onComplete: @escaping () -> Void)
+    func reloadBrowserWidgets(onComplete: @escaping () -> Void)
 }
 
 class RemoteControlStreamer {
@@ -205,6 +206,10 @@ class RemoteControlStreamer {
             }
         case let .setTorch(on: on):
             delegate.setTorch(on: on) {
+                self.send(message: .response(id: id, result: .ok, data: nil))
+            }
+        case .reloadBrowserWidgets:
+            delegate.reloadBrowserWidgets {
                 self.send(message: .response(id: id, result: .ok, data: nil))
             }
         }

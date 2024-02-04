@@ -2702,6 +2702,14 @@ final class Model: ObservableObject {
         remoteControlAssistant?.setBitratePreset(id: id) {}
     }
 
+    func remoteControlAssistantReloadBrowserWidgets() {
+        remoteControlAssistant?.reloadBrowserWidgets {
+            DispatchQueue.main.async {
+                self.makeToast(title: "Browser widgets reloaded")
+            }
+        }
+    }
+
     func twitchEnabledUpdated() {
         reloadTwitchPubSub()
         reloadTwitchChat()
@@ -3390,12 +3398,15 @@ final class Model: ObservableObject {
 
     func reattachCamera() {
         media.attachCamera(device: nil, secondDevice: nil, videoStabilizationMode: .off, videoMirrored: false)
+        let isMirrored = getVideoMirroredOnScreen()
         media.attachCamera(
             device: cameraDevice,
             secondDevice: secondCameraDevice,
             videoStabilizationMode: getVideoStabilizationMode(),
-            videoMirrored: getVideoMirrored()
-        )
+            videoMirrored: getVideoMirroredOnStream()
+        ) {
+            self.videoView.isMirrored = isMirrored
+        }
     }
 
     func setGlobalToneMapping(on: Bool) {
@@ -3419,8 +3430,12 @@ final class Model: ObservableObject {
         return cameraDevice?.isGlobalToneMappingEnabled ?? false
     }
 
-    private func getVideoMirrored() -> Bool {
-        return false
+    private func getVideoMirroredOnStream() -> Bool {
+        return cameraPosition == .front && database.mirrorFrontCameraOnStream!
+    }
+
+    private func getVideoMirroredOnScreen() -> Bool {
+        return cameraPosition == .front && !database.mirrorFrontCameraOnStream!
     }
 
     private func hasCameraChanged(
@@ -3467,7 +3482,6 @@ final class Model: ObservableObject {
         } else {
             secondCameraDevice = nil
         }
-        var isMirrored = false
         cameraPosition = position
         if let secondPosition {
             secondCameraPosition = secondPosition
@@ -3481,22 +3495,21 @@ final class Model: ObservableObject {
                 backZoomX = database.zoom.switchToBack.x!
             }
             zoomX = backZoomX
-            isMirrored = false
         case .front:
             if database.zoom.switchToFront.enabled {
                 clearZoomId()
                 frontZoomX = database.zoom.switchToFront.x!
             }
             zoomX = frontZoomX
-            isMirrored = true
         default:
             break
         }
+        let isMirrored = getVideoMirroredOnScreen()
         media.attachCamera(
             device: cameraDevice,
             secondDevice: secondCameraDevice,
             videoStabilizationMode: getVideoStabilizationMode(),
-            videoMirrored: getVideoMirrored(),
+            videoMirrored: getVideoMirroredOnStream(),
             onSuccess: {
                 if let device = self.cameraDevice {
                     logger.debug("FPS: \(device.fps)")
@@ -4096,6 +4109,9 @@ extension Model: RemoteControlStreamerDelegate {
             if self.isShowingStatusRtmpServer() {
                 topRight.rtmpServer = RemoteControlStatusItem(message: self.rtmpSpeedAndTotal)
             }
+            if self.isShowingStatusRemoteControl() {
+                topRight.remoteControl = RemoteControlStatusItem(message: self.remoteControlStatus)
+            }
             if self.isShowingStatusGameController() {
                 topRight.gameController = RemoteControlStatusItem(message: self.gameControllersTotal)
             }
@@ -4113,6 +4129,9 @@ extension Model: RemoteControlStreamerDelegate {
             }
             if self.isShowingStatusRecording() {
                 topRight.recording = RemoteControlStatusItem(message: self.recordingLength)
+            }
+            if self.isShowingStatusBrowserWidgets() {
+                topRight.browserWidgets = RemoteControlStatusItem(message: self.browserWidgetsStatus)
             }
             onComplete(general, topLeft, topRight)
         }
@@ -4220,6 +4239,13 @@ extension Model: RemoteControlStreamerDelegate {
             self.updateMute()
             self.toggleGlobalButton(type: .mute)
             self.updateButtonStates()
+            onComplete()
+        }
+    }
+
+    func reloadBrowserWidgets(onComplete: @escaping () -> Void) {
+        DispatchQueue.main.async {
+            self.reloadBrowserWidgets()
             onComplete()
         }
     }

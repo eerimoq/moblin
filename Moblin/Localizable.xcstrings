@@ -29895,6 +29895,12 @@
     "Minimum bitrate decrease speed" : {
 
     },
+    "Mirror front camera on stream" : {
+
+    },
+    "Mirror front camera on stream and rotate video 90 degrees in OBS for poor mans portrait streaming." : {
+
+    },
     "Moblin" : {
       "localizations" : {
         "de" : {
@@ -36857,6 +36863,12 @@
           }
         }
       }
+    },
+    "Refresh status" : {
+
+    },
+    "Reload browser widgets" : {
+
     },
     "Reload browsers" : {
 
