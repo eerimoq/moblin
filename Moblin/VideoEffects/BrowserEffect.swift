@@ -50,8 +50,6 @@ final class BrowserEffect: VideoEffect {
         webView.scrollView.backgroundColor = .clear
         webView.scrollView.showsVerticalScrollIndicator = false
         webView.scrollView.showsHorizontalScrollIndicator = false
-        // super.init()
-        // logger.debug("browser-widget: \(host): Init")
     }
 
     var host: String {
