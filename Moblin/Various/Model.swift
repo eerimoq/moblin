@@ -1098,23 +1098,7 @@ final class Model: ObservableObject {
         LBLogger.with("com.haishinkit.SRTHaishinKit").appender = appender
         LBLogger.with("com.haishinkit.HaishinKit").level = .debug
         LBLogger.with("com.haishinkit.SRTHaishinKit").level = .debug
-        let externalCameras = listExternalCameras()
-        backCameras = listCameras(position: .back)
-        for camera in externalCameras where !backCameras.contains(camera) {
-            backCameras.append(camera)
-        }
-        if !backCameras.contains(where: { $0.id == database.backCameraId! }) {
-            database.backCameraId = backCameras.first?.id ?? ""
-            store()
-        }
-        frontCameras = listCameras(position: .front)
-        for camera in externalCameras where !frontCameras.contains(camera) {
-            frontCameras.append(camera)
-        }
-        if !frontCameras.contains(where: { $0.id == database.frontCameraId! }) {
-            database.frontCameraId = frontCameras.first?.id ?? ""
-            store()
-        }
+        updateCameraLists()
         updateBatteryLevel()
         media.onSrtConnected = handleSrtConnected
         media.onSrtDisconnected = handleSrtDisconnected
@@ -1204,6 +1188,14 @@ final class Model: ObservableObject {
         reloadLocation()
         currentStreamId = stream.id
         lutUpdated()
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(handleCaptureDeviceWasConnected),
+                                               name: NSNotification.Name.AVCaptureDeviceWasConnected,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(handleCaptureDeviceWasDisconnected),
+                                               name: NSNotification.Name.AVCaptureDeviceWasDisconnected,
+                                               object: nil)
     }
 
     private func handleIpStatusUpdate(statuses: [IPMonitor.Status]) {
@@ -1346,6 +1338,36 @@ final class Model: ObservableObject {
                 selectScene(id: button.sceneId)
             }
         }
+    }
+
+    private func updateCameraLists() {
+        let externalCameras = listExternalCameras()
+        backCameras = listCameras(position: .back)
+        for camera in externalCameras where !backCameras.contains(camera) {
+            backCameras.append(camera)
+        }
+        if !backCameras.contains(where: { $0.id == database.backCameraId! }) {
+            database.backCameraId = backCameras.first?.id ?? ""
+            store()
+        }
+        frontCameras = listCameras(position: .front)
+        for camera in externalCameras where !frontCameras.contains(camera) {
+            frontCameras.append(camera)
+        }
+        if !frontCameras.contains(where: { $0.id == database.frontCameraId! }) {
+            database.frontCameraId = frontCameras.first?.id ?? ""
+            store()
+        }
+    }
+
+    @objc func handleCaptureDeviceWasConnected(_: Notification) {
+        logger.info("Capture device connected")
+        updateCameraLists()
+    }
+
+    @objc func handleCaptureDeviceWasDisconnected(_: Notification) {
+        logger.info("Capture device disconnected")
+        updateCameraLists()
     }
 
     private func numberOfGameControllers() -> Int {
