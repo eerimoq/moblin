@@ -55,6 +55,7 @@ struct DrawOnStreamView: View {
             VStack {
                 Spacer()
                 HStack {
+                    Spacer()
                     HStack {
                         Button {
                             model.drawOnStreamWipe()
@@ -81,8 +82,8 @@ struct DrawOnStreamView: View {
                     .padding(8)
                     .background(Color(white: 0, opacity: 0.6))
                     .cornerRadius(5)
-                    Spacer()
                 }
+                .padding([.trailing], 15)
             }
         }
     }

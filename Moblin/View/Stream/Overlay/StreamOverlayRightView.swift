@@ -207,66 +207,68 @@ struct RightOverlayView: View {
                 color: .white
             )
             Spacer()
-            if database.show.zoomPresets && model.hasZoom {
-                if model.cameraPosition == .front {
-                    Picker("", selection: $model.frontZoomPresetId) {
-                        ForEach(database.zoom.front) { preset in
-                            Text(preset.name).tag(preset.id)
+            if !model.showDrawOnStream {
+                if database.show.zoomPresets && model.hasZoom {
+                    if model.cameraPosition == .front {
+                        Picker("", selection: $model.frontZoomPresetId) {
+                            ForEach(database.zoom.front) { preset in
+                                Text(preset.name).tag(preset.id)
+                            }
                         }
-                    }
-                    .onChange(of: model.frontZoomPresetId) { id in
-                        model.setCameraZoomPreset(id: id)
-                    }
-                    .pickerStyle(.segmented)
-                    .padding([.bottom], 1)
-                    .background(Color(uiColor: .systemBackground).opacity(0.8))
-                    .frame(width: CGFloat(50 * database.zoom.front.count))
-                    .cornerRadius(7)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 7)
-                            .stroke(.secondary)
-                    )
-                    .padding([.bottom], 5)
-                } else {
-                    Picker("", selection: $model.backZoomPresetId) {
-                        ForEach(model.backZoomPresets()) { preset in
-                            Text(preset.name).tag(preset.id)
+                        .onChange(of: model.frontZoomPresetId) { id in
+                            model.setCameraZoomPreset(id: id)
                         }
+                        .pickerStyle(.segmented)
+                        .padding([.bottom], 1)
+                        .background(Color(uiColor: .systemBackground).opacity(0.8))
+                        .frame(width: CGFloat(50 * database.zoom.front.count))
+                        .cornerRadius(7)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 7)
+                                .stroke(.secondary)
+                        )
+                        .padding([.bottom], 5)
+                    } else {
+                        Picker("", selection: $model.backZoomPresetId) {
+                            ForEach(model.backZoomPresets()) { preset in
+                                Text(preset.name).tag(preset.id)
+                            }
+                        }
+                        .onChange(of: model.backZoomPresetId) { id in
+                            model.setCameraZoomPreset(id: id)
+                        }
+                        .pickerStyle(.segmented)
+                        .padding([.bottom], 1)
+                        .background(Color(uiColor: .systemBackground).opacity(0.8))
+                        .frame(width: CGFloat(50 * model.backZoomPresets().count))
+                        .cornerRadius(7)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 7)
+                                .stroke(.secondary)
+                        )
+                        .padding([.bottom], 5)
                     }
-                    .onChange(of: model.backZoomPresetId) { id in
-                        model.setCameraZoomPreset(id: id)
+                }
+                Picker("", selection: $model.sceneIndex) {
+                    ForEach(0 ..< model.enabledScenes.count, id: \.self) { id in
+                        let scene = model.enabledScenes[id]
+                        Text(scene.name).tag(scene.id)
                     }
-                    .pickerStyle(.segmented)
-                    .padding([.bottom], 1)
-                    .background(Color(uiColor: .systemBackground).opacity(0.8))
-                    .frame(width: CGFloat(50 * model.backZoomPresets().count))
-                    .cornerRadius(7)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 7)
-                            .stroke(.secondary)
-                    )
-                    .padding([.bottom], 5)
                 }
-            }
-            Picker("", selection: $model.sceneIndex) {
-                ForEach(0 ..< model.enabledScenes.count, id: \.self) { id in
-                    let scene = model.enabledScenes[id]
-                    Text(scene.name).tag(scene.id)
+                .onChange(of: model.sceneIndex) { tag in
+                    model.setSceneId(id: model.enabledScenes[tag].id)
+                    model.sceneUpdated(store: false, scrollQuickButtons: true)
                 }
+                .pickerStyle(.segmented)
+                .padding([.bottom], 1)
+                .background(Color(uiColor: .systemBackground).opacity(0.8))
+                .frame(width: CGFloat(70 * model.enabledScenes.count))
+                .cornerRadius(7)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 7)
+                        .stroke(.secondary)
+                )
             }
-            .onChange(of: model.sceneIndex) { tag in
-                model.setSceneId(id: model.enabledScenes[tag].id)
-                model.sceneUpdated(store: false, scrollQuickButtons: true)
-            }
-            .pickerStyle(.segmented)
-            .padding([.bottom], 1)
-            .background(Color(uiColor: .systemBackground).opacity(0.8))
-            .frame(width: CGFloat(70 * model.enabledScenes.count))
-            .cornerRadius(7)
-            .overlay(
-                RoundedRectangle(cornerRadius: 7)
-                    .stroke(.secondary)
-            )
         }
     }
 }
