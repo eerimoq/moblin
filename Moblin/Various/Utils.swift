@@ -515,6 +515,10 @@ extension AVCaptureDevice {
         let factor = getZoomFactorScale(hasUltraWideCamera: hasUltraWideCamera)
         return (Float(minAvailableVideoZoomFactor) * factor, Float(maxAvailableVideoZoomFactor) * factor)
     }
+
+    var fps: (Double, Double) {
+        (1 / activeVideoMinFrameDuration.seconds, 1 / activeVideoMaxFrameDuration.seconds)
+    }
 }
 
 func cameraName(device: AVCaptureDevice?) -> String {
