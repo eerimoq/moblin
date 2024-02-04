@@ -73,12 +73,14 @@ struct DrawOnStreamView: View {
                         }
                         .disabled(model.drawOnStreamLines.isEmpty)
                         ColorPicker("Color", selection: $model.drawOnStreamSelectedColor)
-                            .font(.title)
                             .labelsHidden()
                         Slider(value: $model.drawOnStreamSelectedWidth, in: 1 ... 20)
                             .frame(width: 150)
                             .accentColor(model.drawOnStreamSelectedColor)
                     }
+                    .padding(8)
+                    .background(Color(white: 0, opacity: 0.6))
+                    .cornerRadius(5)
                     Spacer()
                 }
             }
