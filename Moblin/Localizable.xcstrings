@@ -6148,6 +6148,7 @@
 
     },
     "Amplitude" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -22825,6 +22826,7 @@
 
     },
     "Generator" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -25522,6 +25524,7 @@
       }
     },
     "Interval" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -50138,6 +50141,7 @@
       }
     },
     "Use generated audio as source instead of mic." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

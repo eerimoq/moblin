@@ -219,7 +219,6 @@ final class Model: ObservableObject {
     @Published var showChatMessages = true
     @Published var chatPaused = false
     @Published var interactiveChat = false
-    @Published var audioGenerator = "Off"
     @Published var squareWaveGeneratorAmplitude = 200.0
     @Published var squareWaveGeneratorInterval = 60.0
     @Published var blackScreen = false
@@ -734,17 +733,6 @@ final class Model: ObservableObject {
             logger.info("cosmetics: Purchase not done yet")
         default:
             logger.warning("cosmetics: What happend when buying? \(result)")
-        }
-    }
-
-    func setAudioGenerator(generator: String) {
-        switch generator {
-        case "Off":
-            audioGeneratorMode = .off
-        case "Square wave":
-            audioGeneratorMode = .squareWave
-        default:
-            logger.error("Bad audio generator \(generator)")
         }
     }
 
