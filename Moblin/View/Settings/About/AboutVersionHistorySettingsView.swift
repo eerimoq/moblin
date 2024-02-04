@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.169.0", date: "2024-02-04", changes: [
+        "• Draw on stream styling.",
+        "• Draw point (a small filled circle) on stream when tapping.",
+        "• Major refactoring. Hopefully everything still works.",
+    ]),
     Version(version: "0.168.0", date: "2024-02-04", changes: [
         "• Detect cameras plugged in after app starts.",
         "• Support for Cam Link 4K on iPad.",
