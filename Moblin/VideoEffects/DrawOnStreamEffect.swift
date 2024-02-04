@@ -26,6 +26,10 @@ private func calculateMidPoint(_ point1: CGPoint, _ point2: CGPoint) -> CGPoint 
     return CGPoint(x: (point1.x + point2.x) / 2, y: (point1.y + point2.y) / 2)
 }
 
+private func transformPoint(point: CGPoint, scale: Double, offsetX: Double) -> CGPoint {
+    return CGPoint(x: point.x * scale - offsetX, y: point.y * scale)
+}
+
 final class DrawOnStreamEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
     private var overlay: CIImage?
@@ -38,13 +42,21 @@ final class DrawOnStreamEffect: VideoEffect {
             let scale = videoSize.height / size.height
             let canvas = Canvas { context, _ in
                 for line in lines {
-                    context.stroke(
-                        drawOnStreamCreatePath(points: line.points.map { point in
-                            CGPoint(x: point.x * scale - offsetX, y: point.y * scale)
-                        }),
-                        with: .color(line.color),
-                        lineWidth: line.width * scale
-                    )
+                    let width = line.width * scale
+                    if line.points.count > 1 {
+                        context.stroke(
+                            drawOnStreamCreatePath(points: line.points.map { point in
+                                transformPoint(point: point, scale: scale, offsetX: offsetX)
+                            }),
+                            with: .color(line.color),
+                            lineWidth: width
+                        )
+                    } else {
+                        let point = transformPoint(point: line.points[0], scale: scale, offsetX: offsetX)
+                        var path = Path()
+                        path.addEllipse(in: CGRect(x: point.x, y: point.y, width: 1, height: 1))
+                        context.stroke(path, with: .color(line.color), lineWidth: width)
+                    }
                 }
             }
             .background(.clear)

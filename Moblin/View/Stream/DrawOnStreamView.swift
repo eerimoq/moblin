@@ -7,6 +7,8 @@ struct DrawOnStreamLine: Identifiable {
     var color: Color
 }
 
+private var drawing = false
+
 struct DrawOnStreamView: View {
     @EnvironmentObject var model: Model
 
@@ -35,11 +37,14 @@ struct DrawOnStreamView: View {
                     .onChanged { value in
                         let position = value.location
                         if value.translation == .zero {
-                            model.drawOnStreamLines.append(DrawOnStreamLine(
-                                points: [position],
-                                width: model.drawOnStreamSelectedWidth,
-                                color: model.drawOnStreamSelectedColor
-                            ))
+                            if !drawing {
+                                model.drawOnStreamLines.append(DrawOnStreamLine(
+                                    points: [position],
+                                    width: model.drawOnStreamSelectedWidth,
+                                    color: model.drawOnStreamSelectedColor
+                                ))
+                            }
+                            drawing = true
                         } else {
                             guard let lastIdx = model.drawOnStreamLines.indices.last else {
                                 return
@@ -49,6 +54,7 @@ struct DrawOnStreamView: View {
                     }
                     .onEnded { _ in
                         model.drawOnStreamLineComplete()
+                        drawing = false
                     }
             )
             .ignoresSafeArea()
