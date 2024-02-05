@@ -633,21 +633,21 @@ class SettingsWidgetVideoEffect: Codable {
 }
 
 enum SettingsWidgetType: String, Codable, CaseIterable {
-    case videoEffect = "Video effect"
-    case image = "Image"
     case browser = "Browser"
+    case image = "Image"
     case time = "Time"
+    case videoEffect = "Video effect"
 
     static func fromString(value: String) -> SettingsWidgetType {
         switch value {
-        case String(localized: "Video effect"):
-            return .videoEffect
-        case String(localized: "Image"):
-            return .image
         case String(localized: "Browser"):
             return .browser
+        case String(localized: "Image"):
+            return .image
         case String(localized: "Time"):
             return .time
+        case String(localized: "Video effect"):
+            return .videoEffect
         default:
             return .videoEffect
         }
@@ -655,14 +655,14 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
 
     func toString() -> String {
         switch self {
-        case .videoEffect:
-            return String(localized: "Video effect")
-        case .image:
-            return String(localized: "Image")
         case .browser:
             return String(localized: "Browser")
+        case .image:
+            return String(localized: "Image")
         case .time:
             return String(localized: "Time")
+        case .videoEffect:
+            return String(localized: "Video effect")
         }
     }
 }
