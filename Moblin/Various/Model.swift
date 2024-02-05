@@ -9,7 +9,7 @@ import Network
 import PhotosUI
 import SDWebImageSwiftUI
 import SDWebImageWebPCoder
-import SRTHaishinKit
+import HaishinKit
 import StoreKit
 import SwiftUI
 import TwitchChat
@@ -1083,9 +1083,7 @@ final class Model: ObservableObject {
         logger.debugEnabled = database.debug!.logLevel == .debug
         let appender = LogAppender()
         LBLogger.with("com.haishinkit.HaishinKit").appender = appender
-        LBLogger.with("com.haishinkit.SRTHaishinKit").appender = appender
         LBLogger.with("com.haishinkit.HaishinKit").level = .debug
-        LBLogger.with("com.haishinkit.SRTHaishinKit").level = .debug
         updateCameraLists()
         updateBatteryLevel()
         media.onSrtConnected = handleSrtConnected

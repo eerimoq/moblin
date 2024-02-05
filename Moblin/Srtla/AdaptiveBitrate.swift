@@ -1,6 +1,5 @@
 import AVFoundation
 import HaishinKit
-import SRTHaishinKit
 
 protocol AdaptiveBitrateDelegate: AnyObject {
     func adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32)

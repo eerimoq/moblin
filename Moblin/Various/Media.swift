@@ -1,6 +1,5 @@
 import AVFoundation
 import HaishinKit
-import SRTHaishinKit
 
 let mediaDispatchQueue = DispatchQueue(label: "com.eerimoq.stream")
 

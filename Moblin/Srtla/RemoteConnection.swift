@@ -1,6 +1,6 @@
 import Foundation
 import Network
-import SRTHaishinKit
+import HaishinKit
 
 enum SrtlaPacketType: UInt16 {
     case keepalive = 0x1000
