@@ -9,7 +9,6 @@ import Network
 import PhotosUI
 import SDWebImageSwiftUI
 import SDWebImageWebPCoder
-import HaishinKit
 import StoreKit
 import SwiftUI
 import TwitchChat
@@ -219,8 +218,6 @@ final class Model: ObservableObject {
     @Published var showChatMessages = true
     @Published var chatPaused = false
     @Published var interactiveChat = false
-    @Published var squareWaveGeneratorAmplitude = 200.0
-    @Published var squareWaveGeneratorInterval = 60.0
     @Published var blackScreen = false
     private var streaming = false
     @Published var mic = noMic
