@@ -2156,5 +2156,9 @@ final class Settings {
             realDatabase.mirrorFrontCameraOnStream = false
             store()
         }
+        for scene in realDatabase.scenes where scene.externalCameraId == nil {
+            scene.externalCameraId = ""
+            store()
+        }
     }
 }
