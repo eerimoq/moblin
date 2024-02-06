@@ -329,7 +329,7 @@ struct StreamOverlayChatView: View {
                                         ViewOffsetKey.self,
                                         perform: { scrollViewOffsetFromTop in
                                             let offset = max(scrollViewOffsetFromTop, 0)
-                                            if offset >= scrollViewSize.height - wholeSize.height - 20 {
+                                            if offset >= scrollViewSize.height - wholeSize.height - 50 {
                                                 if model.chatPaused, offset >= previousOffset {
                                                     model.endOfChatReachedWhenPaused()
                                                 }
