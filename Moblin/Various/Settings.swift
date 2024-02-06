@@ -672,7 +672,7 @@ let widgetTypes = SettingsWidgetType.allCases.map { $0.toString() }
 class SettingsWidget: Codable, Identifiable, Equatable {
     var name: String
     var id: UUID = .init()
-    var type: SettingsWidgetType = .videoEffect
+    var type: SettingsWidgetType = .browser
     var text: SettingsWidgetText = .init()
     var image: SettingsWidgetImage? = .init()
     var video: SettingsWidgetVideo? = .init()
