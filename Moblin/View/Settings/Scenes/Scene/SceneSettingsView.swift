@@ -65,6 +65,8 @@ struct SceneSettingsView: View {
             return SettingsSceneCameraPosition.back.toString()
         case .rtmp:
             return SettingsSceneCameraPosition.rtmp.toString()
+        case .external:
+            return SettingsSceneCameraPosition.external.toString()
         }
     }
 
@@ -77,8 +79,11 @@ struct SceneSettingsView: View {
         if isRtmpCamera(camera: camera) {
             scene.cameraPosition = .rtmp
             scene.rtmpCameraId = model.getRtmpStream(camera: camera)?.id ?? .init()
-        } else {
+        } else if camera == "Back" || camera == "Front" {
             scene.cameraPosition = SettingsSceneCameraPosition.fromString(value: camera)
+        } else {
+            scene.cameraPosition = .external
+            scene.externalCameraId = camera
         }
         model.sceneUpdated(store: true)
     }

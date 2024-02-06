@@ -19456,6 +19456,9 @@
         }
       }
     },
+    "External" : {
+
+    },
     "External mic overrides follow scene toggle" : {
       "localizations" : {
         "de" : {

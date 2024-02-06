@@ -384,6 +384,7 @@ final class Model: ObservableObject {
 
     var backCameras: [Camera] = []
     var frontCameras: [Camera] = []
+    var externalCameras: [Camera] = []
 
     var recordingsStorage = RecordingsStorage()
     private var latestLowBitrateDate = Date()
@@ -1324,19 +1325,13 @@ final class Model: ObservableObject {
     }
 
     private func updateCameraLists() {
-        let externalCameras = listExternalCameras()
+        externalCameras = listExternalCameras()
         backCameras = listCameras(position: .back)
-        for camera in externalCameras where !backCameras.contains(camera) {
-            backCameras.append(camera)
-        }
         if !backCameras.contains(where: { $0.id == database.backCameraId! }) {
             database.backCameraId = backCameras.first?.id ?? ""
             store()
         }
         frontCameras = listCameras(position: .front)
-        for camera in externalCameras where !frontCameras.contains(camera) {
-            frontCameras.append(camera)
-        }
         if !frontCameras.contains(where: { $0.id == database.frontCameraId! }) {
             database.frontCameraId = frontCameras.first?.id ?? ""
             store()
@@ -1521,8 +1516,7 @@ final class Model: ObservableObject {
             position: position
         )
         return deviceDiscovery.devices.map { device in
-            logger.info("Found camera '\(device.localizedName)' with id \(device.uniqueID)")
-            return Camera(id: device.uniqueID, name: cameraName(device: device))
+            Camera(id: device.uniqueID, name: cameraName(device: device))
         }
     }
 
@@ -1537,8 +1531,7 @@ final class Model: ObservableObject {
             position: .unspecified
         )
         return deviceDiscovery.devices.map { device in
-            logger.info("Found external camera '\(device.localizedName)' with id \(device.uniqueID)")
-            return Camera(id: device.uniqueID, name: cameraName(device: device))
+            Camera(id: device.uniqueID, name: cameraName(device: device))
         }
     }
 
@@ -3060,6 +3053,8 @@ final class Model: ObservableObject {
             attachCamera(position: .front)
         case .rtmp:
             attachRtmpCamera(cameraId: scene.rtmpCameraId!)
+        case .external:
+            attachExternalCamera(cameraId: scene.externalCameraId!)
         }
     }
 
@@ -3071,24 +3066,33 @@ final class Model: ObservableObject {
             attachCamera(position: .front, secondPosition: .back)
         case .rtmp:
             logger.info("PiP RTMP camera not implemented")
+        case .external:
+            logger.info("PiP external camera not implemented")
         }
     }
 
     func listCameraPositions() -> [String] {
-        return cameraPositions + rtmpCameras()
+        return cameraPositions + rtmpCameras() + externalCameras.map { $0.id }
     }
 
     func getCameraPosition(scene: SettingsScene?) -> String {
         guard let scene else {
             return ""
         }
-        if scene.cameraPosition! == .rtmp {
+        switch scene.cameraPosition! {
+        case .rtmp:
             if let stream = getRtmpStream(id: scene.rtmpCameraId!) {
                 return stream.camera()
             } else {
                 return "Back"
             }
-        } else {
+        case .external:
+            if !scene.externalCameraId!.isEmpty {
+                return scene.externalCameraId!
+            } else {
+                return "Back"
+            }
+        default:
             return scene.cameraPosition!.toString()
         }
     }
@@ -3520,6 +3524,10 @@ final class Model: ObservableObject {
         media.attachRtmpCamera(cameraId: cameraId, device: preferredCamera(position: .front))
     }
 
+    private func attachExternalCamera(cameraId _: String) {
+        attachCamera(position: .unspecified)
+    }
+
     private func setCameraZoomX(x: Float, rate: Float? = nil) -> Float? {
         let level = media.setCameraZoomLevel(level: x / cameraZoomLevelToXScale, rate: rate)
         if let level {
@@ -3850,8 +3858,12 @@ final class Model: ObservableObject {
     func preferredCamera(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
         if position == .back {
             return AVCaptureDevice(uniqueID: database.backCameraId!)
-        } else {
+        } else if position == .front {
             return AVCaptureDevice(uniqueID: database.frontCameraId!)
+        } else if let scene = findEnabledScene(id: selectedSceneId) {
+            return AVCaptureDevice(uniqueID: scene.externalCameraId!)
+        } else {
+            return nil
         }
     }
 

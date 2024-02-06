@@ -427,6 +427,7 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
     case back = "Back"
     case front = "Front"
     case rtmp = "RTMP"
+    case external = "External"
 
     static func fromString(value: String) -> SettingsSceneCameraPosition {
         switch value {
@@ -436,6 +437,8 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
             return .front
         case String(localized: "RTMP"):
             return .rtmp
+        case String(localized: "External"):
+            return .external
         default:
             return .back
         }
@@ -449,6 +452,8 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
             return String(localized: "Front")
         case .rtmp:
             return String(localized: "RTMP")
+        case .external:
+            return String(localized: "External")
         }
     }
 }
@@ -508,6 +513,7 @@ class SettingsScene: Codable, Identifiable, Equatable {
     var cameraType: SettingsSceneCameraPosition = .back
     var cameraPosition: SettingsSceneCameraPosition? = .back
     var rtmpCameraId: UUID? = .init()
+    var externalCameraId: String? = ""
     var cameraLayoutPip: SettingsSceneCameraLayoutPip? = .init()
     var widgets: [SettingsSceneWidget] = []
     var buttons: [SettingsSceneButton] = []
