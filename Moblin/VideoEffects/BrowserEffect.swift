@@ -23,6 +23,7 @@ final class BrowserEffect: VideoEffect {
     private var scaleToFitVideo: Bool
     private var snapshotTimer: Timer?
     var startLoadingTime = Date()
+    private var scale = UIScreen().scale
 
     init(url: URL, widget: SettingsWidgetBrowser, videoSize: CGSize) {
         scaleToFitVideo = widget.scaleToFitVideo!
@@ -61,7 +62,6 @@ final class BrowserEffect: VideoEffect {
     }
 
     deinit {
-        // logger.debug("browser-widget: \(host): Deinit")
         stopTakeSnapshots()
     }
 
@@ -87,7 +87,6 @@ final class BrowserEffect: VideoEffect {
             y = .nan
             image = nil
             overlay = nil
-            // logger.debug("browser-widget: \(self.host): Loading empty page")
             webView.loadHTMLString("<html></html>", baseURL: nil)
             isLoaded = false
         }
@@ -99,18 +98,14 @@ final class BrowserEffect: VideoEffect {
 
     private func startTakeSnapshots() {
         snapshotTimer = Timer.scheduledTimer(withTimeInterval: Double(1 / fps), repeats: true, block: { _ in
-            // if self.webView.isLoading {
-            // logger.debug("browser-widget: \(self.host): \(self.progress)% loaded")
-            // }
             guard !self.audioOnly else {
                 return
             }
             let configuration = WKSnapshotConfiguration()
-            // Why is scale needed? Is it always 3? Probably makes resolution 1/3 of actual.
             if self.scaleToFitVideo {
-                configuration.snapshotWidth = NSNumber(value: self.videoSize.width / 3)
+                configuration.snapshotWidth = NSNumber(value: self.videoSize.width / self.scale)
             } else {
-                configuration.snapshotWidth = NSNumber(value: self.width / 3)
+                configuration.snapshotWidth = NSNumber(value: self.width / self.scale)
             }
             self.webView.takeSnapshot(with: configuration) { image, error in
                 if let error {
