@@ -8,6 +8,15 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.170.0", date: "2024-02-06", changes: [
+        "• Bigger audio ring buffer (25 instead of 6 buffers, 1024 samples each).",
+        "  • Not sure if it can fix some audio glitches.",
+        "• Fix unwanted chat pause on iPad.",
+        "• Fix browser widget scaling on iPad.",
+        "• Select browser by default when creating a new widget.",
+        "• iPad multitasking.",
+        "  • Video now works in slide over view.",
+    ]),
     Version(version: "0.169.0", date: "2024-02-04", changes: [
         "• Draw on stream styling.",
         "• Draw point (a small filled circle) on stream when tapping.",
