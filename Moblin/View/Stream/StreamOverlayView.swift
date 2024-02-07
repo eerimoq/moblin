@@ -3,7 +3,7 @@ import SwiftUI
 struct ChatInfo: View {
     var message: String
     var icon: String
-    var iconColor: Color;
+    var iconColor: Color
 
     var body: some View {
         VStack {
@@ -64,9 +64,15 @@ struct StreamOverlayView: View {
                 }
                 .opacity(model.showChatMessages ? 1 : 0)
                 if !model.showChatMessages {
-                    ChatInfo(message: String(localized: "Chat is hidden"), icon: "exclamationmark.triangle.fill", iconColor: .yellow)
+                    ChatInfo(
+                        message: String(localized: "Chat is hidden"),
+                        icon: "exclamationmark.triangle.fill",
+                        iconColor: .yellow)
                 } else if model.chatPaused {
-                    ChatInfo(message: String(localized: "\(model.pausedChatPostsCount) new messages"), icon: "pause", iconColor: .white)
+                    ChatInfo(
+                        message: String(localized: "\(model.pausedChatPostsCount) new messages"),
+                        icon: "pause",
+                        iconColor: .white)
                 }
             }
             .allowsHitTesting(model.interactiveChat)
