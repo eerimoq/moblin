@@ -2877,9 +2877,6 @@
         }
       }
     },
-    "%lld new messages" : {
-
-    },
     "%llu" : {
       "localizations" : {
         "de" : {
@@ -13638,6 +13635,9 @@
           }
         }
       }
+    },
+    "Chat paused: %lld new messages" : {
+
     },
     "Chatroom id" : {
       "localizations" : {

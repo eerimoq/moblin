@@ -2,16 +2,19 @@ import SwiftUI
 
 struct ChatInfo: View {
     var message: String
-    var icon: String
-    var iconColor: Color
+    var icon: String? = nil
+    var iconColor: Color = .white
 
     var body: some View {
         VStack {
             Spacer()
             HStack {
                 HStack {
-                    Image(systemName: icon)
-                        .foregroundColor(iconColor)
+                    if let icon {
+                        Image(systemName: icon)
+                            .foregroundColor(iconColor)
+                            .bold()
+                    }
                     Text(message)
                         .bold()
                         .foregroundColor(.white)
@@ -67,12 +70,12 @@ struct StreamOverlayView: View {
                     ChatInfo(
                         message: String(localized: "Chat is hidden"),
                         icon: "exclamationmark.triangle.fill",
-                        iconColor: .yellow)
+                        iconColor: .yellow
+                    )
                 } else if model.chatPaused {
                     ChatInfo(
-                        message: String(localized: "\(model.pausedChatPostsCount) new messages"),
-                        icon: "pause",
-                        iconColor: .white)
+                        message: String(localized: "Chat paused: \(model.pausedChatPostsCount) new messages")
+                    )
                 }
             }
             .allowsHitTesting(model.interactiveChat)
