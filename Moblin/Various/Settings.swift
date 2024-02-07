@@ -755,6 +755,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case obs = "OBS"
     case remote = "Remote"
     case draw = "Draw"
+    case localOverlays = "Local overlays"
 
     static func fromString(value: String) -> SettingsButtonType {
         switch value {
@@ -806,6 +807,8 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return .remote
         case String(localized: "Draw"):
             return .draw
+        case String(localized: "Local overlays"):
+            return .localOverlays
         default:
             return .torch
         }
@@ -861,6 +864,8 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return String(localized: "Remote")
         case .draw:
             return String(localized: "Draw")
+        case .localOverlays:
+            return String(localized: "Local overlays")
         }
     }
 }
@@ -1663,6 +1668,14 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "squareshape.split.2x2"
     button.systemImageNameOff = "squareshape.split.2x2"
+    updateGlobalButton(database: database, button: button)
+
+    button = SettingsButton(name: String(localized: "Local overlays"))
+    button.id = UUID()
+    button.type = .localOverlays
+    button.imageType = "System name"
+    button.systemImageNameOn = "square.stack.3d.up.slash.fill"
+    button.systemImageNameOff = "square.stack.3d.up.slash"
     updateGlobalButton(database: database, button: button)
 }
 
