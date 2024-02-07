@@ -6013,119 +6013,6 @@
         }
       }
     },
-    "Adaptive bitrate is experimental." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Adaptive Bitrate ist experimentell."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Το προσαρμοστικό bitrate είναι πειραματικό."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El bitrate adaptable es experimental."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Le bitrate adaptatif est une fonctionnalité expérimentale."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "अनुकूली बिटरेट प्रयोगात्मक है।"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bitrate adaptif adalah eksperimental."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Il bitrate adattivo è sperimentale."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "適応ビットレートは実験的です。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "적응형 비트레이트는 시험중입니다."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Adaptieve bitrate is experimenteel."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Adaptacyjny bitrate jest w wersji testowej."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "A taxa de bits adaptativa é experimental."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "A taxa de bits adaptativa é experimental."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Adaptiv bitrate är experimentell."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Uyarlanabilir bit hızı deneyseldir."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tỷ lệ bit thích ứng là thử nghiệm."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "自适应比特率是试验性特性"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "動態位元率是實驗性功能。"
-          }
-        }
-      }
-    },
     "Add" : {
       "localizations" : {
         "de" : {
@@ -6688,119 +6575,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "允許的 RTT 峰值"
-          }
-        }
-      }
-    },
-    "Amplitude" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Amplitude"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Εύρος"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Amplitud"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Amplitude"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "आयाम"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Amplitudo"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ampiezza"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "振幅"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "진폭"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Amplitude"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Amplituda"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Amplitude"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Amplitude"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Amplitud"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Genlik"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Biên độ"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "振幅"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "振幅"
           }
         }
       }
@@ -15317,119 +15091,6 @@
         }
       }
     },
-    "Configure source name in Settings → Streams → %@ → OBS remote control for snapshop and more." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Konfiguriere den Quellnamen unter Einstellungen → Streams → %@ → OBS-Fernbedienung für Snapshop und mehr."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Διαμορφώστε το όνομα της πηγής στις Ρυθμίσεις → Ροές → %@ → Τηλεχειριστήριο OBS για snapshop και άλλα."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Configura el nombre de la fuente en Ajustes → Transmisiones → %@ → Control remoto de OBS para instantánea y más."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Configurez le nom de la source dans Paramètres → Flux → %@ → Télécommande OBS pour Snapshop et plus encore."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "सेटिंग्स → स्ट्रीम → %@ → स्नैपशॉप और अधिक के लिए ओबीएस रिमोट कंट्रोल में स्रोत नाम कॉन्फ़िगर करें।"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Konfigurasikan nama sumber di Pengaturan → Aliran → %@ → kendali jarak jauh OBS untuk snapshop dan lainnya."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Configura il nome della sorgente in Impostazioni → Stream → %@ → Controllo remoto OBS per Snapshop e altro."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "[設定]→[ストリーム]→[%@]→スナップショップなどの OBS リモート コントロールでソース名を設定します。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "설정 → 스트림 → %@ → snapshop용 OBS 원격 제어 등에서 소스 이름을 구성하세요."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Configureer de bronnaam in Instellingen → Streams → %@ → OBS-afstandsbediening voor snapshop en meer."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Skonfiguruj nazwę źródła w Ustawieniach → Strumienie → %@ → Pilot OBS dla Snapshop i nie tylko."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Configure o nome da fonte em Configurações → Streams → %@ → Controle remoto OBS para snapshop e muito mais."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Configure o nome da fonte em Configurações → Streams → %@ → Controle remoto OBS para snapshop e muito mais."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Konfigurera källnamnet i Inställningar → Strömmar → %@ → OBS-fjärrkontroll för ögonblicksbild och mer."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kaynak adını Ayarlar → Akışlar → %@ → Snapshop için OBS uzaktan kumandası ve daha fazlası bölümünde yapılandırın."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Định cấu hình tên nguồn trong Cài đặt → Luồng → %@ → Điều khiển từ xa OBS cho snapshop và hơn thế nữa."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "在设置 → 流 → %@ → OBS 远程控制中配置快照商店等的源名称。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "在設定 → 流 → %@ → OBS 遠端控制中配置快照商店等的來源名稱。"
-          }
-        }
-      }
-    },
     "Configure source name in Settings → Streams → %@ → OBS remote control for snapshot and more." : {
       "localizations" : {
         "de" : {
@@ -18536,7 +18197,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Inaktiverade anslutningar kommer inte att användas."
           }
         },
@@ -19432,8 +19093,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Dra"
+            "state" : "translated",
+            "value" : "Rita"
           }
         },
         "tr" : {
@@ -20216,7 +19877,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Aktivera för att tillåta en assistent att övervaka och styra den här enheten från en annan enhet."
           }
         },
@@ -20328,7 +19989,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Aktivera för att låta en streamerenhet ansluta till den här enheten. När den är ansluten kan den här enheten övervaka och styra streamerenheten."
           }
         },
@@ -22456,7 +22117,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Extern"
           }
         },
@@ -23688,7 +23349,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Snabb IRL"
           }
         },
@@ -24472,8 +24133,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Att hitta bra parametrar är svårt. Du är på egen hand! =)"
+            "state" : "translated",
+            "value" : "Att välja bra parametrar är svårt."
           }
         },
         "tr" : {
@@ -26152,7 +25813,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Generera"
           }
         },
@@ -26178,119 +25839,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "產生"
-          }
-        }
-      }
-    },
-    "Generator" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Generator"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Γεννήτρια"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Generador"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Générateur"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "जनक"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Generator"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Generatore"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "発生器"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Generator"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Generator"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Generator"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Gerador"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Gerador"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Generator"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Jeneratör"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Máy phát điện"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "音频生成"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "變聲器"
           }
         }
       }
@@ -26601,7 +26149,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Global tonmappning"
           }
         },
@@ -28617,7 +28165,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Installera omedelbart den gamla versionen av appen för att behålla dina gamla inställningar."
           }
         },
@@ -28729,7 +28277,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Installera omedelbart den gamla versionen av appen för att behålla dina gamla inställningar. Detta är den sista varningen!"
           }
         },
@@ -29203,119 +28751,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "節點 URL"
-          }
-        }
-      }
-    },
-    "Interval" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Intervall"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Διάστημα"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Intervalo"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Intervalle"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "मध्यान्तर"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Selang"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Intervallo"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "間隔"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "간격"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Interval"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Interwał"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Intervalo"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Intervalo"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Intervall"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Aralık"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Khoảng thời gian"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "间隔"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "間隔"
           }
         }
       }
@@ -31642,7 +31077,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "LUT"
           }
         },
@@ -33770,7 +33205,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Minsta bithastighetsminskningshastighet"
           }
         },
@@ -33882,8 +33317,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Spegel främre kamera på stream"
+            "state" : "translated",
+            "value" : "Spegelvänd främre kamera i strömmen"
           }
         },
         "tr" : {
@@ -33994,8 +33429,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Spegla främre kamera på stream och rotera video 90 grader i OBS för streaming av fattigmans porträtt."
+            "state" : "translated",
+            "value" : "Speglvänd främre kameran i strömmen och rotera video 90 grader i OBS för strömning av fattigmansporträtt."
           }
         },
         "tr" : {
@@ -36682,7 +36117,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Inga inställningar har tagits emot ännu."
           }
         },
@@ -36906,7 +36341,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ingen status mottagen ännu."
           }
         },
@@ -38362,7 +37797,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "OK"
           }
         },
@@ -38810,8 +38245,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Overhead bandbredd"
+            "state" : "translated",
+            "value" : "Overheadbandbredd"
           }
         },
         "tr" : {
@@ -38836,119 +38271,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "開銷頻寬"
-          }
-        }
-      }
-    },
-    "Packets in flight" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Packets in flight"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Πακέτα κατά την πτήση"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Paquetes al vuelo (Packets in flight)"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Paquets en vol"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "उड़ान में पैकेट"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Paket dalam penerbangan"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pacchetti in volo"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "飛行中のパケット"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "비행 중 패킷"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pakketten tijdens de vlucht"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pakiety w ruchu"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pacotes em voo"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pacotes em voo"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Utestående paket"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Uçuşta paketler"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Gói trong chuyến bay"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "传输中的数据包"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "傳輸中的封包"
           }
         }
       }
@@ -39035,7 +38357,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Paket under flygning minskar tröskeln"
           }
         },
@@ -41499,7 +40821,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Inspelningsbekräftelser"
           }
         },
@@ -41723,7 +41045,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Uppdatera status"
           }
         },
@@ -41835,7 +41157,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ladda om webbläsarwidgets"
           }
         },
@@ -41947,7 +41269,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ladda om webbläsare"
           }
         },
@@ -42059,8 +41381,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Avlägsen"
+            "state" : "translated",
+            "value" : "Fjärr"
           }
         },
         "tr" : {
@@ -42283,7 +41605,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Fjärrkontrollassistent"
           }
         },
@@ -42395,7 +41717,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Fjärrkontrollassistenten är inte konfigurerad"
           }
         },
@@ -44187,8 +43509,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Skala för att passa videons bredd"
+            "state" : "translated",
+            "value" : "Skala för att passa videobredd"
           }
         },
         "tr" : {
@@ -45195,7 +44517,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Server adress"
           }
         },
@@ -45307,8 +44629,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Server Port"
+            "state" : "translated",
+            "value" : "Server port"
           }
         },
         "tr" : {
@@ -46539,7 +45861,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Långsam IRL"
           }
         },
@@ -47689,119 +47011,6 @@
         }
       }
     },
-    "SRT oheadbw" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "SRT oheadbw"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Srt oheadbw"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "SRT oheadbw"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bande passante aérienne SRT (SRT oheadbw)"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "SRT oheadbw"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SRT OHEADBW"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SRT avanti"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "srt oheadbw"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "srt oheadbw"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Srt oheadbw"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "SRT oheadbw"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SRT oheadbw"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SRT oheadbw"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "SRT oheadbw"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Srt oheadbw"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SRT OHEADBW"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "SRT 花费带宽"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "SRT oheadbw"
-          }
-        }
-      }
-    },
     "SRT overlay" : {
       "localizations" : {
         "de" : {
@@ -48668,7 +47877,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Start"
           }
         },
@@ -49116,7 +48325,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Sluta"
           }
         },
@@ -50348,8 +49557,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Banderoll"
+            "state" : "translated",
+            "value" : "Strömmare"
           }
         },
         "tr" : {
@@ -52028,7 +51237,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Bithastigheten minskar hastigheten när RTT är för hög."
           }
         },
@@ -52140,7 +51349,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Bithastigheten kommer att minska snabbt när antalet paket under flygning är över detta värde."
           }
         },
@@ -52166,119 +51375,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "當傳輸中的資料包數量高於此值時，位元率將快速下降。"
-          }
-        }
-      }
-    },
-    "The browser widget is experimental does not work very well yet." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Das Browser-Widget ist experimentell und funktioniert noch nicht sehr gut."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Το widget του προγράμματος περιήγησης είναι πειραματικό δεν λειτουργεί πολύ καλά."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El widget del navegador es experimental y no funciona muy bien todavía."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Le widget navigateur est expérimental et peut fonctionner de façon aléatoire."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ब्राउज़र विजेट प्रयोगात्मक है अभी तक बहुत अच्छी तरह से काम नहीं करता है।"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Widget browser bersifat eksperimental belum bekerja dengan baik."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Il widget del browser è sperimentale e non funziona ancora molto bene."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ブラウザウィジェットは実験的であり、まだうまく機能しません。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "브라우저 위젯은 실험적이므로 아직 잘 작동하지 않습니다."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "De browserwidget is experimenteel werkt nog niet erg goed."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Widget z przeglądarki jest w fazie testów i nie działa jeszcze w pełni."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "O widget do navegador é experimental e ainda não funciona muito bem."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "O widget do navegador é experimental e ainda não funciona muito bem."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Webbläsarwidgets är experimentella och fungerar inte bra ännu."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tarayıcı widget'ı deneysel henüz çok iyi çalışmıyor."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tiện ích trình duyệt là thử nghiệm chưa hoạt động tốt."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "浏览器组件作为试验性功能，目前可能运行存在问题"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "瀏覽器小工具功能尚在實驗中，相容性尚未完善。"
           }
         }
       }
@@ -52477,7 +51573,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Den maximalt tillåtna RTT-spiken innan bithastigheten minskas"
           }
         },
@@ -52589,7 +51685,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Minsta bithastighet minskar hastigheten när RTT är för hög."
           }
         },
@@ -52701,7 +51797,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Namnet på källan i OBS som tar emot strömmen från Moblin."
           }
         },
@@ -55083,119 +54179,6 @@
         }
       }
     },
-    "Trying to connect to the OBS server..." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Versuche, eine Verbindung zum OBS-Server herzustellen..."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Προσπάθεια σύνδεσης στον διακομιστή OBS..."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Intentando conectarse al servidor de OBS..."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "J'essaie de me connecter au serveur OBS..."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS सर्वर से कनेक्ट करने का प्रयास किया जा रहा है..."
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Mencoba menyambung ke server OBS..."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tentativo di connessione al server OBS..."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS サーバーに接続しようとしています..."
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS 서버에 연결하는 중입니다..."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Probeert verbinding te maken met de OBS-server..."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Próbuję połączyć się z serwerem OBS..."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tentando se conectar ao servidor OBS..."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tentando se conectar ao servidor OBS..."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Försöker ansluta till OBS-servern..."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "OBS sunucusuna bağlanmaya çalışıyorum..."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Đang cố gắng kết nối với máy chủ OBS..."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "正在尝试连接OBS服务器..."
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "正在嘗試連接OBS伺服器..."
-          }
-        }
-      }
-    },
     "Twitch" : {
       "localizations" : {
         "de" : {
@@ -55726,8 +54709,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Det går inte att ansluta OBS-servern. Försöker igen var 5:e sekund."
+            "state" : "translated",
+            "value" : "Det går inte att ansluta till OBS-servern. Försöker igen var 5:e sekund."
           }
         },
         "tr" : {
@@ -55838,7 +54821,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Okänd strömningsstatus."
           }
         },
@@ -56876,119 +55859,6 @@
         }
       }
     },
-    "Use generated audio as source instead of mic." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verwende das generierte Audio als Quelle anstelle des Mikrofons."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Χρησιμοποιήστε τον παραγόμενο ήχο ως πηγή αντί του MIC."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Utiliza el audio generado como fuente en lugar del micrófono."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Utiliser l'audio généré comme source au lieu du microphone."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "माइक के बजाय स्रोत के रूप में उत्पन्न ऑडियो का उपयोग करें।"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Gunakan audio yang dihasilkan sebagai sumber, bukan mic."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Utilizza l'audio generato come sorgente anziché il microfono."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "生成されたオーディオをマイクの代わりにソースとして使用します。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "마이크 대신 소스에서 만들어진 오디오를 사용합니다."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Gebruik gegenereerde audio als bron in plaats van microfoon."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Użyj wygenerowanego dźwięku jako źródło zamiast mikrofonu."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Use o áudio gerado como fonte em vez do microfone."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Use o áudio gerado como fonte em vez do microfone."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Generera ljud istället för all använda mikrofonen."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Oluşturulan sesi mikrofon yerine kaynak olarak kullanın."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Sử dụng âm thanh được tạo làm nguồn thay vì mic."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "不使用麦克风，使用制作的音频作为输入"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "使用麥克風以外的生成音訊作為聲音來源。"
-          }
-        }
-      }
-    },
     "Use https://streamscharts.com/tools/convert-username to convert your channel name to your channel id." : {
       "localizations" : {
         "de" : {
@@ -57183,8 +56053,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Använd Fast IRL-algoritmen om du inte vet vad du gör!"
+            "state" : "translated",
+            "value" : "Använd Fast IRL-algoritmen om du är osäker!"
           }
         },
         "tr" : {
@@ -57407,7 +56277,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Används av både streamer och assistent."
           }
         },
@@ -59087,8 +57957,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Väntar på att fjärrkontrollens streamer ska ansluta..."
+            "state" : "translated",
+            "value" : "Väntar på att fjärrkontrollens strömmare ska ansluta..."
           }
         },
         "tr" : {
@@ -61109,7 +59979,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Zooma in"
           }
         },
@@ -61221,7 +60091,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Zooma ut"
           }
         },
