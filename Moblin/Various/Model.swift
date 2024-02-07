@@ -1822,6 +1822,7 @@ final class Model: ObservableObject {
 
     func pauseChat() {
         chatPaused = true
+        pausedChatPostsCount = 0
         appendChatMessage(
             user: nil,
             userColor: nil,
@@ -1851,8 +1852,8 @@ final class Model: ObservableObject {
     }
 
     private func updateChat() {
-        pausedChatPostsCount = pausedChatPosts.count
         if chatPaused {
+            pausedChatPostsCount = pausedChatPosts.count
             return
         }
         while let post = newChatPosts.popFirst() {
