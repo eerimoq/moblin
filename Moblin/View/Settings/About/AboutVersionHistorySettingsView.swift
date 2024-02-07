@@ -9,9 +9,9 @@ struct Version {
 // swiftlint:disable line_length
 private let versions = [
     Version(version: "0.172.0", date: "2024-02-07", changes: [
-        "• Quick button to hide local overlays.",
-        "• Spanish translation updated.",
-        "• Show number of chat messages when chat is paused.",
+        "• Quick button to hide local overlays. 💡 adriportela95",
+        "• Spanish translation updated. ✍️ adriportela95",
+        "• Show number of chat messages when chat is paused. 🧑‍🏭 NoFuture",
     ]),
     Version(version: "0.171.0", date: "2024-02-07", changes: [
         "• Select back, front, RTMP or external camera per scene.",
