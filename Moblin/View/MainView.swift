@@ -97,9 +97,8 @@ struct MainView: View {
                                 .opacity(0)
                         }
                     }
-                    if model.showLocalOverlays {
-                        StreamOverlayView()
-                    }
+                    StreamOverlayView()
+                        .opacity(model.showLocalOverlays ? 1 : 0)
                     if model.showDrawOnStream {
                         DrawOnStreamView()
                     }
