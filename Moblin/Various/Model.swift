@@ -245,7 +245,7 @@ final class Model: ObservableObject {
     private var obsWebSocket: ObsWebSocket?
     private var chatPostId = 0
     @Published var chatPosts: Deque<ChatPost> = []
-    private var pausedChatPosts: Deque<ChatPost> = []
+    @Published var pausedChatPosts: Deque<ChatPost> = []
     private var newChatPosts: Deque<ChatPost> = []
     private var numberOfChatPostsPerTick = 0
     private var chatPostsRatePerSecond = 0.0
