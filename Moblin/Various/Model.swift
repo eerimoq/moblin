@@ -246,6 +246,7 @@ final class Model: ObservableObject {
     private var chatPostId = 0
     @Published var chatPosts: Deque<ChatPost> = []
     private var pausedChatPosts: Deque<ChatPost> = []
+    @Published var pausedChatPostsCount: Int = 0
     private var newChatPosts: Deque<ChatPost> = []
     private var numberOfChatPostsPerTick = 0
     private var chatPostsRatePerSecond = 0.0
@@ -1850,6 +1851,7 @@ final class Model: ObservableObject {
     }
 
     private func updateChat() {
+        pausedChatPostsCount = pausedChatPosts.count
         if chatPaused {
             return
         }

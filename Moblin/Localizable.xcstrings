@@ -2877,6 +2877,9 @@
         }
       }
     },
+    "%lld new messages" : {
+
+    },
     "%llu" : {
       "localizations" : {
         "de" : {
@@ -13412,6 +13415,7 @@
       }
     },
     "Chat is paused" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
