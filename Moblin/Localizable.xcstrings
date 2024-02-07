@@ -2647,9 +2647,6 @@
         }
       }
     },
-    "%d new Messages" : {
-
-    },
     "%lld %%" : {
       "localizations" : {
         "de" : {
@@ -2879,6 +2876,9 @@
           }
         }
       }
+    },
+    "%lld new messages" : {
+
     },
     "%llu" : {
       "localizations" : {

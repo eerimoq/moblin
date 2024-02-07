@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ChatWarning: View {
+struct ChatInfo: View {
     var message: String
     var icon: String
     var iconColor: Color;
@@ -64,9 +64,9 @@ struct StreamOverlayView: View {
                 }
                 .opacity(model.showChatMessages ? 1 : 0)
                 if !model.showChatMessages {
-                    ChatWarning(message: String(localized: "Chat is hidden"), icon: "exclamationmark.triangle.fill", iconColor: .yellow)
+                    ChatInfo(message: String(localized: "Chat is hidden"), icon: "exclamationmark.triangle.fill", iconColor: .yellow)
                 } else if model.chatPaused {
-                    ChatWarning(message: String(format: String(localized: "%d new Messages"), model.pausedChatPosts.count), icon: "pause", iconColor: .white)
+                    ChatInfo(message: String(localized: "\(model.pausedChatPostsCount) new messages"), icon: "pause", iconColor: .white)
                 }
             }
             .allowsHitTesting(model.interactiveChat)
