@@ -3071,11 +3071,15 @@ final class Model: ObservableObject {
         }
     }
 
-    func listCameraPositions() -> [String] {
-        return cameraPositions + rtmpCameras() + externalCameras.map { $0.id }
+    func listCameraPositions() -> [(String, String)] {
+        return cameraPositions.map {
+            ($0, $0)
+        } + rtmpCameras().map {
+            ($0, $0)
+        } + externalCameras.map { ($0.id, $0.name) }
     }
 
-    func getCameraPosition(scene: SettingsScene?) -> String {
+    func getCameraPositionId(scene: SettingsScene?) -> String {
         guard let scene else {
             return ""
         }
@@ -3089,6 +3093,30 @@ final class Model: ObservableObject {
         case .external:
             if !scene.externalCameraId!.isEmpty {
                 return scene.externalCameraId!
+            } else {
+                return "Back"
+            }
+        default:
+            return scene.cameraPosition!.toString()
+        }
+    }
+
+    func getCameraPositionName(scene: SettingsScene?) -> String {
+        guard let scene else {
+            return ""
+        }
+        switch scene.cameraPosition! {
+        case .rtmp:
+            if let stream = getRtmpStream(id: scene.rtmpCameraId!) {
+                return stream.camera()
+            } else {
+                return "Back"
+            }
+        case .external:
+            if let camera = externalCameras.first(where: { camera in
+                camera.id == scene.externalCameraId!
+            }) {
+                return camera.name
             } else {
                 return "Back"
             }
@@ -3935,7 +3963,7 @@ final class Model: ObservableObject {
     }
 
     func statusCameraText() -> String {
-        return getCameraPosition(scene: findEnabledScene(id: selectedSceneId))
+        return getCameraPositionName(scene: findEnabledScene(id: selectedSceneId))
     }
 
     func statusZoomText() -> String {

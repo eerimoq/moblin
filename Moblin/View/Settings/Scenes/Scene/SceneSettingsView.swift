@@ -118,24 +118,28 @@ struct SceneSettingsView: View {
                     NavigationLink(destination: InlinePickerView(
                         title: String(localized: "Camera"),
                         onChange: onCameraChange,
-                        items: InlinePickerItem.fromStrings(values: model.listCameraPositions()),
-                        selectedId: model.getCameraPosition(scene: scene)
+                        items: model.listCameraPositions().map { id, name in
+                            InlinePickerItem(id: id, text: name)
+                        },
+                        selectedId: model.getCameraPositionId(scene: scene)
                     )) {
                         TextItemView(
                             name: String(localized: "Camera"),
-                            value: model.getCameraPosition(scene: scene)
+                            value: model.getCameraPositionName(scene: scene)
                         )
                     }
                 } else if scene.cameraLayout == .pip {
                     NavigationLink(destination: InlinePickerView(
                         title: String(localized: "Large camera"),
                         onChange: onCameraChange,
-                        items: InlinePickerItem.fromStrings(values: model.listCameraPositions()),
-                        selectedId: model.getCameraPosition(scene: scene)
+                        items: model.listCameraPositions().map { id, name in
+                            InlinePickerItem(id: id, text: name)
+                        },
+                        selectedId: model.getCameraPositionId(scene: scene)
                     )) {
                         TextItemView(
                             name: String(localized: "Large camera"),
-                            value: model.getCameraPosition(scene: scene)
+                            value: model.getCameraPositionName(scene: scene)
                         )
                     }
                     Button(action: {
