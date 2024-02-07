@@ -459,7 +459,7 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
 }
 
 var cameraPositions = SettingsSceneCameraPosition.allCases.filter { position in
-    position != .rtmp
+    position != .rtmp && position != .external
 }.map { $0.toString() }
 
 enum SettingsSceneCameraLayout: String, Codable, CaseIterable {
@@ -514,6 +514,7 @@ class SettingsScene: Codable, Identifiable, Equatable {
     var cameraPosition: SettingsSceneCameraPosition? = .back
     var rtmpCameraId: UUID? = .init()
     var externalCameraId: String? = ""
+    var externalCameraName: String? = ""
     var cameraLayoutPip: SettingsSceneCameraLayoutPip? = .init()
     var widgets: [SettingsSceneWidget] = []
     var buttons: [SettingsSceneButton] = []
@@ -2171,6 +2172,10 @@ final class Settings {
         }
         for scene in realDatabase.scenes where scene.externalCameraId == nil {
             scene.externalCameraId = ""
+            store()
+        }
+        for scene in realDatabase.scenes where scene.externalCameraName == nil {
+            scene.externalCameraName = ""
             store()
         }
     }

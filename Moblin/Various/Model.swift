@@ -3093,13 +3093,13 @@ final class Model: ObservableObject {
             if let stream = getRtmpStream(id: scene.rtmpCameraId!) {
                 return stream.camera()
             } else {
-                return "Back"
+                return String(localized: "Back")
             }
         case .external:
             if !scene.externalCameraId!.isEmpty {
                 return scene.externalCameraId!
             } else {
-                return "Back"
+                return String(localized: "Back")
             }
         default:
             return scene.cameraPosition!.toString()
@@ -3115,18 +3115,26 @@ final class Model: ObservableObject {
             if let stream = getRtmpStream(id: scene.rtmpCameraId!) {
                 return stream.camera()
             } else {
-                return "Back"
+                return String(localized: "Back")
             }
         case .external:
-            if let camera = externalCameras.first(where: { camera in
-                camera.id == scene.externalCameraId!
-            }) {
-                return camera.name
+            if !scene.externalCameraName!.isEmpty {
+                return scene.externalCameraName!
             } else {
-                return "Back"
+                return String(localized: "Back")
             }
         default:
             return scene.cameraPosition!.toString()
+        }
+    }
+
+    func getExternalCameraName(cameraId: String) -> String {
+        if let camera = externalCameras.first(where: { camera in
+            camera.id == cameraId
+        }) {
+            return camera.name
+        } else {
+            return "Unknown"
         }
     }
 

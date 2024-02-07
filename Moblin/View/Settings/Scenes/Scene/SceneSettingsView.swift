@@ -84,6 +84,7 @@ struct SceneSettingsView: View {
         } else {
             scene.cameraPosition = .external
             scene.externalCameraId = camera
+            scene.externalCameraName = model.getExternalCameraName(cameraId: camera)
         }
         model.sceneUpdated(store: true)
     }
