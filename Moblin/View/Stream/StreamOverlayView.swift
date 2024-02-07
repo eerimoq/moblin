@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ChatInfo: View {
     var message: String
-    var icon: String? = nil
+    var icon: String?
     var iconColor: Color = .white
 
     var body: some View {
