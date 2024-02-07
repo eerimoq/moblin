@@ -8,6 +8,9 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.171.0", date: "2024-02-07", changes: [
+        "• Select back, front, RTMP or external camera per scene.",
+    ]),
     Version(version: "0.170.0", date: "2024-02-06", changes: [
         "• Bigger audio ring buffer (25 instead of 6 buffers, 1024 samples each).",
         "  • Not sure if it can fix some audio glitches.",
