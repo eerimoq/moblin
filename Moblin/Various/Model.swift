@@ -324,6 +324,7 @@ final class Model: ObservableObject {
     }
 
     @Published var showDrawOnStream: Bool = false
+    @Published var showLocalOverlays: Bool = true
     @Published var drawOnStreamLines: [DrawOnStreamLine] = []
     @Published var drawOnStreamSelectedColor: Color = .pink
     @Published var drawOnStreamSelectedWidth: CGFloat = 4
@@ -2825,6 +2826,10 @@ final class Model: ObservableObject {
 
     func toggleDrawOnStream() {
         showDrawOnStream.toggle()
+    }
+
+    func toggleLocalOverlays() {
+        showLocalOverlays.toggle()
     }
 
     func startObsSourceScreenshot() {

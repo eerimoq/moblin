@@ -713,6 +713,13 @@ struct ButtonsInnerView: View {
         model.toggleDrawOnStream()
     }
 
+    private func localOverlaysAction(state _: ButtonState) {
+        state.button.isOn.toggle()
+        model.setGlobalButtonState(type: .localOverlays, isOn: state.button.isOn)
+        model.updateButtonStates()
+        model.toggleLocalOverlays()
+    }
+
     var body: some View {
         VStack {
             switch state.button.type {
@@ -858,6 +865,12 @@ struct ButtonsInnerView: View {
             case .draw:
                 Button(action: {
                     drawAction(state: state)
+                }, label: {
+                    ButtonImage(state: state, buttonSize: size)
+                })
+            case .localOverlays:
+                Button(action: {
+                    localOverlaysAction(state: state)
                 }, label: {
                     ButtonImage(state: state, buttonSize: size)
                 })
