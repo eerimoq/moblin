@@ -3217,8 +3217,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : ""
+            "state" : "translated",
+            "value" : "⚠️"
           }
         },
         "el" : {
@@ -3441,7 +3441,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "⚠️Löschen alter Einstellungen ⚠️"
           }
         },
@@ -3553,7 +3553,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "⚠️ Die Einstellungen konnten nicht geladen werden ⚠️"
           }
         },
@@ -6241,7 +6241,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Algorithmus"
           }
         },
@@ -6471,7 +6471,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Zulässige RTT-Spitze"
           }
         },
@@ -7143,8 +7143,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Damit die App wirksam wird, ist ein Neustart erforderlich."
+            "state" : "translated",
+            "value" : "Damit es wirksam wird, ist ein Neustart der App erforderlich."
           }
         },
         "el" : {
@@ -7479,7 +7479,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Assistent"
           }
         },
@@ -7591,7 +7591,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Assistent und Streamer"
           }
         },
@@ -7703,8 +7703,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Assistenten-URL"
+            "state" : "translated",
+            "value" : "Assistent-URL"
           }
         },
         "el" : {
@@ -8375,7 +8375,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nur Audio"
           }
         },
@@ -10615,8 +10615,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bitrate verringert die Geschwindigkeit"
+            "state" : "translated",
+            "value" : "Geschwindigkeit der Bitratenverringerung"
           }
         },
         "el" : {
@@ -10727,8 +10727,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bitrate erhöht die Geschwindigkeit"
+            "state" : "translated",
+            "value" : "Geschwindigkeit der Bitratensteigerung"
           }
         },
         "el" : {
@@ -11287,7 +11287,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nur Bluetooth-Ausgabe"
           }
         },
@@ -12071,8 +12071,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Browser-Widgets"
+            "state" : "translated",
+            "value" : "Browser Widgets"
           }
         },
         "el" : {
@@ -13079,7 +13079,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kanalzuordnung"
           }
         },
@@ -14315,7 +14315,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Farbraum"
           }
         },
@@ -14539,8 +14539,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Konfigurieren Sie es unter Einstellungen → Fernbedienung"
+            "state" : "translated",
+            "value" : "Konfiguriere es unter Einstellungen → Fernbedienung"
           }
         },
         "el" : {
@@ -15323,8 +15323,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kontrolle"
+            "state" : "translated",
+            "value" : "Bedienung"
           }
         },
         "el" : {
@@ -16779,7 +16779,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Benutzerdefiniertes IRL"
           }
         },
@@ -16891,8 +16891,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Benutzerdefinierte LUT"
+            "state" : "translated",
+            "value" : "Benutzerdefiniertes LUT"
           }
         },
         "el" : {
@@ -17003,7 +17003,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Benutzerdefinierte Luts"
           }
         },
@@ -17451,7 +17451,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Alte Einstellungen löschen und fortfahren"
           }
         },
@@ -18123,7 +18123,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Deaktivierte Verbindungen werden nicht verwendet."
           }
         },
@@ -19019,8 +19019,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ziehen"
+            "state" : "translated",
+            "value" : "Zeichnen"
           }
         },
         "el" : {
@@ -19803,8 +19803,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Aktivieren Sie diese Option, damit ein Assistent dieses Gerät von einem anderen Gerät aus überwachen und steuern kann."
+            "state" : "translated",
+            "value" : "Aktiviere diese Option, damit ein Assistent das Gerät von einem anderen Gerät aus überwachen und steuern kann."
           }
         },
         "el" : {
@@ -19915,8 +19915,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Aktivieren Sie diese Option, damit ein Streamer-Gerät eine Verbindung zu diesem Gerät herstellen kann. Sobald die Verbindung hergestellt ist, kann dieses Gerät das Streamer-Gerät überwachen und steuern."
+            "state" : "translated",
+            "value" : "Aktiviere diese Option, damit ein Streamer-Gerät eine Verbindung zu diesem Gerät herstellen kann. Sobald die Verbindung hergestellt ist, kann dieses Gerät das Streamer-Gerät überwachen und steuern."
           }
         },
         "el" : {
@@ -22043,7 +22043,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Extern"
           }
         },
@@ -23275,7 +23275,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Schnelles IRL"
           }
         },
@@ -24059,7 +24059,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Gute Parameter zu finden ist schwierig. Du bist auf dich allein gestellt! =)"
           }
         },
@@ -25739,7 +25739,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Generieren"
           }
         },
@@ -26075,7 +26075,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Globale Tonzuordnung"
           }
         },
@@ -28091,8 +28091,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Installieren Sie sofort die alte Version der App, um Ihre alten Einstellungen beizubehalten."
+            "state" : "translated",
+            "value" : "Installiere sofort die alte Version der App, um Ihre alten Einstellungen beizubehalten."
           }
         },
         "el" : {
@@ -28203,8 +28203,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Installieren Sie sofort die alte Version der App, um Ihre alten Einstellungen beizubehalten. Dies ist die letzte Warnung!"
+            "state" : "translated",
+            "value" : "Installiere sofort die alte Version der App, um deine alten Einstellungen beizubehalten. Dies ist die letzte Warnung!"
           }
         },
         "el" : {
@@ -31003,7 +31003,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "LUT"
           }
         },
@@ -33131,8 +33131,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Minimale Geschwindigkeit zur Verringerung der Bitrate"
+            "state" : "translated",
+            "value" : "Minimale Geschwindigkeit der Bitratenverringerung"
           }
         },
         "el" : {
@@ -33243,8 +33243,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Spiegelfrontkamera im Stream"
+            "state" : "translated",
+            "value" : "Spiegelung der Frontkamera im Stream"
           }
         },
         "el" : {
@@ -33355,8 +33355,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Spiegeln Sie die Frontkamera im Stream und drehen Sie das Video in OBS um 90 Grad, um Porträts von armen Männern zu streamen."
+            "state" : "translated",
+            "value" : "Spiegel die Frontkamera im Stream und drehe das Video in OBS um 90 Grad, um in Portrait für arme Leute zu streamen."
           }
         },
         "el" : {
@@ -36043,7 +36043,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Noch keine Einstellungen erhalten."
           }
         },
@@ -36267,8 +36267,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Noch kein Status erhalten."
+            "state" : "translated",
+            "value" : "Noch keinen Status erhalten."
           }
         },
         "el" : {
@@ -37723,7 +37723,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "OK"
           }
         },
@@ -38171,8 +38171,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Overhead-Bandbreite"
+            "state" : "translated",
+            "value" : "Bandbreiten-Zuschlag"
           }
         },
         "el" : {
@@ -38283,8 +38283,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pakete im Flug verringern den Schwellenwert"
+            "state" : "translated",
+            "value" : "Übertragende Pakete verringern den Schwellenwert"
           }
         },
         "el" : {
@@ -40747,7 +40747,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Aufzeichnungsbestätigungen"
           }
         },
@@ -40971,7 +40971,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Status aktualisieren"
           }
         },
@@ -41083,7 +41083,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Browser-Widgets neu laden"
           }
         },
@@ -41195,7 +41195,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Browser neu laden"
           }
         },
@@ -41307,7 +41307,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Fernbedienung"
           }
         },
@@ -41531,7 +41531,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Fernbedienungsassistent"
           }
         },
@@ -41643,7 +41643,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Fernbedienungsassistent ist nicht konfiguriert"
           }
         },
@@ -43435,8 +43435,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Skalieren Sie es entsprechend der Videobreite"
+            "state" : "translated",
+            "value" : "Skaliere es entsprechend der Videobreite"
           }
         },
         "el" : {
@@ -44443,8 +44443,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Serveradresse"
+            "state" : "translated",
+            "value" : "Server Adresse"
           }
         },
         "el" : {
@@ -44555,7 +44555,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Server Port"
           }
         },
@@ -45787,7 +45787,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Langsames IRL"
           }
         },
@@ -47803,7 +47803,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Start"
           }
         },
@@ -48251,8 +48251,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Stoppen"
+            "state" : "translated",
+            "value" : "Stop"
           }
         },
         "el" : {
@@ -49483,7 +49483,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Streamer"
           }
         },
@@ -51163,8 +51163,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Die Bitrate verringert sich, wenn RTT zu hoch ist."
+            "state" : "translated",
+            "value" : "Geschwindigkeit der Bitratenverringerung, wenn die RTT zu hoch ist."
           }
         },
         "el" : {
@@ -51275,7 +51275,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Die Bitrate nimmt schnell ab, wenn die Anzahl der übertragenen Pakete über diesem Wert liegt."
           }
         },
@@ -51499,7 +51499,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Die maximal zulässige RTT-Spitze vor der Verringerung der Bitrate"
           }
         },
@@ -51611,8 +51611,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Die minimale Bitrate verringert sich, wenn RTT zu hoch ist."
+            "state" : "translated",
+            "value" : "Die minimale Geschwindigkeit mit der sich die Bitrate verringert, wenn die RTT zu hoch ist."
           }
         },
         "el" : {
@@ -54635,7 +54635,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Es kann keine Verbindung zum OBS-Server hergestellt werden. Alle 5 Sekunden erneuter Versuch."
           }
         },
@@ -55979,8 +55979,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Verwenden Sie den Fast IRL-Algorithmus, es sei denn, Sie wissen, was Sie tun!"
+            "state" : "translated",
+            "value" : "Verwende den Fast IRL-Algorithmus, es sei denn, du wisst, was du tust!"
           }
         },
         "el" : {
@@ -56203,7 +56203,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Wird sowohl vom Streamer als auch vom Assistenten verwendet."
           }
         },
@@ -57883,7 +57883,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Warten auf die Verbindung des Fernbedienungs-Streamers ..."
           }
         },
