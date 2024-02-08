@@ -145,8 +145,8 @@ final class BrowserEffect: VideoEffect {
             return
         }
         overlay = CIImage(image: newImage)
-        if !scaleToFitVideo && overlay != nil {
-            overlay = overlay!.transformed(by: CGAffineTransform(
+        if !scaleToFitVideo, let image = overlay {
+            overlay = image.transformed(by: CGAffineTransform(
                 translationX: x,
                 y: videoSize.height - height - y
             ))
