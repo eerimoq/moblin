@@ -212,7 +212,8 @@ struct RightOverlayView: View {
                     if model.cameraPosition == .front {
                         Picker("", selection: $model.frontZoomPresetId) {
                             ForEach(database.zoom.front) { preset in
-                                Text(preset.name).tag(preset.id)
+                                Text(preset.name)
+                                    .tag(preset.id)
                             }
                         }
                         .onChange(of: model.frontZoomPresetId) { id in
@@ -231,7 +232,8 @@ struct RightOverlayView: View {
                     } else {
                         Picker("", selection: $model.backZoomPresetId) {
                             ForEach(model.backZoomPresets()) { preset in
-                                Text(preset.name).tag(preset.id)
+                                Text(preset.name)
+                                    .tag(preset.id)
                             }
                         }
                         .onChange(of: model.backZoomPresetId) { id in
@@ -252,7 +254,8 @@ struct RightOverlayView: View {
                 Picker("", selection: $model.sceneIndex) {
                     ForEach(0 ..< model.enabledScenes.count, id: \.self) { id in
                         let scene = model.enabledScenes[id]
-                        Text(scene.name).tag(scene.id)
+                        Text(scene.name)
+                            .tag(scene.id)
                     }
                 }
                 .onChange(of: model.sceneIndex) { tag in

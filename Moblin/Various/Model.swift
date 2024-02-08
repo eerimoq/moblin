@@ -1522,6 +1522,27 @@ final class Model: ObservableObject {
         }
     }
 
+    func isSceneActive(scene: SettingsScene) -> Bool {
+        switch scene.cameraPosition {
+        case .rtmp:
+            if let stream = getRtmpStream(id: scene.rtmpCameraId!) {
+                return isRtmpStreamConnected(streamKey: stream.streamKey)
+            } else {
+                return false
+            }
+        case .external:
+            return isExternalCameraConnected(id: scene.externalCameraId!)
+        default:
+            return true
+        }
+    }
+
+    private func isExternalCameraConnected(id: String) -> Bool {
+        externalCameras.first { camera in
+            camera.id == id
+        } != nil
+    }
+
     private func listExternalCameras() -> [Camera] {
         var deviceTypes: [AVCaptureDevice.DeviceType] = []
         if #available(iOS 17.0, *) {

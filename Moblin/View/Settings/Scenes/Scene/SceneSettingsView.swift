@@ -124,10 +124,16 @@ struct SceneSettingsView: View {
                         },
                         selectedId: model.getCameraPositionId(scene: scene)
                     )) {
-                        TextItemView(
-                            name: String(localized: "Camera"),
-                            value: model.getCameraPositionName(scene: scene)
-                        )
+                        HStack {
+                            Text(String(localized: "Camera"))
+                            Spacer()
+                            if !model.isSceneActive(scene: scene) {
+                                Image(systemName: "cable.connector.slash")
+                            }
+                            Text(model.getCameraPositionName(scene: scene))
+                                .foregroundColor(.gray)
+                                .lineLimit(1)
+                        }
                     }
                 } else if scene.cameraLayout == .pip {
                     NavigationLink(destination: InlinePickerView(
