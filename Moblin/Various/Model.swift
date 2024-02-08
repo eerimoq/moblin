@@ -1874,7 +1874,8 @@ final class Model: ObservableObject {
 
     private func updateChat() {
         if chatPaused {
-            pausedChatPostsCount = pausedChatPosts.count
+            // The red line is one post.
+            pausedChatPostsCount = max(pausedChatPosts.count - 1, 0)
             return
         }
         while let post = newChatPosts.popFirst() {
