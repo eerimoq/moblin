@@ -2997,7 +2997,9 @@ final class Model: ObservableObject {
         )
         chatPostId += 1
         if chatPaused {
-            pausedChatPosts.append(post)
+            if pausedChatPosts.count < 2 * maximumNumberOfChatMessages {
+                pausedChatPosts.append(post)
+            }
         } else {
             newChatPosts.append(post)
         }
