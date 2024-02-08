@@ -553,6 +553,18 @@ class SettingsWidgetText: Codable {
     var formatString: String = "{time}"
 }
 
+class SettingsWidgetImage: Codable {
+    var url: String = "https://"
+}
+
+class SettingsWidgetVideo: Codable {
+    var url: String = "https://"
+}
+
+class SettingsWidgetChat: Codable {}
+
+class SettingsWidgetRecording: Codable {}
+
 class SettingsWidgetBrowser: Codable {
     var url: String = ""
     var width: Int = 500
@@ -669,6 +681,10 @@ class SettingsWidget: Codable, Identifiable, Equatable {
     var id: UUID = .init()
     var type: SettingsWidgetType = .browser
     var text: SettingsWidgetText = .init()
+    var image: SettingsWidgetImage? = .init()
+    var video: SettingsWidgetVideo? = .init()
+    var chat: SettingsWidgetChat? = .init()
+    var recording: SettingsWidgetRecording? = .init()
     var browser: SettingsWidgetBrowser = .init()
     var videoEffect: SettingsWidgetVideoEffect = .init()
 
@@ -679,6 +695,40 @@ class SettingsWidget: Codable, Identifiable, Equatable {
     static func == (lhs: SettingsWidget, rhs: SettingsWidget) -> Bool {
         return lhs.id == rhs.id
     }
+}
+
+class SettingsVariableText: Codable {
+    var value: String = "15.0"
+}
+
+class SettingsVariableHttp: Codable {
+    var url: String = "https://"
+}
+
+class SettingsVariableTwitchPubSub: Codable {
+    var pattern: String = ""
+}
+
+class SettingsVariableTextWebsocket: Codable {
+    var url: String = "https://"
+    var pattern: String = ""
+}
+
+enum SettingsVariableType: String, Codable {
+    case text = "Camera"
+    case http = "HTTP"
+    case twitchPubSub = "Twitch PubSub"
+    case websocket = "Websocket"
+}
+
+class SettingsVariable: Codable, Identifiable {
+    var name: String
+    var id: UUID = .init()
+    var type: SettingsVariableType = .text
+    var text: SettingsVariableText = .init()
+    var http: SettingsVariableHttp = .init()
+    var twitchPubSub: SettingsVariableTwitchPubSub = .init()
+    var websocket: SettingsVariableTextWebsocket = .init()
 }
 
 enum SettingsButtonType: String, Codable, CaseIterable {
@@ -1004,6 +1054,7 @@ class SettingsChat: Codable {
     var backgroundColorEnabled: Bool = true
     var shadowColor: RgbColor = .init(red: 0, green: 0, blue: 0)
     var shadowColorEnabled: Bool = false
+    var alignedMessages: Bool? = false
     var boldUsername: Bool = false
     var boldMessage: Bool = false
     var animatedEmotes: Bool = false
@@ -1305,6 +1356,7 @@ class Database: Codable {
     var streams: [SettingsStream] = []
     var scenes: [SettingsScene] = []
     var widgets: [SettingsWidget] = []
+    var variables: [SettingsVariable]? = []
     var buttons: [SettingsButton] = []
     var show: SettingsShow = .init()
     var zoom: SettingsZoom = .init()
