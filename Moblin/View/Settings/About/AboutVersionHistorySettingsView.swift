@@ -8,6 +8,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.173.0", date: "2024-02-08", changes: [
+        "• German translation updated. ✍️ MaurisonX",
+        "• Show disconnected icon next to disconnected cameras in scenes.",
+        "• Fix video freeze if browser widget is incorrectly configured (too high resolution for example).",
+        "• Polish translation updated. ✍️ Seebuch",
+        "• Limit number of paused chat messages to 99, not to run out of memory.",
+    ]),
     Version(version: "0.172.0", date: "2024-02-07", changes: [
         "• Quick button to hide local overlays. 💡 adriportela95",
         "• Spanish translation updated. ✍️ adriportela95",
