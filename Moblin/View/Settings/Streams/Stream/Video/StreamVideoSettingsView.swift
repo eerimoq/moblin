@@ -91,26 +91,6 @@ struct StreamVideoSettingsView: View {
                     model.storeAndReloadStreamIfEnabled(stream: stream)
                 }))
                 .disabled(stream.enabled && model.isLive)
-                if logger.debugEnabled {
-                    NavigationLink(
-                        destination: StreamVideoCaptureSessionPresetSettingsView(
-                            stream: stream,
-                            selection: stream.captureSessionPreset.rawValue
-                        )
-                    ) {
-                        Toggle(isOn: Binding(get: {
-                            stream.captureSessionPresetEnabled
-                        }, set: { value in
-                            stream.captureSessionPresetEnabled = value
-                            model.storeAndReloadStreamIfEnabled(stream: stream)
-                        })) {
-                            TextItemView(
-                                name: String(localized: "Preset"),
-                                value: stream.captureSessionPreset.rawValue
-                            )
-                        }
-                    }
-                }
             }
         }
         .navigationTitle("Video")

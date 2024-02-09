@@ -160,8 +160,6 @@ enum SettingsCaptureSessionPreset: String, Codable, CaseIterable {
     case cif352x288
 }
 
-let captureSessionPresets = SettingsCaptureSessionPreset.allCases.map { $0.rawValue }
-
 class SettingsStreamChat: Codable {
     var bttvEmotes: Bool = true
     var ffzEmotes: Bool = true
@@ -246,8 +244,8 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var bFrames: Bool? = false
     var adaptiveBitrate: Bool = true
     var srt: SettingsStreamSrt = .init()
-    var captureSessionPresetEnabled: Bool = false
-    var captureSessionPreset: SettingsCaptureSessionPreset = .medium
+    var captureSessionPresetEnabled: Bool? = false
+    var captureSessionPreset: SettingsCaptureSessionPreset? = .medium
     var maxKeyFrameInterval: Int32? = 2
     var audioBitrate: Int? = 128_000
     var chat: SettingsStreamChat? = .init()

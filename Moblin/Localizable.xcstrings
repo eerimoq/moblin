@@ -39509,6 +39509,7 @@
       }
     },
     "Preset" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

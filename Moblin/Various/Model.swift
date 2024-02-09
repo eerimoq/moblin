@@ -2278,32 +2278,7 @@ final class Model: ObservableObject {
     }
 
     private func getPreset(preset: AVCaptureSession.Preset) -> AVCaptureSession.Preset {
-        if logger.debugEnabled && stream.captureSessionPresetEnabled {
-            switch stream.captureSessionPreset {
-            case .high:
-                return .high
-            case .medium:
-                return .medium
-            case .low:
-                return .low
-            case .hd1280x720:
-                return .hd1280x720
-            case .hd1920x1080:
-                return .hd1920x1080
-            case .hd4K3840x2160:
-                return .hd4K3840x2160
-            case .vga640x480:
-                return .vga640x480
-            case .iFrame960x540:
-                return .iFrame960x540
-            case .iFrame1280x720:
-                return .iFrame1280x720
-            case .cif352x288:
-                return .cif352x288
-            }
-        } else {
-            return preset
-        }
+        return preset
     }
 
     private func setStreamResolution() {
