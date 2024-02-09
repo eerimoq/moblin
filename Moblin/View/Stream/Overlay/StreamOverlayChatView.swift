@@ -216,6 +216,7 @@ struct ViewOffsetKey: PreferenceKey {
 }
 
 struct ChildSizeReader<Content: View>: View {
+    // periphery:ignore
     @Binding var size: CGSize
     let content: () -> Content
 

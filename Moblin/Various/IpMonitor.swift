@@ -11,6 +11,7 @@ class IPMonitor {
         var name: String
         var interfaceType: NWInterface.InterfaceType
         var ip: String
+        // periphery:ignore
         var ipType: IPType
     }
 

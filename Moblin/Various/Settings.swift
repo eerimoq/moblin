@@ -553,10 +553,12 @@ class SettingsWidgetText: Codable {
     var formatString: String = "{time}"
 }
 
+// periphery:ignore
 class SettingsWidgetImage: Codable {
     var url: String = "https://"
 }
 
+// periphery:ignore
 class SettingsWidgetVideo: Codable {
     var url: String = "https://"
 }
@@ -681,9 +683,13 @@ class SettingsWidget: Codable, Identifiable, Equatable {
     var id: UUID = .init()
     var type: SettingsWidgetType = .browser
     var text: SettingsWidgetText = .init()
+    // periphery:ignore
     var image: SettingsWidgetImage? = .init()
+    // periphery:ignore
     var video: SettingsWidgetVideo? = .init()
+    // periphery:ignore
     var chat: SettingsWidgetChat? = .init()
+    // periphery:ignore
     var recording: SettingsWidgetRecording? = .init()
     var browser: SettingsWidgetBrowser = .init()
     var videoEffect: SettingsWidgetVideoEffect = .init()
@@ -697,18 +703,22 @@ class SettingsWidget: Codable, Identifiable, Equatable {
     }
 }
 
+// periphery:ignore
 class SettingsVariableText: Codable {
     var value: String = "15.0"
 }
 
+// periphery:ignore
 class SettingsVariableHttp: Codable {
     var url: String = "https://"
 }
 
+// periphery:ignore
 class SettingsVariableTwitchPubSub: Codable {
     var pattern: String = ""
 }
 
+// periphery:ignore
 class SettingsVariableTextWebsocket: Codable {
     var url: String = "https://"
     var pattern: String = ""
@@ -721,6 +731,7 @@ enum SettingsVariableType: String, Codable {
     case websocket = "Websocket"
 }
 
+// periphery:ignore
 class SettingsVariable: Codable, Identifiable {
     var name: String
     var id: UUID = .init()
@@ -886,6 +897,7 @@ class SettingsButton: Codable, Identifiable, Equatable, Hashable {
     var name: String
     var id: UUID = .init()
     var type: SettingsButtonType = .widget
+    // periphery:ignore
     var imageType: String? = "System name"
     var systemImageNameOn: String = "mic.slash"
     var systemImageNameOff: String = "mic"
@@ -1054,6 +1066,7 @@ class SettingsChat: Codable {
     var backgroundColorEnabled: Bool = true
     var shadowColor: RgbColor = .init(red: 0, green: 0, blue: 0)
     var shadowColorEnabled: Bool = false
+    // periphery:ignore
     var alignedMessages: Bool? = false
     var boldUsername: Bool = false
     var boldMessage: Bool = false
@@ -1337,12 +1350,14 @@ class SettingsRemoteControlClient: Codable {
     var enabled: Bool = false
     var address: String = ""
     var port: UInt16 = 2345
+    // periphery:ignore
     var password: String? = ""
 }
 
 class SettingsRemoteControlServer: Codable {
     var enabled: Bool = false
     var url: String = ""
+    // periphery:ignore
     var password: String? = ""
 }
 
@@ -1356,6 +1371,7 @@ class Database: Codable {
     var streams: [SettingsStream] = []
     var scenes: [SettingsScene] = []
     var widgets: [SettingsWidget] = []
+    // periphery:ignore
     var variables: [SettingsVariable]? = []
     var buttons: [SettingsButton] = []
     var show: SettingsShow = .init()
