@@ -1,20 +1,19 @@
 import SwiftUI
-import TwitchChat
+import Twitch
+import TwitchIRC
 
-private func getEmotes(from message: ChatMessage) -> [ChatMessageEmote] {
-    var emotes: [ChatMessageEmote] = []
-    for emote in message.emotes {
-        do {
-            try emotes.append(ChatMessageEmote(url: emote.imageURL, range: emote.range))
-        } catch {
-            logger.warning("twitch: chat: Failed to get emote URL")
-        }
+private func getEmotes(from message: PrivateMessage) -> [ChatMessageEmote] {
+    let emotes: [TwitchIRC.Emote] = message.parseEmotes()
+    return emotes.map {
+        ChatMessageEmote(
+            url: URL(string: "https://static-cdn.jtvnw.net/emoticons/v2/\($0.id)/default/dark/3.0")!,
+            range: $0.startIndex ... $0.endIndex
+        )
     }
-    return emotes
 }
 
 final class TwitchChatMoblin {
-    private var twitchChat: TwitchChat!
+    private var chatClient: ChatClient!
     private var model: Model
     private var task: Task<Void, Error>?
     private var connected: Bool = false
@@ -37,42 +36,17 @@ final class TwitchChatMoblin {
             do {
                 var reconnectTime = firstReconnectTime
                 logger.info("twitch: chat: \(channelName): Connecting")
+                chatClient = ChatClient(.anonymous)
                 while true {
-                    twitchChat = TwitchChat(
-                        token: "SCHMOOPIIE",
-                        nick: "justinfan67420",
-                        name: channelName
-                    )
                     do {
+                        let stream = try await chatClient.connect()
                         logger.info("twitch: chat: \(channelName): Connected")
                         connected = true
-                        for try await message in self.twitchChat.messages {
-                            let emotes = getEmotes(from: message)
+                        try await chatClient.join(to: channelName)
+                        logger.info("twitch: chat: \(channelName): joined channel")
+                        for try await message in stream {
                             reconnectTime = firstReconnectTime
-                            let text: String
-                            let isAction = message.isAction()
-                            if isAction {
-                                text = String(message.text.dropFirst(7))
-                            } else {
-                                text = message.text
-                            }
-                            let segments = createSegments(
-                                text: text,
-                                emotes: emotes,
-                                emotesManager: self.emotes
-                            )
-                            await MainActor.run {
-                                self.model.appendChatMessage(
-                                    user: message.sender,
-                                    userColor: message.senderColor,
-                                    segments: segments,
-                                    timestamp: model.digitalClock,
-                                    timestampDate: Date(),
-                                    isAction: isAction,
-                                    isAnnouncement: message.announcement,
-                                    isFirstMessage: message.firstMessage
-                                )
-                            }
+                            await processMessage(message)
                         }
                     } catch {
                         logger.warning("twitch: chat: \(channelName): Got error \(error)")
@@ -91,6 +65,43 @@ final class TwitchChatMoblin {
                 logger.info("Twitch chat ended with error \(error)")
             }
         }
+    }
+
+    func processMessage(_ message: IncomingMessage) async {
+        switch message {
+        case let .privateMessage(chatMessage):
+            await processChatMessage(chatMessage)
+        case let .userNotice(announcement):
+            await processAnnouncement(announcement)
+        default:
+            break
+        }
+    }
+
+    func processChatMessage(_ chatMessage: PrivateMessage) async {
+        let emotes = getEmotes(from: chatMessage)
+        let text: String = chatMessage.message
+        let segments = createSegments(
+            text: text,
+            emotes: emotes,
+            emotesManager: self.emotes
+        )
+        await MainActor.run {
+            self.model.appendChatMessage(
+                user: chatMessage.displayName,
+                userColor: chatMessage.color,
+                segments: segments,
+                timestamp: model.digitalClock,
+                timestampDate: Date(),
+                isAction: chatMessage.message.starts(with: "\u{01}ACTION"),
+                isAnnouncement: false,
+                isFirstMessage: chatMessage.firstMessage
+            )
+        }
+    }
+
+    func processAnnouncement(_: UserNotice) async {
+        // TODO:
     }
 
     func stop() {
@@ -190,11 +201,5 @@ final class TwitchChatMoblin {
             segments.append(segment)
         }
         return segments
-    }
-}
-
-extension ChatMessage {
-    func isAction() -> Bool {
-        return text.starts(with: "\u{01}ACTION")
     }
 }
