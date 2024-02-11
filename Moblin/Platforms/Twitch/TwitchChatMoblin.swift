@@ -95,7 +95,8 @@ final class TwitchChatMoblin {
 
     func processChatMessage(chatMessage: TwitchChatMessage, firstMessage: Bool, announcement: Bool) async {
         let emotes = getEmotes(from: chatMessage)
-        let text: String = chatMessage.message
+        let action = chatMessage.message.starts(with: "\u{01}ACTION")
+        let text = action ? String(chatMessage.message.dropFirst(7)) : chatMessage.message
         let segments = createSegments(
             text: text,
             emotes: emotes,
@@ -108,7 +109,7 @@ final class TwitchChatMoblin {
                 segments: segments,
                 timestamp: model.digitalClock,
                 timestampDate: Date(),
-                isAction: chatMessage.message.starts(with: "\u{01}ACTION"),
+                isAction: action,
                 isAnnouncement: announcement,
                 isFirstMessage: firstMessage
             )
