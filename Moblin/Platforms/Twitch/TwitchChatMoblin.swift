@@ -2,7 +2,18 @@ import SwiftUI
 import Twitch
 import TwitchIRC
 
-private func getEmotes(from message: PrivateMessage) -> [ChatMessageEmote] {
+protocol ChatMessage {
+    var displayName: String { get }
+    var color: String { get }
+    var message: String { get }
+
+    func parseEmotes() -> [TwitchIRC.Emote]
+}
+
+extension PrivateMessage: ChatMessage {}
+extension UserNotice: ChatMessage {}
+
+private func getEmotes(from message: ChatMessage) -> [ChatMessageEmote] {
     let emotes: [TwitchIRC.Emote] = message.parseEmotes()
     return emotes.map {
         ChatMessageEmote(
@@ -70,15 +81,19 @@ final class TwitchChatMoblin {
     func processMessage(_ message: IncomingMessage) async {
         switch message {
         case let .privateMessage(chatMessage):
-            await processChatMessage(chatMessage)
+            await processChatMessage(
+                chatMessage: chatMessage,
+                firstMessage: chatMessage.firstMessage,
+                announcement: false
+            )
         case let .userNotice(announcement):
-            await processAnnouncement(announcement)
+            await processChatMessage(chatMessage: announcement, firstMessage: false, announcement: true)
         default:
             break
         }
     }
 
-    func processChatMessage(_ chatMessage: PrivateMessage) async {
+    func processChatMessage(chatMessage: ChatMessage, firstMessage: Bool, announcement: Bool) async {
         let emotes = getEmotes(from: chatMessage)
         let text: String = chatMessage.message
         let segments = createSegments(
@@ -94,14 +109,10 @@ final class TwitchChatMoblin {
                 timestamp: model.digitalClock,
                 timestampDate: Date(),
                 isAction: chatMessage.message.starts(with: "\u{01}ACTION"),
-                isAnnouncement: false,
-                isFirstMessage: chatMessage.firstMessage
+                isAnnouncement: announcement,
+                isFirstMessage: firstMessage
             )
         }
-    }
-
-    func processAnnouncement(_: UserNotice) async {
-        // TODO:
     }
 
     func stop() {
