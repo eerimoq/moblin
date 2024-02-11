@@ -4147,7 +4147,7 @@ extension Model: RemoteControlStreamerDelegate {
             }
             var topRight = RemoteControlStatusTopRight()
             if self.isShowingStatusAudioLevel() {
-                let level = formatAudioLevelDb(level: self.audioLevel) +
+                let level = formatAudioLevel(level: self.audioLevel) +
                     formatAudioLevelChannels(channels: self.numberOfAudioChannels)
                 topRight.audioLevel = RemoteControlStatusItem(message: level)
             }
