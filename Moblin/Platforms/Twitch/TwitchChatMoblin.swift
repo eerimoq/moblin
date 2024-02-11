@@ -2,7 +2,7 @@ import SwiftUI
 import Twitch
 import TwitchIRC
 
-protocol ChatMessage {
+protocol TwitchChatMessage {
     var displayName: String { get }
     var color: String { get }
     var message: String { get }
@@ -10,10 +10,10 @@ protocol ChatMessage {
     func parseEmotes() -> [TwitchIRC.Emote]
 }
 
-extension PrivateMessage: ChatMessage {}
-extension UserNotice: ChatMessage {}
+extension PrivateMessage: TwitchChatMessage {}
+extension UserNotice: TwitchChatMessage {}
 
-private func getEmotes(from message: ChatMessage) -> [ChatMessageEmote] {
+private func getEmotes(from message: TwitchChatMessage) -> [ChatMessageEmote] {
     let emotes: [TwitchIRC.Emote] = message.parseEmotes()
     return emotes.map {
         ChatMessageEmote(
@@ -93,7 +93,7 @@ final class TwitchChatMoblin {
         }
     }
 
-    func processChatMessage(chatMessage: ChatMessage, firstMessage: Bool, announcement: Bool) async {
+    func processChatMessage(chatMessage: TwitchChatMessage, firstMessage: Bool, announcement: Bool) async {
         let emotes = getEmotes(from: chatMessage)
         let text: String = chatMessage.message
         let segments = createSegments(
