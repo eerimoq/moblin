@@ -36,6 +36,12 @@ struct DisplaySettingsView: View {
                 NavigationLink(destination: GlobalQuickButtonsSettingsView()) {
                     Text("Quick buttons")
                 }
+                NavigationLink(destination: StreamButtonsSettingsView(
+                    background: model.database.streamButtonBackgroundColor!.color(),
+                    foreground: model.database.streamButtonForegroundColor!.color()
+                )) {
+                    Text("Stream button")
+                }
                 Toggle("Battery percentage", isOn: Binding(get: {
                     model.database.batteryPercentage!
                 }, set: { value in
