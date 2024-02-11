@@ -56,7 +56,7 @@ class AdaptiveBitrate {
         self.settings = settings
     }
 
-    private func calcRtts(stats: SRTPerformanceData) {
+    private func calcRtts(_ stats: SRTPerformanceData) {
         if avgRtt < 1 {
             avgRtt = stats.msRTT
         }
@@ -88,8 +88,6 @@ class AdaptiveBitrate {
     private func increaseTempMaxBitrate(
         stats: SRTPerformanceData,
         pif: Double,
-        avgRTT _: Double,
-        fastRTT _: Double,
         allowedRttJitter: Double,
         allowedPifJitter: Int32
     ) {
@@ -100,12 +98,8 @@ class AdaptiveBitrate {
         if pifDiffThing > settings.packetsInFlight {
             pifDiffThing = settings.packetsInFlight
         }
-        // statDeci just used for display on screen
-        // statDeci = pifDiffThing
         pifDiffThing = settings.packetsInFlight - pifDiffThing
-        if pif < Double(settings.packetsInFlight),
-           fastRtt <= avgRtt + allowedRttJitter
-        {
+        if pif < Double(settings.packetsInFlight), fastRtt <= avgRtt + allowedRttJitter {
             if stats.pktFlightSize - Int32(pif) < allowedPifJitter {
                 tempMaxBitrate += (settings.pifDiffIncreaseFactor * pifDiffThing) / settings.packetsInFlight
                 if tempMaxBitrate > targetBitrate {
@@ -243,7 +237,7 @@ class AdaptiveBitrate {
         }
     }
 
-    private func calculateCurrentBitrate(_: SRTPerformanceData) {
+    private func calculateCurrentBitrate() {
         var pifDiffThing = Int32(fastPif) - Int32(smoothPif)
         // lazy decrease
         if pifDiffThing > settings.packetsInFlight {
@@ -272,9 +266,8 @@ class AdaptiveBitrate {
         if tempMaxBitrate < 250_000 {
             tempMaxBitrate = 250_000
         }
-        // check for int  overflows
-        var tempBitrate: Int64
-        tempBitrate = Int64(tempMaxBitrate)
+        // check for int overflows
+        var tempBitrate = Int64(tempMaxBitrate)
         tempBitrate *= Int64(pifDiffThing)
         tempBitrate /= Int64(settings.packetsInFlight)
         curBitrate = Int32(tempBitrate)
@@ -301,12 +294,10 @@ class AdaptiveBitrate {
     // then taking forever to go back up
     func update(stats: SRTPerformanceData) {
         calcSmoothedPif(stats)
-        calcRtts(stats: stats)
+        calcRtts(stats)
         increaseTempMaxBitrate(
             stats: stats,
             pif: smoothPif,
-            avgRTT: avgRtt,
-            fastRTT: fastRtt,
             allowedRttJitter: 15,
             allowedPifJitter: 10
         )
@@ -319,10 +310,10 @@ class AdaptiveBitrate {
             rttSpikeAllowed: settings.rttDiffHighAllowedSpike,
             minimumDecrease: settings.rttDiffHighMinDecrease
         )
-        calculateCurrentBitrate(stats)
+        calculateCurrentBitrate()
         if prevBitrate != curBitrate {
             delegate.adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32(curBitrate))
+            prevBitrate = curBitrate
         }
-        prevBitrate = curBitrate
     }
 }

@@ -129,6 +129,7 @@
 		03A9836E2A9A05F9008FF0DB /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9836D2A9A05F9008FF0DB /* Model.swift */; };
 		03A983712A9A0659008FF0DB /* TwitchPubSub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */; };
 		03A983722A9A0659008FF0DB /* TwitchChatMoblin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A983702A9A0659008FF0DB /* TwitchChatMoblin.swift */; };
+		03AD440A2B78A8A700B1B9B9 /* StreamButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AD44092B78A8A700B1B9B9 /* StreamButtonsSettingsView.swift */; };
 		03B16A242B35612000E5AB07 /* RecordingsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B16A232B35612000E5AB07 /* RecordingsSettingsView.swift */; };
 		03B16A282B35614100E5AB07 /* RecordingsRecordingSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B16A272B35614100E5AB07 /* RecordingsRecordingSettingsView.swift */; };
 		03B16A2D2B35D72F00E5AB07 /* CameraSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B16A2C2B35D72F00E5AB07 /* CameraSettingsView.swift */; };
@@ -304,6 +305,7 @@
 		03A9836D2A9A05F9008FF0DB /* Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitchPubSub.swift; sourceTree = "<group>"; };
 		03A983702A9A0659008FF0DB /* TwitchChatMoblin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitchChatMoblin.swift; sourceTree = "<group>"; };
+		03AD44092B78A8A700B1B9B9 /* StreamButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamButtonsSettingsView.swift; sourceTree = "<group>"; };
 		03B16A232B35612000E5AB07 /* RecordingsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsSettingsView.swift; sourceTree = "<group>"; };
 		03B16A272B35614100E5AB07 /* RecordingsRecordingSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsRecordingSettingsView.swift; sourceTree = "<group>"; };
 		03B16A2C2B35D72F00E5AB07 /* CameraSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraSettingsView.swift; sourceTree = "<group>"; };
@@ -898,6 +900,14 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		03AD44072B78A88B00B1B9B9 /* StreamButton */ = {
+			isa = PBXGroup;
+			children = (
+				03AD44092B78A8A700B1B9B9 /* StreamButtonsSettingsView.swift */,
+			);
+			path = StreamButton;
+			sourceTree = "<group>";
+		};
 		03B16A222B35610100E5AB07 /* Recordings */ = {
 			isa = PBXGroup;
 			children = (
@@ -921,6 +931,7 @@
 		03B16A2B2B35D71500E5AB07 /* Display */ = {
 			isa = PBXGroup;
 			children = (
+				03AD44072B78A88B00B1B9B9 /* StreamButton */,
 				030399112AE2D0E900D27530 /* Chat */,
 				0379BBA32AAD944000B718B6 /* LocalOverlays */,
 				03E877F52B2DB26100086355 /* GlobalButtons */,
@@ -1239,6 +1250,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				035D37282AB0EBB500045B92 /* IconAndTextView.swift in Sources */,
+				03AD440A2B78A8A700B1B9B9 /* StreamButtonsSettingsView.swift in Sources */,
 				03A9836B2A9A05D7008FF0DB /* StreamOverlayView.swift in Sources */,
 				03DBD1032B300D55004B0BE6 /* StreamWizardNetworkSetupBelaboxSettingsView.swift in Sources */,
 				0315A37A2AA39DA800295443 /* TextItemView.swift in Sources */,
@@ -1586,7 +1598,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.173.0;
+				MARKETING_VERSION = 0.174.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1632,7 +1644,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.173.0;
+				MARKETING_VERSION = 0.174.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

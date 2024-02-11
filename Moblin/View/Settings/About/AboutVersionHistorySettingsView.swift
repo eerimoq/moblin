@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.174.0", date: "2024-02-11", changes: [
+        "• Remove debug video preset setting.",
+        "  • No one needs it, right?",
+        "• Fix crash when muted and using remote control.",
+    ]),
     Version(version: "0.173.0", date: "2024-02-08", changes: [
         "• German translation updated. ✍️ MaurisonX",
         "• Show disconnected icon next to disconnected cameras in scenes.",

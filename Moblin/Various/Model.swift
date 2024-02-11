@@ -1685,6 +1685,7 @@ final class Model: ObservableObject {
             self.updateObsSourceScreenshot()
             self.updateObsAudioVolume()
             self.updateBrowserWidgetStatus()
+            self.logStatus()
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
@@ -2820,6 +2821,12 @@ final class Model: ObservableObject {
         }
         if browserWidgetsStatus != message {
             browserWidgetsStatus = message
+        }
+    }
+
+    private func logStatus() {
+        if logger.debugEnabled && isLive {
+            logger.debug("Status: Bitrate: \(speedAndTotal), Uptime: \(uptime)")
         }
     }
 
@@ -4139,7 +4146,7 @@ extension Model: RemoteControlStreamerDelegate {
             }
             var topRight = RemoteControlStatusTopRight()
             if self.isShowingStatusAudioLevel() {
-                let level = formatAudioLevelDb(level: self.audioLevel) +
+                let level = formatAudioLevel(level: self.audioLevel) +
                     formatAudioLevelChannels(channels: self.numberOfAudioChannels)
                 topRight.audioLevel = RemoteControlStatusItem(message: level)
             }
