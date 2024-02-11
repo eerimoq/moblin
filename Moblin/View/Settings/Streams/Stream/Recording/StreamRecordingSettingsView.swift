@@ -10,14 +10,12 @@ struct StreamRecordingSettingsView: View {
     }
 
     private func submitVideoBitrateChange(value: String) {
-        guard let value = Double(value) else {
+        guard var bitrate = Float(value) else {
             return
         }
-        let bitrate = UInt32(value * 1_000_000)
-        guard bitrate <= 50_000_000 else {
-            return
-        }
-        stream.recording!.videoBitrate = bitrate
+        bitrate = max(bitrate, 0)
+        bitrate = min(bitrate, 50)
+        stream.recording!.videoBitrate = bitrateFromMbps(bitrate: bitrate)
         model.store()
     }
 
@@ -50,7 +48,7 @@ struct StreamRecordingSettingsView: View {
                 .disabled(stream.enabled && model.isRecording)
                 NavigationLink(destination: TextEditView(
                     title: String(localized: "Video bitrate"),
-                    value: "\(Double(stream.recording!.videoBitrate) / 1_000_000)",
+                    value: String(bitrateToMbps(bitrate: stream.recording!.videoBitrate)),
                     onSubmit: submitVideoBitrateChange,
                     footer: Text("Up to 50 Mbps. Set to 0 for automatic.")
                 )) {

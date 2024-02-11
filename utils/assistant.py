@@ -92,7 +92,7 @@ class Assistant:
             if kind == 'log':
                 print(data['entry'])
             else:
-                print('ignoring', data)
+                print('ignoring event', kind, data)
 
     async def handle_response(self, data):
         print(data)
