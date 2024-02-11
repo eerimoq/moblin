@@ -1,14 +1,15 @@
 import SwiftUI
 
 struct StreamButtonText: View {
+    @EnvironmentObject var model: Model
     var text: String
 
     var body: some View {
         Text(text)
-            .foregroundColor(.white)
+            .foregroundColor(model.database.streamButtonForegroundColor!.color())
             .frame(minWidth: 60)
             .padding(5)
-            .background(.red)
+            .background(model.database.streamButtonBackgroundColor!.color())
             .cornerRadius(10)
     }
 }
@@ -26,7 +27,7 @@ struct StreamButton: View {
                 StreamButtonText(text: String(localized: "End"))
                     .overlay(
                         RoundedRectangle(cornerRadius: 10)
-                            .stroke(.white)
+                            .stroke(model.database.streamButtonForegroundColor!.color())
                     )
             })
             .confirmationDialog("", isPresented: $isPresentingStopConfirm) {

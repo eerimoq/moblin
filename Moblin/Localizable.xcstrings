@@ -24836,6 +24836,9 @@
         }
       }
     },
+    "Foreground" : {
+
+    },
     "FPS" : {
       "localizations" : {
         "de" : {
@@ -48804,6 +48807,9 @@
           }
         }
       }
+    },
+    "Stream button" : {
+
     },
     "Stream id" : {
       "localizations" : {
