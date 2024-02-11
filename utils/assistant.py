@@ -7,6 +7,7 @@ from websockets.sync.client import connect
 from hashlib import sha256
 from base64 import b64encode
 
+DEFAULT_PORT = 2345
 API_VERSION = '0.1'
 
 
@@ -67,10 +68,12 @@ class Assistant:
 
     def hash_password(self):
         concatenated = self.password + self.salt
-        hash = b64encode(sha256(concatenated.encode('utf-8')).digest()).decode('utf-8')
+        hash = b64encode(sha256(
+            concatenated.encode('utf-8')).digest()).decode('utf-8')
         concatenated = hash + self.challenge
 
-        return b64encode(sha256(concatenated.encode('utf-8')).digest()).decode('utf-8')
+        return b64encode(sha256(
+            concatenated.encode('utf-8')).digest()).decode('utf-8')
 
     async def handle_identify(self, authentication):
         if authentication == self.hash_password():
@@ -129,7 +132,7 @@ def do_run(args):
 
 
 def do_set_zoom(args):
-    with connect('ws://localhost:2345/client') as server:
+    with connect(f'ws://localhost:{args.port}/client') as server:
         server.send(json.dumps({
             'type': 'request',
             'data': {
@@ -150,10 +153,11 @@ def main():
 
     subparser = subparsers.add_parser('run')
     subparser.add_argument('--password', required=True)
-    subparser.add_argument('--port', type=int, default=2345)
+    subparser.add_argument('--port', type=int, default=DEFAULT_PORT)
     subparser.set_defaults(func=do_run)
 
     subparser = subparsers.add_parser('set_zoom')
+    subparser.add_argument('--port', type=int, default=DEFAULT_PORT)
     subparser.add_argument('level')
     subparser.set_defaults(func=do_set_zoom)
 
