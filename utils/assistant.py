@@ -47,7 +47,7 @@ class Assistant:
                     if kind == 'identify':
                         await self.handle_identify(data['authentication'])
                     elif kind == 'event':
-                        print('event:', data)
+                        await self.handle_event(data['data'])
                     elif kind == 'response':
                         await self.handle_response(data)
                     else:
@@ -83,6 +83,13 @@ class Assistant:
             })
         else:
             print('identify failed')
+
+    async def handle_event(self, data):
+        for kind, data in data.items():
+            if kind == 'log':
+                print(data['entry'])
+            else:
+                print('ignoring', data)
 
     async def handle_response(self, data):
         print(data)
