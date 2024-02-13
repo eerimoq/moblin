@@ -33,6 +33,7 @@ struct ButtonImage: View {
                 image.overlay(
                     Circle()
                         .stroke(.white)
+                        .frame(width: buttonSize - 1, height: buttonSize - 1)
                 )
             } else {
                 image
