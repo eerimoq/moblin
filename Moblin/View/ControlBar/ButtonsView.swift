@@ -723,6 +723,8 @@ struct ButtonsInnerView: View {
     var body: some View {
         VStack {
             switch state.button.type {
+            case .unknown:
+                ButtonPlaceholderImage()
             case .torch:
                 Button(action: {
                     torchAction(state: state)
@@ -771,10 +773,6 @@ struct ButtonsInnerView: View {
                 }, label: {
                     ButtonImage(state: state, buttonSize: size)
                 })
-            case .obsScene:
-                ButtonPlaceholderImage()
-            case .obsStartStopStream:
-                ButtonPlaceholderImage()
             case .record:
                 Button(action: {
                     if model.database.startStopRecordingConfirmations! {

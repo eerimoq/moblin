@@ -9,6 +9,11 @@ let defaultStreamButtonForegroundColor = RgbColor(red: 254, green: 254, blue: 25
 enum SettingsStreamCodec: String, Codable, CaseIterable {
     case h265hevc = "H.265/HEVC"
     case h264avc = "H.264/AVC"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsStreamCodec(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
+            .h264avc
+    }
 }
 
 let codecs = SettingsStreamCodec.allCases.map { $0.rawValue }
@@ -20,6 +25,11 @@ enum SettingsStreamResolution: String, Codable, CaseIterable {
     case r854x480 = "854x480"
     case r640x360 = "640x360"
     case r426x240 = "426x240"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsStreamResolution(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
+            .r1920x1080
+    }
 }
 
 let resolutions = SettingsStreamResolution.allCases.map { $0.rawValue }
@@ -29,6 +39,11 @@ let fpss = ["60", "50", "30", "25", "15"]
 enum SettingsStreamProtocol: String, Codable {
     case rtmp = "RTMP"
     case srt = "SRT"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsStreamProtocol(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
+            .rtmp
+    }
 }
 
 class SettingsStreamSrtConnectionPriority: Codable, Identifiable {
@@ -160,6 +175,11 @@ enum SettingsCaptureSessionPreset: String, Codable, CaseIterable {
     case iFrame960x540
     case iFrame1280x720
     case cif352x288
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsCaptureSessionPreset(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .hd1920x1080
+    }
 }
 
 class SettingsStreamChat: Codable {
@@ -429,6 +449,11 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
     case rtmp = "RTMP"
     case external = "External"
 
+    public init(from decoder: Decoder) throws {
+        self = try SettingsSceneCameraPosition(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .back
+    }
+
     static func fromString(value: String) -> SettingsSceneCameraPosition {
         switch value {
         case String(localized: "Back"):
@@ -465,6 +490,13 @@ var cameraPositions = SettingsSceneCameraPosition.allCases.filter { position in
 enum SettingsSceneCameraLayout: String, Codable, CaseIterable {
     case single = "Single"
     case pip = "Picture in Picture"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsSceneCameraLayout(
+            rawValue: decoder.singleValueContainer().decode(RawValue.self)
+        ) ??
+            .single
+    }
 
     static func fromString(value: String) -> SettingsSceneCameraLayout {
         switch value {
@@ -586,6 +618,11 @@ enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
     case noiseReduction = "Noise reduction"
     case pixellate = "Pixellate"
 
+    public init(from decoder: Decoder) throws {
+        self = try SettingsWidgetVideoEffectType(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .movie
+    }
+
     static func fromString(value: String) -> SettingsWidgetVideoEffectType {
         switch value {
         case String(localized: "Movie"):
@@ -646,6 +683,11 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case image = "Image"
     case time = "Time"
     case videoEffect = "Video effect"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsWidgetType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
+            .browser
+    }
 
     static func fromString(value: String) -> SettingsWidgetType {
         switch value {
@@ -729,6 +771,11 @@ enum SettingsVariableType: String, Codable {
     case http = "HTTP"
     case twitchPubSub = "Twitch PubSub"
     case websocket = "Websocket"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsVariableType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
+            .text
+    }
 }
 
 // periphery:ignore
@@ -743,6 +790,7 @@ class SettingsVariable: Codable, Identifiable {
 }
 
 enum SettingsButtonType: String, Codable, CaseIterable {
+    case unknown = "Unknown"
     case torch = "Torch"
     case mute = "Mute"
     case bitrate = "Bitrate"
@@ -751,8 +799,6 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case chat = "Chat"
     case pauseChat = "Pause chat"
     case blackScreen = "Black screen"
-    case obsScene = "OBS scene"
-    case obsStartStopStream = "OBS start/stop stream"
     case record = "Record"
     case recordings = "Recrodings"
     case image = "Image"
@@ -769,8 +815,15 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case draw = "Draw"
     case localOverlays = "Local overlays"
 
+    public init(from decoder: Decoder) throws {
+        self = try SettingsButtonType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
+            .unknown
+    }
+
     static func fromString(value: String) -> SettingsButtonType {
         switch value {
+        case String(localized: "Unknown"):
+            return .unknown
         case String(localized: "Torch"):
             return .torch
         case String(localized: "Mute"):
@@ -787,10 +840,6 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return .pauseChat
         case String(localized: "Black screen"):
             return .blackScreen
-        case String(localized: "OBS scene"):
-            return .obsScene
-        case String(localized: "OBS start/stop stream"):
-            return .obsStartStopStream
         case String(localized: "Record"):
             return .record
         case String(localized: "Recordings"):
@@ -828,6 +877,8 @@ enum SettingsButtonType: String, Codable, CaseIterable {
 
     func toString() -> String {
         switch self {
+        case .unknown:
+            return String(localized: "Unknown")
         case .torch:
             return String(localized: "Torch")
         case .mute:
@@ -844,10 +895,6 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return String(localized: "Pause chat")
         case .blackScreen:
             return String(localized: "Black screen")
-        case .obsScene:
-            return String(localized: "OBS scene")
-        case .obsStartStopStream:
-            return String(localized: "OBS start/stop stream")
         case .record:
             return String(localized: "Record")
         case .recordings:
@@ -919,9 +966,18 @@ class SettingsButton: Codable, Identifiable, Equatable, Hashable {
     }
 }
 
-enum SettingsColorAppleLogLutType: Codable {
+enum SettingsColorAppleLogLutType: String, Codable {
     case bundled
     case disk
+
+    public init(from decoder: Decoder) throws {
+        do {
+            self = try SettingsColorAppleLogLutType(rawValue: decoder.singleValueContainer()
+                .decode(RawValue.self)) ?? .bundled
+        } catch {
+            self = .bundled
+        }
+    }
 }
 
 class SettingsColorAppleLogLut: Codable, Identifiable {
@@ -940,6 +996,10 @@ enum SettingsColorSpace: String, Codable, CaseIterable {
     case p3D65 = "P3 D65"
     case hlgBt2020 = "HLG BT2020"
     case appleLog = "Apple Log"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsColorSpace(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .srgb
+    }
 }
 
 let colorSpaces = SettingsColorSpace.allCases.map { $0.rawValue }
@@ -1019,6 +1079,11 @@ enum SettingsVideoStabilizationMode: String, Codable, CaseIterable {
     case standard = "Standard"
     case cinematic = "Cinematic"
 
+    public init(from decoder: Decoder) throws {
+        self = try SettingsVideoStabilizationMode(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .off
+    }
+
     static func fromString(value: String) -> SettingsVideoStabilizationMode {
         switch value {
         case String(localized: "Off"):
@@ -1084,12 +1149,20 @@ enum SettingsMic: String, Codable, CaseIterable {
     case bottom = "Bottom"
     case front = "Front"
     case back = "Back"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsMic(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .bottom
+    }
 }
 
 enum SettingsLogLevel: String, Codable, CaseIterable {
     case error = "Error"
     case info = "Info"
     case debug = "Debug"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsLogLevel(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .error
+    }
 }
 
 let logLevels = SettingsLogLevel.allCases.map { $0.rawValue }
@@ -1174,6 +1247,11 @@ enum SettingsGameControllerButtonFunction: String, Codable, CaseIterable {
     case chat = "Chat"
     case pauseChat = "Pause chat"
     case scene = "Scene"
+
+    public init(from decoder: Decoder) throws {
+        self = try SettingsGameControllerButtonFunction(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .unused
+    }
 
     static func fromString(value: String) -> SettingsGameControllerButtonFunction {
         switch value {
@@ -1696,6 +1774,10 @@ private func addMissingGlobalButtons(database: Database) {
     button.systemImageNameOn = "square.stack.3d.up.slash.fill"
     button.systemImageNameOff = "square.stack.3d.up.slash"
     updateGlobalButton(database: database, button: button)
+
+    database.globalButtons = database.globalButtons!.filter { button in
+        button.type != .unknown
+    }
 }
 
 private func addScenesToGameController(database: Database) {
@@ -2061,16 +2143,6 @@ final class Settings {
             realDatabase.show.location = true
             store()
         }
-        for button in realDatabase.globalButtons! where button.type == .obsStartStopStream {
-            if button.systemImageNameOn != "wifi.router" {
-                button.systemImageNameOn = "wifi.router"
-                store()
-            }
-            if button.systemImageNameOff != "wifi.router" {
-                button.systemImageNameOff = "wifi.router"
-                store()
-            }
-        }
         for button in realDatabase.globalButtons! where button.type == .image {
             if button.name != "Camera" {
                 button.name = "Camera"
@@ -2087,13 +2159,6 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.obsSourceName == nil {
             stream.obsSourceName = ""
-            store()
-        }
-        let numberOfButtons = realDatabase.globalButtons!.count
-        realDatabase.globalButtons = realDatabase.globalButtons!.filter { button in
-            button.type != .obsScene && button.type != .obsStartStopStream
-        }
-        if realDatabase.globalButtons!.count != numberOfButtons {
             store()
         }
         for stream in realDatabase.streams where stream.srt.connectionPriorities == nil {
