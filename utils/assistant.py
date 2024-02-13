@@ -25,7 +25,7 @@ class Assistant:
         self.streamer = None
         self.request_id = 0
         self.client_completions = {}
-        
+
     async def handle_streamer(self, request):
         self.streamer = web.WebSocketResponse()
         await self.streamer.prepare(request)
@@ -143,47 +143,64 @@ def do_run(args):
     web.run_app(app, port=args.port)
 
 
-def do_get_settings(args):
-    with connect(f'ws://localhost:{args.port}/client') as server:
+def make_client_request(port, data):
+    with connect(f'ws://localhost:{port}/client') as server:
         server.send(json.dumps({
             'type': 'request',
-            'data': {
-                'getSettings': {
-                }
-            }
+            'data': data
         }))
-        data = json.loads(server.recv())['data']['data']['getSettings']['data']
-        print(json.dumps(data, indent=4))
+
+        return json.loads(server.recv())['data']
+
+
+def get_settings(port):
+    data = make_client_request(
+        port,
+        {
+            'getSettings': {
+            }
+        })
+
+    return data['data']['getSettings']['data']
+
+
+def get_scene_id(port, name):
+    settings = get_settings(port)
+
+    for scene in settings['scenes']:
+        if scene['name'] == name:
+            return scene['id']
+    else:
+        raise Exception(f'Unknown scene {name}')
+
+
+def do_get_settings(args):
+    print(json.dumps(get_settings(args.port), indent=4))
 
 
 def do_set_zoom(args):
-    with connect(f'ws://localhost:{args.port}/client') as server:
-        server.send(json.dumps({
-            'type': 'request',
-            'data': {
-                'setZoom': {
-                    'x': float(args.level)
-                }
+    make_client_request(
+        args.port,
+        {
+            'setZoom': {
+                'x': float(args.level)
             }
-        }))
-        server.recv()
+        })
 
 
 def do_set_scene(args):
-    with connect(f'ws://localhost:{args.port}/client') as server:
-        server.send(json.dumps({
-            'type': 'request',
-            'data': {
-                'setScene': {
-                    'id': args.name
-                }
+    make_client_request(
+        args.port,
+        {
+            'setScene': {
+                'id': get_scene_id(args.port, args.name)
             }
-        }))
-        server.recv()
+        })
 
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--port', type=int, default=DEFAULT_PORT)
 
     subparsers = parser.add_subparsers(title='subcommands',
                                        dest='subcommand')
@@ -191,20 +208,16 @@ def main():
 
     subparser = subparsers.add_parser('run')
     subparser.add_argument('--password', required=True)
-    subparser.add_argument('--port', type=int, default=DEFAULT_PORT)
     subparser.set_defaults(func=do_run)
 
     subparser = subparsers.add_parser('get_settings')
-    subparser.add_argument('--port', type=int, default=DEFAULT_PORT)
     subparser.set_defaults(func=do_get_settings)
 
     subparser = subparsers.add_parser('set_zoom')
-    subparser.add_argument('--port', type=int, default=DEFAULT_PORT)
     subparser.add_argument('level')
     subparser.set_defaults(func=do_set_zoom)
 
     subparser = subparsers.add_parser('set_scene')
-    subparser.add_argument('--port', type=int, default=DEFAULT_PORT)
     subparser.add_argument('name')
     subparser.set_defaults(func=do_set_scene)
 
