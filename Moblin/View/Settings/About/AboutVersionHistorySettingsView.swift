@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.176.0", date: "2024-02-13", changes: [
+        "• Fix draw on stream when 16:9 video fills screen width but not height. 🐛 AdAstra",
+        "• Fix lingering marker on RealtimeIRL map. 🐛 Rubaz",
+        "  • Send explicit stop to server when ending stream.",
+    ]),
     Version(version: "0.175.0", date: "2024-02-13", changes: [
         "• Configurable stream button color.",
         "  • Settings → Display → Stream button",

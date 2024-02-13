@@ -2138,6 +2138,7 @@ final class Model: ObservableObject {
 
     func stopStream() {
         isLive = false
+        realtimeIrl?.stop()
         if !streaming {
             return
         }

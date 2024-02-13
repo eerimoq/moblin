@@ -23,4 +23,12 @@ class RealtimeIrl {
         }
         .resume()
     }
+
+    func stop() {
+        var request = URLRequest(url: URL(string: "https://rtirl.com/api/stop?key=\(pushKey)")!)
+        request.httpMethod = "POST"
+        URLSession.shared.dataTask(with: request) { _, _, _ in
+        }
+        .resume()
+    }
 }
