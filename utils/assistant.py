@@ -1,3 +1,4 @@
+import sys
 import json
 import random
 import argparse
@@ -61,6 +62,9 @@ class Assistant:
         return self.streamer
 
     async def send_to_streamer(self, message):
+        if self.streamer is None:
+            raise Exception('Streamer not connected')
+
         await self.streamer.send_str(json.dumps(message))
 
     def next_id(self):
@@ -200,6 +204,7 @@ def do_set_scene(args):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument('-d', '--debug', action='store_true')
     parser.add_argument('--port', type=int, default=DEFAULT_PORT)
 
     subparsers = parser.add_subparsers(title='subcommands',
@@ -223,7 +228,13 @@ def main():
 
     args = parser.parse_args()
 
-    args.func(args)
+    if args.debug:
+        args.func(args)
+    else:
+        try:
+            args.func(args)
+        except BaseException as e:
+            sys.exit('error: ' + str(e))
 
 
 main()
