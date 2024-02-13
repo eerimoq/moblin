@@ -6,6 +6,7 @@ import aiohttp
 from websockets.sync.client import connect
 from hashlib import sha256
 from base64 import b64encode
+import asyncio
 
 DEFAULT_PORT = 2345
 API_VERSION = '0.1'
@@ -23,7 +24,8 @@ class Assistant:
         self.salt = None
         self.streamer = None
         self.request_id = 0
-
+        self.client_completions = {}
+        
     async def handle_streamer(self, request):
         self.streamer = web.WebSocketResponse()
         await self.streamer.prepare(request)
@@ -96,6 +98,12 @@ class Assistant:
 
     async def handle_response(self, data):
         print(data)
+        try:
+            request_id = data['id']
+            queue = self.client_completions[request_id]
+            await queue.put(data)
+        except Exception:
+            pass
 
     async def handle_client(self, request):
         client = web.WebSocketResponse()
@@ -106,14 +114,18 @@ class Assistant:
                 message = json.loads(message.data)
 
                 if message['type'] == 'request':
+                    request_id = self.next_id()
+                    queue = asyncio.Queue()
+                    self.client_completions[request_id] = queue
                     await self.send_to_streamer({
                         'request': {
-                            'id': self.next_id(),
+                            'id': request_id,
                             'data': message['data']
                         }
                     })
                     await client.send_str(json.dumps({
-                        'type': 'response'
+                        'type': 'response',
+                        'data': await queue.get()
                     }))
                 else:
                     print('Not supported', message)
@@ -131,6 +143,19 @@ def do_run(args):
     web.run_app(app, port=args.port)
 
 
+def do_get_settings(args):
+    with connect(f'ws://localhost:{args.port}/client') as server:
+        server.send(json.dumps({
+            'type': 'request',
+            'data': {
+                'getSettings': {
+                }
+            }
+        }))
+        data = json.loads(server.recv())['data']['data']['getSettings']['data']
+        print(json.dumps(data, indent=4))
+
+
 def do_set_zoom(args):
     with connect(f'ws://localhost:{args.port}/client') as server:
         server.send(json.dumps({
@@ -138,6 +163,19 @@ def do_set_zoom(args):
             'data': {
                 'setZoom': {
                     'x': float(args.level)
+                }
+            }
+        }))
+        server.recv()
+
+
+def do_set_scene(args):
+    with connect(f'ws://localhost:{args.port}/client') as server:
+        server.send(json.dumps({
+            'type': 'request',
+            'data': {
+                'setScene': {
+                    'id': args.name
                 }
             }
         }))
@@ -156,10 +194,19 @@ def main():
     subparser.add_argument('--port', type=int, default=DEFAULT_PORT)
     subparser.set_defaults(func=do_run)
 
+    subparser = subparsers.add_parser('get_settings')
+    subparser.add_argument('--port', type=int, default=DEFAULT_PORT)
+    subparser.set_defaults(func=do_get_settings)
+
     subparser = subparsers.add_parser('set_zoom')
     subparser.add_argument('--port', type=int, default=DEFAULT_PORT)
     subparser.add_argument('level')
     subparser.set_defaults(func=do_set_zoom)
+
+    subparser = subparsers.add_parser('set_scene')
+    subparser.add_argument('--port', type=int, default=DEFAULT_PORT)
+    subparser.add_argument('name')
+    subparser.set_defaults(func=do_set_scene)
 
     args = parser.parse_args()
 
