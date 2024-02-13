@@ -6,10 +6,10 @@ struct StreamButtonText: View {
 
     var body: some View {
         Text(text)
-            .foregroundColor(model.database.streamButtonForegroundColor!.color())
+            .foregroundColor(.white)
             .frame(minWidth: 60)
             .padding(5)
-            .background(model.database.streamButtonBackgroundColor!.color())
+            .background(model.database.streamButtonColor!.color())
             .cornerRadius(10)
     }
 }
@@ -27,7 +27,7 @@ struct StreamButton: View {
                 StreamButtonText(text: String(localized: "End"))
                     .overlay(
                         RoundedRectangle(cornerRadius: 10)
-                            .stroke(model.database.streamButtonForegroundColor!.color())
+                            .stroke(.white)
                     )
             })
             .confirmationDialog("", isPresented: $isPresentingStopConfirm) {

@@ -37,8 +37,7 @@ struct DisplaySettingsView: View {
                     Text("Quick buttons")
                 }
                 NavigationLink(destination: StreamButtonsSettingsView(
-                    background: model.database.streamButtonBackgroundColor!.color(),
-                    foreground: model.database.streamButtonForegroundColor!.color()
+                    background: model.database.streamButtonColor!.color()
                 )) {
                     Text("Stream button")
                 }

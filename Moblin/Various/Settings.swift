@@ -3,8 +3,7 @@ import SwiftUI
 
 let defaultStreamUrl = "srt://my_public_ip:4000"
 let defaultQuickButtonColor = RgbColor(red: 255 / 4, green: 255 / 4, blue: 255 / 4)
-let defaultStreamButtonBackgroundColor = RgbColor(red: 255, green: 59, blue: 48)
-let defaultStreamButtonForegroundColor = RgbColor(red: 254, green: 254, blue: 254)
+let defaultStreamButtonColor = RgbColor(red: 255, green: 59, blue: 48)
 
 enum SettingsStreamCodec: String, Codable, CaseIterable {
     case h265hevc = "H.265/HEVC"
@@ -1481,8 +1480,7 @@ class Database: Codable {
     var startStopRecordingConfirmations: Bool? = true
     var color: SettingsColor? = .init()
     var mirrorFrontCameraOnStream: Bool? = false
-    var streamButtonBackgroundColor: RgbColor? = defaultStreamButtonBackgroundColor
-    var streamButtonForegroundColor: RgbColor? = defaultStreamButtonForegroundColor
+    var streamButtonColor: RgbColor? = defaultStreamButtonColor
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -2268,12 +2266,8 @@ final class Settings {
             scene.externalCameraName = ""
             store()
         }
-        if realDatabase.streamButtonBackgroundColor == nil {
-            realDatabase.streamButtonBackgroundColor = defaultStreamButtonBackgroundColor
-            store()
-        }
-        if realDatabase.streamButtonForegroundColor == nil {
-            realDatabase.streamButtonForegroundColor = defaultStreamButtonForegroundColor
+        if realDatabase.streamButtonColor == nil {
+            realDatabase.streamButtonColor = defaultStreamButtonColor
             store()
         }
     }
