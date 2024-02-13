@@ -28872,6 +28872,9 @@
         }
       }
     },
+    "Interactive chat" : {
+
+    },
     "IP address or domain name" : {
       "localizations" : {
         "de" : {
@@ -38731,6 +38734,7 @@
       }
     },
     "Pause chat" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

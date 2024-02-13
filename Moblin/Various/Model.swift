@@ -1317,7 +1317,7 @@ final class Model: ObservableObject {
                 sceneUpdated(store: false)
                 updateButtonStates()
             }
-        case .pauseChat:
+        case .interactiveChat:
             break
         case .scene:
             if !pressed {

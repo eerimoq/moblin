@@ -761,7 +761,7 @@ struct ButtonsInnerView: View {
                 }, label: {
                     ButtonImage(state: state, buttonSize: size, slash: true)
                 })
-            case .pauseChat:
+            case .interactiveChat:
                 Button(action: {
                     interactiveChatAction(state: state)
                 }, label: {

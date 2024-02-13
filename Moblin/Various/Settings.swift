@@ -797,7 +797,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case widget = "Widget"
     case mic = "Mic"
     case chat = "Chat"
-    case pauseChat = "Pause chat"
+    case interactiveChat = "Interactive chat"
     case blackScreen = "Black screen"
     case record = "Record"
     case recordings = "Recrodings"
@@ -816,8 +816,11 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case localOverlays = "Local overlays"
 
     public init(from decoder: Decoder) throws {
-        self = try SettingsButtonType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
-            .unknown
+        var value = try decoder.singleValueContainer().decode(RawValue.self)
+        if value == "Pause chat" {
+            value = "Interactive chat"
+        }
+        self = SettingsButtonType(rawValue: value) ?? .unknown
     }
 
     static func fromString(value: String) -> SettingsButtonType {
@@ -836,8 +839,8 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return .mic
         case String(localized: "Chat"):
             return .chat
-        case String(localized: "Pause chat"):
-            return .pauseChat
+        case String(localized: "Interactive chat"):
+            return .interactiveChat
         case String(localized: "Black screen"):
             return .blackScreen
         case String(localized: "Record"):
@@ -891,8 +894,8 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return String(localized: "Mic")
         case .chat:
             return String(localized: "Chat")
-        case .pauseChat:
-            return String(localized: "Pause chat")
+        case .interactiveChat:
+            return String(localized: "Interactive chat")
         case .blackScreen:
             return String(localized: "Black screen")
         case .record:
@@ -1245,12 +1248,15 @@ enum SettingsGameControllerButtonFunction: String, Codable, CaseIterable {
     case torch = "Torch"
     case blackScreen = "Black screen"
     case chat = "Chat"
-    case pauseChat = "Pause chat"
+    case interactiveChat = "Interactive chat"
     case scene = "Scene"
 
     public init(from decoder: Decoder) throws {
-        self = try SettingsGameControllerButtonFunction(rawValue: decoder.singleValueContainer()
-            .decode(RawValue.self)) ?? .unused
+        var value = try decoder.singleValueContainer().decode(RawValue.self)
+        if value == "Pause chat" {
+            value = "Interactive chat"
+        }
+        self = SettingsGameControllerButtonFunction(rawValue: value) ?? .unused
     }
 
     static func fromString(value: String) -> SettingsGameControllerButtonFunction {
@@ -1273,8 +1279,8 @@ enum SettingsGameControllerButtonFunction: String, Codable, CaseIterable {
             return .blackScreen
         case String(localized: "Chat"):
             return .chat
-        case String(localized: "Pause chat"):
-            return .pauseChat
+        case String(localized: "Interactive chat"):
+            return .interactiveChat
         case String(localized: "Scene"):
             return .scene
         default:
@@ -1302,8 +1308,8 @@ enum SettingsGameControllerButtonFunction: String, Codable, CaseIterable {
             return String(localized: "Black screen")
         case .chat:
             return String(localized: "Chat")
-        case .pauseChat:
-            return String(localized: "Pause chat")
+        case .interactiveChat:
+            return String(localized: "Interactive chat")
         case .scene:
             return String(localized: "Scene")
         }
@@ -1399,7 +1405,7 @@ class SettingsGameController: Codable, Identifiable {
         button = SettingsGameControllerButton()
         button.name = "r.rectangle.roundedbottom"
         button.text = "R"
-        button.function = .pauseChat
+        button.function = .interactiveChat
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "l2.rectangle.roundedtop"
@@ -1419,7 +1425,7 @@ class SettingsGameController: Codable, Identifiable {
         button = SettingsGameControllerButton()
         button.name = "r1.rectangle.roundedbottom"
         button.text = "R1"
-        button.function = .pauseChat
+        button.function = .interactiveChat
         buttons.append(button)
     }
 }
@@ -1587,6 +1593,7 @@ private func updateGlobalButton(database: Database, button: SettingsButton) {
         globalButton.type == button.type
     })
     if let existingButton {
+        existingButton.name = button.name
         existingButton.systemImageNameOn = button.systemImageNameOn
         existingButton.systemImageNameOff = button.systemImageNameOff
     } else {
@@ -1638,9 +1645,9 @@ private func addMissingGlobalButtons(database: Database) {
     button.systemImageNameOff = "message"
     updateGlobalButton(database: database, button: button)
 
-    button = SettingsButton(name: String(localized: "Pause chat"))
+    button = SettingsButton(name: String(localized: "Interactive chat"))
     button.id = UUID()
-    button.type = .pauseChat
+    button.type = .interactiveChat
     button.imageType = "System name"
     button.systemImageNameOn = "message.fill"
     button.systemImageNameOff = "message"
