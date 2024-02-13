@@ -10836,6 +10836,7 @@
       }
     },
     "Bitrate must be greater than zero" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -37272,6 +37273,7 @@
       }
     },
     "OBS scene" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -37384,6 +37386,7 @@
       }
     },
     "OBS start/stop stream" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -54858,6 +54861,9 @@
           }
         }
       }
+    },
+    "Unknown" : {
+
     },
     "Unknown streaming state." : {
       "localizations" : {
