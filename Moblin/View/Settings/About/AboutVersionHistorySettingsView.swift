@@ -8,6 +8,14 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.175.0", date: "2024-02-13", changes: [
+        "• Configurable stream button color.",
+        "  • Settings → Display → Stream button",
+        "• Fix crash when entering high record and preset bitrates. 🐛 nn2p, adriportela95",
+        "• Settings loading robustness.",
+        "  • Makes it easier to install older versions to test with. However, unknown settings will either be replaced or discarded, so some settings may be lost! Always backup your settings before installing old versions of the app.",
+        "• Replace pause chat with interactive chat in UI.",
+    ]),
     Version(version: "0.174.0", date: "2024-02-11", changes: [
         "• Remove debug video preset setting.",
         "  • No one needs it, right?",
