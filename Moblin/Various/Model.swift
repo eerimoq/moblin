@@ -5,6 +5,7 @@ import CoreMotion
 import GameController
 import HaishinKit
 import Logboard
+import MapKit
 import Network
 import PhotosUI
 import SDWebImageSwiftUI
@@ -1223,13 +1224,26 @@ final class Model: ObservableObject {
     }
 
     func isLocationEnabled() -> Bool {
-        return isRealtimeIrlConfigured()
+        return database.location!.enabled
     }
 
     private func handleLocationUpdate(location: CLLocation) {
-        if isLive {
-            realtimeIrl?.update(location: location)
+        guard isLive else {
+            return
         }
+        guard !isLocationInPrivacyRegion(location: location) else {
+            return
+        }
+        realtimeIrl?.update(location: location)
+    }
+
+    private func isLocationInPrivacyRegion(location: CLLocation) -> Bool {
+        for region in database.location!.privacyRegions
+            where region.contains(coordinate: location.coordinate)
+        {
+            return true
+        }
+        return false
     }
 
     func isRealtimeIrlConfigured() -> Bool {

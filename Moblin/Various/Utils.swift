@@ -1,4 +1,5 @@
 import AVKit
+import MapKit
 import SwiftUI
 
 let firstReconnectTime = 7.0
@@ -709,4 +710,34 @@ func formatAudioLevel(level: Float) -> String {
 
 func formatAudioLevelChannels(channels: Int) -> String {
     return String(localized: " \(channels) ch")
+}
+
+extension SettingsPrivacyRegion {
+    func mapRegion() -> MKCoordinateRegion {
+        return MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: latitude, longitude: longitude),
+            span: MKCoordinateSpan(latitudeDelta: latitudeDelta, longitudeDelta: longitudeDelta)
+        )
+    }
+
+    func contains(coordinate: CLLocationCoordinate2D) -> Bool {
+        cos((latitude - coordinate.latitude) * Double.pi / 180) >
+            cos(latitudeDelta / 2.0 * Double.pi / 180) &&
+            cos((longitude - coordinate.longitude) * Double.pi / 180) >
+            cos(longitudeDelta / 2.0 * Double.pi / 180)
+    }
+}
+
+extension MKCoordinateRegion: Equatable {
+    public static func == (lhs: MKCoordinateRegion, rhs: MKCoordinateRegion) -> Bool {
+        if lhs.center.latitude != rhs.center.latitude || lhs.center.longitude != rhs.center.longitude {
+            return false
+        }
+        if lhs.span.latitudeDelta != rhs.span.latitudeDelta || lhs.span.longitudeDelta != rhs.span
+            .longitudeDelta
+        {
+            return false
+        }
+        return true
+    }
 }

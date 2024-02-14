@@ -39852,6 +39852,9 @@
         }
       }
     },
+    "Privacy regions" : {
+
+    },
     "Protocol" : {
       "localizations" : {
         "de" : {
@@ -59463,6 +59466,9 @@
           }
         }
       }
+    },
+    "Your location will not be shared with any service when within any privacy region." : {
+
     },
     "Your public IP address if streaming over the internet." : {
       "localizations" : {

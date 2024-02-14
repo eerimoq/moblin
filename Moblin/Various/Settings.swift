@@ -1450,6 +1450,19 @@ class SettingsRemoteControl: Codable {
     var password: String? = ""
 }
 
+class SettingsPrivacyRegion: Codable, Identifiable {
+    var id: UUID = .init()
+    var latitude: Double = 0
+    var longitude: Double = 0
+    var latitudeDelta: Double = 30
+    var longitudeDelta: Double = 30
+}
+
+class SettingsLocation: Codable {
+    var enabled: Bool = false
+    var privacyRegions: [SettingsPrivacyRegion] = []
+}
+
 class Database: Codable {
     var streams: [SettingsStream] = []
     var scenes: [SettingsScene] = []
@@ -1481,6 +1494,7 @@ class Database: Codable {
     var color: SettingsColor? = .init()
     var mirrorFrontCameraOnStream: Bool? = false
     var streamButtonColor: RgbColor? = defaultStreamButtonColor
+    var location: SettingsLocation? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -2268,6 +2282,10 @@ final class Settings {
         }
         if realDatabase.streamButtonColor == nil {
             realDatabase.streamButtonColor = defaultStreamButtonColor
+            store()
+        }
+        if realDatabase.location == nil {
+            realDatabase.location = .init()
             store()
         }
     }
