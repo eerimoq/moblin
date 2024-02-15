@@ -46,10 +46,10 @@ struct DrawOnStreamView: View {
                             }
                             drawing = true
                         } else {
-                            guard let lastIdx = model.drawOnStreamLines.indices.last else {
+                            guard let lastIndex = model.drawOnStreamLines.indices.last else {
                                 return
                             }
-                            model.drawOnStreamLines[lastIdx].points.append(position)
+                            model.drawOnStreamLines[lastIndex].points.append(position)
                         }
                     }
                     .onEnded { _ in
