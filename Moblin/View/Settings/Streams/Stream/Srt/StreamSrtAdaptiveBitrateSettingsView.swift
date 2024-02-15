@@ -15,6 +15,12 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
         model.objectWillChange.send()
     }
 
+    private func submitFastIrlPacketsInFlight(value: Float) {
+        adaptiveBitrate.fastIrlSettings!.packetsInFlight = Int32(value)
+        model.store()
+        model.updateAdaptiveBitrateIfEnabled(stream: stream)
+    }
+
     private func submitBitrateIncreaseSpeed(value: Float) {
         adaptiveBitrate.customSettings.pifDiffIncreaseFactor = value
         model.store()
@@ -69,7 +75,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
         Form {
             Section {
                 NavigationLink(destination: InlinePickerView(
-                    title: "Algorithm",
+                    title: String(localized: "Algorithm"),
                     onChange: handleAlgorithmChange,
                     items: InlinePickerItem.fromStrings(values: adaptiveBitrateAlgorithms),
                     selectedId: adaptiveBitrate.algorithm.toString()
@@ -81,6 +87,27 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
                 }
             } footer: {
                 Text("Use the Fast IRL algorithm unless you know what you are doing!")
+            }
+            if adaptiveBitrate.algorithm == .fastIrl {
+                Section {
+                    SliderView(value: Float(adaptiveBitrate.fastIrlSettings!.packetsInFlight),
+                               minimum: 200,
+                               maximum: 1000,
+                               step: 5,
+                               onSubmit: submitFastIrlPacketsInFlight,
+                               width: 70,
+                               format: formatPacketsInFlight)
+                } header: {
+                    Text("Packets in flight decrease threshold")
+                } footer: {
+                    VStack(alignment: .leading) {
+                        Text("""
+                        The bitrate will decrease quickly when the number of packets \
+                        in flight are above this value.
+                        """)
+                        Text("200 by default.")
+                    }
+                }
             }
             if adaptiveBitrate.algorithm == .customIrl {
                 Section {

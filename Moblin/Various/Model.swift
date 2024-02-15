@@ -615,7 +615,9 @@ final class Model: ObservableObject {
     func updateAdaptiveBitrateIfEnabled(stream: SettingsStream) {
         switch stream.srt.adaptiveBitrate!.algorithm {
         case .fastIrl:
-            media.setAdaptiveBitrateAlgorithm(settings: adaptiveBitrateFastSettings)
+            var settings = adaptiveBitrateFastSettings
+            settings.packetsInFlight = stream.srt.adaptiveBitrate!.fastIrlSettings!.packetsInFlight
+            media.setAdaptiveBitrateAlgorithm(settings: settings)
         case .slowIrl:
             media.setAdaptiveBitrateAlgorithm(settings: adaptiveBitrateSlowSettings)
         case .customIrl:

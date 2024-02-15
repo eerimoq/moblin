@@ -22,11 +22,11 @@ let adaptiveBitrateFastSettings = AdaptiveBitrateSettings(
 )
 
 let adaptiveBitrateSlowSettings = AdaptiveBitrateSettings(
-    packetsInFlight: 200,
+    packetsInFlight: 500,
     rttDiffHighFactor: 0.95,
     rttDiffHighAllowedSpike: 100,
     rttDiffHighMinDecrease: 100_000,
-    pifDiffIncreaseFactor: 5000
+    pifDiffIncreaseFactor: 25000
 )
 
 class AdaptiveBitrate {

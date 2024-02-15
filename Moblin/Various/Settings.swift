@@ -113,6 +113,16 @@ enum SettingsStreamSrtAdaptiveBitrateAlgorithm: Codable, CaseIterable {
 
 let adaptiveBitrateAlgorithms = SettingsStreamSrtAdaptiveBitrateAlgorithm.allCases.map { $0.toString() }
 
+class SettingsStreamSrtAdaptiveBitrateFastIrlSettings: Codable {
+    var packetsInFlight: Int32 = 200
+
+    func clone() -> SettingsStreamSrtAdaptiveBitrateCustomSettings {
+        let new = SettingsStreamSrtAdaptiveBitrateCustomSettings()
+        new.packetsInFlight = packetsInFlight
+        return new
+    }
+}
+
 class SettingsStreamSrtAdaptiveBitrateCustomSettings: Codable {
     var packetsInFlight: Int32 = 200
     var pifDiffIncreaseFactor: Float = 100
@@ -133,6 +143,7 @@ class SettingsStreamSrtAdaptiveBitrateCustomSettings: Codable {
 
 class SettingsStreamSrtAdaptiveBitrate: Codable {
     var algorithm: SettingsStreamSrtAdaptiveBitrateAlgorithm = .fastIrl
+    var fastIrlSettings: SettingsStreamSrtAdaptiveBitrateFastIrlSettings? = .init()
     var customSettings: SettingsStreamSrtAdaptiveBitrateCustomSettings = .init()
 
     func clone() -> SettingsStreamSrtAdaptiveBitrate {
@@ -2286,6 +2297,10 @@ final class Settings {
         }
         if realDatabase.location == nil {
             realDatabase.location = .init()
+            store()
+        }
+        for stream in database.streams where stream.srt.adaptiveBitrate!.fastIrlSettings == nil {
+            stream.srt.adaptiveBitrate!.fastIrlSettings = .init()
             store()
         }
     }
