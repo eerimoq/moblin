@@ -24,11 +24,19 @@ struct DrawOnStreamView: View {
         ZStack {
             Canvas { context, size in
                 for line in model.drawOnStreamLines {
-                    context.stroke(
-                        drawOnStreamCreatePath(points: line.points),
-                        with: .color(line.color),
-                        lineWidth: line.width
-                    )
+                    let width = line.width
+                    if line.points.count > 1 {
+                        context.stroke(
+                            drawOnStreamCreatePath(points: line.points),
+                            with: .color(line.color),
+                            lineWidth: width
+                        )
+                    } else {
+                        let point = line.points[0]
+                        var path = Path()
+                        path.addEllipse(in: CGRect(x: point.x, y: point.y, width: 1, height: 1))
+                        context.stroke(path, with: .color(line.color), lineWidth: width)
+                    }
                 }
                 model.drawOnStreamSize = size
             }

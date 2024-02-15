@@ -2433,7 +2433,8 @@ final class Model: ObservableObject {
     }
 
     func isYouTubeLiveChatConfigured() -> Bool {
-        return database.chat.enabled! && stream.youTubeEnabled! && stream.youTubeApiKey! != "" && stream.youTubeVideoId! != ""
+        return database.chat.enabled! && stream.youTubeEnabled! && stream.youTubeApiKey! != "" && stream
+            .youTubeVideoId! != ""
     }
 
     func isYouTubeLiveChatConnected() -> Bool {
@@ -2445,7 +2446,8 @@ final class Model: ObservableObject {
     }
 
     func isAfreecaTvChatConfigured() -> Bool {
-        return database.chat.enabled! && stream.afreecaTvEnabled! && stream.afreecaTvChannelName! != "" && stream
+        return database.chat.enabled! && stream.afreecaTvEnabled! && stream
+            .afreecaTvChannelName! != "" && stream
             .afreecaTvStreamId! != ""
     }
 
