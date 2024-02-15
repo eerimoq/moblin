@@ -371,8 +371,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%lld 個通道"
+            "state" : "translated",
+            "value" : "%lld ch"
           }
         }
       }
@@ -2081,8 +2081,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "％@ D b"
+            "state" : "translated",
+            "value" : "％@ dB"
           }
         }
       }
@@ -2417,8 +2417,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@來源音訊電平"
+            "state" : "translated",
+            "value" : "%@來源音量"
           }
         }
       }
@@ -3319,8 +3319,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : ""
+            "state" : "translated",
+            "value" : "⚠️"
           }
         }
       }
@@ -7581,8 +7581,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "助理"
+            "state" : "translated",
+            "value" : "助手"
           }
         }
       }
@@ -7693,8 +7693,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "助理兼主播"
+            "state" : "translated",
+            "value" : "助手和實況主"
           }
         }
       }
@@ -7805,8 +7805,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "助理網址"
+            "state" : "translated",
+            "value" : "助手URL"
           }
         }
       }
@@ -10717,8 +10717,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "碼率下降速度"
+            "state" : "translated",
+            "value" : "位元率下降速度"
           }
         }
       }
@@ -10829,8 +10829,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "碼率提升速度"
+            "state" : "translated",
+            "value" : "位元率提升速度"
           }
         }
       }
@@ -11726,8 +11726,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "邊界"
+            "state" : "translated",
+            "value" : "邊框"
           }
         }
       }
@@ -11839,7 +11839,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "邊界相當耗 CPU 資源，停用以節省電力。"
+            "value" : "邊框相當耗 CPU 資源，停用以節省電力。"
           }
         }
       }
@@ -15311,8 +15311,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "在設定 → 流 → %@ → OBS 遠端控制中配置快照等的來源名稱。"
+            "state" : "translated",
+            "value" : "在設定 → 串流 → %@ → OBS 遠端控制中配置快照等的來源名稱。"
           }
         }
       }
@@ -16991,8 +16991,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "客製化IRL"
+            "state" : "translated",
+            "value" : "自訂 IRL"
           }
         }
       }
@@ -17103,8 +17103,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "自訂查找表"
+            "state" : "translated",
+            "value" : "自訂 LUT"
           }
         }
       }
@@ -17215,8 +17215,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "客製化愛好者"
+            "state" : "translated",
+            "value" : "自訂 LUT"
           }
         }
       }
@@ -18335,8 +18335,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "禁用的連線將不會被使用。"
+            "state" : "translated",
+            "value" : "停用的連線將不會被使用。"
           }
         }
       }
@@ -20015,8 +20015,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "啟用以允許助理從不同的設備監視和控制該設備。"
+            "state" : "translated",
+            "value" : "啟用以允許助手從不同的設備監視和控制該設備。"
           }
         }
       }
@@ -23487,8 +23487,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "快速現實生活"
+            "state" : "translated",
+            "value" : "Fast IRL"
           }
         }
       }
@@ -26511,8 +26511,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "即時查看音訊電平。"
+            "state" : "translated",
+            "value" : "開始直播以查看音量。"
           }
         }
       }
@@ -26623,8 +26623,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "即時查看快照。"
+            "state" : "translated",
+            "value" : "開始直播以查看快照。"
           }
         }
       }
@@ -28415,8 +28415,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "立即安裝舊版本的應用程式以保留舊的設定。這是最後一次警告！"
+            "state" : "translated",
+            "value" : "立即安裝舊版本的應用程式以保留舊的設定。這是最後警告！"
           }
         }
       }
@@ -31218,8 +31218,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "查找表"
+            "state" : "translated",
+            "value" : "LUT"
           }
         }
       }
@@ -33346,8 +33346,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "最小碼率下降速度"
+            "state" : "translated",
+            "value" : "最低位元率下降速度"
           }
         }
       }
@@ -33458,8 +33458,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "鏡面前置鏡頭正在直播"
+            "state" : "translated",
+            "value" : "在直播中鏡像前鏡頭"
           }
         }
       }
@@ -33570,8 +33570,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "在直播中鏡像前置鏡頭，並在 OBS 中將影片旋轉 90 度，以實現窮人的肖像直播。"
+            "state" : "translated",
+            "value" : "將前鏡頭鏡像，並在 OBS 中將影片旋轉 90 度，以實現低成本直向直播。"
           }
         }
       }
@@ -36034,8 +36034,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "尚未收到音頻電平。"
+            "state" : "translated",
+            "value" : "尚未接收到音量。"
           }
         }
       }
@@ -36258,8 +36258,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "尚未收到任何設定。"
+            "state" : "translated",
+            "value" : "尚未接收任何設定。"
           }
         }
       }
@@ -36370,8 +36370,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "尚未收到快照。"
+            "state" : "translated",
+            "value" : "尚未接收快照。"
           }
         }
       }
@@ -36482,8 +36482,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "尚未收到狀態。"
+            "state" : "translated",
+            "value" : "尚未接收狀態。"
           }
         }
       }
@@ -37940,8 +37940,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "好的"
+            "state" : "translated",
+            "value" : "OK"
           }
         }
       }
@@ -38388,8 +38388,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "開銷頻寬"
+            "state" : "translated",
+            "value" : "額外頻寬"
           }
         }
       }
@@ -38500,8 +38500,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "飛行中的資料包減少閾值"
+            "state" : "translated",
+            "value" : "傳輸中的封包減少閾值"
           }
         }
       }
@@ -40969,8 +40969,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "錄音確認"
+            "state" : "translated",
+            "value" : "確認錄製"
           }
         }
       }
@@ -41193,8 +41193,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "刷新狀態"
+            "state" : "translated",
+            "value" : "更新狀態"
           }
         }
       }
@@ -41417,8 +41417,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "重新加載瀏覽器"
+            "state" : "translated",
+            "value" : "重新載入瀏覽器"
           }
         }
       }
@@ -41529,8 +41529,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "偏僻的"
+            "state" : "translated",
+            "value" : "遠端"
           }
         }
       }
@@ -41641,8 +41641,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "遙控"
+            "state" : "translated",
+            "value" : "遠端控制"
           }
         }
       }
@@ -41865,8 +41865,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "遠端控制助手未配置"
+            "state" : "translated",
+            "value" : "遠端控制助手尚未配置"
           }
         }
       }
@@ -43657,8 +43657,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "縮放以適合視訊寬度"
+            "state" : "translated",
+            "value" : "縮放以符合視訊寬度"
           }
         }
       }
@@ -46009,8 +46009,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "慢現實生活"
+            "state" : "translated",
+            "value" : "Slow IRL"
           }
         }
       }
@@ -46457,8 +46457,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "來源名稱是 OBS 中從 Moblin 接收流的來源的名稱。"
+            "state" : "translated",
+            "value" : "來源名稱是 OBS 中從 Moblin 接收串流的來源的名稱。"
           }
         }
       }
@@ -49708,8 +49708,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "流光"
+            "state" : "translated",
+            "value" : "實況主"
           }
         }
       }
@@ -51388,8 +51388,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "RTT過高時碼率下降速度加快。"
+            "state" : "translated",
+            "value" : "RTT過高時位元率下降速度加快。"
           }
         }
       }
@@ -51500,8 +51500,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "當傳輸中的資料包數量高於此值時，位元率將快速下降。"
+            "state" : "translated",
+            "value" : "當傳輸中的封包數量高於此值時，位元率將快速下降。"
           }
         }
       }
@@ -51836,8 +51836,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "RTT過高時的最小碼率下降速度。"
+            "state" : "translated",
+            "value" : "RTT過高時的最低位元率下降速度。"
           }
         }
       }
@@ -54975,8 +54975,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "未知的流狀態。"
+            "state" : "translated",
+            "value" : "未知的串流狀態。"
           }
         }
       }
@@ -55535,8 +55535,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "高達 50 Mbps。設定為 0 表示自動。"
+            "state" : "translated",
+            "value" : "最高設定 50 Mbps。設定為 0 表示自動。"
           }
         }
       }
@@ -56207,8 +56207,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "使用快速 IRL 演算法，除非您知道自己在做什麼！"
+            "state" : "translated",
+            "value" : "進階用途，使用快速 IRL 演算法。"
           }
         }
       }
@@ -56431,8 +56431,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "主播和助手皆使用。"
+            "state" : "translated",
+            "value" : "實況主和助手皆使用。"
           }
         }
       }
@@ -58111,8 +58111,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "等待遙控串流媒體連接..."
+            "state" : "translated",
+            "value" : "等待遠端控制端連接..."
           }
         }
       }
@@ -59231,8 +59231,8 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "X標記"
+            "state" : "translated",
+            "value" : "X記號"
           }
         }
       }
