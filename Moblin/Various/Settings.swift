@@ -116,8 +116,8 @@ let adaptiveBitrateAlgorithms = SettingsStreamSrtAdaptiveBitrateAlgorithm.allCas
 class SettingsStreamSrtAdaptiveBitrateFastIrlSettings: Codable {
     var packetsInFlight: Int32 = 200
 
-    func clone() -> SettingsStreamSrtAdaptiveBitrateCustomSettings {
-        let new = SettingsStreamSrtAdaptiveBitrateCustomSettings()
+    func clone() -> SettingsStreamSrtAdaptiveBitrateFastIrlSettings {
+        let new = SettingsStreamSrtAdaptiveBitrateFastIrlSettings()
         new.packetsInFlight = packetsInFlight
         return new
     }
@@ -149,6 +149,7 @@ class SettingsStreamSrtAdaptiveBitrate: Codable {
     func clone() -> SettingsStreamSrtAdaptiveBitrate {
         let new = SettingsStreamSrtAdaptiveBitrate()
         new.algorithm = algorithm
+        new.fastIrlSettings = fastIrlSettings!.clone()
         new.customSettings = customSettings.clone()
         return new
     }
@@ -1156,6 +1157,7 @@ class SettingsChat: Codable {
     var maximumAge: Int? = 30
     var maximumAgeEnabled: Bool? = false
     var meInUsernameColor: Bool? = true
+    var enabled: Bool? = true
 }
 
 enum SettingsMic: String, Codable, CaseIterable {
@@ -2301,6 +2303,10 @@ final class Settings {
         }
         for stream in database.streams where stream.srt.adaptiveBitrate!.fastIrlSettings == nil {
             stream.srt.adaptiveBitrate!.fastIrlSettings = .init()
+            store()
+        }
+        if realDatabase.chat.enabled == nil {
+            realDatabase.chat.enabled = true
             store()
         }
     }

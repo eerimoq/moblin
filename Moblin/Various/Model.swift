@@ -2256,7 +2256,7 @@ final class Model: ObservableObject {
         reloadLocation()
     }
 
-    private func reloadChats() {
+    func reloadChats() {
         reloadTwitchChat()
         reloadKickPusher()
         reloadYouTubeLiveChat()
@@ -2405,7 +2405,7 @@ final class Model: ObservableObject {
     }
 
     func isTwitchChatConfigured() -> Bool {
-        return stream.twitchEnabled! && stream.twitchChannelName != ""
+        return database.chat.enabled! && stream.twitchEnabled! && stream.twitchChannelName != ""
     }
 
     func isTwitchChatConnected() -> Bool {
@@ -2421,7 +2421,7 @@ final class Model: ObservableObject {
     }
 
     func isKickPusherConfigured() -> Bool {
-        return stream.kickEnabled! && stream.kickChatroomId != ""
+        return database.chat.enabled! && stream.kickEnabled! && stream.kickChatroomId != ""
     }
 
     func isKickPusherConnected() -> Bool {
@@ -2433,7 +2433,7 @@ final class Model: ObservableObject {
     }
 
     func isYouTubeLiveChatConfigured() -> Bool {
-        return stream.youTubeEnabled! && stream.youTubeApiKey! != "" && stream.youTubeVideoId! != ""
+        return database.chat.enabled! && stream.youTubeEnabled! && stream.youTubeApiKey! != "" && stream.youTubeVideoId! != ""
     }
 
     func isYouTubeLiveChatConnected() -> Bool {
@@ -2445,7 +2445,7 @@ final class Model: ObservableObject {
     }
 
     func isAfreecaTvChatConfigured() -> Bool {
-        return stream.afreecaTvEnabled! && stream.afreecaTvChannelName! != "" && stream
+        return database.chat.enabled! && stream.afreecaTvEnabled! && stream.afreecaTvChannelName! != "" && stream
             .afreecaTvStreamId! != ""
     }
 

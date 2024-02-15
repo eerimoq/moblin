@@ -78,6 +78,7 @@ struct StreamOverlayView: View {
                     )
                 }
             }
+            .opacity(model.database.chat.enabled! ? 1 : 0)
             .allowsHitTesting(model.interactiveChat)
             HStack {
                 Spacer()

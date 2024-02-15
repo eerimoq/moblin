@@ -25,6 +25,15 @@ struct LocalOverlaysChatSettingsView: View {
     var body: some View {
         Form {
             Section {
+                Toggle("Enabled", isOn: Binding(get: {
+                    model.database.chat.enabled!
+                }, set: { value in
+                    model.database.chat.enabled = value
+                    model.store()
+                    model.reloadChats()
+                }))
+            }
+            Section {
                 HStack {
                     Text("Font size")
                     Slider(

@@ -713,13 +713,6 @@ func formatAudioLevelChannels(channels: Int) -> String {
 }
 
 extension SettingsPrivacyRegion {
-    func mapRegion() -> MKCoordinateRegion {
-        return MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: latitude, longitude: longitude),
-            span: MKCoordinateSpan(latitudeDelta: latitudeDelta, longitudeDelta: longitudeDelta)
-        )
-    }
-
     func contains(coordinate: CLLocationCoordinate2D) -> Bool {
         cos((latitude - coordinate.latitude) * Double.pi / 180) >
             cos(latitudeDelta / 2.0 * Double.pi / 180) &&
