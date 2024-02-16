@@ -1211,7 +1211,10 @@ final class Model: ObservableObject {
     }
 
     private func updateLocation() {
-        let newLocation = locationManager.status()
+        var newLocation = locationManager.status()
+        if let realtimeIrl {
+            newLocation += realtimeIrl.status()
+        }
         if location != newLocation {
             location = newLocation
         }
