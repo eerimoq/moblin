@@ -8,6 +8,17 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.177.0", date: "2024-02-13", changes: [
+        "• Configurable location privacy regions. Your location will not be shared when in a privacy region.",
+        "  • Settings → Location",
+        "• Toggle in Settings → Location to enable location services.",
+        "• Traditional chinese translation updated. ✍️ 一人HitoriGS",
+        "• Configurable number of packets in flight in FastIRL algorithm.",
+        "  • In my setup 200 is a bit low. The algorithm often decreases bitrate too much when switching camera.",
+        "• Send more fake frames when switching camera for less gaps in video stream.",
+        "• Toggle to enable/disable chat (and hide/show it). 💡 ariathome",
+        "• Fix draw point on stream locally.",
+    ]),
     Version(version: "0.176.0", date: "2024-02-13", changes: [
         "• Fix draw on stream when 16:9 video fills screen width but not height. 🐛 AdAstra",
         "• Fix lingering marker on RealtimeIRL map. 🐛 Rubaz",
