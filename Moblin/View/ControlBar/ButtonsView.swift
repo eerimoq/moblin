@@ -78,8 +78,6 @@ struct MicButtonView: View {
     @EnvironmentObject var model: Model
     @State var selectedMic: Mic
     var done: () -> Void
-    @State var micFollowsScene: Bool = false
-    @State var externalMicOverrides: Bool = false
 
     var body: some View {
         Form {

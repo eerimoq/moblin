@@ -89,8 +89,6 @@ struct SceneSettingsView: View {
         model.sceneUpdated(store: true)
     }
 
-    private func onMicChange(micId _: String) {}
-
     private func canWidgetExpand(widget: SettingsWidget) -> Bool {
         return widgetHasPosition(id: widget.id) || widgetHasSize(id: widget.id)
     }
