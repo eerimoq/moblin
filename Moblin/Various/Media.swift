@@ -136,7 +136,10 @@ final class Media: NSObject {
 
     func getSrtStats(overlay: Bool) -> [String]? {
         let stats = srtConnection.performanceData
-        adaptiveBitrate?.update(stats: stats)
+        adaptiveBitrate?.update(stats: StreamStats(
+            rttMs: stats.msRTT,
+            packetsInFlight: Double(stats.pktFlightSize)
+        ))
         guard overlay else {
             return nil
         }

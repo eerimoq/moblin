@@ -5,6 +5,11 @@ protocol AdaptiveBitrateDelegate: AnyObject {
     func adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32)
 }
 
+struct StreamStats {
+    let rttMs: Double
+    let packetsInFlight: Double
+}
+
 struct AdaptiveBitrateSettings {
     var packetsInFlight: Int32
     var rttDiffHighFactor: Double
@@ -56,27 +61,27 @@ class AdaptiveBitrate {
         self.settings = settings
     }
 
-    private func calcRtts(_ stats: SRTPerformanceData) {
+    private func calcRtts(_ stats: StreamStats) {
         if avgRtt < 1 {
-            avgRtt = stats.msRTT
+            avgRtt = stats.rttMs
         }
-        if avgRtt > stats.msRTT {
+        if avgRtt > stats.rttMs {
             avgRtt *= 0.60
-            avgRtt += stats.msRTT * 0.40
+            avgRtt += stats.rttMs * 0.40
         } else {
             avgRtt *= 0.99
-            if stats.msRTT < 450 {
-                avgRtt += stats.msRTT * 0.01
+            if stats.rttMs < 450 {
+                avgRtt += stats.rttMs * 0.01
             } else {
                 avgRtt += 450 * 0.001
             }
         }
-        if fastRtt > stats.msRTT {
+        if fastRtt > stats.rttMs {
             fastRtt *= 0.70
-            fastRtt += stats.msRTT * 0.30
+            fastRtt += stats.rttMs * 0.30
         } else {
             fastRtt *= 0.90
-            fastRtt += stats.msRTT * 0.10
+            fastRtt += stats.rttMs * 0.10
         }
         if avgRtt > 450 {
             avgRtt = 450
@@ -86,12 +91,12 @@ class AdaptiveBitrate {
     }
 
     private func increaseTempMaxBitrate(
-        stats: SRTPerformanceData,
+        stats: StreamStats,
         pif: Double,
         allowedRttJitter: Double,
         allowedPifJitter: Int32
     ) {
-        var pifDiffThing = stats.pktFlightSize - Int32(pif)
+        var pifDiffThing = Int32(stats.packetsInFlight - pif)
         if pifDiffThing < 0 {
             pifDiffThing = 0
         }
@@ -100,7 +105,7 @@ class AdaptiveBitrate {
         }
         pifDiffThing = settings.packetsInFlight - pifDiffThing
         if pif < Double(settings.packetsInFlight), fastRtt <= avgRtt + allowedRttJitter {
-            if stats.pktFlightSize - Int32(pif) < allowedPifJitter {
+            if Int32(stats.packetsInFlight - pif) < allowedPifJitter {
                 tempMaxBitrate += (settings.pifDiffIncreaseFactor * pifDiffThing) / settings.packetsInFlight
                 if tempMaxBitrate > targetBitrate {
                     tempMaxBitrate = targetBitrate
@@ -109,19 +114,19 @@ class AdaptiveBitrate {
         }
     }
 
-    private func calcSmoothedPif(_ stats: SRTPerformanceData) {
+    private func calcSmoothedPif(_ stats: StreamStats) {
         // increase slowly
-        if stats.pktFlightSize > Int32(smoothPif) {
+        if stats.packetsInFlight > smoothPif {
             smoothPif *= 0.98
-            smoothPif += Double(stats.pktFlightSize) * 0.02
+            smoothPif += stats.packetsInFlight * 0.02
         } else {
             // decrease fast because we really want to be closer to the ideal pif
             smoothPif *= 0.90
-            smoothPif += Double(stats.pktFlightSize) * 0.1
+            smoothPif += stats.packetsInFlight * 0.1
         }
 
         fastPif *= 0.67
-        fastPif += Double(stats.pktFlightSize) * 0.33
+        fastPif += stats.packetsInFlight * 0.33
     }
 
     private func decreaseMaxRateIfPifIsHigh(
@@ -208,12 +213,12 @@ class AdaptiveBitrate {
     }
 
     private func decreaseMaxRateIfRttDiffIsHigh(
-        _ stats: SRTPerformanceData,
+        _ stats: StreamStats,
         factor: Double,
         rttSpikeAllowed: Double,
         minimumDecrease: Int32
     ) {
-        if stats.msRTT > avgRtt + rttSpikeAllowed {
+        if stats.rttMs > avgRtt + rttSpikeAllowed {
             let newMaxBitrate = Int32(Double(tempMaxBitrate) * factor)
             let differece = tempMaxBitrate - newMaxBitrate
             if differece < minimumDecrease {
@@ -221,7 +226,7 @@ class AdaptiveBitrate {
                 logAdaptiveAcion(
                     actionTaken: """
                     RTT: decreasing bitrate by \(minimumDecrease / 1000)k, msrtt \
-                    \(Int(stats.msRTT)) > avgrtt + allow \(Int(avgRtt)) + \(Int(rttSpikeAllowed))
+                    \(Int(stats.rttMs)) > avgrtt + allow \(Int(avgRtt)) + \(Int(rttSpikeAllowed))
                     """
                 )
             } else {
@@ -229,7 +234,7 @@ class AdaptiveBitrate {
                 logAdaptiveAcion(
                     actionTaken: """
                     RTT: decreasing bitrate by \(Int((100 * (1 - factor)).rounded()))%, msrtt \(Int(stats
-                            .msRTT)) > \
+                            .rttMs)) > \
                     avgrtt + allow \(Int(avgRtt)) + \(Int(rttSpikeAllowed))
                     """
                 )
@@ -292,7 +297,7 @@ class AdaptiveBitrate {
     // fluctuate so much in IRL that we kind of bounce from 0 to tempmax this gives us
     // a higher overall bitrate and stops us from dropping the bitrate very low and
     // then taking forever to go back up
-    func update(stats: SRTPerformanceData) {
+    func update(stats: StreamStats) {
         calcSmoothedPif(stats)
         calcRtts(stats)
         increaseTempMaxBitrate(
