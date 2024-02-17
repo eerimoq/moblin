@@ -223,17 +223,19 @@ struct SceneSettingsView: View {
                 })
                 .popover(isPresented: $showingAddWidget) {
                     VStack {
-                        HStack {
-                            Spacer()
-                            Button(action: {
-                                showingAddWidget = false
-                            }, label: {
-                                Text("Cancel")
-                                    .padding(5)
-                                    .foregroundColor(.blue)
-                            })
+                        if UIDevice.current.userInterfaceIdiom == .phone {
+                            HStack {
+                                Spacer()
+                                Button(action: {
+                                    showingAddWidget = false
+                                }, label: {
+                                    Text("Cancel")
+                                        .padding(5)
+                                        .foregroundColor(.blue)
+                                })
+                            }
                         }
-                        Form {
+                        let form = Form {
                             Section("Widget name") {
                                 ForEach(widgets) { widget in
                                     Button(action: {
@@ -249,6 +251,12 @@ struct SceneSettingsView: View {
                                     })
                                 }
                             }
+                        }
+                        if UIDevice.current.userInterfaceIdiom != .phone {
+                            form
+                                .frame(width: 300, height: 400)
+                        } else {
+                            form
                         }
                     }
                 }
@@ -291,17 +299,19 @@ struct SceneSettingsView: View {
                 })
                 .popover(isPresented: $showingAddButton) {
                     VStack {
-                        HStack {
-                            Spacer()
-                            Button(action: {
-                                showingAddButton = false
-                            }, label: {
-                                Text("Cancel")
-                                    .padding(5)
-                                    .foregroundColor(.blue)
-                            })
+                        if UIDevice.current.userInterfaceIdiom == .phone {
+                            HStack {
+                                Spacer()
+                                Button(action: {
+                                    showingAddButton = false
+                                }, label: {
+                                    Text("Cancel")
+                                        .padding(5)
+                                        .foregroundColor(.blue)
+                                })
+                            }
                         }
-                        Form {
+                        let form = Form {
                             Section("Button name") {
                                 ForEach(buttons) { button in
                                     Button(action: {
@@ -316,6 +326,12 @@ struct SceneSettingsView: View {
                                     })
                                 }
                             }
+                        }
+                        if UIDevice.current.userInterfaceIdiom != .phone {
+                            form
+                                .frame(width: 300, height: 400)
+                        } else {
+                            form
                         }
                     }
                 }
