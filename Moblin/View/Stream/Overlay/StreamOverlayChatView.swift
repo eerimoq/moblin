@@ -336,7 +336,7 @@ struct StreamOverlayChatView: View {
                                                     model.endOfChatReachedWhenPaused()
                                                 }
                                             } else if !model.chatPaused {
-                                                if !model.chatPosts.isEmpty && model.interactiveChat {
+                                                if !model.chatPosts.isEmpty, model.interactiveChat {
                                                     model.pauseChat()
                                                 }
                                             }

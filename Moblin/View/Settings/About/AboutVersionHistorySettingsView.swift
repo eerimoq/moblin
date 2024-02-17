@@ -13,7 +13,7 @@ private let versions = [
         "  • However, screen is black for a short while.",
         "• Show location shared counter in location information top right of UI.",
         "• Enable iPad and Mac (Designed for iPad) destinations. Force landscape on iPad. 🧑‍🏭 Spillmaker",
-        "• Only allow pausing chat when in interactive chat mode. 🐛 ariathome, fonz"
+        "• Only allow pausing chat when in interactive chat mode. 🐛 ariathome, fonz",
     ]),
     Version(version: "0.177.0", date: "2024-02-15", changes: [
         "• Configurable location privacy regions. Your location will not be shared when in a privacy region.",
