@@ -251,12 +251,13 @@ struct StreamOverlayChatView: View {
     @State var scrollViewSize: CGSize = .zero
 
     private func scrollToBottom(reader: ScrollViewProxy) {
-        if !model.chatPaused {
-            if let lastPost = model.chatPosts.last {
-                reader.scrollTo(lastPost, anchor: .bottom)
-            } else {
-                reader.scrollTo(chatId, anchor: .bottom)
-            }
+        guard !model.chatPaused else {
+            return
+        }
+        if let lastPost = model.chatPosts.last {
+            reader.scrollTo(lastPost, anchor: .bottom)
+        } else {
+            reader.scrollTo(chatId, anchor: .bottom)
         }
     }
 
@@ -335,7 +336,7 @@ struct StreamOverlayChatView: View {
                                                     model.endOfChatReachedWhenPaused()
                                                 }
                                             } else if !model.chatPaused {
-                                                if !model.chatPosts.isEmpty {
+                                                if !model.chatPosts.isEmpty && model.interactiveChat {
                                                     model.pauseChat()
                                                 }
                                             }
