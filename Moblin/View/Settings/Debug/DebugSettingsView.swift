@@ -67,12 +67,6 @@ struct DebugSettingsView: View {
                 }))
             }
             Section {
-                Toggle("Mic per scene", isOn: Binding(get: {
-                    model.database.debug!.sceneMic!
-                }, set: { value in
-                    model.database.debug!.sceneMic = value
-                    model.store()
-                }))
                 HStack {
                     Text("Video blackish")
                     Slider(

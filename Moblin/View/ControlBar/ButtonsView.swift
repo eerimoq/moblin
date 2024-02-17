@@ -100,12 +100,6 @@ struct MicButtonView: View {
                 .pickerStyle(.inline)
                 .labelsHidden()
             }
-            if model.database.debug!.sceneMic! {
-                Section {
-                    Toggle("Mic follows scene", isOn: $micFollowsScene)
-                    Toggle("External mic overrides follow scene toggle", isOn: $externalMicOverrides)
-                }
-            }
         }
         .navigationTitle("Mic")
         .toolbar {

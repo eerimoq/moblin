@@ -1192,7 +1192,6 @@ class SettingsDebug: Codable {
     var srtOverlay: Bool = false
     var srtOverheadBandwidth: Int32? = 25
     var letItSnow: Bool? = false
-    var sceneMic: Bool? = false
     var recordingsFolder: Bool? = false
     var cameraSwitchRemoveBlackish: Float? = 0.3
     var maximumBandwidthFollowInput: Bool? = true
@@ -2127,10 +2126,6 @@ final class Settings {
         }
         if realDatabase.vibrate == nil {
             realDatabase.vibrate = false
-            store()
-        }
-        if realDatabase.debug!.sceneMic == nil {
-            realDatabase.debug!.sceneMic = false
             store()
         }
         for stream in realDatabase.streams where stream.recording == nil {

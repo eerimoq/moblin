@@ -22265,6 +22265,7 @@
       }
     },
     "External mic overrides follow scene toggle" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -32684,6 +32685,7 @@
       }
     },
     "Mic follows scene" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -33020,6 +33022,7 @@
       }
     },
     "Mic per scene" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -33132,6 +33135,7 @@
       }
     },
     "Mic used in this scene when \"Mic follows scene\" toggle is enabled." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
