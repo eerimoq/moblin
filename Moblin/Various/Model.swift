@@ -3456,7 +3456,15 @@ final class Model: ObservableObject {
     }
 
     func reattachCamera() {
+        detachCamera()
+        attachCamera()
+    }
+
+    func detachCamera() {
         media.attachCamera(device: nil, secondDevice: nil, videoStabilizationMode: .off, videoMirrored: false)
+    }
+
+    func attachCamera() {
         let isMirrored = getVideoMirroredOnScreen()
         media.attachCamera(
             device: cameraDevice,

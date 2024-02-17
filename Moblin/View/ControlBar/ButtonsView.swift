@@ -705,6 +705,7 @@ struct ButtonsInnerView: View {
         }
         model.showingRemoteControl = true
         model.updateRemoteControlAssistantStatus()
+        model.detachCamera()
     }
 
     private func drawAction(state _: ButtonState) {

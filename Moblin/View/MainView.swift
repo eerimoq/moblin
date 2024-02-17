@@ -194,6 +194,7 @@ struct MainView: View {
                 NavigationStack {
                     RemoteControlView {
                         model.showingRemoteControl = false
+                        model.attachCamera()
                     }
                 }
             }
