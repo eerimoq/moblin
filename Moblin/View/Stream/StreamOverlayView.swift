@@ -46,6 +46,14 @@ struct StreamOverlayView: View {
         )
     }
 
+    private func leadingPadding() -> CGFloat {
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            return 15
+        } else {
+            return 0
+        }
+    }
+
     var body: some View {
         ZStack {
             if model.database.tapToFocus, let focusPoint = model.manualFocusPoint {
@@ -86,11 +94,13 @@ struct StreamOverlayView: View {
             }
             HStack {
                 LeftOverlayView()
+                    .padding([.leading], leadingPadding())
                 Spacer()
             }
             .allowsHitTesting(false)
             HStack {
                 StreamOverlayDebugView()
+                    .padding([.leading], leadingPadding())
                 Spacer()
             }
             .allowsHitTesting(false)

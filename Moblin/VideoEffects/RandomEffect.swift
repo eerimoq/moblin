@@ -39,7 +39,6 @@ final class RandomEffect: VideoEffect {
             if let filter {
                 let title = CIFilter.localizedName(forFilterName: filter.name) ?? filter
                     .name
-                logger.info("Video effect \(title)")
                 switch name {
                 case "CISpotLight":
                     setSpotLight(
