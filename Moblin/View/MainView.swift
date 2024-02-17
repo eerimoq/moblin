@@ -63,31 +63,42 @@ struct MainView: View {
             HStack(spacing: 0) {
                 ZStack {
                     GeometryReader { metrics in
-                        streamView
-                            .ignoresSafeArea()
-                            .onTapGesture(count: 1) { location in
-                                guard model.database.tapToFocus else {
-                                    return
+                        HStack {
+                            Spacer(minLength: /*@START_MENU_TOKEN@*/0/*@END_MENU_TOKEN@*/)
+                            VStack {
+                                Spacer(minLength: 0)
+                                ZStack {
+                                    streamView
+                                        .onTapGesture(count: 1) { location in
+                                            guard model.database.tapToFocus else {
+                                                return
+                                            }
+                                            let x = (location.x / metrics.size.width)
+                                                .clamped(to: 0 ... 1)
+                                            let y = (location.y / metrics.size.height)
+                                                .clamped(to: 0 ... 1)
+                                            model.setFocusPointOfInterest(focusPoint: CGPoint(
+                                                x: x,
+                                                y: y
+                                            ))
+                                        }
+                                        .onLongPressGesture(perform: {
+                                            guard model.database.tapToFocus else {
+                                                return
+                                            }
+                                            model.setAutoFocus()
+                                        })
+                                    if model.showingGrid {
+                                        StreamGridView()
+                                    }
                                 }
-                                let x = (location.x / metrics.size.width)
-                                    .clamped(to: 0 ... 1)
-                                let y = (location.y / metrics.size.height)
-                                    .clamped(to: 0 ... 1)
-                                model.setFocusPointOfInterest(focusPoint: CGPoint(
-                                    x: x,
-                                    y: y
-                                ))
+                                .aspectRatio(16 / 9, contentMode: .fit)
+                                Spacer(minLength: 0)
                             }
-                            .onLongPressGesture(perform: {
-                                guard model.database.tapToFocus else {
-                                    return
-                                }
-                                model.setAutoFocus()
-                            })
-                        if model.showingGrid {
-                            StreamGridView()
-                                .ignoresSafeArea()
                         }
+                        .background(.black)
+                        .ignoresSafeArea()
+                        .edgesIgnoringSafeArea(.all)
                         ForEach(model.browsers) { browser in
                             BrowserView(browser: browser)
                                 .frame(

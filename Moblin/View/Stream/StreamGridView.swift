@@ -18,7 +18,6 @@ struct StreamGridView: View {
             path.addLine(to: CGPoint(x: 2 * width, y: size.height))
             context.stroke(path, with: .color(.gray), lineWidth: 1.5)
         }
-        .ignoresSafeArea()
         .allowsHitTesting(false)
     }
 }
