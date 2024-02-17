@@ -1164,6 +1164,7 @@ enum SettingsMic: String, Codable, CaseIterable {
     case bottom = "Bottom"
     case front = "Front"
     case back = "Back"
+    case top = "Top"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsMic(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .bottom
@@ -1492,7 +1493,7 @@ class Database: Codable {
     var videoStabilizationMode: SettingsVideoStabilizationMode = .off
     var chat: SettingsChat = .init()
     var batteryPercentage: Bool? = true
-    var mic: SettingsMic? = .bottom
+    var mic: SettingsMic? = getDefaultMic()
     var debug: SettingsDebug? = .init()
     var quickButtons: SettingsQuickButtons? = .init()
     var globalButtons: [SettingsButton]? = []
@@ -1820,6 +1821,25 @@ private func addScenesToGameController(database: Database) {
     button.sceneId = database.scenes[1].id
 }
 
+private func getDefaultMic() -> SettingsMic {
+    let session = AVAudioSession.sharedInstance()
+    for inputPort in session.availableInputs ?? [] {
+        if inputPort.portType != .builtInMic {
+            continue
+        }
+        if let dataSources = inputPort.dataSources, !dataSources.isEmpty {
+            for dataSource in dataSources {
+                if dataSource.orientation == .bottom {
+                    return .bottom
+                } else if dataSource.orientation == .top {
+                    return .top
+                }
+            }
+        }
+    }
+    return .bottom
+}
+
 private func createDefault() -> Database {
     let database = Database()
     database.backCameraId = getBestBackCameraId()
@@ -1916,7 +1936,7 @@ final class Settings {
             store()
         }
         if realDatabase.mic == nil {
-            realDatabase.mic = .bottom
+            realDatabase.mic = getDefaultMic()
             store()
         }
         if realDatabase.debug == nil {

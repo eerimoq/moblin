@@ -948,6 +948,8 @@ final class Model: ObservableObject {
             wantedOrientation = .front
         case .back:
             wantedOrientation = .back
+        case .top:
+            wantedOrientation = .top
         }
         let session = AVAudioSession.sharedInstance()
         for inputPort in session.availableInputs ?? [] {
@@ -955,9 +957,7 @@ final class Model: ObservableObject {
                 continue
             }
             if let dataSources = inputPort.dataSources, !dataSources.isEmpty {
-                for dataSource in dataSources
-                    where dataSource.orientation == wantedOrientation
-                {
+                for dataSource in dataSources where dataSource.orientation == wantedOrientation {
                     do {
                         try setBuiltInMicAudioMode(dataSource: dataSource)
                         try inputPort.setPreferredDataSource(dataSource)
