@@ -369,6 +369,16 @@ final class Media: NSObject {
         netStream.setColorSpace(colorSpace: colorSpace, onComplete: onComplete)
     }
 
+    func updateVideoStreamBitrate() {
+        var bitRate: UInt32
+        if let adaptiveBitrate {
+            bitRate = UInt32(1000 * adaptiveBitrate.getCurrentBitrate)
+        } else {
+            bitRate = netStream.videoSettings.bitRate
+        }
+        netStream.videoSettings.bitRate = bitRate
+    }
+
     func setVideoStreamBitrate(bitrate: UInt32) {
         adaptiveBitrate?.setTargetBitrate(bitrate: bitrate)
         netStream.videoSettings.bitRate = bitrate

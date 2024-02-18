@@ -1713,6 +1713,9 @@ final class Model: ObservableObject {
             self.updateObsStatus()
             self.updateRemoteControlAssistantStatus()
             self.updateRemoteControlStatus()
+            if self.stream.enabled {
+                self.media.updateVideoStreamBitrate()
+            }
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
             self.updateAdaptiveBitrate()
