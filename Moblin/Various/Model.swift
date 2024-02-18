@@ -2186,7 +2186,7 @@ final class Model: ObservableObject {
         case .rtmp:
             media.rtmpStartStream(url: stream.url,
                                   targetBitrate: stream.bitrate,
-                                  adaptiveBitrate: stream.adaptiveBitrate)
+                                  adaptiveBitrate: stream.adaptiveBitrate && false)
         case .srt:
             payloadSize = stream.srt.mpegtsPacketsPerPacket * 188
             media.srtStartStream(
