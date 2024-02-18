@@ -203,11 +203,11 @@ class AdaptiveBitrate {
         return adaptiveActionsTaken
     }
 
-    var GetFastPif: Int32 {
+    var getFastPif: Int32 {
         return Int32(fastPif)
     }
 
-    var GetSmoothPif: Int32 {
+    var getSmoothPif: Int32 {
         return Int32(smoothPif)
     }
 

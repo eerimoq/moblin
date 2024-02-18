@@ -1715,7 +1715,7 @@ final class Model: ObservableObject {
             self.updateRemoteControlStatus()
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
-            self.updateSrtDebugLines()
+            self.updateAdaptiveBitrate()
             if self.database.show.audioBar {
                 self.updateAudioLevel()
             }
@@ -1771,8 +1771,8 @@ final class Model: ObservableObject {
         return luts.first { $0.id == id }
     }
 
-    private func updateSrtDebugLines() {
-        if let lines = media.getSrtStats(overlay: database.debug!.srtOverlay) {
+    private func updateAdaptiveBitrate() {
+        if let lines = media.updateAdaptiveBitrate(overlay: database.debug!.srtOverlay) {
             srtDebugLines = lines
             if logger.debugEnabled && isLive {
                 logger.debug(lines.joined(separator: ", "))
@@ -2181,7 +2181,9 @@ final class Model: ObservableObject {
         latestLowBitrateDate = Date()
         switch stream.getProtocol() {
         case .rtmp:
-            rtmpStartStream()
+            media.rtmpStartStream(url: stream.url,
+                                  targetBitrate: stream.bitrate,
+                                  adaptiveBitrate: stream.adaptiveBitrate)
         case .srt:
             payloadSize = stream.srt.mpegtsPacketsPerPacket * 188
             media.srtStartStream(
@@ -2197,8 +2199,8 @@ final class Model: ObservableObject {
                 networkInterfaceNames: database.networkInterfaceNames!,
                 connectionPriorities: stream.srt.connectionPriorities!
             )
-            updateAdaptiveBitrateIfEnabled(stream: stream)
         }
+        updateAdaptiveBitrateIfEnabled(stream: stream)
         updateSpeed(now: Date())
     }
 
@@ -3661,10 +3663,6 @@ final class Model: ObservableObject {
         case .cinematic:
             return .cinematic
         }
-    }
-
-    private func rtmpStartStream() {
-        media.rtmpStartStream(url: stream.url)
     }
 
     func toggleTorch() {

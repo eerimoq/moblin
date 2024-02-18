@@ -134,36 +134,64 @@ final class Media: NSObject {
         srtla?.setNetworkInterfaceNames(networkInterfaceNames: networkInterfaceNames)
     }
 
-    func getSrtStats(overlay: Bool) -> [String]? {
-        let stats = srtConnection.performanceData
-        adaptiveBitrate?.update(stats: StreamStats(
-            rttMs: stats.msRTT,
-            packetsInFlight: Double(stats.pktFlightSize)
-        ))
-        guard overlay else {
-            return nil
+    func updateAdaptiveBitrate(overlay: Bool) -> [String]? {
+        if srtStream != nil {
+            let stats = srtConnection.performanceData
+            adaptiveBitrate?.update(stats: StreamStats(
+                rttMs: stats.msRTT,
+                packetsInFlight: Double(stats.pktFlightSize)
+            ))
+            guard overlay else {
+                return nil
+            }
+            if let adaptiveBitrate {
+                return [
+                    "R: \(stats.pktRetransTotal) N: \(stats.pktRecvNAKTotal) S: \(stats.pktSndDropTotal)",
+                    "msRTT: \(stats.msRTT)",
+                    """
+                    pktFlightSize: \(stats.pktFlightSize)   \
+                    \(adaptiveBitrate.getFastPif)   \
+                    \(adaptiveBitrate.getSmoothPif)
+                    """,
+                    "B: \(adaptiveBitrate.getCurrentBitrate) /  \(adaptiveBitrate.getTempMaxBitrate)",
+                ] + adaptiveBitrate.getAdaptiveActions
+            } else {
+                return [
+                    "pktRetransTotal: \(stats.pktRetransTotal)",
+                    "pktRecvNAKTotal: \(stats.pktRecvNAKTotal)",
+                    "pktSndDropTotal: \(stats.pktSndDropTotal)",
+                    "msRTT: \(stats.msRTT)",
+                    "pktFlightSize: \(stats.pktFlightSize)",
+                    "pktSndBuf: \(stats.pktSndBuf)",
+                ]
+            }
+        } else if let rtmpStream {
+            let stats = rtmpStream.info.stats.value
+            adaptiveBitrate?.update(stats: StreamStats(
+                rttMs: stats.rttMs,
+                packetsInFlight: Double(stats.packetsInFlight)
+            ))
+            guard overlay else {
+                return nil
+            }
+            if let adaptiveBitrate {
+                return [
+                    "rttMs: \(stats.rttMs)",
+                    """
+                    packetsInFlight: \(stats.packetsInFlight)   \
+                    \(adaptiveBitrate.getFastPif)   \
+                    \(adaptiveBitrate.getSmoothPif)
+                    """,
+                    "B: \(adaptiveBitrate.getCurrentBitrate) /  \(adaptiveBitrate.getTempMaxBitrate)",
+                ] + adaptiveBitrate.getAdaptiveActions
+            } else {
+                return [
+                    "rttMs: \(stats.rttMs)",
+                    "packetsInFlight: \(stats.packetsInFlight)",
+                ]
+            }
         }
-        if let adapativeStats = adaptiveBitrate {
-            return [
-                "R: \(stats.pktRetransTotal) N: \(stats.pktRecvNAKTotal) S: \(stats.pktSndDropTotal)",
-                "msRTT: \(stats.msRTT)",
-                """
-                pktFlightSize: \(stats.pktFlightSize)   \
-                \(adapativeStats.GetFastPif)   \
-                \(adapativeStats.GetSmoothPif)
-                """,
-                "B: \(adapativeStats.getCurrentBitrate) /  \(adapativeStats.getTempMaxBitrate)",
-            ] + adapativeStats.getAdaptiveActions
-        } else {
-            return [
-                "pktRetransTotal: \(stats.pktRetransTotal)",
-                "pktRecvNAKTotal: \(stats.pktRecvNAKTotal)",
-                "pktSndDropTotal: \(stats.pktSndDropTotal)",
-                "msRTT: \(stats.msRTT)",
-                "pktFlightSize: \(stats.pktFlightSize)",
-                "pktSndBuf: \(stats.pktSndBuf)",
-            ]
-        }
+        return nil
     }
 
     func updateSrtSpeed() {
@@ -248,13 +276,24 @@ final class Media: NSObject {
         return urlComponents.url
     }
 
-    func rtmpStartStream(url: String) {
+    func rtmpStartStream(url: String,
+                         targetBitrate: UInt32,
+                         adaptiveBitrate adaptiveBitrateEnabled: Bool)
+    {
         rtmpStreamName = makeRtmpStreamName(url: url)
         rtmpConnection.addEventListener(
             .rtmpStatus,
             selector: #selector(rtmpStatusHandler),
             observer: self
         )
+        if adaptiveBitrateEnabled {
+            adaptiveBitrate = AdaptiveBitrate(
+                targetBitrate: targetBitrate,
+                delegate: self
+            )
+        } else {
+            adaptiveBitrate = nil
+        }
         rtmpConnection.connect(makeRtmpUri(url: url))
     }
 
@@ -266,6 +305,7 @@ final class Media: NSObject {
         )
         rtmpStream?.close()
         rtmpConnection.close()
+        adaptiveBitrate = nil
     }
 
     @objc
