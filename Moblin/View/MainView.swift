@@ -58,15 +58,28 @@ struct MainView: View {
         }
     }
 
+    func drawFocus(context: GraphicsContext, metrics: GeometryProxy, focusPoint: CGPoint) {
+        let sideLength = 70.0
+        let x = metrics.size.width * focusPoint.x - sideLength / 2
+        let y = metrics.size.height * focusPoint.y - sideLength / 2
+        let origin = CGPoint(x: x, y: y)
+        let size = CGSize(width: sideLength, height: sideLength)
+        context.stroke(
+            Path(roundedRect: CGRect(origin: origin, size: size), cornerRadius: 2.0),
+            with: .color(.yellow),
+            lineWidth: 1
+        )
+    }
+
     var body: some View {
         ZStack {
             HStack(spacing: 0) {
                 ZStack {
-                    GeometryReader { metrics in
-                        HStack {
-                            Spacer(minLength: /*@START_MENU_TOKEN@*/0/*@END_MENU_TOKEN@*/)
-                            VStack {
-                                Spacer(minLength: 0)
+                    HStack {
+                        Spacer(minLength: /*@START_MENU_TOKEN@*/0/*@END_MENU_TOKEN@*/)
+                        VStack {
+                            Spacer(minLength: 0)
+                            GeometryReader { metrics in
                                 ZStack {
                                     streamView
                                         .onTapGesture(count: 1) { location in
@@ -88,25 +101,35 @@ struct MainView: View {
                                             }
                                             model.setAutoFocus()
                                         })
+                                    if model.database.tapToFocus, let focusPoint = model.manualFocusPoint {
+                                        Canvas { context, _ in
+                                            drawFocus(
+                                                context: context,
+                                                metrics: metrics,
+                                                focusPoint: focusPoint
+                                            )
+                                        }
+                                        .allowsHitTesting(false)
+                                    }
                                     if model.showingGrid {
                                         StreamGridView()
                                     }
                                 }
-                                .aspectRatio(16 / 9, contentMode: .fit)
-                                Spacer(minLength: 0)
                             }
+                            .aspectRatio(16 / 9, contentMode: .fit)
+                            Spacer(minLength: 0)
                         }
-                        .background(.black)
-                        .ignoresSafeArea()
-                        .edgesIgnoringSafeArea(.all)
-                        ForEach(model.browsers) { browser in
-                            BrowserView(browser: browser)
-                                .frame(
-                                    width: browser.browserEffect.width,
-                                    height: browser.browserEffect.height
-                                )
-                                .opacity(0)
-                        }
+                    }
+                    .background(.black)
+                    .ignoresSafeArea()
+                    .edgesIgnoringSafeArea(.all)
+                    ForEach(model.browsers) { browser in
+                        BrowserView(browser: browser)
+                            .frame(
+                                width: browser.browserEffect.width,
+                                height: browser.browserEffect.height
+                            )
+                            .opacity(0)
                     }
                     StreamOverlayView()
                         .opacity(model.showLocalOverlays ? 1 : 0)
