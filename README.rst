@@ -117,6 +117,8 @@ Features
 
 - Supports UVC cameras on iPad.
 
+- Basic support for Mac.
+
 - Video effects.
 
   - Grayscale.
@@ -207,13 +209,7 @@ ToDo
 Ideas/plan
 ==========
 
-- Twitch chat user badges.
-
 - Show two cameras at the same time.
-
-- Always receive sampels from all mics for smoother transition between mics?
-
-- A list of usernames whos messages will not get displayed on screen.
 
 - Rework zoom. Fine tune similar to builtin camera app.
 
@@ -224,24 +220,13 @@ Ideas/plan
     filters when you have the time. I think that would be the same
     order in terms of complexity to implement as well.
 
-- Reintroduce settings in portrait.
-
-- Take picture.
-
 - Reduce brightness when thermal state is critical.
-
-- Optionally do not automatically start using external mic is plugged
-  in.
-
-- Advanced settings toggle.
 
 - Add Twitch/Kick Icons next to chat messages depending on which
   platform the message came from.
 
 - Lookup Twitch channel id from channel name. Possibly login to
   Twitch.
-
-- Play music and short sound samples.
 
 - Something that is important for professional streamers: Ad
   management. There are new endpoints to get and snooze the next ad
