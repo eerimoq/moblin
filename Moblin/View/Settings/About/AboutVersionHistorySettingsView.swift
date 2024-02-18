@@ -8,6 +8,16 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.179.0", date: "2024-02-18", changes: [
+        "• Disable camera capture when remote control assistant is open. :bulb: djandrea.",
+        "  • Audio is still captured. Was not that easy to disable.",
+        "• Make grid only cover video.",
+        "• Fix adding widgets and buttons to scenes on iPad.",
+        "• Top mic by default on iPad.",
+        "• Fix tap screen to focus on iPad.",
+        "• Try fixing slow bitrate drops after some time by periodically setting the bitrate. :bug: all of us",
+        "  • It is set every 10 seconds now, regardless if it changed or not.",
+    ]),
     Version(version: "0.178.0", date: "2024-02-17", changes: [
         "• Fix phone screen (mirroring) glitches when switching scene.",
         "  • However, screen is black for a short while.",
