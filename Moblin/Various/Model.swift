@@ -612,7 +612,7 @@ final class Model: ObservableObject {
         wizardBelaboxUrl = ""
     }
 
-    func updateAdaptiveBitrateIfEnabled(stream: SettingsStream) {
+    func updateAdaptiveBitrateSrtIfEnabled(stream: SettingsStream) {
         switch stream.srt.adaptiveBitrate!.algorithm {
         case .fastIrl:
             var settings = adaptiveBitrateFastSettings
@@ -630,6 +630,12 @@ final class Model: ObservableObject {
                 pifDiffIncreaseFactor: Int32(customSettings.pifDiffIncreaseFactor * 1000)
             ))
         }
+    }
+
+    func updateAdaptiveBitrateRtmpIfEnabled(stream _: SettingsStream) {
+        var settings = adaptiveBitrateFastSettings
+        settings.rttDiffHighAllowedSpike = 500
+        media.setAdaptiveBitrateAlgorithm(settings: settings)
     }
 
     @MainActor
@@ -2186,7 +2192,8 @@ final class Model: ObservableObject {
         case .rtmp:
             media.rtmpStartStream(url: stream.url,
                                   targetBitrate: stream.bitrate,
-                                  adaptiveBitrate: stream.adaptiveBitrate && false)
+                                  adaptiveBitrate: stream.rtmp!.adaptiveBitrateEnabled)
+            updateAdaptiveBitrateRtmpIfEnabled(stream: stream)
         case .srt:
             payloadSize = stream.srt.mpegtsPacketsPerPacket * 188
             media.srtStartStream(
@@ -2194,7 +2201,7 @@ final class Model: ObservableObject {
                 url: stream.url,
                 reconnectTime: reconnectTime,
                 targetBitrate: stream.bitrate,
-                adaptiveBitrate: stream.adaptiveBitrate,
+                adaptiveBitrate: stream.srt.adaptiveBitrateEnabled!,
                 latency: stream.srt.latency,
                 overheadBandwidth: database.debug!.srtOverheadBandwidth!,
                 maximumBandwidthFollowInput: database.debug!.maximumBandwidthFollowInput!,
@@ -2202,8 +2209,8 @@ final class Model: ObservableObject {
                 networkInterfaceNames: database.networkInterfaceNames!,
                 connectionPriorities: stream.srt.connectionPriorities!
             )
+            updateAdaptiveBitrateSrtIfEnabled(stream: stream)
         }
-        updateAdaptiveBitrateIfEnabled(stream: stream)
         updateSpeed(now: Date())
     }
 

@@ -159,6 +159,7 @@ class SettingsStreamSrt: Codable {
     var latency: Int32 = 2000
     var maximumBandwidthFollowInput: Bool? = true
     var overheadBandwidth: Int32? = 25
+    var adaptiveBitrateEnabled: Bool? = true
     var adaptiveBitrate: SettingsStreamSrtAdaptiveBitrate? = .init()
     var connectionPriorities: SettingsStreamSrtConnectionPriorities? = .init()
     var mpegtsPacketsPerPacket: Int = 7
@@ -168,9 +169,20 @@ class SettingsStreamSrt: Codable {
         new.latency = latency
         new.overheadBandwidth = overheadBandwidth
         new.maximumBandwidthFollowInput = maximumBandwidthFollowInput
+        new.adaptiveBitrateEnabled = adaptiveBitrateEnabled
         new.adaptiveBitrate = adaptiveBitrate!.clone()
         new.connectionPriorities = connectionPriorities!.clone()
         new.mpegtsPacketsPerPacket = mpegtsPacketsPerPacket
+        return new
+    }
+}
+
+class SettingsStreamRtmp: Codable {
+    var adaptiveBitrateEnabled: Bool = false
+
+    func clone() -> SettingsStreamSrt {
+        let new = SettingsStreamSrt()
+        new.adaptiveBitrateEnabled = adaptiveBitrateEnabled
         return new
     }
 }
@@ -275,8 +287,9 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var bitrate: UInt32 = 5_000_000
     var codec: SettingsStreamCodec = .h265hevc
     var bFrames: Bool? = false
-    var adaptiveBitrate: Bool = true
+    var adaptiveBitrate: Bool? = true
     var srt: SettingsStreamSrt = .init()
+    var rtmp: SettingsStreamRtmp? = .init()
     var captureSessionPresetEnabled: Bool? = false
     var captureSessionPreset: SettingsCaptureSessionPreset? = .medium
     var maxKeyFrameInterval: Int32? = 2
@@ -391,7 +404,9 @@ class SettingsStream: Codable, Identifiable, Equatable {
 
     func bitrateString() -> String {
         var bitrate = formatBytesPerSecond(speed: Int64(bitrate))
-        if getProtocol() == .srt && adaptiveBitrate {
+        if getProtocol() == .srt && srt.adaptiveBitrateEnabled! {
+            bitrate = "<\(bitrate)"
+        } else if getProtocol() == .rtmp && rtmp!.adaptiveBitrateEnabled {
             bitrate = "<\(bitrate)"
         }
         return bitrate
@@ -2322,6 +2337,14 @@ final class Settings {
         }
         if realDatabase.chat.enabled == nil {
             realDatabase.chat.enabled = true
+            store()
+        }
+        for stream in database.streams where stream.rtmp == nil {
+            stream.rtmp = .init()
+            store()
+        }
+        for stream in database.streams where stream.srt.adaptiveBitrateEnabled == nil {
+            stream.srt.adaptiveBitrateEnabled = stream.adaptiveBitrate!
             store()
         }
     }

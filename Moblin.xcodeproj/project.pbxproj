@@ -76,6 +76,7 @@
 		036BE2CC2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036BE2CB2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift */; };
 		036BE2CF2ABD4CA60048F9C5 /* KickPusher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036BE2CE2ABD4CA60048F9C5 /* KickPusher.swift */; };
 		036BE2D22ABD518E0048F9C5 /* StreamKickSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036BE2D12ABD518E0048F9C5 /* StreamKickSettingsView.swift */; };
+		03708D162B83C39B009C88AA /* StreamRtmpSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03708D152B83C39B009C88AA /* StreamRtmpSettingsView.swift */; };
 		0379BB762AA6345400B718B6 /* ButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB752AA6345400B718B6 /* ButtonSettingsView.swift */; };
 		0379BB792AA64C9500B718B6 /* WidgetVideoEffectSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB782AA64C9500B718B6 /* WidgetVideoEffectSettingsView.swift */; };
 		0379BB7E2AA7C55000B718B6 /* ButtonImagePickerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB7D2AA7C55000B718B6 /* ButtonImagePickerSettingsView.swift */; };
@@ -256,6 +257,7 @@
 		036BE2CB2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamUrlSettingsView.swift; sourceTree = "<group>"; };
 		036BE2CE2ABD4CA60048F9C5 /* KickPusher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KickPusher.swift; sourceTree = "<group>"; };
 		036BE2D12ABD518E0048F9C5 /* StreamKickSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamKickSettingsView.swift; sourceTree = "<group>"; };
+		03708D152B83C39B009C88AA /* StreamRtmpSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamRtmpSettingsView.swift; sourceTree = "<group>"; };
 		0379BB752AA6345400B718B6 /* ButtonSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonSettingsView.swift; sourceTree = "<group>"; };
 		0379BB782AA64C9500B718B6 /* WidgetVideoEffectSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetVideoEffectSettingsView.swift; sourceTree = "<group>"; };
 		0379BB7D2AA7C55000B718B6 /* ButtonImagePickerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonImagePickerSettingsView.swift; sourceTree = "<group>"; };
@@ -428,6 +430,7 @@
 		0315A3402AA31ADC00295443 /* Stream */ = {
 			isa = PBXGroup;
 			children = (
+				03708D132B83C321009C88AA /* Rtmp */,
 				034CE2EA2B4D2E5A00E2C1BD /* RealtimeIrl */,
 				03BBAE972B2EB4CE0033D425 /* Chat */,
 				031A4DC42B2CED2D0053F67D /* Audio */,
@@ -721,6 +724,14 @@
 				036BE2D12ABD518E0048F9C5 /* StreamKickSettingsView.swift */,
 			);
 			path = Kick;
+			sourceTree = "<group>";
+		};
+		03708D132B83C321009C88AA /* Rtmp */ = {
+			isa = PBXGroup;
+			children = (
+				03708D152B83C39B009C88AA /* StreamRtmpSettingsView.swift */,
+			);
+			path = Rtmp;
 			sourceTree = "<group>";
 		};
 		0379BB712AA4BFA500B718B6 /* Twitch */ = {
@@ -1319,6 +1330,7 @@
 				032469A92AE1B3040097B18B /* StreamSrtSettingsView.swift in Sources */,
 				03A983652A9A05D7008FF0DB /* StreamSettingsView.swift in Sources */,
 				03DBD0F82B300659004B0BE6 /* StreamWizardSettingsView.swift in Sources */,
+				03708D162B83C39B009C88AA /* StreamRtmpSettingsView.swift in Sources */,
 				0315A37C2AA439B500295443 /* NameEditView.swift in Sources */,
 				03DBD1072B300D91004B0BE6 /* StreamWizardNetworkSetupObsSettingsView.swift in Sources */,
 				038DF9F12B387AC80027363A /* StreamWizardAfreecaTvSettingsView.swift in Sources */,
