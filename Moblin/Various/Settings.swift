@@ -180,8 +180,8 @@ class SettingsStreamSrt: Codable {
 class SettingsStreamRtmp: Codable {
     var adaptiveBitrateEnabled: Bool = false
 
-    func clone() -> SettingsStreamSrt {
-        let new = SettingsStreamSrt()
+    func clone() -> SettingsStreamRtmp {
+        let new = SettingsStreamRtmp()
         new.adaptiveBitrateEnabled = adaptiveBitrateEnabled
         return new
     }
@@ -328,6 +328,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
         new.bFrames = bFrames
         new.adaptiveBitrate = adaptiveBitrate
         new.srt = srt.clone()
+        new.rtmp = rtmp!.clone()
         new.captureSessionPresetEnabled = captureSessionPresetEnabled
         new.captureSessionPreset = captureSessionPreset
         new.maxKeyFrameInterval = maxKeyFrameInterval
