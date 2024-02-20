@@ -29,6 +29,8 @@ final class Media: NSObject {
     private var rtmpStreamName = ""
     private var currentAudioLevel: Float = -160.0
     private var numberOfAudioChannels: Int = 0
+    private var audioCapturePresentationTimestamp: Double = 0
+    private var videoCapturePresentationTimestamp: Double = 0
     private var srtUrl: String = ""
     private var latency: Int32 = 2000
     private var overheadBandwidth: Int32 = 25
@@ -82,6 +84,14 @@ final class Media: NSObject {
 
     func getNumberOfAudioChannels() -> Int {
         return numberOfAudioChannels
+    }
+
+    func getAudioCapturePresentationTimestamp() -> Double {
+        return audioCapturePresentationTimestamp
+    }
+
+    func getVideoCapturePresentationTimestamp() -> Double {
+        return videoCapturePresentationTimestamp
     }
 
     func srtStartStream(
@@ -369,14 +379,17 @@ final class Media: NSObject {
         netStream.setColorSpace(colorSpace: colorSpace, onComplete: onComplete)
     }
 
+    private var multiplier: UInt32 = 0
+
     func updateVideoStreamBitrate() {
+        multiplier ^= 1
         var bitRate: UInt32
         if let adaptiveBitrate {
             bitRate = UInt32(1000 * adaptiveBitrate.getCurrentBitrate)
         } else {
             bitRate = netStream.videoSettings.bitRate
         }
-        netStream.videoSettings.bitRate = bitRate
+        netStream.videoSettings.bitRate = bitRate + multiplier * (bitRate / 10)
     }
 
     func setVideoStreamBitrate(bitrate: UInt32) {
@@ -578,7 +591,7 @@ extension Media: NetStreamDelegate {
 
     func streamDidOpen(_: NetStream) {}
 
-    func stream(_: NetStream, audioLevel: Float, numberOfAudioChannels: Int) {
+    func stream(_: NetStream, audioLevel: Float, numberOfAudioChannels: Int, presentationTimestamp: Double) {
         DispatchQueue.main.async {
             if becameMuted(old: self.currentAudioLevel, new: audioLevel) || becameUnmuted(
                 old: self.currentAudioLevel,
@@ -590,6 +603,13 @@ extension Media: NetStreamDelegate {
                 self.currentAudioLevel = audioLevel
             }
             self.numberOfAudioChannels = numberOfAudioChannels
+            self.audioCapturePresentationTimestamp = presentationTimestamp
+        }
+    }
+
+    func streamVideo(_: HaishinKit.NetStream, presentationTimestamp: Double) {
+        DispatchQueue.main.async {
+            self.videoCapturePresentationTimestamp = presentationTimestamp
         }
     }
 
