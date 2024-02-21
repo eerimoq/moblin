@@ -1720,7 +1720,7 @@ final class Model: ObservableObject {
             self.updateRemoteControlAssistantStatus()
             self.updateRemoteControlStatus()
             if self.stream.enabled {
-                self.media.updateVideoStreamBitrate()
+                self.media.updateVideoStreamBitrate(bitrate: self.stream.bitrate)
             }
             logger.info("back camera system pressure \(self.cameraDevice?.systemPressureState)")
             let audioPts = self.media.getAudioCapturePresentationTimestamp()

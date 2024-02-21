@@ -381,13 +381,13 @@ final class Media: NSObject {
 
     private var multiplier: UInt32 = 0
 
-    func updateVideoStreamBitrate() {
+    func updateVideoStreamBitrate(bitrate: UInt32) {
         multiplier ^= 1
         var bitRate: UInt32
         if let adaptiveBitrate {
             bitRate = UInt32(1000 * adaptiveBitrate.getCurrentBitrate)
         } else {
-            bitRate = netStream.videoSettings.bitRate
+            bitRate = bitrate
         }
         netStream.videoSettings.bitRate = bitRate + multiplier * (bitRate / 10)
     }
