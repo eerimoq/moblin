@@ -8,6 +8,12 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.180.0", date: "2024-02-21", changes: [
+        "• Experimental support for RTMP adaptive bitrate.",
+        "  • Disabled by default. Enable in Settings → Streams → My stream → RTMP → Adaptive bitrate.",
+        "• Trying to fix slowly declining bitrate again.",
+        "  • Configure encoder bitrate to 10% higher for 10 seconds, then 0% higher, then 10% higher, and so on.",
+    ]),
     Version(version: "0.179.0", date: "2024-02-18", changes: [
         "• Disable camera capture when remote control assistant is open. :bulb: djandrea.",
         "  • Audio is still captured. Was not that easy to disable.",
