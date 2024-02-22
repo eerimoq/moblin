@@ -1722,11 +1722,11 @@ final class Model: ObservableObject {
             if self.stream.enabled {
                 self.media.updateVideoStreamBitrate(bitrate: self.stream.bitrate)
             }
-            logger.info("back camera system pressure \(self.cameraDevice?.systemPressureState)")
+            logger.debug("back camera system pressure \(self.cameraDevice?.systemPressureState)")
             let audioPts = self.media.getAudioCapturePresentationTimestamp()
             let videoPts = self.media.getVideoCapturePresentationTimestamp()
             let delta = audioPts - videoPts
-            logger.info("CapturePts: audio: \(audioPts), video: \(videoPts), delta: \(delta)")
+            logger.debug("CapturePts: audio: \(audioPts), video: \(videoPts), delta: \(delta)")
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
             self.updateAdaptiveBitrate()
