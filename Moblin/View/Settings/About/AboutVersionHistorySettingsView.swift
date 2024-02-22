@@ -9,7 +9,7 @@ struct Version {
 // swiftlint:disable line_length
 private let versions = [
     Version(version: "0.180.1", date: "2024-02-22", changes: [
-        "• Fix top and bottom parts of UI outside screen when using browser widget. 🐛 nn2p"
+        "• Fix top and bottom parts of UI outside screen when using browser widget. 🐛 nn2p",
     ]),
     Version(version: "0.180.0", date: "2024-02-21", changes: [
         "• Experimental support for RTMP adaptive bitrate.",
