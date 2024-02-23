@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.181.0", date: "2024-02-23", changes: [
+        "• Less logging by default.",
+        "• Major refactoring.",
+        "• Show capture delta in debug overlay.",
+    ]),
     Version(version: "0.180.1", date: "2024-02-22", changes: [
         "• Fix top and bottom parts of UI outside screen when using browser widget. 🐛 nn2p",
     ]),
