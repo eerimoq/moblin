@@ -11,7 +11,7 @@ private let versions = [
     Version(version: "0.181.0", date: "2024-02-23", changes: [
         "• Less logging by default.",
         "• Major refactoring.",
-        "• Show capture delta in debug overlay.",
+        "• Show audio/video capture delta in debug overlay.",
         "• Fix SRT(LA) adaptive bitrate custom settings.",
         "  • Bitrate decrease speed was wrong. It used bitrate increase speed / 1000 as factor. Very wrong.",
     ]),
