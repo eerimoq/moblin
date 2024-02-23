@@ -1787,7 +1787,7 @@ final class Model: ObservableObject {
     private func updateAdaptiveBitrate() {
         if let lines = media.updateAdaptiveBitrate(overlay: database.debug!.srtOverlay) {
             debugLines = lines
-            debugLines.append("Audio/video capture delta: \(Int(1000 * self.media.getCaptureDelta())) ms")
+            debugLines.append("Audio/video capture delta: \(Int(1000 * media.getCaptureDelta())) ms")
             if logger.debugEnabled && isLive {
                 logger.debug(lines.joined(separator: ", "))
             }
