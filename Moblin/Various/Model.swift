@@ -616,18 +616,18 @@ final class Model: ObservableObject {
         switch stream.srt.adaptiveBitrate!.algorithm {
         case .fastIrl:
             var settings = adaptiveBitrateFastSettings
-            settings.packetsInFlight = stream.srt.adaptiveBitrate!.fastIrlSettings!.packetsInFlight
+            settings.packetsInFlight = Int64(stream.srt.adaptiveBitrate!.fastIrlSettings!.packetsInFlight)
             media.setAdaptiveBitrateAlgorithm(settings: settings)
         case .slowIrl:
             media.setAdaptiveBitrateAlgorithm(settings: adaptiveBitrateSlowSettings)
         case .customIrl:
             let customSettings = stream.srt.adaptiveBitrate!.customSettings
             media.setAdaptiveBitrateAlgorithm(settings: AdaptiveBitrateSettings(
-                packetsInFlight: customSettings.packetsInFlight,
-                rttDiffHighFactor: Double(customSettings.pifDiffIncreaseFactor),
+                packetsInFlight: Int64(customSettings.packetsInFlight),
+                rttDiffHighFactor: Double(customSettings.rttDiffHighDecreaseFactor),
                 rttDiffHighAllowedSpike: Double(customSettings.rttDiffHighAllowedSpike),
-                rttDiffHighMinDecrease: Int32(customSettings.rttDiffHighMinimumDecrease * 1000),
-                pifDiffIncreaseFactor: Int32(customSettings.pifDiffIncreaseFactor * 1000)
+                rttDiffHighMinDecrease: Int64(customSettings.rttDiffHighMinimumDecrease * 1000),
+                pifDiffIncreaseFactor: Int64(customSettings.pifDiffIncreaseFactor * 1000)
             ))
         }
     }
