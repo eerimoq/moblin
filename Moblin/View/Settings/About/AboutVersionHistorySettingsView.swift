@@ -12,6 +12,8 @@ private let versions = [
         "• Less logging by default.",
         "• Major refactoring.",
         "• Show capture delta in debug overlay.",
+        "• Fix SRT(LA) adaptive bitrate custom settings.",
+        "  • Bitrate decrease speed was wrong. It used bitrate increase speed / 1000 as factor. Very wrong.",
     ]),
     Version(version: "0.180.1", date: "2024-02-22", changes: [
         "• Fix top and bottom parts of UI outside screen when using browser widget. 🐛 nn2p",
