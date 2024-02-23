@@ -381,7 +381,7 @@ final class Model: ObservableObject {
     var cameraZoomXMinimum: Float = 1.0
     var cameraZoomXMaximum: Float = 1.0
     var secondCameraDevice: AVCaptureDevice?
-    @Published var srtDebugLines: [String] = []
+    @Published var debugLines: [String] = []
     @Published var streamingHistory = StreamingHistory()
     private var streamingHistoryStream: StreamingHistoryStream?
 
@@ -1722,10 +1722,9 @@ final class Model: ObservableObject {
             if self.stream.enabled {
                 self.media.updateVideoStreamBitrate(bitrate: self.stream.bitrate)
             }
-            logger.debug("back camera system pressure \(self.cameraDevice?.systemPressureState)")
             let audioPts = self.media.getAudioCapturePresentationTimestamp()
             let videoPts = self.media.getVideoCapturePresentationTimestamp()
-            let delta = audioPts - videoPts
+            let delta = self.media.getCaptureDelta()
             logger.debug("CapturePts: audio: \(audioPts), video: \(videoPts), delta: \(delta)")
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
@@ -1787,12 +1786,13 @@ final class Model: ObservableObject {
 
     private func updateAdaptiveBitrate() {
         if let lines = media.updateAdaptiveBitrate(overlay: database.debug!.srtOverlay) {
-            srtDebugLines = lines
+            debugLines = lines
+            debugLines.append("Audio/video capture delta: \(Int(1000 * self.media.getCaptureDelta())) ms")
             if logger.debugEnabled && isLive {
                 logger.debug(lines.joined(separator: ", "))
             }
-        } else if !srtDebugLines.isEmpty {
-            srtDebugLines = []
+        } else if !debugLines.isEmpty {
+            debugLines = []
         }
     }
 

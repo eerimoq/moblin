@@ -53,7 +53,7 @@ struct DebugSettingsView: View {
                 NavigationLink(destination: DebugAudioSettingsView()) {
                     Text("Audio")
                 }
-                Toggle("SRT overlay", isOn: Binding(get: {
+                Toggle("Debug overlay", isOn: Binding(get: {
                     model.database.debug!.srtOverlay
                 }, set: { value in
                     model.database.debug!.srtOverlay = value

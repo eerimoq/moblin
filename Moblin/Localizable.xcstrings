@@ -17336,6 +17336,9 @@
         }
       }
     },
+    "Debug overlay" : {
+
+    },
     "Decibel" : {
       "localizations" : {
         "de" : {
@@ -47143,6 +47146,7 @@
       }
     },
     "SRT overlay" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

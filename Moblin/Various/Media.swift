@@ -93,6 +93,10 @@ final class Media: NSObject {
     func getVideoCapturePresentationTimestamp() -> Double {
         return videoCapturePresentationTimestamp
     }
+    
+    func getCaptureDelta() -> Double {
+        return audioCapturePresentationTimestamp - videoCapturePresentationTimestamp
+    }
 
     func srtStartStream(
         isSrtla: Bool,
