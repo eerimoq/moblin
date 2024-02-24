@@ -42,6 +42,7 @@ final class Media: NSObject {
     var onAudioMuteChange: (() -> Void)!
     var onVideoDeviceInUseByAnotherClient: (() -> Void)!
     private var adaptiveBitrate: AdaptiveBitrate?
+    private var failedVideoEffect: String?
 
     func logStatistics() {
         srtla?.logStatistics()
@@ -541,6 +542,10 @@ final class Media: NSObject {
     func stopRecording() {
         netStream.stopRecording()
     }
+
+    func getFailedVideoEffect() -> String? {
+        return failedVideoEffect
+    }
 }
 
 extension Media: NetStreamDelegate {
@@ -614,6 +619,12 @@ extension Media: NetStreamDelegate {
     func streamVideo(_: HaishinKit.NetStream, presentationTimestamp: Double) {
         DispatchQueue.main.async {
             self.videoCapturePresentationTimestamp = presentationTimestamp
+        }
+    }
+
+    func streamVideo(_: HaishinKit.NetStream, failedEffect: String?) {
+        DispatchQueue.main.async {
+            self.failedVideoEffect = failedEffect
         }
     }
 

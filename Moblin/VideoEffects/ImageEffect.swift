@@ -40,6 +40,8 @@ final class ImageEffect: VideoEffect {
         self.y = y
         self.width = width
         self.height = height
+        super.init()
+        name = "image widget"
     }
 
     override func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {

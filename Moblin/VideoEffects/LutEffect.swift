@@ -66,6 +66,11 @@ private func convertLut(image: UIImage) -> (Float, Data)? {
 final class LutEffect: VideoEffect {
     private var filter = CIFilter.colorCube()
 
+    override init() {
+        super.init()
+        name = "LUT"
+    }
+
     func setLut(name: String, image: UIImage) {
         guard let (dimension, data) = convertLut(image: image) else {
             return

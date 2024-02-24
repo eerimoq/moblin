@@ -25,6 +25,11 @@ final class MovieEffect: VideoEffect {
 
     private var black: CIImage?
 
+    override init() {
+        super.init()
+        name = "movie filter"
+    }
+
     override func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {
         extent = image.extent
         filter.inputImage = black!

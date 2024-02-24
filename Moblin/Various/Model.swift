@@ -437,6 +437,7 @@ final class Model: ObservableObject {
     private var pixellateEffect = PixellateEffect()
     private var locationManager = Location()
     private var realtimeIrl: RealtimeIrl?
+    private var failedVideoEffect: String?
 
     func drawOnStreamLineComplete() {
         drawOnStreamEffect.updateOverlay(
@@ -1712,6 +1713,7 @@ final class Model: ObservableObject {
             self.updateObsAudioVolume()
             self.updateBrowserWidgetStatus()
             self.logStatus()
+            self.updateFailedVideoEffects()
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
@@ -2042,6 +2044,11 @@ final class Model: ObservableObject {
         browsers = browserEffects.map { _, browser in
             Browser(browserEffect: browser)
         }
+        drawOnStreamEffect.updateOverlay(
+            videoSize: media.getVideoSize(),
+            size: drawOnStreamSize,
+            lines: drawOnStreamLines
+        )
         sceneUpdated(imageEffectChanged: true, store: false)
     }
 
@@ -2871,6 +2878,16 @@ final class Model: ObservableObject {
     private func logStatus() {
         if logger.debugEnabled && isLive {
             logger.debug("Status: Bitrate: \(speedAndTotal), Uptime: \(uptime)")
+        }
+    }
+
+    private func updateFailedVideoEffects() {
+        let newFailedVideoEffect = media.getFailedVideoEffect()
+        if newFailedVideoEffect != failedVideoEffect {
+            if let newFailedVideoEffect {
+                makeErrorToast(title: "Failed to render \(newFailedVideoEffect)")
+            }
+            failedVideoEffect = newFailedVideoEffect
         }
     }
 

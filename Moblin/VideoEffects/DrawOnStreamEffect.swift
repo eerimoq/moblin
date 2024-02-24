@@ -34,6 +34,11 @@ final class DrawOnStreamEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
     private var overlay: CIImage?
 
+    override init() {
+        super.init()
+        name = "draw on stream"
+    }
+
     func updateOverlay(videoSize: CGSize, size: CGSize, lines: [DrawOnStreamLine]) {
         DispatchQueue.main.async {
             let drawRatio = size.width / size.height

@@ -18,6 +18,8 @@ final class TextEffect: VideoEffect {
         self.fontSize = fontSize
         x = 0
         y = 0
+        super.init()
+        name = "time widget"
     }
 
     private func formatted() -> String {

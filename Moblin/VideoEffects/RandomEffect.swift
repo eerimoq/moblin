@@ -23,11 +23,12 @@ func setSpotLight(filter: CIFilter, width: CGFloat, height: CGFloat) {
 
 final class RandomEffect: VideoEffect {
     private var filter: CIFilter?
-    private var name: String
+    private var effetName: String
 
     override init() {
-        name = randomEffects.shuffled().first!
+        effetName = randomEffects.shuffled().first!
         super.init()
+        name = "random filter"
     }
 
     private var extent = CGRect.zero {
@@ -35,9 +36,9 @@ final class RandomEffect: VideoEffect {
             if extent == oldValue {
                 return
             }
-            filter = CIFilter(name: name)!
+            filter = CIFilter(name: effetName)!
             if let filter {
-                switch name {
+                switch effetName {
                 case "CISpotLight":
                     setSpotLight(
                         filter: filter,

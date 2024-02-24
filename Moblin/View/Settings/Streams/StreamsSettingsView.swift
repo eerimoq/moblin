@@ -23,6 +23,7 @@ struct StreamsSettingsView: View {
                                     model.setCurrentStream(stream: stream)
                                     model.reloadStream()
                                     model.sceneUpdated()
+                                    model.resetSelectedScene(changeScene: false)
                                 }))
                                 .disabled(stream.enabled || model.isLive || model.isRecording)
                             }

@@ -7,6 +7,11 @@ final class NoiseReductionEffect: VideoEffect {
     var noiseLevel: Float = 0.01
     var sharpness: Float = 2.0
 
+    override init() {
+        super.init()
+        name = "noise reduction"
+    }
+
     override func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {
         filter.inputImage = image
         filter.noiseLevel = noiseLevel

@@ -7,6 +7,7 @@ struct StreamVideoSettingsView: View {
     private func onResolutionChange(resolution: String) {
         stream.resolution = SettingsStreamResolution(rawValue: resolution)!
         model.storeAndReloadStreamIfEnabled(stream: stream)
+        model.resetSelectedScene(changeScene: false)
     }
 
     private func onFpsChange(fps: String) {
