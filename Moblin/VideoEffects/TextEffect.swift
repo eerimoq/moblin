@@ -61,6 +61,9 @@ final class TextEffect: VideoEffect {
                 translationX: x,
                 y: size.height - newImage.size.height - y
             ))
+            if overlay != nil {
+                overlay = overlay!.cropped(to: CGRect(x: 0, y: 0, width: size.width, height: size.height))
+            }
         }
     }
 
