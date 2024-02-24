@@ -9,7 +9,7 @@ struct Version {
 // swiftlint:disable line_length
 private let versions = [
     Version(version: "0.181.1", date: "2024-02-24", changes: [
-        "• Keep screen on when showing remote control assistant. 🐛 djandrea",
+        "• Keep screen on when showing remote control assistant. 🐛 djandrea.",
     ]),
     Version(version: "0.181.0", date: "2024-02-23", changes: [
         "• Less logging by default.",
