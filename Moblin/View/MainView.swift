@@ -231,6 +231,7 @@ struct MainView: View {
                     RemoteControlView {
                         model.showingRemoteControl = false
                         model.attachCamera()
+                        model.updateScreenAutoOff()
                     }
                 }
             }

@@ -2162,7 +2162,7 @@ final class Model: ObservableObject {
         streamTotalBytes = 0
         streamTotalChatMessages = 0
         reconnectTime = firstReconnectTime
-        UIApplication.shared.isIdleTimerDisabled = true
+        updateScreenAutoOff()
         startNetStream()
         streamingHistoryStream = StreamingHistoryStream(settings: stream.clone())
         streamingHistoryStream!.updateHighestThermalState(thermalState: ThermalState(from: thermalState))
@@ -2171,6 +2171,7 @@ final class Model: ObservableObject {
 
     func stopStream() {
         isLive = false
+        updateScreenAutoOff()
         realtimeIrl?.stop()
         if !streaming {
             return
@@ -2178,7 +2179,6 @@ final class Model: ObservableObject {
         logger.info("stream: Stop")
         streamTotalBytes += UInt64(media.streamTotal())
         streaming = false
-        UIApplication.shared.isIdleTimerDisabled = false
         stopNetStream()
         streamState = .disconnected
         if let streamingHistoryStream {
@@ -2188,6 +2188,10 @@ final class Model: ObservableObject {
             streamingHistory.append(stream: streamingHistoryStream)
             streamingHistory.store()
         }
+    }
+
+    func updateScreenAutoOff() {
+        UIApplication.shared.isIdleTimerDisabled = (showingRemoteControl || isLive)
     }
 
     private func startNetStream(reconnect _: Bool = false) {
