@@ -11,6 +11,7 @@ private let versions = [
     Version(version: "0.181.1", date: "2024-02-24", changes: [
         "• Keep screen on when showing remote control assistant. 🐛 djandrea.",
         "• Make capture device image size match session preset.",
+        "  • Fixes draw on 720p stream on iPhone X.",
         "  • Might make image quality worse on some devices. Not sure.",
     ]),
     Version(version: "0.181.0", date: "2024-02-23", changes: [
