@@ -24,6 +24,10 @@ final class TextEffect: VideoEffect {
         return Date().formatted(.dateTime.hour().minute().second())
     }
 
+    private func scaledFontSize(width: Double) -> CGFloat {
+        return fontSize * (width / 1920)
+    }
+
     private func updateOverlay(size: CGSize, time: Double) {
         guard time > nextUpdateTime else {
             return
@@ -36,7 +40,7 @@ final class TextEffect: VideoEffect {
             let text = Text(self.formatted())
                 .background(.black)
                 .foregroundColor(.white)
-                .font(.system(size: self.fontSize))
+                .font(.system(size: self.scaledFontSize(width: size.width)))
             let renderer = ImageRenderer(content: text)
             let image = renderer.uiImage
             textQueue.sync {
