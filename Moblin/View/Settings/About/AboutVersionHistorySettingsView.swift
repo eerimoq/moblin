@@ -8,6 +8,10 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.182.0", date: "2024-02-24", changes: [
+        "• Make time widget text size same regardless of resolution.",
+        "• Show error toast if an overlay (widget/filter) cannot be rendered.",
+    ]),
     Version(version: "0.181.1", date: "2024-02-24", changes: [
         "• Keep screen on when showing remote control assistant. 🐛 djandrea.",
         "• Make capture device image size match session preset.",
