@@ -1945,7 +1945,8 @@ final class Model: ObservableObject {
                     x: widget.x,
                     y: widget.y,
                     width: widget.width,
-                    height: widget.height
+                    height: widget.height,
+                    settingName: realWidget.name
                 )
             }
         }
@@ -2022,7 +2023,8 @@ final class Model: ObservableObject {
         for widget in database.widgets where widget.type == .time {
             textEffects[widget.id] = TextEffect(
                 format: widget.text.formatString,
-                fontSize: 40
+                fontSize: 40,
+                settingName: widget.name
             )
         }
         for browserEffect in browserEffects.values {
@@ -2038,7 +2040,8 @@ final class Model: ObservableObject {
             browserEffects[widget.id] = BrowserEffect(
                 url: url,
                 widget: widget.browser,
-                videoSize: videoSize
+                videoSize: videoSize,
+                settingName: widget.name
             )
         }
         browsers = browserEffects.map { _, browser in

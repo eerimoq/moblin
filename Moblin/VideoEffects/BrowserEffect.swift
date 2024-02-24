@@ -25,7 +25,7 @@ final class BrowserEffect: VideoEffect {
     var startLoadingTime = Date()
     private var scale = UIScreen().scale
 
-    init(url: URL, widget: SettingsWidgetBrowser, videoSize: CGSize) {
+    init(url: URL, widget: SettingsWidgetBrowser, videoSize: CGSize, settingName: String) {
         scaleToFitVideo = widget.scaleToFitVideo!
         self.url = url
         self.videoSize = videoSize
@@ -52,7 +52,7 @@ final class BrowserEffect: VideoEffect {
         webView.scrollView.showsVerticalScrollIndicator = false
         webView.scrollView.showsHorizontalScrollIndicator = false
         super.init()
-        name = "browser widget"
+        name = "\(settingName) browser widget"
     }
 
     var host: String {

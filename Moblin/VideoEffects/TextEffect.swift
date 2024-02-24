@@ -14,12 +14,12 @@ final class TextEffect: VideoEffect {
     private var image: UIImage?
     private var nextUpdateTime = -1.0
 
-    init(format _: String, fontSize: CGFloat) {
+    init(format _: String, fontSize: CGFloat, settingName: String) {
         self.fontSize = fontSize
         x = 0
         y = 0
         super.init()
-        name = "time widget"
+        name = "\(settingName) time widget"
     }
 
     private func formatted() -> String {
