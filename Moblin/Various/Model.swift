@@ -91,14 +91,15 @@ private let iconsProductIds = [
     "AppIconLooking",
     "AppIconGoblin",
     "AppIconGoblina",
+    "AppIconTetris",
     "AppIconMillionaire",
     "AppIconBillionaire",
     "AppIconTrillionaire",
+    "AppIconIreland",
 ]
 
 private let globalIconsNotYetInStore = [
     Icon(name: "Basque", id: "AppIconBasque", price: ""),
-    Icon(name: "Tetris", id: "AppIconTetris", price: ""),
     Icon(name: "China", id: "AppIconChina", price: ""),
     Icon(name: "France", id: "AppIconFrance", price: ""),
     Icon(name: "Poland", id: "AppIconPoland", price: ""),
