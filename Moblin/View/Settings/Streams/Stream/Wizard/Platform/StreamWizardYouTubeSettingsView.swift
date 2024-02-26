@@ -11,6 +11,8 @@ struct StreamWizardYouTubeSettingsView: View {
                     .disableAutocorrection(true)
             } header: {
                 Text("API key")
+            } footer: {
+                Text("Only needed for chat.")
             }
             Section {
                 TextField("jo304F4gr", text: $model.wizardYouTubeVideoId)
@@ -18,6 +20,8 @@ struct StreamWizardYouTubeSettingsView: View {
                     .disableAutocorrection(true)
             } header: {
                 Text("Video id")
+            } footer: {
+                Text("Only needed for chat.")
             }
             Section {
                 NavigationLink(
