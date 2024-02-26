@@ -317,7 +317,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%lld 채널"
           }
         },
@@ -1561,7 +1561,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%1$@ - %2$@"
           }
         },
@@ -2027,7 +2027,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@dB"
           }
         },
@@ -2251,7 +2251,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@ 초"
           }
         },
@@ -2363,7 +2363,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@ 소스 오디오 레벨"
           }
         },
@@ -2475,7 +2475,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@ 소스 오디오 동기화"
           }
         },
@@ -2587,7 +2587,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@ 소스 스냅샷"
           }
         },
@@ -3041,7 +3041,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "• %@"
           }
         },
@@ -3265,7 +3265,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : ""
           }
         },
@@ -3377,7 +3377,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "⚠️ 오디오는 아직 구현되지 않았습니다."
           }
         },
@@ -3489,7 +3489,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "⚠️ 이전 설정 삭제 ⚠️"
           }
         },
@@ -3601,7 +3601,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "⚠️ 설정을 로드하지 못했습니다 ⚠️"
           }
         },
@@ -5172,7 +5172,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "18529305"
           }
         },
@@ -5396,7 +5396,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "우선순위가 높은 연결이 안정적인 경우 우선순위가 낮은 연결보다 우선순위가 높은 연결이 더 많이 사용됩니다. 불안정한 연결은 다시 안정될 때까지 구성된 우선순위에 관계없이 가장 낮은 우선순위를 갖습니다."
           }
         },
@@ -5620,7 +5620,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "위젯을 숨기고 표시하는 데 사용되는 모든 장면 빠른 버튼 목록입니다. 장면 버튼은 0개 이상의 장면에서 사용할 수 있습니다."
           }
         },
@@ -5732,7 +5732,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "모든 위젯의 목록입니다. 위젯은 0개 이상의 장면에서 사용될 수 있습니다."
           }
         },
@@ -6292,7 +6292,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "연산"
           }
         },
@@ -6522,7 +6522,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "허용된 RTT 스파이크"
           }
         },
@@ -7194,7 +7194,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "적용하려면 앱을 다시 시작해야 합니다."
           }
         },
@@ -7307,7 +7307,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "외관"
+            "value" : "배치방식"
           }
         },
         "nl" : {
@@ -7530,7 +7530,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "어시스턴트"
           }
         },
@@ -7642,7 +7642,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "어시스턴트 및 스트리머"
           }
         },
@@ -7754,7 +7754,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "어시스턴트 URL"
           }
         },
@@ -8315,7 +8315,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "오디오 레벨"
+            "value" : "오디오 레벨 표시 방법"
           }
         },
         "nl" : {
@@ -8426,7 +8426,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "오디오만"
           }
         },
@@ -8650,7 +8650,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "스트림을 전환하면 자동으로 라이브로 전환됩니다."
           }
         },
@@ -9659,7 +9659,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "배터리 퍼센트"
+            "value" : "배터리 잔량 표시"
           }
         },
         "nl" : {
@@ -10666,7 +10666,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "비트레이트 감소 속도"
           }
         },
@@ -10778,7 +10778,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "비트레이트 증가 속도"
           }
         },
@@ -11339,7 +11339,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "블루투스 출력만 가능"
           }
         },
@@ -12123,7 +12123,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "브라우저 위젯"
           }
         },
@@ -12572,7 +12572,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "카메라"
+            "value" : "노출보정"
           }
         },
         "nl" : {
@@ -13131,7 +13131,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "채널 매핑"
           }
         },
@@ -13244,7 +13244,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "채팅 숨기기"
+            "value" : "채팅 표시"
           }
         },
         "nl" : {
@@ -14028,7 +14028,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "원"
           }
         },
@@ -14364,7 +14364,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "색상"
           }
         },
@@ -14476,7 +14476,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "색 공간"
           }
         },
@@ -14700,7 +14700,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "설정 → 원격 제어에서 구성하십시오."
           }
         },
@@ -14924,7 +14924,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "설정 → 스트림 → %@ → URL에서 구성하세요."
           }
         },
@@ -15260,7 +15260,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "설정 → 스트림 → %@ → 스냅샷 등에 대한 OBS 원격 제어에서 소스 이름을 구성하세요."
           }
         },
@@ -15372,7 +15372,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "연결 우선순위"
           }
         },
@@ -15484,7 +15484,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "제어"
           }
         },
@@ -15596,7 +15596,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "제어 장치"
           }
         },
@@ -15708,7 +15708,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "컨트롤러 %lld"
           }
         },
@@ -16380,7 +16380,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "아래 스크린샷과 같이 OBS Show Connect Info에서 복사합니다. 도구 → WebSocket 서버 설정 → 연결 정보 표시 → 서버 비밀번호."
           }
         },
@@ -16493,7 +16493,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "화장하기"
+            "value" : "모블린 아이콘"
           }
         },
         "nl" : {
@@ -16940,7 +16940,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "맞춤 IRL"
           }
         },
@@ -17052,7 +17052,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "맞춤형 LUT"
           }
         },
@@ -17164,7 +17164,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "커스텀 루트"
           }
         },
@@ -17615,7 +17615,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "이전 설정을 삭제하고 계속하세요"
           }
         },
@@ -18175,7 +18175,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "설정을 변경하려면 RTMP 서버를 비활성화하세요."
           }
         },
@@ -18287,7 +18287,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "비활성화된 연결은 사용되지 않습니다."
           }
         },
@@ -18512,7 +18512,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "표시"
+            "value" : "화면 표시"
           }
         },
         "nl" : {
@@ -19071,7 +19071,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "아래에"
           }
         },
@@ -19183,7 +19183,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "그리다"
           }
         },
@@ -19631,7 +19631,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "각 스트림은 하나의 RTMP 게시자(일반적으로 드론)로부터 비디오를 수신할 수 있습니다."
           }
         },
@@ -19855,7 +19855,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "다음 토스트 메시지가 나타날 때 장치를 진동시키려면 \"진동\"을 활성화하십시오."
           }
         },
@@ -19967,7 +19967,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "보조자가 다른 장치에서 이 장치를 모니터링하고 제어할 수 있도록 허용합니다."
           }
         },
@@ -20079,7 +20079,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "스트리머 장치를 이 장치에 연결하려면 활성화하세요. 연결되면 이 장치는 스트리머 장치를 모니터링하고 제어할 수 있습니다."
           }
         },
@@ -20527,7 +20527,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "비디오를 이 스트림으로 보내려면 RTMP 게시자 장치에 URL 중 하나를 입력하세요. 일반적으로 WiFi URL을 입력합니다."
           }
         },
@@ -21871,7 +21871,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "실험적"
           }
         },
@@ -22095,7 +22095,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "노출 편향"
           }
         },
@@ -22207,7 +22207,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "외부"
           }
         },
@@ -22320,7 +22320,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "외부 마이크 재정의 후속 장면 토글"
           }
         },
@@ -23440,7 +23440,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "빠른 IRL"
           }
         },
@@ -24224,7 +24224,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "좋은 매개변수를 찾는 것은 어렵습니다. 당신은 당신 자신입니다! =)"
           }
         },
@@ -24784,7 +24784,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "지정된 FPS를 강제로 설정하거나 게시자의 FPS를 사용하려면 0으로 설정하세요. B-프레임은 강제 FPS에서 작동하지 않습니다. 강제 FPS는 일반적으로 DJI 드론에 필요합니다."
           }
         },
@@ -25456,7 +25456,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "기능"
           }
         },
@@ -25568,7 +25568,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "게임 컨트롤러 버튼"
           }
         },
@@ -25680,8 +25680,8 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "게임 컨트롤러"
+            "state" : "translated",
+            "value" : "게임 컨트롤러 연동"
           }
         },
         "nl" : {
@@ -25904,7 +25904,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "생성하다"
           }
         },
@@ -26017,7 +26017,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Geometry"
+            "value" : "위치"
           }
         },
         "nl" : {
@@ -26240,7 +26240,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "글로벌 톤 매핑"
           }
         },
@@ -26464,7 +26464,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "실시간으로 오디오 레벨을 확인하세요."
           }
         },
@@ -26576,7 +26576,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "실시간으로 전환하여 스냅샷을 확인하세요."
           }
         },
@@ -26913,7 +26913,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "회색"
+            "value" : "그레이톤"
           }
         },
         "nl" : {
@@ -27024,7 +27024,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "그리드"
           }
         },
@@ -28256,7 +28256,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "이전 설정을 유지하려면 즉시 이전 버전의 앱을 설치하세요."
           }
         },
@@ -28368,7 +28368,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "이전 설정을 유지하려면 즉시 이전 버전의 앱을 설치하세요. 마지막 경고입니다!"
           }
         },
@@ -29715,7 +29715,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "왼쪽"
           }
         },
@@ -29828,7 +29828,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "눈이 내리게 놔두세요"
+            "value" : "눈이 내립니다."
           }
         },
         "nl" : {
@@ -30164,7 +30164,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "화면 UI"
+            "value" : "화면 표시"
           }
         },
         "nl" : {
@@ -30387,7 +30387,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "위치"
           }
         },
@@ -30723,7 +30723,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "배터리 부족"
           }
         },
@@ -30835,7 +30835,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "낮은 비트 전송률"
           }
         },
@@ -30947,7 +30947,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "낮은 비트 전송률 경고"
           }
         },
@@ -31171,7 +31171,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "LUT"
           }
         },
@@ -31283,7 +31283,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "진동이 작동하려면 무음 모드가 꺼져 있는지 확인하세요."
           }
         },
@@ -31955,7 +31955,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "최대 대역폭은 입력을 따릅니다."
           }
         },
@@ -32628,7 +32628,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "마이크"
+            "value" : "마이크 선택"
           }
         },
         "nl" : {
@@ -32740,7 +32740,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "마이크가 장면을 따라갑니다."
           }
         },
@@ -33077,7 +33077,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "장면별 마이크"
           }
         },
@@ -33190,7 +33190,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "\"마이크가 장면을 따라갑니다\" 토글이 활성화된 경우 이 장면에서 마이크가 사용됩니다."
           }
         },
@@ -33302,7 +33302,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "최소 비트레이트 감소 속도"
           }
         },
@@ -33414,8 +33414,8 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "스트리밍 시 전면 카메라 미러링"
+            "state" : "translated",
+            "value" : "스트리밍 시 전면 카메라의 좌우반전"
           }
         },
         "nl" : {
@@ -33526,7 +33526,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "가난한 사람의 인물 사진 스트리밍을 위해 스트림에서 전면 카메라를 미러링하고 OBS에서 비디오를 90도 회전합니다."
           }
         },
@@ -33863,7 +33863,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "비디오"
+            "value" : "레터박스"
           }
         },
         "nl" : {
@@ -34646,7 +34646,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "내 출처"
           }
         },
@@ -35654,7 +35654,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "네트워크 인터페이스 이름"
           }
         },
@@ -35990,7 +35990,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "아직 수신된 오디오 레벨이 없습니다."
           }
         },
@@ -36102,7 +36102,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "알려진 이더넷 네트워크 인터페이스가 없습니다."
           }
         },
@@ -36214,7 +36214,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "아직 설정이 수신되지 않았습니다."
           }
         },
@@ -36326,7 +36326,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "아직 스냅샷이 수신되지 않았습니다."
           }
         },
@@ -36438,7 +36438,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "아직 수신된 상태가 없습니다."
           }
         },
@@ -37896,7 +37896,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "좋아요"
           }
         },
@@ -38120,7 +38120,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "사용하지 않는 퀵버튼만 삭제할 수 있습니다."
           }
         },
@@ -38344,7 +38344,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "오버헤드 대역폭"
           }
         },
@@ -38456,7 +38456,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "전송 중인 패킷 감소 임계값"
           }
         },
@@ -39017,8 +39017,8 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "픽셀화"
+            "state" : "translated",
+            "value" : "모자이크"
           }
         },
         "nl" : {
@@ -39130,7 +39130,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "스트리밍할 플랫폼"
+            "value" : "스트리밍 할 플랫폼"
           }
         },
         "nl" : {
@@ -40029,7 +40029,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "게시 URL"
           }
         },
@@ -40141,7 +40141,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "푸시 키"
           }
         },
@@ -40253,7 +40253,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "빠른 버튼"
           }
         },
@@ -40365,7 +40365,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "빠른 버튼은 아래에서 위로 나타납니다."
           }
         },
@@ -40589,7 +40589,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "실시간IRL"
           }
         },
@@ -40925,7 +40925,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "녹음 확인"
           }
         },
@@ -41149,7 +41149,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "새로고침 상태"
           }
         },
@@ -41261,7 +41261,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "브라우저 위젯 새로고침"
           }
         },
@@ -41373,7 +41373,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "브라우저 새로고침"
           }
         },
@@ -41485,7 +41485,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "원격"
           }
         },
@@ -41597,7 +41597,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "리모콘"
           }
         },
@@ -41709,8 +41709,8 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "원격 제어 보조원"
+            "state" : "translated",
+            "value" : "원격 제어 지원"
           }
         },
         "nl" : {
@@ -41821,8 +41821,8 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "원격 제어 보조자가 구성되지 않았습니다."
+            "state" : "translated",
+            "value" : "원격 제어 지원이 구성되지 않았습니다."
           }
         },
         "nl" : {
@@ -41933,7 +41933,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "초기화"
           }
         },
@@ -42269,7 +42269,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "해상도와 FPS는 라이브 스트리밍과 동일합니다."
           }
         },
@@ -42381,7 +42381,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "구매를 복원"
           }
         },
@@ -42605,7 +42605,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "오른쪽"
           }
         },
@@ -42717,7 +42717,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "RTMP"
           }
         },
@@ -43277,7 +43277,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "rtmp://arn03.contribute.live-video.net/app/"
           }
         },
@@ -43389,7 +43389,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "RTMP(S)"
           }
         },
@@ -43613,7 +43613,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "비디오 너비에 맞게 크기 조정"
           }
         },
@@ -44173,7 +44173,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "해당 페이지에서 \"채팅방\"을 검색해 보세요. 18529305는 아래 예시 스크린샷의 채팅방 ID입니다."
           }
         },
@@ -44397,8 +44397,8 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "귀하의 위치를 ​​https://rtirl.com으로 보내 시청자에게 귀하가 어디에 있는지 알려주세요."
+            "state" : "translated",
+            "value" : "​​https://rtirl.com 을 통해 시청자에게 당신이 어디에 있는지 위치를 공유할 수 있습니다."
           }
         },
         "nl" : {
@@ -44621,7 +44621,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "서버 주소"
           }
         },
@@ -44733,7 +44733,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "서버 포트"
           }
         },
@@ -45853,7 +45853,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "건너뛰다"
           }
         },
@@ -45965,7 +45965,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "느린 IRL"
           }
         },
@@ -46189,7 +46189,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@ 소스를 찾을 수 없습니다"
           }
         },
@@ -46301,7 +46301,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "소스 이름"
           }
         },
@@ -46413,7 +46413,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "소스 이름은 Moblin에서 스트림을 수신하는 OBS의 소스 이름입니다."
           }
         },
@@ -46637,7 +46637,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "정사각형"
           }
         },
@@ -47310,7 +47310,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "srt://107.32.12.132:5000"
           }
         },
@@ -47982,7 +47982,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "시작"
           }
         },
@@ -48094,7 +48094,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "스트리밍 시작"
           }
         },
@@ -48318,7 +48318,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "시작 중..."
           }
         },
@@ -48430,7 +48430,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "멈추다"
           }
         },
@@ -48542,7 +48542,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "스트리밍 중지"
           }
         },
@@ -48654,8 +48654,8 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "멎는..."
+            "state" : "translated",
+            "value" : "정지 중..."
           }
         },
         "nl" : {
@@ -48881,7 +48881,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "스트림 ID"
           }
         },
@@ -49105,8 +49105,8 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "스트림 키 누락"
+            "state" : "translated",
+            "value" : "스트림 키가 누락되어 있습니다."
           }
         },
         "nl" : {
@@ -49665,8 +49665,8 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "사광"
+            "state" : "translated",
+            "value" : "스트리머"
           }
         },
         "nl" : {
@@ -50226,7 +50226,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "초점을 맞추려면 화면을 터치하세요."
+            "value" : "화면을 터치하여 초점 맞추기"
           }
         },
         "nl" : {
@@ -51345,7 +51345,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "RTT가 너무 높을 때 비트레이트 감소 속도입니다."
           }
         },
@@ -51457,7 +51457,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "전송 중인 패킷 수가 이 값을 초과하면 비트 전송률이 빠르게 감소합니다."
           }
         },
@@ -51681,7 +51681,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "비트 전송률을 낮추기 전 허용되는 최대 RTT 스파이크"
           }
         },
@@ -51793,7 +51793,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "RTT가 너무 높을 때 최소 비트 전송률 감소 속도입니다."
           }
         },
@@ -51905,7 +51905,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Moblin에서 스트림을 수신하는 OBS의 소스 이름입니다."
           }
         },
@@ -52241,7 +52241,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "RTMP 서버를 사용하면 Moblin이 네트워크를 통해 비디오 스트림을 수신할 수 있습니다. 이를 통해 일부 드론 및 기타 카메라를 소스로 사용할 수 있습니다."
           }
         },
@@ -52353,7 +52353,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "스트림 이름은 장면 설정의 카메라 목록에 표시됩니다."
           }
         },
@@ -52465,7 +52465,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "RTMP 서버가 RTMP 게시자를 수신 대기하는 TCP 포트입니다."
           }
         },
@@ -54033,7 +54033,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "삼각형"
           }
         },
@@ -54146,7 +54146,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "트리플"
+            "value" : "3분할"
           }
         },
         "nl" : {
@@ -54258,7 +54258,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "트리플 (자동)"
+            "value" : "트리플(자동)"
           }
         },
         "nl" : {
@@ -54817,7 +54817,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "OBS 서버에 연결할 수 없습니다. 5초마다 다시 시도합니다."
           }
         },
@@ -54932,7 +54932,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "알 수 없는 스트리밍 상태입니다."
           }
         },
@@ -55380,7 +55380,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "위로"
           }
         },
@@ -55492,7 +55492,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "최대 50Mbps. 자동으로 설정하려면 0으로 설정하세요."
           }
         },
@@ -55716,7 +55716,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "URL"
           }
         },
@@ -56164,7 +56164,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "무엇을 하고 있는지 모르는 경우에는 Fast IRL 알고리즘을 사용하십시오!"
           }
         },
@@ -56388,7 +56388,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "스트리머와 어시스턴트 모두에서 사용됩니다."
           }
         },
@@ -56948,8 +56948,8 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "떨리다"
+            "state" : "translated",
+            "value" : "진동 알림"
           }
         },
         "nl" : {
@@ -57172,7 +57172,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "비디오 비트레이트"
           }
         },
@@ -57284,7 +57284,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "영상이 거무스름하다"
           }
         },
@@ -57396,7 +57396,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "비디오 코덱"
           }
         },
@@ -58068,7 +58068,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "원격 제어 스트리머가 연결되기를 기다리는 중..."
           }
         },
@@ -59076,7 +59076,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ws://213.33.45.132:4567"
           }
         },
@@ -59188,7 +59188,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "X 표시"
           }
         },
@@ -59757,7 +59757,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "0밀리초 이상입니다."
           }
         },
@@ -60093,7 +60093,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "확대"
           }
         },
@@ -60205,7 +60205,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "축소"
           }
         },
