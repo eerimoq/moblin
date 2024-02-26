@@ -4,30 +4,17 @@
     <meta charset="UTF-8">
     <meta http-equiv="refresh" content="0;url=">
     <script>
-        function getParameterByName(name, url) {
-            if (!url) url = window.location.href;
-            name = name.replace(/[\[\]]/g, "\\$&");
-            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-                results = regex.exec(url);
-            if (!results) return null;
-            if (!results[2]) return '';
-            return decodeURIComponent(results[2].replace(/\+/g, " "));
-        }
-
         window.onload = function() {
-            var code = getParameterByName('code');
+            var fragment = window.location.hash.substring(1);
             var redirectURL = "moblin://auth/success";
-
-            if (code) {
-                redirectURL += "?code=" + encodeURIComponent(code);
-            }
-
-            window.location.href = redirectURL;
+            var url = redirectURL + "#" + fragment;
+            window.location.href = url;
+            document.getElementById('link').href = url;
         };
     </script>
     <title>Redirecting...</title>
 </head>
 <body>
-    <p>If you are not redirected automatically, follow this <a href="moblin://auth/success">link</a>.</p>
+    <p>If you are not redirected automatically, follow this <a id="link" href="moblin://auth/success">link</a>.</p>
 </body>
 </html>
