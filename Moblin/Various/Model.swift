@@ -528,13 +528,15 @@ final class Model: ObservableObject {
         stream.afreecaTvEnabled = false
         stream.obsWebSocketEnabled = false
         if wizardPlatform != .custom {
-            if wizardObsRemoteControlEnabled {
-                let url = cleanUrl(url: wizardObsRemoteControlUrl.trim())
-                if isValidWebSocketUrl(url: url) == nil {
-                    stream.obsWebSocketEnabled = true
-                    stream.obsWebSocketUrl = url
-                    stream.obsWebSocketPassword = wizardObsRemoteControlPassword.trim()
-                    stream.obsSourceName = wizardObsRemoteControlSourceName.trim()
+            if wizardNetworkSetup != .direct {
+                if wizardObsRemoteControlEnabled {
+                    let url = cleanUrl(url: wizardObsRemoteControlUrl.trim())
+                    if isValidWebSocketUrl(url: url) == nil {
+                        stream.obsWebSocketEnabled = true
+                        stream.obsWebSocketUrl = url
+                        stream.obsWebSocketPassword = wizardObsRemoteControlPassword.trim()
+                        stream.obsSourceName = wizardObsRemoteControlSourceName.trim()
+                    }
                 }
             }
         }

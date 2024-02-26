@@ -10167,6 +10167,7 @@
       }
     },
     "Best possible stability. Uses bonding. Paid service." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -10277,6 +10278,9 @@
           }
         }
       }
+    },
+    "Best possible stability. Uses bonding. Paid third-party service." : {
+
     },
     "Big packets" : {
       "localizations" : {
