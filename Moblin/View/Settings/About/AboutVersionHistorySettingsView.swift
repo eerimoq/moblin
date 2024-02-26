@@ -8,6 +8,14 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.183.0", date: "2024-02-26", changes: [
+        "• Fix crash when streaming to https://github.com/sallar/mac-local-rtmp-server RTMP server. 🐛 JohannesLiv",
+        "  • Adaptive bitrate will not work at all after about 4 GB of data sent. Requires server fix.",
+        "• Ireland and tetris icons in store.",
+        "• Updated korean translation. ✍️ 고블린",
+        "• Fixed audio drift issue on iPhone 15?",
+        "• Only show OBS remote control page in wizard when OBS is (likely) used. 🐛 JohannesLiv",
+    ]),
     Version(version: "0.182.0", date: "2024-02-24", changes: [
         "• Make time widget text size same regardless of resolution.",
         "• Show error toast if an overlay (widget/filter) cannot be rendered.",
