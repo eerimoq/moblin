@@ -6,13 +6,11 @@ struct BrowserView: UIViewRepresentable {
     var browser: Browser
 
     func makeUIView(context _: Context) -> WKWebView {
-        // print("Make browser UI view", browser.browserEffect.url.host()!)
         return browser.browserEffect.webView
     }
 
     func updateUIView(_: WKWebView, context _: Context) {
         browser.browserEffect.reload()
-        // print("Update browser UI view", browser.browserEffect.url.host()!)
     }
 }
 
