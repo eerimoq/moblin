@@ -17,34 +17,24 @@ struct StreamOverlayTextView: View {
 }
 
 struct StreamOverlayIconAndTextView: View {
-    var show: Bool
     var icon: String
     var text: String
-    var textFirst = false
     var color: Color = .white
     var textColor: Color = .white
 
     var body: some View {
-        if show {
-            HStack(spacing: 1) {
-                if textFirst {
-                    StreamOverlayTextView(text: text, textColor: textColor)
-                        .font(smallFont)
-                }
-                Image(systemName: icon)
-                    .frame(width: 17, height: 17)
-                    .font(smallFont)
-                    .padding([.leading, .trailing], 2)
-                    .foregroundColor(color)
-                    .background(Color(white: 0, opacity: 0.6))
-                    .cornerRadius(5)
-                if !textFirst {
-                    StreamOverlayTextView(text: text, textColor: textColor)
-                        .font(smallFont)
-                }
-            }
-            .padding(0)
+        HStack(spacing: 1) {
+            StreamOverlayTextView(text: text, textColor: textColor)
+                .font(smallFont)
+            Image(systemName: icon)
+                .frame(width: 17, height: 17)
+                .font(smallFont)
+                .padding([.leading, .trailing], 2)
+                .foregroundColor(color)
+                .background(Color(white: 0, opacity: 0.6))
+                .cornerRadius(5)
         }
+        .padding(0)
     }
 }
 
@@ -66,20 +56,16 @@ struct MainView: View {
                             HStack {
                                 Spacer()
                                 StreamOverlayIconAndTextView(
-                                    show: true,
                                     icon: "waveform",
                                     text: "|||||||||",
-                                    textFirst: true,
                                     textColor: .green
                                 )
                             }
                             HStack {
                                 Spacer()
                                 StreamOverlayIconAndTextView(
-                                    show: true,
                                     icon: "speedometer",
-                                    text: "3,4 Mbps",
-                                    textFirst: true
+                                    text: "3,4 Mbps"
                                 )
                             }
                             .padding([.bottom], 4)
