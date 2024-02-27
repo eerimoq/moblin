@@ -227,6 +227,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var twitchEnabled: Bool? = true
     var twitchChannelName: String = ""
     var twitchChannelId: String = ""
+    var twitchAccessToken: String?
     var kickEnabled: Bool? = true
     var kickChatroomId: String = ""
     var youTubeEnabled: Bool? = true

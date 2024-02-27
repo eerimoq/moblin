@@ -182,7 +182,8 @@
 		03FB4B312AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FB4B302AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift */; };
 		03FBD1812B3B0DE500757CA9 /* RtmpServerClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FBD1802B3B0DE500757CA9 /* RtmpServerClient.swift */; };
 		03FBD1852B3B0DF300757CA9 /* RtmpServerChunkStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FBD1842B3B0DF300757CA9 /* RtmpServerChunkStream.swift */; };
-		5B513A0B2B77885A00953CAF /* Twitch in Frameworks */ = {isa = PBXBuildFile; productRef = 5B513A0A2B77885A00953CAF /* Twitch */; };
+		5B3A5E362B8E59E7007DF957 /* Twitch in Frameworks */ = {isa = PBXBuildFile; productRef = 5B3A5E352B8E59E7007DF957 /* Twitch */; };
+		5B513A1F2B89F52F00953CAF /* TwitchAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B513A1E2B89F52F00953CAF /* TwitchAuth.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -359,6 +360,7 @@
 		03FB4B302AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitratePresetsPresetSettingsView.swift; sourceTree = "<group>"; };
 		03FBD1802B3B0DE500757CA9 /* RtmpServerClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpServerClient.swift; sourceTree = "<group>"; };
 		03FBD1842B3B0DF300757CA9 /* RtmpServerChunkStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpServerChunkStream.swift; sourceTree = "<group>"; };
+		5B513A1E2B89F52F00953CAF /* TwitchAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitchAuth.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -371,7 +373,7 @@
 				03A983452A9A03EA008FF0DB /* HaishinKit in Frameworks */,
 				0320D8762AED36860030418F /* WrappingHStack in Frameworks */,
 				032815D52AC855A5001F8A85 /* LicenseList in Frameworks */,
-				5B513A0B2B77885A00953CAF /* Twitch in Frameworks */,
+				5B3A5E362B8E59E7007DF957 /* Twitch in Frameworks */,
 				0307EBCA2B59B239006F7B2A /* Telegraph in Frameworks */,
 				03A974282AC137A000610E21 /* Collections in Frameworks */,
 				03A08B7C2AC295620018BA95 /* AlertToast in Frameworks */,
@@ -726,6 +728,7 @@
 			children = (
 				03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */,
 				03A983702A9A0659008FF0DB /* TwitchChatMoblin.swift */,
+				5B513A1E2B89F52F00953CAF /* TwitchAuth.swift */,
 			);
 			path = Twitch;
 			sourceTree = "<group>";
@@ -1159,7 +1162,7 @@
 				03BC116A2AE56C2200C38FC4 /* SDWebImageWebPCoder */,
 				0320D8752AED36860030418F /* WrappingHStack */,
 				0307EBC92B59B239006F7B2A /* Telegraph */,
-				5B513A0A2B77885A00953CAF /* Twitch */,
+				5B3A5E352B8E59E7007DF957 /* Twitch */,
 			);
 			productName = Mobs;
 			productReference = 035E9E332A9A02D6009D4F5A /* Moblin.app */;
@@ -1217,7 +1220,7 @@
 				03BC11692AE56C2200C38FC4 /* XCRemoteSwiftPackageReference "SDWebImageWebPCoder" */,
 				0320D8742AED36860030418F /* XCRemoteSwiftPackageReference "WrappingHStack" */,
 				0307EBC82B59B239006F7B2A /* XCRemoteSwiftPackageReference "Telegraph" */,
-				5B513A092B77885A00953CAF /* XCRemoteSwiftPackageReference "swift-twitch-client" */,
+				5B3A5E342B8E59E7007DF957 /* XCRemoteSwiftPackageReference "swift-twitch-client" */,
 			);
 			productRefGroup = 035E9E342A9A02D6009D4F5A /* Products */;
 			projectDirPath = "";
@@ -1403,6 +1406,7 @@
 				031A2E002ADBE34F005CE350 /* DraggableItemPrefixView.swift in Sources */,
 				0379BB792AA64C9500B718B6 /* WidgetVideoEffectSettingsView.swift in Sources */,
 				0315A33B2AA2FA7100295443 /* LocalListener.swift in Sources */,
+				5B513A1F2B89F52F00953CAF /* TwitchAuth.swift in Sources */,
 				035D37372AB230E700045B92 /* StreamVideoBitrateSettingsView.swift in Sources */,
 				032FDBFC2B0B1183007BE85E /* ValueEditView.swift in Sources */,
 				0318391B2AF79DDF00320FB2 /* StreamSrtAdaptiveBitrateSettingsView.swift in Sources */,
@@ -1745,9 +1749,9 @@
 				minimumVersion = 0.14.0;
 			};
 		};
-		5B513A092B77885A00953CAF /* XCRemoteSwiftPackageReference "swift-twitch-client" */ = {
+		5B3A5E342B8E59E7007DF957 /* XCRemoteSwiftPackageReference "swift-twitch-client" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/LosFarmosCTL/swift-twitch-client";
+			repositoryURL = "https://github.com/nofuture2077/swift-twitch-client/";
 			requirement = {
 				branch = main;
 				kind = branch;
@@ -1801,9 +1805,9 @@
 			package = 03BC11692AE56C2200C38FC4 /* XCRemoteSwiftPackageReference "SDWebImageWebPCoder" */;
 			productName = SDWebImageWebPCoder;
 		};
-		5B513A0A2B77885A00953CAF /* Twitch */ = {
+		5B3A5E352B8E59E7007DF957 /* Twitch */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 5B513A092B77885A00953CAF /* XCRemoteSwiftPackageReference "swift-twitch-client" */;
+			package = 5B3A5E342B8E59E7007DF957 /* XCRemoteSwiftPackageReference "swift-twitch-client" */;
 			productName = Twitch;
 		};
 /* End XCSwiftPackageProductDependency section */

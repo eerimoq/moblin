@@ -36,7 +36,7 @@ struct StreamSettingsView: View {
             NavigationLink(destination: StreamRecordingSettingsView(stream: stream)) {
                 Text("Recording")
             }
-            NavigationLink(destination: StreamTwitchSettingsView(stream: stream)) {
+            NavigationLink(destination: StreamTwitchSettingsView(model: model, stream: stream)) {
                 Toggle("Twitch", isOn: Binding(get: {
                     stream.twitchEnabled!
                 }, set: { value in

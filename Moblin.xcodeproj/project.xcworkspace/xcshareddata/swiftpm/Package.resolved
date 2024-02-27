@@ -192,10 +192,10 @@
     {
       "identity" : "swift-twitch-client",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/LosFarmosCTL/swift-twitch-client",
+      "location" : "https://github.com/nofuture2077/swift-twitch-client/",
       "state" : {
         "branch" : "main",
-        "revision" : "895e2c8f48601a98ee2ec433755076cd48b5fa4d"
+        "revision" : "238a6d06c7c0d6d83969248e29eda84a9cae0d2b"
       }
     },
     {

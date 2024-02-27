@@ -1,8 +1,15 @@
 import SwiftUI
 
 struct StreamTwitchSettingsView: View {
-    @EnvironmentObject var model: Model
+    var model: Model
     var stream: SettingsStream
+    var twitchAuth: TwitchAuth
+    
+    init(model: Model, stream: SettingsStream) {
+        self.model = model
+        self.stream = stream
+        self.twitchAuth = TwitchAuth(model: model)
+    }
 
     func submitChannelName(value: String) {
         stream.twitchChannelName = value
@@ -21,32 +28,45 @@ struct StreamTwitchSettingsView: View {
     }
 
     var body: some View {
-        Form {
-            Section {
-                TextEditNavigationView(
-                    title: String(localized: "Channel name"),
-                    value: stream.twitchChannelName,
-                    onSubmit: submitChannelName,
-                    capitalize: true
-                )
-            } footer: {
-                Text("The name of your channel.")
+        VStack {
+            Button(action: {
+                self.twitchAuth.startAuthentication(stream: stream)
+            }) {
+                Text(stream.twitchAccessToken != nil ? "Connected" : "Connect with Twitch")
+                    .padding()
+                    .foregroundColor(.white)
+                    .background(Color.purple)
+                    .cornerRadius(8)
             }
-            Section {
-                TextEditNavigationView(
-                    title: String(localized: "Channel id"),
-                    value: stream.twitchChannelId,
-                    onSubmit: submitChannelId
-                )
-            } footer: {
-                Text(
-                    "A large number. Use developer tools (F11) in your browser. Look at websocket messages."
-                )
+            .padding()
+                
+            Form {
+                Section {
+                    TextEditNavigationView(
+                        title: String(localized: "Channel name"),
+                        value: stream.twitchChannelName,
+                        onSubmit: submitChannelName,
+                        capitalize: true
+                    )
+                } footer: {
+                    Text("The name of your channel.")
+                }
+                Section {
+                    TextEditNavigationView(
+                        title: String(localized: "Channel id"),
+                        value: stream.twitchChannelId,
+                        onSubmit: submitChannelId
+                    )
+                } footer: {
+                    Text(
+                        "A large number. Use developer tools (F11) in your browser. Look at websocket messages."
+                    )
+                }
             }
-        }
-        .navigationTitle("Twitch")
-        .toolbar {
-            SettingsToolbar()
+            .navigationTitle("Twitch")
+            .toolbar {
+                SettingsToolbar()
+            }
         }
     }
 }
