@@ -4,12 +4,15 @@ all:
 
 style:
 	swiftformat --maxwidth 110 Moblin
+	swiftformat --maxwidth 110 "Moblin Watch"
 
 style-check:
 	swiftformat --maxwidth 110 --lint Moblin
+	swiftformat --maxwidth 110 --lint "Moblin Watch"
 
 lint:
 	swiftlint lint --strict Moblin
+	swiftlint lint --strict "Moblin Watch"
 
 periphery:
 	periphery scan

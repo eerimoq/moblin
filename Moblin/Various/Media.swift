@@ -99,6 +99,26 @@ final class Media: NSObject {
         return audioCapturePresentationTimestamp - videoCapturePresentationTimestamp
     }
 
+    func logTiming() {
+        let audioPts = getAudioCapturePresentationTimestamp()
+        let videoPts = getVideoCapturePresentationTimestamp()
+        let delta = getCaptureDelta()
+        logger.debug("CapturePts: audio: \(audioPts), video: \(videoPts), delta: \(delta)")
+        logger.debug("""
+        CapturePts: audio: \(CMClock.hostTimeClock.time.seconds - audioPts), \
+        video: \(CMClock.hostTimeClock.time.seconds - videoPts)
+        """)
+        let audioClock = netStream.mixer.audioSession.synchronizationClock!
+        let videoClock = netStream.mixer.captureSession.synchronizationClock!
+        let audioRate = CMClock.hostTimeClock.rate(relativeTo: audioClock)
+        let videoRate = CMClock.hostTimeClock.rate(relativeTo: videoClock)
+        logger.debug("""
+        CapturePts: rate: audio: \(audioRate) video: \(videoRate) \
+        h: \(CMClock.hostTimeClock.time.seconds) a: \(audioClock.time.seconds) \
+        v: \(videoClock.time.seconds)
+        """)
+    }
+
     func srtStartStream(
         isSrtla: Bool,
         url: String,

@@ -1727,10 +1727,7 @@ final class Model: ObservableObject {
             if self.stream.enabled {
                 self.media.updateVideoStreamBitrate(bitrate: self.stream.bitrate)
             }
-            let audioPts = self.media.getAudioCapturePresentationTimestamp()
-            let videoPts = self.media.getVideoCapturePresentationTimestamp()
-            let delta = self.media.getCaptureDelta()
-            logger.debug("CapturePts: audio: \(audioPts), video: \(videoPts), delta: \(delta)")
+            self.media.logTiming()
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
             self.updateAdaptiveBitrate()
