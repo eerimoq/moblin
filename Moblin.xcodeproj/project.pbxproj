@@ -175,7 +175,6 @@
 		03E95AC62ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */; };
 		03E95AE42ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95AE32ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift */; };
 		03EBEA632ACB4A17000DF427 /* BrowserEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */; };
-		03ECDF3E2B8D2B0D00BD920E /* HaishinKit.swift in Resources */ = {isa = PBXBuildFile; fileRef = 03ECDF3D2B8D2B0D00BD920E /* HaishinKit.swift */; };
 		03ECDF492B8E4E5F00BD920E /* MoblinWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECDF482B8E4E5F00BD920E /* MoblinWatchApp.swift */; };
 		03ECDF4B2B8E4E5F00BD920E /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECDF4A2B8E4E5F00BD920E /* MainView.swift */; };
 		03ECDF4D2B8E4E6000BD920E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03ECDF4C2B8E4E6000BD920E /* Assets.xcassets */; };
@@ -385,7 +384,6 @@
 		03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomSwitchToSettingsView.swift; sourceTree = "<group>"; };
 		03E95AE32ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapScreenToFocusSettingsView.swift; sourceTree = "<group>"; };
 		03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserEffect.swift; sourceTree = "<group>"; };
-		03ECDF3D2B8D2B0D00BD920E /* HaishinKit.swift */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = HaishinKit.swift; path = ../../HaishinKit.swift; sourceTree = "<group>"; };
 		03ECDF462B8E4E5E00BD920E /* MoblinWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MoblinWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		03ECDF482B8E4E5F00BD920E /* MoblinWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinWatchApp.swift; sourceTree = "<group>"; };
 		03ECDF4A2B8E4E5F00BD920E /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
@@ -714,7 +712,6 @@
 				035E9E362A9A02D6009D4F5A /* MoblinApp.swift */,
 				035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */,
 				03F853B22B151FA700719B89 /* Localizable.xcstrings */,
-				03ECDF3D2B8D2B0D00BD920E /* HaishinKit.swift */,
 				03A173F92B38312E00ACC4F8 /* Snow.sks */,
 				038F42F32B685ACF00E68752 /* LUTs.bundle */,
 			);
@@ -1368,7 +1365,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				035E9E3E2A9A02D7009D4F5A /* Preview Assets.xcassets in Resources */,
-				03ECDF3E2B8D2B0D00BD920E /* HaishinKit.swift in Resources */,
 				038F42F42B685ACF00E68752 /* LUTs.bundle in Resources */,
 				031852A62B21890A00AEAD0D /* InfoPlist.strings in Resources */,
 				035E9E3B2A9A02D7009D4F5A /* Assets.xcassets in Resources */,
