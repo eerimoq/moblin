@@ -33,33 +33,16 @@ struct ChatInfo: View {
 struct StreamOverlayView: View {
     @EnvironmentObject var model: Model
 
-    func drawFocus(context: GraphicsContext, metrics: GeometryProxy, focusPoint: CGPoint) {
-        let sideLength = 70.0
-        let x = metrics.size.width * focusPoint.x - sideLength / 2
-        let y = metrics.size.height * focusPoint.y - sideLength / 2
-        let origin = CGPoint(x: x, y: y)
-        let size = CGSize(width: sideLength, height: sideLength)
-        context.stroke(
-            Path(roundedRect: CGRect(origin: origin, size: size), cornerRadius: 2.0),
-            with: .color(.yellow),
-            lineWidth: 1
-        )
+    private func leadingPadding() -> CGFloat {
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            return 15
+        } else {
+            return 0
+        }
     }
 
     var body: some View {
         ZStack {
-            if model.database.tapToFocus, let focusPoint = model.manualFocusPoint {
-                GeometryReader { metrics in
-                    Canvas { context, _ in
-                        drawFocus(
-                            context: context,
-                            metrics: metrics,
-                            focusPoint: focusPoint
-                        )
-                    }
-                    .allowsHitTesting(false)
-                }
-            }
             ZStack {
                 GeometryReader { metrics in
                     StreamOverlayChatView()
@@ -78,6 +61,7 @@ struct StreamOverlayView: View {
                     )
                 }
             }
+            .opacity(model.database.chat.enabled! ? 1 : 0)
             .allowsHitTesting(model.interactiveChat)
             HStack {
                 Spacer()
@@ -85,11 +69,13 @@ struct StreamOverlayView: View {
             }
             HStack {
                 LeftOverlayView()
+                    .padding([.leading], leadingPadding())
                 Spacer()
             }
             .allowsHitTesting(false)
             HStack {
                 StreamOverlayDebugView()
+                    .padding([.leading], leadingPadding())
                 Spacer()
             }
             .allowsHitTesting(false)

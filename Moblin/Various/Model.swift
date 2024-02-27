@@ -5,6 +5,7 @@ import CoreMotion
 import GameController
 import HaishinKit
 import Logboard
+import MapKit
 import Network
 import PhotosUI
 import SDWebImageSwiftUI
@@ -89,14 +90,15 @@ private let iconsProductIds = [
     "AppIconLooking",
     "AppIconGoblin",
     "AppIconGoblina",
+    "AppIconTetris",
     "AppIconMillionaire",
     "AppIconBillionaire",
     "AppIconTrillionaire",
+    "AppIconIreland",
 ]
 
 private let globalIconsNotYetInStore = [
     Icon(name: "Basque", id: "AppIconBasque", price: ""),
-    Icon(name: "Tetris", id: "AppIconTetris", price: ""),
     Icon(name: "China", id: "AppIconChina", price: ""),
     Icon(name: "France", id: "AppIconFrance", price: ""),
     Icon(name: "Poland", id: "AppIconPoland", price: ""),
@@ -379,7 +381,7 @@ final class Model: ObservableObject {
     var cameraZoomXMinimum: Float = 1.0
     var cameraZoomXMaximum: Float = 1.0
     var secondCameraDevice: AVCaptureDevice?
-    @Published var srtDebugLines: [String] = []
+    @Published var debugLines: [String] = []
     @Published var streamingHistory = StreamingHistory()
     private var streamingHistoryStream: StreamingHistoryStream?
 
@@ -435,6 +437,7 @@ final class Model: ObservableObject {
     private var pixellateEffect = PixellateEffect()
     private var locationManager = Location()
     private var realtimeIrl: RealtimeIrl?
+    private var failedVideoEffect: String?
 
     func drawOnStreamLineComplete() {
         drawOnStreamEffect.updateOverlay(
@@ -524,13 +527,15 @@ final class Model: ObservableObject {
         stream.afreecaTvEnabled = false
         stream.obsWebSocketEnabled = false
         if wizardPlatform != .custom {
-            if wizardObsRemoteControlEnabled {
-                let url = cleanUrl(url: wizardObsRemoteControlUrl.trim())
-                if isValidWebSocketUrl(url: url) == nil {
-                    stream.obsWebSocketEnabled = true
-                    stream.obsWebSocketUrl = url
-                    stream.obsWebSocketPassword = wizardObsRemoteControlPassword.trim()
-                    stream.obsSourceName = wizardObsRemoteControlSourceName.trim()
+            if wizardNetworkSetup != .direct {
+                if wizardObsRemoteControlEnabled {
+                    let url = cleanUrl(url: wizardObsRemoteControlUrl.trim())
+                    if isValidWebSocketUrl(url: url) == nil {
+                        stream.obsWebSocketEnabled = true
+                        stream.obsWebSocketUrl = url
+                        stream.obsWebSocketPassword = wizardObsRemoteControlPassword.trim()
+                        stream.obsSourceName = wizardObsRemoteControlSourceName.trim()
+                    }
                 }
             }
         }
@@ -610,22 +615,30 @@ final class Model: ObservableObject {
         wizardBelaboxUrl = ""
     }
 
-    func updateAdaptiveBitrateIfEnabled(stream: SettingsStream) {
+    func updateAdaptiveBitrateSrtIfEnabled(stream: SettingsStream) {
         switch stream.srt.adaptiveBitrate!.algorithm {
         case .fastIrl:
-            media.setAdaptiveBitrateAlgorithm(settings: adaptiveBitrateFastSettings)
+            var settings = adaptiveBitrateFastSettings
+            settings.packetsInFlight = Int64(stream.srt.adaptiveBitrate!.fastIrlSettings!.packetsInFlight)
+            media.setAdaptiveBitrateAlgorithm(settings: settings)
         case .slowIrl:
             media.setAdaptiveBitrateAlgorithm(settings: adaptiveBitrateSlowSettings)
         case .customIrl:
             let customSettings = stream.srt.adaptiveBitrate!.customSettings
             media.setAdaptiveBitrateAlgorithm(settings: AdaptiveBitrateSettings(
-                packetsInFlight: customSettings.packetsInFlight,
-                rttDiffHighFactor: Double(customSettings.pifDiffIncreaseFactor),
+                packetsInFlight: Int64(customSettings.packetsInFlight),
+                rttDiffHighFactor: Double(customSettings.rttDiffHighDecreaseFactor),
                 rttDiffHighAllowedSpike: Double(customSettings.rttDiffHighAllowedSpike),
-                rttDiffHighMinDecrease: Int32(customSettings.rttDiffHighMinimumDecrease * 1000),
-                pifDiffIncreaseFactor: Int32(customSettings.pifDiffIncreaseFactor * 1000)
+                rttDiffHighMinDecrease: Int64(customSettings.rttDiffHighMinimumDecrease * 1000),
+                pifDiffIncreaseFactor: Int64(customSettings.pifDiffIncreaseFactor * 1000)
             ))
         }
+    }
+
+    func updateAdaptiveBitrateRtmpIfEnabled(stream _: SettingsStream) {
+        var settings = adaptiveBitrateFastSettings
+        settings.rttDiffHighAllowedSpike = 500
+        media.setAdaptiveBitrateAlgorithm(settings: settings)
     }
 
     @MainActor
@@ -944,6 +957,8 @@ final class Model: ObservableObject {
             wantedOrientation = .front
         case .back:
             wantedOrientation = .back
+        case .top:
+            wantedOrientation = .top
         }
         let session = AVAudioSession.sharedInstance()
         for inputPort in session.availableInputs ?? [] {
@@ -951,9 +966,7 @@ final class Model: ObservableObject {
                 continue
             }
             if let dataSources = inputPort.dataSources, !dataSources.isEmpty {
-                for dataSource in dataSources
-                    where dataSource.orientation == wantedOrientation
-                {
+                for dataSource in dataSources where dataSource.orientation == wantedOrientation {
                     do {
                         try setBuiltInMicAudioMode(dataSource: dataSource)
                         try inputPort.setPreferredDataSource(dataSource)
@@ -1207,7 +1220,10 @@ final class Model: ObservableObject {
     }
 
     private func updateLocation() {
-        let newLocation = locationManager.status()
+        var newLocation = locationManager.status()
+        if let realtimeIrl {
+            newLocation += realtimeIrl.status()
+        }
         if location != newLocation {
             location = newLocation
         }
@@ -1222,13 +1238,26 @@ final class Model: ObservableObject {
     }
 
     func isLocationEnabled() -> Bool {
-        return isRealtimeIrlConfigured()
+        return database.location!.enabled
     }
 
     private func handleLocationUpdate(location: CLLocation) {
-        if isLive {
-            realtimeIrl?.update(location: location)
+        guard isLive else {
+            return
         }
+        guard !isLocationInPrivacyRegion(location: location) else {
+            return
+        }
+        realtimeIrl?.update(location: location)
+    }
+
+    private func isLocationInPrivacyRegion(location: CLLocation) -> Bool {
+        for region in database.location!.privacyRegions
+            where region.contains(coordinate: location.coordinate)
+        {
+            return true
+        }
+        return false
     }
 
     func isRealtimeIrlConfigured() -> Bool {
@@ -1316,7 +1345,7 @@ final class Model: ObservableObject {
                 sceneUpdated(store: false)
                 updateButtonStates()
             }
-        case .pauseChat:
+        case .interactiveChat:
             break
         case .scene:
             if !pressed {
@@ -1686,6 +1715,7 @@ final class Model: ObservableObject {
             self.updateObsAudioVolume()
             self.updateBrowserWidgetStatus()
             self.logStatus()
+            self.updateFailedVideoEffects()
         })
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true, block: { _ in
             self.updateBatteryLevel()
@@ -1693,9 +1723,16 @@ final class Model: ObservableObject {
             self.updateObsStatus()
             self.updateRemoteControlAssistantStatus()
             self.updateRemoteControlStatus()
+            if self.stream.enabled {
+                self.media.updateVideoStreamBitrate(bitrate: self.stream.bitrate)
+            }
+            let audioPts = self.media.getAudioCapturePresentationTimestamp()
+            let videoPts = self.media.getVideoCapturePresentationTimestamp()
+            let delta = self.media.getCaptureDelta()
+            logger.debug("CapturePts: audio: \(audioPts), video: \(videoPts), delta: \(delta)")
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
-            self.updateSrtDebugLines()
+            self.updateAdaptiveBitrate()
             if self.database.show.audioBar {
                 self.updateAudioLevel()
             }
@@ -1751,14 +1788,15 @@ final class Model: ObservableObject {
         return luts.first { $0.id == id }
     }
 
-    private func updateSrtDebugLines() {
-        if let lines = media.getSrtStats(overlay: database.debug!.srtOverlay) {
-            srtDebugLines = lines
+    private func updateAdaptiveBitrate() {
+        if let lines = media.updateAdaptiveBitrate(overlay: database.debug!.srtOverlay) {
+            debugLines = lines
+            debugLines.append("Audio/video capture delta: \(Int(1000 * media.getCaptureDelta())) ms")
             if logger.debugEnabled && isLive {
                 logger.debug(lines.joined(separator: ", "))
             }
-        } else if !srtDebugLines.isEmpty {
-            srtDebugLines = []
+        } else if !debugLines.isEmpty {
+            debugLines = []
         }
     }
 
@@ -1909,7 +1947,8 @@ final class Model: ObservableObject {
                     x: widget.x,
                     y: widget.y,
                     width: widget.width,
-                    height: widget.height
+                    height: widget.height,
+                    settingName: realWidget.name
                 )
             }
         }
@@ -1986,7 +2025,8 @@ final class Model: ObservableObject {
         for widget in database.widgets where widget.type == .time {
             textEffects[widget.id] = TextEffect(
                 format: widget.text.formatString,
-                fontSize: 40
+                fontSize: 40,
+                settingName: widget.name
             )
         }
         for browserEffect in browserEffects.values {
@@ -2002,12 +2042,18 @@ final class Model: ObservableObject {
             browserEffects[widget.id] = BrowserEffect(
                 url: url,
                 widget: widget.browser,
-                videoSize: videoSize
+                videoSize: videoSize,
+                settingName: widget.name
             )
         }
         browsers = browserEffects.map { _, browser in
             Browser(browserEffect: browser)
         }
+        drawOnStreamEffect.updateOverlay(
+            videoSize: media.getVideoSize(),
+            size: drawOnStreamSize,
+            lines: drawOnStreamLines
+        )
         sceneUpdated(imageEffectChanged: true, store: false)
     }
 
@@ -2128,7 +2174,7 @@ final class Model: ObservableObject {
         streamTotalBytes = 0
         streamTotalChatMessages = 0
         reconnectTime = firstReconnectTime
-        UIApplication.shared.isIdleTimerDisabled = true
+        updateScreenAutoOff()
         startNetStream()
         streamingHistoryStream = StreamingHistoryStream(settings: stream.clone())
         streamingHistoryStream!.updateHighestThermalState(thermalState: ThermalState(from: thermalState))
@@ -2137,13 +2183,14 @@ final class Model: ObservableObject {
 
     func stopStream() {
         isLive = false
+        updateScreenAutoOff()
+        realtimeIrl?.stop()
         if !streaming {
             return
         }
         logger.info("stream: Stop")
         streamTotalBytes += UInt64(media.streamTotal())
         streaming = false
-        UIApplication.shared.isIdleTimerDisabled = false
         stopNetStream()
         streamState = .disconnected
         if let streamingHistoryStream {
@@ -2155,12 +2202,19 @@ final class Model: ObservableObject {
         }
     }
 
+    func updateScreenAutoOff() {
+        UIApplication.shared.isIdleTimerDisabled = (showingRemoteControl || isLive)
+    }
+
     private func startNetStream(reconnect _: Bool = false) {
         streamState = .connecting
         latestLowBitrateDate = Date()
         switch stream.getProtocol() {
         case .rtmp:
-            rtmpStartStream()
+            media.rtmpStartStream(url: stream.url,
+                                  targetBitrate: stream.bitrate,
+                                  adaptiveBitrate: stream.rtmp!.adaptiveBitrateEnabled)
+            updateAdaptiveBitrateRtmpIfEnabled(stream: stream)
         case .srt:
             payloadSize = stream.srt.mpegtsPacketsPerPacket * 188
             media.srtStartStream(
@@ -2168,7 +2222,7 @@ final class Model: ObservableObject {
                 url: stream.url,
                 reconnectTime: reconnectTime,
                 targetBitrate: stream.bitrate,
-                adaptiveBitrate: stream.adaptiveBitrate,
+                adaptiveBitrate: stream.srt.adaptiveBitrateEnabled!,
                 latency: stream.srt.latency,
                 overheadBandwidth: database.debug!.srtOverheadBandwidth!,
                 maximumBandwidthFollowInput: database.debug!.maximumBandwidthFollowInput!,
@@ -2176,7 +2230,7 @@ final class Model: ObservableObject {
                 networkInterfaceNames: database.networkInterfaceNames!,
                 connectionPriorities: stream.srt.connectionPriorities!
             )
-            updateAdaptiveBitrateIfEnabled(stream: stream)
+            updateAdaptiveBitrateSrtIfEnabled(stream: stream)
         }
         updateSpeed(now: Date())
     }
@@ -2238,7 +2292,7 @@ final class Model: ObservableObject {
         reloadLocation()
     }
 
-    private func reloadChats() {
+    func reloadChats() {
         reloadTwitchChat()
         reloadKickPusher()
         reloadYouTubeLiveChat()
@@ -2387,7 +2441,7 @@ final class Model: ObservableObject {
     }
 
     func isTwitchChatConfigured() -> Bool {
-        return stream.twitchEnabled! && stream.twitchChannelName != ""
+        return database.chat.enabled! && stream.twitchEnabled! && stream.twitchChannelName != ""
     }
 
     func isTwitchChatConnected() -> Bool {
@@ -2403,7 +2457,7 @@ final class Model: ObservableObject {
     }
 
     func isKickPusherConfigured() -> Bool {
-        return stream.kickEnabled! && stream.kickChatroomId != ""
+        return database.chat.enabled! && stream.kickEnabled! && stream.kickChatroomId != ""
     }
 
     func isKickPusherConnected() -> Bool {
@@ -2415,7 +2469,8 @@ final class Model: ObservableObject {
     }
 
     func isYouTubeLiveChatConfigured() -> Bool {
-        return stream.youTubeEnabled! && stream.youTubeApiKey! != "" && stream.youTubeVideoId! != ""
+        return database.chat.enabled! && stream.youTubeEnabled! && stream.youTubeApiKey! != "" && stream
+            .youTubeVideoId! != ""
     }
 
     func isYouTubeLiveChatConnected() -> Bool {
@@ -2427,7 +2482,8 @@ final class Model: ObservableObject {
     }
 
     func isAfreecaTvChatConfigured() -> Bool {
-        return stream.afreecaTvEnabled! && stream.afreecaTvChannelName! != "" && stream
+        return database.chat.enabled! && stream.afreecaTvEnabled! && stream
+            .afreecaTvChannelName! != "" && stream
             .afreecaTvStreamId! != ""
     }
 
@@ -2827,6 +2883,16 @@ final class Model: ObservableObject {
     private func logStatus() {
         if logger.debugEnabled && isLive {
             logger.debug("Status: Bitrate: \(speedAndTotal), Uptime: \(uptime)")
+        }
+    }
+
+    private func updateFailedVideoEffects() {
+        let newFailedVideoEffect = media.getFailedVideoEffect()
+        if newFailedVideoEffect != failedVideoEffect {
+            if let newFailedVideoEffect {
+                makeErrorToast(title: "Failed to render \(newFailedVideoEffect)")
+            }
+            failedVideoEffect = newFailedVideoEffect
         }
     }
 
@@ -3433,7 +3499,15 @@ final class Model: ObservableObject {
     }
 
     func reattachCamera() {
+        detachCamera()
+        attachCamera()
+    }
+
+    func detachCamera() {
         media.attachCamera(device: nil, secondDevice: nil, videoStabilizationMode: .off, videoMirrored: false)
+    }
+
+    func attachCamera() {
         let isMirrored = getVideoMirroredOnScreen()
         media.attachCamera(
             device: cameraDevice,
@@ -3630,10 +3704,6 @@ final class Model: ObservableObject {
         case .cinematic:
             return .cinematic
         }
-    }
-
-    private func rtmpStartStream() {
-        media.rtmpStartStream(url: stream.url)
     }
 
     func toggleTorch() {

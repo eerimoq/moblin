@@ -30,6 +30,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
     private var formatDescription: CMVideoFormatDescription?
     private var videoCodec: VideoCodec?
     private var numberOfFrames: UInt64 = 0
+    private var videoCodecLockQueue = DispatchQueue(label: "com.eerimoq.Moblin.VideoCodec")
 
     init(client: RtmpServerClient, streamId: UInt16) {
         self.client = client
@@ -387,7 +388,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         config.data = messageData.subdata(in: FLVTagType.video.headerSize ..< messageData.count)
         let status = config.makeFormatDescription(&formatDescription)
         if status == noErr {
-            videoCodec = VideoCodec()
+            videoCodec = VideoCodec(lockQueue: videoCodecLockQueue)
             videoCodec!.formatDescription = formatDescription
             videoCodec!.delegate = self
             videoCodec!.startRunning()

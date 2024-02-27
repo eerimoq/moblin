@@ -113,19 +113,24 @@ struct StreamWizardSummarySettingsView: View {
                     }
                 }
             } else {
-                if model.wizardObsRemoteControlEnabled {
-                    Section {
-                        TextValueView(name: String(localized: "URL"), value: model.wizardObsRemoteControlUrl)
-                        TextValueView(
-                            name: String(localized: "Password"),
-                            value: model.wizardObsRemoteControlPassword
-                        )
-                        TextValueView(
-                            name: String(localized: "Source name"),
-                            value: model.wizardObsRemoteControlSourceName
-                        )
-                    } header: {
-                        Text("OBS remote control")
+                if model.wizardNetworkSetup != .direct {
+                    if model.wizardObsRemoteControlEnabled {
+                        Section {
+                            TextValueView(
+                                name: String(localized: "URL"),
+                                value: model.wizardObsRemoteControlUrl
+                            )
+                            TextValueView(
+                                name: String(localized: "Password"),
+                                value: model.wizardObsRemoteControlPassword
+                            )
+                            TextValueView(
+                                name: String(localized: "Source name"),
+                                value: model.wizardObsRemoteControlSourceName
+                            )
+                        } header: {
+                            Text("OBS remote control")
+                        }
                     }
                 }
                 Section {

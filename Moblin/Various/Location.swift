@@ -12,8 +12,6 @@ class Location: NSObject, CLLocationManagerDelegate {
         manager.delegate = self
         manager.requestWhenInUseAuthorization()
         manager.startUpdatingLocation()
-        // manager.desiredAccuracy = 1
-        // manager.distanceFilter = 10
     }
 
     func stop() {

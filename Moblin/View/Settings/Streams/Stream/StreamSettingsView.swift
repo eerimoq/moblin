@@ -110,6 +110,11 @@ struct StreamSettingsView: View {
                     Text("SRT(LA)")
                 }
             }
+            if stream.getProtocol() == .rtmp {
+                NavigationLink(destination: StreamRtmpSettingsView(stream: stream)) {
+                    Text("RTMP")
+                }
+            }
         }
         .navigationTitle("Stream")
         .toolbar {

@@ -89,8 +89,6 @@ struct SceneSettingsView: View {
         model.sceneUpdated(store: true)
     }
 
-    private func onMicChange(micId _: String) {}
-
     private func canWidgetExpand(widget: SettingsWidget) -> Bool {
         return widgetHasPosition(id: widget.id) || widgetHasSize(id: widget.id)
     }
@@ -162,24 +160,6 @@ struct SceneSettingsView: View {
             } header: {
                 Text("Camera")
             }
-            if model.database.debug!.sceneMic! {
-                Section {
-                    NavigationLink(destination: InlinePickerView(
-                        title: String(localized: "Mic"),
-                        onChange: onMicChange,
-                        items: model.listMics().map { mic in
-                            InlinePickerItem(id: mic.id, text: mic.name)
-                        },
-                        selectedId: model.listMics().first?.id ?? ""
-                    )) {
-                        Text(model.listMics().first?.name ?? "")
-                    }
-                } header: {
-                    Text("Mic")
-                } footer: {
-                    Text("Mic used in this scene when \"Mic follows scene\" toggle is enabled.")
-                }
-            }
             Section {
                 List {
                     ForEach(scene.widgets) { widget in
@@ -241,17 +221,19 @@ struct SceneSettingsView: View {
                 })
                 .popover(isPresented: $showingAddWidget) {
                     VStack {
-                        HStack {
-                            Spacer()
-                            Button(action: {
-                                showingAddWidget = false
-                            }, label: {
-                                Text("Cancel")
-                                    .padding(5)
-                                    .foregroundColor(.blue)
-                            })
+                        if UIDevice.current.userInterfaceIdiom == .phone {
+                            HStack {
+                                Spacer()
+                                Button(action: {
+                                    showingAddWidget = false
+                                }, label: {
+                                    Text("Cancel")
+                                        .padding(5)
+                                        .foregroundColor(.blue)
+                                })
+                            }
                         }
-                        Form {
+                        let form = Form {
                             Section("Widget name") {
                                 ForEach(widgets) { widget in
                                     Button(action: {
@@ -267,6 +249,12 @@ struct SceneSettingsView: View {
                                     })
                                 }
                             }
+                        }
+                        if UIDevice.current.userInterfaceIdiom != .phone {
+                            form
+                                .frame(width: 300, height: 400)
+                        } else {
+                            form
                         }
                     }
                 }
@@ -309,17 +297,19 @@ struct SceneSettingsView: View {
                 })
                 .popover(isPresented: $showingAddButton) {
                     VStack {
-                        HStack {
-                            Spacer()
-                            Button(action: {
-                                showingAddButton = false
-                            }, label: {
-                                Text("Cancel")
-                                    .padding(5)
-                                    .foregroundColor(.blue)
-                            })
+                        if UIDevice.current.userInterfaceIdiom == .phone {
+                            HStack {
+                                Spacer()
+                                Button(action: {
+                                    showingAddButton = false
+                                }, label: {
+                                    Text("Cancel")
+                                        .padding(5)
+                                        .foregroundColor(.blue)
+                                })
+                            }
                         }
-                        Form {
+                        let form = Form {
                             Section("Button name") {
                                 ForEach(buttons) { button in
                                     Button(action: {
@@ -334,6 +324,12 @@ struct SceneSettingsView: View {
                                     })
                                 }
                             }
+                        }
+                        if UIDevice.current.userInterfaceIdiom != .phone {
+                            form
+                                .frame(width: 300, height: 400)
+                        } else {
+                            form
                         }
                     }
                 }

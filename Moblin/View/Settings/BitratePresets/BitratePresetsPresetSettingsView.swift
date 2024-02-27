@@ -6,14 +6,12 @@ struct BitratePresetsPresetSettingsView: View {
     var preset: SettingsBitratePreset
 
     func submit(bitrate: String) {
-        guard let bitrate = Float(bitrate) else {
+        guard var bitrate = Float(bitrate) else {
             return
         }
-        guard bitrate > 0 else {
-            model.makeErrorToast(title: String(localized: "Bitrate must be greater than zero"))
-            return
-        }
-        preset.bitrate = max(bitrateFromMbps(bitrate: bitrate), 100_000)
+        bitrate = max(bitrate, 0.1)
+        bitrate = min(bitrate, 50)
+        preset.bitrate = bitrateFromMbps(bitrate: bitrate)
         model.store()
     }
 

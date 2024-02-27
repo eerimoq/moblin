@@ -44,9 +44,9 @@ struct StreamSrtSettingsView: View {
                 .disabled(stream.enabled && model.isLive)
                 NavigationLink(destination: StreamSrtAdaptiveBitrateSettingsView(stream: stream)) {
                     Toggle("Adaptive bitrate", isOn: Binding(get: {
-                        stream.adaptiveBitrate
+                        stream.srt.adaptiveBitrateEnabled!
                     }, set: { value in
-                        stream.adaptiveBitrate = value
+                        stream.srt.adaptiveBitrateEnabled = value
                         model.storeAndReloadStreamIfEnabled(stream: stream)
                     }))
                     .disabled(stream.enabled && model.isLive)

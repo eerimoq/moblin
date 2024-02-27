@@ -5,6 +5,11 @@ import UIKit
 final class SepiaEffect: VideoEffect {
     private let filter = CIFilter.sepiaTone()
 
+    override init() {
+        super.init()
+        name = "sepia filter"
+    }
+
     override func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {
         filter.inputImage = image
         filter.intensity = 0.9

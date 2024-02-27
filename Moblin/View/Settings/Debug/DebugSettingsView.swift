@@ -53,7 +53,7 @@ struct DebugSettingsView: View {
                 NavigationLink(destination: DebugAudioSettingsView()) {
                     Text("Audio")
                 }
-                Toggle("SRT overlay", isOn: Binding(get: {
+                Toggle("Debug overlay", isOn: Binding(get: {
                     model.database.debug!.srtOverlay
                 }, set: { value in
                     model.database.debug!.srtOverlay = value
@@ -67,12 +67,6 @@ struct DebugSettingsView: View {
                 }))
             }
             Section {
-                Toggle("Mic per scene", isOn: Binding(get: {
-                    model.database.debug!.sceneMic!
-                }, set: { value in
-                    model.database.debug!.sceneMic = value
-                    model.store()
-                }))
                 HStack {
                     Text("Video blackish")
                     Slider(

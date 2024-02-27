@@ -6,6 +6,11 @@ final class TripleEffect: VideoEffect {
     private let centerFilter = CIFilter.sourceOverCompositing()
     private let rightFilter = CIFilter.sourceOverCompositing()
 
+    override init() {
+        super.init()
+        name = "triple filter"
+    }
+
     override func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {
         // How to do this on GPU?
         let size = image.extent.size

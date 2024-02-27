@@ -1,3 +1,4 @@
+import sys
 import json
 import random
 import argparse
@@ -6,6 +7,7 @@ import aiohttp
 from websockets.sync.client import connect
 from hashlib import sha256
 from base64 import b64encode
+import asyncio
 
 DEFAULT_PORT = 2345
 API_VERSION = '0.1'
@@ -23,6 +25,7 @@ class Assistant:
         self.salt = None
         self.streamer = None
         self.request_id = 0
+        self.client_completions = {}
 
     async def handle_streamer(self, request):
         self.streamer = web.WebSocketResponse()
@@ -59,6 +62,9 @@ class Assistant:
         return self.streamer
 
     async def send_to_streamer(self, message):
+        if self.streamer is None:
+            raise Exception('Streamer not connected')
+
         await self.streamer.send_str(json.dumps(message))
 
     def next_id(self):
@@ -92,10 +98,16 @@ class Assistant:
             if kind == 'log':
                 print(data['entry'])
             else:
-                print('ignoring', data)
+                print('ignoring event', kind, data)
 
     async def handle_response(self, data):
         print(data)
+        try:
+            request_id = data['id']
+            queue = self.client_completions[request_id]
+            await queue.put(data)
+        except Exception:
+            pass
 
     async def handle_client(self, request):
         client = web.WebSocketResponse()
@@ -106,14 +118,18 @@ class Assistant:
                 message = json.loads(message.data)
 
                 if message['type'] == 'request':
+                    request_id = self.next_id()
+                    queue = asyncio.Queue()
+                    self.client_completions[request_id] = queue
                     await self.send_to_streamer({
                         'request': {
-                            'id': self.next_id(),
+                            'id': request_id,
                             'data': message['data']
                         }
                     })
                     await client.send_str(json.dumps({
-                        'type': 'response'
+                        'type': 'response',
+                        'data': await queue.get()
                     }))
                 else:
                     print('Not supported', message)
@@ -131,21 +147,65 @@ def do_run(args):
     web.run_app(app, port=args.port)
 
 
-def do_set_zoom(args):
-    with connect(f'ws://localhost:{args.port}/client') as server:
+def make_client_request(port, data):
+    with connect(f'ws://localhost:{port}/client') as server:
         server.send(json.dumps({
             'type': 'request',
-            'data': {
-                'setZoom': {
-                    'x': float(args.level)
-                }
-            }
+            'data': data
         }))
-        server.recv()
+
+        return json.loads(server.recv())['data']
+
+
+def get_settings(port):
+    data = make_client_request(
+        port,
+        {
+            'getSettings': {
+            }
+        })
+
+    return data['data']['getSettings']['data']
+
+
+def get_scene_id(port, name):
+    settings = get_settings(port)
+
+    for scene in settings['scenes']:
+        if scene['name'] == name:
+            return scene['id']
+    else:
+        raise Exception(f'Unknown scene {name}')
+
+
+def do_get_settings(args):
+    print(json.dumps(get_settings(args.port), indent=4))
+
+
+def do_set_zoom(args):
+    make_client_request(
+        args.port,
+        {
+            'setZoom': {
+                'x': float(args.level)
+            }
+        })
+
+
+def do_set_scene(args):
+    make_client_request(
+        args.port,
+        {
+            'setScene': {
+                'id': get_scene_id(args.port, args.name)
+            }
+        })
 
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument('-d', '--debug', action='store_true')
+    parser.add_argument('--port', type=int, default=DEFAULT_PORT)
 
     subparsers = parser.add_subparsers(title='subcommands',
                                        dest='subcommand')
@@ -153,17 +213,28 @@ def main():
 
     subparser = subparsers.add_parser('run')
     subparser.add_argument('--password', required=True)
-    subparser.add_argument('--port', type=int, default=DEFAULT_PORT)
     subparser.set_defaults(func=do_run)
 
+    subparser = subparsers.add_parser('get_settings')
+    subparser.set_defaults(func=do_get_settings)
+
     subparser = subparsers.add_parser('set_zoom')
-    subparser.add_argument('--port', type=int, default=DEFAULT_PORT)
     subparser.add_argument('level')
     subparser.set_defaults(func=do_set_zoom)
 
+    subparser = subparsers.add_parser('set_scene')
+    subparser.add_argument('name')
+    subparser.set_defaults(func=do_set_scene)
+
     args = parser.parse_args()
 
-    args.func(args)
+    if args.debug:
+        args.func(args)
+    else:
+        try:
+            args.func(args)
+        except BaseException as e:
+            sys.exit('error: ' + str(e))
 
 
 main()

@@ -76,6 +76,7 @@
 		036BE2CC2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036BE2CB2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift */; };
 		036BE2CF2ABD4CA60048F9C5 /* KickPusher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036BE2CE2ABD4CA60048F9C5 /* KickPusher.swift */; };
 		036BE2D22ABD518E0048F9C5 /* StreamKickSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036BE2D12ABD518E0048F9C5 /* StreamKickSettingsView.swift */; };
+		03708D162B83C39B009C88AA /* StreamRtmpSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03708D152B83C39B009C88AA /* StreamRtmpSettingsView.swift */; };
 		0379BB762AA6345400B718B6 /* ButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB752AA6345400B718B6 /* ButtonSettingsView.swift */; };
 		0379BB792AA64C9500B718B6 /* WidgetVideoEffectSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB782AA64C9500B718B6 /* WidgetVideoEffectSettingsView.swift */; };
 		0379BB7E2AA7C55000B718B6 /* ButtonImagePickerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB7D2AA7C55000B718B6 /* ButtonImagePickerSettingsView.swift */; };
@@ -129,6 +130,7 @@
 		03A9836E2A9A05F9008FF0DB /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9836D2A9A05F9008FF0DB /* Model.swift */; };
 		03A983712A9A0659008FF0DB /* TwitchPubSub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */; };
 		03A983722A9A0659008FF0DB /* TwitchChatMoblin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A983702A9A0659008FF0DB /* TwitchChatMoblin.swift */; };
+		03ACC7C72B7C94AA003B6CD6 /* LocationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ACC7C62B7C94AA003B6CD6 /* LocationSettingsView.swift */; };
 		03AD440A2B78A8A700B1B9B9 /* StreamButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AD44092B78A8A700B1B9B9 /* StreamButtonsSettingsView.swift */; };
 		03B16A242B35612000E5AB07 /* RecordingsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B16A232B35612000E5AB07 /* RecordingsSettingsView.swift */; };
 		03B16A282B35614100E5AB07 /* RecordingsRecordingSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B16A272B35614100E5AB07 /* RecordingsRecordingSettingsView.swift */; };
@@ -256,6 +258,7 @@
 		036BE2CB2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamUrlSettingsView.swift; sourceTree = "<group>"; };
 		036BE2CE2ABD4CA60048F9C5 /* KickPusher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KickPusher.swift; sourceTree = "<group>"; };
 		036BE2D12ABD518E0048F9C5 /* StreamKickSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamKickSettingsView.swift; sourceTree = "<group>"; };
+		03708D152B83C39B009C88AA /* StreamRtmpSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamRtmpSettingsView.swift; sourceTree = "<group>"; };
 		0379BB752AA6345400B718B6 /* ButtonSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonSettingsView.swift; sourceTree = "<group>"; };
 		0379BB782AA64C9500B718B6 /* WidgetVideoEffectSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetVideoEffectSettingsView.swift; sourceTree = "<group>"; };
 		0379BB7D2AA7C55000B718B6 /* ButtonImagePickerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonImagePickerSettingsView.swift; sourceTree = "<group>"; };
@@ -306,6 +309,7 @@
 		03A9836D2A9A05F9008FF0DB /* Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		03A9836F2A9A0659008FF0DB /* TwitchPubSub.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitchPubSub.swift; sourceTree = "<group>"; };
 		03A983702A9A0659008FF0DB /* TwitchChatMoblin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitchChatMoblin.swift; sourceTree = "<group>"; };
+		03ACC7C62B7C94AA003B6CD6 /* LocationSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationSettingsView.swift; sourceTree = "<group>"; };
 		03AD44092B78A8A700B1B9B9 /* StreamButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamButtonsSettingsView.swift; sourceTree = "<group>"; };
 		03B16A232B35612000E5AB07 /* RecordingsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsSettingsView.swift; sourceTree = "<group>"; };
 		03B16A272B35614100E5AB07 /* RecordingsRecordingSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsRecordingSettingsView.swift; sourceTree = "<group>"; };
@@ -428,6 +432,7 @@
 		0315A3402AA31ADC00295443 /* Stream */ = {
 			isa = PBXGroup;
 			children = (
+				03708D132B83C321009C88AA /* Rtmp */,
 				034CE2EA2B4D2E5A00E2C1BD /* RealtimeIrl */,
 				03BBAE972B2EB4CE0033D425 /* Chat */,
 				031A4DC42B2CED2D0053F67D /* Audio */,
@@ -723,6 +728,14 @@
 			path = Kick;
 			sourceTree = "<group>";
 		};
+		03708D132B83C321009C88AA /* Rtmp */ = {
+			isa = PBXGroup;
+			children = (
+				03708D152B83C39B009C88AA /* StreamRtmpSettingsView.swift */,
+			);
+			path = Rtmp;
+			sourceTree = "<group>";
+		};
 		0379BB712AA4BFA500B718B6 /* Twitch */ = {
 			isa = PBXGroup;
 			children = (
@@ -903,6 +916,14 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		03ACC7C52B7C94AA003B6CD6 /* Location */ = {
+			isa = PBXGroup;
+			children = (
+				03ACC7C62B7C94AA003B6CD6 /* LocationSettingsView.swift */,
+			);
+			path = Location;
+			sourceTree = "<group>";
+		};
 		03AD44072B78A88B00B1B9B9 /* StreamButton */ = {
 			isa = PBXGroup;
 			children = (
@@ -956,6 +977,7 @@
 				0304A5092B45ADA900310842 /* GameControllers */,
 				0379BBA82AAD951400B718B6 /* HelpAndSupport */,
 				032A49B62AC54DAD00ED3916 /* ImportExport */,
+				03ACC7C52B7C94AA003B6CD6 /* Location */,
 				03B16A222B35610100E5AB07 /* Recordings */,
 				034844F32B57AB5B0089B874 /* RemoteControl */,
 				0379BBB02AAD97EA00B718B6 /* Reset */,
@@ -1306,10 +1328,12 @@
 				0379BBA02AAD823900B718B6 /* StreamOverlayTextView.swift in Sources */,
 				03B374072AA0EA650028DDD5 /* MovieEffect.swift in Sources */,
 				03BE504A2B3EB59A004720AF /* IpMonitor.swift in Sources */,
+				03ACC7C72B7C94AA003B6CD6 /* LocationSettingsView.swift in Sources */,
 				03507F6B2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift in Sources */,
 				032469A92AE1B3040097B18B /* StreamSrtSettingsView.swift in Sources */,
 				03A983652A9A05D7008FF0DB /* StreamSettingsView.swift in Sources */,
 				03DBD0F82B300659004B0BE6 /* StreamWizardSettingsView.swift in Sources */,
+				03708D162B83C39B009C88AA /* StreamRtmpSettingsView.swift in Sources */,
 				0315A37C2AA439B500295443 /* NameEditView.swift in Sources */,
 				03DBD1072B300D91004B0BE6 /* StreamWizardNetworkSetupObsSettingsView.swift in Sources */,
 				038DF9F12B387AC80027363A /* StreamWizardAfreecaTvSettingsView.swift in Sources */,
@@ -1594,24 +1618,25 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UIStatusBarHidden = NO;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.174.0;
+				MARKETING_VERSION = 0.183.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -1640,24 +1665,25 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UIStatusBarHidden = NO;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.174.0;
+				MARKETING_VERSION = 0.183.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

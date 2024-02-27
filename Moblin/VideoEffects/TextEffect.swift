@@ -14,14 +14,20 @@ final class TextEffect: VideoEffect {
     private var image: UIImage?
     private var nextUpdateTime = -1.0
 
-    init(format _: String, fontSize: CGFloat) {
+    init(format _: String, fontSize: CGFloat, settingName: String) {
         self.fontSize = fontSize
         x = 0
         y = 0
+        super.init()
+        name = "\(settingName) time widget"
     }
 
     private func formatted() -> String {
         return Date().formatted(.dateTime.hour().minute().second())
+    }
+
+    private func scaledFontSize(width: Double) -> CGFloat {
+        return fontSize * (width / 1920)
     }
 
     private func updateOverlay(size: CGSize, time: Double) {
@@ -36,7 +42,7 @@ final class TextEffect: VideoEffect {
             let text = Text(self.formatted())
                 .background(.black)
                 .foregroundColor(.white)
-                .font(.system(size: self.fontSize))
+                .font(.system(size: self.scaledFontSize(width: size.width)))
             let renderer = ImageRenderer(content: text)
             let image = renderer.uiImage
             textQueue.sync {
@@ -61,6 +67,9 @@ final class TextEffect: VideoEffect {
                 translationX: x,
                 y: size.height - newImage.size.height - y
             ))
+            if overlay != nil {
+                overlay = overlay!.cropped(to: CGRect(x: 0, y: 0, width: size.width, height: size.height))
+            }
         }
     }
 

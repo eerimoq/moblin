@@ -34,12 +34,14 @@ final class ImageEffect: VideoEffect {
     private let width: Double
     private let height: Double
 
-    init(image: UIImage, x: Double, y: Double, width: Double, height: Double) {
+    init(image: UIImage, x: Double, y: Double, width: Double, height: Double, settingName: String) {
         originalImage = image
         self.x = x
         self.y = y
         self.width = width
         self.height = height
+        super.init()
+        name = "\(settingName) image widget"
     }
 
     override func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {

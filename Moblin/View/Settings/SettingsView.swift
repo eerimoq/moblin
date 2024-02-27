@@ -114,6 +114,9 @@ struct SettingsView: View {
                 NavigationLink(destination: RemoteControlSettingsView()) {
                     Text("Remote control")
                 }
+                NavigationLink(destination: LocationSettingsView()) {
+                    Text("Location")
+                }
             }
             Section {
                 NavigationLink(destination: CosmeticsSettingsView()) {

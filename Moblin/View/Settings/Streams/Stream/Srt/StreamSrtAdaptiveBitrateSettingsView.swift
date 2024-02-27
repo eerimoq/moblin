@@ -11,14 +11,20 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
     private func handleAlgorithmChange(value: String) {
         adaptiveBitrate.algorithm = SettingsStreamSrtAdaptiveBitrateAlgorithm.fromString(value: value)
         model.store()
-        model.updateAdaptiveBitrateIfEnabled(stream: stream)
+        model.updateAdaptiveBitrateSrtIfEnabled(stream: stream)
         model.objectWillChange.send()
+    }
+
+    private func submitFastIrlPacketsInFlight(value: Float) {
+        adaptiveBitrate.fastIrlSettings!.packetsInFlight = Int32(value)
+        model.store()
+        model.updateAdaptiveBitrateSrtIfEnabled(stream: stream)
     }
 
     private func submitBitrateIncreaseSpeed(value: Float) {
         adaptiveBitrate.customSettings.pifDiffIncreaseFactor = value
         model.store()
-        model.updateAdaptiveBitrateIfEnabled(stream: stream)
+        model.updateAdaptiveBitrateSrtIfEnabled(stream: stream)
     }
 
     private func formatBitrateIncreaseSpeed(value: Float) -> String {
@@ -28,7 +34,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
     private func submitBitrateDecreaseSpeed(value: Float) {
         adaptiveBitrate.customSettings.rttDiffHighDecreaseFactor = powf(1 - (value / 100), 0.2)
         model.store()
-        model.updateAdaptiveBitrateIfEnabled(stream: stream)
+        model.updateAdaptiveBitrateSrtIfEnabled(stream: stream)
     }
 
     private func formatBitrateDecreaseSpeed(value: Float) -> String {
@@ -38,7 +44,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
     private func submitMinimumBitrateDecreaseSpeed(value: Float) {
         adaptiveBitrate.customSettings.rttDiffHighMinimumDecrease = value / 5 / 1000
         model.store()
-        model.updateAdaptiveBitrateIfEnabled(stream: stream)
+        model.updateAdaptiveBitrateSrtIfEnabled(stream: stream)
     }
 
     private func formatMinimumBitrateDecreaseSpeed(value: Float) -> String {
@@ -48,7 +54,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
     private func submitPacketsInFlight(value: Float) {
         adaptiveBitrate.customSettings.packetsInFlight = Int32(value)
         model.store()
-        model.updateAdaptiveBitrateIfEnabled(stream: stream)
+        model.updateAdaptiveBitrateSrtIfEnabled(stream: stream)
     }
 
     private func formatPacketsInFlight(value: Float) -> String {
@@ -58,7 +64,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
     private func submitAllowedRttSpike(value: Float) {
         adaptiveBitrate.customSettings.rttDiffHighAllowedSpike = value
         model.store()
-        model.updateAdaptiveBitrateIfEnabled(stream: stream)
+        model.updateAdaptiveBitrateSrtIfEnabled(stream: stream)
     }
 
     private func formatAllowedRttSpike(value: Float) -> String {
@@ -69,7 +75,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
         Form {
             Section {
                 NavigationLink(destination: InlinePickerView(
-                    title: "Algorithm",
+                    title: String(localized: "Algorithm"),
                     onChange: handleAlgorithmChange,
                     items: InlinePickerItem.fromStrings(values: adaptiveBitrateAlgorithms),
                     selectedId: adaptiveBitrate.algorithm.toString()
@@ -81,6 +87,27 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
                 }
             } footer: {
                 Text("Use the Fast IRL algorithm unless you know what you are doing!")
+            }
+            if adaptiveBitrate.algorithm == .fastIrl {
+                Section {
+                    SliderView(value: Float(adaptiveBitrate.fastIrlSettings!.packetsInFlight),
+                               minimum: 200,
+                               maximum: 1000,
+                               step: 5,
+                               onSubmit: submitFastIrlPacketsInFlight,
+                               width: 70,
+                               format: formatPacketsInFlight)
+                } header: {
+                    Text("Packets in flight decrease threshold")
+                } footer: {
+                    VStack(alignment: .leading) {
+                        Text("""
+                        The bitrate will decrease quickly when the number of packets \
+                        in flight are above this value.
+                        """)
+                        Text("200 by default.")
+                    }
+                }
             }
             if adaptiveBitrate.algorithm == .customIrl {
                 Section {

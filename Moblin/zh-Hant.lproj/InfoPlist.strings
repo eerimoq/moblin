@@ -2,7 +2,7 @@
 "CFBundleDisplayName" = "Moblin";
 
 /* Bundle name */
-"CFBundleName" = "Moblin 16";
+"CFBundleName" = "Moblin";
 
 /* Privacy - Camera Usage Description */
 "NSCameraUsageDescription" = "Moblin 串流影像來自相機。";
@@ -11,7 +11,7 @@
 "NSLocalNetworkUsageDescription" = "Moblin 使用本地端作為 SRT 函式庫的輸入與輸出。";
 
 /* Privacy - Location When In Use Usage Description */
-"NSLocationWhenInUseUsageDescription" = "Moblin 可以顯示你的位置/時速 等資訊於實況畫面上。";
+"NSLocationWhenInUseUsageDescription" = "Moblin 可以顯示你的位置、時速等資訊於實況畫面上。";
 
 /* Privacy - Microphone Usage Description */
 "NSMicrophoneUsageDescription" = "Moblin 串流音源來自麥克風。";

@@ -33,6 +33,7 @@ struct ButtonImage: View {
                 image.overlay(
                     Circle()
                         .stroke(.white)
+                        .frame(width: buttonSize - 1, height: buttonSize - 1)
                 )
             } else {
                 image
@@ -77,8 +78,6 @@ struct MicButtonView: View {
     @EnvironmentObject var model: Model
     @State var selectedMic: Mic
     var done: () -> Void
-    @State var micFollowsScene: Bool = false
-    @State var externalMicOverrides: Bool = false
 
     var body: some View {
         Form {
@@ -98,12 +97,6 @@ struct MicButtonView: View {
                 }
                 .pickerStyle(.inline)
                 .labelsHidden()
-            }
-            if model.database.debug!.sceneMic! {
-                Section {
-                    Toggle("Mic follows scene", isOn: $micFollowsScene)
-                    Toggle("External mic overrides follow scene toggle", isOn: $externalMicOverrides)
-                }
             }
         }
         .navigationTitle("Mic")
@@ -628,40 +621,34 @@ struct ButtonsInnerView: View {
         model.updateButtonStates()
     }
 
-    private func movieAction(state: ButtonState) {
+    private func videoEffectAction(state: ButtonState, type: SettingsButtonType) {
         state.button.isOn.toggle()
-        model.setGlobalButtonState(type: .movie, isOn: state.button.isOn)
+        model.setGlobalButtonState(type: type, isOn: state.button.isOn)
         model.sceneUpdated(store: false)
+    }
+
+    private func movieAction(state: ButtonState) {
+        videoEffectAction(state: state, type: .movie)
     }
 
     private func grayScaleAction(state: ButtonState) {
-        state.button.isOn.toggle()
-        model.setGlobalButtonState(type: .grayScale, isOn: state.button.isOn)
-        model.sceneUpdated(store: false)
+        videoEffectAction(state: state, type: .grayScale)
     }
 
     private func sepiaAction(state: ButtonState) {
-        state.button.isOn.toggle()
-        model.setGlobalButtonState(type: .sepia, isOn: state.button.isOn)
-        model.sceneUpdated(store: false)
+        videoEffectAction(state: state, type: .sepia)
     }
 
     private func randomAction(state: ButtonState) {
-        state.button.isOn.toggle()
-        model.setGlobalButtonState(type: .random, isOn: state.button.isOn)
-        model.sceneUpdated(store: false)
+        videoEffectAction(state: state, type: .random)
     }
 
     private func tripleAction(state: ButtonState) {
-        state.button.isOn.toggle()
-        model.setGlobalButtonState(type: .triple, isOn: state.button.isOn)
-        model.sceneUpdated(store: false)
+        videoEffectAction(state: state, type: .triple)
     }
 
     private func pixellateAction(state: ButtonState) {
-        state.button.isOn.toggle()
-        model.setGlobalButtonState(type: .pixellate, isOn: state.button.isOn)
-        model.sceneUpdated(store: false)
+        videoEffectAction(state: state, type: .pixellate)
     }
 
     private func streamAction(state _: ButtonState) {
@@ -704,6 +691,8 @@ struct ButtonsInnerView: View {
         }
         model.showingRemoteControl = true
         model.updateRemoteControlAssistantStatus()
+        model.detachCamera()
+        model.updateScreenAutoOff()
     }
 
     private func drawAction(state _: ButtonState) {
@@ -723,6 +712,8 @@ struct ButtonsInnerView: View {
     var body: some View {
         VStack {
             switch state.button.type {
+            case .unknown:
+                ButtonPlaceholderImage()
             case .torch:
                 Button(action: {
                     torchAction(state: state)
@@ -759,7 +750,7 @@ struct ButtonsInnerView: View {
                 }, label: {
                     ButtonImage(state: state, buttonSize: size, slash: true)
                 })
-            case .pauseChat:
+            case .interactiveChat:
                 Button(action: {
                     interactiveChatAction(state: state)
                 }, label: {
@@ -771,10 +762,6 @@ struct ButtonsInnerView: View {
                 }, label: {
                     ButtonImage(state: state, buttonSize: size)
                 })
-            case .obsScene:
-                ButtonPlaceholderImage()
-            case .obsStartStopStream:
-                ButtonPlaceholderImage()
             case .record:
                 Button(action: {
                     if model.database.startStopRecordingConfirmations! {

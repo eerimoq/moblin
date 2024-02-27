@@ -22,42 +22,59 @@ struct DrawOnStreamView: View {
 
     var body: some View {
         ZStack {
-            Canvas { context, size in
-                for line in model.drawOnStreamLines {
-                    context.stroke(
-                        drawOnStreamCreatePath(points: line.points),
-                        with: .color(line.color),
-                        lineWidth: line.width
-                    )
-                }
-                model.drawOnStreamSize = size
-            }
-            .gesture(
-                DragGesture(minimumDistance: 0)
-                    .onChanged { value in
-                        let position = value.location
-                        if value.translation == .zero {
-                            if !drawing {
-                                model.drawOnStreamLines.append(DrawOnStreamLine(
-                                    points: [position],
-                                    width: model.drawOnStreamSelectedWidth,
-                                    color: model.drawOnStreamSelectedColor
-                                ))
+            HStack {
+                Spacer(minLength: 0)
+                VStack {
+                    Spacer(minLength: 0)
+                    Canvas { context, size in
+                        for line in model.drawOnStreamLines {
+                            let width = line.width
+                            if line.points.count > 1 {
+                                context.stroke(
+                                    drawOnStreamCreatePath(points: line.points),
+                                    with: .color(line.color),
+                                    lineWidth: width
+                                )
+                            } else {
+                                let point = line.points[0]
+                                var path = Path()
+                                path.addEllipse(in: CGRect(x: point.x, y: point.y, width: 1, height: 1))
+                                context.stroke(path, with: .color(line.color), lineWidth: width)
                             }
-                            drawing = true
-                        } else {
-                            guard let lastIdx = model.drawOnStreamLines.indices.last else {
-                                return
-                            }
-                            model.drawOnStreamLines[lastIdx].points.append(position)
                         }
+                        model.drawOnStreamSize = size
                     }
-                    .onEnded { _ in
-                        model.drawOnStreamLineComplete()
-                        drawing = false
-                    }
-            )
+                    .gesture(
+                        DragGesture(minimumDistance: 0)
+                            .onChanged { value in
+                                let position = value.location
+                                if value.translation == .zero {
+                                    if !drawing {
+                                        model.drawOnStreamLines.append(DrawOnStreamLine(
+                                            points: [position],
+                                            width: model.drawOnStreamSelectedWidth,
+                                            color: model.drawOnStreamSelectedColor
+                                        ))
+                                    }
+                                    drawing = true
+                                } else {
+                                    guard let lastIndex = model.drawOnStreamLines.indices.last else {
+                                        return
+                                    }
+                                    model.drawOnStreamLines[lastIndex].points.append(position)
+                                }
+                            }
+                            .onEnded { _ in
+                                model.drawOnStreamLineComplete()
+                                drawing = false
+                            }
+                    )
+                    .aspectRatio(16 / 9, contentMode: .fit)
+                    Spacer(minLength: 0)
+                }
+            }
             .ignoresSafeArea()
+            .edgesIgnoringSafeArea(.all)
             VStack {
                 Spacer()
                 HStack {

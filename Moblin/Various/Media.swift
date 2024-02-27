@@ -29,6 +29,8 @@ final class Media: NSObject {
     private var rtmpStreamName = ""
     private var currentAudioLevel: Float = -160.0
     private var numberOfAudioChannels: Int = 0
+    private var audioCapturePresentationTimestamp: Double = 0
+    private var videoCapturePresentationTimestamp: Double = 0
     private var srtUrl: String = ""
     private var latency: Int32 = 2000
     private var overheadBandwidth: Int32 = 25
@@ -40,6 +42,7 @@ final class Media: NSObject {
     var onAudioMuteChange: (() -> Void)!
     var onVideoDeviceInUseByAnotherClient: (() -> Void)!
     private var adaptiveBitrate: AdaptiveBitrate?
+    private var failedVideoEffect: String?
 
     func logStatistics() {
         srtla?.logStatistics()
@@ -82,6 +85,18 @@ final class Media: NSObject {
 
     func getNumberOfAudioChannels() -> Int {
         return numberOfAudioChannels
+    }
+
+    func getAudioCapturePresentationTimestamp() -> Double {
+        return audioCapturePresentationTimestamp
+    }
+
+    func getVideoCapturePresentationTimestamp() -> Double {
+        return videoCapturePresentationTimestamp
+    }
+
+    func getCaptureDelta() -> Double {
+        return audioCapturePresentationTimestamp - videoCapturePresentationTimestamp
     }
 
     func srtStartStream(
@@ -134,33 +149,64 @@ final class Media: NSObject {
         srtla?.setNetworkInterfaceNames(networkInterfaceNames: networkInterfaceNames)
     }
 
-    func getSrtStats(overlay: Bool) -> [String]? {
-        let stats = srtConnection.performanceData
-        adaptiveBitrate?.update(stats: stats)
-        guard overlay else {
-            return nil
+    func updateAdaptiveBitrate(overlay: Bool) -> [String]? {
+        if srtStream != nil {
+            let stats = srtConnection.performanceData
+            adaptiveBitrate?.update(stats: StreamStats(
+                rttMs: stats.msRTT,
+                packetsInFlight: Double(stats.pktFlightSize)
+            ))
+            guard overlay else {
+                return nil
+            }
+            if let adaptiveBitrate {
+                return [
+                    "R: \(stats.pktRetransTotal) N: \(stats.pktRecvNAKTotal) S: \(stats.pktSndDropTotal)",
+                    "msRTT: \(stats.msRTT)",
+                    """
+                    pktFlightSize: \(stats.pktFlightSize)   \
+                    \(adaptiveBitrate.getFastPif)   \
+                    \(adaptiveBitrate.getSmoothPif)
+                    """,
+                    "B: \(adaptiveBitrate.getCurrentBitrate) /  \(adaptiveBitrate.getTempMaxBitrate)",
+                ] + adaptiveBitrate.getAdaptiveActions
+            } else {
+                return [
+                    "pktRetransTotal: \(stats.pktRetransTotal)",
+                    "pktRecvNAKTotal: \(stats.pktRecvNAKTotal)",
+                    "pktSndDropTotal: \(stats.pktSndDropTotal)",
+                    "msRTT: \(stats.msRTT)",
+                    "pktFlightSize: \(stats.pktFlightSize)",
+                    "pktSndBuf: \(stats.pktSndBuf)",
+                ]
+            }
+        } else if let rtmpStream {
+            let stats = rtmpStream.info.stats.value
+            adaptiveBitrate?.update(stats: StreamStats(
+                rttMs: stats.rttMs,
+                packetsInFlight: Double(stats.packetsInFlight)
+            ))
+            guard overlay else {
+                return nil
+            }
+            if let adaptiveBitrate {
+                return [
+                    "rttMs: \(stats.rttMs)",
+                    """
+                    packetsInFlight: \(stats.packetsInFlight)   \
+                    \(adaptiveBitrate.getFastPif)   \
+                    \(adaptiveBitrate.getSmoothPif)
+                    """,
+                    "B: \(adaptiveBitrate.getCurrentBitrate) /  \(adaptiveBitrate.getTempMaxBitrate)",
+                ] + adaptiveBitrate.getAdaptiveActions
+            } else {
+                return [
+                    "rttMs: \(stats.rttMs)",
+                    "packetsInFlight: \(stats.packetsInFlight)",
+                ]
+            }
         }
-        if let adapativeStats = adaptiveBitrate {
-            return [
-                "R: \(stats.pktRetransTotal) N: \(stats.pktRecvNAKTotal) S: \(stats.pktSndDropTotal)",
-                "msRTT: \(stats.msRTT)",
-                """
-                pktFlightSize: \(stats.pktFlightSize)   \
-                \(adapativeStats.GetFastPif)   \
-                \(adapativeStats.GetSmoothPif)
-                """,
-                "B: \(adapativeStats.getCurrentBitrate) /  \(adapativeStats.getTempMaxBitrate)",
-            ] + adapativeStats.getAdaptiveActions
-        } else {
-            return [
-                "pktRetransTotal: \(stats.pktRetransTotal)",
-                "pktRecvNAKTotal: \(stats.pktRecvNAKTotal)",
-                "pktSndDropTotal: \(stats.pktSndDropTotal)",
-                "msRTT: \(stats.msRTT)",
-                "pktFlightSize: \(stats.pktFlightSize)",
-                "pktSndBuf: \(stats.pktSndBuf)",
-            ]
-        }
+        return nil
     }
 
     func updateSrtSpeed() {
@@ -245,13 +291,24 @@ final class Media: NSObject {
         return urlComponents.url
     }
 
-    func rtmpStartStream(url: String) {
+    func rtmpStartStream(url: String,
+                         targetBitrate: UInt32,
+                         adaptiveBitrate adaptiveBitrateEnabled: Bool)
+    {
         rtmpStreamName = makeRtmpStreamName(url: url)
         rtmpConnection.addEventListener(
             .rtmpStatus,
             selector: #selector(rtmpStatusHandler),
             observer: self
         )
+        if adaptiveBitrateEnabled {
+            adaptiveBitrate = AdaptiveBitrate(
+                targetBitrate: targetBitrate,
+                delegate: self
+            )
+        } else {
+            adaptiveBitrate = nil
+        }
         rtmpConnection.connect(makeRtmpUri(url: url))
     }
 
@@ -263,6 +320,7 @@ final class Media: NSObject {
         )
         rtmpStream?.close()
         rtmpConnection.close()
+        adaptiveBitrate = nil
     }
 
     @objc
@@ -324,6 +382,19 @@ final class Media: NSObject {
 
     func setColorSpace(colorSpace: AVCaptureColorSpace, onComplete: @escaping () -> Void) {
         netStream.setColorSpace(colorSpace: colorSpace, onComplete: onComplete)
+    }
+
+    private var multiplier: UInt32 = 0
+
+    func updateVideoStreamBitrate(bitrate: UInt32) {
+        multiplier ^= 1
+        var bitRate: UInt32
+        if let adaptiveBitrate {
+            bitRate = UInt32(1000 * adaptiveBitrate.getCurrentBitrate)
+        } else {
+            bitRate = bitrate
+        }
+        netStream.videoSettings.bitRate = bitRate + multiplier * (bitRate / 10)
     }
 
     func setVideoStreamBitrate(bitrate: UInt32) {
@@ -471,6 +542,10 @@ final class Media: NSObject {
     func stopRecording() {
         netStream.stopRecording()
     }
+
+    func getFailedVideoEffect() -> String? {
+        return failedVideoEffect
+    }
 }
 
 extension Media: NetStreamDelegate {
@@ -525,7 +600,7 @@ extension Media: NetStreamDelegate {
 
     func streamDidOpen(_: NetStream) {}
 
-    func stream(_: NetStream, audioLevel: Float, numberOfAudioChannels: Int) {
+    func stream(_: NetStream, audioLevel: Float, numberOfAudioChannels: Int, presentationTimestamp: Double) {
         DispatchQueue.main.async {
             if becameMuted(old: self.currentAudioLevel, new: audioLevel) || becameUnmuted(
                 old: self.currentAudioLevel,
@@ -537,6 +612,19 @@ extension Media: NetStreamDelegate {
                 self.currentAudioLevel = audioLevel
             }
             self.numberOfAudioChannels = numberOfAudioChannels
+            self.audioCapturePresentationTimestamp = presentationTimestamp
+        }
+    }
+
+    func streamVideo(_: HaishinKit.NetStream, presentationTimestamp: Double) {
+        DispatchQueue.main.async {
+            self.videoCapturePresentationTimestamp = presentationTimestamp
+        }
+    }
+
+    func streamVideo(_: HaishinKit.NetStream, failedEffect: String?) {
+        DispatchQueue.main.async {
+            self.failedVideoEffect = failedEffect
         }
     }
 

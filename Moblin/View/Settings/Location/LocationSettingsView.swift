@@ -1,4 +1,26 @@
+import MapKit
 import SwiftUI
+
+struct PrivacyRegionView: View {
+    @EnvironmentObject var model: Model
+    var region: SettingsPrivacyRegion
+    @State var current: MKCoordinateRegion
+
+    var body: some View {
+        Map(coordinateRegion: $current)
+            .aspectRatio(4 / 3, contentMode: .fill)
+            .onChange(of: current) { _ in
+                region.latitude = current.center.latitude
+                region.longitude = current.center.longitude
+                region.latitudeDelta = current.span.latitudeDelta
+                region.longitudeDelta = current.span.longitudeDelta
+            }
+            .onDisappear {
+                model.store()
+                model.reloadLocation()
+            }
+    }
+}
 
 struct LocationSettingsView: View {
     @EnvironmentObject var model: Model
@@ -14,13 +36,33 @@ struct LocationSettingsView: View {
                     model.reloadLocation()
                 }))
             }
-            if model.isLocationEnabled() {
-                Section {
-                    Text("Latitude: \(model.latestLocation.coordinate.latitude)")
-                    Text("Longitude: \(model.latestLocation.coordinate.longitude)")
-                    Text("Speed: \(formatOneDecimal(value: Float(model.latestLocation.speed))) m/s")
-                    Text("Altitude: \(formatOneDecimal(value: Float(model.latestLocation.altitude))) m")
+            Section {
+                List {
+                    ForEach(model.database.location!.privacyRegions) { region in
+                        PrivacyRegionView(region: region, current: MKCoordinateRegion(
+                            center: CLLocationCoordinate2D(latitude: region.latitude,
+                                                           longitude: region.longitude),
+                            span: MKCoordinateSpan(
+                                latitudeDelta: region.latitudeDelta,
+                                longitudeDelta: region.longitudeDelta
+                            )
+                        ))
+                    }
+                    .onDelete(perform: { indexes in
+                        model.database.location!.privacyRegions.remove(atOffsets: indexes)
+                        model.store()
+                        model.reloadLocation()
+                    })
                 }
+                CreateButtonView(action: {
+                    model.database.location!.privacyRegions.append(SettingsPrivacyRegion())
+                    model.store()
+                    model.reloadLocation()
+                })
+            } header: {
+                Text("Privacy regions")
+            } footer: {
+                Text("Your location will not be shared with any service when within any privacy region.")
             }
         }
         .navigationTitle("Location")

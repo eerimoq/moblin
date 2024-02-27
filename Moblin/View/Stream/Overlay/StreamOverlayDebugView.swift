@@ -5,7 +5,7 @@ struct StreamOverlayDebugView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 1) {
-            ForEach(model.srtDebugLines, id: \.self) { line in
+            ForEach(model.debugLines, id: \.self) { line in
                 Text(line)
                     .font(smallFont)
                     .foregroundColor(.white)

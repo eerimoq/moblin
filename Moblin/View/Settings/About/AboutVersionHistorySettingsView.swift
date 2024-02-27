@@ -8,6 +8,81 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.183.0", date: "2024-02-26", changes: [
+        "• Fix crash when streaming to https://github.com/sallar/mac-local-rtmp-server RTMP server. 🐛 JohannesLiv",
+        "  • Adaptive bitrate will not work at all after about 4 GB of data sent. Requires server fix.",
+        "• Ireland and tetris icons in store.",
+        "• Updated korean translation. ✍️ 고블린",
+        "• Fixed audio drift issue on iPhone 15?",
+        "• Only show OBS remote control page in wizard when OBS is (likely) used. 🐛 JohannesLiv",
+    ]),
+    Version(version: "0.182.0", date: "2024-02-24", changes: [
+        "• Make time widget text size same regardless of resolution.",
+        "• Show error toast if an overlay (widget/filter) cannot be rendered.",
+    ]),
+    Version(version: "0.181.1", date: "2024-02-24", changes: [
+        "• Keep screen on when showing remote control assistant. 🐛 djandrea.",
+        "• Make capture device image size match session preset.",
+        "  • Fixes draw on 720p stream on iPhone X.",
+        "  • Might make image quality worse on some devices. Not sure.",
+    ]),
+    Version(version: "0.181.0", date: "2024-02-23", changes: [
+        "• Less logging by default.",
+        "• Major refactoring.",
+        "• Show audio/video capture delta in debug overlay.",
+        "• Fix SRT(LA) adaptive bitrate custom settings.",
+        "  • Bitrate decrease speed was wrong. It used bitrate increase speed / 1000 as factor. Very wrong.",
+    ]),
+    Version(version: "0.180.1", date: "2024-02-22", changes: [
+        "• Fix top and bottom parts of UI outside screen when using browser widget. 🐛 nn2p",
+    ]),
+    Version(version: "0.180.0", date: "2024-02-21", changes: [
+        "• Experimental support for RTMP adaptive bitrate.",
+        "  • Disabled by default. Enable in Settings → Streams → My stream → RTMP → Adaptive bitrate.",
+        "• Trying to fix slowly declining bitrate again.",
+        "  • Configure encoder bitrate to 10% higher for 10 seconds, then 0% higher, then 10% higher, and so on.",
+    ]),
+    Version(version: "0.179.0", date: "2024-02-18", changes: [
+        "• Disable camera capture when remote control assistant is open. 💡 djandrea.",
+        "  • Audio is still captured. Was not that easy to disable.",
+        "• Make grid only cover video.",
+        "• Fix adding widgets and buttons to scenes on iPad.",
+        "• Top mic by default on iPad.",
+        "• Fix tap screen to focus on iPad.",
+        "• Try fixing slow bitrate drops after some time by periodically setting the bitrate. 🐛 all of us",
+        "  • It is set every 10 seconds now, regardless if it changed or not.",
+    ]),
+    Version(version: "0.178.0", date: "2024-02-17", changes: [
+        "• Fix phone screen (mirroring) glitches when switching scene.",
+        "  • However, screen is black for a short while.",
+        "• Show location shared counter in location information top right of UI.",
+        "• Enable iPad and Mac (Designed for iPad) destinations. Force landscape on iPad. 🧑‍🏭 Spillmaker",
+        "• Only allow pausing chat when in interactive chat mode. 🐛 ariathome, fonz",
+    ]),
+    Version(version: "0.177.0", date: "2024-02-15", changes: [
+        "• Configurable location privacy regions. Your location will not be shared when in a privacy region.",
+        "  • Settings → Location",
+        "• Toggle in Settings → Location to enable location services.",
+        "• Traditional chinese translation updated. ✍️ 一人HitoriGS",
+        "• Configurable number of packets in flight in FastIRL algorithm.",
+        "  • In my setup 200 is a bit low. The algorithm often decreases bitrate too much when switching camera.",
+        "• Send more fake frames when switching camera for less gaps in video stream.",
+        "• Toggle to enable/disable chat (and hide/show it). 💡 ariathome",
+        "• Fix draw point on stream locally.",
+    ]),
+    Version(version: "0.176.0", date: "2024-02-13", changes: [
+        "• Fix draw on stream when 16:9 video fills screen width but not height. 🐛 AdAstra",
+        "• Fix lingering marker on RealtimeIRL map. 🐛 Rubaz",
+        "  • Send explicit stop to server when ending stream.",
+    ]),
+    Version(version: "0.175.0", date: "2024-02-13", changes: [
+        "• Configurable stream button color.",
+        "  • Settings → Display → Stream button",
+        "• Fix crash when entering high record and preset bitrates. 🐛 nn2p, adriportela95",
+        "• Settings loading robustness.",
+        "  • Makes it easier to install older versions to test with. However, unknown settings will either be replaced or discarded, so some settings may be lost! Always backup your settings before installing old versions of the app.",
+        "• Replace pause chat with interactive chat in UI.",
+    ]),
     Version(version: "0.174.0", date: "2024-02-11", changes: [
         "• Remove debug video preset setting.",
         "  • No one needs it, right?",
