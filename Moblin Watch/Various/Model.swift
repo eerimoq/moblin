@@ -30,6 +30,7 @@ class Model: NSObject, ObservableObject {
     private var chatPostId = 0
     @Published var speedAndTotal = noValue
     @Published var audioLevel: Float = -160.0
+    @Published var preview: UIImage?
 
     func setup() {
         if WCSession.isSupported() {
@@ -82,6 +83,7 @@ class Model: NSObject, ObservableObject {
             return
         }
         print("Preview", preview.count)
+        self.preview = UIImage(data: preview)
     }
 }
 

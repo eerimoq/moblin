@@ -144,11 +144,19 @@ struct MainView: View {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 1) {
                     ZStack {
-                        Image("Preview")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(maxWidth: .infinity)
-                            .padding([.bottom], 3)
+                        if let preview = model.preview {
+                            Image(uiImage: preview)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(maxWidth: .infinity)
+                                .padding([.bottom], 3)
+                        } else {
+                            Image("Preview")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(maxWidth: .infinity)
+                                .padding([.bottom], 3)
+                        }
                         VStack(spacing: 1) {
                             Spacer()
                             HStack {
@@ -166,21 +174,25 @@ struct MainView: View {
                         }
                         .padding([.leading], 3)
                     }
-                    ForEach(model.chatPosts) { post in
-                        WrappingHStack(
-                            alignment: .leading,
-                            horizontalSpacing: 0,
-                            verticalSpacing: 0,
-                            fitContentWidth: true
-                        ) {
-                            Text(post.timestamp + " ")
-                                .foregroundColor(.gray)
-                            Text(post.user)
-                                .foregroundColor(post.userColor)
-                            Text(": ")
-                            ForEach(post.segments) { segment in
-                                if let text = segment.text {
-                                    Text(text + " ")
+                    if model.chatPosts.isEmpty {
+                        Text("Chat is empty.")
+                    } else {
+                        ForEach(model.chatPosts) { post in
+                            WrappingHStack(
+                                alignment: .leading,
+                                horizontalSpacing: 0,
+                                verticalSpacing: 0,
+                                fitContentWidth: true
+                            ) {
+                                Text(post.timestamp + " ")
+                                    .foregroundColor(.gray)
+                                Text(post.user)
+                                    .foregroundColor(post.userColor)
+                                Text(": ")
+                                ForEach(post.segments) { segment in
+                                    if let text = segment.text {
+                                        Text(text + " ")
+                                    }
                                 }
                             }
                         }

@@ -1,5 +1,6 @@
 import AVFoundation
 import HaishinKit
+import SwiftUI
 
 let mediaDispatchQueue = DispatchQueue(label: "com.eerimoq.stream")
 
@@ -41,6 +42,7 @@ final class Media: NSObject {
     var onRtmpDisconnected: ((_ message: String) -> Void)!
     var onAudioMuteChange: (() -> Void)!
     var onVideoDeviceInUseByAnotherClient: (() -> Void)!
+    var onLowFpsPngImage: ((Data?) -> Void)!
     private var adaptiveBitrate: AdaptiveBitrate?
     private var failedVideoEffect: String?
 
@@ -385,6 +387,10 @@ final class Media: NSObject {
         _ = netStream.unregisterVideoEffect(effect)
     }
 
+    public func setLowFpsPngImage(enabled: Bool) {
+        netStream.setLowFpsPngImage(enabled: enabled)
+    }
+
     func setVideoSessionPreset(preset: AVCaptureSession.Preset) {
         netStream.sessionPreset = preset
     }
@@ -648,6 +654,10 @@ extension Media: NetStreamDelegate {
         DispatchQueue.main.async {
             self.failedVideoEffect = failedEffect
         }
+    }
+
+    func streamVideo(_: HaishinKit.NetStream, lowFpsPngImage: Data?) {
+        onLowFpsPngImage(lowFpsPngImage)
     }
 
     func stream(_: HaishinKit.NetStream, recorderErrorOccured error: HaishinKit.IORecorder.Error) {

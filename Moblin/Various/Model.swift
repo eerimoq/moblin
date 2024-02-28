@@ -1106,6 +1106,7 @@ final class Model: NSObject, ObservableObject {
         media.onRtmpDisconnected = handleRtmpDisconnected
         media.onAudioMuteChange = updateAudioLevel
         media.onVideoDeviceInUseByAnotherClient = handleVideoDeviceInUseByAnotherClient
+        media.onLowFpsPngImage = handleLowFpsPngImage
         setupAudioSession()
         setMic()
         if let cameraDevice = preferredCamera(position: .back) {
@@ -1204,6 +1205,7 @@ final class Model: NSObject, ObservableObject {
         } else {
             logger.info("Watch not supported")
         }
+        media.setLowFpsPngImage(enabled: true)
     }
 
     private func handleIpStatusUpdate(statuses: [IPMonitor.Status]) {
@@ -2945,11 +2947,11 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    private func sendPreviewToWatch() {
+    private func sendPreviewToWatch(image: Data) {
         guard isWatchReachable() else {
             return
         }
-        sendMessageToWatch(name: WatchMessage.preview.rawValue, data: Data())
+        sendMessageToWatch(name: WatchMessage.preview.rawValue, data: image)
     }
 
     func toggleDrawOnStream() {
@@ -3872,6 +3874,16 @@ final class Model: NSObject, ObservableObject {
     private func handleVideoDeviceInUseByAnotherClient() {
         DispatchQueue.main.async {
             // self.makeErrorToast(title: "Video in use by another app")
+        }
+    }
+
+    private func handleLowFpsPngImage(image: Data?) {
+        guard let image else {
+            return
+        }
+        logger.info("low res image: \(image.count)")
+        DispatchQueue.main.async {
+            self.sendPreviewToWatch(image: image)
         }
     }
 
