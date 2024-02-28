@@ -14,6 +14,7 @@ import StoreKit
 import SwiftUI
 import TwitchChat
 import VideoToolbox
+import WatchConnectivity
 import WebKit
 
 class Browser: Identifiable {
@@ -25,7 +26,6 @@ class Browser: Identifiable {
     }
 }
 
-private let noValue = ""
 private let maximumNumberOfChatMessages = 50
 private let secondsSuffix = String(localized: "/sec")
 private let fallbackStream = SettingsStream(name: "Fallback")
@@ -205,7 +205,7 @@ enum WizardCustomProtocol {
     case rtmp
 }
 
-final class Model: ObservableObject {
+final class Model: NSObject, ObservableObject {
     private let media = Media()
     var streamState = StreamState.disconnected {
         didSet {
@@ -404,7 +404,8 @@ final class Model: ObservableObject {
 
     @Published var remoteControlStatus = noValue
 
-    init() {
+    override init() {
+        super.init()
         showLoadSettingsFailed = !settings.load()
         streamingHistory.load()
         recordingsStorage.load()
@@ -831,7 +832,7 @@ final class Model: ObservableObject {
     }
 
     func formatLog(log: Deque<LogEntry>) -> String {
-        var data = "Version: \(version())\n"
+        var data = "Version: \(appVersion())\n"
         data += "Debug: \(logger.debugEnabled)\n\n"
         data += log.map { e in e.message }.joined(separator: "\n")
         return data
@@ -1195,6 +1196,14 @@ final class Model: ObservableObject {
                                                selector: #selector(handleCaptureDeviceWasDisconnected),
                                                name: NSNotification.Name.AVCaptureDeviceWasDisconnected,
                                                object: nil)
+
+        if WCSession.isSupported() {
+            let session = WCSession.default
+            session.delegate = self
+            session.activate()
+        } else {
+            logger.info("Watch not supported")
+        }
     }
 
     private func handleIpStatusUpdate(statuses: [IPMonitor.Status]) {
@@ -1841,6 +1850,7 @@ final class Model: ObservableObject {
             .isNaN || newAudioLevel == .infinity || audioLevel.isNaN || audioLevel == .infinity
         {
             audioLevel = newAudioLevel
+            sendAudioLevelToWatch()
         }
     }
 
@@ -2894,6 +2904,54 @@ final class Model: ObservableObject {
         }
     }
 
+    private func isWatchReachable() -> Bool {
+        return WCSession.default.activationState == .activated && WCSession.default.isReachable
+    }
+
+    private func sendMessageToWatch(name: String, data: Any) {
+        WCSession.default.sendMessage([name: data], replyHandler: nil)
+    }
+
+    private func sendSpeedAndTotalToWatch() {
+        guard isWatchReachable() else {
+            return
+        }
+        sendMessageToWatch(name: WatchMessage.speedAndTotal.rawValue, data: speedAndTotal)
+    }
+
+    private func sendAudioLevelToWatch() {
+        guard isWatchReachable() else {
+            return
+        }
+        sendMessageToWatch(name: WatchMessage.audioLevel.rawValue, data: audioLevel)
+    }
+
+    private func sendChatMessageToWatch(post: ChatPost) {
+        guard isWatchReachable() else {
+            return
+        }
+        guard let user = post.user, let userColor = post.userColor else {
+            return
+        }
+        do {
+            let data = try JSONEncoder().encode(WatchProtocolChatMessage(
+                user: user,
+                userColor: userColor,
+                segments: post.segments.filter { $0.text != nil }.map { $0.text! }
+            ))
+            sendMessageToWatch(name: WatchMessage.chatMessage.rawValue, data: data)
+        } catch {
+            logger.info("Watch chat message send failed")
+        }
+    }
+
+    private func sendPreviewToWatch() {
+        guard isWatchReachable() else {
+            return
+        }
+        sendMessageToWatch(name: WatchMessage.preview.rawValue, data: Data())
+    }
+
     func toggleDrawOnStream() {
         showDrawOnStream.toggle()
     }
@@ -3048,6 +3106,7 @@ final class Model: ObservableObject {
         } else {
             newChatPosts.append(post)
         }
+        sendChatMessageToWatch(post: post)
     }
 
     func reloadChatMessages() {
@@ -3433,8 +3492,10 @@ final class Model: ObservableObject {
             let speedString = formatBytesPerSecond(speed: speed)
             let total = sizeFormatter.string(fromByteCount: media.streamTotal())
             speedAndTotal = String(localized: "\(speedString) (\(total))")
+            sendSpeedAndTotalToWatch()
         } else if speedAndTotal != noValue {
             speedAndTotal = noValue
+            sendSpeedAndTotalToWatch()
         }
     }
 
@@ -4402,5 +4463,23 @@ extension Model: RemoteControlAssistantDelegate {
         }
         logId += 1
         remoteControlAssistantLog.append(LogEntry(id: logId, message: entry))
+    }
+}
+
+extension Model: WCSessionDelegate {
+    func session(
+        _: WCSession,
+        activationDidCompleteWith activationState: WCSessionActivationState,
+        error _: Error?
+    ) {
+        logger.info("Watch \(activationState)")
+    }
+
+    func sessionDidBecomeInactive(_: WCSession) {
+        logger.info("Watch session inactive")
+    }
+
+    func sessionDidDeactivate(_: WCSession) {
+        logger.info("Watch session deactive")
     }
 }

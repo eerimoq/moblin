@@ -114,6 +114,11 @@
 		03A173FA2B38312E00ACC4F8 /* Snow.sks in Resources */ = {isa = PBXBuildFile; fileRef = 03A173F92B38312E00ACC4F8 /* Snow.sks */; };
 		03A3F4C72AF4C0AD00F465D1 /* AdaptiveBitrate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A3F4C62AF4C0AD00F465D1 /* AdaptiveBitrate.swift */; };
 		03A5991A2B66A94B002E7EE8 /* DrawOnStreamEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A599192B66A94B002E7EE8 /* DrawOnStreamEffect.swift */; };
+		03A707B12B8EBE4D003BB7BE /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 03A707B02B8EBE4D003BB7BE /* Collections */; };
+		03A707B82B8ED466003BB7BE /* WatchProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A707B72B8ED466003BB7BE /* WatchProtocol.swift */; };
+		03A707B92B8ED466003BB7BE /* WatchProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A707B72B8ED466003BB7BE /* WatchProtocol.swift */; };
+		03A707BD2B8F0F61003BB7BE /* CommonUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FC2A9F35EF0028DDD5 /* CommonUtils.swift */; };
+		03A707C02B8F0FAE003BB7BE /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A707BF2B8F0FAE003BB7BE /* Utils.swift */; };
 		03A974282AC137A000610E21 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 03A974272AC137A000610E21 /* Collections */; };
 		03A983422A9A03D3008FF0DB /* TwitchChat in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983412A9A03D3008FF0DB /* TwitchChat */; };
 		03A983452A9A03EA008FF0DB /* HaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 03A983442A9A03EA008FF0DB /* HaishinKit */; };
@@ -139,7 +144,7 @@
 		03B16A312B35D74800E5AB07 /* DisplaySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B16A302B35D74800E5AB07 /* DisplaySettingsView.swift */; };
 		03B373F62A9EF98E0028DDD5 /* ControlBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373F52A9EF98E0028DDD5 /* ControlBarView.swift */; };
 		03B373F92A9EFB340028DDD5 /* BatteryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373F82A9EFB340028DDD5 /* BatteryView.swift */; };
-		03B373FD2A9F35EF0028DDD5 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FC2A9F35EF0028DDD5 /* Utils.swift */; };
+		03B373FD2A9F35EF0028DDD5 /* CommonUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FC2A9F35EF0028DDD5 /* CommonUtils.swift */; };
 		03B373FF2A9FCA790028DDD5 /* ThermalStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FE2A9FCA790028DDD5 /* ThermalStateView.swift */; };
 		03B374022AA0354C0028DDD5 /* GrayScaleEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374012AA0354C0028DDD5 /* GrayScaleEffect.swift */; };
 		03B374042AA036D10028DDD5 /* ButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374032AA036D10028DDD5 /* ButtonsView.swift */; };
@@ -325,6 +330,8 @@
 		03A173F92B38312E00ACC4F8 /* Snow.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Snow.sks; sourceTree = "<group>"; };
 		03A3F4C62AF4C0AD00F465D1 /* AdaptiveBitrate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveBitrate.swift; sourceTree = "<group>"; };
 		03A599192B66A94B002E7EE8 /* DrawOnStreamEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawOnStreamEffect.swift; sourceTree = "<group>"; };
+		03A707B72B8ED466003BB7BE /* WatchProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchProtocol.swift; sourceTree = "<group>"; };
+		03A707BF2B8F0FAE003BB7BE /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		03A983552A9A05D7008FF0DB /* StreamsSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamsSettingsView.swift; sourceTree = "<group>"; };
 		03A983562A9A05D7008FF0DB /* MainView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		03A983572A9A05D7008FF0DB /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -347,7 +354,7 @@
 		03B16A302B35D74800E5AB07 /* DisplaySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplaySettingsView.swift; sourceTree = "<group>"; };
 		03B373F52A9EF98E0028DDD5 /* ControlBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlBarView.swift; sourceTree = "<group>"; };
 		03B373F82A9EFB340028DDD5 /* BatteryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryView.swift; sourceTree = "<group>"; };
-		03B373FC2A9F35EF0028DDD5 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		03B373FC2A9F35EF0028DDD5 /* CommonUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonUtils.swift; sourceTree = "<group>"; };
 		03B373FE2A9FCA790028DDD5 /* ThermalStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThermalStateView.swift; sourceTree = "<group>"; };
 		03B374012AA0354C0028DDD5 /* GrayScaleEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrayScaleEffect.swift; sourceTree = "<group>"; };
 		03B374032AA036D10028DDD5 /* ButtonsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonsView.swift; sourceTree = "<group>"; };
@@ -424,6 +431,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03A707B12B8EBE4D003BB7BE /* Collections in Frameworks */,
 				03ECDF5D2B8E5F0B00BD920E /* WrappingHStack in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -677,6 +685,7 @@
 		035E9E2A2A9A02D6009D4F5A = {
 			isa = PBXGroup;
 			children = (
+				03A707B62B8ED43D003BB7BE /* Common */,
 				035E9E352A9A02D6009D4F5A /* Moblin */,
 				03ECDF472B8E4E5F00BD920E /* Moblin Watch */,
 				035E9E342A9A02D6009D4F5A /* Products */,
@@ -948,6 +957,15 @@
 			path = Zoom;
 			sourceTree = "<group>";
 		};
+		03A707B62B8ED43D003BB7BE /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				03A707B72B8ED466003BB7BE /* WatchProtocol.swift */,
+				03B373FC2A9F35EF0028DDD5 /* CommonUtils.swift */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
 		03A983542A9A0582008FF0DB /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -1125,7 +1143,7 @@
 				03D445E12AE5966B00A0F6E9 /* CacheAsyncImage.swift */,
 				03BE50492B3EB59A004720AF /* IpMonitor.swift */,
 				03279CE62B4CD245006CEA5A /* Location.swift */,
-				03B373FC2A9F35EF0028DDD5 /* Utils.swift */,
+				03A707BF2B8F0FAE003BB7BE /* Utils.swift */,
 			);
 			path = Various;
 			sourceTree = "<group>";
@@ -1287,6 +1305,7 @@
 			name = MoblinWatch;
 			packageProductDependencies = (
 				03ECDF5C2B8E5F0B00BD920E /* WrappingHStack */,
+				03A707B02B8EBE4D003BB7BE /* Collections */,
 			);
 			productName = "MoblinWatch Watch App";
 			productReference = 03ECDF462B8E4E5E00BD920E /* MoblinWatch.app */;
@@ -1404,6 +1423,7 @@
 				039ADE472B55C23600FE0F59 /* RemoteControlStreamer.swift in Sources */,
 				03A9836C2A9A05D7008FF0DB /* WidgetSettingsView.swift in Sources */,
 				03DBD0FF2B30091B004B0BE6 /* StreamWizardNetworkSetupSettingsView.swift in Sources */,
+				03A707C02B8F0FAE003BB7BE /* Utils.swift in Sources */,
 				036BE2CC2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift in Sources */,
 				03EBEA632ACB4A17000DF427 /* BrowserEffect.swift in Sources */,
 				0379BB882AA836B500B718B6 /* StreamVideoSettingsView.swift in Sources */,
@@ -1434,7 +1454,8 @@
 				03C088372B0AFFA8000990DA /* InlinePickerView.swift in Sources */,
 				03E95AE42ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift in Sources */,
 				03BC11622AE4BDA200C38FC4 /* Seventv.swift in Sources */,
-				03B373FD2A9F35EF0028DDD5 /* Utils.swift in Sources */,
+				03B373FD2A9F35EF0028DDD5 /* CommonUtils.swift in Sources */,
+				03A707B82B8ED466003BB7BE /* WatchProtocol.swift in Sources */,
 				031839172AF6A03100320FB2 /* DebugAudioSettingsView.swift in Sources */,
 				03487F262B334B63003D9ED9 /* StreamingHistory.swift in Sources */,
 				032FDBFF2B0B11B0007BE85E /* PositionEditView.swift in Sources */,
@@ -1558,9 +1579,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03A707BD2B8F0F61003BB7BE /* CommonUtils.swift in Sources */,
 				03ECDF602B8E738A00BD920E /* Model.swift in Sources */,
 				03ECDF4B2B8E4E5F00BD920E /* MainView.swift in Sources */,
 				03ECDF492B8E4E5F00BD920E /* MoblinWatchApp.swift in Sources */,
+				03A707B92B8ED466003BB7BE /* WatchProtocol.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2027,6 +2050,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 03A08B7A2AC295620018BA95 /* XCRemoteSwiftPackageReference "AlertToast" */;
 			productName = AlertToast;
+		};
+		03A707B02B8EBE4D003BB7BE /* Collections */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03A974262AC137A000610E21 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = Collections;
 		};
 		03A974272AC137A000610E21 /* Collections */ = {
 			isa = XCSwiftPackageProductDependency;

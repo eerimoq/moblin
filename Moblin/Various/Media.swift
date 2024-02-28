@@ -108,15 +108,17 @@ final class Media: NSObject {
         CapturePts: audio: \(CMClock.hostTimeClock.time.seconds - audioPts), \
         video: \(CMClock.hostTimeClock.time.seconds - videoPts)
         """)
-        let audioClock = netStream.mixer.audioSession.synchronizationClock!
-        let videoClock = netStream.mixer.captureSession.synchronizationClock!
-        let audioRate = CMClock.hostTimeClock.rate(relativeTo: audioClock)
-        let videoRate = CMClock.hostTimeClock.rate(relativeTo: videoClock)
-        logger.debug("""
-        CapturePts: rate: audio: \(audioRate) video: \(videoRate) \
-        h: \(CMClock.hostTimeClock.time.seconds) a: \(audioClock.time.seconds) \
-        v: \(videoClock.time.seconds)
-        """)
+        if let audioClock = netStream.mixer.audioSession.synchronizationClock,
+           let videoClock = netStream.mixer.captureSession.synchronizationClock
+        {
+            let audioRate = CMClock.hostTimeClock.rate(relativeTo: audioClock)
+            let videoRate = CMClock.hostTimeClock.rate(relativeTo: videoClock)
+            logger.debug("""
+            CapturePts: rate: audio: \(audioRate) video: \(videoRate) \
+            h: \(CMClock.hostTimeClock.time.seconds) a: \(audioClock.time.seconds) \
+            v: \(videoClock.time.seconds)
+            """)
+        }
     }
 
     func srtStartStream(

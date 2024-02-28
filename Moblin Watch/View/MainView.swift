@@ -1,7 +1,105 @@
 import SwiftUI
 import WrappingHStack
 
-let smallFont = Font.system(size: 13)
+private let barsPerDb: Float = 0.3
+private let clippingThresholdDb: Float = -1.0
+private let redThresholdDb: Float = -8.5
+private let yellowThresholdDb: Float = -20
+private let zeroThresholdDb: Float = -60
+
+// Approx 60 * 0.3 = 20
+private let maxBars = "||||||||||||||||||||"
+
+struct AudioLevelView: View {
+    var showBar: Bool
+    var level: Float
+
+    private func bars(count: Float) -> Substring {
+        let barCount = Int(count.rounded(.toNearestOrAwayFromZero))
+        return maxBars.prefix(barCount)
+    }
+
+    private func isClipping() -> Bool {
+        return level > clippingThresholdDb
+    }
+
+    private func clippingText() -> Substring {
+        let db = -zeroThresholdDb
+        return bars(count: db * barsPerDb)
+    }
+
+    private func redText() -> Substring {
+        guard level > redThresholdDb else {
+            return ""
+        }
+        let db = level - redThresholdDb
+        return bars(count: db * barsPerDb)
+    }
+
+    private func yellowText() -> Substring {
+        guard level > yellowThresholdDb else {
+            return ""
+        }
+        let db = min(level - yellowThresholdDb, redThresholdDb - yellowThresholdDb)
+        return bars(count: db * barsPerDb)
+    }
+
+    private func greenText() -> Substring {
+        guard level > zeroThresholdDb else {
+            return ""
+        }
+        let db = min(level - zeroThresholdDb, yellowThresholdDb - zeroThresholdDb)
+        return bars(count: db * barsPerDb)
+    }
+
+    var body: some View {
+        HStack(spacing: 1) {
+            HStack(spacing: 1) {
+                if level.isNaN {
+                    Text("Muted")
+                        .foregroundColor(.white)
+                } else if level == .infinity {
+                    Text("Unknown")
+                        .foregroundColor(.white)
+                } else {
+                    if showBar {
+                        HStack(spacing: 0) {
+                            if isClipping() {
+                                Text(clippingText())
+                                    .foregroundColor(.red)
+                            } else {
+                                Text(redText())
+                                    .foregroundColor(.red)
+                                Text(yellowText())
+                                    .foregroundColor(.yellow)
+                                Text(greenText())
+                                    .foregroundColor(.green)
+                            }
+                        }
+                        .padding([.bottom], 2)
+                        .bold()
+                    } else {
+                        Text(formatAudioLevelDb(level: level))
+                            .foregroundColor(.white)
+                    }
+                }
+            }
+            .padding([.leading, .trailing], 2)
+            .background(Color(white: 0, opacity: 0.6))
+            .cornerRadius(5)
+            .font(smallFont)
+            Image(systemName: "waveform")
+                .frame(width: 17, height: 17)
+                .font(smallFont)
+                .padding([.leading, .trailing], 2)
+                .padding([.bottom], showBar ? 2 : 0)
+                .foregroundColor(.white)
+                .background(Color(white: 0, opacity: 0.6))
+                .cornerRadius(5)
+        }
+        .padding(0)
+    }
+}
 
 struct StreamOverlayTextView: View {
     var text: String
@@ -44,7 +142,7 @@ struct MainView: View {
     var body: some View {
         TabView {
             ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
+                LazyVStack(alignment: .leading, spacing: 1) {
                     ZStack {
                         Image("Preview")
                             .resizable()
@@ -55,124 +153,42 @@ struct MainView: View {
                             Spacer()
                             HStack {
                                 Spacer()
-                                StreamOverlayIconAndTextView(
-                                    icon: "waveform",
-                                    text: "|||||||||",
-                                    textColor: .green
-                                )
+                                AudioLevelView(showBar: true, level: model.audioLevel)
                             }
                             HStack {
                                 Spacer()
                                 StreamOverlayIconAndTextView(
                                     icon: "speedometer",
-                                    text: "3,4 Mbps"
+                                    text: model.speedAndTotal
                                 )
                             }
                             .padding([.bottom], 4)
                         }
                         .padding([.leading], 3)
                     }
-                    WrappingHStack(
-                        alignment: .leading,
-                        horizontalSpacing: 0,
-                        verticalSpacing: 0,
-                        fitContentWidth: true
-                    ) {
-                        Text("19:25 ")
-                            .foregroundColor(.gray)
-                        Text("erik")
-                            .foregroundColor(.yellow)
-                        Text(": ")
-                        Text("Hello ")
-                        Text("all, ")
-                        Text("how ")
-                        Text("are ")
-                        Text("you ")
-                        Text("doing?")
-                    }
-                    WrappingHStack(
-                        alignment: .leading,
-                        horizontalSpacing: 0,
-                        verticalSpacing: 0,
-                        fitContentWidth: true
-                    ) {
-                        Text("19:24 ")
-                            .foregroundColor(.gray)
-                        Text("99cowS")
-                            .foregroundColor(.green)
-                        Text(": ")
-                        Text("fewokoewf ")
-                        Text("weoke ")
-                        Text("wfokowekf ")
-                        Text("wf ")
-                        Text("dwww")
-                    }
-                    WrappingHStack(
-                        alignment: .leading,
-                        horizontalSpacing: 0,
-                        verticalSpacing: 0,
-                        fitContentWidth: true
-                    ) {
-                        Text("19:23 ")
-                            .foregroundColor(.gray)
-                        Text("foobar")
-                            .foregroundColor(.red)
-                        Text(": :)")
-                    }
-                    WrappingHStack(
-                        alignment: .leading,
-                        horizontalSpacing: 0,
-                        verticalSpacing: 0,
-                        fitContentWidth: true
-                    ) {
-                        Text("19:24 ")
-                            .foregroundColor(.gray)
-                        Text("99cowS")
-                            .foregroundColor(.green)
-                        Text(": ")
-                        Text("we ")
-                        Text("ew")
-                    }
-                    WrappingHStack(
-                        alignment: .leading,
-                        horizontalSpacing: 0,
-                        verticalSpacing: 0,
-                        fitContentWidth: true
-                    ) {
-                        Text("19:22 ")
-                            .foregroundColor(.gray)
-                        Text("Kalle")
-                            .foregroundColor(.brown)
-                        Text(": POG !!!!")
+                    ForEach(model.chatPosts) { post in
+                        WrappingHStack(
+                            alignment: .leading,
+                            horizontalSpacing: 0,
+                            verticalSpacing: 0,
+                            fitContentWidth: true
+                        ) {
+                            Text(post.timestamp + " ")
+                                .foregroundColor(.gray)
+                            Text(post.user)
+                                .foregroundColor(post.userColor)
+                            Text(": ")
+                            ForEach(post.segments) { segment in
+                                if let text = segment.text {
+                                    Text(text + " ")
+                                }
+                            }
+                        }
                     }
                 }
             }
             .ignoresSafeArea()
             .edgesIgnoringSafeArea([.top, .leading, .trailing])
-            VStack(alignment: .leading) {
-                HStack {
-                    Image(systemName: "waveform")
-                    Text("|||||||||")
-                        .foregroundColor(.green)
-                    Spacer()
-                }
-                HStack {
-                    Image(systemName: "speedometer")
-                    Text("3,4 Mbps")
-                    Spacer()
-                }
-                HStack {
-                    Image(systemName: "deskclock")
-                    Text("58m 34s")
-                    Spacer()
-                }
-                HStack {
-                    Image(systemName: "message")
-                    Text("5 new")
-                    Spacer()
-                }
-                Spacer()
-            }
         }
         .onAppear {
             model.setup()
