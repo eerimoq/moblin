@@ -2930,7 +2930,6 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func sendChatMessageToWatch(post: ChatPost) {
-        print("watch", post)
         guard isWatchReachable() else {
             return
         }
@@ -2945,7 +2944,6 @@ final class Model: NSObject, ObservableObject {
             let color = database.chat.usernameColor
             userColor = WatchProtocolColor(red: color.red, green: color.green, blue: color.blue)
         }
-        print("watch", userColor)
         do {
             let data = try JSONEncoder().encode(WatchProtocolChatMessage(
                 timestamp: post.timestamp,

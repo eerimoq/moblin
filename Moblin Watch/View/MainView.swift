@@ -201,6 +201,8 @@ struct MainView: View {
             }
             .ignoresSafeArea()
             .edgesIgnoringSafeArea([.top, .leading, .trailing])
+            Text("Remote control?")
+            Text("Settings?")
         }
         .onAppear {
             model.setup()
