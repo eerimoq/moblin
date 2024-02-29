@@ -50,7 +50,7 @@ class Model: NSObject, ObservableObject {
         DispatchQueue.main.async {
             self.chatPosts.prepend(ChatPost(id: self.chatPostId,
                                             user: message.user,
-                                            userColor: .brown,
+                                            userColor: message.userColor.color(),
                                             segments: message.segments.map { ChatPostSegment(text: $0) },
                                             timestamp: message.timestamp))
             self.chatPostId += 1

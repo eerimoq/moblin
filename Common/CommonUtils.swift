@@ -387,4 +387,16 @@ extension WatchProtocolColor {
             return nil
         }
     }
+
+    private func colorScale(_ color: Int) -> Double {
+        return Double(color) / 255
+    }
+
+    func color() -> Color {
+        return Color(
+            red: colorScale(red),
+            green: colorScale(green),
+            blue: colorScale(blue)
+        )
+    }
 }
