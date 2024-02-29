@@ -2930,15 +2930,22 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func sendChatMessageToWatch(post: ChatPost) {
+        print("watch", post)
         guard isWatchReachable() else {
             return
         }
-        guard let user = post.user,
-              let userHexColor = post.userColor,
-              let userColor = WatchProtocolColor.fromHex(value: userHexColor)
-        else {
+        guard let user = post.user else {
             return
         }
+        var userColor: WatchProtocolColor
+        if let hexColor = post.userColor,
+           let color = WatchProtocolColor.fromHex(value: hexColor) {
+            userColor = color
+        } else {
+            let color = database.chat.usernameColor
+            userColor = WatchProtocolColor(red: color.red, green: color.green, blue: color.blue)
+        }
+        print("watch", userColor)
         do {
             let data = try JSONEncoder().encode(WatchProtocolChatMessage(
                 timestamp: post.timestamp,
@@ -2956,6 +2963,7 @@ final class Model: NSObject, ObservableObject {
         guard isWatchReachable() else {
             return
         }
+        logger.info("watch Sending preview \(image.count)")
         sendMessageToWatch(name: WatchMessage.preview.rawValue, data: image)
     }
 

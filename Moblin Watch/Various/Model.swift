@@ -106,6 +106,7 @@ extension Model: WCSessionDelegate {
     }
 
     func session(_: WCSession, didReceiveMessage message: [String: Any]) {
+        print("watch", message)
         for entry in message {
             do {
                 switch WatchMessage(rawValue: entry.key) {

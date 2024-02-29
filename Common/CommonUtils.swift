@@ -377,6 +377,7 @@ let noValue = ""
 
 extension WatchProtocolColor {
     static func fromHex(value: String) -> WatchProtocolColor? {
+        print("watch", value)
         if let colorNumber = Int(value.suffix(6), radix: 16) {
             return WatchProtocolColor(
                 red: (colorNumber >> 16) & 0xFF,
