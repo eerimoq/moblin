@@ -1205,7 +1205,6 @@ final class Model: NSObject, ObservableObject {
         } else {
             logger.info("Watch not supported")
         }
-        media.setLowFpsPngImage(enabled: true)
     }
 
     private func handleIpStatusUpdate(statuses: [IPMonitor.Status]) {
@@ -1880,6 +1879,7 @@ final class Model: NSObject, ObservableObject {
                 }
             }
             chatPosts.append(post)
+            sendChatMessageToWatch(post: post)
             numberOfChatPostsPerTick += 1
             streamTotalChatMessages += 1
             numberOfPostsAppended += 1
@@ -1931,6 +1931,7 @@ final class Model: NSObject, ObservableObject {
                 chatPosts.removeFirst()
             }
             chatPosts.append(post)
+            sendChatMessageToWatch(post: post)
             numberOfChatPostsPerTick += 1
             streamTotalChatMessages += 1
         }
@@ -2932,11 +2933,15 @@ final class Model: NSObject, ObservableObject {
         guard isWatchReachable() else {
             return
         }
-        guard let user = post.user, let userColor = post.userColor else {
+        guard let user = post.user,
+              let userHexColor = post.userColor,
+              let userColor = WatchProtocolColor.fromHex(value: userHexColor)
+        else {
             return
         }
         do {
             let data = try JSONEncoder().encode(WatchProtocolChatMessage(
+                timestamp: post.timestamp,
                 user: user,
                 userColor: userColor,
                 segments: post.segments.filter { $0.text != nil }.map { $0.text! }
@@ -3108,7 +3113,6 @@ final class Model: NSObject, ObservableObject {
         } else {
             newChatPosts.append(post)
         }
-        sendChatMessageToWatch(post: post)
     }
 
     func reloadChatMessages() {
@@ -4493,5 +4497,12 @@ extension Model: WCSessionDelegate {
 
     func sessionDidDeactivate(_: WCSession) {
         logger.info("Watch session deactive")
+    }
+
+    func sessionReachabilityDidChange(_: WCSession) {
+        logger.info("Watch reachability changed to \(isWatchReachable())")
+        DispatchQueue.main.async {
+            self.media.setLowFpsPngImage(enabled: self.isWatchReachable())
+        }
     }
 }

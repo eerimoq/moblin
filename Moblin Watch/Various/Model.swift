@@ -52,7 +52,7 @@ class Model: NSObject, ObservableObject {
                                             user: message.user,
                                             userColor: .brown,
                                             segments: message.segments.map { ChatPostSegment(text: $0) },
-                                            timestamp: digitalClockFormatter.string(from: Date())))
+                                            timestamp: message.timestamp))
             self.chatPostId += 1
             if self.chatPosts.count > 10 {
                 _ = self.chatPosts.popLast()
