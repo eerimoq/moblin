@@ -2938,7 +2938,8 @@ final class Model: NSObject, ObservableObject {
         }
         var userColor: WatchProtocolColor
         if let hexColor = post.userColor,
-           let color = WatchProtocolColor.fromHex(value: hexColor) {
+           let color = WatchProtocolColor.fromHex(value: hexColor)
+        {
             userColor = color
         } else {
             let color = database.chat.usernameColor
