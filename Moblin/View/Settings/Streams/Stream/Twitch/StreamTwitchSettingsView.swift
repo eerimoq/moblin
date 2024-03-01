@@ -4,11 +4,11 @@ struct StreamTwitchSettingsView: View {
     var model: Model
     var stream: SettingsStream
     var twitchAuth: TwitchAuth
-    
+
     init(model: Model, stream: SettingsStream) {
         self.model = model
         self.stream = stream
-        self.twitchAuth = TwitchAuth(model: model)
+        twitchAuth = TwitchAuth(model: model)
     }
 
     func submitChannelName(value: String) {
@@ -29,17 +29,20 @@ struct StreamTwitchSettingsView: View {
 
     var body: some View {
         VStack {
-            Button(action: {
-                self.twitchAuth.startAuthentication(stream: stream)
-            }) {
-                Text(stream.twitchAccessToken != nil ? "Connected" : "Connect with Twitch")
-                    .padding()
-                    .foregroundColor(.white)
-                    .background(Color.purple)
-                    .cornerRadius(8)
-            }
+            Button(
+                action: {
+                    self.twitchAuth.startAuthentication(stream: stream)
+                },
+                label: {
+                    Text(stream.twitchAccessToken != nil ? "Connected" : "Connect with Twitch")
+                        .padding()
+                        .foregroundColor(.white)
+                        .background(Color.purple)
+                        .cornerRadius(8)
+                }
+            )
             .padding()
-                
+
             Form {
                 Section {
                     TextEditNavigationView(

@@ -24,7 +24,7 @@ private func getEmotes(from message: TwitchChatMessage) -> [ChatMessageEmote] {
 }
 
 final class TwitchChatMoblin {
-    private var chatClient: ChatClient!
+    private var twitchAuth: TwitchAuth
     private var model: Model
     private var task: Task<Void, Error>?
     private var connected: Bool = false
@@ -33,6 +33,7 @@ final class TwitchChatMoblin {
     init(model: Model) {
         self.model = model
         emotes = Emotes()
+        twitchAuth = TwitchAuth(model: model)
     }
 
     func start(channelName: String, channelId: String, settings: SettingsStreamChat!) {
@@ -47,13 +48,15 @@ final class TwitchChatMoblin {
             do {
                 var reconnectTime = firstReconnectTime
                 logger.info("twitch: chat: \(channelName): Connecting")
-                chatClient = ChatClient(.anonymous)
+                let chatClient = try await self.twitchAuth.ircClient(stream: model.stream)!
+                
                 while true {
                     do {
-                        let stream = try await chatClient.connect()
+                        try await chatClient.join(to: channelName)
+                        let stream = chatClient.stream()
                         logger.info("twitch: chat: \(channelName): Connected")
                         connected = true
-                        try await chatClient.join(to: channelName)
+                        
                         logger.info("twitch: chat: \(channelName): joined channel")
                         for try await message in stream {
                             reconnectTime = firstReconnectTime
