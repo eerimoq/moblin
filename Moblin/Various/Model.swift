@@ -1203,7 +1203,7 @@ final class Model: NSObject, ObservableObject {
             session.delegate = self
             session.activate()
         } else {
-            logger.info("Watch not supported")
+            logger.info("watch: Not supported")
         }
     }
 
@@ -2331,6 +2331,7 @@ final class Model: NSObject, ObservableObject {
         updateTorch()
         updateMute()
         videoView.attachStream(media.getNetStream())
+        setLowFpsPngImage()
     }
 
     private func showPreset(preset: SettingsZoomPreset) -> Bool {
@@ -2947,6 +2948,7 @@ final class Model: NSObject, ObservableObject {
         }
         do {
             let data = try JSONEncoder().encode(WatchProtocolChatMessage(
+                id: post.id,
                 timestamp: post.timestamp,
                 user: user,
                 userColor: userColor,
@@ -2954,7 +2956,7 @@ final class Model: NSObject, ObservableObject {
             ))
             sendMessageToWatch(name: WatchMessage.chatMessage.rawValue, data: data)
         } catch {
-            logger.info("Watch chat message send failed")
+            logger.info("watch: Chat message send failed")
         }
     }
 
@@ -2962,8 +2964,26 @@ final class Model: NSObject, ObservableObject {
         guard isWatchReachable() else {
             return
         }
-        logger.info("watch Sending preview \(image.count)")
-        sendMessageToWatch(name: WatchMessage.preview.rawValue, data: image)
+        guard WCSession.default.outstandingFileTransfers.isEmpty else {
+            logger.info("watch: Preview already in transfer, discarding new of \(image.count) bytes")
+            return
+        }
+        guard let directory = WCSession.default.watchDirectoryURL else {
+            logger.info("watch: No watch, discarding preview")
+            return
+        }
+        let previewUrl = directory.appending(component: "preview.png")
+        do {
+            try image.write(to: previewUrl)
+        } catch {
+            logger.error("watch: write failed with error \(error)")
+            return
+        }
+        WCSession.default.transferFile(previewUrl, metadata: nil)
+    }
+
+    func setLowFpsPngImage() {
+        media.setLowFpsPngImage(enabled: isWatchReachable())
     }
 
     func toggleDrawOnStream() {
@@ -3892,7 +3912,6 @@ final class Model: NSObject, ObservableObject {
         guard let image else {
             return
         }
-        logger.info("low res image: \(image.count)")
         DispatchQueue.main.async {
             self.sendPreviewToWatch(image: image)
         }
@@ -4495,21 +4514,29 @@ extension Model: WCSessionDelegate {
         activationDidCompleteWith activationState: WCSessionActivationState,
         error _: Error?
     ) {
-        logger.info("Watch \(activationState)")
+        logger.info("watch: \(activationState)")
+        switch activationState {
+        case .activated:
+            DispatchQueue.main.async {
+                self.setLowFpsPngImage()
+            }
+        default:
+            break
+        }
     }
 
     func sessionDidBecomeInactive(_: WCSession) {
-        logger.info("Watch session inactive")
+        logger.info("watch: Session inactive")
     }
 
     func sessionDidDeactivate(_: WCSession) {
-        logger.info("Watch session deactive")
+        logger.info("watch: Session deactive")
     }
 
     func sessionReachabilityDidChange(_: WCSession) {
-        logger.info("Watch reachability changed to \(isWatchReachable())")
+        logger.info("watch: Reachability changed to \(isWatchReachable())")
         DispatchQueue.main.async {
-            self.media.setLowFpsPngImage(enabled: self.isWatchReachable())
+            self.setLowFpsPngImage()
         }
     }
 }

@@ -4,11 +4,11 @@ enum WatchMessage: String {
     case chatMessage
     case speedAndTotal
     case audioLevel
-    case preview
 }
 
 // periphery:ignore
 struct WatchProtocolChatMessage: Codable {
+    var id: Int
     var timestamp: String
     var user: String
     var userColor: WatchProtocolColor

@@ -77,14 +77,6 @@ class Model: NSObject, ObservableObject {
             self.audioLevel = audioLevel
         }
     }
-
-    private func handlePreview(value: Any) throws {
-        guard let preview = value as? Data else {
-            return
-        }
-        print("Preview", preview.count)
-        self.preview = UIImage(data: preview)
-    }
 }
 
 extension Model: WCSessionDelegate {
@@ -106,7 +98,6 @@ extension Model: WCSessionDelegate {
     }
 
     func session(_: WCSession, didReceiveMessage message: [String: Any]) {
-        print("watch", message)
         for entry in message {
             do {
                 switch WatchMessage(rawValue: entry.key) {
@@ -116,12 +107,20 @@ extension Model: WCSessionDelegate {
                     try handleSpeedAndTotal(value: entry.value)
                 case .audioLevel:
                     try handleAudioLevel(value: entry.value)
-                case .preview:
-                    try handlePreview(value: entry.value)
                 default:
                     print("Unknown message type \(entry.key)")
                 }
             } catch {}
+        }
+    }
+
+    func session(_: WCSession, didReceive file: WCSessionFile) {
+        DispatchQueue.main.async {
+            do {
+                self.preview = try UIImage(data: Data(contentsOf: file.fileURL))
+            } catch {
+                print("preview not an image")
+            }
         }
     }
 }
