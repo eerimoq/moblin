@@ -387,7 +387,7 @@ final class Media: NSObject {
         _ = netStream.unregisterVideoEffect(effect)
     }
 
-    public func setLowFpsPngImage(enabled: Bool) {
+    func setLowFpsPngImage(enabled: Bool) {
         netStream.setLowFpsPngImage(enabled: enabled)
     }
 

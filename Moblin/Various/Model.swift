@@ -2964,7 +2964,9 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func trySendNextChatPostToWatch() {
-        guard isWatchReachable(), !isWaitingForChatPostResponseFromWatch, let post = watchChatPosts.first else {
+        guard isWatchReachable(), !isWaitingForChatPostResponseFromWatch,
+              let post = watchChatPosts.first
+        else {
             return
         }
         var data: Data
