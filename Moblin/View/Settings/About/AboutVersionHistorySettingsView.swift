@@ -8,6 +8,9 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.184.0", date: "2024-03-01", changes: [
+        "• Apple Watch companion app with preview and chat.",
+    ]),
     Version(version: "0.183.0", date: "2024-02-26", changes: [
         "• Fix crash when streaming to https://github.com/sallar/mac-local-rtmp-server RTMP server. 🐛 JohannesLiv",
         "  • Adaptive bitrate will not work at all after about 4 GB of data sent. Requires server fix.",

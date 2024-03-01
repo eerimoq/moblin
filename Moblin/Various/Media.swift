@@ -1,5 +1,6 @@
 import AVFoundation
 import HaishinKit
+import SwiftUI
 
 let mediaDispatchQueue = DispatchQueue(label: "com.eerimoq.stream")
 
@@ -41,6 +42,7 @@ final class Media: NSObject {
     var onRtmpDisconnected: ((_ message: String) -> Void)!
     var onAudioMuteChange: (() -> Void)!
     var onVideoDeviceInUseByAnotherClient: (() -> Void)!
+    var onLowFpsPngImage: ((Data?) -> Void)!
     private var adaptiveBitrate: AdaptiveBitrate?
     private var failedVideoEffect: String?
 
@@ -97,6 +99,28 @@ final class Media: NSObject {
 
     func getCaptureDelta() -> Double {
         return audioCapturePresentationTimestamp - videoCapturePresentationTimestamp
+    }
+
+    func logTiming() {
+        let audioPts = getAudioCapturePresentationTimestamp()
+        let videoPts = getVideoCapturePresentationTimestamp()
+        let delta = getCaptureDelta()
+        logger.debug("CapturePts: audio: \(audioPts), video: \(videoPts), delta: \(delta)")
+        logger.debug("""
+        CapturePts: audio: \(CMClock.hostTimeClock.time.seconds - audioPts), \
+        video: \(CMClock.hostTimeClock.time.seconds - videoPts)
+        """)
+        if let audioClock = netStream.mixer.audioSession.synchronizationClock,
+           let videoClock = netStream.mixer.captureSession.synchronizationClock
+        {
+            let audioRate = CMClock.hostTimeClock.rate(relativeTo: audioClock)
+            let videoRate = CMClock.hostTimeClock.rate(relativeTo: videoClock)
+            logger.debug("""
+            CapturePts: rate: audio: \(audioRate) video: \(videoRate) \
+            h: \(CMClock.hostTimeClock.time.seconds) a: \(audioClock.time.seconds) \
+            v: \(videoClock.time.seconds)
+            """)
+        }
     }
 
     func srtStartStream(
@@ -363,6 +387,10 @@ final class Media: NSObject {
         _ = netStream.unregisterVideoEffect(effect)
     }
 
+    func setLowFpsPngImage(enabled: Bool) {
+        netStream.setLowFpsPngImage(enabled: enabled)
+    }
+
     func setVideoSessionPreset(preset: AVCaptureSession.Preset) {
         netStream.sessionPreset = preset
     }
@@ -626,6 +654,10 @@ extension Media: NetStreamDelegate {
         DispatchQueue.main.async {
             self.failedVideoEffect = failedEffect
         }
+    }
+
+    func streamVideo(_: HaishinKit.NetStream, lowFpsPngImage: Data?) {
+        onLowFpsPngImage(lowFpsPngImage)
     }
 
     func stream(_: HaishinKit.NetStream, recorderErrorOccured error: HaishinKit.IORecorder.Error) {

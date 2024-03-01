@@ -4,7 +4,7 @@ struct AboutSettingsView: View {
     var body: some View {
         Form {
             Section {
-                TextItemView(name: String(localized: "Version"), value: version())
+                TextItemView(name: String(localized: "Version"), value: appVersion())
                 NavigationLink(destination: AboutVersionHistorySettingsView()) {
                     Text("Version history")
                 }
