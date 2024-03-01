@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="0;url=">
+    <script>
+        window.onload = function() {
+            var fragment = window.location.hash.substring(1);
+            var redirectURL = "moblin://auth/success";
+            var url = redirectURL + "#" + fragment;
+            window.location.href = url;
+            document.getElementById('link').href = url;
+        };
+    </script>
+    <title>Redirecting...</title>
+</head>
+<body>
+    <p>If you are not redirected automatically, follow this <a id="link" href="moblin://auth/success">link</a>.</p>
+</body>
+</html>

@@ -12,7 +12,6 @@ import SDWebImageSwiftUI
 import SDWebImageWebPCoder
 import StoreKit
 import SwiftUI
-import TwitchChat
 import VideoToolbox
 import WatchConnectivity
 import WebKit

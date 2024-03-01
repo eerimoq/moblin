@@ -207,6 +207,12 @@ struct LineView: View {
     }
 }
 
+struct InputView: View {
+    var body: some View {
+        Text("InputView")
+    }
+}
+
 struct ViewOffsetKey: PreferenceKey {
     static var defaultValue = CGFloat.zero
 
@@ -358,6 +364,7 @@ struct StreamOverlayChatView: View {
                 }
                 .frame(width: fullMetrics.size.width * model.database.chat.width!,
                        height: fullMetrics.size.height * model.database.chat.height!)
+                InputView()
             }
         }
     }

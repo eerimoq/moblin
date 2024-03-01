@@ -1,20 +1,30 @@
 import SwiftUI
-import TwitchChat
+import Twitch
+import TwitchIRC
 
-private func getEmotes(from message: ChatMessage) -> [ChatMessageEmote] {
-    var emotes: [ChatMessageEmote] = []
-    for emote in message.emotes {
-        do {
-            try emotes.append(ChatMessageEmote(url: emote.imageURL, range: emote.range))
-        } catch {
-            logger.warning("twitch: chat: Failed to get emote URL")
-        }
+protocol TwitchChatMessage {
+    var displayName: String { get }
+    var color: String { get }
+    var message: String { get }
+
+    func parseEmotes() -> [TwitchIRC.Emote]
+}
+
+extension PrivateMessage: TwitchChatMessage {}
+extension UserNotice: TwitchChatMessage {}
+
+private func getEmotes(from message: TwitchChatMessage) -> [ChatMessageEmote] {
+    let emotes: [TwitchIRC.Emote] = message.parseEmotes()
+    return emotes.map {
+        ChatMessageEmote(
+            url: URL(string: "https://static-cdn.jtvnw.net/emoticons/v2/\($0.id)/default/dark/3.0")!,
+            range: $0.startIndex ... $0.endIndex
+        )
     }
-    return emotes
 }
 
 final class TwitchChatMoblin {
-    private var twitchChat: TwitchChat!
+    private var twitchAuth: TwitchAuth
     private var model: Model
     private var task: Task<Void, Error>?
     private var connected: Bool = false
@@ -23,6 +33,7 @@ final class TwitchChatMoblin {
     init(model: Model) {
         self.model = model
         emotes = Emotes()
+        twitchAuth = TwitchAuth(model: model)
     }
 
     func start(channelName: String, channelId: String, settings: SettingsStreamChat!) {
@@ -37,42 +48,19 @@ final class TwitchChatMoblin {
             do {
                 var reconnectTime = firstReconnectTime
                 logger.info("twitch: chat: \(channelName): Connecting")
+                let chatClient = try await self.twitchAuth.ircClient(stream: model.stream)!
+                
                 while true {
-                    twitchChat = TwitchChat(
-                        token: "SCHMOOPIIE",
-                        nick: "justinfan67420",
-                        name: channelName
-                    )
                     do {
+                        try await chatClient.join(to: channelName)
+                        let stream = chatClient.stream()
                         logger.info("twitch: chat: \(channelName): Connected")
                         connected = true
-                        for try await message in self.twitchChat.messages {
-                            let emotes = getEmotes(from: message)
+                        
+                        logger.info("twitch: chat: \(channelName): joined channel")
+                        for try await message in stream {
                             reconnectTime = firstReconnectTime
-                            let text: String
-                            let isAction = message.isAction()
-                            if isAction {
-                                text = String(message.text.dropFirst(7))
-                            } else {
-                                text = message.text
-                            }
-                            let segments = createSegments(
-                                text: text,
-                                emotes: emotes,
-                                emotesManager: self.emotes
-                            )
-                            await MainActor.run {
-                                self.model.appendChatMessage(
-                                    user: message.sender,
-                                    userColor: message.senderColor,
-                                    segments: segments,
-                                    timestamp: model.digitalClock,
-                                    timestampDate: Date(),
-                                    isAction: isAction,
-                                    isAnnouncement: message.announcement,
-                                    isFirstMessage: message.firstMessage
-                                )
-                            }
+                            await processMessage(message)
                         }
                     } catch {
                         logger.warning("twitch: chat: \(channelName): Got error \(error)")
@@ -90,6 +78,44 @@ final class TwitchChatMoblin {
             } catch {
                 logger.info("Twitch chat ended with error \(error)")
             }
+        }
+    }
+
+    func processMessage(_ message: IncomingMessage) async {
+        switch message {
+        case let .privateMessage(chatMessage):
+            await processChatMessage(
+                chatMessage: chatMessage,
+                firstMessage: chatMessage.firstMessage,
+                announcement: false
+            )
+        case let .userNotice(announcement):
+            await processChatMessage(chatMessage: announcement, firstMessage: false, announcement: true)
+        default:
+            break
+        }
+    }
+
+    func processChatMessage(chatMessage: TwitchChatMessage, firstMessage: Bool, announcement: Bool) async {
+        let emotes = getEmotes(from: chatMessage)
+        let action = chatMessage.message.starts(with: "\u{01}ACTION")
+        let text = action ? String(chatMessage.message.dropFirst(7)) : chatMessage.message
+        let segments = createSegments(
+            text: text,
+            emotes: emotes,
+            emotesManager: self.emotes
+        )
+        await MainActor.run {
+            self.model.appendChatMessage(
+                user: chatMessage.displayName,
+                userColor: chatMessage.color,
+                segments: segments,
+                timestamp: model.digitalClock,
+                timestampDate: Date(),
+                isAction: action,
+                isAnnouncement: announcement,
+                isFirstMessage: firstMessage
+            )
         }
     }
 
@@ -190,11 +216,5 @@ final class TwitchChatMoblin {
             segments.append(segment)
         }
         return segments
-    }
-}
-
-extension ChatMessage {
-    func isAction() -> Bool {
-        return text.starts(with: "\u{01}ACTION")
     }
 }
