@@ -259,7 +259,6 @@ final class Model: NSObject, ObservableObject {
     private var watchChatPosts: Deque<WatchProtocolChatMessage> = []
     private var isWaitingForChatPostResponseFromWatch = false
     private var nextWatchPreviewId: Int64 = 1
-    private var watchPreviewFileTransfer: WCSessionFileTransfer?
     private var chatSpeedTicks = 0
     @Published var numberOfViewers = noValue
     var numberOfViewersUpdateDate = Date()
@@ -4584,13 +4583,6 @@ extension Model: WCSessionDelegate {
         DispatchQueue.main.async {
             self.setLowFpsPngImage()
             self.trySendNextChatPostToWatch()
-        }
-    }
-
-    func session(_: WCSession, didFinish _: WCSessionFileTransfer, error _: (any Error)?) {
-        DispatchQueue.main.async {
-            logger.info("watch: file transfer finish")
-            self.watchPreviewFileTransfer = nil
         }
     }
 }
