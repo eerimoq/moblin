@@ -151,11 +151,18 @@ struct MainView: View {
                                 .frame(maxWidth: .infinity)
                                 .padding([.bottom], 3)
                         } else {
-                            Image("Preview")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(maxWidth: .infinity)
-                                .padding([.bottom], 3)
+                            VStack {
+                                Spacer()
+                                HStack {
+                                    Spacer()
+                                    Image(systemName: "tv.slash")
+                                    Spacer()
+                                }
+                                Spacer()
+                            }
+                            .aspectRatio(16 / 9, contentMode: .fit)
+                            .frame(maxWidth: .infinity)
+                            .padding([.bottom], 3)
                         }
                         VStack(spacing: 1) {
                             Spacer()
