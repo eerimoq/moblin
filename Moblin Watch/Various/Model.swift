@@ -30,6 +30,8 @@ class Model: NSObject, ObservableObject {
     @Published var speedAndTotal = noValue
     @Published var audioLevel: Float = -160.0
     @Published var preview: UIImage?
+    private var previewTransfer = Data()
+    private var nextPreviewTransferId: Int64 = -1
 
     func setup() {
         if WCSession.isSupported() {
@@ -41,8 +43,8 @@ class Model: NSObject, ObservableObject {
         }
     }
 
-    private func handleChatMessage(value: Any) throws {
-        guard let data = value as? Data else {
+    private func handleChatMessage(_ message: [String: Any]) throws {
+        guard let data = message["data"] as? Data else {
             return
         }
         let message = try JSONDecoder().decode(WatchProtocolChatMessage.self, from: data)
@@ -61,8 +63,8 @@ class Model: NSObject, ObservableObject {
         }
     }
 
-    private func handleSpeedAndTotal(value: Any) throws {
-        guard let speedAndTotal = value as? String else {
+    private func handleSpeedAndTotal(_ message: [String: Any]) throws {
+        guard let speedAndTotal = message["data"] as? String else {
             return
         }
         DispatchQueue.main.async {
@@ -70,12 +72,34 @@ class Model: NSObject, ObservableObject {
         }
     }
 
-    private func handleAudioLevel(value: Any) throws {
-        guard let audioLevel = value as? Float else {
+    private func handleAudioLevel(_ message: [String: Any]) throws {
+        guard let audioLevel = message["data"] as? Float else {
             return
         }
         DispatchQueue.main.async {
             self.audioLevel = audioLevel
+        }
+    }
+
+    private func handlePreview(_ message: [String: Any]) throws {
+        guard let isFirst = message["isFirst"] as? Bool, let isLast = message["isLast"] as? Bool,
+              let id = message["id"] as? Int64, let data = message["data"] as? Data
+        else {
+            return
+        }
+        DispatchQueue.main.async {
+            if isFirst {
+                self.nextPreviewTransferId = id + 1
+                self.previewTransfer = data
+            } else if id == self.nextPreviewTransferId {
+                self.previewTransfer += data
+                if isLast {
+                    self.preview = UIImage(data: self.previewTransfer)
+                    self.nextPreviewTransferId = -1
+                } else {
+                    self.nextPreviewTransferId += 1
+                }
+            }
         }
     }
 }
@@ -99,18 +123,21 @@ extension Model: WCSessionDelegate {
     }
 
     func session(_: WCSession, didReceiveMessage message: [String: Any]) {
-        for entry in message {
-            do {
-                switch WatchMessage(rawValue: entry.key) {
-                case .speedAndTotal:
-                    try handleSpeedAndTotal(value: entry.value)
-                case .audioLevel:
-                    try handleAudioLevel(value: entry.value)
-                default:
-                    print("Unknown message type \(entry.key)")
-                }
-            } catch {}
+        guard let type = message["type"] as? String else {
+            return
         }
+        do {
+            switch WatchMessage(rawValue: type) {
+            case .speedAndTotal:
+                try handleSpeedAndTotal(message)
+            case .audioLevel:
+                try handleAudioLevel(message)
+            case .preview:
+                try handlePreview(message)
+            default:
+                print("Unknown message type \(type)")
+            }
+        } catch {}
     }
 
     func session(
@@ -118,26 +145,17 @@ extension Model: WCSessionDelegate {
         didReceiveMessage message: [String: Any],
         replyHandler: ([String: Any]) -> Void
     ) {
-        for entry in message {
-            do {
-                switch WatchMessage(rawValue: entry.key) {
-                case .chatMessage:
-                    try handleChatMessage(value: entry.value)
-                default:
-                    print("Unknown message type \(entry.key)")
-                }
-            } catch {}
+        guard let type = message["type"] as? String else {
+            return
         }
-        replyHandler([:])
-    }
-
-    func session(_: WCSession, didReceive file: WCSessionFile) {
-        DispatchQueue.main.async {
-            do {
-                self.preview = try UIImage(data: Data(contentsOf: file.fileURL))
-            } catch {
-                print("preview not an image")
+        do {
+            switch WatchMessage(rawValue: type) {
+            case .chatMessage:
+                try handleChatMessage(message)
+            default:
+                print("Unknown message type \(type)")
             }
-        }
+        } catch {}
+        replyHandler([:])
     }
 }

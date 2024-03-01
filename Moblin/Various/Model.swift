@@ -258,6 +258,8 @@ final class Model: NSObject, ObservableObject {
     @Published var chatPostsTotal: Int = 0
     private var watchChatPosts: Deque<WatchProtocolChatMessage> = []
     private var isWaitingForChatPostResponseFromWatch = false
+    private var nextWatchPreviewId: Int64 = 1
+    private var watchPreviewFileTransfer: WCSessionFileTransfer?
     private var chatSpeedTicks = 0
     @Published var numberOfViewers = noValue
     var numberOfViewersUpdateDate = Date()
@@ -2910,31 +2912,35 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    private func isWatchReachable() -> Bool {
+    func isWatchReachable() -> Bool {
         return WCSession.default.activationState == .activated && WCSession.default.isReachable
     }
 
     private func sendMessageToWatch(
-        name: String,
+        type: String,
         data: Any,
         replyHandler: (([String: Any]) -> Void)? = nil,
         errorHandler: ((Error) -> Void)? = nil
     ) {
-        WCSession.default.sendMessage([name: data], replyHandler: replyHandler, errorHandler: errorHandler)
+        WCSession.default.sendMessage(
+            ["type": type, "data": data],
+            replyHandler: replyHandler,
+            errorHandler: errorHandler
+        )
     }
 
     private func sendSpeedAndTotalToWatch() {
         guard isWatchReachable() else {
             return
         }
-        sendMessageToWatch(name: WatchMessage.speedAndTotal.rawValue, data: speedAndTotal)
+        sendMessageToWatch(type: WatchMessage.speedAndTotal.rawValue, data: speedAndTotal)
     }
 
     private func sendAudioLevelToWatch() {
         guard isWatchReachable() else {
             return
         }
-        sendMessageToWatch(name: WatchMessage.audioLevel.rawValue, data: audioLevel)
+        sendMessageToWatch(type: WatchMessage.audioLevel.rawValue, data: audioLevel)
     }
 
     private func enqueueWatchChatPost(post: ChatPost) {
@@ -2976,7 +2982,7 @@ final class Model: NSObject, ObservableObject {
             logger.info("watch: Chat message send failed")
             return
         }
-        sendMessageToWatch(name: WatchMessage.chatMessage.rawValue,
+        sendMessageToWatch(type: WatchMessage.chatMessage.rawValue,
                            data: data,
                            replyHandler: { _ in
                                DispatchQueue.main.async {
@@ -3003,22 +3009,23 @@ final class Model: NSObject, ObservableObject {
         guard isWatchReachable() else {
             return
         }
-        guard WCSession.default.outstandingFileTransfers.isEmpty else {
-            logger.info("watch: Preview already in transfer, discarding new of \(image.count) bytes")
-            return
+        var image = image
+        var isFirst = true
+        var isLast = false
+        while !isLast {
+            let chunk = image.prefix(50000)
+            image = image.advanced(by: chunk.count)
+            if image.isEmpty {
+                isLast = true
+            }
+            WCSession.default.sendMessage(
+                ["type": WatchMessage.preview.rawValue, "isFirst": isFirst, "isLast": isLast,
+                 "id": nextWatchPreviewId, "data": chunk],
+                replyHandler: nil
+            )
+            isFirst = false
+            nextWatchPreviewId += 1
         }
-        guard let directory = WCSession.default.watchDirectoryURL else {
-            logger.info("watch: No watch, discarding preview")
-            return
-        }
-        let previewUrl = directory.appending(component: "preview.png")
-        do {
-            try image.write(to: previewUrl)
-        } catch {
-            logger.error("watch: write failed with error \(error)")
-            return
-        }
-        WCSession.default.transferFile(previewUrl, metadata: nil)
     }
 
     func setLowFpsPngImage() {
@@ -4577,6 +4584,13 @@ extension Model: WCSessionDelegate {
         DispatchQueue.main.async {
             self.setLowFpsPngImage()
             self.trySendNextChatPostToWatch()
+        }
+    }
+
+    func session(_: WCSession, didFinish _: WCSessionFileTransfer, error _: (any Error)?) {
+        DispatchQueue.main.async {
+            logger.info("watch: file transfer finish")
+            self.watchPreviewFileTransfer = nil
         }
     }
 }

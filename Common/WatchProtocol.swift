@@ -4,6 +4,7 @@ enum WatchMessage: String {
     case chatMessage
     case speedAndTotal
     case audioLevel
+    case preview
 }
 
 // periphery:ignore
