@@ -256,6 +256,8 @@ final class Model: NSObject, ObservableObject {
     private var numberOfChatPostsPerMinute = 0
     @Published var chatPostsRate = String(localized: "0.0/min")
     @Published var chatPostsTotal: Int = 0
+    private var watchChatPosts: Deque<WatchProtocolChatMessage> = []
+    private var isWaitingForChatPostResponseFromWatch = false
     private var chatSpeedTicks = 0
     @Published var numberOfViewers = noValue
     var numberOfViewersUpdateDate = Date()
@@ -2912,8 +2914,13 @@ final class Model: NSObject, ObservableObject {
         return WCSession.default.activationState == .activated && WCSession.default.isReachable
     }
 
-    private func sendMessageToWatch(name: String, data: Any) {
-        WCSession.default.sendMessage([name: data], replyHandler: nil)
+    private func sendMessageToWatch(
+        name: String,
+        data: Any,
+        replyHandler: (([String: Any]) -> Void)? = nil,
+        errorHandler: ((Error) -> Void)? = nil
+    ) {
+        WCSession.default.sendMessage([name: data], replyHandler: replyHandler, errorHandler: errorHandler)
     }
 
     private func sendSpeedAndTotalToWatch() {
@@ -2930,10 +2937,7 @@ final class Model: NSObject, ObservableObject {
         sendMessageToWatch(name: WatchMessage.audioLevel.rawValue, data: audioLevel)
     }
 
-    private func sendChatMessageToWatch(post: ChatPost) {
-        guard isWatchReachable() else {
-            return
-        }
+    private func enqueueWatchChatPost(post: ChatPost) {
         guard let user = post.user else {
             return
         }
@@ -2946,18 +2950,51 @@ final class Model: NSObject, ObservableObject {
             let color = database.chat.usernameColor
             userColor = WatchProtocolColor(red: color.red, green: color.green, blue: color.blue)
         }
+        let post = WatchProtocolChatMessage(
+            id: post.id,
+            timestamp: post.timestamp,
+            user: user,
+            userColor: userColor,
+            segments: post.segments.filter { $0.text != nil }.map { $0.text! }
+        )
+        watchChatPosts.append(post)
+        if watchChatPosts.count > 10 {
+            _ = watchChatPosts.popFirst()
+        }
+    }
+
+    private func trySendNextChatPostToWatch() {
+        guard isWatchReachable(), !isWaitingForChatPostResponseFromWatch, let post = watchChatPosts.first else {
+            return
+        }
+        var data: Data
         do {
-            let data = try JSONEncoder().encode(WatchProtocolChatMessage(
-                id: post.id,
-                timestamp: post.timestamp,
-                user: user,
-                userColor: userColor,
-                segments: post.segments.filter { $0.text != nil }.map { $0.text! }
-            ))
-            sendMessageToWatch(name: WatchMessage.chatMessage.rawValue, data: data)
+            data = try JSONEncoder().encode(post)
         } catch {
             logger.info("watch: Chat message send failed")
+            return
         }
+        sendMessageToWatch(name: WatchMessage.chatMessage.rawValue,
+                           data: data,
+                           replyHandler: { _ in
+                               DispatchQueue.main.async {
+                                   self.isWaitingForChatPostResponseFromWatch = false
+                                   _ = self.watchChatPosts.popFirst()
+                                   self.trySendNextChatPostToWatch()
+                               }
+                           },
+                           errorHandler: { _ in
+                               DispatchQueue.main.async {
+                                   self.isWaitingForChatPostResponseFromWatch = false
+                                   self.trySendNextChatPostToWatch()
+                               }
+                           })
+        isWaitingForChatPostResponseFromWatch = true
+    }
+
+    private func sendChatMessageToWatch(post: ChatPost) {
+        enqueueWatchChatPost(post: post)
+        trySendNextChatPostToWatch()
     }
 
     private func sendPreviewToWatch(image: Data) {
@@ -4537,6 +4574,7 @@ extension Model: WCSessionDelegate {
         logger.info("watch: Reachability changed to \(isWatchReachable())")
         DispatchQueue.main.async {
             self.setLowFpsPngImage()
+            self.trySendNextChatPostToWatch()
         }
     }
 }

@@ -27,7 +27,6 @@ struct ChatPost: Identifiable {
 
 class Model: NSObject, ObservableObject {
     @Published var chatPosts = Deque<ChatPost>()
-    private var chatPostId = 0
     @Published var speedAndTotal = noValue
     @Published var audioLevel: Float = -160.0
     @Published var preview: UIImage?
@@ -48,12 +47,14 @@ class Model: NSObject, ObservableObject {
         }
         let message = try JSONDecoder().decode(WatchProtocolChatMessage.self, from: data)
         DispatchQueue.main.async {
-            self.chatPosts.prepend(ChatPost(id: self.chatPostId,
+            guard !self.chatPosts.contains(where: { $0.id == message.id }) else {
+                return
+            }
+            self.chatPosts.prepend(ChatPost(id: message.id,
                                             user: message.user,
                                             userColor: message.userColor.color(),
                                             segments: message.segments.map { ChatPostSegment(text: $0) },
                                             timestamp: message.timestamp))
-            self.chatPostId += 1
             if self.chatPosts.count > 10 {
                 _ = self.chatPosts.popLast()
             }
@@ -101,8 +102,6 @@ extension Model: WCSessionDelegate {
         for entry in message {
             do {
                 switch WatchMessage(rawValue: entry.key) {
-                case .chatMessage:
-                    try handleChatMessage(value: entry.value)
                 case .speedAndTotal:
                     try handleSpeedAndTotal(value: entry.value)
                 case .audioLevel:
@@ -112,6 +111,24 @@ extension Model: WCSessionDelegate {
                 }
             } catch {}
         }
+    }
+
+    func session(
+        _: WCSession,
+        didReceiveMessage message: [String: Any],
+        replyHandler: ([String: Any]) -> Void
+    ) {
+        for entry in message {
+            do {
+                switch WatchMessage(rawValue: entry.key) {
+                case .chatMessage:
+                    try handleChatMessage(value: entry.value)
+                default:
+                    print("Unknown message type \(entry.key)")
+                }
+            } catch {}
+        }
+        replyHandler([:])
     }
 
     func session(_: WCSession, didReceive file: WCSessionFile) {
