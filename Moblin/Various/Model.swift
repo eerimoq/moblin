@@ -2962,7 +2962,8 @@ final class Model: NSObject, ObservableObject {
             timestamp: post.timestamp,
             user: user,
             userColor: userColor,
-            segments: post.segments.filter { $0.text != nil }.map { $0.text! }
+            segments: post.segments
+                .map { WatchProtocolChatSegment(text: $0.text, url: $0.url?.absoluteString) }
         )
         watchChatPosts.append(post)
         if watchChatPosts.count > maximumNumberOfWatchChatMessages {

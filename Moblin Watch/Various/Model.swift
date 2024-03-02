@@ -68,6 +68,13 @@ class Model: NSObject, ObservableObject {
         }
     }
 
+    private func makeUrl(url: String?) -> URL? {
+        guard let url else {
+            return nil
+        }
+        return URL(string: url)
+    }
+
     private func handleChatMessage(_ message: [String: Any]) throws {
         guard let data = message["data"] as? Data else {
             return
@@ -80,7 +87,10 @@ class Model: NSObject, ObservableObject {
             self.chatPosts.prepend(ChatPost(id: message.id,
                                             user: message.user,
                                             userColor: message.userColor.color(),
-                                            segments: message.segments.map { ChatPostSegment(text: $0) },
+                                            segments: message.segments.map { ChatPostSegment(
+                                                text: $0.text,
+                                                url: self.makeUrl(url: $0.url)
+                                            ) },
                                             timestamp: message.timestamp))
             if self.chatPosts.count > maximumNumberOfWatchChatMessages {
                 _ = self.chatPosts.popLast()

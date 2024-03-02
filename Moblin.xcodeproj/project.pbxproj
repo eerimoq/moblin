@@ -38,6 +38,7 @@
 		031C15C52B9340FB00BA967D /* AudioLevelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031C15C32B9340FB00BA967D /* AudioLevelView.swift */; };
 		031C15C62B9341F400BA967D /* StreamOverlayIconAndTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBA12AAD824600B718B6 /* StreamOverlayIconAndTextView.swift */; };
 		031C15C82B93425200BA967D /* StreamOverlayTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB9F2AAD823900B718B6 /* StreamOverlayTextView.swift */; };
+		031C15CD2B938DD800BA967D /* CacheAsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D445E12AE5966B00A0F6E9 /* CacheAsyncImage.swift */; };
 		031CCE2D2ACA76CF00CB5D46 /* NoiseReductionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031CCE2C2ACA76CF00CB5D46 /* NoiseReductionEffect.swift */; };
 		031F91EB2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F91EA2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift */; };
 		0320D8762AED36860030418F /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 0320D8752AED36860030418F /* WrappingHStack */; };
@@ -1011,6 +1012,7 @@
 				031C15C12B9340DE00BA967D /* View */,
 				03A707B72B8ED466003BB7BE /* WatchProtocol.swift */,
 				03B373FC2A9F35EF0028DDD5 /* CommonUtils.swift */,
+				03D445E12AE5966B00A0F6E9 /* CacheAsyncImage.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -1206,7 +1208,6 @@
 				034D2EC12B351715003C6D14 /* RecordingsStorage.swift */,
 				03831D512AD90AB5008D26CC /* MoblinSettingsUrl.swift */,
 				03487F252B334B63003D9ED9 /* StreamingHistory.swift */,
-				03D445E12AE5966B00A0F6E9 /* CacheAsyncImage.swift */,
 				03BE50492B3EB59A004720AF /* IpMonitor.swift */,
 				03279CE62B4CD245006CEA5A /* Location.swift */,
 				03A707BF2B8F0FAE003BB7BE /* Utils.swift */,
@@ -1656,6 +1657,7 @@
 				031C15C82B93425200BA967D /* StreamOverlayTextView.swift in Sources */,
 				03A707BD2B8F0F61003BB7BE /* CommonUtils.swift in Sources */,
 				03ECDF602B8E738A00BD920E /* Model.swift in Sources */,
+				031C15CD2B938DD800BA967D /* CacheAsyncImage.swift in Sources */,
 				031C15C52B9340FB00BA967D /* AudioLevelView.swift in Sources */,
 				03B89D9A2B92DDA80022EAE7 /* ChatView.swift in Sources */,
 				03ECDF4B2B8E4E5F00BD920E /* MainView.swift in Sources */,

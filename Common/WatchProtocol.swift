@@ -8,13 +8,18 @@ enum WatchMessage: String {
     case settings
 }
 
+struct WatchProtocolChatSegment: Codable {
+    var text: String?
+    var url: String?
+}
+
 // periphery:ignore
 struct WatchProtocolChatMessage: Codable {
     var id: Int
     var timestamp: String
     var user: String
     var userColor: WatchProtocolColor
-    var segments: [String]
+    var segments: [WatchProtocolChatSegment]
 }
 
 // periphery:ignore
