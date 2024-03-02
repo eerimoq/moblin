@@ -8,6 +8,14 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.185.0", date: "2024-03-02", changes: [
+        "• Watch companion app.",
+        "  • Configurable chat font size.",
+        "    • Configure in phone app: Settings → Watch → Chat",
+        "  • Show disconnected icon overlay when disconnected from phone.",
+        "  • Show at most 5 chat messages per second.",
+        "    • Chat messages will be discarded when received at higher pace.",
+    ]),
     Version(version: "0.184.0", date: "2024-03-01", changes: [
         "• Apple Watch companion app with preview and chat. 💡 mikeful and others",
         "  • Preview updates at 1 FPS.",
