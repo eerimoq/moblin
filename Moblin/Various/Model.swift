@@ -234,7 +234,7 @@ final class Model: NSObject, ObservableObject {
     private var subscriptions = Set<AnyCancellable>()
     @Published var uptime = noValue
     @Published var srtlaConnectionStatistics = noValue
-    @Published var audioLevel: Float = -160.0
+    @Published var audioLevel: Float = defaultAudioLevel
     @Published var numberOfAudioChannels: Int = 0
     var settings = Settings()
     @Published var digitalClock = noValue
@@ -2965,7 +2965,7 @@ final class Model: NSObject, ObservableObject {
             segments: post.segments.filter { $0.text != nil }.map { $0.text! }
         )
         watchChatPosts.append(post)
-        if watchChatPosts.count > 10 {
+        if watchChatPosts.count > maximumNumberOfWatchChatMessages {
             _ = watchChatPosts.popFirst()
         }
     }
@@ -2986,13 +2986,13 @@ final class Model: NSObject, ObservableObject {
         sendMessageToWatch(type: WatchMessage.chatMessage.rawValue,
                            data: data,
                            replyHandler: { _ in
-                               DispatchQueue.main.async {
+                               DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                                    _ = self.watchChatPosts.popFirst()
                                    self.handleSendChatMessageComplete()
                                }
                            },
                            errorHandler: { error in
-                               DispatchQueue.main.async {
+                               DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                                    logger.info("watch: Send chat message error: \(error)")
                                    self.handleSendChatMessageComplete()
                                }
@@ -3015,7 +3015,7 @@ final class Model: NSObject, ObservableObject {
             return
         }
         guard !isWaitingForPreviewResponseFromWatch else {
-            logger.debug("watch: Discarding preview. Previous transfer not completed.")
+            logger.info("watch: Discarding preview. Previous transfer not completed.")
             return
         }
         var image = image

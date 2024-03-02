@@ -11,12 +11,18 @@ struct PreviewView: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(maxWidth: .infinity)
                     .padding([.bottom], 3)
-            } else {
+            }
+            if model.showPreviewDisconnected {
                 VStack {
                     Spacer()
                     HStack {
                         Spacer()
-                        Image(systemName: "tv.slash")
+                        Image(systemName: "cable.connector.slash")
+                            .font(.title)
+                            .padding(5)
+                            .foregroundColor(.white)
+                            .background(Color(white: 0, opacity: 0.6))
+                            .cornerRadius(5)
                         Spacer()
                     }
                     Spacer()

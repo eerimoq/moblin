@@ -4,6 +4,7 @@ import SwiftUI
 
 let firstReconnectTime = 7.0
 let buttonSize: CGFloat = 40
+let maximumNumberOfWatchChatMessages = 10
 
 func nextReconnectTime(_ reconnectTime: Double) -> Double {
     return min(reconnectTime * 1.3, 60)

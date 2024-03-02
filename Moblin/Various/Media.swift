@@ -28,7 +28,7 @@ final class Media: NSObject {
     private var srtSpeed: Int64 = 0
     private var srtConnectedObservation: NSKeyValueObservation?
     private var rtmpStreamName = ""
-    private var currentAudioLevel: Float = -160.0
+    private var currentAudioLevel: Float = defaultAudioLevel
     private var numberOfAudioChannels: Int = 0
     private var audioCapturePresentationTimestamp: Double = 0
     private var videoCapturePresentationTimestamp: Double = 0

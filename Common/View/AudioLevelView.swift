@@ -5,6 +5,7 @@ private let clippingThresholdDb: Float = -1.0
 private let redThresholdDb: Float = -8.5
 private let yellowThresholdDb: Float = -20
 private let zeroThresholdDb: Float = -60
+let defaultAudioLevel: Float = -160.0
 
 // Approx 60 * 0.3 = 20
 private let maxBars = "||||||||||||||||||||"

@@ -3,6 +3,8 @@ import Foundation
 import SwiftUI
 import WatchConnectivity
 
+private let previewTimeout = 5.0
+
 struct ChatPostSegment: Identifiable {
     var id = UUID()
     var text: String?
@@ -29,9 +31,10 @@ class Model: NSObject, ObservableObject {
     @Published var chatPosts = Deque<ChatPost>()
     @Published var speedAndTotal = noValue
     private var latestSpeedAndTotalDate = Date()
-    @Published var audioLevel: Float = -160.0
+    @Published var audioLevel: Float = defaultAudioLevel
     private var latestAudioLevel = Date()
     @Published var preview: UIImage?
+    @Published var showPreviewDisconnected = true
     private var latestPreviewDate = Date()
     private var previewTransfer = Data()
     private var nextPreviewTransferId: Int64 = -1
@@ -54,14 +57,14 @@ class Model: NSObject, ObservableObject {
 
     private func updatePreview() {
         let now = Date()
-        if latestPreviewDate + 10 < now, preview != nil {
-            preview = nil
+        if latestPreviewDate + previewTimeout < now, !showPreviewDisconnected {
+            showPreviewDisconnected = true
         }
-        if latestSpeedAndTotalDate + 10 < now, speedAndTotal != noValue {
+        if latestSpeedAndTotalDate + previewTimeout < now, speedAndTotal != noValue {
             speedAndTotal = noValue
         }
-        if latestAudioLevel + 10 < now, audioLevel != -160.0 {
-            audioLevel = -160.0
+        if latestAudioLevel + previewTimeout < now, audioLevel != defaultAudioLevel {
+            audioLevel = defaultAudioLevel
         }
     }
 
@@ -79,7 +82,7 @@ class Model: NSObject, ObservableObject {
                                             userColor: message.userColor.color(),
                                             segments: message.segments.map { ChatPostSegment(text: $0) },
                                             timestamp: message.timestamp))
-            if self.chatPosts.count > 10 {
+            if self.chatPosts.count > maximumNumberOfWatchChatMessages {
                 _ = self.chatPosts.popLast()
             }
         }
@@ -137,6 +140,7 @@ class Model: NSObject, ObservableObject {
             }
             if isLast {
                 self.preview = UIImage(data: self.previewTransfer)
+                self.showPreviewDisconnected = false
                 self.latestPreviewDate = Date()
                 self.nextPreviewTransferId = -1
             }
