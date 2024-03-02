@@ -151,6 +151,10 @@
 		03B374072AA0EA650028DDD5 /* MovieEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374062AA0EA650028DDD5 /* MovieEffect.swift */; };
 		03B374092AA0EA700028DDD5 /* ImageEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374082AA0EA700028DDD5 /* ImageEffect.swift */; };
 		03B374132AA277570028DDD5 /* Srtla.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374122AA277570028DDD5 /* Srtla.swift */; };
+		03B89D8F2B92DB290022EAE7 /* AboutSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B89D8E2B92DB290022EAE7 /* AboutSettingsView.swift */; };
+		03B89D912B92DB9E0022EAE7 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B89D902B92DB9E0022EAE7 /* SettingsView.swift */; };
+		03B89D972B92DD670022EAE7 /* PreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B89D962B92DD670022EAE7 /* PreviewView.swift */; };
+		03B89D9A2B92DDA80022EAE7 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B89D992B92DDA80022EAE7 /* ChatView.swift */; };
 		03BBAE9A2B2EB4FD0033D425 /* StreamChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BBAE992B2EB4FD0033D425 /* StreamChatSettingsView.swift */; };
 		03BC115D2AE4BD7B00C38FC4 /* Bttv.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC115C2AE4BD7B00C38FC4 /* Bttv.swift */; };
 		03BC11602AE4BD9200C38FC4 /* Ffz.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC115F2AE4BD9200C38FC4 /* Ffz.swift */; };
@@ -184,7 +188,7 @@
 		03ECDF4B2B8E4E5F00BD920E /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECDF4A2B8E4E5F00BD920E /* MainView.swift */; };
 		03ECDF4D2B8E4E6000BD920E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03ECDF4C2B8E4E6000BD920E /* Assets.xcassets */; };
 		03ECDF502B8E4E6000BD920E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03ECDF4F2B8E4E6000BD920E /* Preview Assets.xcassets */; };
-		03ECDF532B8E4E6000BD920E /* MoblinWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 03ECDF462B8E4E5E00BD920E /* MoblinWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		03ECDF532B8E4E6000BD920E /* Moblin.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 03ECDF462B8E4E5E00BD920E /* Moblin.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		03ECDF5D2B8E5F0B00BD920E /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 03ECDF5C2B8E5F0B00BD920E /* WrappingHStack */; };
 		03ECDF602B8E738A00BD920E /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECDF5F2B8E738A00BD920E /* Model.swift */; };
 		03EF34B42B1AFBB600A19221 /* AfreecaTvChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EF34B32B1AFBB600A19221 /* AfreecaTvChat.swift */; };
@@ -216,7 +220,7 @@
 			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
 			dstSubfolderSpec = 16;
 			files = (
-				03ECDF532B8E4E6000BD920E /* MoblinWatch.app in Embed Watch Content */,
+				03ECDF532B8E4E6000BD920E /* Moblin.app in Embed Watch Content */,
 			);
 			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -361,6 +365,10 @@
 		03B374062AA0EA650028DDD5 /* MovieEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieEffect.swift; sourceTree = "<group>"; };
 		03B374082AA0EA700028DDD5 /* ImageEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEffect.swift; sourceTree = "<group>"; };
 		03B374122AA277570028DDD5 /* Srtla.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Srtla.swift; sourceTree = "<group>"; };
+		03B89D8E2B92DB290022EAE7 /* AboutSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutSettingsView.swift; sourceTree = "<group>"; };
+		03B89D902B92DB9E0022EAE7 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		03B89D962B92DD670022EAE7 /* PreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewView.swift; sourceTree = "<group>"; };
+		03B89D992B92DDA80022EAE7 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		03BBAE952B2E5FD20033D425 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		03BBAE992B2EB4FD0033D425 /* StreamChatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamChatSettingsView.swift; sourceTree = "<group>"; };
 		03BC115C2AE4BD7B00C38FC4 /* Bttv.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bttv.swift; sourceTree = "<group>"; };
@@ -391,7 +399,7 @@
 		03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomSwitchToSettingsView.swift; sourceTree = "<group>"; };
 		03E95AE32ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapScreenToFocusSettingsView.swift; sourceTree = "<group>"; };
 		03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserEffect.swift; sourceTree = "<group>"; };
-		03ECDF462B8E4E5E00BD920E /* MoblinWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MoblinWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		03ECDF462B8E4E5E00BD920E /* Moblin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Moblin.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		03ECDF482B8E4E5F00BD920E /* MoblinWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinWatchApp.swift; sourceTree = "<group>"; };
 		03ECDF4A2B8E4E5F00BD920E /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		03ECDF4C2B8E4E6000BD920E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -697,7 +705,7 @@
 			isa = PBXGroup;
 			children = (
 				035E9E332A9A02D6009D4F5A /* Moblin.app */,
-				03ECDF462B8E4E5E00BD920E /* MoblinWatch.app */,
+				03ECDF462B8E4E5E00BD920E /* Moblin.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1094,6 +1102,39 @@
 			path = VideoEffects;
 			sourceTree = "<group>";
 		};
+		03B89D932B92DBE60022EAE7 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				03B89D952B92DBF40022EAE7 /* About */,
+				03B89D902B92DB9E0022EAE7 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		03B89D952B92DBF40022EAE7 /* About */ = {
+			isa = PBXGroup;
+			children = (
+				03B89D8E2B92DB290022EAE7 /* AboutSettingsView.swift */,
+			);
+			path = About;
+			sourceTree = "<group>";
+		};
+		03B89D9B2B92DEF90022EAE7 /* Preview */ = {
+			isa = PBXGroup;
+			children = (
+				03B89D962B92DD670022EAE7 /* PreviewView.swift */,
+			);
+			path = Preview;
+			sourceTree = "<group>";
+		};
+		03B89D9C2B92DF000022EAE7 /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				03B89D992B92DDA80022EAE7 /* ChatView.swift */,
+			);
+			path = Chat;
+			sourceTree = "<group>";
+		};
 		03BBAE972B2EB4CE0033D425 /* Chat */ = {
 			isa = PBXGroup;
 			children = (
@@ -1218,6 +1259,9 @@
 		03ECDF632B8E797200BD920E /* View */ = {
 			isa = PBXGroup;
 			children = (
+				03B89D9C2B92DF000022EAE7 /* Chat */,
+				03B89D9B2B92DEF90022EAE7 /* Preview */,
+				03B89D932B92DBE60022EAE7 /* Settings */,
 				03ECDF4A2B8E4E5F00BD920E /* MainView.swift */,
 			);
 			path = View;
@@ -1308,7 +1352,7 @@
 				03A707B02B8EBE4D003BB7BE /* Collections */,
 			);
 			productName = "MoblinWatch Watch App";
-			productReference = 03ECDF462B8E4E5E00BD920E /* MoblinWatch.app */;
+			productReference = 03ECDF462B8E4E5E00BD920E /* Moblin.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -1579,9 +1623,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03B89D912B92DB9E0022EAE7 /* SettingsView.swift in Sources */,
+				03B89D972B92DD670022EAE7 /* PreviewView.swift in Sources */,
 				03A707BD2B8F0F61003BB7BE /* CommonUtils.swift in Sources */,
 				03ECDF602B8E738A00BD920E /* Model.swift in Sources */,
+				03B89D9A2B92DDA80022EAE7 /* ChatView.swift in Sources */,
 				03ECDF4B2B8E4E5F00BD920E /* MainView.swift in Sources */,
+				03B89D8F2B92DB290022EAE7 /* AboutSettingsView.swift in Sources */,
 				03ECDF492B8E4E5F00BD920E /* MoblinWatchApp.swift in Sources */,
 				03A707B92B8ED466003BB7BE /* WatchProtocol.swift in Sources */,
 			);
@@ -1868,7 +1916,7 @@
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 0.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs.Watch;
-				PRODUCT_NAME = MoblinWatch;
+				PRODUCT_NAME = Moblin;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
@@ -1906,7 +1954,7 @@
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 0.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs.Watch;
-				PRODUCT_NAME = MoblinWatch;
+				PRODUCT_NAME = Moblin;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;

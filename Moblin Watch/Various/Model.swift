@@ -82,8 +82,10 @@ class Model: NSObject, ObservableObject {
     }
 
     private func handlePreview(_ message: [String: Any]) throws {
-        guard let isFirst = message["isFirst"] as? Bool, let isLast = message["isLast"] as? Bool,
-              let id = message["id"] as? Int64, let data = message["data"] as? Data
+        guard let isFirst = message["isFirst"] as? Bool,
+              let isLast = message["isLast"] as? Bool,
+              let id = message["id"] as? Int64,
+              let data = message["data"] as? Data
         else {
             return
         }
@@ -132,8 +134,6 @@ extension Model: WCSessionDelegate {
                 try handleSpeedAndTotal(message)
             case .audioLevel:
                 try handleAudioLevel(message)
-            case .preview:
-                try handlePreview(message)
             default:
                 print("Unknown message type \(type)")
             }
@@ -152,6 +152,8 @@ extension Model: WCSessionDelegate {
             switch WatchMessage(rawValue: type) {
             case .chatMessage:
                 try handleChatMessage(message)
+            case .preview:
+                try handlePreview(message)
             default:
                 print("Unknown message type \(type)")
             }

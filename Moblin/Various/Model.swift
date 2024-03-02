@@ -258,6 +258,7 @@ final class Model: NSObject, ObservableObject {
     @Published var chatPostsTotal: Int = 0
     private var watchChatPosts: Deque<WatchProtocolChatMessage> = []
     private var isWaitingForChatPostResponseFromWatch = false
+    private var isWaitingForPreviewResponseFromWatch = false
     private var nextWatchPreviewId: Int64 = 1
     private var chatSpeedTicks = 0
     @Published var numberOfViewers = noValue
@@ -3008,6 +3009,10 @@ final class Model: NSObject, ObservableObject {
         guard isWatchReachable() else {
             return
         }
+        guard !isWaitingForPreviewResponseFromWatch else {
+            logger.debug("watch: Discarding preview. Previous transfer not completed.")
+            return
+        }
         var image = image
         var isFirst = true
         var isLast = false
@@ -3017,14 +3022,32 @@ final class Model: NSObject, ObservableObject {
             if image.isEmpty {
                 isLast = true
             }
+            let isLastLocal = isLast
             WCSession.default.sendMessage(
-                ["type": WatchMessage.preview.rawValue, "isFirst": isFirst, "isLast": isLast,
-                 "id": nextWatchPreviewId, "data": chunk],
-                replyHandler: nil
+                ["type": WatchMessage.preview.rawValue,
+                 "isFirst": isFirst,
+                 "isLast": isLast,
+                 "id": nextWatchPreviewId,
+                 "data": chunk],
+                replyHandler: { _ in
+                    DispatchQueue.main.async {
+                        if isLastLocal {
+                            self.isWaitingForPreviewResponseFromWatch = false
+                        }
+                    }
+                },
+                errorHandler: { _ in
+                    DispatchQueue.main.async {
+                        if isLastLocal {
+                            self.isWaitingForPreviewResponseFromWatch = false
+                        }
+                    }
+                }
             )
             isFirst = false
             nextWatchPreviewId += 1
         }
+        isWaitingForPreviewResponseFromWatch = true
     }
 
     func setLowFpsPngImage() {
@@ -4559,7 +4582,7 @@ extension Model: WCSessionDelegate {
         activationDidCompleteWith activationState: WCSessionActivationState,
         error _: Error?
     ) {
-        logger.info("watch: \(activationState)")
+        logger.debug("watch: \(activationState)")
         switch activationState {
         case .activated:
             DispatchQueue.main.async {
@@ -4571,15 +4594,15 @@ extension Model: WCSessionDelegate {
     }
 
     func sessionDidBecomeInactive(_: WCSession) {
-        logger.info("watch: Session inactive")
+        logger.debug("watch: Session inactive")
     }
 
     func sessionDidDeactivate(_: WCSession) {
-        logger.info("watch: Session deactive")
+        logger.debug("watch: Session deactive")
     }
 
     func sessionReachabilityDidChange(_: WCSession) {
-        logger.info("watch: Reachability changed to \(isWatchReachable())")
+        logger.debug("watch: Reachability changed to \(isWatchReachable())")
         DispatchQueue.main.async {
             self.setLowFpsPngImage()
             self.trySendNextChatPostToWatch()
