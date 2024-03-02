@@ -12,7 +12,7 @@ private let maxBars = "||||||||||||||||||||"
 struct AudioLevelView: View {
     var showBar: Bool
     var level: Float
-    var channels: Int? = nil
+    var channels: Int?
 
     private func bars(count: Float) -> Substring {
         let barCount = Int(count.rounded(.toNearestOrAwayFromZero))
