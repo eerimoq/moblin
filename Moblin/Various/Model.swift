@@ -2986,18 +2986,22 @@ final class Model: NSObject, ObservableObject {
                            data: data,
                            replyHandler: { _ in
                                DispatchQueue.main.async {
-                                   self.isWaitingForChatPostResponseFromWatch = false
                                    _ = self.watchChatPosts.popFirst()
-                                   self.trySendNextChatPostToWatch()
+                                   self.handleSendChatMessageComplete()
                                }
                            },
-                           errorHandler: { _ in
+                           errorHandler: { error in
                                DispatchQueue.main.async {
-                                   self.isWaitingForChatPostResponseFromWatch = false
-                                   self.trySendNextChatPostToWatch()
+                                   logger.info("watch: Send chat message error: \(error)")
+                                   self.handleSendChatMessageComplete()
                                }
                            })
         isWaitingForChatPostResponseFromWatch = true
+    }
+
+    private func handleSendChatMessageComplete() {
+        isWaitingForChatPostResponseFromWatch = false
+        trySendNextChatPostToWatch()
     }
 
     private func sendChatMessageToWatch(post: ChatPost) {
@@ -3031,16 +3035,13 @@ final class Model: NSObject, ObservableObject {
                  "data": chunk],
                 replyHandler: { _ in
                     DispatchQueue.main.async {
-                        if isLastLocal {
-                            self.isWaitingForPreviewResponseFromWatch = false
-                        }
+                        self.handleSendPreviewComplete(isLast: isLastLocal)
                     }
                 },
-                errorHandler: { _ in
+                errorHandler: { error in
                     DispatchQueue.main.async {
-                        if isLastLocal {
-                            self.isWaitingForPreviewResponseFromWatch = false
-                        }
+                        logger.info("watch: Send preview chunk error: \(error)")
+                        self.handleSendPreviewComplete(isLast: isLastLocal)
                     }
                 }
             )
@@ -3048,6 +3049,12 @@ final class Model: NSObject, ObservableObject {
             nextWatchPreviewId += 1
         }
         isWaitingForPreviewResponseFromWatch = true
+    }
+
+    private func handleSendPreviewComplete(isLast: Bool) {
+        if isLast {
+            isWaitingForPreviewResponseFromWatch = false
+        }
     }
 
     func setLowFpsPngImage() {

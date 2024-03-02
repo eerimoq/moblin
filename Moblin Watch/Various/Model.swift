@@ -28,8 +28,11 @@ struct ChatPost: Identifiable {
 class Model: NSObject, ObservableObject {
     @Published var chatPosts = Deque<ChatPost>()
     @Published var speedAndTotal = noValue
+    private var latestSpeedAndTotalDate = Date()
     @Published var audioLevel: Float = -160.0
+    private var latestAudioLevel = Date()
     @Published var preview: UIImage?
+    private var latestPreviewDate = Date()
     private var previewTransfer = Data()
     private var nextPreviewTransferId: Int64 = -1
 
@@ -38,8 +41,26 @@ class Model: NSObject, ObservableObject {
             let session = WCSession.default
             session.delegate = self
             session.activate()
-        } else {
-            print("Not good!")
+        }
+        setupPeriodicTimers()
+    }
+
+    private func setupPeriodicTimers() {
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
+            self.updatePreview()
+        })
+    }
+
+    private func updatePreview() {
+        let now = Date()
+        if latestPreviewDate + 10 < now, preview != nil {
+            preview = nil
+        }
+        if latestSpeedAndTotalDate + 10 < now, speedAndTotal != noValue {
+            speedAndTotal = noValue
+        }
+        if latestAudioLevel + 10 < now, audioLevel != -160.0 {
+            audioLevel = -160.0
         }
     }
 
@@ -69,6 +90,7 @@ class Model: NSObject, ObservableObject {
         }
         DispatchQueue.main.async {
             self.speedAndTotal = speedAndTotal
+            self.latestSpeedAndTotalDate = Date()
         }
     }
 
@@ -78,6 +100,7 @@ class Model: NSObject, ObservableObject {
         }
         DispatchQueue.main.async {
             self.audioLevel = audioLevel
+            self.latestAudioLevel = Date()
         }
     }
 
@@ -97,6 +120,7 @@ class Model: NSObject, ObservableObject {
                 self.previewTransfer += data
                 if isLast {
                     self.preview = UIImage(data: self.previewTransfer)
+                    self.latestPreviewDate = Date()
                     self.nextPreviewTransferId = -1
                 } else {
                     self.nextPreviewTransferId += 1
