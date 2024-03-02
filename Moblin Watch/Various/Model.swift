@@ -104,7 +104,7 @@ class Model: NSObject, ObservableObject {
             self.latestAudioLevel = Date()
         }
     }
-    
+
     private func handleSettings(_ message: [String: Any]) throws {
         guard let settings = message["data"] as? Data else {
             return

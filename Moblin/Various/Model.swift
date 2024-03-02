@@ -3062,10 +3062,9 @@ final class Model: NSObject, ObservableObject {
         do {
             let settings = try JSONEncoder().encode(database.watch)
             sendMessageToWatch(type: WatchMessage.settings.rawValue, data: settings)
-        } catch {
-        }
+        } catch {}
     }
-    
+
     func setLowFpsImage() {
         media.setLowFpsImage(enabled: isWatchReachable())
     }
