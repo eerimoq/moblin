@@ -11,6 +11,7 @@ struct ChatView: View {
     var body: some View {
         if model.chatPosts.isEmpty {
             Text("Chat is empty.")
+                .font(.system(size: fontSize()))
         } else {
             ForEach(model.chatPosts) { post in
                 WrappingHStack(
