@@ -35,5 +35,8 @@ struct WatchChatSettingsView: View {
             model.store()
         }
         .navigationTitle("Chat")
+        .toolbar {
+            SettingsToolbar()
+        }
     }
 }
