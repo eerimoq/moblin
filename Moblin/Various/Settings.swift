@@ -2353,5 +2353,9 @@ final class Settings {
             realDatabase.watch = .init()
             store()
         }
+        if realDatabase.watch!.chat.timestampEnabled == nil {
+            realDatabase.watch!.chat.timestampEnabled = true
+            store()
+        }
     }
 }

@@ -20,8 +20,10 @@ struct ChatView: View {
                     verticalSpacing: 0,
                     fitContentWidth: true
                 ) {
-                    Text(post.timestamp + " ")
-                        .foregroundColor(.gray)
+                    if model.settings.chat.timestampEnabled! {
+                        Text(post.timestamp + " ")
+                            .foregroundColor(.gray)
+                    }
                     Text(post.user)
                         .foregroundColor(post.userColor)
                     Text(": ")

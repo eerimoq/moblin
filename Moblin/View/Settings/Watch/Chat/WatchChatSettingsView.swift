@@ -27,6 +27,14 @@ struct WatchChatSettingsView: View {
                     Text(String(Int(fontSize)))
                         .frame(width: 25)
                 }
+                Toggle(isOn: Binding(get: {
+                    model.database.watch!.chat.timestampEnabled!
+                }, set: { value in
+                    model.database.watch!.chat.timestampEnabled = value
+                    model.store()
+                })) {
+                    Text("Timestamp")
+                }
             } header: {
                 Text("General")
             }
