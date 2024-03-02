@@ -5,6 +5,7 @@ enum WatchMessage: String {
     case speedAndTotal
     case audioLevel
     case preview
+    case settings
 }
 
 // periphery:ignore
@@ -21,4 +22,12 @@ struct WatchProtocolColor: Codable {
     var red: Int
     var green: Int
     var blue: Int
+}
+
+class WatchSettingsChat: Codable {
+    var fontSize: Float = 17.0
+}
+
+class WatchSettings: Codable {
+    var chat: WatchSettingsChat = .init()
 }

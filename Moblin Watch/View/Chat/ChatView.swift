@@ -4,6 +4,10 @@ import WrappingHStack
 struct ChatView: View {
     @EnvironmentObject var model: Model
 
+    private func fontSize() -> CGFloat {
+        return CGFloat(model.settings.chat.fontSize)
+    }
+
     var body: some View {
         if model.chatPosts.isEmpty {
             Text("Chat is empty.")
@@ -27,6 +31,7 @@ struct ChatView: View {
                     }
                 }
             }
+            .font(.system(size: fontSize()))
         }
     }
 }

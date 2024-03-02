@@ -9,7 +9,7 @@ struct Version {
 // swiftlint:disable line_length
 private let versions = [
     Version(version: "0.184.0", date: "2024-03-01", changes: [
-        "• Apple Watch companion app with preview and chat.",
+        "• Apple Watch companion app with preview and chat. 💡 mikeful and others",
         "  • Preview updates at 1 FPS.",
         "  • Up to 10 chat messages. No emotes, not even as text if image on phone.",
     ]),

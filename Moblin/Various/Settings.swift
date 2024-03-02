@@ -1524,6 +1524,7 @@ class Database: Codable {
     var mirrorFrontCameraOnStream: Bool? = false
     var streamButtonColor: RgbColor? = defaultStreamButtonColor
     var location: SettingsLocation? = .init()
+    var watch: WatchSettings? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -2346,6 +2347,10 @@ final class Settings {
         }
         for stream in database.streams where stream.srt.adaptiveBitrateEnabled == nil {
             stream.srt.adaptiveBitrateEnabled = stream.adaptiveBitrate!
+            store()
+        }
+        if realDatabase.watch == nil {
+            realDatabase.watch = .init()
             store()
         }
     }

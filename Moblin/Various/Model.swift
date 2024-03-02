@@ -2074,6 +2074,7 @@ final class Model: NSObject, ObservableObject {
 
     func store() {
         settings.store()
+        sendSettingsToWatch()
     }
 
     func networkInterfaceNamesUpdated() {
@@ -3057,6 +3058,14 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
+    private func sendSettingsToWatch() {
+        do {
+            let settings = try JSONEncoder().encode(database.watch)
+            sendMessageToWatch(type: WatchMessage.settings.rawValue, data: settings)
+        } catch {
+        }
+    }
+    
     func setLowFpsImage() {
         media.setLowFpsImage(enabled: isWatchReachable())
     }
@@ -4613,6 +4622,7 @@ extension Model: WCSessionDelegate {
         DispatchQueue.main.async {
             self.setLowFpsImage()
             self.trySendNextChatPostToWatch()
+            self.sendSettingsToWatch()
         }
     }
 }

@@ -35,6 +35,7 @@ class Model: NSObject, ObservableObject {
     private var latestPreviewDate = Date()
     private var previewTransfer = Data()
     private var nextPreviewTransferId: Int64 = -1
+    var settings = WatchSettings()
 
     func setup() {
         if WCSession.isSupported() {
@@ -103,6 +104,17 @@ class Model: NSObject, ObservableObject {
             self.latestAudioLevel = Date()
         }
     }
+    
+    private func handleSettings(_ message: [String: Any]) throws {
+        guard let settings = message["data"] as? Data else {
+            return
+        }
+        DispatchQueue.main.async {
+            do {
+                self.settings = try JSONDecoder().decode(WatchSettings.self, from: settings)
+            } catch {}
+        }
+    }
 
     private func handlePreview(_ message: [String: Any]) throws {
         guard let isFirst = message["isFirst"] as? Bool,
@@ -160,6 +172,8 @@ extension Model: WCSessionDelegate {
                 try handleSpeedAndTotal(message)
             case .audioLevel:
                 try handleAudioLevel(message)
+            case .settings:
+                try handleSettings(message)
             default:
                 print("Unknown message type \(type)")
             }

@@ -136,6 +136,11 @@ struct SettingsView: View {
                 }
             }
             Section {
+                NavigationLink(destination: WatchSettingsView()) {
+                    Text("Watch")
+                }
+            }
+            Section {
                 NavigationLink(destination: HelpAndSupportSettingsView()) {
                     Text("Help & support")
                 }
