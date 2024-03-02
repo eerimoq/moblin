@@ -118,13 +118,15 @@ class Model: NSObject, ObservableObject {
                 self.previewTransfer = data
             } else if id == self.nextPreviewTransferId {
                 self.previewTransfer += data
-                if isLast {
-                    self.preview = UIImage(data: self.previewTransfer)
-                    self.latestPreviewDate = Date()
-                    self.nextPreviewTransferId = -1
-                } else {
-                    self.nextPreviewTransferId += 1
-                }
+                self.nextPreviewTransferId += 1
+            } else {
+                self.nextPreviewTransferId = -1
+                return
+            }
+            if isLast {
+                self.preview = UIImage(data: self.previewTransfer)
+                self.latestPreviewDate = Date()
+                self.nextPreviewTransferId = -1
             }
         }
     }

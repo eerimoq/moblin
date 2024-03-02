@@ -10,7 +10,7 @@ struct Version {
 private let versions = [
     Version(version: "0.184.0", date: "2024-03-01", changes: [
         "• Apple Watch companion app with preview and chat.",
-        "  • Preview updates once every 2 seconds.",
+        "  • Preview updates at 1 FPS.",
         "  • Up to 10 chat messages. No emotes, not even as text if image on phone.",
     ]),
     Version(version: "0.183.0", date: "2024-02-26", changes: [

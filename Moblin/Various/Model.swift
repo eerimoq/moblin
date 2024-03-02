@@ -1110,7 +1110,7 @@ final class Model: NSObject, ObservableObject {
         media.onRtmpDisconnected = handleRtmpDisconnected
         media.onAudioMuteChange = updateAudioLevel
         media.onVideoDeviceInUseByAnotherClient = handleVideoDeviceInUseByAnotherClient
-        media.onLowFpsPngImage = handleLowFpsPngImage
+        media.onLowFpsImage = handleLowFpsImage
         setupAudioSession()
         setMic()
         if let cameraDevice = preferredCamera(position: .back) {
@@ -2335,7 +2335,7 @@ final class Model: NSObject, ObservableObject {
         updateTorch()
         updateMute()
         videoView.attachStream(media.getNetStream())
-        setLowFpsPngImage()
+        setLowFpsImage()
     }
 
     private func showPreset(preset: SettingsZoomPreset) -> Bool {
@@ -3040,7 +3040,7 @@ final class Model: NSObject, ObservableObject {
                 },
                 errorHandler: { error in
                     DispatchQueue.main.async {
-                        logger.info("watch: Send preview chunk error: \(error)")
+                        logger.debug("watch: Send preview chunk error: \(error)")
                         self.handleSendPreviewComplete(isLast: isLastLocal)
                     }
                 }
@@ -3057,8 +3057,8 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    func setLowFpsPngImage() {
-        media.setLowFpsPngImage(enabled: isWatchReachable())
+    func setLowFpsImage() {
+        media.setLowFpsImage(enabled: isWatchReachable())
     }
 
     func toggleDrawOnStream() {
@@ -3983,7 +3983,7 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    private func handleLowFpsPngImage(image: Data?) {
+    private func handleLowFpsImage(image: Data?) {
         guard let image else {
             return
         }
@@ -4593,7 +4593,7 @@ extension Model: WCSessionDelegate {
         switch activationState {
         case .activated:
             DispatchQueue.main.async {
-                self.setLowFpsPngImage()
+                self.setLowFpsImage()
             }
         default:
             break
@@ -4611,7 +4611,7 @@ extension Model: WCSessionDelegate {
     func sessionReachabilityDidChange(_: WCSession) {
         logger.debug("watch: Reachability changed to \(isWatchReachable())")
         DispatchQueue.main.async {
-            self.setLowFpsPngImage()
+            self.setLowFpsImage()
             self.trySendNextChatPostToWatch()
         }
     }

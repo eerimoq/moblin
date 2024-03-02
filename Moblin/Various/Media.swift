@@ -42,7 +42,7 @@ final class Media: NSObject {
     var onRtmpDisconnected: ((_ message: String) -> Void)!
     var onAudioMuteChange: (() -> Void)!
     var onVideoDeviceInUseByAnotherClient: (() -> Void)!
-    var onLowFpsPngImage: ((Data?) -> Void)!
+    var onLowFpsImage: ((Data?) -> Void)!
     private var adaptiveBitrate: AdaptiveBitrate?
     private var failedVideoEffect: String?
 
@@ -387,8 +387,8 @@ final class Media: NSObject {
         _ = netStream.unregisterVideoEffect(effect)
     }
 
-    func setLowFpsPngImage(enabled: Bool) {
-        netStream.setLowFpsPngImage(enabled: enabled)
+    func setLowFpsImage(enabled: Bool) {
+        netStream.setLowFpsImage(enabled: enabled)
     }
 
     func setVideoSessionPreset(preset: AVCaptureSession.Preset) {
@@ -656,8 +656,8 @@ extension Media: NetStreamDelegate {
         }
     }
 
-    func streamVideo(_: HaishinKit.NetStream, lowFpsPngImage: Data?) {
-        onLowFpsPngImage(lowFpsPngImage)
+    func streamVideo(_: HaishinKit.NetStream, lowFpsImage: Data?) {
+        onLowFpsImage(lowFpsImage)
     }
 
     func stream(_: HaishinKit.NetStream, recorderErrorOccured error: HaishinKit.IORecorder.Error) {
