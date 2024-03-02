@@ -8,4 +8,3 @@ struct ControlView: View {
         }
     }
 }
-
