@@ -34,6 +34,10 @@
 		031C15B52B93326500BA967D /* WatchChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031C15B42B93326500BA967D /* WatchChatSettingsView.swift */; };
 		031C15B92B93339C00BA967D /* WatchSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031C15B82B93339C00BA967D /* WatchSettingsView.swift */; };
 		031C15C02B9336D700BA967D /* ControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031C15BE2B9336D200BA967D /* ControlView.swift */; };
+		031C15C42B9340FB00BA967D /* AudioLevelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031C15C32B9340FB00BA967D /* AudioLevelView.swift */; };
+		031C15C52B9340FB00BA967D /* AudioLevelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031C15C32B9340FB00BA967D /* AudioLevelView.swift */; };
+		031C15C62B9341F400BA967D /* StreamOverlayIconAndTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBA12AAD824600B718B6 /* StreamOverlayIconAndTextView.swift */; };
+		031C15C82B93425200BA967D /* StreamOverlayTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB9F2AAD823900B718B6 /* StreamOverlayTextView.swift */; };
 		031CCE2D2ACA76CF00CB5D46 /* NoiseReductionEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031CCE2C2ACA76CF00CB5D46 /* NoiseReductionEffect.swift */; };
 		031F91EB2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F91EA2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift */; };
 		0320D8762AED36860030418F /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 0320D8752AED36860030418F /* WrappingHStack */; };
@@ -255,6 +259,7 @@
 		031C15B42B93326500BA967D /* WatchChatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchChatSettingsView.swift; sourceTree = "<group>"; };
 		031C15B82B93339C00BA967D /* WatchSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSettingsView.swift; sourceTree = "<group>"; };
 		031C15BE2B9336D200BA967D /* ControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlView.swift; sourceTree = "<group>"; };
+		031C15C32B9340FB00BA967D /* AudioLevelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioLevelView.swift; sourceTree = "<group>"; };
 		031CCE2C2ACA76CF00CB5D46 /* NoiseReductionEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoiseReductionEffect.swift; sourceTree = "<group>"; };
 		031F91EA2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardObsRemoteControlSettingsView.swift; sourceTree = "<group>"; };
 		032469A82AE1B3040097B18B /* StreamSrtSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamSrtSettingsView.swift; sourceTree = "<group>"; };
@@ -613,6 +618,16 @@
 			path = Control;
 			sourceTree = "<group>";
 		};
+		031C15C12B9340DE00BA967D /* View */ = {
+			isa = PBXGroup;
+			children = (
+				0379BB9F2AAD823900B718B6 /* StreamOverlayTextView.swift */,
+				0379BBA12AAD824600B718B6 /* StreamOverlayIconAndTextView.swift */,
+				031C15C32B9340FB00BA967D /* AudioLevelView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		032469A72AE1B2D80097B18B /* Srt */ = {
 			isa = PBXGroup;
 			children = (
@@ -894,10 +909,8 @@
 			isa = PBXGroup;
 			children = (
 				030947C22A9C0496003FC387 /* StreamOverlayChatView.swift */,
-				0379BBA12AAD824600B718B6 /* StreamOverlayIconAndTextView.swift */,
 				0379BB9B2AAD819800B718B6 /* StreamOverlayLeftView.swift */,
 				0379BB9D2AAD81AA00B718B6 /* StreamOverlayRightView.swift */,
-				0379BB9F2AAD823900B718B6 /* StreamOverlayTextView.swift */,
 				03F5A8E42AD6FF8E00F354D2 /* StreamOverlayDebugView.swift */,
 			);
 			path = Overlay;
@@ -995,6 +1008,7 @@
 		03A707B62B8ED43D003BB7BE /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				031C15C12B9340DE00BA967D /* View */,
 				03A707B72B8ED466003BB7BE /* WatchProtocol.swift */,
 				03B373FC2A9F35EF0028DDD5 /* CommonUtils.swift */,
 			);
@@ -1520,6 +1534,7 @@
 				0364662E2B456B3B005AB9FA /* StreamWizardCustonRtmpSettingsView.swift in Sources */,
 				0379BBA02AAD823900B718B6 /* StreamOverlayTextView.swift in Sources */,
 				03B374072AA0EA650028DDD5 /* MovieEffect.swift in Sources */,
+				031C15C42B9340FB00BA967D /* AudioLevelView.swift in Sources */,
 				03BE504A2B3EB59A004720AF /* IpMonitor.swift in Sources */,
 				03ACC7C72B7C94AA003B6CD6 /* LocationSettingsView.swift in Sources */,
 				03507F6B2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift in Sources */,
@@ -1638,12 +1653,15 @@
 			files = (
 				031C15C02B9336D700BA967D /* ControlView.swift in Sources */,
 				03B89D972B92DD670022EAE7 /* PreviewView.swift in Sources */,
+				031C15C82B93425200BA967D /* StreamOverlayTextView.swift in Sources */,
 				03A707BD2B8F0F61003BB7BE /* CommonUtils.swift in Sources */,
 				03ECDF602B8E738A00BD920E /* Model.swift in Sources */,
+				031C15C52B9340FB00BA967D /* AudioLevelView.swift in Sources */,
 				03B89D9A2B92DDA80022EAE7 /* ChatView.swift in Sources */,
 				03ECDF4B2B8E4E5F00BD920E /* MainView.swift in Sources */,
 				03ECDF492B8E4E5F00BD920E /* MoblinWatchApp.swift in Sources */,
 				03A707B92B8ED466003BB7BE /* WatchProtocol.swift in Sources */,
+				031C15C62B9341F400BA967D /* StreamOverlayIconAndTextView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
