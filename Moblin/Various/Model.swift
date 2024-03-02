@@ -238,6 +238,7 @@ final class Model: NSObject, ObservableObject {
     var settings = Settings()
     @Published var digitalClock = noValue
     private var selectedSceneId = UUID()
+    var twitchAuth: TwitchAuth!
     private var twitchChat: TwitchChatMoblin!
     private var twitchPubSub: TwitchPubSub?
     private var kickPusher: KickPusher?
@@ -1124,6 +1125,7 @@ final class Model: NSObject, ObservableObject {
         frontZoomPresetId = database.zoom.front[0].id
         videoView.videoGravity = .resizeAspect
         updateDigitalClock(now: Date())
+        twitchAuth = TwitchAuth(model: self)
         twitchChat = TwitchChatMoblin(model: self)
         reloadStream()
         resetSelectedScene()

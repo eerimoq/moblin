@@ -3,12 +3,10 @@ import SwiftUI
 struct StreamTwitchSettingsView: View {
     var model: Model
     var stream: SettingsStream
-    var twitchAuth: TwitchAuth
 
     init(model: Model, stream: SettingsStream) {
         self.model = model
         self.stream = stream
-        twitchAuth = TwitchAuth(model: model)
     }
 
     func submitChannelName(value: String) {
@@ -31,7 +29,7 @@ struct StreamTwitchSettingsView: View {
         VStack {
             Button(
                 action: {
-                    self.twitchAuth.startAuthentication(stream: stream)
+                    self.model.twitchAuth.startAuthentication(stream: stream)
                 },
                 label: {
                     Text(stream.twitchAccessToken != nil ? "Connected" : "Connect with Twitch")

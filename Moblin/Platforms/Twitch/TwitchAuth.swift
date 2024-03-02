@@ -25,8 +25,37 @@ class TwitchAuth {
 
     let authorizationUrl = "https://id.twitch.tv/oauth2/authorize"
     let twitchClientId = "ndtuabi5wzhedsj53ol9swcnobmti7"
-    let twitchScopes =
-        "user:edit+user:read:chat+user:write:chat+moderator:manage:announcements+channel:bot+user:bot"
+    let twitchScopes = [
+        "user:edit",
+        "user:read:chat",
+        "user:write:chat",
+        "moderator:manage:announcements",
+        "user:manage:whispers",
+        "moderator:manage:shoutouts",
+        "moderator:read:shoutouts",
+        "moderator:read:chat_settings",
+        "moderator:manage:chat_settings",
+        "moderator:manage:banned_users",
+        "clips:edit",
+        "channel:manage:raids",
+        "channel:read:polls",
+        "channel:manage:polls",
+        "channel:manage:moderators",
+        "channel:read:hype_train",
+        "channel:edit:commercial",
+        "channel:manage:broadcast",
+        "channel:read:ads",
+        "channel:manage:ads",
+        
+        // irc and pubsub
+        "channel:bot",
+        "channel:moderate",
+        "chat:edit",
+        "chat:read",
+        "user:bot",
+        "whispers:read",
+        "whispers:edit"
+    ]
     let twitchRedirectURI = "https://nofuture2077.github.io/moblin/auth/"
 
     init(model: Model) {
@@ -41,7 +70,7 @@ class TwitchAuth {
         }
 
         let urlString = "\(authorizationUrl)?client_id=\(twitchClientId)&redirect_uri=\(encodedRedirectURI)" +
-            "&response_type=token&scope=\(twitchScopes)"
+        "&response_type=token&scope=\(twitchScopes.joined(separator: "+"))"
 
         if let url = URL(string: urlString) {
             let viewController = StreamTwitchSettingsViewController()
@@ -107,9 +136,25 @@ class TwitchAuth {
         )
     }
     
+    func twitchClientAnon() throws -> TwitchClient? {
+        return try TwitchClient(
+            authentication: .init(
+                oAuth: "",
+                clientID: "",
+                userID: "",
+                userLogin: ""
+            )
+        )
+    }
+    
     func ircClient(stream: SettingsStream) async throws -> TwitchIRCClient? {
         let twitchClient = try self.twitchClient(stream: stream)
         return try await twitchClient?.ircClient(IRCAuthenticationStyle.authenticated)
+    }
+    
+    func ircClientAnon(stream: SettingsStream) async throws -> TwitchIRCClient? {
+        let twitchClient = try self.twitchClientAnon()
+        return try await twitchClient?.ircClient(IRCAuthenticationStyle.anonymous)
     }
 
     func fetchUsernameAndId(
