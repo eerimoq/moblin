@@ -39,6 +39,7 @@ class Model: NSObject, ObservableObject {
     private var previewTransfer = Data()
     private var nextPreviewTransferId: Int64 = -1
     var settings = WatchSettings()
+    private var latestChatMessageDate = Date()
 
     func setup() {
         if WCSession.isSupported() {
@@ -83,9 +84,11 @@ class Model: NSObject, ObservableObject {
         guard !chatPosts.contains(where: { $0.id == message.id }) else {
             return
         }
-        if settings.chat.notificationOnMessage! {
+        let now = Date()
+        if settings.chat.notificationOnMessage! && latestChatMessageDate + 5 < now {
             WKInterfaceDevice.current().play(.notification)
         }
+        latestChatMessageDate = now
         chatPosts.prepend(ChatPost(id: message.id,
                                    user: message.user,
                                    userColor: message.userColor.color(),
