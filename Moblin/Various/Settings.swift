@@ -2357,5 +2357,9 @@ final class Settings {
             realDatabase.watch!.chat.timestampEnabled = true
             store()
         }
+        if realDatabase.watch!.chat.notificationOnMessage == nil {
+            realDatabase.watch!.chat.notificationOnMessage = false
+            store()
+        }
     }
 }

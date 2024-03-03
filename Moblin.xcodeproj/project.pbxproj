@@ -1132,10 +1132,10 @@
 			isa = PBXGroup;
 			children = (
 				03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */,
-				038F42EC2B6849D400E68752 /* LutEffect.swift */,
 				03A599192B66A94B002E7EE8 /* DrawOnStreamEffect.swift */,
 				03B374012AA0354C0028DDD5 /* GrayScaleEffect.swift */,
 				03B374082AA0EA700028DDD5 /* ImageEffect.swift */,
+				038F42EC2B6849D400E68752 /* LutEffect.swift */,
 				03B374062AA0EA650028DDD5 /* MovieEffect.swift */,
 				031CCE2C2ACA76CF00CB5D46 /* NoiseReductionEffect.swift */,
 				03085C0E2B487D950009DAB6 /* PixellateEffect.swift */,
@@ -1874,7 +1874,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.186.0;
+				MARKETING_VERSION = 0.187.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1922,7 +1922,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.186.0;
+				MARKETING_VERSION = 0.187.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

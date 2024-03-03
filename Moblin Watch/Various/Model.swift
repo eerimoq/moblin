@@ -80,21 +80,22 @@ class Model: NSObject, ObservableObject {
             return
         }
         let message = try JSONDecoder().decode(WatchProtocolChatMessage.self, from: data)
-        DispatchQueue.main.async {
-            guard !self.chatPosts.contains(where: { $0.id == message.id }) else {
-                return
-            }
-            self.chatPosts.prepend(ChatPost(id: message.id,
-                                            user: message.user,
-                                            userColor: message.userColor.color(),
-                                            segments: message.segments.map { ChatPostSegment(
-                                                text: $0.text,
-                                                url: self.makeUrl(url: $0.url)
-                                            ) },
-                                            timestamp: message.timestamp))
-            if self.chatPosts.count > maximumNumberOfWatchChatMessages {
-                _ = self.chatPosts.popLast()
-            }
+        guard !chatPosts.contains(where: { $0.id == message.id }) else {
+            return
+        }
+        if settings.chat.notificationOnMessage! {
+            WKInterfaceDevice.current().play(.notification)
+        }
+        chatPosts.prepend(ChatPost(id: message.id,
+                                   user: message.user,
+                                   userColor: message.userColor.color(),
+                                   segments: message.segments.map { ChatPostSegment(
+                                       text: $0.text,
+                                       url: makeUrl(url: $0.url)
+                                   ) },
+                                   timestamp: message.timestamp))
+        if chatPosts.count > maximumNumberOfWatchChatMessages {
+            _ = chatPosts.popLast()
         }
     }
 
@@ -102,31 +103,25 @@ class Model: NSObject, ObservableObject {
         guard let speedAndTotal = message["data"] as? String else {
             return
         }
-        DispatchQueue.main.async {
-            self.speedAndTotal = speedAndTotal
-            self.latestSpeedAndTotalDate = Date()
-        }
+        self.speedAndTotal = speedAndTotal
+        latestSpeedAndTotalDate = Date()
     }
 
     private func handleAudioLevel(_ message: [String: Any]) throws {
         guard let audioLevel = message["data"] as? Float else {
             return
         }
-        DispatchQueue.main.async {
-            self.audioLevel = audioLevel
-            self.latestAudioLevel = Date()
-        }
+        self.audioLevel = audioLevel
+        latestAudioLevel = Date()
     }
 
     private func handleSettings(_ message: [String: Any]) throws {
         guard let settings = message["data"] as? Data else {
             return
         }
-        DispatchQueue.main.async {
-            do {
-                self.settings = try JSONDecoder().decode(WatchSettings.self, from: settings)
-            } catch {}
-        }
+        do {
+            self.settings = try JSONDecoder().decode(WatchSettings.self, from: settings)
+        } catch {}
     }
 
     private func handlePreview(_ message: [String: Any]) throws {
@@ -137,23 +132,21 @@ class Model: NSObject, ObservableObject {
         else {
             return
         }
-        DispatchQueue.main.async {
-            if isFirst {
-                self.nextPreviewTransferId = id + 1
-                self.previewTransfer = data
-            } else if id == self.nextPreviewTransferId {
-                self.previewTransfer += data
-                self.nextPreviewTransferId += 1
-            } else {
-                self.nextPreviewTransferId = -1
-                return
-            }
-            if isLast {
-                self.preview = UIImage(data: self.previewTransfer)
-                self.showPreviewDisconnected = false
-                self.latestPreviewDate = Date()
-                self.nextPreviewTransferId = -1
-            }
+        if isFirst {
+            nextPreviewTransferId = id + 1
+            previewTransfer = data
+        } else if id == nextPreviewTransferId {
+            previewTransfer += data
+            nextPreviewTransferId += 1
+        } else {
+            nextPreviewTransferId = -1
+            return
+        }
+        if isLast {
+            preview = UIImage(data: previewTransfer)
+            showPreviewDisconnected = false
+            latestPreviewDate = Date()
+            nextPreviewTransferId = -1
         }
     }
 }
@@ -180,16 +173,18 @@ extension Model: WCSessionDelegate {
         guard let type = message["type"] as? String else {
             return
         }
-        do {
-            switch WatchMessage(rawValue: type) {
-            case .speedAndTotal:
-                try handleSpeedAndTotal(message)
-            case .settings:
-                try handleSettings(message)
-            default:
-                print("Unknown message type \(type)")
-            }
-        } catch {}
+        DispatchQueue.main.async {
+            do {
+                switch WatchMessage(rawValue: type) {
+                case .speedAndTotal:
+                    try self.handleSpeedAndTotal(message)
+                case .settings:
+                    try self.handleSettings(message)
+                default:
+                    print("Unknown message type \(type)")
+                }
+            } catch {}
+        }
     }
 
     func session(
@@ -200,18 +195,20 @@ extension Model: WCSessionDelegate {
         guard let type = message["type"] as? String else {
             return
         }
-        do {
-            switch WatchMessage(rawValue: type) {
-            case .chatMessage:
-                try handleChatMessage(message)
-            case .preview:
-                try handlePreview(message)
-            case .audioLevel:
-                try handleAudioLevel(message)
-            default:
-                print("Unknown message type \(type)")
-            }
-        } catch {}
+        DispatchQueue.main.async {
+            do {
+                switch WatchMessage(rawValue: type) {
+                case .chatMessage:
+                    try self.handleChatMessage(message)
+                case .preview:
+                    try self.handlePreview(message)
+                case .audioLevel:
+                    try self.handleAudioLevel(message)
+                default:
+                    print("Unknown message type \(type)")
+                }
+            } catch {}
+        }
         replyHandler([:])
     }
 }

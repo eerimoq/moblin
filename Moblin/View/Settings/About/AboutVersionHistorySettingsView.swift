@@ -8,6 +8,12 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.187.0", date: "2024-03-03", changes: [
+        "• Watch companion app.",
+        "  • Improved robustness.",
+        "  • Toggle to enable/disable notification as sound and vibration on each chat message.",
+        "    • App must be in foreground for it to work.",
+    ]),
     Version(version: "0.186.0", date: "2024-03-02", changes: [
         "• Watch companion app.",
         "  • Chat emotes (not all image formats are supported).",

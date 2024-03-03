@@ -35,6 +35,14 @@ struct WatchChatSettingsView: View {
                 })) {
                     Text("Timestamp")
                 }
+                Toggle(isOn: Binding(get: {
+                    model.database.watch!.chat.notificationOnMessage!
+                }, set: { value in
+                    model.database.watch!.chat.notificationOnMessage = value
+                    model.store()
+                })) {
+                    Text("Notification on message")
+                }
             } header: {
                 Text("General")
             }
