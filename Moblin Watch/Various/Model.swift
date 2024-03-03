@@ -85,7 +85,7 @@ class Model: NSObject, ObservableObject {
             return
         }
         let now = Date()
-        if settings.chat.notificationOnMessage! && latestChatMessageDate + 5 < now {
+        if settings.chat.notificationOnMessage! && latestChatMessageDate + 30 < now {
             WKInterfaceDevice.current().play(.notification)
         }
         latestChatMessageDate = now
