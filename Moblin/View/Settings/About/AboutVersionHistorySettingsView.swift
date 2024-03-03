@@ -8,6 +8,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.188.0", date: "2024-03-03", changes: [
+        "• List of usernames to ignore chat messages from. 💡 ichrisIRL",
+        "  • Settings → Display → Chat → Usernames to ignore",
+        "• Watch companion app.",
+        "  • Only play chat message notification if no messages has been received in 30 seconds. 💡 JohannesLiv",
+        "• Make Mac app lists mics again (and use?).",
+    ]),
     Version(version: "0.187.0", date: "2024-03-03", changes: [
         "• Watch companion app.",
         "  • Improved robustness.",
