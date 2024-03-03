@@ -1845,6 +1845,9 @@ private func addScenesToGameController(database: Database) {
 }
 
 private func getDefaultMic() -> SettingsMic {
+    if ProcessInfo().isiOSAppOnMac {
+        return .bottom
+    }
     let session = AVAudioSession.sharedInstance()
     for inputPort in session.availableInputs ?? [] {
         if inputPort.portType != .builtInMic {
