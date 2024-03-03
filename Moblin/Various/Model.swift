@@ -3229,6 +3229,9 @@ final class Model: NSObject, ObservableObject {
         isAnnouncement: Bool,
         isFirstMessage: Bool
     ) {
+        if database.chat.usernamesToIgnore!.contains(where: { user == $0.value }) {
+            return
+        }
         let post = ChatPost(
             id: chatPostId,
             user: user,

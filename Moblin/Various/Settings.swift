@@ -1153,6 +1153,11 @@ class RgbColor: Codable {
     }
 }
 
+class SettingsChatUsername: Identifiable, Codable {
+    var id = UUID()
+    var value: String = ""
+}
+
 class SettingsChat: Codable {
     var fontSize: Float = 17.0
     var usernameColor: RgbColor = .init(red: 255, green: 163, blue: 0)
@@ -1174,6 +1179,7 @@ class SettingsChat: Codable {
     var maximumAgeEnabled: Bool? = false
     var meInUsernameColor: Bool? = true
     var enabled: Bool? = true
+    var usernamesToIgnore: [SettingsChatUsername]? = []
 }
 
 enum SettingsMic: String, Codable, CaseIterable {
@@ -2359,6 +2365,10 @@ final class Settings {
         }
         if realDatabase.watch!.chat.notificationOnMessage == nil {
             realDatabase.watch!.chat.notificationOnMessage = false
+            store()
+        }
+        if realDatabase.chat.usernamesToIgnore == nil {
+            realDatabase.chat.usernamesToIgnore = []
             store()
         }
     }
