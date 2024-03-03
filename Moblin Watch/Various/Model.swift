@@ -184,8 +184,6 @@ extension Model: WCSessionDelegate {
             switch WatchMessage(rawValue: type) {
             case .speedAndTotal:
                 try handleSpeedAndTotal(message)
-            case .audioLevel:
-                try handleAudioLevel(message)
             case .settings:
                 try handleSettings(message)
             default:
@@ -208,6 +206,8 @@ extension Model: WCSessionDelegate {
                 try handleChatMessage(message)
             case .preview:
                 try handlePreview(message)
+            case .audioLevel:
+                try handleAudioLevel(message)
             default:
                 print("Unknown message type \(type)")
             }

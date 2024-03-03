@@ -8,6 +8,7 @@ enum WatchMessage: String {
     case settings
 }
 
+// periphery:ignore
 struct WatchProtocolChatSegment: Codable {
     var text: String?
     var url: String?
@@ -27,13 +28,4 @@ struct WatchProtocolColor: Codable {
     var red: Int
     var green: Int
     var blue: Int
-}
-
-class WatchSettingsChat: Codable {
-    var fontSize: Float = 17.0
-    var timestampEnabled: Bool? = true
-}
-
-class WatchSettings: Codable {
-    var chat: WatchSettingsChat = .init()
 }

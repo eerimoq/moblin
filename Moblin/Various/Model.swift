@@ -259,6 +259,7 @@ final class Model: NSObject, ObservableObject {
     private var watchChatPosts: Deque<WatchProtocolChatMessage> = []
     private var isWaitingForChatPostResponseFromWatch = false
     private var isWaitingForPreviewResponseFromWatch = false
+    private var isWaitingForAudioLevelResponseFromWatch = false
     private var nextWatchPreviewId: Int64 = 1
     private var chatSpeedTicks = 0
     @Published var numberOfViewers = noValue
@@ -2941,10 +2942,28 @@ final class Model: NSObject, ObservableObject {
         guard isWatchReachable() else {
             return
         }
-        sendMessageToWatch(type: WatchMessage.audioLevel.rawValue, data: audioLevel)
+        guard !isWaitingForAudioLevelResponseFromWatch else {
+            return
+        }
+        sendMessageToWatch(type: WatchMessage.audioLevel.rawValue,
+                           data: audioLevel,
+                           replyHandler: { _ in
+                               DispatchQueue.main.async {
+                                   self.isWaitingForAudioLevelResponseFromWatch = false
+                               }
+                           },
+                           errorHandler: { _ in
+                               DispatchQueue.main.async {
+                                   self.isWaitingForAudioLevelResponseFromWatch = false
+                               }
+                           })
+        isWaitingForAudioLevelResponseFromWatch = true
     }
 
     private func enqueueWatchChatPost(post: ChatPost) {
+        guard WCSession.default.isWatchAppInstalled else {
+            return
+        }
         guard let user = post.user else {
             return
         }
@@ -3019,6 +3038,7 @@ final class Model: NSObject, ObservableObject {
             logger.info("watch: Discarding preview. Previous transfer not completed.")
             return
         }
+        // logger.info("watch: \(image.count)")
         var image = image
         var isFirst = true
         var isLast = false
@@ -3040,9 +3060,9 @@ final class Model: NSObject, ObservableObject {
                         self.handleSendPreviewComplete(isLast: isLastLocal)
                     }
                 },
-                errorHandler: { error in
+                errorHandler: { _ in
                     DispatchQueue.main.async {
-                        logger.debug("watch: Send preview chunk error: \(error)")
+                        // logger.debug("watch: Send preview chunk \(isLastLocal) error: \(error)")
                         self.handleSendPreviewComplete(isLast: isLastLocal)
                     }
                 }
@@ -3054,12 +3074,16 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func handleSendPreviewComplete(isLast: Bool) {
+        // logger.debug("watch: Is last \(isLast)")
         if isLast {
             isWaitingForPreviewResponseFromWatch = false
         }
     }
 
     private func sendSettingsToWatch() {
+        guard isWatchReachable() else {
+            return
+        }
         do {
             let settings = try JSONEncoder().encode(database.watch)
             sendMessageToWatch(type: WatchMessage.settings.rawValue, data: settings)
@@ -4623,6 +4647,7 @@ extension Model: WCSessionDelegate {
             self.setLowFpsImage()
             self.trySendNextChatPostToWatch()
             self.sendSettingsToWatch()
+            self.sendAudioLevelToWatch()
         }
     }
 }

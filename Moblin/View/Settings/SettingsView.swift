@@ -137,7 +137,10 @@ struct SettingsView: View {
             }
             Section {
                 NavigationLink(destination: WatchSettingsView()) {
-                    Text("Watch")
+                    HStack {
+                        Image(systemName: "applewatch")
+                        Text("Watch")
+                    }
                 }
             }
             Section {
