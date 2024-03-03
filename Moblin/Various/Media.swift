@@ -77,7 +77,7 @@ final class Media: NSObject {
             netStream = srtStream
         }
         netStream.delegate = self
-        netStream.videoOrientation = .landscapeRight
+        netStream.setVideoOrientation(value: .landscapeRight)
         attachAudio(device: AVCaptureDevice.default(for: .audio))
     }
 
@@ -370,11 +370,11 @@ final class Media: NSObject {
     }
 
     func setTorch(on: Bool) {
-        netStream.torch = on
+        netStream.setTorch(value: on)
     }
 
     func setMute(on: Bool) {
-        netStream.hasAudio = !on
+        netStream.setHasAudio(value: !on)
     }
 
     func registerEffect(_ effect: VideoEffect) {
@@ -392,7 +392,7 @@ final class Media: NSObject {
     }
 
     func setVideoSessionPreset(preset: AVCaptureSession.Preset) {
-        netStream.sessionPreset = preset
+        netStream.setSessionPreset(preset: preset)
     }
 
     func setVideoSize(size: VideoSize) {
@@ -405,7 +405,7 @@ final class Media: NSObject {
     }
 
     func setStreamFPS(fps: Int) {
-        netStream.frameRate = Double(fps)
+        netStream.setFrameRate(value: Double(fps))
     }
 
     func setColorSpace(colorSpace: AVCaptureColorSpace, onComplete: @escaping () -> Void) {
