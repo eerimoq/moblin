@@ -7,7 +7,7 @@ A free iOS app for IRL streaming. Mainly targeting `Twitch`_, but can
 stream to `YouTube`_, `Kick`_, `Facebook`_ and `OBS Studio`_ as well
 (and probably more).
 
-|iphone| x |watch|
+|iphone|_ |watch|_
 
 Discord: https://discord.gg/nt3UwHqbMM
 
@@ -380,9 +380,11 @@ Similar software
 .. _Settings.swift: https://github.com/eerimoq/moblin/blob/main/Moblin/Various/Settings.swift
 
 .. |app-store| image:: https://github.com/eerimoq/moblin/raw/main/docs/app-store.svg
-  :width: 150
+   :width: 150
 .. _app-store: https://apps.apple.com/us/app/moblin/id6466745933
 
 .. |iphone| image:: https://github.com/eerimoq/moblin/raw/main/docs/iphone15-pro-max-screenshot.png
+   :width: 150
 
 .. |watch| image:: https://github.com/eerimoq/moblin/raw/main/docs/watch-series-9-screenshot.png
+   :width: 150
