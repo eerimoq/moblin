@@ -11,7 +11,7 @@ struct ChatPostSegment: Identifiable {
     var url: URL?
 }
 
-struct ChatPost: Identifiable {
+struct ChatPost: Identifiable, Hashable {
     static func == (lhs: ChatPost, rhs: ChatPost) -> Bool {
         return lhs.id == rhs.id
     }
@@ -21,7 +21,7 @@ struct ChatPost: Identifiable {
     }
 
     var id: Int
-    var user: String
+    var user: String?
     var userColor: Color
     var segments: [ChatPostSegment]
     var timestamp: String
@@ -40,6 +40,8 @@ class Model: NSObject, ObservableObject {
     private var nextPreviewTransferId: Int64 = -1
     var settings = WatchSettings()
     private var latestChatMessageDate = Date()
+    private var numberOfRedLinesInChat = 0
+    private var redLineId = -1
 
     func setup() {
         if WCSession.isSupported() {
@@ -86,6 +88,13 @@ class Model: NSObject, ObservableObject {
         }
         let now = Date()
         if settings.chat.notificationOnMessage! && latestChatMessageDate + 30 < now {
+            redLineId -= 1
+            chatPosts.prepend(ChatPost(id: redLineId,
+                                       user: nil,
+                                       userColor: .red,
+                                       segments: [],
+                                       timestamp: message.timestamp))
+            numberOfRedLinesInChat += 1
             WKInterfaceDevice.current().play(.notification)
         }
         latestChatMessageDate = now
@@ -97,8 +106,10 @@ class Model: NSObject, ObservableObject {
                                        url: makeUrl(url: $0.url)
                                    ) },
                                    timestamp: message.timestamp))
-        if chatPosts.count > maximumNumberOfWatchChatMessages {
-            _ = chatPosts.popLast()
+        while chatPosts.count > maximumNumberOfWatchChatMessages + numberOfRedLinesInChat {
+            if chatPosts.popLast()?.user == nil {
+                numberOfRedLinesInChat -= 1
+            }
         }
     }
 

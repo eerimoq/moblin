@@ -5,10 +5,12 @@ struct MainView: View {
 
     var body: some View {
         TabView {
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 1) {
-                    PreviewView()
-                    ChatView()
+            GeometryReader { metrics in
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 1) {
+                        PreviewView()
+                        ChatView(width: metrics.size.width)
+                    }
                 }
             }
             .ignoresSafeArea()
