@@ -5,10 +5,6 @@ private let audioLevels = [String(localized: "Bar"), String(localized: "Decibel"
 struct DisplaySettingsView: View {
     @EnvironmentObject var model: Model
 
-    var chat: SettingsChat {
-        model.database.chat
-    }
-
     private func onAudioLevelChange(type: String) {
         model.database.show.audioBar = type == String(localized: "Bar")
         model.store()
@@ -21,18 +17,6 @@ struct DisplaySettingsView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: LocalOverlaysChatSettingsView(
-                    timestampColor: chat.timestampColor.color(),
-                    usernameColor: chat.usernameColor.color(),
-                    messageColor: chat.messageColor.color(),
-                    backgroundColor: chat.backgroundColor.color(),
-                    shadowColor: chat.shadowColor.color(),
-                    height: chat.height!,
-                    width: chat.width!,
-                    fontSize: chat.fontSize
-                )) {
-                    Text("Chat")
-                }
                 NavigationLink(destination: GlobalQuickButtonsSettingsView()) {
                     Text("Quick buttons")
                 }

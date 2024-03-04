@@ -1,6 +1,7 @@
 import SwiftUI
 
 let settingsHalfWidth = 350.0
+private let iconWidth = 32.0
 
 enum SettingsLayout {
     case full
@@ -76,6 +77,10 @@ struct SettingsToolbar: ToolbarContent {
 struct SettingsView: View {
     @EnvironmentObject var model: Model
 
+    var chat: SettingsChat {
+        model.database.chat
+    }
+
     var body: some View {
         Form {
             if model.isLive {
@@ -89,33 +94,86 @@ struct SettingsView: View {
                     }
                 }
             }
+
             Section {
                 NavigationLink(destination: StreamsSettingsView()) {
-                    Text("Streams")
+                    HStack {
+                        Image(systemName: "dot.radiowaves.left.and.right")
+                            .frame(width: iconWidth)
+                        Text("Streams")
+                    }
                 }
                 NavigationLink(destination: ScenesSettingsView()) {
-                    Text("Scenes")
+                    HStack {
+                        Image(systemName: "photo.on.rectangle")
+                            .frame(width: iconWidth)
+                        Text("Scenes")
+                    }
+                }
+                NavigationLink(destination: LocalOverlaysChatSettingsView(
+                    timestampColor: chat.timestampColor.color(),
+                    usernameColor: chat.usernameColor.color(),
+                    messageColor: chat.messageColor.color(),
+                    backgroundColor: chat.backgroundColor.color(),
+                    shadowColor: chat.shadowColor.color(),
+                    height: chat.height!,
+                    width: chat.width!,
+                    fontSize: chat.fontSize
+                )) {
+                    HStack {
+                        Image(systemName: "message")
+                            .frame(width: iconWidth)
+                        Text("Chat")
+                    }
                 }
                 NavigationLink(destination: DisplaySettingsView()) {
-                    Text("Display")
+                    HStack {
+                        Image(systemName: "rectangle.inset.topright.fill")
+                            .frame(width: iconWidth)
+                        Text("Display")
+                    }
                 }
                 NavigationLink(destination: CameraSettingsView()) {
-                    Text("Camera")
+                    HStack {
+                        Image(systemName: "camera")
+                            .frame(width: iconWidth)
+                        Text("Camera")
+                    }
                 }
                 NavigationLink(destination: BitratePresetsSettingsView()) {
-                    Text("Bitrate presets")
+                    HStack {
+                        Image(systemName: "speedometer")
+                            .frame(width: iconWidth)
+                        Text("Bitrate presets")
+                    }
                 }
                 NavigationLink(destination: RtmpServerSettingsView()) {
-                    Text("RTMP server")
+                    HStack {
+                        Image(systemName: "server.rack")
+                            .frame(width: iconWidth)
+                        Text("RTMP server")
+                    }
                 }
                 NavigationLink(destination: GameControllersSettingsView()) {
-                    Text("Game controllers")
+                    HStack {
+                        Image(systemName: "gamecontroller")
+                            .frame(width: iconWidth)
+                        Text("Game controllers")
+                    }
                 }
                 NavigationLink(destination: RemoteControlSettingsView()) {
-                    Text("Remote control")
+                    HStack {
+                        Image(systemName: "appletvremote.gen1")
+                            .frame(width: iconWidth)
+                        Text("Remote control")
+                    }
                 }
                 NavigationLink(destination: LocationSettingsView()) {
-                    Text("Location")
+                    HStack {
+                        Image(systemName: "location")
+                            .frame(width: iconWidth)
+                        Text("Location")
+                    }
                 }
             }
             Section {
@@ -123,43 +181,69 @@ struct SettingsView: View {
                     HStack {
                         Image(systemName: "heart.fill")
                             .foregroundColor(.red)
+                            .frame(width: iconWidth)
                         Text("Cosmetics")
                     }
                 }
             }
             Section {
                 NavigationLink(destination: RecordingsSettingsView()) {
-                    Text("Recordings")
+                    HStack {
+                        Image(systemName: "film.stack")
+                            .frame(width: iconWidth)
+                        Text("Recordings")
+                    }
                 }
                 NavigationLink(destination: StreamingHistorySettingsView()) {
-                    Text("Streaming history")
+                    HStack {
+                        Image(systemName: "text.book.closed")
+                            .frame(width: iconWidth)
+                        Text("Streaming history")
+                    }
                 }
             }
             Section {
                 NavigationLink(destination: WatchSettingsView()) {
                     HStack {
                         Image(systemName: "applewatch")
+                            .frame(width: iconWidth)
                         Text("Watch")
                     }
                 }
             }
             Section {
                 NavigationLink(destination: HelpAndSupportSettingsView()) {
-                    Text("Help & support")
+                    HStack {
+                        Image(systemName: "questionmark.circle")
+                            .frame(width: iconWidth)
+                        Text("Help & support")
+                    }
                 }
                 NavigationLink(destination: AboutSettingsView()) {
-                    Text("About")
+                    HStack {
+                        Image(systemName: "info.circle")
+                            .frame(width: iconWidth)
+                        Text("About")
+                    }
                 }
                 NavigationLink(
                     destination: DebugSettingsView(cameraSwitchRemoveBlackish: model.database.debug!
                         .cameraSwitchRemoveBlackish!)
                 ) {
-                    Text("Debug")
+                    HStack {
+                        Image(systemName: "ladybug")
+                            .frame(width: iconWidth)
+                        Text("Debug")
+                    }
                 }
             }
             Section {
                 NavigationLink(destination: ImportExportSettingsView()) {
-                    Text("Import and export settings")
+                    HStack {
+                        Image(systemName: "gearshape")
+                            .frame(width: iconWidth)
+                        Text("Import and export settings")
+                    }
                 }
             }
             Section {
