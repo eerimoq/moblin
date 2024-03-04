@@ -7,7 +7,9 @@ A free iOS app for IRL streaming. Mainly targeting `Twitch`_, but can
 stream to `YouTube`_, `Kick`_, `Facebook`_ and `OBS Studio`_ as well
 (and probably more).
 
-.. image:: https://github.com/eerimoq/moblin/raw/main/docs/main.jpg
+.. image:: https://github.com/eerimoq/moblin/raw/main/docs/iphone15-pro-max-screenshot.png
+
+.. image:: https://github.com/eerimoq/moblin/raw/main/docs/watch-series-9-screenshot.png
 
 Discord: https://discord.gg/nt3UwHqbMM
 
