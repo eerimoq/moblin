@@ -384,7 +384,7 @@ Similar software
 .. _app-store: https://apps.apple.com/us/app/moblin/id6466745933
 
 .. |iphone| image:: https://github.com/eerimoq/moblin/raw/main/docs/iphone15-pro-max-screenshot.png
-   :width: 55%
+   :width: 80%
 
 .. |watch| image:: https://github.com/eerimoq/moblin/raw/main/docs/watch-series-9-screenshot.png
-   :width: 25%
+   :width: 15%
