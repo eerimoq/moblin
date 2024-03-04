@@ -224,6 +224,8 @@ Apple Watch companion app
 
   - Limited to 10 messages.
 
+- Watch face complication.
+
 ToDo
 ====
 
