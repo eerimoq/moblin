@@ -21,6 +21,9 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
 Features
 ========
 
+Main app
+--------
+
 - Stream using RTMP, RTMPS, SRT or SRTLA to any platform that supports
   them.
 
@@ -205,6 +208,21 @@ Features
 
   - Both 0 and 180 degrees orientation. Video always with gravity down
     (never upside down).
+
+Apple Watch companion app
+-------------------------
+
+- Stream preview.
+
+- Show audio level.
+
+- Show bitrate.
+
+- Chat.
+
+  - Not all emotes are supported.
+
+  - Limited to 10 messages.
 
 ToDo
 ====
