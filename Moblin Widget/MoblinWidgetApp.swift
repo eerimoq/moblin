@@ -28,29 +28,30 @@ struct SimpleEntry: TimelineEntry {
     let date: Date
 }
 
-struct Moblin_PreviewEntryView : View {
+struct MoblinWidgetAppEntryView : View {
     var entry: Provider.Entry
 
     var body: some View {
-        VStack {
-            Image("Icon")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 30, height: 30)
-        }
+        Image("Icon")
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(width: 30, height: 30)
+            //.widgetLabel {
+            //    Text("10")
+            //}
     }
 }
 
 @main
-struct Moblin_Preview: Widget {
-    let kind: String = "Moblin_Preview"
+struct MoblinWidgetApp: Widget {
+    let kind: String = "MoblinWidgetApp"
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
-            Moblin_PreviewEntryView(entry: entry)
+            MoblinWidgetAppEntryView(entry: entry)
                 .containerBackground(.fill.tertiary, for: .widget)
         }
         .configurationDisplayName("Moblin")
-        .description("Moblin preview.")
+        .description("Moblin widget.")
     }
 }

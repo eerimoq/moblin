@@ -87,9 +87,9 @@
 		03708D162B83C39B009C88AA /* StreamRtmpSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03708D152B83C39B009C88AA /* StreamRtmpSettingsView.swift */; };
 		0376F6F92B9511030056B3D2 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0376F6F82B9511030056B3D2 /* WidgetKit.framework */; };
 		0376F6FB2B9511030056B3D2 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0376F6FA2B9511030056B3D2 /* SwiftUI.framework */; };
-		0376F6FE2B9511030056B3D2 /* Moblin_Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0376F6FD2B9511030056B3D2 /* Moblin_Preview.swift */; };
+		0376F6FE2B9511030056B3D2 /* MoblinWidgetApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0376F6FD2B9511030056B3D2 /* MoblinWidgetApp.swift */; };
 		0376F7002B9511040056B3D2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0376F6FF2B9511040056B3D2 /* Assets.xcassets */; };
-		0376F7042B9511040056B3D2 /* Moblin PreviewExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0376F6F72B9511030056B3D2 /* Moblin PreviewExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		0376F7042B9511040056B3D2 /* MoblinWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0376F6F72B9511030056B3D2 /* MoblinWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		0379BB762AA6345400B718B6 /* ButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB752AA6345400B718B6 /* ButtonSettingsView.swift */; };
 		0379BB792AA64C9500B718B6 /* WidgetVideoEffectSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB782AA64C9500B718B6 /* WidgetVideoEffectSettingsView.swift */; };
 		0379BB7E2AA7C55000B718B6 /* ButtonImagePickerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BB7D2AA7C55000B718B6 /* ButtonImagePickerSettingsView.swift */; };
@@ -222,7 +222,7 @@
 			containerPortal = 035E9E2B2A9A02D6009D4F5A /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 0376F6F62B9511030056B3D2;
-			remoteInfo = "Moblin PreviewExtension";
+			remoteInfo = "Moblin Widget App Extension";
 		};
 		03ECDF512B8E4E6000BD920E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -240,7 +240,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				0376F7042B9511040056B3D2 /* Moblin PreviewExtension.appex in Embed Foundation Extensions */,
+				0376F7042B9511040056B3D2 /* MoblinWidget.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -333,10 +333,10 @@
 		036BE2CE2ABD4CA60048F9C5 /* KickPusher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KickPusher.swift; sourceTree = "<group>"; };
 		036BE2D12ABD518E0048F9C5 /* StreamKickSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamKickSettingsView.swift; sourceTree = "<group>"; };
 		03708D152B83C39B009C88AA /* StreamRtmpSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamRtmpSettingsView.swift; sourceTree = "<group>"; };
-		0376F6F72B9511030056B3D2 /* Moblin PreviewExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Moblin PreviewExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0376F6F72B9511030056B3D2 /* MoblinWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MoblinWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		0376F6F82B9511030056B3D2 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		0376F6FA2B9511030056B3D2 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
-		0376F6FD2B9511030056B3D2 /* Moblin_Preview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Moblin_Preview.swift; sourceTree = "<group>"; };
+		0376F6FD2B9511030056B3D2 /* MoblinWidgetApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinWidgetApp.swift; sourceTree = "<group>"; };
 		0376F6FF2B9511040056B3D2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0376F7012B9511040056B3D2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0379BB752AA6345400B718B6 /* ButtonSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonSettingsView.swift; sourceTree = "<group>"; };
@@ -782,7 +782,7 @@
 				03A707B62B8ED43D003BB7BE /* Common */,
 				035E9E352A9A02D6009D4F5A /* Moblin */,
 				03ECDF472B8E4E5F00BD920E /* Moblin Watch */,
-				0376F6FC2B9511030056B3D2 /* Moblin Preview */,
+				0376F6FC2B9511030056B3D2 /* Moblin Widget */,
 				035E9E342A9A02D6009D4F5A /* Products */,
 				035D372A2AB103E600045B92 /* Frameworks */,
 			);
@@ -793,7 +793,7 @@
 			children = (
 				035E9E332A9A02D6009D4F5A /* Moblin.app */,
 				03ECDF462B8E4E5E00BD920E /* Moblin.app */,
-				0376F6F72B9511030056B3D2 /* Moblin PreviewExtension.appex */,
+				0376F6F72B9511030056B3D2 /* MoblinWidget.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -886,14 +886,14 @@
 			path = Rtmp;
 			sourceTree = "<group>";
 		};
-		0376F6FC2B9511030056B3D2 /* Moblin Preview */ = {
+		0376F6FC2B9511030056B3D2 /* Moblin Widget */ = {
 			isa = PBXGroup;
 			children = (
-				0376F6FD2B9511030056B3D2 /* Moblin_Preview.swift */,
+				0376F6FD2B9511030056B3D2 /* MoblinWidgetApp.swift */,
 				0376F6FF2B9511040056B3D2 /* Assets.xcassets */,
 				0376F7012B9511040056B3D2 /* Info.plist */,
 			);
-			path = "Moblin Preview";
+			path = "Moblin Widget";
 			sourceTree = "<group>";
 		};
 		0379BB712AA4BFA500B718B6 /* Twitch */ = {
@@ -1424,9 +1424,9 @@
 			productReference = 035E9E332A9A02D6009D4F5A /* Moblin.app */;
 			productType = "com.apple.product-type.application";
 		};
-		0376F6F62B9511030056B3D2 /* Moblin PreviewExtension */ = {
+		0376F6F62B9511030056B3D2 /* MoblinWidget */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0376F7052B9511040056B3D2 /* Build configuration list for PBXNativeTarget "Moblin PreviewExtension" */;
+			buildConfigurationList = 0376F7052B9511040056B3D2 /* Build configuration list for PBXNativeTarget "MoblinWidget" */;
 			buildPhases = (
 				0376F6F32B9511030056B3D2 /* Sources */,
 				0376F6F42B9511030056B3D2 /* Frameworks */,
@@ -1436,9 +1436,9 @@
 			);
 			dependencies = (
 			);
-			name = "Moblin PreviewExtension";
-			productName = "Moblin PreviewExtension";
-			productReference = 0376F6F72B9511030056B3D2 /* Moblin PreviewExtension.appex */;
+			name = MoblinWidget;
+			productName = "Moblin Widget App";
+			productReference = 0376F6F72B9511030056B3D2 /* MoblinWidget.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		03ECDF452B8E4E5E00BD920E /* MoblinWatch */ = {
@@ -1530,7 +1530,7 @@
 			targets = (
 				035E9E322A9A02D6009D4F5A /* Moblin */,
 				03ECDF452B8E4E5E00BD920E /* MoblinWatch */,
-				0376F6F62B9511030056B3D2 /* Moblin PreviewExtension */,
+				0376F6F62B9511030056B3D2 /* MoblinWidget */,
 			);
 		};
 /* End PBXProject section */
@@ -1748,7 +1748,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0376F6FE2B9511030056B3D2 /* Moblin_Preview.swift in Sources */,
+				0376F6FE2B9511030056B3D2 /* MoblinWidgetApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1781,7 +1781,7 @@
 		};
 		0376F7032B9511040056B3D2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 0376F6F62B9511030056B3D2 /* Moblin PreviewExtension */;
+			target = 0376F6F62B9511030056B3D2 /* MoblinWidget */;
 			targetProxy = 0376F7022B9511040056B3D2 /* PBXContainerItemProxy */;
 		};
 		03ECDF522B8E4E6000BD920E /* PBXTargetDependency */ = {
@@ -2042,9 +2042,13 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "Moblin Preview/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Moblin Preview";
+				INFOPLIST_FILE = "Moblin Widget/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Moblin Widget";
+				INFOPLIST_KEY_NSCameraUsageDescription = Yes;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = Yes;
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = Yes;
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = Yes;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2052,8 +2056,8 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.eerimoq.Mobs.Watch.Moblin-Preview";
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs.Watch.Widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -2076,9 +2080,13 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "Moblin Preview/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Moblin Preview";
+				INFOPLIST_FILE = "Moblin Widget/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Moblin Widget";
+				INFOPLIST_KEY_NSCameraUsageDescription = Yes;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = Yes;
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = Yes;
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = Yes;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2086,8 +2094,8 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.eerimoq.Mobs.Watch.Moblin-Preview";
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs.Watch.Widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -2196,7 +2204,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0376F7052B9511040056B3D2 /* Build configuration list for PBXNativeTarget "Moblin PreviewExtension" */ = {
+		0376F7052B9511040056B3D2 /* Build configuration list for PBXNativeTarget "MoblinWidget" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0376F7062B9511040056B3D2 /* Debug */,
