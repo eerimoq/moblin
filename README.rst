@@ -10,6 +10,7 @@ stream to `YouTube`_, `Kick`_, `Facebook`_ and `OBS Studio`_ as well
 .. image:: https://github.com/eerimoq/moblin/raw/main/docs/iphone15-pro-max-screenshot.png
 
 .. image:: https://github.com/eerimoq/moblin/raw/main/docs/watch-series-9-screenshot.png
+   :width: 20%
 
 Discord: https://discord.gg/nt3UwHqbMM
 
