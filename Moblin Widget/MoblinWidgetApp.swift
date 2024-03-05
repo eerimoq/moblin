@@ -32,7 +32,7 @@ struct MoblinWidgetAppEntryView : View {
     var entry: Provider.Entry
 
     var body: some View {
-        Image("Icon")
+        Image("AppIcon")
             .resizable()
             .aspectRatio(contentMode: .fit)
             .frame(width: 30, height: 30)
