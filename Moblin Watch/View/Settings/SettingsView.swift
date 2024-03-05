@@ -8,7 +8,7 @@ struct SettingsView: View {
     var body: some View {
         Form {
             Section {
-                Text("Change settings in Moblin on host device (iPhone, iPad, ...).")
+                Text("Change settings in Moblin in iPhone/iPad.")
                 NavigationLink(
                     destination: DebugSettingsView()
                 ) {
