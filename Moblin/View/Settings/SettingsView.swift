@@ -1,7 +1,6 @@
 import SwiftUI
 
 let settingsHalfWidth = 350.0
-private let iconWidth = 32.0
 
 enum SettingsLayout {
     case full

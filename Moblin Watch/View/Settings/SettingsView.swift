@@ -1,7 +1,5 @@
 import SwiftUI
 
-private let iconWidth = 32.0
-
 struct SettingsView: View {
     @EnvironmentObject var model: Model
 

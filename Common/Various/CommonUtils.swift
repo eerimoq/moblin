@@ -2,6 +2,7 @@ import AVKit
 import MapKit
 import SwiftUI
 
+let iconWidth = 32.0
 let firstReconnectTime = 7.0
 let buttonSize: CGFloat = 40
 let maximumNumberOfWatchChatMessages = 10
