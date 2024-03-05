@@ -12,7 +12,7 @@ private let versions = [
         "• Watch companion app.",
         "  • Some logs and counters for debugging.",
         "  • Settings tab mostly for debug.",
-        "  • Tub icon.",
+        "• Tub icon.",
     ]),
     Version(version: "0.190.0", date: "2024-03-04", changes: [
         "• Icons next to text in main settings page.",
