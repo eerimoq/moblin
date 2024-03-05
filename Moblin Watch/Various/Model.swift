@@ -27,6 +27,11 @@ struct ChatPost: Identifiable, Hashable {
     var timestamp: String
 }
 
+struct LogEntry: Identifiable {
+    var id: Int
+    var message: String
+}
+
 class Model: NSObject, ObservableObject {
     @Published var chatPosts = Deque<ChatPost>()
     @Published var speedAndTotal = noValue
@@ -42,8 +47,13 @@ class Model: NSObject, ObservableObject {
     private var latestChatMessageDate = Date()
     private var numberOfRedLinesInChat = 0
     private var redLineId = -1
+    var log: Deque<LogEntry> = []
+    private var logId = 1
+    var numberOfMessagesReceived = 0
 
     func setup() {
+        logger.handler = debugLog(message:)
+        logger.debugEnabled = true
         if WCSession.isSupported() {
             let session = WCSession.default
             session.delegate = self
@@ -56,6 +66,16 @@ class Model: NSObject, ObservableObject {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             self.updatePreview()
         })
+    }
+
+    func debugLog(message: String) {
+        DispatchQueue.main.async {
+            if self.log.count > 50 {
+                self.log.removeFirst()
+            }
+            self.log.append(LogEntry(id: self.logId, message: message))
+            self.logId += 1
+        }
     }
 
     private func updatePreview() {
@@ -80,6 +100,7 @@ class Model: NSObject, ObservableObject {
 
     private func handleChatMessage(_ message: [String: Any]) throws {
         guard let data = message["data"] as? Data else {
+            logger.info("Invalid chat message message")
             return
         }
         let message = try JSONDecoder().decode(WatchProtocolChatMessage.self, from: data)
@@ -115,6 +136,7 @@ class Model: NSObject, ObservableObject {
 
     private func handleSpeedAndTotal(_ message: [String: Any]) throws {
         guard let speedAndTotal = message["data"] as? String else {
+            logger.info("Invalid speed and total message")
             return
         }
         self.speedAndTotal = speedAndTotal
@@ -123,6 +145,7 @@ class Model: NSObject, ObservableObject {
 
     private func handleAudioLevel(_ message: [String: Any]) throws {
         guard let audioLevel = message["data"] as? Float else {
+            logger.info("Invalid audio level message")
             return
         }
         self.audioLevel = audioLevel
@@ -131,6 +154,7 @@ class Model: NSObject, ObservableObject {
 
     private func handleSettings(_ message: [String: Any]) throws {
         guard let settings = message["data"] as? Data else {
+            logger.info("Invalid settings message")
             return
         }
         do {
@@ -144,6 +168,7 @@ class Model: NSObject, ObservableObject {
               let id = message["id"] as? Int64,
               let data = message["data"] as? Data
         else {
+            logger.info("Invalid preview message")
             return
         }
         if isFirst {
@@ -173,21 +198,23 @@ extension Model: WCSessionDelegate {
     ) {
         switch activationState {
         case .activated:
-            print("Connectivity activated")
+            logger.info("Connectivity activated")
         case .inactive:
-            print("Connectivity inactive")
+            logger.info("Connectivity inactive")
         case .notActivated:
-            print("Connectivity not activated")
+            logger.info("Connectivity not activated")
         default:
-            print("Connectivity unknown state")
+            logger.info("Connectivity unknown")
         }
     }
 
     func session(_: WCSession, didReceiveMessage message: [String: Any]) {
         guard let type = message["type"] as? String else {
+            logger.info("Message type missing")
             return
         }
         DispatchQueue.main.async {
+            self.numberOfMessagesReceived += 1
             do {
                 switch WatchMessage(rawValue: type) {
                 case .speedAndTotal:
@@ -195,7 +222,7 @@ extension Model: WCSessionDelegate {
                 case .settings:
                     try self.handleSettings(message)
                 default:
-                    print("Unknown message type \(type)")
+                    logger.info("Unknown message type \(type)")
                 }
             } catch {}
         }
@@ -207,9 +234,11 @@ extension Model: WCSessionDelegate {
         replyHandler: ([String: Any]) -> Void
     ) {
         guard let type = message["type"] as? String else {
+            logger.info("Message type missing")
             return
         }
         DispatchQueue.main.async {
+            self.numberOfMessagesReceived += 1
             do {
                 switch WatchMessage(rawValue: type) {
                 case .chatMessage:
@@ -219,10 +248,14 @@ extension Model: WCSessionDelegate {
                 case .audioLevel:
                     try self.handleAudioLevel(message)
                 default:
-                    print("Unknown message type \(type)")
+                    logger.info("Unknown message type \(type)")
                 }
             } catch {}
         }
         replyHandler([:])
+    }
+
+    func sessionReachabilityDidChange(_: WCSession) {
+        logger.debug("Reachability changed to \(WCSession.default.isReachable)")
     }
 }

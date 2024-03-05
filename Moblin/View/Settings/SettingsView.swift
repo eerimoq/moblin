@@ -94,7 +94,6 @@ struct SettingsView: View {
                     }
                 }
             }
-
             Section {
                 NavigationLink(destination: StreamsSettingsView()) {
                     HStack {

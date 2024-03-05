@@ -77,6 +77,10 @@
 		035E9E372A9A02D6009D4F5A /* MoblinApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035E9E362A9A02D6009D4F5A /* MoblinApp.swift */; };
 		035E9E3B2A9A02D7009D4F5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */; };
 		035E9E3E2A9A02D7009D4F5A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3D2A9A02D7009D4F5A /* Preview Assets.xcassets */; };
+		0361EA722B96D37B005923ED /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0361EA712B96D37B005923ED /* SettingsView.swift */; };
+		0361EA752B96D412005923ED /* DebugSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0361EA742B96D412005923ED /* DebugSettingsView.swift */; };
+		0361EA772B96D476005923ED /* DebugLogSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0361EA762B96D476005923ED /* DebugLogSettingsView.swift */; };
+		0361EA792B96D5BE005923ED /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0361EA782B96D5BE005923ED /* Log.swift */; };
 		036333282AAE2E5100FF1231 /* ImageStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036333272AAE2E5100FF1231 /* ImageStorage.swift */; };
 		0364304F2B2FF9F400B7C448 /* StreamWizardTwitchSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0364304E2B2FF9F400B7C448 /* StreamWizardTwitchSettingsView.swift */; };
 		0364662C2B456B25005AB9FA /* StreamWizardCustomSrtSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0364662B2B456B25005AB9FA /* StreamWizardCustomSrtSettingsView.swift */; };
@@ -325,6 +329,10 @@
 		035E9E362A9A02D6009D4F5A /* MoblinApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinApp.swift; sourceTree = "<group>"; };
 		035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		035E9E3D2A9A02D7009D4F5A /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		0361EA712B96D37B005923ED /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		0361EA742B96D412005923ED /* DebugSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSettingsView.swift; sourceTree = "<group>"; };
+		0361EA762B96D476005923ED /* DebugLogSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogSettingsView.swift; sourceTree = "<group>"; };
+		0361EA782B96D5BE005923ED /* Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
 		036333272AAE2E5100FF1231 /* ImageStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStorage.swift; sourceTree = "<group>"; };
 		0364304E2B2FF9F400B7C448 /* StreamWizardTwitchSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardTwitchSettingsView.swift; sourceTree = "<group>"; };
 		0364662B2B456B25005AB9FA /* StreamWizardCustomSrtSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardCustomSrtSettingsView.swift; sourceTree = "<group>"; };
@@ -829,6 +837,24 @@
 				035E9E3D2A9A02D7009D4F5A /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		0361EA702B96D34A005923ED /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				0361EA732B96D3ED005923ED /* Debug */,
+				0361EA712B96D37B005923ED /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		0361EA732B96D3ED005923ED /* Debug */ = {
+			isa = PBXGroup;
+			children = (
+				0361EA742B96D412005923ED /* DebugSettingsView.swift */,
+				0361EA762B96D476005923ED /* DebugLogSettingsView.swift */,
+			);
+			path = Debug;
 			sourceTree = "<group>";
 		};
 		0364304D2B2FF9D700B7C448 /* Wizard */ = {
@@ -1349,6 +1375,7 @@
 		03ECDF632B8E797200BD920E /* View */ = {
 			isa = PBXGroup;
 			children = (
+				0361EA702B96D34A005923ED /* Settings */,
 				031C15BC2B9336C700BA967D /* Control */,
 				03B89D9C2B92DF000022EAE7 /* Chat */,
 				03B89D9B2B92DEF90022EAE7 /* Preview */,
@@ -1360,6 +1387,7 @@
 		03ECDF652B8E798000BD920E /* Various */ = {
 			isa = PBXGroup;
 			children = (
+				0361EA782B96D5BE005923ED /* Log.swift */,
 				03ECDF5F2B8E738A00BD920E /* Model.swift */,
 			);
 			path = Various;
@@ -1762,13 +1790,17 @@
 				031C15C82B93425200BA967D /* StreamOverlayTextView.swift in Sources */,
 				03A707BD2B8F0F61003BB7BE /* CommonUtils.swift in Sources */,
 				03ECDF602B8E738A00BD920E /* Model.swift in Sources */,
+				0361EA792B96D5BE005923ED /* Log.swift in Sources */,
 				031C15CD2B938DD800BA967D /* CacheAsyncImage.swift in Sources */,
+				0361EA722B96D37B005923ED /* SettingsView.swift in Sources */,
 				031C15C52B9340FB00BA967D /* AudioLevelView.swift in Sources */,
 				03B89D9A2B92DDA80022EAE7 /* ChatView.swift in Sources */,
+				0361EA772B96D476005923ED /* DebugLogSettingsView.swift in Sources */,
 				03ECDF4B2B8E4E5F00BD920E /* MainView.swift in Sources */,
 				03ECDF492B8E4E5F00BD920E /* MoblinWatchApp.swift in Sources */,
 				03A707B92B8ED466003BB7BE /* WatchProtocol.swift in Sources */,
 				031C15C62B9341F400BA967D /* StreamOverlayIconAndTextView.swift in Sources */,
+				0361EA752B96D412005923ED /* DebugSettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

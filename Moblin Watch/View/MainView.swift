@@ -16,6 +16,9 @@ struct MainView: View {
             .ignoresSafeArea()
             .edgesIgnoringSafeArea([.top, .leading, .trailing])
             ControlView()
+            NavigationStack {
+                SettingsView()
+            }
         }
         .onAppear {
             model.setup()
