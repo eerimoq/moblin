@@ -1,24 +1,27 @@
+FORMAT_ARGS=--maxwidth 110 --swiftversion 5
+LINT_ARGS=--strict --quiet
+
 all:
 	$(MAKE) style
 	$(MAKE) lint
 
 style:
-	swiftformat --maxwidth 110 Common
-	swiftformat --maxwidth 110 Moblin
-	swiftformat --maxwidth 110 "Moblin Watch"
-	swiftformat --maxwidth 110 "Moblin Widget"
+	swiftformat $(FORMAT_ARGS) Common
+	swiftformat $(FORMAT_ARGS) Moblin
+	swiftformat $(FORMAT_ARGS) "Moblin Watch"
+	swiftformat $(FORMAT_ARGS) "Moblin Widget"
 
 style-check:
-	swiftformat --maxwidth 110 --lint Common
-	swiftformat --maxwidth 110 --lint Moblin
-	swiftformat --maxwidth 110 --lint "Moblin Watch"
-	swiftformat --maxwidth 110 --lint "Moblin Widget"
+	swiftformat $(FORMAT_ARGS) --lint Common
+	swiftformat $(FORMAT_ARGS) --lint Moblin
+	swiftformat $(FORMAT_ARGS) --lint "Moblin Watch"
+	swiftformat $(FORMAT_ARGS) --lint "Moblin Widget"
 
 lint:
-	swiftlint lint --strict Common
-	swiftlint lint --strict Moblin
-	swiftlint lint --strict "Moblin Watch"
-	swiftlint lint --strict "Moblin Widget"
+	swiftlint lint $(LINT_ARGS) Common
+	swiftlint lint $(LINT_ARGS) Moblin
+	swiftlint lint $(LINT_ARGS) "Moblin Watch"
+	swiftlint lint $(LINT_ARGS) "Moblin Widget"
 
 periphery:
 	periphery scan
