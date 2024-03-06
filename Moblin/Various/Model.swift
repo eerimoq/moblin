@@ -1784,10 +1784,18 @@ final class Model: NSObject, ObservableObject {
             }
         }
         guard let image else {
-            logger.info("Failed to load LUT image \(lut.name)")
+            let message = "Failed to load LUT image \(lut.name)"
+            makeErrorToast(title: message)
+            logger.info(message)
             return
         }
-        lutEffect.setLut(name: lut.name, image: image)
+        do {
+            try lutEffect.setLut(name: lut.name, image: image)
+        } catch {
+            let message = "\(error)"
+            makeErrorToast(title: message)
+            logger.info(message)
+        }
     }
 
     func addLut(data: Data) {

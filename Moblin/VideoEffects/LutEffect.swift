@@ -4,29 +4,24 @@ import UIKit
 
 private let lutQueue = DispatchQueue(label: "com.eerimoq.widget.cubeLut")
 
-private func convertLut(image: UIImage) -> (Float, Data)? {
+private func convertLut(image: UIImage) throws -> (Float, Data) {
     let width = image.size.width * image.scale
     let height = image.size.height * image.scale
     let dimension = Int(cbrt(Double(width * height)))
     guard Int(width) % dimension == 0, Int(height) % dimension == 0 else {
-        logger.info("lut: Image is not a cube")
-        return nil
+        throw "LUT image is not a cube"
     }
     guard dimension * dimension * dimension == Int(width * height) else {
-        logger.info("lut: Image is not a cube")
-        return nil
+        throw "LUT image is not a cube"
     }
     guard image.cgImage?.bitsPerComponent == 8 else {
-        logger.info("lut: Image is not 8 bits per component")
-        return nil
+        throw "LUT image is not 8 bits per component"
     }
     guard let data = image.cgImage?.dataProvider?.data else {
-        logger.info("lut: Failed to get data")
-        return nil
+        throw "Failed to get LUT data"
     }
     guard var pixels = CFDataGetBytePtr(data) else {
-        logger.info("lut: Failed to get pixels")
-        return nil
+        throw "Failed to get LUT pixels"
     }
     let length = CFDataGetLength(data)
     let original = pixels
@@ -71,10 +66,8 @@ final class LutEffect: VideoEffect {
         name = "LUT"
     }
 
-    func setLut(name: String, image: UIImage) {
-        guard let (dimension, data) = convertLut(image: image) else {
-            return
-        }
+    func setLut(name: String, image: UIImage) throws {
+        let (dimension, data) = try convertLut(image: image)
         logger
             .info("lut: Applying filter \(name) with dimension \(dimension) and data \(data.count)")
         let filter = CIFilter.colorCube()

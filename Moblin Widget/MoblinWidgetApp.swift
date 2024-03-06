@@ -1,17 +1,17 @@
-import WidgetKit
 import SwiftUI
+import WidgetKit
 
 struct Provider: TimelineProvider {
-    func placeholder(in context: Context) -> SimpleEntry {
+    func placeholder(in _: Context) -> SimpleEntry {
         SimpleEntry(date: Date())
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
+    func getSnapshot(in _: Context, completion: @escaping (SimpleEntry) -> Void) {
         let entry = SimpleEntry(date: Date())
         completion(entry)
     }
 
-    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
+    func getTimeline(in _: Context, completion: @escaping (Timeline<Entry>) -> Void) {
         var entries: [SimpleEntry] = []
         let currentDate = Date()
         for hourOffset in 0 ..< 5 {
@@ -28,7 +28,7 @@ struct SimpleEntry: TimelineEntry {
     let date: Date
 }
 
-struct MoblinWidgetAppEntryView : View {
+struct MoblinWidgetAppEntryView: View {
     var entry: Provider.Entry
 
     var body: some View {
@@ -36,9 +36,9 @@ struct MoblinWidgetAppEntryView : View {
             .resizable()
             .aspectRatio(contentMode: .fit)
             .frame(width: 30, height: 30)
-            //.widgetLabel {
-            //    Text("10")
-            //}
+        // .widgetLabel {
+        //    Text("10")
+        // }
     }
 }
 
