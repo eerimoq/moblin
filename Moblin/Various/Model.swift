@@ -258,6 +258,7 @@ final class Model: NSObject, ObservableObject {
     @Published var chatPostsRate = String(localized: "0.0/min")
     @Published var chatPostsTotal: Int = 0
     private var watchChatPosts: Deque<WatchProtocolChatMessage> = []
+    private var nextWatchChatPostId = 1
     private var isWaitingForChatPostResponseFromWatch = false
     private var isWaitingForPreviewResponseFromWatch = false
     private var isWaitingForAudioLevelResponseFromWatch = false
@@ -2986,13 +2987,14 @@ final class Model: NSObject, ObservableObject {
             userColor = WatchProtocolColor(red: color.red, green: color.green, blue: color.blue)
         }
         let post = WatchProtocolChatMessage(
-            id: post.id,
+            id: nextWatchChatPostId,
             timestamp: post.timestamp,
             user: user,
             userColor: userColor,
             segments: post.segments
                 .map { WatchProtocolChatSegment(text: $0.text, url: $0.url?.absoluteString) }
         )
+        nextWatchChatPostId += 1
         watchChatPosts.append(post)
         if watchChatPosts.count > maximumNumberOfWatchChatMessages {
             _ = watchChatPosts.popFirst()

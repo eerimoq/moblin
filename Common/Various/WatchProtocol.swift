@@ -16,6 +16,7 @@ struct WatchProtocolChatSegment: Codable {
 
 // periphery:ignore
 struct WatchProtocolChatMessage: Codable {
+    // Starts at 1 and incremented for each new message
     var id: Int
     var timestamp: String
     var user: String

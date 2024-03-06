@@ -15,7 +15,7 @@ struct ChatView: View {
                 .font(.system(size: fontSize()))
         } else {
             ForEach(model.chatPosts) { post in
-                if let user = post.user {
+                if post.kind == .normal {
                     WrappingHStack(
                         alignment: .leading,
                         horizontalSpacing: 0,
@@ -26,12 +26,12 @@ struct ChatView: View {
                             Text(post.timestamp + " ")
                                 .foregroundColor(.gray)
                         }
-                        Text(user)
+                        Text(post.user)
                             .foregroundColor(post.userColor)
                         Text(": ")
                         ForEach(post.segments) { segment in
                             if let text = segment.text {
-                                Text(text + " ")
+                                Text(text)
                             }
                             if let url = segment.url {
                                 CacheAsyncImage(url: url) { image in
@@ -46,11 +46,25 @@ struct ChatView: View {
                             }
                         }
                     }
-                } else {
+                } else if post.kind == .redLine {
                     Rectangle()
                         .fill(.red)
                         .frame(width: width, height: 1.5)
                         .padding(2)
+                } else {
+                    WrappingHStack(
+                        alignment: .leading,
+                        horizontalSpacing: 0,
+                        verticalSpacing: 0,
+                        fitContentWidth: true
+                    ) {
+                        ForEach(post.segments) { segment in
+                            if let text = segment.text {
+                                Text(text + " ")
+                            }
+                        }
+                    }
+                    .italic()
                 }
             }
             .font(.system(size: fontSize()))

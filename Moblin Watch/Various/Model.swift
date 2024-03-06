@@ -11,6 +11,12 @@ struct ChatPostSegment: Identifiable {
     var url: URL?
 }
 
+enum ChatPostKind {
+    case normal
+    case redLine
+    case info
+}
+
 struct ChatPost: Identifiable, Hashable {
     static func == (lhs: ChatPost, rhs: ChatPost) -> Bool {
         return lhs.id == rhs.id
@@ -21,7 +27,8 @@ struct ChatPost: Identifiable, Hashable {
     }
 
     var id: Int
-    var user: String?
+    var kind: ChatPostKind
+    var user: String
     var userColor: Color
     var segments: [ChatPostSegment]
     var timestamp: String
@@ -45,8 +52,9 @@ class Model: NSObject, ObservableObject {
     private var nextPreviewTransferId: Int64 = -1
     var settings = WatchSettings()
     private var latestChatMessageDate = Date()
-    private var numberOfRedLinesInChat = 0
-    private var redLineId = -1
+    private var numberOfNormalPostsInChat = 0
+    private var nextExpectedWatchChatPostId = 1
+    private var nextNonNormalChatLineId = -1
     var log: Deque<LogEntry> = []
     private var logId = 1
     var numberOfMessagesReceived = 0
@@ -98,28 +106,58 @@ class Model: NSObject, ObservableObject {
         return URL(string: url)
     }
 
+    private func appendInfoMessage(message: WatchProtocolChatMessage, segments: [ChatPostSegment]) {
+        nextNonNormalChatLineId -= 1
+        chatPosts.prepend(ChatPost(id: nextNonNormalChatLineId,
+                                   kind: .info,
+                                   user: "",
+                                   userColor: .white,
+                                   segments: segments,
+                                   timestamp: message.timestamp))
+    }
+
+    private func appendRedLineMessage(message: WatchProtocolChatMessage) {
+        nextNonNormalChatLineId -= 1
+        chatPosts.prepend(ChatPost(id: nextNonNormalChatLineId,
+                                   kind: .redLine,
+                                   user: "",
+                                   userColor: .red,
+                                   segments: [],
+                                   timestamp: message.timestamp))
+    }
+
     private func handleChatMessage(_ message: [String: Any]) throws {
         guard let data = message["data"] as? Data else {
             logger.info("Invalid chat message message")
             return
         }
         let message = try JSONDecoder().decode(WatchProtocolChatMessage.self, from: data)
-        guard !chatPosts.contains(where: { $0.id == message.id }) else {
-            return
+        if message.id < nextExpectedWatchChatPostId {
+            nextExpectedWatchChatPostId = message.id
+            chatPosts.removeAll()
+            numberOfNormalPostsInChat = 0
+            latestChatMessageDate = Date()
+            appendInfoMessage(message: message, segments: [
+                .init(text: "Reconnected."),
+            ])
         }
+        let numberOfDiscardedChatMessages = message.id - nextExpectedWatchChatPostId
+        if numberOfDiscardedChatMessages > 0 {
+            appendInfoMessage(message: message, segments: [
+                .init(text: String(numberOfDiscardedChatMessages)),
+                .init(text: numberOfDiscardedChatMessages == 1 ? "message" : "messages"),
+                .init(text: "discarded."),
+            ])
+        }
+        nextExpectedWatchChatPostId = message.id + 1
         let now = Date()
         if settings.chat.notificationOnMessage! && latestChatMessageDate + 30 < now {
-            redLineId -= 1
-            chatPosts.prepend(ChatPost(id: redLineId,
-                                       user: nil,
-                                       userColor: .red,
-                                       segments: [],
-                                       timestamp: message.timestamp))
-            numberOfRedLinesInChat += 1
+            appendRedLineMessage(message: message)
             WKInterfaceDevice.current().play(.notification)
         }
         latestChatMessageDate = now
         chatPosts.prepend(ChatPost(id: message.id,
+                                   kind: .normal,
                                    user: message.user,
                                    userColor: message.userColor.color(),
                                    segments: message.segments.map { ChatPostSegment(
@@ -127,9 +165,10 @@ class Model: NSObject, ObservableObject {
                                        url: makeUrl(url: $0.url)
                                    ) },
                                    timestamp: message.timestamp))
-        while chatPosts.count > maximumNumberOfWatchChatMessages + numberOfRedLinesInChat {
-            if chatPosts.popLast()?.user == nil {
-                numberOfRedLinesInChat -= 1
+        numberOfNormalPostsInChat += 1
+        while numberOfNormalPostsInChat > maximumNumberOfWatchChatMessages {
+            if chatPosts.popLast()?.kind == .normal {
+                numberOfNormalPostsInChat -= 1
             }
         }
     }
