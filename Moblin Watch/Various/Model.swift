@@ -151,9 +151,11 @@ class Model: NSObject, ObservableObject {
         }
         nextExpectedWatchChatPostId = message.id + 1
         let now = Date()
-        if settings.chat.notificationOnMessage! && latestChatMessageDate + 30 < now {
+        if latestChatMessageDate + 30 < now {
             appendRedLineMessage(message: message)
-            WKInterfaceDevice.current().play(.notification)
+            if settings.chat.notificationOnMessage! {
+                WKInterfaceDevice.current().play(.notification)
+            }
         }
         latestChatMessageDate = now
         chatPosts.prepend(ChatPost(id: message.id,
