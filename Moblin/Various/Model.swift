@@ -1231,6 +1231,7 @@ final class Model: NSObject, ObservableObject {
             }) {
                 let interface = SettingsNetworkInterfaceName()
                 interface.interfaceName = status.name
+                interface.name = status.name
                 database.networkInterfaceNames!.append(interface)
                 store()
             }
