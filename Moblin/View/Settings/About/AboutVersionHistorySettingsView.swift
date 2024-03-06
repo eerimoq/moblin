@@ -8,6 +8,16 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.192.0", date: "2024-03-06", changes: [
+        "• Show error toast if LUT image is invalid.",
+        "• Fix empty ethernet interface name. 🐛 Marlow",
+        "  • Only works for unrecognized network interfaces (those not in Settings → Display → Network interface names).",
+        "• Watch companion app.",
+        "  • Chat improvements.",
+        "    • Show number of discarded messages.",
+        "    • Show when reconnected to phone.",
+        "    • Remove duplicated spaces between words.",
+    ]),
     Version(version: "0.191.0", date: "2024-03-05", changes: [
         "• Watch companion app.",
         "  • Some logs and counters for debugging.",
