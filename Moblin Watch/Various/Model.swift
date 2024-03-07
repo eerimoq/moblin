@@ -132,6 +132,10 @@ class Model: NSObject, ObservableObject {
             return
         }
         let message = try JSONDecoder().decode(WatchProtocolChatMessage.self, from: data)
+        // Latest received message is often retransmitted. Just ignore it if so (or likely so).
+        if message.id == chatPosts.first?.id {
+            return
+        }
         if message.id < nextExpectedWatchChatPostId {
             nextExpectedWatchChatPostId = message.id
             chatPosts.removeAll()
