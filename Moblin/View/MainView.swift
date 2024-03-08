@@ -226,7 +226,7 @@ struct MainView: View {
             }
             if model.showingRemoteControl {
                 NavigationStack {
-                    RemoteControlView {
+                    ControlBarRemoteControlAssistantView {
                         model.showingRemoteControl = false
                         model.attachCamera()
                         model.updateScreenAutoOff()

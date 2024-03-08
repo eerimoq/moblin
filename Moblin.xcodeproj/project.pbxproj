@@ -63,6 +63,7 @@
 		0346B5EC2B9AD1BF00999109 /* MoblinWatch-InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0346B5EB2B9AD1BF00999109 /* MoblinWatch-InfoPlist.xcstrings */; };
 		0346B5EE2B9AD1BF00999109 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0346B5ED2B9AD1BF00999109 /* InfoPlist.xcstrings */; };
 		0346B5F02B9AD1BF00999109 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0346B5EF2B9AD1BF00999109 /* Localizable.xcstrings */; };
+		0346B5F42B9AF4EE00999109 /* ControlBarRemoteControlAssistantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0346B5F32B9AF4EE00999109 /* ControlBarRemoteControlAssistantView.swift */; };
 		034844EF2B579D4C0089B874 /* RemoteControlAssistant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034844EE2B579D4C0089B874 /* RemoteControlAssistant.swift */; };
 		034844F22B579DF30089B874 /* RemoteControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034844F12B579DF30089B874 /* RemoteControl.swift */; };
 		034844F52B57AB840089B874 /* RemoteControlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034844F42B57AB840089B874 /* RemoteControlSettingsView.swift */; };
@@ -317,6 +318,7 @@
 		0346B5EB2B9AD1BF00999109 /* MoblinWatch-InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = "MoblinWatch-InfoPlist.xcstrings"; sourceTree = "<group>"; };
 		0346B5ED2B9AD1BF00999109 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		0346B5EF2B9AD1BF00999109 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		0346B5F32B9AF4EE00999109 /* ControlBarRemoteControlAssistantView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlBarRemoteControlAssistantView.swift; sourceTree = "<group>"; };
 		034844EE2B579D4C0089B874 /* RemoteControlAssistant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteControlAssistant.swift; sourceTree = "<group>"; };
 		034844F12B579DF30089B874 /* RemoteControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteControl.swift; sourceTree = "<group>"; };
 		034844F42B57AB840089B874 /* RemoteControlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteControlSettingsView.swift; sourceTree = "<group>"; };
@@ -744,6 +746,14 @@
 				03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */,
 			);
 			path = Browser;
+			sourceTree = "<group>";
+		};
+		0346B5F22B9AF4D300999109 /* RemoteControlAssistant */ = {
+			isa = PBXGroup;
+			children = (
+				0346B5F32B9AF4EE00999109 /* ControlBarRemoteControlAssistantView.swift */,
+			);
+			path = RemoteControlAssistant;
 			sourceTree = "<group>";
 		};
 		034844F32B57AB5B0089B874 /* RemoteControl */ = {
@@ -1195,6 +1205,7 @@
 		03B373F72A9EFB1F0028DDD5 /* ControlBar */ = {
 			isa = PBXGroup;
 			children = (
+				0346B5F22B9AF4D300999109 /* RemoteControlAssistant */,
 				03B373F82A9EFB340028DDD5 /* BatteryView.swift */,
 				03B374032AA036D10028DDD5 /* ButtonsView.swift */,
 				03B373F52A9EF98E0028DDD5 /* ControlBarView.swift */,
@@ -1643,6 +1654,7 @@
 				030947C32A9C0496003FC387 /* StreamOverlayChatView.swift in Sources */,
 				03BDE2222B24367D00DF193A /* ObsWebSocket.swift in Sources */,
 				03DBD0FB2B30078B004B0BE6 /* StreamWizardKickSettingsView.swift in Sources */,
+				0346B5F42B9AF4EE00999109 /* ControlBarRemoteControlAssistantView.swift in Sources */,
 				03B16A312B35D74800E5AB07 /* DisplaySettingsView.swift in Sources */,
 				03A983622A9A05D7008FF0DB /* MainView.swift in Sources */,
 				03B374042AA036D10028DDD5 /* ButtonsView.swift in Sources */,

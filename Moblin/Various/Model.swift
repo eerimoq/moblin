@@ -2772,6 +2772,14 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
+    func remoteControlAssistantSetSrtConnectionPriority(priority: RemoteControlSettingsSrtConnectionPriority) {
+        remoteControlAssistant?.setSrtConnectionPriority(
+            id: priority.id,
+            priority: priority.priority,
+            enabled: priority.enabled
+        ) {}
+    }
+
     func twitchEnabledUpdated() {
         reloadTwitchPubSub()
         reloadTwitchChat()
@@ -4487,6 +4495,15 @@ extension Model: RemoteControlStreamerDelegate {
             settings.bitratePresets = self.database.bitratePresets.map { preset in
                 RemoteControlSettingsBitratePreset(id: preset.id, bitrate: preset.bitrate)
             }
+            settings.srt!.connectionPriorities = self.stream.srt.connectionPriorities!.priorities
+                .map { priority in
+                    RemoteControlSettingsSrtConnectionPriority(
+                        id: priority.id,
+                        name: priority.name,
+                        priority: priority.priority,
+                        enabled: priority.enabled!
+                    )
+                }
             onComplete(settings)
         }
     }
@@ -4584,6 +4601,18 @@ extension Model: RemoteControlStreamerDelegate {
     func reloadBrowserWidgets(onComplete: @escaping () -> Void) {
         DispatchQueue.main.async {
             self.reloadBrowserWidgets()
+            onComplete()
+        }
+    }
+
+    func setSrtConnectionPriority(id: UUID, priority: Int, enabled: Bool, onComplete: @escaping () -> Void) {
+        DispatchQueue.main.async {
+            if let entry = self.stream.srt.connectionPriorities!.priorities.first(where: { $0.id == id }) {
+                entry.priority = clampConnectionPriority(value: priority)
+                entry.enabled = enabled
+                self.store()
+                self.updateSrtlaPriorities()
+            }
             onComplete()
         }
     }

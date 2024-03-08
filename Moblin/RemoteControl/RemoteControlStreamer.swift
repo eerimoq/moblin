@@ -18,6 +18,7 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func setMute(on: Bool, onComplete: @escaping () -> Void)
     func setTorch(on: Bool, onComplete: @escaping () -> Void)
     func reloadBrowserWidgets(onComplete: @escaping () -> Void)
+    func setSrtConnectionPriority(id: UUID, priority: Int, enabled: Bool, onComplete: @escaping () -> Void)
 }
 
 class RemoteControlStreamer {
@@ -210,6 +211,10 @@ class RemoteControlStreamer {
             }
         case .reloadBrowserWidgets:
             delegate.reloadBrowserWidgets {
+                self.send(message: .response(id: id, result: .ok, data: nil))
+            }
+        case let .setSrtConnectionPriority(id: priorityId, priority: priority, enabled: enabled):
+            delegate.setSrtConnectionPriority(id: priorityId, priority: priority, enabled: enabled) {
                 self.send(message: .response(id: id, result: .ok, data: nil))
             }
         }

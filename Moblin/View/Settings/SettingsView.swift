@@ -187,7 +187,7 @@ struct SettingsView: View {
             Section {
                 NavigationLink(destination: RecordingsSettingsView()) {
                     HStack {
-                        Image(systemName: "film.stack")
+                        Image(systemName: "photo.on.rectangle.angled")
                             .frame(width: iconWidth)
                         Text("Recordings")
                     }

@@ -142,6 +142,13 @@ class RemoteControlAssistant {
         performRequestNoResponseData(data: .reloadBrowserWidgets, onSuccess: onSuccess)
     }
 
+    func setSrtConnectionPriority(id: UUID, priority: Int, enabled: Bool, onSuccess: @escaping () -> Void) {
+        performRequestNoResponseData(
+            data: .setSrtConnectionPriority(id: id, priority: priority, enabled: enabled),
+            onSuccess: onSuccess
+        )
+    }
+
     private func startInternal() {
         do {
             try server.start(port: Endpoint.Port(port), interface: address)

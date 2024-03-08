@@ -1,5 +1,12 @@
 import SwiftUI
 
+let minimumSrtConnectionPriority = 1
+let maximumSrtConnectionPriority = 10
+
+func clampConnectionPriority(value: Int) -> Int {
+    return value.clamped(to: minimumSrtConnectionPriority ... maximumSrtConnectionPriority)
+}
+
 struct PriorityItemView: View {
     @EnvironmentObject var model: Model
     var priority: SettingsStreamSrtConnectionPriority
@@ -28,13 +35,13 @@ struct PriorityItemView: View {
                     .frame(width: 90)
                 Slider(
                     value: $prio,
-                    in: 1 ... 10,
+                    in: Float(minimumSrtConnectionPriority) ... Float(maximumSrtConnectionPriority),
                     step: 1,
                     onEditingChanged: { begin in
                         guard !begin else {
                             return
                         }
-                        priority.priority = Int(prio)
+                        priority.priority = clampConnectionPriority(value: Int(prio))
                         model.store()
                         model.updateSrtlaPriorities()
                     }
@@ -62,20 +69,18 @@ struct StreamSrtConnectionPriorityView: View {
                     Text("Enabled")
                 }
             }
-            if stream.srt.connectionPriorities!.enabled {
-                Section {
-                    ForEach(stream.srt.connectionPriorities!.priorities) { priority in
-                        PriorityItemView(priority: priority, prio: Float(priority.priority))
-                    }
-                } footer: {
-                    Text("""
-                    A connection with high priority will be used more than a connection with \
-                    low priority if the high priority connection is stable. Unstable connections \
-                    will get lowest priority regardless of configured priority until they are stable again.
-                    """)
-                    Text("")
-                    Text("Disabled connections will not be used.")
+            Section {
+                ForEach(stream.srt.connectionPriorities!.priorities) { priority in
+                    PriorityItemView(priority: priority, prio: Float(priority.priority))
                 }
+            } footer: {
+                Text("""
+                A connection with high priority will be used more than a connection with \
+                low priority if the high priority connection is stable. Unstable connections \
+                will get lowest priority regardless of configured priority until they are stable again.
+                """)
+                Text("")
+                Text("Disabled connections will not be used.")
             }
         }
         .navigationTitle("Connection priorities")

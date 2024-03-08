@@ -20691,6 +20691,9 @@
         }
       }
     },
+    "Enter assistant's address and port. For example ws://132.23.43.43:2345." : {
+
+    },
     "Enter one of the URLs into the RTMP publisher device to send video to this stream. Usually enter the WiFi URL." : {
       "localizations" : {
         "de" : {
@@ -46674,6 +46677,9 @@
           }
         }
       }
+    },
+    "SRT connection priorities" : {
+
     },
     "SRT disconnected" : {
       "localizations" : {
