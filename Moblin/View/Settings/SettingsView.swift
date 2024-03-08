@@ -8,7 +8,7 @@ enum SettingsLayout {
     case right
 }
 
-struct SettingsLayoutMenuItem {
+private struct SettingsLayoutMenuItem {
     var layout: SettingsLayout
     var image: String
     var text: String

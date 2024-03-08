@@ -36,9 +36,6 @@ struct MoblinWidgetAppEntryView: View {
             .resizable()
             .aspectRatio(contentMode: .fit)
             .frame(width: 30, height: 30)
-        // .widgetLabel {
-        //    Text("10")
-        // }
     }
 }
 
