@@ -18,14 +18,14 @@ private let layoutMenuItems = [
     SettingsLayoutMenuItem(
         layout: .right,
         image: "rectangle.righthalf.filled",
-        text: "Right"
+        text: String(localized: "Right")
     ),
     SettingsLayoutMenuItem(
         layout: .left,
         image: "rectangle.lefthalf.filled",
-        text: "Left"
+        text: String(localized: "Left")
     ),
-    SettingsLayoutMenuItem(layout: .full, image: "rectangle.fill", text: "Full"),
+    SettingsLayoutMenuItem(layout: .full, image: "rectangle.fill", text: String(localized: "Full")),
 ]
 
 struct SettingsToolbar: ToolbarContent {
@@ -73,6 +73,19 @@ struct SettingsToolbar: ToolbarContent {
     }
 }
 
+private struct IconAndText: View {
+    let image: String
+    let text: String
+
+    var body: some View {
+        HStack {
+            Image(systemName: image)
+                .frame(width: iconWidth)
+            Text(text)
+        }
+    }
+}
+
 struct SettingsView: View {
     @EnvironmentObject var model: Model
 
@@ -95,18 +108,10 @@ struct SettingsView: View {
             }
             Section {
                 NavigationLink(destination: StreamsSettingsView()) {
-                    HStack {
-                        Image(systemName: "dot.radiowaves.left.and.right")
-                            .frame(width: iconWidth)
-                        Text("Streams")
-                    }
+                    IconAndText(image: "dot.radiowaves.left.and.right", text: String(localized: "Streams"))
                 }
                 NavigationLink(destination: ScenesSettingsView()) {
-                    HStack {
-                        Image(systemName: "photo.on.rectangle")
-                            .frame(width: iconWidth)
-                        Text("Scenes")
-                    }
+                    IconAndText(image: "photo.on.rectangle", text: String(localized: "Scenes"))
                 }
                 NavigationLink(destination: LocalOverlaysChatSettingsView(
                     timestampColor: chat.timestampColor.color(),
@@ -118,60 +123,28 @@ struct SettingsView: View {
                     width: chat.width!,
                     fontSize: chat.fontSize
                 )) {
-                    HStack {
-                        Image(systemName: "message")
-                            .frame(width: iconWidth)
-                        Text("Chat")
-                    }
+                    IconAndText(image: "message", text: String(localized: "Chat"))
                 }
                 NavigationLink(destination: DisplaySettingsView()) {
-                    HStack {
-                        Image(systemName: "rectangle.inset.topright.fill")
-                            .frame(width: iconWidth)
-                        Text("Display")
-                    }
+                    IconAndText(image: "rectangle.inset.topright.fill", text: String(localized: "Display"))
                 }
                 NavigationLink(destination: CameraSettingsView()) {
-                    HStack {
-                        Image(systemName: "camera")
-                            .frame(width: iconWidth)
-                        Text("Camera")
-                    }
+                    IconAndText(image: "camera", text: String(localized: "Camera"))
                 }
                 NavigationLink(destination: BitratePresetsSettingsView()) {
-                    HStack {
-                        Image(systemName: "speedometer")
-                            .frame(width: iconWidth)
-                        Text("Bitrate presets")
-                    }
+                    IconAndText(image: "speedometer", text: String(localized: "Bitrate presets"))
                 }
                 NavigationLink(destination: RtmpServerSettingsView()) {
-                    HStack {
-                        Image(systemName: "server.rack")
-                            .frame(width: iconWidth)
-                        Text("RTMP server")
-                    }
+                    IconAndText(image: "server.rack", text: String(localized: "RTMP server"))
                 }
                 NavigationLink(destination: GameControllersSettingsView()) {
-                    HStack {
-                        Image(systemName: "gamecontroller")
-                            .frame(width: iconWidth)
-                        Text("Game controllers")
-                    }
+                    IconAndText(image: "gamecontroller", text: String(localized: "Game controllers"))
                 }
                 NavigationLink(destination: RemoteControlSettingsView()) {
-                    HStack {
-                        Image(systemName: "appletvremote.gen1")
-                            .frame(width: iconWidth)
-                        Text("Remote control")
-                    }
+                    IconAndText(image: "appletvremote.gen1", text: String(localized: "Remote control"))
                 }
                 NavigationLink(destination: LocationSettingsView()) {
-                    HStack {
-                        Image(systemName: "location")
-                            .frame(width: iconWidth)
-                        Text("Location")
-                    }
+                    IconAndText(image: "location", text: String(localized: "Location"))
                 }
             }
             Section {
@@ -186,62 +159,34 @@ struct SettingsView: View {
             }
             Section {
                 NavigationLink(destination: RecordingsSettingsView()) {
-                    HStack {
-                        Image(systemName: "photo.on.rectangle.angled")
-                            .frame(width: iconWidth)
-                        Text("Recordings")
-                    }
+                    IconAndText(image: "photo.on.rectangle.angled", text: String(localized: "Recordings"))
                 }
                 NavigationLink(destination: StreamingHistorySettingsView()) {
-                    HStack {
-                        Image(systemName: "text.book.closed")
-                            .frame(width: iconWidth)
-                        Text("Streaming history")
-                    }
+                    IconAndText(image: "text.book.closed", text: String(localized: "Streaming history"))
                 }
             }
             Section {
                 NavigationLink(destination: WatchSettingsView()) {
-                    HStack {
-                        Image(systemName: "applewatch")
-                            .frame(width: iconWidth)
-                        Text("Watch")
-                    }
+                    IconAndText(image: "applewatch", text: String(localized: "Watch"))
                 }
             }
             Section {
                 NavigationLink(destination: HelpAndSupportSettingsView()) {
-                    HStack {
-                        Image(systemName: "questionmark.circle")
-                            .frame(width: iconWidth)
-                        Text("Help & support")
-                    }
+                    IconAndText(image: "questionmark.circle", text: String(localized: "Help & support"))
                 }
                 NavigationLink(destination: AboutSettingsView()) {
-                    HStack {
-                        Image(systemName: "info.circle")
-                            .frame(width: iconWidth)
-                        Text("About")
-                    }
+                    IconAndText(image: "info.circle", text: String(localized: "About"))
                 }
                 NavigationLink(
                     destination: DebugSettingsView(cameraSwitchRemoveBlackish: model.database.debug!
                         .cameraSwitchRemoveBlackish!)
                 ) {
-                    HStack {
-                        Image(systemName: "ladybug")
-                            .frame(width: iconWidth)
-                        Text("Debug")
-                    }
+                    IconAndText(image: "ladybug", text: String(localized: "Debug"))
                 }
             }
             Section {
                 NavigationLink(destination: ImportExportSettingsView()) {
-                    HStack {
-                        Image(systemName: "gearshape")
-                            .frame(width: iconWidth)
-                        Text("Import and export settings")
-                    }
+                    IconAndText(image: "gearshape", text: String(localized: "Import and export settings"))
                 }
             }
             Section {
