@@ -4897,8 +4897,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Standardmäßig 200."
+            "state" : "translated",
+            "value" : "Standardmäßig  bei 200."
           }
         },
         "el" : {
@@ -10279,8 +10279,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bestmögliche Stabilität. Verwendet Bindung. Bezahlter Drittanbieter-Service."
+            "state" : "translated",
+            "value" : "Bestmögliche Stabilität. Verwendet Bonding. Bezahlter Drittanbieter-Service."
           }
         },
         "el" : {
@@ -12855,8 +12855,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ändern Sie die Einstellungen in Moblin auf dem iPhone/iPad."
+            "state" : "translated",
+            "value" : "Ändere die Einstellungen in Moblin auf dem iPhone/iPad."
           }
         },
         "el" : {
@@ -13415,7 +13415,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Der Chat ist leer."
           }
         },
@@ -13751,7 +13751,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Chat pausiert: %lld neue Nachrichten"
           }
         },
@@ -17447,7 +17447,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Debug-Overlay"
           }
         },
@@ -28983,7 +28983,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Interaktiver Chat"
           }
         },
@@ -32791,8 +32791,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Mitteilungen"
+            "state" : "translated",
+            "value" : "Nachrichten"
           }
         },
         "el" : {
@@ -36823,7 +36823,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Benachrichtigung bei Nachricht"
           }
         },
@@ -37943,7 +37943,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Wird nur für den Chat benötigt."
           }
         },
@@ -39623,8 +39623,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Datenschutzbereiche"
+            "state" : "translated",
+            "value" : "Private Bereiche"
           }
         },
         "el" : {
@@ -48583,8 +48583,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Stream-Taste"
+            "state" : "translated",
+            "value" : "Stream Button"
           }
         },
         "el" : {
@@ -54743,7 +54743,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Unbekannt"
           }
         },
@@ -56535,7 +56535,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Zu ignorierende Benutzernamen"
           }
         },
@@ -58215,7 +58215,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Betrachten"
           }
         },
@@ -59677,8 +59677,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ihr Standort wird an keinen Dienst weitergegeben, wenn Sie sich innerhalb einer Datenschutzregion befinden."
+            "state" : "translated",
+            "value" : "Dein Standort wird an keinen Dienst weitergegeben, wenn man sich in einem privaten Bereich befindet."
           }
         },
         "el" : {

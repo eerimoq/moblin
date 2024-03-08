@@ -60,6 +60,9 @@
 		0332EF612B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0332EF602B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift */; };
 		03403DF62AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */; };
 		0344AFE72B00023E00C177DB /* AboutDesignedBySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0344AFE62B00023E00C177DB /* AboutDesignedBySettingsView.swift */; };
+		0346B5EC2B9AD1BF00999109 /* MoblinWatch-InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0346B5EB2B9AD1BF00999109 /* MoblinWatch-InfoPlist.xcstrings */; };
+		0346B5EE2B9AD1BF00999109 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0346B5ED2B9AD1BF00999109 /* InfoPlist.xcstrings */; };
+		0346B5F02B9AD1BF00999109 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0346B5EF2B9AD1BF00999109 /* Localizable.xcstrings */; };
 		034844EF2B579D4C0089B874 /* RemoteControlAssistant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034844EE2B579D4C0089B874 /* RemoteControlAssistant.swift */; };
 		034844F22B579DF30089B874 /* RemoteControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034844F12B579DF30089B874 /* RemoteControl.swift */; };
 		034844F52B57AB840089B874 /* RemoteControlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 034844F42B57AB840089B874 /* RemoteControlSettingsView.swift */; };
@@ -311,6 +314,9 @@
 		0332EF602B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpServerStreamSettingsView.swift; sourceTree = "<group>"; };
 		03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBrowserSettingsView.swift; sourceTree = "<group>"; };
 		0344AFE62B00023E00C177DB /* AboutDesignedBySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutDesignedBySettingsView.swift; sourceTree = "<group>"; };
+		0346B5EB2B9AD1BF00999109 /* MoblinWatch-InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = "MoblinWatch-InfoPlist.xcstrings"; sourceTree = "<group>"; };
+		0346B5ED2B9AD1BF00999109 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
+		0346B5EF2B9AD1BF00999109 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		034844EE2B579D4C0089B874 /* RemoteControlAssistant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteControlAssistant.swift; sourceTree = "<group>"; };
 		034844F12B579DF30089B874 /* RemoteControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteControl.swift; sourceTree = "<group>"; };
 		034844F42B57AB840089B874 /* RemoteControlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteControlSettingsView.swift; sourceTree = "<group>"; };
@@ -915,6 +921,8 @@
 		0376F6FC2B9511030056B3D2 /* Moblin Widget */ = {
 			isa = PBXGroup;
 			children = (
+				0346B5ED2B9AD1BF00999109 /* InfoPlist.xcstrings */,
+				0346B5EF2B9AD1BF00999109 /* Localizable.xcstrings */,
 				0376F6FD2B9511030056B3D2 /* MoblinWidgetApp.swift */,
 				0376F6FF2B9511040056B3D2 /* Assets.xcassets */,
 				0376F7012B9511040056B3D2 /* Info.plist */,
@@ -1356,6 +1364,7 @@
 		03ECDF472B8E4E5F00BD920E /* Moblin Watch */ = {
 			isa = PBXGroup;
 			children = (
+				0346B5EB2B9AD1BF00999109 /* MoblinWatch-InfoPlist.xcstrings */,
 				03ECDF632B8E797200BD920E /* View */,
 				03ECDF652B8E798000BD920E /* Various */,
 				03ECDF4E2B8E4E6000BD920E /* Preview Content */,
@@ -1582,7 +1591,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0346B5EE2B9AD1BF00999109 /* InfoPlist.xcstrings in Resources */,
 				0376F7002B9511040056B3D2 /* Assets.xcassets in Resources */,
+				0346B5F02B9AD1BF00999109 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1593,6 +1604,7 @@
 				03ECDF502B8E4E6000BD920E /* Preview Assets.xcassets in Resources */,
 				03ECDF4D2B8E4E6000BD920E /* Assets.xcassets in Resources */,
 				0352679E2B99A00C00B49B72 /* Localizable.xcstrings in Resources */,
+				0346B5EC2B9AD1BF00999109 /* MoblinWatch-InfoPlist.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
