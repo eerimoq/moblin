@@ -17,15 +17,7 @@ enum ChatPostKind {
     case info
 }
 
-struct ChatPost: Identifiable, Hashable {
-    static func == (lhs: ChatPost, rhs: ChatPost) -> Bool {
-        return lhs.id == rhs.id
-    }
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-
+struct ChatPost: Identifiable {
     var id: Int
     var kind: ChatPostKind
     var user: String
