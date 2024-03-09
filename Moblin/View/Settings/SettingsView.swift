@@ -172,7 +172,7 @@ struct SettingsView: View {
             }
             Section {
                 NavigationLink(destination: HelpAndSupportSettingsView()) {
-                    IconAndText(image: "questionmark.circle", text: String(localized: "Help & support"))
+                    IconAndText(image: "questionmark.circle", text: String(localized: "Help and support"))
                 }
                 NavigationLink(destination: AboutSettingsView()) {
                     IconAndText(image: "info.circle", text: String(localized: "About"))

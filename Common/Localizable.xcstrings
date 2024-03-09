@@ -27306,6 +27306,7 @@
       }
     },
     "Help & support" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -27416,6 +27417,9 @@
           }
         }
       }
+    },
+    "Help and support" : {
+
     },
     "Hide sensitive URL" : {
       "localizations" : {
