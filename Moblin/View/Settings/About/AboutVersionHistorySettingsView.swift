@@ -8,6 +8,14 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.194.0", date: "2024-03-09", changes: [
+        "- Change recordings icon in settings to the same icon as the recordings quick button.",
+        "- Add SRT connection priorities to remote control. 💡 djandrea.",
+        "  - UI is not updated if on connection priorities page.",
+        "- Manual focus. 💡 b3ck and others",
+        "  - Press the \"Camera\" quick button to set focus.",
+        "    - If not showing, toggle it on in Settings → Display → Quick buttons.",
+    ]),
     Version(version: "0.193.0", date: "2024-03-07", changes: [
         "• Watch companion app.",
         "  • Lower preview quality as it seems to work better.",
