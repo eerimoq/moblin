@@ -32009,6 +32009,15 @@
         }
       }
     },
+    "Manual focus" : {
+
+    },
+    "Manual focus not supported for this camera" : {
+
+    },
+    "Manual focus not supported for this camera. Use a non-triple/dual camera." : {
+
+    },
     "Many thanks from the Moblin developers!" : {
       "localizations" : {
         "de" : {

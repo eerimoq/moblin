@@ -1715,7 +1715,6 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "camera"
     button.systemImageNameOff = "camera"
-    button.enabled = false
     updateGlobalButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Black screen"))

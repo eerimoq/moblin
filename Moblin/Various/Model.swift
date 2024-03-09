@@ -216,6 +216,8 @@ final class Model: NSObject, ObservableObject {
 
     @Published var scrollQuickButtons: Int = 0
     @Published var bias: Float = 0.0
+    @Published var manualFocus: Float = 1.0
+    @Published var isManualFocus = false
     @Published var showingSettings = false
     @Published var settingsLayout: SettingsLayout = .right
     @Published var showChatMessages = true
@@ -392,6 +394,7 @@ final class Model: NSObject, ObservableObject {
     @Published var debugLines: [String] = []
     @Published var streamingHistory = StreamingHistory()
     private var streamingHistoryStream: StreamingHistoryStream?
+    private var focusChangeObservation: NSKeyValueObservation?
 
     var backCameras: [Camera] = []
     var frontCameras: [Camera] = []
@@ -4153,6 +4156,7 @@ final class Model: NSObject, ObservableObject {
         } catch let error as NSError {
             logger.error("while locking device for focusPointOfInterest: \(error)")
         }
+        isManualFocus = false
     }
 
     func setAutoFocus() {
@@ -4177,6 +4181,32 @@ final class Model: NSObject, ObservableObject {
             manualFocusPoint = nil
         } catch let error as NSError {
             logger.error("while locking device for focusPointOfInterest: \(error)")
+        }
+        isManualFocus = false
+    }
+
+    func setManualFocus(lensPosition: Float) {
+        guard
+            let device = cameraDevice, device.isLockingFocusWithCustomLensPositionSupported
+        else {
+            makeErrorToast(title: String(localized: "Manual focus not supported for this camera"))
+            return
+        }
+        do {
+            try device.lockForConfiguration()
+            device.setFocusModeLocked(lensPosition: lensPosition)
+            device.unlockForConfiguration()
+        } catch let error as NSError {
+            logger.error("while locking device for manual focus: \(error)")
+        }
+        isManualFocus = true
+    }
+
+    func isCameraSupportingManualFocus() -> Bool {
+        if let device = cameraDevice, device.isLockingFocusWithCustomLensPositionSupported {
+            return true
+        } else {
+            return false
         }
     }
 
