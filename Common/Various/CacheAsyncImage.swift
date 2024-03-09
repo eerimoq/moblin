@@ -9,8 +9,8 @@ import SwiftUI
 struct CacheAsyncImage<Content, Content2>: View where Content: View, Content2: View {
     private let url: URL
     private let scale: CGFloat
-    private let content: ((Image) -> Content)
-    private let placeholder: (() -> Content2)
+    private let content: (Image) -> Content
+    private let placeholder: () -> Content2
 
     init(url: URL,
          scale: CGFloat = 1,
