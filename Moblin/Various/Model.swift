@@ -217,7 +217,7 @@ final class Model: NSObject, ObservableObject {
     @Published var scrollQuickButtons: Int = 0
     @Published var bias: Float = 0.0
     @Published var manualFocus: Float = 1.0
-    @Published var isManualFocus = false
+    var isManualFocus = false
     @Published var showingSettings = false
     @Published var settingsLayout: SettingsLayout = .right
     @Published var showChatMessages = true
@@ -394,7 +394,6 @@ final class Model: NSObject, ObservableObject {
     @Published var debugLines: [String] = []
     @Published var streamingHistory = StreamingHistory()
     private var streamingHistoryStream: StreamingHistoryStream?
-    private var focusChangeObservation: NSKeyValueObservation?
 
     var backCameras: [Camera] = []
     var frontCameras: [Camera] = []
@@ -4159,8 +4158,8 @@ final class Model: NSObject, ObservableObject {
         isManualFocus = false
     }
 
-    func setAutoFocus() {
-        if manualFocusPoint == nil {
+    func setAutoFocus(force: Bool = false) {
+        if manualFocusPoint == nil, !force {
             return
         }
         stopMotionDetection()

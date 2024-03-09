@@ -66,7 +66,6 @@ private struct RemoteControlSrtConnectionPriorityView: View {
 }
 
 private struct RemoteControlSrtConnectionPrioritiesView: View {
-    @EnvironmentObject var model: Model
     var srt: RemoteControlSettingsSrt
 
     var body: some View {

@@ -151,18 +151,19 @@ struct CameraView: View {
     @EnvironmentObject var model: Model
     var done: () -> Void
 
-    private func focusText() -> String {
-        if model.isManualFocus, model.isCameraSupportingManualFocus() {
-            return String(Int(model.manualFocus * 100))
-        } else {
-            return "Off"
-        }
-    }
-
     var body: some View {
         Form {
             Section {
-                HStack {
+                Toggle(isOn: Binding(get: {
+                    model.isManualFocus
+                }, set: { value in
+                    model.isManualFocus = value
+                    if value {
+                        model.setManualFocus(lensPosition: model.manualFocus)
+                    } else {
+                        model.setAutoFocus(force: true)
+                    }
+                }), label: {
                     Slider(
                         value: $model.manualFocus,
                         in: 0 ... 1,
@@ -177,10 +178,8 @@ struct CameraView: View {
                     .onChange(of: model.manualFocus) { _ in
                         model.setManualFocus(lensPosition: model.manualFocus)
                     }
-                    .disabled(!model.isCameraSupportingManualFocus())
-                    Text(focusText())
-                        .frame(width: 60)
-                }
+                })
+                .disabled(!model.isCameraSupportingManualFocus())
             } header: {
                 Text("Manual focus")
             } footer: {
