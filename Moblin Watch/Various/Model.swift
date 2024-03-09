@@ -196,6 +196,12 @@ class Model: NSObject, ObservableObject {
         }
         do {
             self.settings = try JSONDecoder().decode(WatchSettings.self, from: settings)
+            if self.settings.chat.timestampEnabled == nil {
+                self.settings.chat.timestampEnabled = false
+            }
+            if self.settings.chat.notificationOnMessage == nil {
+                self.settings.chat.notificationOnMessage = false
+            }
         } catch {}
     }
 
