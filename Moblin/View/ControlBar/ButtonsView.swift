@@ -147,6 +147,8 @@ struct StreamSwitcherView: View {
     }
 }
 
+private var editingManualFocus = false
+
 struct CameraView: View {
     @EnvironmentObject var model: Model
     var done: () -> Void
@@ -155,13 +157,12 @@ struct CameraView: View {
         Form {
             Section {
                 Toggle(isOn: Binding(get: {
-                    model.isManualFocus
+                    model.getIsManualFocusEnabled()
                 }, set: { value in
-                    model.isManualFocus = value
                     if value {
                         model.setManualFocus(lensPosition: model.manualFocus)
                     } else {
-                        model.setAutoFocus(force: true)
+                        model.setAutoFocus()
                     }
                 }), label: {
                     Slider(
@@ -169,6 +170,7 @@ struct CameraView: View {
                         in: 0 ... 1,
                         step: 0.01,
                         onEditingChanged: { begin in
+                            editingManualFocus = begin
                             guard !begin else {
                                 return
                             }
@@ -176,7 +178,9 @@ struct CameraView: View {
                         }
                     )
                     .onChange(of: model.manualFocus) { _ in
-                        model.setManualFocus(lensPosition: model.manualFocus)
+                        if editingManualFocus {
+                            model.setManualFocus(lensPosition: model.manualFocus)
+                        }
                     }
                 })
                 .disabled(!model.isCameraSupportingManualFocus())

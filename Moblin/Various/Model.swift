@@ -216,8 +216,11 @@ final class Model: NSObject, ObservableObject {
 
     @Published var scrollQuickButtons: Int = 0
     @Published var bias: Float = 0.0
+    private var manualFocusesEnabled: [AVCaptureDevice: Bool] = [:]
+    private var manualFocuses: [AVCaptureDevice: Float] = [:]
+    @Published var manualFocusPoint: CGPoint?
     @Published var manualFocus: Float = 1.0
-    var isManualFocus = false
+    private var manualFocusMotionAttitude: CMAttitude?
     @Published var showingSettings = false
     @Published var settingsLayout: SettingsLayout = .right
     @Published var showChatMessages = true
@@ -319,7 +322,6 @@ final class Model: NSObject, ObservableObject {
     private var obsSourceScreenshotIsFetching = false
     var obsRecording = false
     @Published var iconImage: String = plainIcon.id
-    @Published var manualFocusPoint: CGPoint?
     @Published var backZoomPresetId = UUID()
     @Published var frontZoomPresetId = UUID()
     @Published var zoomX: Float = 1.0
@@ -330,7 +332,6 @@ final class Model: NSObject, ObservableObject {
     var cameraPosition: AVCaptureDevice.Position?
     var secondCameraPosition: AVCaptureDevice.Position?
     private let motionManager = CMMotionManager()
-    private var manualFocusAttitude: CMAttitude?
     var database: Database {
         settings.database
     }
@@ -3803,8 +3804,8 @@ final class Model: NSObject, ObservableObject {
         ) else {
             return
         }
-        setAutoFocus()
         cameraDevice = preferredCamera(position: position)
+        setFocusAfterCameraAttach()
         cameraZoomLevelToXScale = cameraDevice?
             .getZoomFactorScale(hasUltraWideCamera: hasUltraWideCamera()) ?? 1.0
         (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice?
@@ -4155,13 +4156,10 @@ final class Model: NSObject, ObservableObject {
         } catch let error as NSError {
             logger.error("while locking device for focusPointOfInterest: \(error)")
         }
-        isManualFocus = false
+        manualFocusesEnabled[device] = false
     }
 
-    func setAutoFocus(force: Bool = false) {
-        if manualFocusPoint == nil, !force {
-            return
-        }
+    func setAutoFocus() {
         stopMotionDetection()
         guard
             let device = cameraDevice, device.isFocusPointOfInterestSupported
@@ -4181,7 +4179,7 @@ final class Model: NSObject, ObservableObject {
         } catch let error as NSError {
             logger.error("while locking device for focusPointOfInterest: \(error)")
         }
-        isManualFocus = false
+        manualFocusesEnabled[device] = false
     }
 
     func setManualFocus(lensPosition: Float) {
@@ -4191,6 +4189,7 @@ final class Model: NSObject, ObservableObject {
             makeErrorToast(title: String(localized: "Manual focus not supported for this camera"))
             return
         }
+        stopMotionDetection()
         do {
             try device.lockForConfiguration()
             device.setFocusModeLocked(lensPosition: lensPosition)
@@ -4198,7 +4197,26 @@ final class Model: NSObject, ObservableObject {
         } catch let error as NSError {
             logger.error("while locking device for manual focus: \(error)")
         }
-        isManualFocus = true
+        manualFocusPoint = nil
+        manualFocusesEnabled[device] = true
+        manualFocuses[device] = lensPosition
+    }
+
+    func getIsManualFocusEnabled() -> Bool {
+        guard let device = cameraDevice else {
+            return false
+        }
+        return manualFocusesEnabled[device] ?? false
+    }
+
+    private func setFocusAfterCameraAttach() {
+        guard let device = cameraDevice else {
+            return
+        }
+        manualFocus = manualFocuses[device] ?? 1.0
+        if !getIsManualFocusEnabled() {
+            setAutoFocus()
+        }
     }
 
     func isCameraSupportingManualFocus() -> Bool {
@@ -4211,21 +4229,21 @@ final class Model: NSObject, ObservableObject {
 
     private func startMotionDetection() {
         motionManager.stopDeviceMotionUpdates()
-        manualFocusAttitude = nil
+        manualFocusMotionAttitude = nil
         motionManager.deviceMotionUpdateInterval = 0.2
         motionManager.startDeviceMotionUpdates(to: OperationQueue.main) { data, _ in
             guard let data else {
                 return
             }
             let attitude = data.attitude
-            if self.manualFocusAttitude == nil {
-                self.manualFocusAttitude = attitude
+            if self.manualFocusMotionAttitude == nil {
+                self.manualFocusMotionAttitude = attitude
             }
-            if diffAngles(attitude.pitch, self.manualFocusAttitude!.pitch) > 10 {
+            if diffAngles(attitude.pitch, self.manualFocusMotionAttitude!.pitch) > 10 {
                 self.setAutoFocus()
-            } else if diffAngles(attitude.roll, self.manualFocusAttitude!.roll) > 10 {
+            } else if diffAngles(attitude.roll, self.manualFocusMotionAttitude!.roll) > 10 {
                 self.setAutoFocus()
-            } else if diffAngles(attitude.yaw, self.manualFocusAttitude!.yaw) > 10 {
+            } else if diffAngles(attitude.yaw, self.manualFocusMotionAttitude!.yaw) > 10 {
                 self.setAutoFocus()
             }
         }
