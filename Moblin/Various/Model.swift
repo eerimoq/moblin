@@ -134,13 +134,9 @@ func makeChatPostTextSegments(text: String) -> [ChatPostSegment] {
     return segments
 }
 
-struct ChatPost: Identifiable, Hashable {
+struct ChatPost: Identifiable, Equatable {
     static func == (lhs: ChatPost, rhs: ChatPost) -> Bool {
         return lhs.id == rhs.id
-    }
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
     }
 
     var id: Int

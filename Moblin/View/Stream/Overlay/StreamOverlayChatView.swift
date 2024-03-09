@@ -255,7 +255,7 @@ struct StreamOverlayChatView: View {
             return
         }
         if let lastPost = model.chatPosts.last {
-            reader.scrollTo(lastPost, anchor: .bottom)
+            reader.scrollTo(lastPost.id, anchor: .bottom)
         } else {
             reader.scrollTo(chatId, anchor: .bottom)
         }
@@ -288,7 +288,7 @@ struct StreamOverlayChatView: View {
                                                                 )
                                                             }
                                                         }
-                                                        .id(post)
+                                                        .id(post.id)
                                                     } else if post.isFirstMessage {
                                                         HStack(spacing: 0) {
                                                             Rectangle()
@@ -302,18 +302,18 @@ struct StreamOverlayChatView: View {
                                                                 )
                                                             }
                                                         }
-                                                        .id(post)
+                                                        .id(post.id)
                                                     } else {
                                                         LineView(post: post, chat: model.database.chat)
                                                             .padding([.leading], 3)
-                                                            .id(post)
+                                                            .id(post.id)
                                                     }
                                                 } else {
                                                     Rectangle()
                                                         .fill(.red)
                                                         .frame(width: metrics.size.width, height: 1.5)
                                                         .padding(2)
-                                                        .id(post)
+                                                        .id(post.id)
                                                 }
                                             }
                                         }
