@@ -46,7 +46,7 @@ struct StreamOverlayView: View {
             ZStack {
                 GeometryReader { metrics in
                     StreamOverlayChatView()
-                        .frame(width: metrics.size.width * 0.95)
+                        .frame(width: metrics.size.width * 0.95, height: metrics.size.height * 0.8)
                 }
                 .opacity(model.showChatMessages ? 1 : 0)
                 if !model.showChatMessages {
