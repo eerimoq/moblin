@@ -255,8 +255,9 @@ struct StreamOverlayChatView: View {
             return
         }
         if let lastPost = model.chatPosts.last {
-            logger.info("xxx \(lastPost.id) \(lastPost.segments)")
-            reader.scrollTo(lastPost.id)
+            reader.scrollTo(lastPost.id, anchor: .bottom)
+        } else {
+            reader.scrollTo(chatId, anchor: .bottom)
         }
     }
 
@@ -265,21 +266,94 @@ struct StreamOverlayChatView: View {
             VStack {
                 Spacer(minLength: 0)
                 GeometryReader { metrics in
-                    ScrollViewReader { reader in
-                        ScrollView(showsIndicators: true) {
-                            LazyVStack(alignment: .leading, spacing: 1) {
-                                ForEach(model.chatPosts) { post in
-                                    LineView(post: post, chat: model.database.chat)
-                                        .rotationEffect(Angle(degrees: 180))
-                                        .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
-                                        .padding([.leading], 3)
-                                        .id(post.id)
+                    ChildSizeReader(size: $wholeSize) {
+                        ScrollView(showsIndicators: false) {
+                            ChildSizeReader(size: $scrollViewSize) {
+                                ScrollViewReader { reader in
+                                    VStack {
+                                        Spacer(minLength: 0)
+                                        LazyVStack(alignment: .leading, spacing: 1) {
+                                            ForEach(model.chatPosts) { post in
+                                                if post.user != nil {
+                                                    if post.isAnnouncement {
+                                                        HStack(spacing: 0) {
+                                                            Rectangle()
+                                                                .frame(width: 3)
+                                                                .foregroundColor(.green)
+                                                            VStack(alignment: .leading) {
+                                                                AnnouncementView(chat: model.database.chat)
+                                                                LineView(
+                                                                    post: post,
+                                                                    chat: model.database.chat
+                                                                )
+                                                            }
+                                                        }
+                                                        .id(post.id)
+                                                    } else if post.isFirstMessage {
+                                                        HStack(spacing: 0) {
+                                                            Rectangle()
+                                                                .frame(width: 3)
+                                                                .foregroundColor(.yellow)
+                                                            VStack(alignment: .leading) {
+                                                                FirstMessageView(chat: model.database.chat)
+                                                                LineView(
+                                                                    post: post,
+                                                                    chat: model.database.chat
+                                                                )
+                                                            }
+                                                        }
+                                                        .id(post.id)
+                                                    } else {
+                                                        LineView(post: post, chat: model.database.chat)
+                                                            .padding([.leading], 3)
+                                                            .id(post.id)
+                                                    }
+                                                } else {
+                                                    Rectangle()
+                                                        .fill(.red)
+                                                        .frame(width: metrics.size.width, height: 1.5)
+                                                        .padding(2)
+                                                        .id(post.id)
+                                                }
+                                            }
+                                        }
+                                        .id(chatId)
+                                    }
+                                    .background(
+                                        GeometryReader { proxy in
+                                            Color.clear.preference(
+                                                key: ViewOffsetKey.self,
+                                                value: -1 * proxy.frame(in: .named(spaceName)).origin.y
+                                            )
+                                        }
+                                    )
+                                    .onPreferenceChange(
+                                        ViewOffsetKey.self,
+                                        perform: { scrollViewOffsetFromTop in
+                                            let offset = max(scrollViewOffsetFromTop, 0)
+                                            if offset >= scrollViewSize.height - wholeSize.height - 50 {
+                                                if model.chatPaused, offset >= previousOffset {
+                                                    model.endOfChatReachedWhenPaused()
+                                                }
+                                            } else if !model.chatPaused {
+                                                if !model.chatPosts.isEmpty, model.interactiveChat {
+                                                    model.pauseChat()
+                                                }
+                                            }
+                                            previousOffset = offset
+                                        }
+                                    )
+                                    .onChange(of: model.chatPosts) { _ in
+                                        scrollToBottom(reader: reader)
+                                    }
+                                    .frame(minHeight: metrics.size.height)
+                                    .onAppear {
+                                        scrollToBottom(reader: reader)
+                                    }
                                 }
                             }
                         }
-                        .rotationEffect(Angle(degrees: 180))
-                        .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
-                        .border(.red)
+                        .coordinateSpace(name: spaceName)
                     }
                 }
                 .frame(width: fullMetrics.size.width * model.database.chat.width!,

@@ -1934,9 +1934,9 @@ final class Model: NSObject, ObservableObject {
         }
         while let post = newChatPosts.popFirst() {
             if chatPosts.count > maximumNumberOfChatMessages - 1 {
-                chatPosts.removeLast()
+                chatPosts.removeFirst()
             }
-            chatPosts.prepend(post)
+            chatPosts.append(post)
             sendChatMessageToWatch(post: post)
             numberOfChatPostsPerTick += 1
             streamTotalChatMessages += 1
