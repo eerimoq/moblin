@@ -1375,15 +1375,7 @@ final class Model: NSObject, ObservableObject {
     private func updateCameraLists() {
         externalCameras = listExternalCameras()
         backCameras = listCameras(position: .back)
-        if !backCameras.contains(where: { $0.id == database.backCameraId! }) {
-            database.backCameraId = backCameras.first?.id ?? ""
-            store()
-        }
         frontCameras = listCameras(position: .front)
-        if !frontCameras.contains(where: { $0.id == database.frontCameraId! }) {
-            database.frontCameraId = frontCameras.first?.id ?? ""
-            store()
-        }
     }
 
     @objc func handleCaptureDeviceWasConnected(_: Notification) {
@@ -3371,11 +3363,23 @@ final class Model: NSObject, ObservableObject {
     }
 
     func listCameraPositions() -> [(String, String)] {
-        return cameraPositions.map {
-            ($0, $0)
+        return backCameras.map {
+            ($0.id, "Back \($0.name)")
+        } + frontCameras.map {
+            ($0.id, "Front \($0.name)")
+        } + externalCameras.map {
+            ($0.id, $0.name)
         } + rtmpCameras().map {
             ($0, $0)
-        } + externalCameras.map { ($0.id, $0.name) }
+        }
+    }
+
+    func isBackCamera(cameraId: String) -> Bool {
+        return backCameras.contains(where: { $0.id == cameraId })
+    }
+
+    func isFrontCamera(cameraId: String) -> Bool {
+        return frontCameras.contains(where: { $0.id == cameraId })
     }
 
     func getCameraPositionId(scene: SettingsScene?) -> String {
@@ -3387,38 +3391,58 @@ final class Model: NSObject, ObservableObject {
             if let stream = getRtmpStream(id: scene.rtmpCameraId!) {
                 return stream.camera()
             } else {
-                return String(localized: "Back")
+                return ""
             }
         case .external:
             if !scene.externalCameraId!.isEmpty {
                 return scene.externalCameraId!
             } else {
-                return String(localized: "Back")
+                return ""
             }
-        default:
-            return scene.cameraPosition!.toString()
+        case .back:
+            if !scene.backCameraId!.isEmpty {
+                return scene.backCameraId!
+            } else {
+                return ""
+            }
+        case .front:
+            if !scene.frontCameraId!.isEmpty {
+                return scene.frontCameraId!
+            } else {
+                return ""
+            }
         }
     }
 
     func getCameraPositionName(scene: SettingsScene?) -> String {
         guard let scene else {
-            return ""
+            return "Unknown"
         }
         switch scene.cameraPosition! {
         case .rtmp:
             if let stream = getRtmpStream(id: scene.rtmpCameraId!) {
                 return stream.camera()
             } else {
-                return String(localized: "Back")
+                return "Unknown"
             }
         case .external:
             if !scene.externalCameraName!.isEmpty {
                 return scene.externalCameraName!
             } else {
-                return String(localized: "Back")
+                return "Unknown"
             }
-        default:
-            return scene.cameraPosition!.toString()
+        case .back:
+            if let camera = backCameras.first(where: { $0.id == scene.backCameraId! }) {
+                return "Back \(camera.name)"
+            } else {
+                return "Unknown"
+            }
+        case .front:
+            if let camera = frontCameras.first(where: { $0.id == scene.frontCameraId! }) {
+                return "Front \(camera.name)"
+            } else {
+                return "Unknown"
+            }
         }
     }
 
@@ -4250,12 +4274,14 @@ final class Model: NSObject, ObservableObject {
     }
 
     func preferredCamera(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
-        if position == .back {
-            return AVCaptureDevice(uniqueID: database.backCameraId!)
-        } else if position == .front {
-            return AVCaptureDevice(uniqueID: database.frontCameraId!)
-        } else if let scene = findEnabledScene(id: selectedSceneId) {
-            return AVCaptureDevice(uniqueID: scene.externalCameraId!)
+        if let scene = findEnabledScene(id: selectedSceneId) {
+            if position == .back {
+                return AVCaptureDevice(uniqueID: scene.backCameraId!)
+            } else if position == .front {
+                return AVCaptureDevice(uniqueID: scene.frontCameraId!)
+            } else {
+                return AVCaptureDevice(uniqueID: scene.externalCameraId!)
+            }
         } else {
             return nil
         }

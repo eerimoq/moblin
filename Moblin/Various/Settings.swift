@@ -571,6 +571,8 @@ class SettingsScene: Codable, Identifiable, Equatable {
     var cameraLayout: SettingsSceneCameraLayout? = .single
     var cameraType: SettingsSceneCameraPosition = .back
     var cameraPosition: SettingsSceneCameraPosition? = .back
+    var backCameraId: String? = getBestBackCameraId()
+    var frontCameraId: String? = getBestFrontCameraId()
     var rtmpCameraId: UUID? = .init()
     var externalCameraId: String? = ""
     var externalCameraName: String? = ""
@@ -1510,8 +1512,6 @@ class Database: Codable {
     var tapToFocus: Bool = false
     var bitratePresets: [SettingsBitratePreset] = []
     var iconImage: String = plainIcon.image()
-    var backCameraId: String? = ""
-    var frontCameraId: String? = ""
     var videoStabilizationMode: SettingsVideoStabilizationMode = .off
     var chat: SettingsChat = .init()
     var batteryPercentage: Bool? = true
@@ -1564,10 +1564,12 @@ class Database: Codable {
 private func addDefaultScenes(database: Database) {
     var scene = SettingsScene(name: String(localized: "Back"))
     scene.cameraPosition = .back
+    scene.backCameraId = getBestBackCameraId()
     database.scenes.append(scene)
 
     scene = SettingsScene(name: String(localized: "Front"))
     scene.cameraPosition = .front
+    scene.frontCameraId = getBestFrontCameraId()
     database.scenes.append(scene)
 }
 
@@ -1867,8 +1869,6 @@ private func getDefaultMic() -> SettingsMic {
 
 private func createDefault() -> Database {
     let database = Database()
-    database.backCameraId = getBestBackCameraId()
-    database.frontCameraId = getBestFrontCameraId()
     addDefaultScenes(database: database)
     addDefaultZoomPresets(database: database)
     addDefaultBitratePresets(database: database)
@@ -1982,14 +1982,6 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.maxKeyFrameInterval == nil {
             stream.maxKeyFrameInterval = 2
-            store()
-        }
-        if realDatabase.backCameraId == nil {
-            realDatabase.backCameraId = getBestBackCameraId()
-            store()
-        }
-        if realDatabase.frontCameraId == nil {
-            realDatabase.frontCameraId = ""
             store()
         }
         for scene in realDatabase.scenes where scene.cameraPosition == nil {
@@ -2371,6 +2363,14 @@ final class Settings {
         }
         if realDatabase.chat.usernamesToIgnore == nil {
             realDatabase.chat.usernamesToIgnore = []
+            store()
+        }
+        for scene in realDatabase.scenes where scene.backCameraId == nil {
+            scene.backCameraId = getBestBackCameraId()
+            store()
+        }
+        for scene in realDatabase.scenes where scene.frontCameraId == nil {
+            scene.frontCameraId = getBestFrontCameraId()
             store()
         }
     }

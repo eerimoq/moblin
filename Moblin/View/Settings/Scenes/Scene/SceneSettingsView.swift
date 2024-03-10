@@ -75,16 +75,20 @@ struct SceneSettingsView: View {
         model.sceneUpdated(store: true)
     }
 
-    private func onCameraChange(camera: String) {
-        if isRtmpCamera(camera: camera) {
+    private func onCameraChange(cameraId: String) {
+        if isRtmpCamera(camera: cameraId) {
             scene.cameraPosition = .rtmp
-            scene.rtmpCameraId = model.getRtmpStream(camera: camera)?.id ?? .init()
-        } else if camera == "Back" || camera == "Front" {
-            scene.cameraPosition = SettingsSceneCameraPosition.fromString(value: camera)
+            scene.rtmpCameraId = model.getRtmpStream(camera: cameraId)?.id ?? .init()
+        } else if model.isBackCamera(cameraId: cameraId) {
+            scene.cameraPosition = .back
+            scene.backCameraId = cameraId
+        } else if model.isFrontCamera(cameraId: cameraId) {
+            scene.cameraPosition = .front
+            scene.frontCameraId = cameraId
         } else {
             scene.cameraPosition = .external
-            scene.externalCameraId = camera
-            scene.externalCameraName = model.getExternalCameraName(cameraId: camera)
+            scene.externalCameraId = cameraId
+            scene.externalCameraName = model.getExternalCameraName(cameraId: cameraId)
         }
         model.sceneUpdated(store: true)
     }
