@@ -1877,14 +1877,14 @@ final class Model: NSObject, ObservableObject {
         var numberOfPostsAppended = 0
         while numberOfPostsAppended < 5, let post = pausedChatPosts.popFirst() {
             if post.user == nil {
-                if let lastPost = chatPosts.last, lastPost.user == nil {
+                if let lastPost = chatPosts.first, lastPost.user == nil {
                     continue
                 }
                 if pausedChatPosts.isEmpty {
                     continue
                 }
             }
-            chatPosts.append(post)
+            chatPosts.prepend(post)
             sendChatMessageToWatch(post: post)
             numberOfChatPostsPerTick += 1
             streamTotalChatMessages += 1
@@ -1934,9 +1934,9 @@ final class Model: NSObject, ObservableObject {
         }
         while let post = newChatPosts.popFirst() {
             if chatPosts.count > maximumNumberOfChatMessages - 1 {
-                chatPosts.removeFirst()
+                chatPosts.removeLast()
             }
-            chatPosts.append(post)
+            chatPosts.prepend(post)
             sendChatMessageToWatch(post: post)
             numberOfChatPostsPerTick += 1
             streamTotalChatMessages += 1
