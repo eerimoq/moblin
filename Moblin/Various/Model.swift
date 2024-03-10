@@ -4181,11 +4181,7 @@ final class Model: NSObject, ObservableObject {
 
     func setAutoFocus() {
         stopMotionDetection()
-        guard
-            let device = cameraDevice, device.isFocusPointOfInterestSupported
-        else {
-            logger.warning("Tap to focus not supported for this camera")
-            makeErrorToast(title: String(localized: "Tap to focus not supported for this camera"))
+        guard let device = cameraDevice, device.isFocusPointOfInterestSupported else {
             return
         }
         do {
