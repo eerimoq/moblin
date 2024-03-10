@@ -118,7 +118,7 @@ Main app
 
 - Make phone screen black by pressing a button.
 
-- Supports UVC cameras on iPad.
+- Supports UVC (USB-C) cameras on iPad.
 
 - Basic support for Mac.
 
