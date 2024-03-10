@@ -8,13 +8,19 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
-    Version(version: "0.194.0", date: "2024-03-09", changes: [
+    Version(version: "0.194.0", date: "2024-03-10", changes: [
         "- Change recordings icon in settings to the same icon as the recordings quick button.",
         "- Add SRT connection priorities to remote control. 💡 djandrea.",
         "  - UI is not updated if on connection priorities page.",
-        "- Manual focus. 💡 b3ck and others",
+        "- Manual focus for cameras that supports it (non-triple/dual). 💡 b3ck and others",
         "  - Press the \"Camera\" quick button to set focus.",
-        "    - If not showing, toggle it on in Settings → Display → Quick buttons.",
+        "    - If not showing, toggle it on in Settings -> Display -> Quick buttons.",
+        "- Watch companion app.",
+        "  - Disable chat emotes as they make the app crash now. Maybe started to crash after watchOS update?",
+        "- Fix chat disappearing. 🐛 ariathome and onigiri",
+        "  - Was mainly a problem with small chat window and long chat messages.",
+        "- Camera selection per scene. 💡 JohannesLiv",
+        "  - Removed Setttings → Camera → Back/Front. Select camera in Settings → Scenes → My scene instead.",
     ]),
     Version(version: "0.193.0", date: "2024-03-07", changes: [
         "• Watch companion app.",
