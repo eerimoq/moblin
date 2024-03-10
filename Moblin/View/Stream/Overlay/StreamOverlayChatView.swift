@@ -242,7 +242,6 @@ struct SizePreferenceKey: PreferenceKey {
 }
 
 private var previousOffset = 0.0
-private let chatId = 1
 
 struct StreamOverlayChatView: View {
     @EnvironmentObject var model: Model
@@ -259,7 +258,6 @@ struct StreamOverlayChatView: View {
                         ScrollView(showsIndicators: false) {
                             ChildSizeReader(size: $scrollViewSize) {
                                 VStack {
-                                    Spacer(minLength: 0)
                                     LazyVStack(alignment: .leading, spacing: 1) {
                                         ForEach(model.chatPosts) { post in
                                             if post.user != nil {
@@ -298,7 +296,6 @@ struct StreamOverlayChatView: View {
                                                         .padding([.leading], 3)
                                                         .rotationEffect(Angle(degrees: 180))
                                                         .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
-
                                                 }
                                             } else {
                                                 Rectangle()
@@ -310,6 +307,7 @@ struct StreamOverlayChatView: View {
                                             }
                                         }
                                     }
+                                    Spacer(minLength: 0)
                                 }
                                 .background(
                                     GeometryReader { proxy in
