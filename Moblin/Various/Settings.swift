@@ -480,19 +480,6 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
         self = try SettingsSceneCameraPosition(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .back
     }
-
-    func toString() -> String {
-        switch self {
-        case .back:
-            return String(localized: "Back")
-        case .front:
-            return String(localized: "Front")
-        case .rtmp:
-            return String(localized: "RTMP")
-        case .external:
-            return String(localized: "External")
-        }
-    }
 }
 
 class SettingsScene: Codable, Identifiable, Equatable {

@@ -3348,19 +3348,6 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    private func attachPipLayout(scene: SettingsScene) {
-        switch scene.cameraPosition! {
-        case .back:
-            attachCamera(position: .back, secondPosition: .front)
-        case .front:
-            attachCamera(position: .front, secondPosition: .back)
-        case .rtmp:
-            logger.info("PiP RTMP camera not implemented")
-        case .external:
-            logger.info("PiP external camera not implemented")
-        }
-    }
-
     func listCameraPositions() -> [(String, String)] {
         return backCameras.map {
             ($0.id, "Back \($0.name)")

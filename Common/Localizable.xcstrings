@@ -9046,7 +9046,6 @@
       }
     },
     "Auto cameras use more energy as multiple cameras are powered on, even if only one is used at a time. This allows the phone to quickly change camera when zooming." : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -55901,7 +55900,6 @@
       }
     },
     "The ultra wide camera does not perform well in low light conditions. Likewise, the auto cameras do not perform well when zoom is 0.5-1.0x since the ultra wide camera will be used." : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

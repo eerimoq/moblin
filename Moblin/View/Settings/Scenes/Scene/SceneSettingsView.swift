@@ -6,7 +6,6 @@ struct SceneSettingsView: View {
     @State private var showingAddButton = false
     @State private var expandedWidget: SettingsSceneWidget?
     var scene: SettingsScene
-    @State var showPipSmallCameraDimensions = false
 
     var widgets: [SettingsWidget] {
         model.database.widgets
@@ -57,19 +56,6 @@ struct SceneSettingsView: View {
         return sceneWidget
     }
 
-    private func pipSmall() -> String {
-        switch scene.cameraPosition! {
-        case .back:
-            return SettingsSceneCameraPosition.front.toString()
-        case .front:
-            return SettingsSceneCameraPosition.back.toString()
-        case .rtmp:
-            return SettingsSceneCameraPosition.rtmp.toString()
-        case .external:
-            return SettingsSceneCameraPosition.external.toString()
-        }
-    }
-
     private func onCameraChange(cameraId: String) {
         if isRtmpCamera(camera: cameraId) {
             scene.cameraPosition = .rtmp
@@ -104,6 +90,18 @@ struct SceneSettingsView: View {
                 NavigationLink(destination: InlinePickerView(
                     title: String(localized: "Camera"),
                     onChange: onCameraChange,
+                    footers: [
+                        String(localized: """
+                        The ultra wide camera does not perform well in low light conditions. Likewise, the \
+                        auto cameras do not perform well when zoom is 0.5-1.0x since the ultra wide camera \
+                        will be used.
+                        """),
+                        "",
+                        String(localized: """
+                        Auto cameras use more energy as multiple cameras are powered on, even if only \
+                        one is used at a time. This allows the phone to quickly change camera when zooming.
+                        """),
+                    ],
                     items: model.listCameraPositions().map { id, name in
                         InlinePickerItem(id: id, text: name)
                     },
