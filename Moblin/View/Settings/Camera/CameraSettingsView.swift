@@ -145,10 +145,6 @@ struct CameraSettingsLutsView: View {
 struct CameraSettingsView: View {
     @EnvironmentObject var model: Model
 
-    private func toCameraName(id: String, cameras: [Camera]) -> String {
-        return cameras.first(where: { $0.id == id })?.name ?? ""
-    }
-
     private func currentLut() -> String {
         if model.database.color!.lutEnabled {
             return model.getLogLutById(id: model.database.color!.lut)?.name ?? ""

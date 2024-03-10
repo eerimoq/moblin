@@ -326,7 +326,6 @@ final class Model: NSObject, ObservableObject {
     private var backZoomX: Float = 0.5
     private var frontZoomX: Float = 1.0
     var cameraPosition: AVCaptureDevice.Position?
-    var secondCameraPosition: AVCaptureDevice.Position?
     private let motionManager = CMMotionManager()
     var database: Database {
         settings.database
@@ -3491,12 +3490,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func sceneUpdatedOn(scene: SettingsScene) {
-        switch scene.cameraLayout! {
-        case .single:
-            attachSingleLayout(scene: scene)
-        case .pip:
-            attachPipLayout(scene: scene)
-        }
+        attachSingleLayout(scene: scene)
         if database.color!.lutEnabled {
             media.registerEffect(lutEffect)
         }
@@ -3817,10 +3811,6 @@ final class Model: NSObject, ObservableObject {
             oldCameraDevice: cameraDevice,
             oldPosition: cameraPosition,
             newPosition: position
-        ) || hasCameraChanged(
-            oldCameraDevice: secondCameraDevice,
-            oldPosition: secondCameraPosition,
-            newPosition: secondPosition
         ) else {
             return
         }
@@ -3839,11 +3829,6 @@ final class Model: NSObject, ObservableObject {
             secondCameraDevice = nil
         }
         cameraPosition = position
-        if let secondPosition {
-            secondCameraPosition = secondPosition
-        } else {
-            secondCameraPosition = nil
-        }
         switch position {
         case .back:
             if database.zoom.switchToBack.enabled {
@@ -3887,7 +3872,6 @@ final class Model: NSObject, ObservableObject {
         cameraDevice = nil
         cameraPosition = nil
         secondCameraDevice = nil
-        secondCameraPosition = nil
         videoView.isMirrored = false
         hasZoom = false
         media.attachRtmpCamera(cameraId: cameraId, device: preferredCamera(position: .front))

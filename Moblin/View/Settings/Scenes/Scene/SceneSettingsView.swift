@@ -70,11 +70,6 @@ struct SceneSettingsView: View {
         }
     }
 
-    private func onLayoutChange(layout: String) {
-        scene.cameraLayout = SettingsSceneCameraLayout.fromString(value: layout)
-        model.sceneUpdated(store: true)
-    }
-
     private func onCameraChange(cameraId: String) {
         if isRtmpCamera(camera: cameraId) {
             scene.cameraPosition = .rtmp
@@ -107,62 +102,24 @@ struct SceneSettingsView: View {
             }
             Section {
                 NavigationLink(destination: InlinePickerView(
-                    title: String(localized: "Layout"),
-                    onChange: onLayoutChange,
-                    footers: [
-                        String(localized: "The Picture in Picture layout is experimental and does not work."),
-                    ],
-                    items: InlinePickerItem.fromStrings(values: cameraLayouts),
-                    selectedId: scene.cameraLayout!.toString()
+                    title: String(localized: "Camera"),
+                    onChange: onCameraChange,
+                    items: model.listCameraPositions().map { id, name in
+                        InlinePickerItem(id: id, text: name)
+                    },
+                    selectedId: model.getCameraPositionId(scene: scene)
                 )) {
-                    TextItemView(name: String(localized: "Layout"), value: scene.cameraLayout!.toString())
-                }
-                if scene.cameraLayout == .single {
-                    NavigationLink(destination: InlinePickerView(
-                        title: String(localized: "Camera"),
-                        onChange: onCameraChange,
-                        items: model.listCameraPositions().map { id, name in
-                            InlinePickerItem(id: id, text: name)
-                        },
-                        selectedId: model.getCameraPositionId(scene: scene)
-                    )) {
-                        HStack {
-                            Text(String(localized: "Camera"))
-                            Spacer()
-                            if !model.isSceneActive(scene: scene) {
-                                Image(systemName: "cable.connector.slash")
-                            }
-                            Text(model.getCameraPositionName(scene: scene))
-                                .foregroundColor(.gray)
-                                .lineLimit(1)
+                    HStack {
+                        Text(String(localized: "Camera"))
+                        Spacer()
+                        if !model.isSceneActive(scene: scene) {
+                            Image(systemName: "cable.connector.slash")
                         }
-                    }
-                } else if scene.cameraLayout == .pip {
-                    NavigationLink(destination: InlinePickerView(
-                        title: String(localized: "Large camera"),
-                        onChange: onCameraChange,
-                        items: model.listCameraPositions().map { id, name in
-                            InlinePickerItem(id: id, text: name)
-                        },
-                        selectedId: model.getCameraPositionId(scene: scene)
-                    )) {
-                        TextItemView(
-                            name: String(localized: "Large camera"),
-                            value: model.getCameraPositionName(scene: scene)
-                        )
-                    }
-                    Button(action: {
-                        showPipSmallCameraDimensions.toggle()
-                    }, label: {
-                        TextItemView(name: String(localized: "Small camera"), value: pipSmall())
-                    })
-                    .foregroundColor(.primary)
-                    if showPipSmallCameraDimensions {
-                        SceneCameraPipSmallCameraSettingsView(scene: scene)
+                        Text(model.getCameraPositionName(scene: scene))
+                            .foregroundColor(.gray)
+                            .lineLimit(1)
                     }
                 }
-            } header: {
-                Text("Camera")
             }
             Section {
                 List {

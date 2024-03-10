@@ -31351,6 +31351,7 @@
       }
     },
     "Large camera" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -31587,6 +31588,7 @@
       }
     },
     "Layout" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -41381,6 +41383,7 @@
       }
     },
     "Picture in Picture" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -48461,6 +48464,7 @@
       }
     },
     "Single" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -48933,6 +48937,7 @@
       }
     },
     "Small camera" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -55423,6 +55428,7 @@
       }
     },
     "The Picture in Picture layout is experimental and does not work." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

@@ -187,7 +187,6 @@
 		03BDE2222B24367D00DF193A /* ObsWebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BDE2212B24367D00DF193A /* ObsWebSocket.swift */; };
 		03BDE2262B24656400DF193A /* StreamObsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BDE2252B24656400DF193A /* StreamObsSettingsView.swift */; };
 		03BE504A2B3EB59A004720AF /* IpMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BE50492B3EB59A004720AF /* IpMonitor.swift */; };
-		03C088302B0A939F000990DA /* SceneCameraPipSmallCameraSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C0882F2B0A939F000990DA /* SceneCameraPipSmallCameraSettingsView.swift */; };
 		03C088372B0AFFA8000990DA /* InlinePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C088362B0AFFA8000990DA /* InlinePickerView.swift */; };
 		03C2C2832B5F906E00E2F30B /* SliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C2C2822B5F906E00E2F30B /* SliderView.swift */; };
 		03CB8BCD2B5090C700B96530 /* StreamGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CB8BCC2B5090C700B96530 /* StreamGridView.swift */; };
@@ -435,7 +434,6 @@
 		03BDE2212B24367D00DF193A /* ObsWebSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObsWebSocket.swift; sourceTree = "<group>"; };
 		03BDE2252B24656400DF193A /* StreamObsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamObsSettingsView.swift; sourceTree = "<group>"; };
 		03BE50492B3EB59A004720AF /* IpMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IpMonitor.swift; sourceTree = "<group>"; };
-		03C0882F2B0A939F000990DA /* SceneCameraPipSmallCameraSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneCameraPipSmallCameraSettingsView.swift; sourceTree = "<group>"; };
 		03C088362B0AFFA8000990DA /* InlinePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlinePickerView.swift; sourceTree = "<group>"; };
 		03C2C2822B5F906E00E2F30B /* SliderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderView.swift; sourceTree = "<group>"; };
 		03CB8BCC2B5090C700B96530 /* StreamGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamGridView.swift; sourceTree = "<group>"; };
@@ -590,7 +588,6 @@
 			children = (
 				03A9835C2A9A05D7008FF0DB /* SceneSettingsView.swift */,
 				0315A36F2AA3771F00295443 /* SceneWidgetSettingsView.swift */,
-				03C0882F2B0A939F000990DA /* SceneCameraPipSmallCameraSettingsView.swift */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -1727,7 +1724,6 @@
 				0379BBA52AAD945D00B718B6 /* LocalOverlaysSettingsView.swift in Sources */,
 				0379BB762AA6345400B718B6 /* ButtonSettingsView.swift in Sources */,
 				03FBD1852B3B0DF300757CA9 /* RtmpServerChunkStream.swift in Sources */,
-				03C088302B0A939F000990DA /* SceneCameraPipSmallCameraSettingsView.swift in Sources */,
 				03CB8BCD2B5090C700B96530 /* StreamGridView.swift in Sources */,
 				035E775C2ACC969D00738DCE /* ZoomPresetSettingsView.swift in Sources */,
 				03D10E7A2B64099500B1E436 /* TextEditNavigationView.swift in Sources */,

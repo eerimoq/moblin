@@ -481,21 +481,6 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
             .decode(RawValue.self)) ?? .back
     }
 
-    static func fromString(value: String) -> SettingsSceneCameraPosition {
-        switch value {
-        case String(localized: "Back"):
-            return .back
-        case String(localized: "Front"):
-            return .front
-        case String(localized: "RTMP"):
-            return .rtmp
-        case String(localized: "External"):
-            return .external
-        default:
-            return .back
-        }
-    }
-
     func toString() -> String {
         switch self {
         case .back:
@@ -510,65 +495,10 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
     }
 }
 
-var cameraPositions = SettingsSceneCameraPosition.allCases.filter { position in
-    position != .rtmp && position != .external
-}.map { $0.toString() }
-
-enum SettingsSceneCameraLayout: String, Codable, CaseIterable {
-    case single = "Single"
-    case pip = "Picture in Picture"
-
-    public init(from decoder: Decoder) throws {
-        self = try SettingsSceneCameraLayout(
-            rawValue: decoder.singleValueContainer().decode(RawValue.self)
-        ) ??
-            .single
-    }
-
-    static func fromString(value: String) -> SettingsSceneCameraLayout {
-        switch value {
-        case String(localized: "Single"):
-            return .single
-        case String(localized: "Picture in Picture"):
-            return .pip
-        default:
-            return .single
-        }
-    }
-
-    func toString() -> String {
-        switch self {
-        case .single:
-            return String(localized: "Single")
-        case .pip:
-            return String(localized: "Picture in Picture")
-        }
-    }
-}
-
-var cameraLayouts = SettingsSceneCameraLayout.allCases.map { $0.toString() }
-
-class SettingsSceneCameraLayoutPip: Codable {
-    var x: Double = 65.0
-    var y: Double = 0.0
-    var width: Double = 35.0
-    var height: Double = 35.0
-
-    func clone() -> SettingsSceneCameraLayoutPip {
-        let new = SettingsSceneCameraLayoutPip()
-        new.x = x
-        new.y = y
-        new.width = width
-        new.height = height
-        return new
-    }
-}
-
 class SettingsScene: Codable, Identifiable, Equatable {
     var name: String
     var id: UUID = .init()
     var enabled: Bool = true
-    var cameraLayout: SettingsSceneCameraLayout? = .single
     var cameraType: SettingsSceneCameraPosition = .back
     var cameraPosition: SettingsSceneCameraPosition? = .back
     var backCameraId: String? = getBestBackCameraId()
@@ -576,7 +506,6 @@ class SettingsScene: Codable, Identifiable, Equatable {
     var rtmpCameraId: UUID? = .init()
     var externalCameraId: String? = ""
     var externalCameraName: String? = ""
-    var cameraLayoutPip: SettingsSceneCameraLayoutPip? = .init()
     var widgets: [SettingsSceneWidget] = []
     var buttons: [SettingsSceneButton] = []
 
@@ -595,11 +524,9 @@ class SettingsScene: Codable, Identifiable, Equatable {
     func clone() -> SettingsScene {
         let new = SettingsScene(name: name)
         new.enabled = enabled
-        new.cameraLayout = cameraLayout
         new.cameraType = cameraType
         new.cameraPosition = cameraPosition
         new.rtmpCameraId = rtmpCameraId
-        new.cameraLayoutPip = cameraLayoutPip!.clone()
         for widget in widgets {
             new.widgets.append(widget.clone())
         }
@@ -1970,14 +1897,6 @@ final class Settings {
         }
         if realDatabase.debug!.srtOverheadBandwidth == nil {
             realDatabase.debug!.srtOverheadBandwidth = 25
-            store()
-        }
-        for scene in realDatabase.scenes where scene.cameraLayout == nil {
-            scene.cameraLayout = .single
-            store()
-        }
-        for scene in realDatabase.scenes where scene.cameraLayoutPip == nil {
-            scene.cameraLayoutPip = .init()
             store()
         }
         for stream in realDatabase.streams where stream.maxKeyFrameInterval == nil {
