@@ -8,6 +8,12 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.196.0", date: "2024-03-11", changes: [
+        "• Helpful message when trying to add a widget to a scene when no widgets exists.",
+        "• Fix crash when entering negative height or width for a browser widget. 🐛 Onur",
+        "• Updated spanish translation. ✍️ adriportela95",
+        "• Updated german translation. ✍️ MaurisonX",
+    ]),
     Version(version: "0.195.0", date: "2024-03-11", changes: [
         "• Make manual focus slider follow auto focus. 💡 Tony Mah",
     ]),
