@@ -9,7 +9,7 @@ struct Version {
 // swiftlint:disable line_length
 private let versions = [
     Version(version: "0.195.0", date: "2024-03-11", changes: [
-        "• Make manual focus slider follow auto focus. 💡 Tony Mah"
+        "• Make manual focus slider follow auto focus. 💡 Tony Mah",
     ]),
     Version(version: "0.194.0", date: "2024-03-10", changes: [
         "• Change recordings icon in settings to the same icon as the recordings quick button.",
