@@ -216,7 +216,9 @@ final class Model: NSObject, ObservableObject {
     private var manualFocuses: [AVCaptureDevice: Float] = [:]
     @Published var manualFocusPoint: CGPoint?
     @Published var manualFocus: Float = 1.0
+    var editingManualFocus = false
     private var manualFocusMotionAttitude: CMAttitude?
+    private var focusObservation: NSKeyValueObservation?
     @Published var showingSettings = false
     @Published var settingsLayout: SettingsLayout = .right
     @Published var showChatMessages = true
@@ -4212,6 +4214,28 @@ final class Model: NSObject, ObservableObject {
         } else {
             return false
         }
+    }
+
+    func startObservingFocus() {
+        guard let device = cameraDevice else {
+            return
+        }
+        focusObservation = device.observe(\.lensPosition) { [weak self] _, _ in
+            guard let self else {
+                return
+            }
+            DispatchQueue.main.async {
+                guard !self.editingManualFocus else {
+                    return
+                }
+                self.manualFocuses[device] = device.lensPosition
+                self.manualFocus = device.lensPosition
+            }
+        }
+    }
+
+    func stopObservingFocus() {
+        focusObservation = nil
     }
 
     private func startMotionDetection() {

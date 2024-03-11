@@ -147,8 +147,6 @@ struct StreamSwitcherView: View {
     }
 }
 
-private var editingManualFocus = false
-
 struct CameraView: View {
     @EnvironmentObject var model: Model
     var done: () -> Void
@@ -170,7 +168,7 @@ struct CameraView: View {
                         in: 0 ... 1,
                         step: 0.01,
                         onEditingChanged: { begin in
-                            editingManualFocus = begin
+                            model.editingManualFocus = begin
                             guard !begin else {
                                 return
                             }
@@ -178,7 +176,7 @@ struct CameraView: View {
                         }
                     )
                     .onChange(of: model.manualFocus) { _ in
-                        if editingManualFocus {
+                        if model.editingManualFocus {
                             model.setManualFocus(lensPosition: model.manualFocus)
                         }
                     }
@@ -211,6 +209,12 @@ struct CameraView: View {
                         .frame(width: 60)
                 }
             }
+        }
+        .onAppear {
+            model.startObservingFocus()
+        }
+        .onDisappear {
+            model.stopObservingFocus()
         }
         .navigationTitle("Camera")
         .toolbar {
