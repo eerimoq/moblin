@@ -5161,7 +5161,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "200 por defecto."
           }
         },
@@ -10713,8 +10713,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "La mejor estabilidad posible. Utiliza vinculación. Servicio de terceros pagado."
+            "state" : "translated",
+            "value" : "La mejor estabilidad posible. Utiliza bonding. Servicio de terceros de pago."
           }
         },
         "fr" : {
@@ -13427,7 +13427,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Cambiar la configuración en Moblin en iPhone/iPad."
           }
         },
@@ -14017,7 +14017,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "El chat está vacío."
           }
         },
@@ -14371,7 +14371,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Chat en pausa: %lld mensajes nuevos"
           }
         },
@@ -18265,8 +18265,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Superposición de depuración"
+            "state" : "translated",
+            "value" : "Overlay de depuración"
           }
         },
         "fr" : {
@@ -21675,8 +21675,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Geben Sie die Adresse und den Hafen des Assistenten ein. Zum Beispiel ws://132.23.43.43:2345."
+            "state" : "translated",
+            "value" : "Gebe die Adresse und den Port des Assistenten ein. Zum Beispiel ws://132.23.43.43:2345."
           }
         },
         "el" : {
@@ -21687,8 +21687,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ingrese la dirección y el puerto del asistente. Por ejemplo ws://132.23.43.43:2345."
+            "state" : "translated",
+            "value" : "Ingresa la dirección y el puerto del asistente. Por ejemplo ws://132.23.43.43:2345."
           }
         },
         "fr" : {
@@ -26750,7 +26750,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Voll"
           }
         },
@@ -26762,8 +26762,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Lleno"
+            "state" : "translated",
+            "value" : "Toda la pantalla"
           }
         },
         "fr" : {
@@ -28756,7 +28756,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Hilfe und Unterstützung"
           }
         },
@@ -28768,8 +28768,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ayuda y apoyo"
+            "state" : "translated",
+            "value" : "Ayuda y soporte"
           }
         },
         "fr" : {
@@ -30538,8 +30538,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "charla interactiva"
+            "state" : "translated",
+            "value" : "Chat interactivo"
           }
         },
         "fr" : {
@@ -33476,7 +33476,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Manueller Fokus"
           }
         },
@@ -33488,7 +33488,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Enfoque manual"
           }
         },
@@ -33594,7 +33594,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Manueller Fokus wird für diese Kamera nicht unterstützt"
           }
         },
@@ -33606,7 +33606,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "El enfoque manual no es compatible con esta cámara"
           }
         },
@@ -33712,8 +33712,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Manueller Fokus wird für diese Kamera nicht unterstützt. Verwenden Sie eine Nicht-Triple/Dual-Kamera."
+            "state" : "translated",
+            "value" : "Manueller Fokus wird für diese Kamera nicht unterstützt. Verwende eine Nicht-Dreifach/Dual-Kamera."
           }
         },
         "el" : {
@@ -33724,7 +33724,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "El enfoque manual no es compatible con esta cámara. Utilice una cámara que no sea triple o dual."
           }
         },
@@ -34668,7 +34668,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mensajes"
           }
         },
@@ -38916,8 +38916,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Notificación en mensaje"
+            "state" : "translated",
+            "value" : "Notificación por mensaje"
           }
         },
         "fr" : {
@@ -40096,8 +40096,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Sólo es necesario para chatear."
+            "state" : "translated",
+            "value" : "Sólo es necesario para el chat."
           }
         },
         "fr" : {
@@ -41748,7 +41748,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Regiones de privacidad"
           }
         },
@@ -42929,7 +42929,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Confirmaciones de grabación"
+            "value" : "Confirmación de grabación"
           }
         },
         "fr" : {
@@ -48934,7 +48934,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "SRT-Verbindungsprioritäten"
           }
         },
@@ -48946,7 +48946,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Prioridades de conexión SRT"
           }
         },
@@ -57442,7 +57442,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Desconocido"
           }
         },
@@ -59330,8 +59330,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Nombres de usuario para ignorar"
+            "state" : "translated",
+            "value" : "Nombres de usuario que se ignorarán"
           }
         },
         "fr" : {
@@ -61100,8 +61100,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Mirar"
+            "state" : "translated",
+            "value" : "Apple Watch"
           }
         },
         "fr" : {
@@ -62640,8 +62640,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Su ubicación no se compartirá con ningún servicio cuando se encuentre dentro de una región de privacidad."
+            "state" : "translated",
+            "value" : "Tu ubicación no se compartirá con ningún servicio cuando te encuentres dentro de una región de privacidad."
           }
         },
         "fr" : {
