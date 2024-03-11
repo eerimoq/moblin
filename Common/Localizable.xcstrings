@@ -38427,6 +38427,9 @@
         }
       }
     },
+    "No widgets found. Create widgets in Settings → Scenes → Widgets." : {
+
+    },
     "Noise level" : {
       "localizations" : {
         "de" : {

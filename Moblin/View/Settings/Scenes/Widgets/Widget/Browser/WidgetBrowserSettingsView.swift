@@ -17,6 +17,9 @@ struct WidgetBrowserSettingsView: View {
         guard let width = Int(value) else {
             return
         }
+        guard width > 0 else {
+            return
+        }
         widget.browser.width = width
         model.store()
         model.resetSelectedScene(changeScene: false)
@@ -24,6 +27,9 @@ struct WidgetBrowserSettingsView: View {
 
     private func submitHeight(value: String) {
         guard let height = Int(value) else {
+            return
+        }
+        guard height > 0 else {
             return
         }
         widget.browser.height = height

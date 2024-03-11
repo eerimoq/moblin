@@ -4754,4 +4754,48 @@ extension Model: WCSessionDelegate {
             self.sendAudioLevelToWatch()
         }
     }
+
+    private func handleGetImage(_ message: [String: Any], _ replyHandler: @escaping ([String: Any]) -> Void) {
+        guard let urlString = message["data"] as? String else {
+            replyHandler(["data": Data()])
+            return
+        }
+        guard let url = URL(string: urlString) else {
+            replyHandler(["data": Data()])
+            return
+        }
+        URLSession.shared.dataTask(with: URLRequest(url: url)) { data, response, _ in
+            guard let response = response?.http else {
+                replyHandler(["data": Data()])
+                return
+            }
+            guard response.isSuccessful, let data else {
+                replyHandler(["data": Data()])
+                return
+            }
+            if data.count < 15000 {
+                replyHandler(["data": data])
+            } else {
+                replyHandler(["data": Data()])
+            }
+        }
+        .resume()
+    }
+
+    func session(
+        _: WCSession,
+        didReceiveMessage message: [String: Any],
+        replyHandler: @escaping ([String: Any]) -> Void
+    ) {
+        guard let type = message["type"] as? String else {
+            logger.info("Message type missing")
+            return
+        }
+        switch WatchMessageFromWatch(rawValue: type) {
+        case .getImage:
+            handleGetImage(message, replyHandler)
+        default:
+            logger.info("Unknown message type \(type)")
+        }
+    }
 }

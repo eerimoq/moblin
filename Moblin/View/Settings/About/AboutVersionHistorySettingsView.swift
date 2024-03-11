@@ -17,7 +17,7 @@ private let versions = [
         "  • UI is not updated if on connection priorities page.",
         "• Manual focus for cameras that supports it (non-triple/dual). 💡 b3ck and others",
         "  • Press the \"Camera\" quick button to set focus.",
-        "    • If not showing, toggle it on in Settings -> Display -> Quick buttons.",
+        "    • If not showing, toggle it on in Settings → Display → Quick buttons.",
         "• Watch companion app.",
         "  • Disable chat emotes as they make the app crash now. Maybe started to crash after watchOS update?",
         "• Fix chat disappearing. 🐛 ariathome and onigiri",

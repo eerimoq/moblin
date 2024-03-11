@@ -193,19 +193,25 @@ struct SceneSettingsView: View {
                             }
                         }
                         let form = Form {
-                            Section("Widget name") {
-                                ForEach(widgets) { widget in
-                                    Button(action: {
-                                        scene.widgets
-                                            .append(createSceneWidget(widget: widget))
-                                        model.sceneUpdated(imageEffectChanged: true)
-                                        showingAddWidget = false
-                                    }, label: {
-                                        IconAndTextView(
-                                            image: widgetImage(widget: widget),
-                                            text: widget.name
-                                        )
-                                    })
+                            if widgets.isEmpty {
+                                Section {
+                                    Text("No widgets found. Create widgets in Settings → Scenes → Widgets.")
+                                }
+                            } else {
+                                Section("Widget name") {
+                                    ForEach(widgets) { widget in
+                                        Button(action: {
+                                            scene.widgets
+                                                .append(createSceneWidget(widget: widget))
+                                            model.sceneUpdated(imageEffectChanged: true)
+                                            showingAddWidget = false
+                                        }, label: {
+                                            IconAndTextView(
+                                                image: widgetImage(widget: widget),
+                                                text: widget.name
+                                            )
+                                        })
+                                    }
                                 }
                             }
                         }

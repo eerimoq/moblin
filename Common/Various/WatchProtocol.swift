@@ -8,6 +8,10 @@ enum WatchMessage: String {
     case settings
 }
 
+enum WatchMessageFromWatch: String {
+    case getImage
+}
+
 // periphery:ignore
 struct WatchProtocolChatSegment: Codable {
     var text: String?
