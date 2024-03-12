@@ -2956,6 +2956,7 @@ final class Model: NSObject, ObservableObject {
         guard !isWaitingForAudioLevelResponseFromWatch else {
             return
         }
+        isWaitingForAudioLevelResponseFromWatch = true
         sendMessageToWatch(type: WatchMessage.audioLevel.rawValue,
                            data: audioLevel,
                            replyHandler: { _ in
@@ -2963,12 +2964,12 @@ final class Model: NSObject, ObservableObject {
                                    self.isWaitingForAudioLevelResponseFromWatch = false
                                }
                            },
-                           errorHandler: { _ in
+                           errorHandler: { error in
+                               logger.info("watch: Send audio level error: \(error)")
                                DispatchQueue.main.async {
                                    self.isWaitingForAudioLevelResponseFromWatch = false
                                }
                            })
-        isWaitingForAudioLevelResponseFromWatch = true
     }
 
     private func enqueueWatchChatPost(post: ChatPost) {
@@ -3015,6 +3016,7 @@ final class Model: NSObject, ObservableObject {
             logger.info("watch: Chat message send failed")
             return
         }
+        isWaitingForChatPostResponseFromWatch = true
         sendMessageToWatch(type: WatchMessage.chatMessage.rawValue,
                            data: data,
                            replyHandler: { _ in
@@ -3024,12 +3026,11 @@ final class Model: NSObject, ObservableObject {
                                }
                            },
                            errorHandler: { error in
+                               logger.info("watch: Send chat message error: \(error)")
                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                                   logger.info("watch: Send chat message error: \(error)")
                                    self.handleSendChatMessageComplete()
                                }
                            })
-        isWaitingForChatPostResponseFromWatch = true
     }
 
     private func handleSendChatMessageComplete() {
@@ -3050,7 +3051,7 @@ final class Model: NSObject, ObservableObject {
             logger.info("watch: Discarding preview. Previous transfer not completed.")
             return
         }
-        // logger.info("watch: \(image.count)")
+        isWaitingForPreviewResponseFromWatch = true
         var image = image
         var isFirst = true
         var isLast = false
@@ -3072,9 +3073,9 @@ final class Model: NSObject, ObservableObject {
                         self.handleSendPreviewComplete(isLast: isLastLocal)
                     }
                 },
-                errorHandler: { _ in
+                errorHandler: { error in
+                    logger.info("watch: Send preview error: \(error)")
                     DispatchQueue.main.async {
-                        // logger.debug("watch: Send preview chunk \(isLastLocal) error: \(error)")
                         self.handleSendPreviewComplete(isLast: isLastLocal)
                     }
                 }
@@ -3082,7 +3083,6 @@ final class Model: NSObject, ObservableObject {
             isFirst = false
             nextWatchPreviewId += 1
         }
-        isWaitingForPreviewResponseFromWatch = true
     }
 
     private func handleSendPreviewComplete(isLast: Bool) {
@@ -4757,7 +4757,7 @@ extension Model: WCSessionDelegate {
 
     private func makePng(_ uiImage: UIImage) -> Data {
         for height in [35.0, 25.0, 15.0] {
-            guard var pngData = uiImage.resize(height: height).pngData() else {
+            guard let pngData = uiImage.resize(height: height).pngData() else {
                 return Data()
             }
             if pngData.count < 15000 {
