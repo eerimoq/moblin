@@ -40,8 +40,6 @@ class Model: NSObject, ObservableObject {
     @Published var preview: UIImage?
     @Published var showPreviewDisconnected = true
     private var latestPreviewDate = Date()
-    private var previewTransfer = Data()
-    private var nextPreviewTransferId: Int64 = -1
     var settings = WatchSettings()
     private var latestChatMessageDate = Date()
     private var numberOfNormalPostsInChat = 0
@@ -194,42 +192,23 @@ class Model: NSObject, ObservableObject {
             logger.info("Invalid settings message")
             return
         }
-        do {
-            self.settings = try JSONDecoder().decode(WatchSettings.self, from: settings)
-            if self.settings.chat.timestampEnabled == nil {
-                self.settings.chat.timestampEnabled = false
-            }
-            if self.settings.chat.notificationOnMessage == nil {
-                self.settings.chat.notificationOnMessage = false
-            }
-        } catch {}
+        self.settings = try JSONDecoder().decode(WatchSettings.self, from: settings)
+        if self.settings.chat.timestampEnabled == nil {
+            self.settings.chat.timestampEnabled = false
+        }
+        if self.settings.chat.notificationOnMessage == nil {
+            self.settings.chat.notificationOnMessage = false
+        }
     }
 
     private func handlePreview(_ message: [String: Any]) throws {
-        guard let isFirst = message["isFirst"] as? Bool,
-              let isLast = message["isLast"] as? Bool,
-              let id = message["id"] as? Int64,
-              let data = message["data"] as? Data
-        else {
+        guard let image = message["data"] as? Data else {
             logger.info("Invalid preview message")
             return
         }
-        if isFirst {
-            nextPreviewTransferId = id + 1
-            previewTransfer = data
-        } else if id == nextPreviewTransferId {
-            previewTransfer += data
-            nextPreviewTransferId += 1
-        } else {
-            nextPreviewTransferId = -1
-            return
-        }
-        if isLast {
-            preview = UIImage(data: previewTransfer)
-            showPreviewDisconnected = false
-            latestPreviewDate = Date()
-            nextPreviewTransferId = -1
-        }
+        preview = UIImage(data: image)
+        showPreviewDisconnected = false
+        latestPreviewDate = Date()
     }
 }
 
@@ -264,27 +243,6 @@ extension Model: WCSessionDelegate {
                     try self.handleSpeedAndTotal(message)
                 case .settings:
                     try self.handleSettings(message)
-                default:
-                    logger.info("Unknown message type \(type)")
-                }
-            } catch {}
-        }
-    }
-
-    func session(
-        _: WCSession,
-        didReceiveMessage message: [String: Any],
-        replyHandler: ([String: Any]) -> Void
-    ) {
-        guard let type = message["type"] as? String else {
-            logger.info("Message type missing")
-            replyHandler([:])
-            return
-        }
-        DispatchQueue.main.async {
-            self.numberOfMessagesReceived += 1
-            do {
-                switch WatchMessage(rawValue: type) {
                 case .chatMessage:
                     try self.handleChatMessage(message)
                 case .preview:
@@ -296,7 +254,6 @@ extension Model: WCSessionDelegate {
                 }
             } catch {}
         }
-        replyHandler([:])
     }
 
     func sessionReachabilityDidChange(_: WCSession) {

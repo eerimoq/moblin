@@ -262,10 +262,6 @@ final class Model: NSObject, ObservableObject {
     @Published var chatPostsTotal: Int = 0
     private var watchChatPosts: Deque<WatchProtocolChatMessage> = []
     private var nextWatchChatPostId = 1
-    private var isWaitingForChatPostResponseFromWatch = false
-    private var isWaitingForPreviewResponseFromWatch = false
-    private var isWaitingForAudioLevelResponseFromWatch = false
-    private var nextWatchPreviewId: Int64 = 1
     private var chatSpeedTicks = 0
     @Published var numberOfViewers = noValue
     var numberOfViewersUpdateDate = Date()
@@ -1745,6 +1741,7 @@ final class Model: NSObject, ObservableObject {
                 self.updateAudioLevel()
             }
             self.updateChat()
+            self.trySendNextChatPostToWatch()
         })
     }
 
@@ -2953,23 +2950,7 @@ final class Model: NSObject, ObservableObject {
         guard isWatchReachable() else {
             return
         }
-        guard !isWaitingForAudioLevelResponseFromWatch else {
-            return
-        }
-        isWaitingForAudioLevelResponseFromWatch = true
-        sendMessageToWatch(type: WatchMessage.audioLevel.rawValue,
-                           data: audioLevel,
-                           replyHandler: { _ in
-                               DispatchQueue.main.async {
-                                   self.isWaitingForAudioLevelResponseFromWatch = false
-                               }
-                           },
-                           errorHandler: { error in
-                               logger.info("watch: Send audio level error: \(error)")
-                               DispatchQueue.main.async {
-                                   self.isWaitingForAudioLevelResponseFromWatch = false
-                               }
-                           })
+        sendMessageToWatch(type: WatchMessage.audioLevel.rawValue, data: audioLevel)
     }
 
     private func enqueueWatchChatPost(post: ChatPost) {
@@ -3004,9 +2985,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func trySendNextChatPostToWatch() {
-        guard isWatchReachable(), !isWaitingForChatPostResponseFromWatch,
-              let post = watchChatPosts.first
-        else {
+        guard isWatchReachable(), let post = watchChatPosts.popFirst() else {
             return
         }
         var data: Data
@@ -3016,80 +2995,18 @@ final class Model: NSObject, ObservableObject {
             logger.info("watch: Chat message send failed")
             return
         }
-        isWaitingForChatPostResponseFromWatch = true
-        sendMessageToWatch(type: WatchMessage.chatMessage.rawValue,
-                           data: data,
-                           replyHandler: { _ in
-                               DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                                   _ = self.watchChatPosts.popFirst()
-                                   self.handleSendChatMessageComplete()
-                               }
-                           },
-                           errorHandler: { error in
-                               logger.info("watch: Send chat message error: \(error)")
-                               DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                                   self.handleSendChatMessageComplete()
-                               }
-                           })
-    }
-
-    private func handleSendChatMessageComplete() {
-        isWaitingForChatPostResponseFromWatch = false
-        trySendNextChatPostToWatch()
+        sendMessageToWatch(type: WatchMessage.chatMessage.rawValue, data: data)
     }
 
     private func sendChatMessageToWatch(post: ChatPost) {
         enqueueWatchChatPost(post: post)
-        trySendNextChatPostToWatch()
     }
 
     private func sendPreviewToWatch(image: Data) {
         guard isWatchReachable() else {
             return
         }
-        guard !isWaitingForPreviewResponseFromWatch else {
-            logger.info("watch: Discarding preview. Previous transfer not completed.")
-            return
-        }
-        isWaitingForPreviewResponseFromWatch = true
-        var image = image
-        var isFirst = true
-        var isLast = false
-        while !isLast {
-            let chunk = image.prefix(50000)
-            image = image.advanced(by: chunk.count)
-            if image.isEmpty {
-                isLast = true
-            }
-            let isLastLocal = isLast
-            WCSession.default.sendMessage(
-                ["type": WatchMessage.preview.rawValue,
-                 "isFirst": isFirst,
-                 "isLast": isLast,
-                 "id": nextWatchPreviewId,
-                 "data": chunk],
-                replyHandler: { _ in
-                    DispatchQueue.main.async {
-                        self.handleSendPreviewComplete(isLast: isLastLocal)
-                    }
-                },
-                errorHandler: { error in
-                    logger.info("watch: Send preview error: \(error)")
-                    DispatchQueue.main.async {
-                        self.handleSendPreviewComplete(isLast: isLastLocal)
-                    }
-                }
-            )
-            isFirst = false
-            nextWatchPreviewId += 1
-        }
-    }
-
-    private func handleSendPreviewComplete(isLast: Bool) {
-        // logger.debug("watch: Is last \(isLast)")
-        if isLast {
-            isWaitingForPreviewResponseFromWatch = false
-        }
+        sendMessageToWatch(type: WatchMessage.preview.rawValue, data: image)
     }
 
     private func sendSettingsToWatch() {
