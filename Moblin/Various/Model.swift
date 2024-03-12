@@ -4801,6 +4801,7 @@ extension Model: WCSessionDelegate {
     ) {
         guard let type = message["type"] as? String else {
             logger.info("Message type missing")
+            replyHandler([:])
             return
         }
         switch WatchMessageFromWatch(rawValue: type) {
@@ -4808,6 +4809,7 @@ extension Model: WCSessionDelegate {
             handleGetImage(message, replyHandler)
         default:
             logger.info("Unknown message type \(type)")
+            replyHandler([:])
         }
     }
 }

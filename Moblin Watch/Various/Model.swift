@@ -278,6 +278,7 @@ extension Model: WCSessionDelegate {
     ) {
         guard let type = message["type"] as? String else {
             logger.info("Message type missing")
+            replyHandler([:])
             return
         }
         DispatchQueue.main.async {
