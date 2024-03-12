@@ -1,7 +1,7 @@
 import SwiftUI
 import WatchConnectivity
 
-class Cache {
+private class Cache {
     private var cache: [URL: Image] = [:]
     private var waitingForResponse = false
 

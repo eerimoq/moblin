@@ -6,6 +6,20 @@
 
 import SwiftUI
 
+private class Cache {
+    private var cache: [URL: Image] = [:]
+
+    func get(_ url: URL) -> Image? {
+        return cache[url]
+    }
+
+    func set(_ url: URL, _ image: Image) {
+        cache[url] = image
+    }
+}
+
+private let cache = Cache()
+
 struct CacheAsyncImage<Content, Content2>: View where Content: View, Content2: View {
     private let url: URL
     private let scale: CGFloat
@@ -24,30 +38,16 @@ struct CacheAsyncImage<Content, Content2>: View where Content: View, Content2: V
     }
 
     var body: some View {
-        if let image = ImageCache[url] {
+        if let image = cache.get(url) {
             content(image)
         } else {
             AsyncImage(url: url,
                        scale: scale,
-                       content: { cacheAndRender(image: $0) },
+                       content: {
+                           cache.set(url, $0)
+                           return content($0)
+                       },
                        placeholder: placeholder)
-        }
-    }
-
-    private func cacheAndRender(image: Image) -> some View {
-        ImageCache[url] = image
-        return content(image)
-    }
-}
-
-private enum ImageCache {
-    private static var cache: [URL: Image] = [:]
-    static subscript(url: URL) -> Image? {
-        get {
-            return ImageCache.cache[url]
-        }
-        set {
-            ImageCache.cache[url] = newValue
         }
     }
 }
