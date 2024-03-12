@@ -34,7 +34,7 @@ struct ChatView: View {
                                 Text(text)
                             }
                             if let url = segment.url {
-                                CacheAsyncImage(url: url) { image in
+                                WatchCacheAsyncImage(url: url) { image in
                                     image
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)

@@ -48,7 +48,7 @@ private class Cache {
 
 private let cache = Cache()
 
-struct CacheAsyncImage<Content, Content2>: View where Content: View, Content2: View {
+struct WatchCacheAsyncImage<Content, Content2>: View where Content: View, Content2: View {
     private let url: URL
     private let scale: CGFloat
     private let content: (Image) -> Content
