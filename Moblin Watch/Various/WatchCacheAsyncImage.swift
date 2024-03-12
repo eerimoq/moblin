@@ -3,6 +3,7 @@ import WatchConnectivity
 
 private class Cache {
     private var cache: [URL: Image] = [:]
+    private var waiters: [URL: [(Image) -> Void]] = [:]
     private var waitingForResponse = false
 
     private func fetchImage(_ url: URL) {
@@ -13,6 +14,7 @@ private class Cache {
             "type": "getImage",
             "data": url.absoluteString,
         ]
+        waitingForResponse = true
         WCSession.default.sendMessage(message, replyHandler: { message in
             guard let data = message["data"] as? Data else {
                 return
@@ -24,25 +26,37 @@ private class Cache {
                 } else {
                     self.set(url, Image("UnsupportedEmotePlaceholder"))
                 }
+                if let (url, _) = self.waiters.first {
+                    self.fetchImage(url)
+                }
             }
         }, errorHandler: { _ in
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 self.waitingForResponse = false
+                self.waiters.removeAll()
             }
         })
-        waitingForResponse = true
     }
 
-    func get(_ url: URL) -> Image? {
+    func get(_ url: URL, _ onImage: @escaping (Image) -> Void) -> Image? {
         if let image = cache[url] {
             return image
         }
+        if waiters[url] == nil {
+            waiters[url] = []
+        }
+        waiters[url]?.append(onImage)
         fetchImage(url)
         return nil
     }
 
     func set(_ url: URL, _ image: Image) {
         cache[url] = image
+        if let onImages = waiters.removeValue(forKey: url) {
+            for onImage in onImages {
+                onImage(image)
+            }
+        }
     }
 }
 
@@ -53,6 +67,7 @@ struct WatchCacheAsyncImage<Content, Content2>: View where Content: View, Conten
     private let scale: CGFloat
     private let content: (Image) -> Content
     private let placeholder: () -> Content2
+    @State var image: Image?
 
     init(url: URL,
          scale: CGFloat = 1,
@@ -65,9 +80,15 @@ struct WatchCacheAsyncImage<Content, Content2>: View where Content: View, Conten
         self.placeholder = placeholder
     }
 
+    private func onImage(image: Image) {
+        self.image = image
+    }
+
     var body: some View {
-        if let image = cache.get(url) {
+        if let image = cache.get(url, onImage) {
             content(image)
+        } else if let image {
+            image
         } else {
             placeholder()
         }

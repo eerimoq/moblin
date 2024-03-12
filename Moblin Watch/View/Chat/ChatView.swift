@@ -39,9 +39,7 @@ struct ChatView: View {
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
                                 } placeholder: {
-                                    Image("NoEmotePlaceholder")
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
+                                    EmptyView()
                                 }
                                 .frame(height: CGFloat(fontSize() * 1.5))
                                 Text(" ")
