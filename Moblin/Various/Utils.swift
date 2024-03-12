@@ -22,6 +22,17 @@ extension UIImage {
         }
         return scaledImage
     }
+
+    func resize(height: CGFloat) -> UIImage {
+        let size = CGSize(width: size.width * (height / size.height), height: height)
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        let image = UIGraphicsImageRenderer(size: size, format: format).image { _ in
+            draw(in: CGRect(origin: .zero, size: size))
+        }
+
+        return image.withRenderingMode(renderingMode)
+    }
 }
 
 func widgetImage(widget: SettingsWidget) -> String {

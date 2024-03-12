@@ -4755,6 +4755,18 @@ extension Model: WCSessionDelegate {
         }
     }
 
+    private func makePng(_ uiImage: UIImage) -> Data {
+        for height in [35.0, 25.0, 15.0] {
+            guard var pngData = uiImage.resize(height: height).pngData() else {
+                return Data()
+            }
+            if pngData.count < 15000 {
+                return pngData
+            }
+        }
+        return Data()
+    }
+
     private func handleGetImage(_ message: [String: Any], _ replyHandler: @escaping ([String: Any]) -> Void) {
         guard let urlString = message["data"] as? String else {
             replyHandler(["data": Data()])
@@ -4773,11 +4785,11 @@ extension Model: WCSessionDelegate {
                 replyHandler(["data": Data()])
                 return
             }
-            if data.count < 15000 {
-                replyHandler(["data": data])
-            } else {
+            guard let uiImage = UIImage(data: data) else {
                 replyHandler(["data": Data()])
+                return
             }
+            replyHandler(["data": self.makePng(uiImage)])
         }
         .resume()
     }

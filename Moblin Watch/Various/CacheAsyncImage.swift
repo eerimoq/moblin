@@ -17,16 +17,16 @@ private class Cache {
             guard let data = message["data"] as? Data else {
                 return
             }
-            DispatchQueue.main.async {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 self.waitingForResponse = false
                 if let uiImage = UIImage(data: data) {
                     self.set(url, Image(uiImage: uiImage))
                 } else {
-                    self.set(url, Image("Placeholder"))
+                    self.set(url, Image("UnsupportedEmotePlaceholder"))
                 }
             }
         }, errorHandler: { _ in
-            DispatchQueue.main.async {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 self.waitingForResponse = false
             }
         })
