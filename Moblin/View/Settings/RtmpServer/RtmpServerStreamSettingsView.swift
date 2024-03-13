@@ -135,21 +135,25 @@ struct RtmpServerStreamSettingsView: View {
                 Text("The stream name is shown in the list of cameras in scene settings.")
             }
             Section {
-                List {
-                    ForEach(model.ipStatuses, id: \.name) { status in
+                if model.rtmpServerEnabled() {
+                    List {
+                        ForEach(model.ipStatuses, id: \.name) { status in
+                            InterfaceView(
+                                port: port,
+                                streamKey: stream.streamKey,
+                                image: urlImage(interfaceType: status.interfaceType),
+                                ip: status.ip
+                            )
+                        }
                         InterfaceView(
                             port: port,
                             streamKey: stream.streamKey,
-                            image: urlImage(interfaceType: status.interfaceType),
-                            ip: status.ip
+                            image: "personalhotspot",
+                            ip: "172.20.10.1"
                         )
                     }
-                    InterfaceView(
-                        port: port,
-                        streamKey: stream.streamKey,
-                        image: "personalhotspot",
-                        ip: "172.20.10.1"
-                    )
+                } else {
+                    Text("Enable the RTMP server to see URLs.")
                 }
             } header: {
                 Text("Publish URLs")
