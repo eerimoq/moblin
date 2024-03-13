@@ -15,6 +15,7 @@ enum RemoteControlRequest: Codable {
     case setBitratePreset(id: UUID)
     case setMic(id: String)
     case setSrtConnectionPriority(id: UUID, priority: Int, enabled: Bool)
+    case setSrtConnectionPrioritiesEnabled(enabled: Bool)
     case reloadBrowserWidgets
 }
 
@@ -95,14 +96,15 @@ struct RemoteControlSettingsSrtConnectionPriority: Codable, Identifiable {
 }
 
 struct RemoteControlSettingsSrt: Codable {
-    var connectionPriorities: [RemoteControlSettingsSrtConnectionPriority] = []
+    var connectionPrioritiesEnabled: Bool
+    var connectionPriorities: [RemoteControlSettingsSrtConnectionPriority]
 }
 
 struct RemoteControlSettings: Codable {
-    var scenes: [RemoteControlSettingsScene] = []
-    var bitratePresets: [RemoteControlSettingsBitratePreset] = []
-    var mics: [RemoteControlSettingsMic] = []
-    var srt: RemoteControlSettingsSrt? = .init()
+    var scenes: [RemoteControlSettingsScene]
+    var bitratePresets: [RemoteControlSettingsBitratePreset]
+    var mics: [RemoteControlSettingsMic]
+    var srt: RemoteControlSettingsSrt
 }
 
 struct RemoteControlState: Codable {

@@ -66,10 +66,22 @@ private struct RemoteControlSrtConnectionPriorityView: View {
 }
 
 private struct RemoteControlSrtConnectionPrioritiesView: View {
+    @EnvironmentObject var model: Model
     var srt: RemoteControlSettingsSrt
+    @State var enabled: Bool
 
     var body: some View {
         Form {
+            Section {
+                Toggle(isOn: Binding(get: {
+                    enabled
+                }, set: { value in
+                    enabled = value
+                    model.remoteControlAssistantSetSrtConnectionPriorityEnabled(enabled: value)
+                })) {
+                    Text("Enabled")
+                }
+            }
             Section {
                 ForEach(srt.connectionPriorities) { priority in
                     RemoteControlSrtConnectionPriorityView(
@@ -243,12 +255,10 @@ struct ControlBarRemoteControlAssistantView: View {
                                     .remoteControlAssistantSetBitratePreset(id: model
                                         .remoteControlBitrate)
                             }
-                            if let srt = settings.srt {
-                                NavigationLink(
-                                    destination: RemoteControlSrtConnectionPrioritiesView(srt: srt)
-                                ) {
-                                    Text("SRT connection priorities")
-                                }
+                            NavigationLink(destination: RemoteControlSrtConnectionPrioritiesView(srt: settings
+                                    .srt, enabled: settings.srt.connectionPrioritiesEnabled))
+                            {
+                                Text("SRT connection priorities")
                             }
                         } else {
                             Text("No settings received yet.")

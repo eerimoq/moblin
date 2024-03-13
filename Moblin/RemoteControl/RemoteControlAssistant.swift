@@ -142,6 +142,13 @@ class RemoteControlAssistant {
         performRequestNoResponseData(data: .reloadBrowserWidgets, onSuccess: onSuccess)
     }
 
+    func setSrtConnectionPrioritiesEnabled(enabled: Bool, onSuccess: @escaping () -> Void) {
+        performRequestNoResponseData(
+            data: .setSrtConnectionPrioritiesEnabled(enabled: enabled),
+            onSuccess: onSuccess
+        )
+    }
+
     func setSrtConnectionPriority(id: UUID, priority: Int, enabled: Bool, onSuccess: @escaping () -> Void) {
         performRequestNoResponseData(
             data: .setSrtConnectionPriority(id: id, priority: priority, enabled: enabled),

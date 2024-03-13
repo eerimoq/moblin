@@ -2761,6 +2761,12 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
+    func remoteControlAssistantSetSrtConnectionPriorityEnabled(enabled: Bool) {
+        remoteControlAssistant?.setSrtConnectionPrioritiesEnabled(
+            enabled: enabled
+        ) {}
+    }
+
     func remoteControlAssistantSetSrtConnectionPriority(priority: RemoteControlSettingsSrtConnectionPriority) {
         remoteControlAssistant?.setSrtConnectionPriority(
             id: priority.id,
@@ -4462,17 +4468,16 @@ extension Model: RemoteControlStreamerDelegate {
 
     func getSettings(onComplete: @escaping (RemoteControlSettings) -> Void) {
         DispatchQueue.main.async {
-            var settings = RemoteControlSettings()
-            settings.scenes = self.database.scenes.map { scene in
+            let scenes = self.database.scenes.map { scene in
                 RemoteControlSettingsScene(id: scene.id, name: scene.name)
             }
-            settings.mics = self.listMics().map { mic in
+            let mics = self.listMics().map { mic in
                 RemoteControlSettingsMic(id: mic.id, name: mic.name)
             }
-            settings.bitratePresets = self.database.bitratePresets.map { preset in
+            let bitratePresets = self.database.bitratePresets.map { preset in
                 RemoteControlSettingsBitratePreset(id: preset.id, bitrate: preset.bitrate)
             }
-            settings.srt!.connectionPriorities = self.stream.srt.connectionPriorities!.priorities
+            let connectionPriorities = self.stream.srt.connectionPriorities!.priorities
                 .map { priority in
                     RemoteControlSettingsSrtConnectionPriority(
                         id: priority.id,
@@ -4481,7 +4486,16 @@ extension Model: RemoteControlStreamerDelegate {
                         enabled: priority.enabled!
                     )
                 }
-            onComplete(settings)
+            let connectionPrioritiesEnabled = self.stream.srt.connectionPriorities!.enabled
+            onComplete(RemoteControlSettings(
+                scenes: scenes,
+                bitratePresets: bitratePresets,
+                mics: mics,
+                srt: RemoteControlSettingsSrt(
+                    connectionPrioritiesEnabled: connectionPrioritiesEnabled,
+                    connectionPriorities: connectionPriorities
+                )
+            ))
         }
     }
 
@@ -4578,6 +4592,15 @@ extension Model: RemoteControlStreamerDelegate {
     func reloadBrowserWidgets(onComplete: @escaping () -> Void) {
         DispatchQueue.main.async {
             self.reloadBrowserWidgets()
+            onComplete()
+        }
+    }
+
+    func setSrtConnectionPrioritiesEnabled(enabled: Bool, onComplete: @escaping () -> Void) {
+        DispatchQueue.main.async {
+            self.stream.srt.connectionPriorities!.enabled = enabled
+            self.store()
+            self.updateSrtlaPriorities()
             onComplete()
         }
     }
