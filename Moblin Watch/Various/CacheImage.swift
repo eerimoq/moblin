@@ -62,22 +62,14 @@ private class Cache {
 
 private let cache = Cache()
 
-struct WatchCacheAsyncImage<Content, Content2>: View where Content: View, Content2: View {
+struct CacheImage<Content>: View where Content: View {
     private let url: URL
-    private let scale: CGFloat
     private let content: (Image) -> Content
-    private let placeholder: () -> Content2
     @State var image: Image?
 
-    init(url: URL,
-         scale: CGFloat = 1,
-         @ViewBuilder content: @escaping (Image) -> Content,
-         @ViewBuilder placeholder: @escaping () -> Content2)
-    {
+    init(url: URL, @ViewBuilder content: @escaping (Image) -> Content) {
         self.url = url
-        self.scale = scale
         self.content = content
-        self.placeholder = placeholder
     }
 
     private func onImage(image: Image) {
@@ -90,7 +82,7 @@ struct WatchCacheAsyncImage<Content, Content2>: View where Content: View, Conten
         } else if let image {
             image
         } else {
-            placeholder()
+            EmptyView()
         }
     }
 

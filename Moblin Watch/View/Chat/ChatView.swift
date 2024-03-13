@@ -34,12 +34,10 @@ struct ChatView: View {
                                 Text(text)
                             }
                             if let url = segment.url {
-                                WatchCacheAsyncImage(url: url) { image in
+                                CacheImage(url: url) { image in
                                     image
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
-                                } placeholder: {
-                                    EmptyView()
                                 }
                                 .frame(height: CGFloat(fontSize() * 1.5))
                                 Text(" ")
