@@ -21789,7 +21789,11 @@
         }
       }
     },
+    "Enter one of the URLs into the RTMP publisher device to send video to this stream. Usually enter the WiFi or Personal Hotspot URL." : {
+
+    },
     "Enter one of the URLs into the RTMP publisher device to send video to this stream. Usually enter the WiFi URL." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

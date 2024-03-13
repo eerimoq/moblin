@@ -1,6 +1,37 @@
 import Network
 import SwiftUI
 
+private struct InterfaceView: View {
+    @EnvironmentObject var model: Model
+    var port: UInt16
+    var streamKey: String
+    var image: String
+    var ip: String
+
+    private func streamUrl(address: String) -> String {
+        return rtmpStreamUrl(address: address, port: port, streamKey: streamKey)
+    }
+
+    var body: some View {
+        HStack {
+            if streamKey.isEmpty {
+                Text("Stream key missing")
+            } else {
+                Image(systemName: image)
+                Text(streamUrl(address: ip))
+            }
+            Spacer()
+            Button(action: {
+                UIPasteboard.general.string = streamUrl(address: ip)
+                model.makeToast(title: "URL copied to clipboard")
+            }, label: {
+                Image(systemName: "doc.on.doc")
+            })
+            .disabled(streamKey.isEmpty)
+        }
+    }
+}
+
 struct RtmpServerStreamSettingsView: View {
     @EnvironmentObject var model: Model
     var port: UInt16
@@ -47,10 +78,6 @@ struct RtmpServerStreamSettingsView: View {
         model.store()
         model.reloadRtmpServer()
         model.objectWillChange.send()
-    }
-
-    private func streamUrl(address: String) -> String {
-        return rtmpStreamUrl(address: address, port: port, streamKey: stream.streamKey)
     }
 
     private func urlImage(interfaceType: NWInterface.InterfaceType) -> String {
@@ -110,23 +137,19 @@ struct RtmpServerStreamSettingsView: View {
             Section {
                 List {
                     ForEach(model.ipStatuses, id: \.name) { status in
-                        HStack {
-                            if stream.streamKey.isEmpty {
-                                Text("Stream key missing")
-                            } else {
-                                Image(systemName: urlImage(interfaceType: status.interfaceType))
-                                Text(streamUrl(address: status.ip))
-                            }
-                            Spacer()
-                            Button(action: {
-                                UIPasteboard.general.string = streamUrl(address: status.ip)
-                                model.makeToast(title: "URL copied to clipboard")
-                            }, label: {
-                                Image(systemName: "doc.on.doc")
-                            })
-                            .disabled(stream.streamKey.isEmpty)
-                        }
+                        InterfaceView(
+                            port: port,
+                            streamKey: stream.streamKey,
+                            image: urlImage(interfaceType: status.interfaceType),
+                            ip: status.ip
+                        )
                     }
+                    InterfaceView(
+                        port: port,
+                        streamKey: stream.streamKey,
+                        image: "personalhotspot",
+                        ip: "172.20.10.1"
+                    )
                 }
             } header: {
                 Text("Publish URLs")
@@ -134,7 +157,7 @@ struct RtmpServerStreamSettingsView: View {
                 VStack(alignment: .leading) {
                     Text("""
                     Enter one of the URLs into the RTMP publisher device to send video \
-                    to this stream. Usually enter the WiFi URL.
+                    to this stream. Usually enter the WiFi or Personal Hotspot URL.
                     """)
                 }
             }
