@@ -8,6 +8,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.199.0", date: "2024-03-13", changes: [
+        "• Always show Personal Hotspot RTMP URL in RTMP server stream settings. 💡 vi",
+        "  • Kind of experimental. Works on my phone.",
+        "• Only show RTMP publish URLs when RTMP server is enabled.",
+        "• Disable audio bitrate setting when live.",
+        "• Toggle to enable/disable connection priorities in remote control. 💡 djandrea.",
+    ]),
     Version(version: "0.198.0", date: "2024-03-12", changes: [
         "• Watch companion app.",
         "  • Show emotes immediately. No Moblin icon placeholder.",
