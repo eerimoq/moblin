@@ -31,6 +31,7 @@ struct StreamAudioSettingsView: View {
                     Text(formatBytesPerSecond(speed: Int64(calcBitrate())))
                         .frame(width: 90)
                 }
+                .disabled(stream.enabled && model.isLive)
             } header: {
                 Text("Bitrate")
             } footer: {
