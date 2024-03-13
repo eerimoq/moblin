@@ -37,16 +37,18 @@ struct CacheAsyncImage<Content, Content2>: View where Content: View, Content2: V
         self.placeholder = placeholder
     }
 
+    private func cacheAndRender(image: Image) -> some View {
+        cache.set(url, image)
+        return content(image)
+    }
+
     var body: some View {
         if let image = cache.get(url) {
             content(image)
         } else {
             AsyncImage(url: url,
                        scale: scale,
-                       content: {
-                           cache.set(url, $0)
-                           return content($0)
-                       },
+                       content: { cacheAndRender(image: $0) },
                        placeholder: placeholder)
         }
     }
