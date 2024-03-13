@@ -116,8 +116,8 @@ class Model: NSObject, ObservableObject {
                                    timestamp: message.timestamp))
     }
 
-    private func handleChatMessage(_ message: [String: Any]) throws {
-        guard let data = message["data"] as? Data else {
+    private func handleChatMessage(_ data: Any) throws {
+        guard let data = data as? Data else {
             logger.info("Invalid chat message message")
             return
         }
@@ -169,8 +169,8 @@ class Model: NSObject, ObservableObject {
         }
     }
 
-    private func handleSpeedAndTotal(_ message: [String: Any]) throws {
-        guard let speedAndTotal = message["data"] as? String else {
+    private func handleSpeedAndTotal(_ data: Any) throws {
+        guard let speedAndTotal = data as? String else {
             logger.info("Invalid speed and total message")
             return
         }
@@ -178,8 +178,8 @@ class Model: NSObject, ObservableObject {
         latestSpeedAndTotalDate = Date()
     }
 
-    private func handleAudioLevel(_ message: [String: Any]) throws {
-        guard let audioLevel = message["data"] as? Float else {
+    private func handleAudioLevel(_ data: Any) throws {
+        guard let audioLevel = data as? Float else {
             logger.info("Invalid audio level message")
             return
         }
@@ -187,8 +187,8 @@ class Model: NSObject, ObservableObject {
         latestAudioLevel = Date()
     }
 
-    private func handleSettings(_ message: [String: Any]) throws {
-        guard let settings = message["data"] as? Data else {
+    private func handleSettings(_ data: Any) throws {
+        guard let settings = data as? Data else {
             logger.info("Invalid settings message")
             return
         }
@@ -201,8 +201,8 @@ class Model: NSObject, ObservableObject {
         }
     }
 
-    private func handlePreview(_ message: [String: Any]) throws {
-        guard let image = message["data"] as? Data else {
+    private func handlePreview(_ data: Any) throws {
+        guard let image = data as? Data else {
             logger.info("Invalid preview message")
             return
         }
@@ -231,26 +231,24 @@ extension Model: WCSessionDelegate {
     }
 
     func session(_: WCSession, didReceiveMessage message: [String: Any]) {
-        guard let type = message["type"] as? String else {
-            logger.info("Message type missing")
+        guard let (type, data) = WatchMessageToWatch.unpack(message) else {
+            logger.info("watch: Invalid message")
             return
         }
         DispatchQueue.main.async {
             self.numberOfMessagesReceived += 1
             do {
-                switch WatchMessage(rawValue: type) {
+                switch type {
                 case .speedAndTotal:
-                    try self.handleSpeedAndTotal(message)
+                    try self.handleSpeedAndTotal(data)
                 case .settings:
-                    try self.handleSettings(message)
+                    try self.handleSettings(data)
                 case .chatMessage:
-                    try self.handleChatMessage(message)
+                    try self.handleChatMessage(data)
                 case .preview:
-                    try self.handlePreview(message)
+                    try self.handlePreview(data)
                 case .audioLevel:
-                    try self.handleAudioLevel(message)
-                default:
-                    logger.info("Unknown message type \(type)")
+                    try self.handleAudioLevel(data)
                 }
             } catch {}
         }

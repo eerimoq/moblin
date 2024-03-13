@@ -1,15 +1,55 @@
 import Foundation
 
-enum WatchMessage: String {
+enum WatchMessageToWatch: String {
     case chatMessage
     case speedAndTotal
     case audioLevel
     case preview
     case settings
+
+    static func pack(type: WatchMessageToWatch, data: Any) -> [String: Any] {
+        return [
+            "type": type.rawValue,
+            "data": data,
+        ]
+    }
+
+    static func unpack(_ message: [String: Any]) -> (WatchMessageToWatch, Any)? {
+        guard let type = message["type"] as? String else {
+            return nil
+        }
+        guard let type = WatchMessageToWatch(rawValue: type) else {
+            return nil
+        }
+        guard let data = message["data"] else {
+            return nil
+        }
+        return (type, data)
+    }
 }
 
 enum WatchMessageFromWatch: String {
     case getImage
+
+    static func pack(type: WatchMessageFromWatch, data: Any) -> [String: Any] {
+        return [
+            "type": type.rawValue,
+            "data": data,
+        ]
+    }
+
+    static func unpack(_ message: [String: Any]) -> (WatchMessageFromWatch, Any)? {
+        guard let type = message["type"] as? String else {
+            return nil
+        }
+        guard let type = WatchMessageFromWatch(rawValue: type) else {
+            return nil
+        }
+        guard let data = message["data"] else {
+            return nil
+        }
+        return (type, data)
+    }
 }
 
 // periphery:ignore

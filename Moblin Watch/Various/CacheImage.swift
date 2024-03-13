@@ -10,11 +10,8 @@ private class Cache {
         guard !waitingForResponse else {
             return
         }
-        let message = [
-            "type": "getImage",
-            "data": url.absoluteString,
-        ]
         waitingForResponse = true
+        let message = WatchMessageFromWatch.pack(type: .getImage, data: url.absoluteString)
         WCSession.default.sendMessage(message, replyHandler: { message in
             guard let data = message["data"] as? Data else {
                 return

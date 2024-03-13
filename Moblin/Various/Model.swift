@@ -2927,13 +2927,13 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func sendMessageToWatch(
-        type: String,
+        type: WatchMessageToWatch,
         data: Any,
         replyHandler: (([String: Any]) -> Void)? = nil,
         errorHandler: ((Error) -> Void)? = nil
     ) {
         WCSession.default.sendMessage(
-            ["type": type, "data": data],
+            WatchMessageToWatch.pack(type: type, data: data),
             replyHandler: replyHandler,
             errorHandler: errorHandler
         )
@@ -2943,14 +2943,14 @@ final class Model: NSObject, ObservableObject {
         guard isWatchReachable() else {
             return
         }
-        sendMessageToWatch(type: WatchMessage.speedAndTotal.rawValue, data: speedAndTotal)
+        sendMessageToWatch(type: .speedAndTotal, data: speedAndTotal)
     }
 
     private func sendAudioLevelToWatch() {
         guard isWatchReachable() else {
             return
         }
-        sendMessageToWatch(type: WatchMessage.audioLevel.rawValue, data: audioLevel)
+        sendMessageToWatch(type: .audioLevel, data: audioLevel)
     }
 
     private func enqueueWatchChatPost(post: ChatPost) {
@@ -2995,7 +2995,7 @@ final class Model: NSObject, ObservableObject {
             logger.info("watch: Chat message send failed")
             return
         }
-        sendMessageToWatch(type: WatchMessage.chatMessage.rawValue, data: data)
+        sendMessageToWatch(type: .chatMessage, data: data)
     }
 
     private func sendChatMessageToWatch(post: ChatPost) {
@@ -3006,7 +3006,7 @@ final class Model: NSObject, ObservableObject {
         guard isWatchReachable() else {
             return
         }
-        sendMessageToWatch(type: WatchMessage.preview.rawValue, data: image)
+        sendMessageToWatch(type: .preview, data: image)
     }
 
     private func sendSettingsToWatch() {
@@ -3015,7 +3015,7 @@ final class Model: NSObject, ObservableObject {
         }
         do {
             let settings = try JSONEncoder().encode(database.watch)
-            sendMessageToWatch(type: WatchMessage.settings.rawValue, data: settings)
+            sendMessageToWatch(type: .settings, data: settings)
         } catch {}
     }
 
@@ -4684,8 +4684,8 @@ extension Model: WCSessionDelegate {
         return Data()
     }
 
-    private func handleGetImage(_ message: [String: Any], _ replyHandler: @escaping ([String: Any]) -> Void) {
-        guard let urlString = message["data"] as? String else {
+    private func handleGetImage(_ data: Any, _ replyHandler: @escaping ([String: Any]) -> Void) {
+        guard let urlString = data as? String else {
             replyHandler(["data": Data()])
             return
         }
@@ -4716,17 +4716,14 @@ extension Model: WCSessionDelegate {
         didReceiveMessage message: [String: Any],
         replyHandler: @escaping ([String: Any]) -> Void
     ) {
-        guard let type = message["type"] as? String else {
-            logger.info("Message type missing")
+        guard let (type, data) = WatchMessageFromWatch.unpack(message) else {
+            logger.info("watch: Invalid message")
             replyHandler([:])
             return
         }
-        switch WatchMessageFromWatch(rawValue: type) {
+        switch type {
         case .getImage:
-            handleGetImage(message, replyHandler)
-        default:
-            logger.info("Unknown message type \(type)")
-            replyHandler([:])
+            handleGetImage(data, replyHandler)
         }
     }
 }
