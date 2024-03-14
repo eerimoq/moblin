@@ -8,6 +8,10 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.200.0", date: "2024-03-14", changes: [
+        "• Make remote control assistant listen on all interfaces.",
+        "• Show list of remote control assistant URLs.",
+    ]),
     Version(version: "0.199.0", date: "2024-03-13", changes: [
         "• Always show Personal Hotspot RTMP URL in RTMP server stream settings. 💡 vi",
         "  • Kind of experimental. Works on my phone.",
