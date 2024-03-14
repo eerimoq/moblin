@@ -8,8 +8,8 @@ private struct InterfaceView: View {
     var image: String
     var ip: String
 
-    private func streamUrl(address: String) -> String {
-        return rtmpStreamUrl(address: address, port: port, streamKey: streamKey)
+    private func streamUrl() -> String {
+        return rtmpStreamUrl(address: ip, port: port, streamKey: streamKey)
     }
 
     var body: some View {
@@ -18,11 +18,11 @@ private struct InterfaceView: View {
                 Text("Stream key missing")
             } else {
                 Image(systemName: image)
-                Text(streamUrl(address: ip))
+                Text(streamUrl())
             }
             Spacer()
             Button(action: {
-                UIPasteboard.general.string = streamUrl(address: ip)
+                UIPasteboard.general.string = streamUrl()
                 model.makeToast(title: "URL copied to clipboard")
             }, label: {
                 Image(systemName: "doc.on.doc")
@@ -78,23 +78,6 @@ struct RtmpServerStreamSettingsView: View {
         model.store()
         model.reloadRtmpServer()
         model.objectWillChange.send()
-    }
-
-    private func urlImage(interfaceType: NWInterface.InterfaceType) -> String {
-        switch interfaceType {
-        case .other:
-            return "questionmark"
-        case .wifi:
-            return "wifi"
-        case .cellular:
-            return "antenna.radiowaves.left.and.right"
-        case .wiredEthernet:
-            return "cable.connector"
-        case .loopback:
-            return "questionmark"
-        @unknown default:
-            return "questionmark"
-        }
     }
 
     var body: some View {

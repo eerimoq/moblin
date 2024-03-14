@@ -21795,6 +21795,9 @@
         }
       }
     },
+    "Enter one of the URLs as \"Assistant URL\" in the streamer device to connect to this device." : {
+
+    },
     "Enter one of the URLs into the RTMP publisher device to send video to this stream. Usually enter the WiFi or Personal Hotspot URL." : {
 
     },
@@ -46701,6 +46704,7 @@
       }
     },
     "Server address" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

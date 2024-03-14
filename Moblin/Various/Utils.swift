@@ -1,5 +1,6 @@
 import AVKit
 import MapKit
+import Network
 import SwiftUI
 
 extension UIImage {
@@ -372,5 +373,22 @@ extension MKCoordinateRegion: Equatable {
             return false
         }
         return true
+    }
+}
+
+func urlImage(interfaceType: NWInterface.InterfaceType) -> String {
+    switch interfaceType {
+    case .other:
+        return "questionmark"
+    case .wifi:
+        return "wifi"
+    case .cellular:
+        return "antenna.radiowaves.left.and.right"
+    case .wiredEthernet:
+        return "cable.connector"
+    case .loopback:
+        return "questionmark"
+    @unknown default:
+        return "questionmark"
     }
 }

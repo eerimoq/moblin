@@ -2705,7 +2705,6 @@ final class Model: NSObject, ObservableObject {
         }
         let client = database.remoteControl!.client
         remoteControlAssistant = RemoteControlAssistant(
-            address: client.address,
             port: client.port,
             password: database.remoteControl!.password!,
             delegate: self

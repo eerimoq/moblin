@@ -19,7 +19,6 @@ private func randomString() -> String {
 }
 
 class RemoteControlAssistant {
-    private let address: String
     private let port: UInt16
     private let password: String
     private var connected: Bool = false
@@ -35,12 +34,10 @@ class RemoteControlAssistant {
     private var salt: String = ""
 
     init(
-        address: String,
         port: UInt16,
         password: String,
         delegate: RemoteControlAssistantDelegate
     ) {
-        self.address = address
         self.port = port
         self.password = password
         self.delegate = delegate
@@ -158,7 +155,7 @@ class RemoteControlAssistant {
 
     private func startInternal() {
         do {
-            try server.start(port: Endpoint.Port(port), interface: address)
+            try server.start(port: Endpoint.Port(port))
             stopRetryStartTimer()
         } catch {
             logger.debug("remote-control-assistant: Failed to start server with error \(error)")

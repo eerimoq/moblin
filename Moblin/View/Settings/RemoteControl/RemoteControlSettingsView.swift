@@ -1,5 +1,30 @@
 import SwiftUI
 
+private struct InterfaceView: View {
+    @EnvironmentObject var model: Model
+    var port: UInt16
+    var image: String
+    var ip: String
+
+    private func streamUrl() -> String {
+        return "ws://\(ip):\(port)"
+    }
+
+    var body: some View {
+        HStack {
+            Image(systemName: image)
+            Text(streamUrl())
+            Spacer()
+            Button(action: {
+                UIPasteboard.general.string = streamUrl()
+                model.makeToast(title: "URL copied to clipboard")
+            }, label: {
+                Image(systemName: "doc.on.doc")
+            })
+        }
+    }
+}
+
 struct PasswordView: View {
     @Environment(\.dismiss) var dismiss
     @State var value: String
@@ -69,12 +94,6 @@ struct RemoteControlSettingsView: View {
         model.reloadRemoteControlStreamer()
     }
 
-    private func submitAssistantAddress(value: String) {
-        model.database.remoteControl!.client.address = value.trim()
-        model.store()
-        model.reloadRemoteControlAssistant()
-    }
-
     private func submitAssistantPort(value: String) {
         guard let port = UInt16(value.trim()) else {
             return
@@ -140,12 +159,6 @@ struct RemoteControlSettingsView: View {
                     Text("Enabled")
                 }
                 TextEditNavigationView(
-                    title: String(localized: "Server address"),
-                    value: model.database.remoteControl!.client.address,
-                    onSubmit: submitAssistantAddress,
-                    placeholder: "32.143.32.12"
-                )
-                TextEditNavigationView(
                     title: String(localized: "Server port"),
                     value: String(model.database.remoteControl!.client.port),
                     onSubmit: submitAssistantPort,
@@ -158,6 +171,31 @@ struct RemoteControlSettingsView: View {
                 Enable to let a streamer device connect to this device. Once connected, \
                 this device can monitor and control the streamer device.
                 """)
+            }
+            if model.database.remoteControl!.client.enabled {
+                Section {
+                    List {
+                        ForEach(model.ipStatuses, id: \.name) { status in
+                            InterfaceView(
+                                port: model.database.remoteControl!.client.port,
+                                image: urlImage(interfaceType: status.interfaceType),
+                                ip: status.ip
+                            )
+                        }
+                        InterfaceView(
+                            port: model.database.remoteControl!.client.port,
+                            image: "personalhotspot",
+                            ip: "172.20.10.1"
+                        )
+                    }
+                } footer: {
+                    VStack(alignment: .leading) {
+                        Text("""
+                        Enter one of the URLs as "Assistant URL" in the streamer device to \
+                        connect to this device.
+                        """)
+                    }
+                }
             }
         }
         .navigationTitle("Remote control")
