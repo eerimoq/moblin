@@ -2732,8 +2732,7 @@ final class Model: NSObject, ObservableObject {
 
     func isRemoteControlAssistantConfigured() -> Bool {
         let client = database.remoteControl!.client
-        return client.enabled && !client.address.isEmpty && client.port > 0 && !database.remoteControl!
-            .password!.isEmpty
+        return client.enabled && client.port > 0 && !database.remoteControl!.password!.isEmpty
     }
 
     func remoteControlAssistantSetScene(id: UUID) {
