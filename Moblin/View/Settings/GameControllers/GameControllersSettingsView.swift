@@ -16,6 +16,9 @@ struct GameControllersSettingsView: View {
     var body: some View {
         Form {
             Section {
+                Text("Use game controllers to zoom, set scene, and more, from a distance.")
+            }
+            Section {
                 List {
                     ForEach(model.database.gameControllers!) { gameController in
                         NavigationLink(

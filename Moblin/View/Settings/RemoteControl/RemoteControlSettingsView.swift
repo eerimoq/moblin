@@ -87,6 +87,9 @@ struct RemoteControlSettingsView: View {
     var body: some View {
         Form {
             Section {
+                Text("Control and monitor Moblin from another device.")
+            }
+            Section {
                 NavigationLink(destination: PasswordView(
                     value: model.database.remoteControl!.password!,
                     onSubmit: submitPassword

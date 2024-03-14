@@ -16361,6 +16361,9 @@
         }
       }
     },
+    "Control and monitor Moblin from another device." : {
+
+    },
     "Controller" : {
       "localizations" : {
         "de" : {
@@ -58614,6 +58617,9 @@
           }
         }
       }
+    },
+    "Use game controllers to zoom, set scene, and more, from a distance." : {
+
     },
     "Use https://streamscharts.com/tools/convert-username to convert your channel name to your channel id." : {
       "localizations" : {
