@@ -185,7 +185,7 @@ struct RemoteControlSettingsView: View {
                         InterfaceView(
                             port: model.database.remoteControl!.client.port,
                             image: "personalhotspot",
-                            ip: "172.20.10.1"
+                            ip: personalHotspotLocalAddress
                         )
                     }
                 } footer: {

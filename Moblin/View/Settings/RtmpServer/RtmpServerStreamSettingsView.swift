@@ -132,7 +132,7 @@ struct RtmpServerStreamSettingsView: View {
                             port: port,
                             streamKey: stream.streamKey,
                             image: "personalhotspot",
-                            ip: "172.20.10.1"
+                            ip: personalHotspotLocalAddress
                         )
                     }
                 } else {

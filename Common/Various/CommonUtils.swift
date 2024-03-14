@@ -1,11 +1,13 @@
 import AVKit
 import MapKit
+import Network
 import SwiftUI
 
 let iconWidth = 32.0
 let firstReconnectTime = 7.0
 let buttonSize: CGFloat = 40
 let maximumNumberOfWatchChatMessages = 20
+let personalHotspotLocalAddress = "172.20.10.1"
 
 func nextReconnectTime(_ reconnectTime: Double) -> Double {
     return min(reconnectTime * 1.3, 60)
@@ -400,5 +402,22 @@ extension WatchProtocolColor {
             green: colorScale(green),
             blue: colorScale(blue)
         )
+    }
+}
+
+func urlImage(interfaceType: NWInterface.InterfaceType) -> String {
+    switch interfaceType {
+    case .other:
+        return "questionmark"
+    case .wifi:
+        return "wifi"
+    case .cellular:
+        return "antenna.radiowaves.left.and.right"
+    case .wiredEthernet:
+        return "cable.connector"
+    case .loopback:
+        return "questionmark"
+    @unknown default:
+        return "questionmark"
     }
 }
