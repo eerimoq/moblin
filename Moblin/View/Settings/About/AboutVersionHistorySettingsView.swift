@@ -8,6 +8,9 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.201.0", date: "2024-03-15", changes: [
+        "• Slightly bigger and always dark color theme zoom preset and scene selection pickers.",
+    ]),
     Version(version: "0.200.0", date: "2024-03-14", changes: [
         "• Make remote control assistant listen on all interfaces.",
         "• Show list of remote control assistant URLs.",
