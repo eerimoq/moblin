@@ -405,9 +405,9 @@ class SettingsStream: Codable, Identifiable, Equatable {
 
     func bitrateString() -> String {
         var bitrate = formatBytesPerSecond(speed: Int64(bitrate))
-        if getProtocol() == .srt && srt.adaptiveBitrateEnabled! {
+        if getProtocol() == .srt && (srt.adaptiveBitrateEnabled ?? false) {
             bitrate = "<\(bitrate)"
-        } else if getProtocol() == .rtmp && rtmp!.adaptiveBitrateEnabled {
+        } else if getProtocol() == .rtmp && (rtmp?.adaptiveBitrateEnabled ?? false) {
             bitrate = "<\(bitrate)"
         }
         return bitrate
