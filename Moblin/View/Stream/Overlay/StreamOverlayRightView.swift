@@ -1,5 +1,58 @@
 import SwiftUI
 
+private let segmentHeight = 40.0
+private let zoomSegmentWidth = 50.0
+private let sceneSegmentWidth = 70.0
+private let pickerBorderColor = Color.gray
+private var pickerBackgroundColor = Color.black.opacity(0.6)
+
+private struct SegmentedPicker<T: Equatable, Content: View>: View {
+    @Namespace private var selectionAnimation
+    @Binding var selectedItem: T?
+    private let items: [T]
+    private let content: (T) -> Content
+
+    init(_ items: [T],
+         selectedItem: Binding<T?>,
+         @ViewBuilder content: @escaping (T) -> Content)
+    {
+        _selectedItem = selectedItem
+        self.items = items
+        self.content = content
+    }
+
+    @ViewBuilder func overlay(for item: T) -> some View {
+        if item == selectedItem {
+            RoundedRectangle(cornerRadius: 6)
+                .fill(.gray.opacity(0.6))
+                .padding(2)
+                .matchedGeometryEffect(id: "selectedSegmentHighlight", in: selectionAnimation)
+        }
+    }
+
+    public var body: some View {
+        HStack(spacing: 0) {
+            ForEach(self.items.indices, id: \.self) { index in
+                ZStack {
+                    Rectangle()
+                        .overlay(self.overlay(for: self.items[index]))
+                        .foregroundColor(.black.opacity(0.1))
+                    Button(action: {
+                        withAnimation(.linear.speed(1.5)) {
+                            self.selectedItem = self.items[index]
+                        }
+                    }, label: {
+                        self.content(self.items[index])
+                    })
+                }
+                Divider()
+                    .background(pickerBorderColor)
+            }
+        }
+        .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
 struct RightOverlayView: View {
     @EnvironmentObject var model: Model
 
@@ -107,66 +160,83 @@ struct RightOverlayView: View {
             if !model.showDrawOnStream {
                 if database.show.zoomPresets && model.hasZoom {
                     if model.cameraPosition == .front {
-                        Picker("", selection: $model.frontZoomPresetId) {
-                            ForEach(database.zoom.front) { preset in
-                                Text(preset.name)
-                                    .tag(preset.id)
+                        SegmentedPicker(database.zoom.front, selectedItem: Binding(get: {
+                            database.zoom.front.first { $0.id == model.frontZoomPresetId }
+                        }, set: { value in
+                            if let value {
+                                model.frontZoomPresetId = value.id
                             }
+                        })) {
+                            Text($0.name)
+                                .font(.subheadline)
+                                .frame(width: zoomSegmentWidth, height: segmentHeight)
                         }
                         .onChange(of: model.frontZoomPresetId) { id in
                             model.setCameraZoomPreset(id: id)
                         }
-                        .pickerStyle(.segmented)
-                        .padding([.bottom], 1)
-                        .background(Color(uiColor: .systemBackground).opacity(0.8))
-                        .frame(width: CGFloat(50 * database.zoom.front.count))
+                        .background(pickerBackgroundColor)
+                        .foregroundColor(.white)
+                        .frame(width: zoomSegmentWidth * Double(database.zoom.front.count))
                         .cornerRadius(7)
                         .overlay(
                             RoundedRectangle(cornerRadius: 7)
-                                .stroke(.secondary)
+                                .stroke(pickerBorderColor)
                         )
                         .padding([.bottom], 5)
                     } else {
-                        Picker("", selection: $model.backZoomPresetId) {
-                            ForEach(model.backZoomPresets()) { preset in
-                                Text(preset.name)
-                                    .tag(preset.id)
+                        SegmentedPicker(model.backZoomPresets(), selectedItem: Binding(get: {
+                            model.backZoomPresets().first { $0.id == model.backZoomPresetId }
+                        }, set: { value in
+                            if let value {
+                                model.backZoomPresetId = value.id
                             }
+                        })) {
+                            Text($0.name)
+                                .font(.subheadline)
+                                .frame(width: zoomSegmentWidth, height: segmentHeight)
                         }
                         .onChange(of: model.backZoomPresetId) { id in
                             model.setCameraZoomPreset(id: id)
                         }
-                        .pickerStyle(.segmented)
-                        .padding([.bottom], 1)
-                        .background(Color(uiColor: .systemBackground).opacity(0.8))
-                        .frame(width: CGFloat(50 * model.backZoomPresets().count))
+                        .background(pickerBackgroundColor)
+                        .foregroundColor(.white)
+                        .frame(width: zoomSegmentWidth * Double(model.backZoomPresets().count))
                         .cornerRadius(7)
                         .overlay(
                             RoundedRectangle(cornerRadius: 7)
-                                .stroke(.secondary)
+                                .stroke(pickerBorderColor)
                         )
                         .padding([.bottom], 5)
                     }
                 }
-                Picker("", selection: $model.sceneIndex) {
-                    ForEach(0 ..< model.enabledScenes.count, id: \.self) { id in
-                        let scene = model.enabledScenes[id]
-                        Text(scene.name)
-                            .tag(scene.id)
+                SegmentedPicker(model.enabledScenes, selectedItem: Binding(get: {
+                    if model.sceneIndex < model.enabledScenes.count {
+                        model.enabledScenes[model.sceneIndex]
+                    } else {
+                        nil
                     }
+                }, set: { value in
+                    if let value, let index = model.enabledScenes.firstIndex(of: value) {
+                        model.sceneIndex = index
+                    } else {
+                        model.sceneIndex = 0
+                    }
+                })) {
+                    Text($0.name)
+                        .font(.subheadline)
+                        .frame(width: sceneSegmentWidth, height: segmentHeight)
                 }
                 .onChange(of: model.sceneIndex) { tag in
                     model.setSceneId(id: model.enabledScenes[tag].id)
                     model.sceneUpdated(store: false, scrollQuickButtons: true)
                 }
-                .pickerStyle(.segmented)
-                .padding([.bottom], 1)
-                .background(Color(uiColor: .systemBackground).opacity(0.8))
-                .frame(width: CGFloat(70 * model.enabledScenes.count))
+                .background(pickerBackgroundColor)
+                .foregroundColor(.white)
+                .frame(width: sceneSegmentWidth * Double(model.enabledScenes.count))
                 .cornerRadius(7)
                 .overlay(
                     RoundedRectangle(cornerRadius: 7)
-                        .stroke(.secondary)
+                        .stroke(pickerBorderColor)
                 )
             }
         }

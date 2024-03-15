@@ -982,7 +982,7 @@ class SettingsShow: Codable {
     var browserWidgets: Bool? = true
 }
 
-class SettingsZoomPreset: Codable, Identifiable {
+class SettingsZoomPreset: Codable, Identifiable, Equatable {
     var id: UUID
     var name: String = ""
     var level: Float = 1.0
@@ -993,6 +993,10 @@ class SettingsZoomPreset: Codable, Identifiable {
         self.name = name
         self.level = level
         self.x = x
+    }
+
+    static func == (lhs: SettingsZoomPreset, rhs: SettingsZoomPreset) -> Bool {
+        return lhs.id == rhs.id
     }
 }
 
