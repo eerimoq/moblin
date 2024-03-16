@@ -80,7 +80,6 @@
 		035E775C2ACC969D00738DCE /* ZoomPresetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035E775B2ACC969D00738DCE /* ZoomPresetSettingsView.swift */; };
 		035E9E372A9A02D6009D4F5A /* MoblinApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035E9E362A9A02D6009D4F5A /* MoblinApp.swift */; };
 		035E9E3B2A9A02D7009D4F5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */; };
-		035E9E3E2A9A02D7009D4F5A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 035E9E3D2A9A02D7009D4F5A /* Preview Assets.xcassets */; };
 		0361EA722B96D37B005923ED /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0361EA712B96D37B005923ED /* SettingsView.swift */; };
 		0361EA752B96D412005923ED /* DebugSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0361EA742B96D412005923ED /* DebugSettingsView.swift */; };
 		0361EA772B96D476005923ED /* DebugLogSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0361EA762B96D476005923ED /* DebugLogSettingsView.swift */; };
@@ -337,7 +336,6 @@
 		035E9E332A9A02D6009D4F5A /* Moblin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Moblin.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		035E9E362A9A02D6009D4F5A /* MoblinApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinApp.swift; sourceTree = "<group>"; };
 		035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		035E9E3D2A9A02D7009D4F5A /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		0361EA712B96D37B005923ED /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		0361EA742B96D412005923ED /* DebugSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSettingsView.swift; sourceTree = "<group>"; };
 		0361EA762B96D476005923ED /* DebugLogSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogSettingsView.swift; sourceTree = "<group>"; };
@@ -827,9 +825,6 @@
 		035E9E352A9A02D6009D4F5A /* Moblin */ = {
 			isa = PBXGroup;
 			children = (
-				032BC5B22AD8E18000DEC883 /* Info.plist */,
-				03F9775E2BA5A8E8000F5739 /* PrivacyInfo.xcprivacy */,
-				031852A42B21890A00AEAD0D /* InfoPlist.strings */,
 				034D26FD2B3A034A0097C619 /* RtmpServer */,
 				03BC115B2AE4BD6200C38FC4 /* Emotes */,
 				030D487F2B35E4AF003B2014 /* Platforms */,
@@ -840,21 +835,15 @@
 				03279CF02B4D2AD3006CEA5A /* RealtimeIrl */,
 				03A983542A9A0582008FF0DB /* View */,
 				03BE504E2B3EC107004720AF /* Various */,
-				035E9E3C2A9A02D7009D4F5A /* Preview Content */,
 				035E9E362A9A02D6009D4F5A /* MoblinApp.swift */,
 				035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */,
+				03F9775E2BA5A8E8000F5739 /* PrivacyInfo.xcprivacy */,
 				03A173F92B38312E00ACC4F8 /* Snow.sks */,
+				032BC5B22AD8E18000DEC883 /* Info.plist */,
+				031852A42B21890A00AEAD0D /* InfoPlist.strings */,
 				038F42F32B685ACF00E68752 /* LUTs.bundle */,
 			);
 			path = Moblin;
-			sourceTree = "<group>";
-		};
-		035E9E3C2A9A02D7009D4F5A /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				035E9E3D2A9A02D7009D4F5A /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 		0361EA702B96D34A005923ED /* Settings */ = {
@@ -1593,7 +1582,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				035E9E3E2A9A02D7009D4F5A /* Preview Assets.xcassets in Resources */,
 				03F977602BA5ADD8000F5739 /* PrivacyInfo.xcprivacy in Resources */,
 				038F42F42B685ACF00E68752 /* LUTs.bundle in Resources */,
 				031852A62B21890A00AEAD0D /* InfoPlist.strings in Resources */,
@@ -2008,7 +1996,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Moblin/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = L82N7LD4N5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -2056,7 +2044,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Moblin/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = L82N7LD4N5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
