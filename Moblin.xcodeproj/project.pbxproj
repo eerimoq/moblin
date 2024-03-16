@@ -218,6 +218,7 @@
 		03F5A8DF2AD5DACB00F354D2 /* Srt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F5A8DE2AD5DACB00F354D2 /* Srt.swift */; };
 		03F5A8E52AD6FF8E00F354D2 /* StreamOverlayDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F5A8E42AD6FF8E00F354D2 /* StreamOverlayDebugView.swift */; };
 		03F853B32B151FA700719B89 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03F853B22B151FA700719B89 /* Localizable.xcstrings */; };
+		03F977602BA5ADD8000F5739 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 03F9775E2BA5A8E8000F5739 /* PrivacyInfo.xcprivacy */; };
 		03FB4B2F2AD8CF83005AA183 /* BitratePresetsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FB4B2E2AD8CF83005AA183 /* BitratePresetsSettingsView.swift */; };
 		03FB4B312AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FB4B302AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift */; };
 		03FBD1812B3B0DE500757CA9 /* RtmpServerClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FBD1802B3B0DE500757CA9 /* RtmpServerClient.swift */; };
@@ -1593,6 +1594,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				035E9E3E2A9A02D7009D4F5A /* Preview Assets.xcassets in Resources */,
+				03F977602BA5ADD8000F5739 /* PrivacyInfo.xcprivacy in Resources */,
 				038F42F42B685ACF00E68752 /* LUTs.bundle in Resources */,
 				031852A62B21890A00AEAD0D /* InfoPlist.strings in Resources */,
 				035E9E3B2A9A02D7009D4F5A /* Assets.xcassets in Resources */,
