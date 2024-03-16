@@ -4,6 +4,7 @@ import SwiftUI
 let defaultStreamUrl = "srt://my_public_ip:4000"
 let defaultQuickButtonColor = RgbColor(red: 255 / 4, green: 255 / 4, blue: 255 / 4)
 let defaultStreamButtonColor = RgbColor(red: 255, green: 59, blue: 48)
+let minZoomX: Float = 0.5
 
 enum SettingsStreamCodec: String, Codable, CaseIterable {
     case h265hevc = "H.265/HEVC"
@@ -1499,7 +1500,7 @@ private func addDefaultZoomPresets(database: Database) {
 
 private func addDefaultBackZoomPresets(database: Database) {
     if let device = getBestBackCameraDevice() {
-        let hasUltraWideCamera = hasUltraWideCamera()
+        let hasUltraWideCamera = hasUltraWideBackCamera()
         let scale = device.getZoomFactorScale(hasUltraWideCamera: hasUltraWideCamera)
         var xs: [Float] = []
         if hasUltraWideCamera {
@@ -1540,6 +1541,7 @@ private func addDefaultBackZoomPresets(database: Database) {
 
 private func addDefaultFrontZoomPresets(database: Database) {
     database.zoom.front = [
+        SettingsZoomPreset(id: UUID(), name: "0.5x", level: 0.5, x: 0.5),
         SettingsZoomPreset(id: UUID(), name: "1x", level: 1.0, x: 1.0),
         SettingsZoomPreset(id: UUID(), name: "2x", level: 2.0, x: 2.0),
         SettingsZoomPreset(id: UUID(), name: "4x", level: 4.0, x: 4.0),

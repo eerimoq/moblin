@@ -160,8 +160,8 @@ struct RightOverlayView: View {
             if !model.showDrawOnStream {
                 if database.show.zoomPresets && model.hasZoom {
                     if model.cameraPosition == .front {
-                        SegmentedPicker(database.zoom.front, selectedItem: Binding(get: {
-                            database.zoom.front.first { $0.id == model.frontZoomPresetId }
+                        SegmentedPicker(model.frontZoomPresets(), selectedItem: Binding(get: {
+                            model.frontZoomPresets().first { $0.id == model.frontZoomPresetId }
                         }, set: { value in
                             if let value {
                                 model.frontZoomPresetId = value.id
@@ -176,7 +176,7 @@ struct RightOverlayView: View {
                         }
                         .background(pickerBackgroundColor)
                         .foregroundColor(.white)
-                        .frame(width: zoomSegmentWidth * Double(database.zoom.front.count))
+                        .frame(width: zoomSegmentWidth * Double(model.frontZoomPresets().count))
                         .cornerRadius(7)
                         .overlay(
                             RoundedRectangle(cornerRadius: 7)

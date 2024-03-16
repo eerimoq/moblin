@@ -1114,7 +1114,7 @@ final class Model: NSObject, ObservableObject {
         setMic()
         if let cameraDevice = preferredCamera(position: .back) {
             (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice
-                .getUIZoomRange(hasUltraWideCamera: hasUltraWideCamera())
+                .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera())
             if let preset = backZoomPresets().first {
                 backZoomPresetId = preset.id
                 backZoomX = preset.x!
@@ -2347,6 +2347,10 @@ final class Model: NSObject, ObservableObject {
 
     func backZoomPresets() -> [SettingsZoomPreset] {
         return database.zoom.back.filter { showPreset(preset: $0) }
+    }
+
+    func frontZoomPresets() -> [SettingsZoomPreset] {
+        return database.zoom.front.filter { showPreset(preset: $0) }
     }
 
     private func getPreset(preset: AVCaptureSession.Preset) -> AVCaptureSession.Preset {
@@ -3727,9 +3731,9 @@ final class Model: NSObject, ObservableObject {
         cameraDevice = preferredCamera(position: position)
         setFocusAfterCameraAttach()
         cameraZoomLevelToXScale = cameraDevice?
-            .getZoomFactorScale(hasUltraWideCamera: hasUltraWideCamera()) ?? 1.0
+            .getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera()) ?? 1.0
         (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice?
-            .getUIZoomRange(hasUltraWideCamera: hasUltraWideCamera()) ?? (
+            .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera()) ?? (
                 1.0,
                 1.0
             )
@@ -4200,7 +4204,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func factorToX(position: AVCaptureDevice.Position, factor: Float) -> Float {
-        if position == .back && hasUltraWideCamera() {
+        if position == .back && hasUltraWideBackCamera() {
             return factor / 2
         }
         return factor

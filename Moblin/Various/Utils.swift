@@ -266,7 +266,7 @@ func cameraName(device: AVCaptureDevice?) -> String {
     }
 }
 
-func hasUltraWideCamera() -> Bool {
+func hasUltraWideBackCamera() -> Bool {
     return AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .back) != nil
 }
 
