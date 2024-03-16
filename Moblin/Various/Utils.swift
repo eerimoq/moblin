@@ -273,6 +273,9 @@ func hasUltraWideCamera() -> Bool {
 func getBestBackCameraDevice() -> AVCaptureDevice? {
     var device = AVCaptureDevice.default(.builtInTripleCamera, for: .video, position: .back)
     if device == nil {
+        device = AVCaptureDevice.default(.builtInDualWideCamera, for: .video, position: .back)
+    }
+    if device == nil {
         device = AVCaptureDevice.default(.builtInDualCamera, for: .video, position: .back)
     }
     if device == nil {

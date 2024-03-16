@@ -8,6 +8,10 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.203.0", date: "2024-03-16", changes: [
+        "• Select wide dual back camera by default if triple camera does not exist. 🐛 breakJ and nezst",
+        "  • Should make 0.5x lens show up by default on some phone models.",
+    ]),
     Version(version: "0.202.0", date: "2024-03-15", changes: [
         "• Fix streaming history crash. 🐛 MrPol",
     ]),
