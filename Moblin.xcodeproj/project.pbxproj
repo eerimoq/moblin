@@ -1309,16 +1309,16 @@
 			isa = PBXGroup;
 			children = (
 				03D445E12AE5966B00A0F6E9 /* CacheAsyncImage.swift */,
-				03A9836D2A9A05F9008FF0DB /* Model.swift */,
-				03A08B7F2AC368860018BA95 /* Media.swift */,
-				0382933A2A9A73ED008963AA /* Settings.swift */,
-				0379BB8F2AABA7DC00B718B6 /* Log.swift */,
 				036333272AAE2E5100FF1231 /* ImageStorage.swift */,
-				034D2EC12B351715003C6D14 /* RecordingsStorage.swift */,
-				03831D512AD90AB5008D26CC /* MoblinSettingsUrl.swift */,
-				03487F252B334B63003D9ED9 /* StreamingHistory.swift */,
 				03BE50492B3EB59A004720AF /* IpMonitor.swift */,
 				03279CE62B4CD245006CEA5A /* Location.swift */,
+				0379BB8F2AABA7DC00B718B6 /* Log.swift */,
+				03A08B7F2AC368860018BA95 /* Media.swift */,
+				03831D512AD90AB5008D26CC /* MoblinSettingsUrl.swift */,
+				03A9836D2A9A05F9008FF0DB /* Model.swift */,
+				034D2EC12B351715003C6D14 /* RecordingsStorage.swift */,
+				0382933A2A9A73ED008963AA /* Settings.swift */,
+				03487F252B334B63003D9ED9 /* StreamingHistory.swift */,
 				03A707BF2B8F0FAE003BB7BE /* Utils.swift */,
 			);
 			path = Various;
