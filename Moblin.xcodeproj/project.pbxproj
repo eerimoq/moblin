@@ -540,8 +540,8 @@
 		030D487F2B35E4AF003B2014 /* Platforms */ = {
 			isa = PBXGroup;
 			children = (
-				03B7DAAF2BA63F4600CEFC1B /* OpenStreamingPlatform */,
 				03EF34B22B1AFB7F00A19221 /* AfreecaTv */,
+				03B7DAAF2BA63F4600CEFC1B /* OpenStreamingPlatform */,
 				0330F2AE2AFAD24F001262C3 /* YouTube */,
 				0379BB712AA4BFA500B718B6 /* Twitch */,
 				036BE2CD2ABD4C960048F9C5 /* Kick */,

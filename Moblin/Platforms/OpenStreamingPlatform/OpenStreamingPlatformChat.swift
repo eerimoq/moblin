@@ -2,13 +2,22 @@ import Foundation
 import XMLCoder
 
 private struct Message: Codable {
+    let from: String
     let body: String
+
+    func user() -> String? {
+        guard let slashIndex = from.firstIndex(of: "/") else {
+            return nil
+        }
+        return String(from.suffix(from: from.index(slashIndex, offsetBy: 1)))
+    }
 }
 
 private struct MessageContainer: Codable {
     let message: Message
 }
 
+// periphery:ignore
 private struct Open: Codable, DynamicNodeEncoding {
     let xmlns: String
     let to: String?
@@ -27,10 +36,12 @@ private struct OpenContainer: Codable {
 
 private struct Success: Codable {}
 
+// periphery:ignore
 private struct SuccessContainer: Codable {
     let success: Success
 }
 
+// periphery:ignore
 private struct Auth: Codable, DynamicNodeEncoding {
     let xmlns: String
     let mechanism: String
@@ -52,10 +63,12 @@ private struct Auth: Codable, DynamicNodeEncoding {
     }
 }
 
+// periphery:ignore
 private struct Mechanisms: Codable {
     let mechanism: [String]
 }
 
+// periphery:ignore
 private struct Features: Codable {
     let mechanisms: Mechanisms?
 }
@@ -187,7 +200,7 @@ class OpenStreamingPlatformChat {
     private func handleMessageMessage(message: Message) async throws {
         let segments = createSegments(message: message.body)
         await MainActor.run {
-            model.appendChatMessage(user: "todo",
+            model.appendChatMessage(user: message.user() ?? "unknown",
                                     userColor: nil,
                                     segments: segments,
                                     timestamp: model.digitalClock,

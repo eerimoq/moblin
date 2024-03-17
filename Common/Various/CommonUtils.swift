@@ -392,10 +392,12 @@ extension WatchProtocolColor {
         }
     }
 
+    // periphery:ignore
     private func colorScale(_ color: Int) -> Double {
         return Double(color) / 255
     }
 
+    // periphery:ignore
     func color() -> Color {
         return Color(
             red: colorScale(red),

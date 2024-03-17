@@ -1395,6 +1395,7 @@ class SettingsGameController: Codable, Identifiable {
 
 class SettingsRemoteControlClient: Codable {
     var enabled: Bool = false
+    // periphery:ignore
     var address: String = ""
     var port: UInt16 = 2345
     // periphery:ignore

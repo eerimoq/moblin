@@ -14,6 +14,7 @@ enum WatchMessageToWatch: String {
         ]
     }
 
+    // periphery:ignore
     static func unpack(_ message: [String: Any]) -> (WatchMessageToWatch, Any)? {
         guard let type = message["type"] as? String else {
             return nil
@@ -31,6 +32,7 @@ enum WatchMessageToWatch: String {
 enum WatchMessageFromWatch: String {
     case getImage
 
+    // periphery:ignore
     static func pack(type: WatchMessageFromWatch, data: Any) -> [String: Any] {
         return [
             "type": type.rawValue,
