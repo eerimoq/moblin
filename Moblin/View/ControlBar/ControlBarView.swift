@@ -90,12 +90,16 @@ struct ControlBarView: View {
             .padding([.leading], 0)
             .padding([.trailing], 5)
             HStack(spacing: 0) {
-                Image("\(model.iconImage)NoBackground")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .padding([.bottom], 4)
-                    .offset(x: 2)
-                    .frame(width: buttonSize, height: buttonSize)
+                Button {
+                    model.showingCosmetics.toggle()
+                } label: {
+                    Image("\(model.iconImage)NoBackground")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .padding([.bottom], 4)
+                        .offset(x: 2)
+                        .frame(width: buttonSize, height: buttonSize)
+                }
                 Button {
                     model.showingSettings.toggle()
                 } label: {

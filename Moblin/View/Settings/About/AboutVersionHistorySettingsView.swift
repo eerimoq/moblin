@@ -10,7 +10,7 @@ struct Version {
 private let versions = [
     Version(version: "0.204.0", date: "2024-03-17", changes: [
         "• Untested Open Streaming Platform chat using websockets. 💡 ErAzOr",
-        "  • Settings -> Streams -> My stream -> Open Streaming Platform.",
+        "  • Settings → Streams → My stream → Open Streaming Platform.",
     ]),
     Version(version: "0.203.2", date: "2024-03-16", changes: [
         "• Fix torch when switching from back to front camera (or at least fix major bug).",

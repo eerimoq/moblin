@@ -220,6 +220,7 @@ final class Model: NSObject, ObservableObject {
     private var manualFocusMotionAttitude: CMAttitude?
     private var focusObservation: NSKeyValueObservation?
     @Published var showingSettings = false
+    @Published var showingCosmetics = false
     @Published var settingsLayout: SettingsLayout = .right
     @Published var showChatMessages = true
     @Published var chatPaused = false

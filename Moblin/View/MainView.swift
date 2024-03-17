@@ -244,6 +244,17 @@ struct MainView: View {
                     .frame(width: settingsHalfWidth)
                 }
             }
+            if model.showingCosmetics {
+                HStack {
+                    Spacer()
+                    NavigationStack {
+                        CosmeticsSettingsView(quickDone: {
+                            model.showingCosmetics = false
+                        })
+                    }
+                    .frame(width: settingsHalfWidth)
+                }
+            }
             if model.database.debug!.letItSnow! {
                 SpriteView(scene: scene, options: [.allowsTransparency])
                     .ignoresSafeArea()
