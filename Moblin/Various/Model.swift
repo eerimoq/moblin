@@ -248,6 +248,7 @@ final class Model: NSObject, ObservableObject {
     private var kickPusher: KickPusher?
     private var youTubeLiveChat: YouTubeLiveChat?
     private var afreecaTvChat: AfreecaTvChat?
+    private var openStreamingPlatformChat: OpenStreamingPlatformChat!
     private var obsWebSocket: ObsWebSocket?
     private var chatPostId = 0
     @Published var chatPosts: Deque<ChatPost> = []
@@ -2314,6 +2315,7 @@ final class Model: NSObject, ObservableObject {
         reloadKickPusher()
         reloadYouTubeLiveChat()
         reloadAfreecaTvChat()
+        reloadOpenStreamingPlatformChat()
     }
 
     private func reloadConnections() {
@@ -2455,7 +2457,8 @@ final class Model: NSObject, ObservableObject {
 
     func isChatConfigured() -> Bool {
         return isTwitchChatConfigured() || isKickPusherConfigured() ||
-            isYouTubeLiveChatConfigured() || isAfreecaTvChatConfigured()
+            isYouTubeLiveChatConfigured() || isAfreecaTvChatConfigured() ||
+            isOpenStreamingPlatformChatConfigured()
     }
 
     func isViewersConfigured() -> Bool {
@@ -2517,6 +2520,21 @@ final class Model: NSObject, ObservableObject {
         return afreecaTvChat?.hasEmotes() ?? false
     }
 
+    func isOpenStreamingPlatformChatConfigured() -> Bool {
+        return database.chat.enabled! && stream.openStreamingPlatformEnabled! && stream
+            .openStreamingPlatformUrl! != "" && stream
+            .openStreamingPlatformUsername! != "" && stream
+            .openStreamingPlatformPassword! != ""
+    }
+
+    func isOpenStreamingPlatformChatConnected() -> Bool {
+        return openStreamingPlatformChat?.isConnected() ?? false
+    }
+
+    func hasOpenStreamingPlatformChatEmotes() -> Bool {
+        return openStreamingPlatformChat?.hasEmotes() ?? false
+    }
+
     func isChatConnected() -> Bool {
         if isTwitchChatConfigured() && !isTwitchChatConnected() {
             return false
@@ -2530,12 +2548,15 @@ final class Model: NSObject, ObservableObject {
         if isAfreecaTvChatConfigured() && !isAfreecaTvChatConnected() {
             return false
         }
+        if isOpenStreamingPlatformChatConfigured() && !isOpenStreamingPlatformChatConnected() {
+            return false
+        }
         return true
     }
 
     func hasChatEmotes() -> Bool {
         return hasTwitchChatEmotes() || hasKickPusherEmotes() ||
-            hasYouTubeLiveChatEmotes() || hasAfreecaTvChatEmotes()
+            hasYouTubeLiveChatEmotes() || hasAfreecaTvChatEmotes() || hasOpenStreamingPlatformChatEmotes()
     }
 
     func isStreamConnceted() -> Bool {
@@ -2622,6 +2643,22 @@ final class Model: NSObject, ObservableObject {
             afreecaTvChat!.start()
         } else {
             logger.info("AfreecaTV chat id not configured. No AfreecaTV chat.")
+        }
+    }
+
+    private func reloadOpenStreamingPlatformChat() {
+        openStreamingPlatformChat?.stop()
+        openStreamingPlatformChat = nil
+        if isOpenStreamingPlatformChatConfigured() {
+            openStreamingPlatformChat = OpenStreamingPlatformChat(
+                model: self,
+                url: stream.openStreamingPlatformUrl!,
+                username: stream.openStreamingPlatformUsername!,
+                password: stream.openStreamingPlatformPassword!
+            )
+            openStreamingPlatformChat!.start()
+        } else {
+            logger.info("Open Streaming Platform chat id not configured. No Open Streaming Platform chat.")
         }
     }
 
@@ -2831,6 +2868,26 @@ final class Model: NSObject, ObservableObject {
 
     func afreecaTvStreamIdUpdated() {
         reloadAfreecaTvChat()
+        resetChat()
+    }
+
+    func openStreamingPlatformEnabledUpdated() {
+        reloadOpenStreamingPlatformChat()
+        resetChat()
+    }
+
+    func openStreamingPlatformUrlUpdated() {
+        reloadOpenStreamingPlatformChat()
+        resetChat()
+    }
+
+    func openStreamingPlatformUsernameUpdated() {
+        reloadOpenStreamingPlatformChat()
+        resetChat()
+    }
+
+    func openStreamingPlatformPasswordUpdated() {
+        reloadOpenStreamingPlatformChat()
         resetChat()
     }
 

@@ -174,6 +174,9 @@
 		03B374132AA277570028DDD5 /* Srtla.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B374122AA277570028DDD5 /* Srtla.swift */; };
 		03B77ADA2B9446210053F106 /* WatchSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B77AD92B9446210053F106 /* WatchSettings.swift */; };
 		03B77ADB2B9446210053F106 /* WatchSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B77AD92B9446210053F106 /* WatchSettings.swift */; };
+		03B7DAB22BA63F7400CEFC1B /* OpenStreamingPlatformChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B7DAB12BA63F7400CEFC1B /* OpenStreamingPlatformChat.swift */; };
+		03B7DAB52BA640C100CEFC1B /* XMLCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 03B7DAB42BA640C100CEFC1B /* XMLCoder */; };
+		03B7DAB92BA6EE6200CEFC1B /* StreamOpenStreamingPlatformSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B7DAB82BA6EE6200CEFC1B /* StreamOpenStreamingPlatformSettingsView.swift */; };
 		03B89D972B92DD670022EAE7 /* PreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B89D962B92DD670022EAE7 /* PreviewView.swift */; };
 		03B89D9A2B92DDA80022EAE7 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B89D992B92DDA80022EAE7 /* ChatView.swift */; };
 		03BBAE9A2B2EB4FD0033D425 /* StreamChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BBAE992B2EB4FD0033D425 /* StreamChatSettingsView.swift */; };
@@ -424,6 +427,8 @@
 		03B374082AA0EA700028DDD5 /* ImageEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEffect.swift; sourceTree = "<group>"; };
 		03B374122AA277570028DDD5 /* Srtla.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Srtla.swift; sourceTree = "<group>"; };
 		03B77AD92B9446210053F106 /* WatchSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSettings.swift; sourceTree = "<group>"; };
+		03B7DAB12BA63F7400CEFC1B /* OpenStreamingPlatformChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenStreamingPlatformChat.swift; sourceTree = "<group>"; };
+		03B7DAB82BA6EE6200CEFC1B /* StreamOpenStreamingPlatformSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOpenStreamingPlatformSettingsView.swift; sourceTree = "<group>"; };
 		03B89D962B92DD670022EAE7 /* PreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewView.swift; sourceTree = "<group>"; };
 		03B89D992B92DDA80022EAE7 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		03BBAE952B2E5FD20033D425 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
@@ -479,6 +484,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03B7DAB52BA640C100CEFC1B /* XMLCoder in Frameworks */,
 				0307869A2AEC23FB0061FDE2 /* StoreKit.framework in Frameworks */,
 				03BC11672AE5654700C38FC4 /* SDWebImageSwiftUI in Frameworks */,
 				03A983452A9A03EA008FF0DB /* HaishinKit in Frameworks */,
@@ -534,6 +540,7 @@
 		030D487F2B35E4AF003B2014 /* Platforms */ = {
 			isa = PBXGroup;
 			children = (
+				03B7DAAF2BA63F4600CEFC1B /* OpenStreamingPlatform */,
 				03EF34B22B1AFB7F00A19221 /* AfreecaTv */,
 				0330F2AE2AFAD24F001262C3 /* YouTube */,
 				0379BB712AA4BFA500B718B6 /* Twitch */,
@@ -557,6 +564,7 @@
 		0315A3402AA31ADC00295443 /* Stream */ = {
 			isa = PBXGroup;
 			children = (
+				03B7DAB62BA6EE4300CEFC1B /* OpenStreamingPlatform */,
 				03EF34B72B1B027000A19221 /* AfreecaTv */,
 				031A4DC42B2CED2D0053F67D /* Audio */,
 				03BBAE972B2EB4CE0033D425 /* Chat */,
@@ -1246,6 +1254,22 @@
 			path = Various;
 			sourceTree = "<group>";
 		};
+		03B7DAAF2BA63F4600CEFC1B /* OpenStreamingPlatform */ = {
+			isa = PBXGroup;
+			children = (
+				03B7DAB12BA63F7400CEFC1B /* OpenStreamingPlatformChat.swift */,
+			);
+			path = OpenStreamingPlatform;
+			sourceTree = "<group>";
+		};
+		03B7DAB62BA6EE4300CEFC1B /* OpenStreamingPlatform */ = {
+			isa = PBXGroup;
+			children = (
+				03B7DAB82BA6EE6200CEFC1B /* StreamOpenStreamingPlatformSettingsView.swift */,
+			);
+			path = OpenStreamingPlatform;
+			sourceTree = "<group>";
+		};
 		03B89D9B2B92DEF90022EAE7 /* Preview */ = {
 			isa = PBXGroup;
 			children = (
@@ -1460,6 +1484,7 @@
 				03BC116A2AE56C2200C38FC4 /* SDWebImageWebPCoder */,
 				0320D8752AED36860030418F /* WrappingHStack */,
 				0307EBC92B59B239006F7B2A /* Telegraph */,
+				03B7DAB42BA640C100CEFC1B /* XMLCoder */,
 			);
 			productName = Mobs;
 			productReference = 035E9E332A9A02D6009D4F5A /* Moblin.app */;
@@ -1565,6 +1590,7 @@
 				03BC11692AE56C2200C38FC4 /* XCRemoteSwiftPackageReference "SDWebImageWebPCoder" */,
 				0320D8742AED36860030418F /* XCRemoteSwiftPackageReference "WrappingHStack" */,
 				0307EBC82B59B239006F7B2A /* XCRemoteSwiftPackageReference "Telegraph" */,
+				03B7DAB32BA6409800CEFC1B /* XCRemoteSwiftPackageReference "XMLCoder" */,
 			);
 			productRefGroup = 035E9E342A9A02D6009D4F5A /* Products */;
 			projectDirPath = "";
@@ -1706,6 +1732,7 @@
 				0379BBB82AAD9B7200B718B6 /* WidgetsSettingsView.swift in Sources */,
 				03085C082B4865D10009DAB6 /* GameControllersSettingsView.swift in Sources */,
 				03BBAE9A2B2EB4FD0033D425 /* StreamChatSettingsView.swift in Sources */,
+				03B7DAB92BA6EE6200CEFC1B /* StreamOpenStreamingPlatformSettingsView.swift in Sources */,
 				0379BBAA2AAD953200B718B6 /* HelpAndSupportSettingsView.swift in Sources */,
 				0364304F2B2FF9F400B7C448 /* StreamWizardTwitchSettingsView.swift in Sources */,
 				03403DF62AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift in Sources */,
@@ -1743,6 +1770,7 @@
 				032A49BA2AC54E6500ED3916 /* ImportSettingsView.swift in Sources */,
 				03A14BE32ACC903E00D180FF /* ZoomSettingsView.swift in Sources */,
 				03A983682A9A05D7008FF0DB /* SceneSettingsView.swift in Sources */,
+				03B7DAB22BA63F7400CEFC1B /* OpenStreamingPlatformChat.swift in Sources */,
 				0379BB942AACF16600B718B6 /* SepiaEffect.swift in Sources */,
 				034D2EC22B351715003C6D14 /* RecordingsStorage.swift in Sources */,
 				031F91EB2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift in Sources */,
@@ -2332,6 +2360,14 @@
 				kind = branch;
 			};
 		};
+		03B7DAB32BA6409800CEFC1B /* XCRemoteSwiftPackageReference "XMLCoder" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/CoreOffice/XMLCoder";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.17.1;
+			};
+		};
 		03BC11652AE5654700C38FC4 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SDWebImage/SDWebImageSwiftUI";
@@ -2395,6 +2431,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 03A983432A9A03EA008FF0DB /* XCRemoteSwiftPackageReference "HaishinKit" */;
 			productName = HaishinKit;
+		};
+		03B7DAB42BA640C100CEFC1B /* XMLCoder */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03B7DAB32BA6409800CEFC1B /* XCRemoteSwiftPackageReference "XMLCoder" */;
+			productName = XMLCoder;
 		};
 		03BC11662AE5654700C38FC4 /* SDWebImageSwiftUI */ = {
 			isa = XCSwiftPackageProductDependency;

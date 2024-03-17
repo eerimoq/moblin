@@ -80,6 +80,17 @@ struct StreamSettingsView: View {
                     }
                 }))
             }
+            NavigationLink(destination: StreamOpenStreamingPlatformSettingsView(stream: stream)) {
+                Toggle("Open Streaming Platform", isOn: Binding(get: {
+                    stream.openStreamingPlatformEnabled!
+                }, set: { value in
+                    stream.openStreamingPlatformEnabled = value
+                    model.store()
+                    if stream.enabled {
+                        model.openStreamingPlatformEnabledUpdated()
+                    }
+                }))
+            }
             NavigationLink(destination: StreamChatSettingsView(stream: stream)) {
                 Text("Chat")
             }

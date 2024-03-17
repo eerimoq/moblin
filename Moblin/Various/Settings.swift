@@ -279,6 +279,10 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var afreecaTvEnabled: Bool? = true
     var afreecaTvChannelName: String? = ""
     var afreecaTvStreamId: String? = ""
+    var openStreamingPlatformEnabled: Bool? = true
+    var openStreamingPlatformUrl: String? = ""
+    var openStreamingPlatformUsername: String? = ""
+    var openStreamingPlatformPassword: String? = ""
     var obsWebSocketEnabled: Bool? = true
     var obsWebSocketUrl: String? = ""
     var obsWebSocketPassword: String? = ""
@@ -318,6 +322,10 @@ class SettingsStream: Codable, Identifiable, Equatable {
         new.afreecaTvEnabled = afreecaTvEnabled
         new.afreecaTvChannelName = afreecaTvChannelName
         new.afreecaTvStreamId = afreecaTvStreamId
+        new.openStreamingPlatformEnabled = openStreamingPlatformEnabled
+        new.openStreamingPlatformUrl = openStreamingPlatformUrl
+        new.openStreamingPlatformUsername = openStreamingPlatformUsername
+        new.openStreamingPlatformPassword = openStreamingPlatformPassword
         new.obsWebSocketEnabled = obsWebSocketEnabled
         new.obsWebSocketUrl = obsWebSocketUrl
         new.obsWebSocketPassword = obsWebSocketPassword
@@ -2283,6 +2291,22 @@ final class Settings {
         }
         for scene in realDatabase.scenes where scene.frontCameraId == nil {
             scene.frontCameraId = getBestFrontCameraId()
+            store()
+        }
+        for stream in realDatabase.streams where stream.openStreamingPlatformEnabled == nil {
+            stream.openStreamingPlatformEnabled = true
+            store()
+        }
+        for stream in realDatabase.streams where stream.openStreamingPlatformUrl == nil {
+            stream.openStreamingPlatformUrl = ""
+            store()
+        }
+        for stream in realDatabase.streams where stream.openStreamingPlatformUsername == nil {
+            stream.openStreamingPlatformUsername = ""
+            store()
+        }
+        for stream in realDatabase.streams where stream.openStreamingPlatformPassword == nil {
+            stream.openStreamingPlatformPassword = ""
             store()
         }
     }

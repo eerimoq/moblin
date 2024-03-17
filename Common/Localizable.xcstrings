@@ -22038,6 +22038,9 @@
         }
       }
     },
+    "Example URL: ws://foo.org:5443/ws" : {
+
+    },
     "Example:  rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef" : {
       "localizations" : {
         "de" : {
@@ -40330,6 +40333,9 @@
           }
         }
       }
+    },
+    "Open Streaming Platform" : {
+
     },
     "Overhead bandwidth" : {
       "localizations" : {

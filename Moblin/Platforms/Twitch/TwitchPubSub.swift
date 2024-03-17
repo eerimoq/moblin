@@ -1,20 +1,20 @@
 import Foundation
 
-struct MessageData: Decodable {
+private struct MessageData: Decodable {
     var message: String
 }
 
-struct Message: Decodable {
+private struct Message: Decodable {
     var data: MessageData
 }
 
-struct Response: Decodable {}
+private struct Response: Decodable {}
 
-struct MessageViewCount: Decodable {
+private struct MessageViewCount: Decodable {
     var viewers: Int
 }
 
-func getMessageType(message: String) throws -> String {
+private func getMessageType(message: String) throws -> String {
     if let jsonData = message.data(using: String.Encoding.utf8) {
         let data = try JSONSerialization.jsonObject(
             with: jsonData,
@@ -30,21 +30,21 @@ func getMessageType(message: String) throws -> String {
     throw "Failed to get message type"
 }
 
-func decodeResponse(message: String) throws -> Response {
+private func decodeResponse(message: String) throws -> Response {
     return try JSONDecoder().decode(
         Response.self,
         from: message.data(using: String.Encoding.utf8)!
     )
 }
 
-func decodeMessage(message: String) throws -> Message {
+private func decodeMessage(message: String) throws -> Message {
     return try JSONDecoder().decode(
         Message.self,
         from: message.data(using: String.Encoding.utf8)!
     )
 }
 
-func decodeMessageViewCount(message: String) throws -> MessageViewCount {
+private func decodeMessageViewCount(message: String) throws -> MessageViewCount {
     return try JSONDecoder().decode(
         MessageViewCount.self,
         from: message.data(using: String.Encoding.utf8)!
