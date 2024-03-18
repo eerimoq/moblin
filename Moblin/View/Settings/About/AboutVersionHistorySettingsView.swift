@@ -8,6 +8,10 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.206.0", date: "2024-03-18", changes: [
+        "• Fix OBS media source button to hopefully fix audio and video issues.",
+        "  • Similar to `!fix` in NOALBS.",
+    ]),
     Version(version: "0.205.0", date: "2024-03-18", changes: [
         "• Show cosmetics page when tapping the Moblin icon.",
         "• Partially fix LUTs.",
