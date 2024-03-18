@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="210mm"
-   height="297mm"
-   viewBox="0 0 210 297"
+   width="386.33234mm"
+   height="161.21608mm"
+   viewBox="0 0 386.33234 161.21608"
    version="1.1"
    id="svg5"
    inkscape:version="1.2.2 (b0a84865, 2022-12-01)"
@@ -25,13 +25,13 @@
      inkscape:document-units="mm"
      showgrid="false"
      inkscape:zoom="0.44470169"
-     inkscape:cx="724.08091"
-     inkscape:cy="642.00341"
+     inkscape:cx="836.51582"
+     inkscape:cy="12.367841"
      inkscape:window-width="1440"
      inkscape:window-height="847"
-     inkscape:window-x="0"
+     inkscape:window-x="-1"
      inkscape:window-y="25"
-     inkscape:window-maximized="1"
+     inkscape:window-maximized="0"
      inkscape:current-layer="layer1" />
   <defs
      id="defs2">
@@ -47,7 +47,8 @@
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     transform="translate(29.512799,-167.38674)">
     <circle
        style="fill:#008000;stroke:#1e1a1a;stroke-width:0.6;stroke-linejoin:bevel;stroke-miterlimit:3.4;stroke-dasharray:none"
        id="path577"
@@ -117,9 +118,9 @@
        inkscape:export-ydpi="501.19189"><tspan
          x="56.735039"
          y="192.58684"
-         id="tspan15236"><tspan
+         id="tspan661"><tspan
            style="font-size:38.8056px"
-           id="tspan15234">Moblin Triple Party</tspan></tspan></text>
+           id="tspan659">Moblin Triple Party</tspan></tspan></text>
     <circle
        style="fill:#008000;stroke:#1e1a1a;stroke-width:0.334428;stroke-linejoin:bevel;stroke-miterlimit:3.4;stroke-dasharray:none"
        id="path577-22"
