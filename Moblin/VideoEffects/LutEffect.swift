@@ -59,7 +59,7 @@ private func convertLut(image: UIImage) throws -> (Float, Data) {
 }
 
 final class LutEffect: VideoEffect {
-    private var filter = CIFilter.colorCube()
+    private var filter = CIFilter.colorCubeWithColorSpace()
 
     override init() {
         super.init()
@@ -70,9 +70,10 @@ final class LutEffect: VideoEffect {
         let (dimension, data) = try convertLut(image: image)
         logger
             .info("lut: Applying filter \(name) with dimension \(dimension) and data \(data.count)")
-        let filter = CIFilter.colorCube()
-        filter.cubeDimension = dimension
+        let filter = CIFilter.colorCubeWithColorSpace()
         filter.cubeData = data
+        filter.cubeDimension = dimension
+        filter.colorSpace = CGColorSpaceCreateDeviceRGB()
         lutQueue.sync {
             self.filter = filter
         }
