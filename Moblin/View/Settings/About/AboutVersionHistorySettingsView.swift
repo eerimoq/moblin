@@ -8,6 +8,12 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.205.0", date: "2024-03-18", changes: [
+        "• Show cosmetics page when tapping the Moblin icon.",
+        "• Partially fix LUTs.",
+        "  • Not oversaturated anymore, but still vertical lines sometimes.",
+        "• Fix zoom preset and scene selection pickers when button shapes are enabled. 🐛 Tony Mah",
+    ]),
     Version(version: "0.204.0", date: "2024-03-17", changes: [
         "• Untested Open Streaming Platform chat using websockets. 💡 ErAzOr",
         "  • Settings → Streams → My stream → Open Streaming Platform.",
