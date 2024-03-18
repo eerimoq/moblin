@@ -44,6 +44,7 @@ private struct SegmentedPicker<T: Equatable, Content: View>: View {
                     }, label: {
                         self.content(self.items[index])
                     })
+                    .buttonStyle(.plain)
                 }
                 Divider()
                     .background(pickerBorderColor)
