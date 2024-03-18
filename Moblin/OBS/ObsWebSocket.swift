@@ -118,6 +118,8 @@ private enum RequestType: String, Codable {
     case getVersion = "GetVersion"
     case setInputAudioSyncOffset = "SetInputAudioSyncOffset"
     case getInputAudioSyncOffset = "GetInputAudioSyncOffset"
+    case setSceneItemEnabled = "SetSceneItemEnabled"
+    case getSceneItemId = "GetSceneItemId"
 }
 
 private enum EventType: String, Codable {
@@ -203,6 +205,21 @@ struct GetInputAudioSyncOffset: Codable {
 
 struct GetInputAudioSyncOffsetResponse: Codable {
     let inputAudioSyncOffset: Int
+}
+
+struct SetSceneItemEnabled: Codable {
+    let sceneName: String
+    let sceneItemId: Int
+    let sceneItemEnabled: Bool
+}
+
+struct GetSceneItemId: Codable {
+    let sceneName: String
+    let sourceName: String
+}
+
+struct GetSceneItemIdResponse: Codable {
+    let sceneItemId: Int
 }
 
 struct SceneChangedEvent: Decodable {
@@ -583,6 +600,60 @@ class ObsWebSocket {
             do {
                 let response = try JSONDecoder().decode(GetInputAudioSyncOffsetResponse.self, from: response)
                 onSuccess(response.inputAudioSyncOffset)
+            } catch {
+                onError("JSON decode failed")
+            }
+        }, onError: { message in
+            onError(message)
+        })
+    }
+
+    func setSceneItemEnabled(
+        sceneName: String,
+        sceneItemId: Int,
+        enabled: Bool,
+        onSuccess: @escaping () -> Void,
+        onError: @escaping (String) -> Void
+    ) {
+        var request: Data
+        do {
+            request = try JSONEncoder().encode(SetSceneItemEnabled(
+                sceneName: sceneName,
+                sceneItemId: sceneItemId,
+                sceneItemEnabled: enabled
+            ))
+        } catch {
+            onError("JSON encode failed")
+            return
+        }
+        performRequest(type: .setSceneItemEnabled, data: request, onSuccess: { _ in
+            onSuccess()
+        }, onError: { message in
+            onError(message)
+        })
+    }
+
+    func getSceneItemId(
+        sceneName: String,
+        sourceName: String,
+        onSuccess: @escaping (Int) -> Void,
+        onError: @escaping (String) -> Void
+    ) {
+        var request: Data
+        do {
+            request = try JSONEncoder().encode(GetSceneItemId(sceneName: sceneName, sourceName: sourceName))
+        } catch {
+            onError("JSON encode failed")
+            return
+        }
+        performRequest(type: .getSceneItemId, data: request, onSuccess: { response in
+            guard let response else {
+                onError("No data")
+                return
+            }
+            do {
+                let response = try JSONDecoder().decode(GetSceneItemIdResponse.self, from: response)
+                onSuccess(response.sceneItemId)
             } catch {
                 onError("JSON decode failed")
             }
