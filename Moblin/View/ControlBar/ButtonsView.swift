@@ -369,6 +369,43 @@ struct ObsView: View {
                     } header: {
                         Text("\(model.stream.obsSourceName!) source audio levels")
                     }
+                    if !model.obsFixOngoing {
+                        Section {
+                            HStack {
+                                Spacer()
+                                Button(action: {
+                                    model.obsFixStream()
+                                }, label: {
+                                    Text("Fix \(model.stream.obsSourceName!) source")
+                                })
+                                Spacer()
+                            }
+                        } footer: {
+                            Text("""
+                            Restarts the \(model.stream.obsSourceName!) source to hopefully fix \
+                            audio and video issues.
+                            """)
+                        }
+                        .listRowBackground(RoundedRectangle(cornerRadius: 10)
+                            .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
+                            .overlay(RoundedRectangle(cornerRadius: 10)
+                                .stroke(.blue, lineWidth: 2)))
+                    } else {
+                        Section {
+                            HStack {
+                                Spacer()
+                                Text("Fixing...")
+                                Spacer()
+                            }
+                            .foregroundColor(.white)
+                        } footer: {
+                            Text("""
+                            Restarts the \(model.stream.obsSourceName!) source to hopefully fix \
+                            audio and video issues.
+                            """)
+                        }
+                        .listRowBackground(Color.gray)
+                    }
                 } else {
                     Text("""
                     Configure source name in \

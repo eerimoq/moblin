@@ -313,6 +313,7 @@ final class Model: NSObject, ObservableObject {
     @Published var currentStreamId = UUID()
     @Published var obsStreaming = false
     @Published var obsStreamingState: ObsOutputState = .stopped
+    @Published var obsFixOngoing = false
     @Published var obsScreenshot: CGImage?
     private var obsSourceFetchScreenshot = false
     private var obsSourceScreenshotIsFetching = false
@@ -2932,6 +2933,44 @@ final class Model: NSObject, ObservableObject {
                                     subTitle: message)
             }
         })
+    }
+
+    func obsFixStream() {
+        obsFixOngoing = true
+        obsWebSocket?.getSceneItemId(
+            sceneName: obsCurrentScene,
+            sourceName: stream.obsSourceName!,
+            onSuccess: { itemId in
+                self.obsWebSocket?.setSceneItemEnabled(
+                    sceneName: self.obsCurrentScene,
+                    sceneItemId: itemId,
+                    enabled: false,
+                    onSuccess: {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                            self.obsWebSocket?.setSceneItemEnabled(
+                                sceneName: self.obsCurrentScene,
+                                sceneItemId: itemId,
+                                enabled: true,
+                                onSuccess: {
+                                    DispatchQueue.main.async {
+                                        self.obsFixOngoing = false
+                                    }
+                                },
+                                onError: self.obsFixStreamError
+                            )
+                        }
+                    },
+                    onError: self.obsFixStreamError
+                )
+            },
+            onError: obsFixStreamError
+        )
+    }
+
+    func obsFixStreamError(_: String) {
+        DispatchQueue.main.async {
+            self.obsFixOngoing = false
+        }
     }
 
     func startObsAudioVolume() {

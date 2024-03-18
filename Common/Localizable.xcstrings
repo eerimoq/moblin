@@ -25699,6 +25699,12 @@
         }
       }
     },
+    "Fix %@ source" : {
+
+    },
+    "Fixing..." : {
+
+    },
     "Font size" : {
       "localizations" : {
         "de" : {
@@ -44348,6 +44354,9 @@
           }
         }
       }
+    },
+    "Restarts the %@ source to hopefully fix audio and video issues." : {
+
     },
     "Restore purchases" : {
       "localizations" : {
