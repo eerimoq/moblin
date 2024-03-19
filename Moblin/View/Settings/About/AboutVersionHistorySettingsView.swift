@@ -8,6 +8,10 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.208.0", date: "2024-03-19", changes: [
+        "• Fix Apple Log, and more specifically apply LUTs correctly. 🐛 JohannesLiv",
+        "• Fix vertical lines and other image artifacts when applying various effects/widgets/draw on stream. 🐛 JohannesLiv",
+    ]),
     Version(version: "0.207.0", date: "2024-03-18", changes: [
         "• Updated Russian translation. ✍️ Murrito",
     ]),
