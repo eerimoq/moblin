@@ -959,15 +959,16 @@ enum SettingsColorSpace: String, Codable, CaseIterable {
 
 let colorSpaces = SettingsColorSpace.allCases.map { $0.rawValue }
 
+private let allBundledLuts = [
+    SettingsColorAppleLogLut(type: .bundled, name: "Apple Log To Rec 709"),
+    SettingsColorAppleLogLut(type: .bundled, name: "Moblin Meme"),
+]
+
 class SettingsColor: Codable {
     var space: SettingsColorSpace = .srgb
     var lutEnabled: Bool = false
     var lut: UUID = .init()
-    var bundledLuts = [
-        SettingsColorAppleLogLut(type: .bundled, name: "Neutral"),
-        SettingsColorAppleLogLut(type: .bundled, name: "Apple Log To Rec 709"),
-        SettingsColorAppleLogLut(type: .bundled, name: "Moblin Meme"),
-    ]
+    var bundledLuts = allBundledLuts
     var diskLuts: [SettingsColorAppleLogLut]? = []
 }
 
@@ -1481,6 +1482,7 @@ class Database: Codable {
         for button in database.globalButtons! {
             button.isOn = false
         }
+        addMissingBundledLuts(database: database)
         return database
     }
 
@@ -1765,6 +1767,17 @@ private func addMissingGlobalButtons(database: Database) {
     }
 }
 
+private func addMissingBundledLuts(database: Database) {
+    database.color!.bundledLuts = database.color!.bundledLuts
+        .filter { lut in allBundledLuts.contains { $0.name == lut.name } }
+    for bundledLut in allBundledLuts {
+        if database.color!.bundledLuts.contains(where: { $0.name == bundledLut.name }) {
+            continue
+        }
+        database.color!.bundledLuts.append(bundledLut)
+    }
+}
+
 private func addScenesToGameController(database: Database) {
     var button = database.gameControllers![0].buttons[0]
     button.function = .scene
@@ -1803,6 +1816,7 @@ private func createDefault() -> Database {
     addDefaultBitratePresets(database: database)
     addMissingGlobalButtons(database: database)
     addScenesToGameController(database: database)
+    addMissingBundledLuts(database: database)
     return database
 }
 
