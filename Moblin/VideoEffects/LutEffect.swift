@@ -20,77 +20,47 @@ private func convertLut(image: UIImage) throws -> (Float, Data) {
     guard let data = cgImage.dataProvider?.data else {
         throw "Failed to get LUT data"
     }
-    guard let pixels = CFDataGetBytePtr(data) else {
+    let length = CFDataGetLength(data)
+    guard let data = CFDataGetBytePtr(data) else {
         throw "Failed to get LUT pixels"
     }
+    var pixels: [Float]
+    if cgImage.bitsPerComponent == 8 {
+        pixels = stride(from: 0, to: length, by: 1).map { Float(data[$0]) / 255.0 }
+    } else if cgImage.bitsPerComponent == 16 {
+        pixels = data.withMemoryRebound(to: UInt16.self, capacity: length / 2) { data in
+            stride(from: 0, to: length / 2, by: 1).map { Float(data[$0].littleEndian) / 65535.0 }
+        }
+    } else {
+        throw "LUT image is not 8 or 16 bits per pixel component"
+    }
+    let numberOfPixels = Int(width * height)
+    let numberOutputOfComponents = numberOfPixels * 4
+    var cube = UnsafeMutablePointer<Float>.allocate(capacity: numberOutputOfComponents)
     let componentsPerPixel = cgImage.bitsPerPixel / cgImage.bitsPerComponent
     let hasAlpha = componentsPerPixel == 4
-    let numberOfPixels = Int(width * height)
-    let numberInputOfComponents = numberOfPixels * componentsPerPixel
-    let numberOutputOfComponents = numberOfPixels * 4
-    let cube = UnsafeMutablePointer<Float>.allocate(capacity: numberOutputOfComponents)
-    if cgImage.bitsPerComponent == 8 {
-        convert8BitsPerComponent(
-            Int(width),
-            Int(height),
-            dimension,
-            componentsPerPixel,
-            pixels,
-            cube,
-            hasAlpha
-        )
-    } else if cgImage.bitsPerComponent == 16 {
-        convert16BitsPerComponent(
-            Int(width),
-            Int(height),
-            dimension,
-            componentsPerPixel,
-            pixels,
-            cube,
-            hasAlpha,
-            numberInputOfComponents
-        )
-
-    } else {
-        throw "LUT image is not 8 or 16 bits per component"
-    }
-    return (Float(dimension), Data(bytes: cube, count: numberOutputOfComponents * 4))
-}
-
-private func convert8BitsPerComponent(
-    _ width: Int,
-    _ height: Int,
-    _ dimension: Int,
-    _ componentsPerPixel: Int,
-    _ pixels: UnsafePointer<UInt8>,
-    _ cube: UnsafeMutablePointer<Float>,
-    _ hasAlpha: Bool
-) {
-    var pixels = pixels
-    var cube = cube
-    let rows = height / dimension
-    let columns = width / dimension
-    let original = pixels
+    let originalCube = cube
+    let rows = Int(height) / dimension
+    let columns = Int(width) / dimension
     for row in 0 ..< rows {
         for column in 0 ..< columns {
             for lr in 0 ..< dimension {
-                pixels = original
                 let rowStrides = Int(width) * (row * dimension + lr) * componentsPerPixel
                 let columnStrides = column * dimension * componentsPerPixel
-                pixels += (rowStrides + columnStrides)
+                var index = (rowStrides + columnStrides)
                 for _ in 0 ..< dimension {
-                    cube.pointee = Float(pixels.pointee) / 255.0
+                    cube.pointee = pixels[index]
                     cube += 1
-                    pixels += 1
-                    cube.pointee = Float(pixels.pointee) / 255.0
+                    index += 1
+                    cube.pointee = pixels[index]
                     cube += 1
-                    pixels += 1
-                    cube.pointee = Float(pixels.pointee) / 255.0
+                    index += 1
+                    cube.pointee = pixels[index]
                     cube += 1
-                    pixels += 1
+                    index += 1
                     if hasAlpha {
-                        cube.pointee = Float(pixels.pointee) / 255.0
-                        pixels += 1
+                        cube.pointee = pixels[index]
+                        index += 1
                     } else {
                         cube.pointee = 1.0
                     }
@@ -99,53 +69,7 @@ private func convert8BitsPerComponent(
             }
         }
     }
-}
-
-private func convert16BitsPerComponent(
-    _ width: Int,
-    _ height: Int,
-    _ dimension: Int,
-    _ componentsPerPixel: Int,
-    _ pixels: UnsafePointer<UInt8>,
-    _ cube: UnsafeMutablePointer<Float>,
-    _ hasAlpha: Bool,
-    _ numberInputOfComponents: Int
-) {
-    var cube = cube
-    let rows = Int(height) / dimension
-    let columns = Int(width) / dimension
-    pixels.withMemoryRebound(to: UInt16.self, capacity: numberInputOfComponents) { pixels in
-        var pixels = pixels
-        let original = pixels
-        for row in 0 ..< rows {
-            for column in 0 ..< columns {
-                for lr in 0 ..< dimension {
-                    pixels = original
-                    let rowStrides = Int(width) * (row * dimension + lr) * componentsPerPixel
-                    let columnStrides = column * dimension * componentsPerPixel
-                    pixels += (rowStrides + columnStrides)
-                    for _ in 0 ..< dimension {
-                        cube.pointee = Float(pixels.pointee.littleEndian) / 65535.0
-                        cube += 1
-                        pixels += 1
-                        cube.pointee = Float(pixels.pointee.littleEndian) / 65535.0
-                        cube += 1
-                        pixels += 1
-                        cube.pointee = Float(pixels.pointee.littleEndian) / 65535.0
-                        cube += 1
-                        pixels += 1
-                        if hasAlpha {
-                            cube.pointee = Float(pixels.pointee.littleEndian) / 65535.0
-                            pixels += 1
-                        } else {
-                            cube.pointee = 1.0
-                        }
-                        cube += 1
-                    }
-                }
-            }
-        }
-    }
+    return (Float(dimension), Data(bytes: originalCube, count: numberOutputOfComponents * 4))
 }
 
 final class LutEffect: VideoEffect {
