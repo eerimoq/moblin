@@ -181,11 +181,30 @@ var sizeFormatter: ByteCountFormatter {
     return formatter
 }
 
+var speedFormatterValue: ByteCountFormatter {
+    let formatter = ByteCountFormatter()
+    formatter.allowsNonnumericFormatting = false
+    formatter.countStyle = .decimal
+    formatter.includesUnit = false
+    return formatter
+}
+
+var speedFormatterUnit: ByteCountFormatter {
+    let formatter = ByteCountFormatter()
+    formatter.allowsNonnumericFormatting = false
+    formatter.includesCount = false
+    return formatter
+}
+
 func formatBytesPerSecond(speed: Int64) -> String {
-    var speed = sizeFormatter.string(fromByteCount: speed)
-    speed = speed.replacingOccurrences(of: "bytes", with: "b")
-    speed = speed.replacingOccurrences(of: "byte", with: "b")
-    return speed.replacingOccurrences(of: "B", with: "b") + "ps"
+    let value = speedFormatterValue.string(fromByteCount: speed)
+    var unit = speedFormatterUnit.string(fromByteCount: speed)
+    unit = unit.replacingOccurrences(of: "bytes", with: "bps")
+    unit = unit.replacingOccurrences(of: "byte", with: "bps")
+    if unit.count == 2 {
+        unit = "\(unit.remove(at: unit.startIndex))bps"
+    }
+    return "\(value) \(unit)"
 }
 
 var uptimeFormatter: DateComponentsFormatter {
