@@ -20,7 +20,7 @@ private func convertLut(image: UIImage) throws -> (Float, Data) {
     guard let data = cgImage.dataProvider?.data else {
         throw "Failed to get LUT data"
     }
-    guard var pixels = CFDataGetBytePtr(data) else {
+    guard let pixels = CFDataGetBytePtr(data) else {
         throw "Failed to get LUT pixels"
     }
     let componentsPerPixel = cgImage.bitsPerPixel / cgImage.bitsPerComponent
@@ -68,7 +68,6 @@ private func convert8BitsPerComponent(
 ) {
     var pixels = pixels
     var cube = cube
-    let origCube = cube
     let rows = height / dimension
     let columns = width / dimension
     let original = pixels
@@ -112,9 +111,7 @@ private func convert16BitsPerComponent(
     _ hasAlpha: Bool,
     _ numberInputOfComponents: Int
 ) {
-    var pixels = pixels
     var cube = cube
-    let origCube = cube
     let rows = Int(height) / dimension
     let columns = Int(width) / dimension
     pixels.withMemoryRebound(to: UInt16.self, capacity: numberInputOfComponents) { pixels in

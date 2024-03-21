@@ -8,6 +8,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.209.0", date: "2024-03-21", changes: [
+        "• Support for more LUT formats.",
+        "  • 16 bits per pixel component, not only 8.",
+        "  • RGB, not only RGBA.",
+        "• Fix/mitigate slow/hanging video settings changes. 🐛 JohannesLiv",
+        "  • Sometimes still problematic when torch is on.",
+    ]),
     Version(version: "0.208.0", date: "2024-03-19", changes: [
         "• Fix Apple Log, and more specifically apply LUTs correctly. 🐛 JohannesLiv",
         "• Fix vertical lines and other image artifacts when applying various effects/widgets/draw on stream. 🐛 JohannesLiv",
