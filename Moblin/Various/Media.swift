@@ -356,12 +356,11 @@ final class Media: NSObject {
             return
         }
         DispatchQueue.main.async {
-            switch code {
-            case RTMPConnection.Code.connectSuccess.rawValue:
+            switch RTMPConnection.Code(rawValue: code) {
+            case .connectSuccess:
                 self.rtmpStream?.publish(self.rtmpStreamName)
                 self.onRtmpConnected()
-            case RTMPConnection.Code.connectFailed.rawValue,
-                 RTMPConnection.Code.connectClosed.rawValue:
+            case .connectFailed, .connectClosed:
                 self.onRtmpDisconnected("\(code)")
             default:
                 break

@@ -2170,6 +2170,11 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
+    func setIsLive(value: Bool) {
+        isLive = value
+        sendIsLiveToWatch()
+    }
+
     func startStream(delayed: Bool = false) {
         logger.info("stream: Start")
         guard !streaming else {
@@ -2189,7 +2194,7 @@ final class Model: NSObject, ObservableObject {
             )
             return
         }
-        isLive = true
+        setIsLive(value: true)
         streaming = true
         streamTotalBytes = 0
         streamTotalChatMessages = 0
@@ -2202,7 +2207,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func stopStream() {
-        isLive = false
+        setIsLive(value: false)
         updateScreenAutoOff()
         realtimeIrl?.stop()
         if !streaming {
@@ -3122,6 +3127,13 @@ final class Model: NSObject, ObservableObject {
             let settings = try JSONEncoder().encode(database.watch)
             sendMessageToWatch(type: .settings, data: settings)
         } catch {}
+    }
+
+    private func sendIsLiveToWatch() {
+        guard isWatchReachable() else {
+            return
+        }
+        sendMessageToWatch(type: .isLive, data: isLive)
     }
 
     func setLowFpsImage() {
@@ -4791,6 +4803,7 @@ extension Model: WCSessionDelegate {
             self.trySendNextChatPostToWatch()
             self.sendSettingsToWatch()
             self.sendAudioLevelToWatch()
+            self.sendIsLiveToWatch()
         }
     }
 
@@ -4833,6 +4846,19 @@ extension Model: WCSessionDelegate {
         .resume()
     }
 
+    private func handleSetIsLive(_ data: Any) {
+        guard let value = data as? Bool else {
+            return
+        }
+        DispatchQueue.main.async {
+            if value {
+                self.startStream()
+            } else {
+                self.stopStream()
+            }
+        }
+    }
+
     func session(
         _: WCSession,
         didReceiveMessage message: [String: Any],
@@ -4846,6 +4872,21 @@ extension Model: WCSessionDelegate {
         switch type {
         case .getImage:
             handleGetImage(data, replyHandler)
+        default:
+            replyHandler([:])
+        }
+    }
+
+    func session(_: WCSession, didReceiveMessage message: [String: Any]) {
+        guard let (type, data) = WatchMessageFromWatch.unpack(message) else {
+            logger.info("watch: Invalid message")
+            return
+        }
+        switch type {
+        case .setIsLive:
+            handleSetIsLive(data)
+        default:
+            break
         }
     }
 }

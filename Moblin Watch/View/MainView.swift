@@ -15,7 +15,7 @@ struct MainView: View {
             }
             .ignoresSafeArea()
             .edgesIgnoringSafeArea([.top, .leading, .trailing])
-            // ControlView()
+            ControlView()
             NavigationStack {
                 SettingsView()
             }

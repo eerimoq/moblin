@@ -48,6 +48,7 @@ class Model: NSObject, ObservableObject {
     var log: Deque<LogEntry> = []
     private var logId = 1
     var numberOfMessagesReceived = 0
+    @Published var isLive = false
 
     func setup() {
         logger.handler = debugLog(message:)
@@ -187,6 +188,13 @@ class Model: NSObject, ObservableObject {
         latestAudioLevel = Date()
     }
 
+    private func handleIsLive(_ data: Any) throws {
+        guard let value = data as? Bool else {
+            return
+        }
+        isLive = value
+    }
+
     private func handleSettings(_ data: Any) throws {
         guard let settings = data as? Data else {
             logger.info("Invalid settings message")
@@ -209,6 +217,11 @@ class Model: NSObject, ObservableObject {
         preview = UIImage(data: image)
         showPreviewDisconnected = false
         latestPreviewDate = Date()
+    }
+
+    func setIsLive(value: Bool) {
+        let message = WatchMessageFromWatch.pack(type: .setIsLive, data: value)
+        WCSession.default.sendMessage(message, replyHandler: nil)
     }
 }
 
@@ -249,6 +262,8 @@ extension Model: WCSessionDelegate {
                     try self.handlePreview(data)
                 case .audioLevel:
                     try self.handleAudioLevel(data)
+                case .isLive:
+                    try self.handleIsLive(data)
                 }
             } catch {}
         }

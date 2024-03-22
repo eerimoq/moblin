@@ -124,7 +124,7 @@ struct StreamSwitcherView: View {
                     if model.setCurrentStream(streamId: model.currentStreamId) {
                         model.reloadStream()
                         model.sceneUpdated()
-                        model.isLive = true
+                        model.setIsLive(value: true)
                         DispatchQueue.main
                             .asyncAfter(deadline: .now() + 3) {
                                 model.startStream(delayed: true)
