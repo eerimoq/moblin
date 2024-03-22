@@ -23,7 +23,8 @@ LANGUAGES = [
     ("ja", "ja"),
     ("hi", "hi"),
     ("ko", "ko"),
-    ("ru", "ru")
+    ("ru", "ru"),
+    ("uk", "uk")
 ]
 
 
