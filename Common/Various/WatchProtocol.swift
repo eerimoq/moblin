@@ -33,6 +33,7 @@ enum WatchMessageToWatch: String {
 enum WatchMessageFromWatch: String {
     case getImage
     case setIsLive
+    case keepAlive
 
     // periphery:ignore
     static func pack(type: WatchMessageFromWatch, data: Any) -> [String: Any] {

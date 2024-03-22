@@ -4885,6 +4885,8 @@ extension Model: WCSessionDelegate {
         switch type {
         case .setIsLive:
             handleSetIsLive(data)
+        case .keepAlive:
+            break
         default:
             break
         }

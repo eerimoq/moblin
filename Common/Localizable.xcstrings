@@ -16362,7 +16362,122 @@
       }
     },
     "Control and monitor Moblin from another device." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Steuern und überwachen Sie Moblin von einem anderen Gerät aus."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ελέγξτε και παρακολουθήστε το Moblin από άλλη συσκευή."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Controla y monitorea Moblin desde otro dispositivo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Contrôlez et surveillez Moblin depuis un autre appareil."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "किसी अन्य डिवाइस से मोबलिन को नियंत्रित और मॉनिटर करें।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Kontrol dan pantau Moblin dari perangkat lain."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Controlla e monitora Moblin da un altro dispositivo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "別のデバイスから Moblin を制御および監視します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "다른 장치에서 Moblin을 제어하고 모니터링하세요."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bedien en monitor Moblin vanaf een ander apparaat."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Kontroluj i monitoruj Moblin z innego urządzenia."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Controle e monitore o Moblin de outro dispositivo."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Controle e monitore o Moblin de outro dispositivo."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Управляйте и контролируйте Moblin с другого устройства."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Styr och övervaka Moblin från en annan enhet."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Moblin'i başka bir cihazdan kontrol edin ve izleyin."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Kiểm soát và giám sát Moblin từ một thiết bị khác."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "从另一台设备控制和监控 Moblin。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "從另一台設備控制和監控 Moblin。"
+          }
+        }
+      }
     },
     "Controller" : {
       "localizations" : {
@@ -21085,7 +21200,122 @@
       }
     },
     "Enable the RTMP server to see URLs." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aktivieren Sie den RTMP-Server, um URLs anzuzeigen."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ενεργοποιήστε τον διακομιστή RTMP για να βλέπει διευθύνσεις URL."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Habilite el servidor RTMP para ver las URL."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Activez le serveur RTMP pour voir les URL."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "यूआरएल देखने के लिए आरटीएमपी सर्वर सक्षम करें।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aktifkan server RTMP untuk melihat URL."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Abilita il server RTMP per vedere gli URL."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "RTMP サーバーが URL を参照できるようにします。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL을 보려면 RTMP 서버를 활성화하세요."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Schakel de RTMP-server in om URL's te zien."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Włącz serwer RTMP, aby zobaczyć adresy URL."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Habilite o servidor RTMP para ver URLs."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Habilite o servidor RTMP para ver URLs."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Включите сервер RTMP, чтобы видеть URL-адреса."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktivera RTMP-servern för att se webbadresser."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL'leri görmek için RTMP sunucusunu etkinleştirin."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cho phép máy chủ RTMP xem URL."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "启用 RTMP 服务器以查看 URL。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "啟用 RTMP 伺服器以查看 URL。"
+          }
+        }
+      }
     },
     "Enable to allow an assistant to monitor and control this device from a different device." : {
       "localizations" : {
@@ -21796,126 +22026,237 @@
       }
     },
     "Enter one of the URLs as \"Assistant URL\" in the streamer device to connect to this device." : {
-
-    },
-    "Enter one of the URLs into the RTMP publisher device to send video to this stream. Usually enter the WiFi or Personal Hotspot URL." : {
-
-    },
-    "Enter one of the URLs into the RTMP publisher device to send video to this stream. Usually enter the WiFi URL." : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gebe eine der URLs in das RTMP-Publisher-Gerät ein, um Videos an diesen Stream zu senden. Gebe normalerweise die WLAN-URL ein."
+            "state" : "needs_review",
+            "value" : "Geben Sie eine der URLs als „Assistant URL“ im Streamer-Gerät ein, um eine Verbindung zu diesem Gerät herzustellen."
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Εισαγάγετε μία από τις διευθύνσεις URL στη συσκευή εκδότη RTMP για αποστολή βίντεο σε αυτήν τη ροή. Συνήθως εισάγετε τη διεύθυνση URL του WiFi."
+            "value" : "Εισαγάγετε ένα από τα URL ως \"URL Βοηθού\" στη συσκευή ροής για να συνδεθείτε σε αυτήν τη συσκευή."
           }
         },
         "es" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ingresa una de las URL en el dispositivo del RTMP publisher para enviar video a esta transmisión. Generalmente ingresa la URL de WiFi."
+            "state" : "needs_review",
+            "value" : "Ingrese una de las URL como \"URL del asistente\" en el dispositivo transmisor para conectarse a este dispositivo."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Entrez l'une des URL dans l'appareil de l'éditeur RTMP pour envoyer la vidéo à ce flux. Entrez généralement l'URL WiFi."
+            "value" : "Entrez l'une des URL comme « URL de l'assistant » dans l'appareil de diffusion pour vous connecter à cet appareil."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "इस स्ट्रीम पर वीडियो भेजने के लिए आरटीएमपी प्रकाशक डिवाइस में एक यूआरएल दर्ज करें। आमतौर पर वाईफाई यूआरएल दर्ज करें।"
+            "value" : "इस डिवाइस से कनेक्ट करने के लिए स्ट्रीमर डिवाइस में किसी एक यूआरएल को \"सहायक यूआरएल\" के रूप में दर्ज करें।"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Masukkan salah satu URL ke perangkat penerbit RTMP untuk mengirim video ke aliran ini. Biasanya masukkan URL WiFi."
+            "value" : "Masukkan salah satu URL sebagai \"URL Asisten\" di perangkat streamer untuk terhubung ke perangkat ini."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Inserisci uno degli URL nel dispositivo editore RTMP per inviare video a questo stream. Di solito inserisci l'URL WiFi."
+            "value" : "Inserisci uno degli URL come \"URL assistente\" nel dispositivo streamer per connetterti a questo dispositivo."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "URL の 1 つを RTMP パブリッシャ デバイスに入力して、ビデオをこのストリームに送信します。通常は WiFi URL を入力します。"
+            "value" : "いずれかの URL をストリーマー デバイスの「アシスタント URL」として入力して、このデバイスに接続します。"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "비디오를 이 스트림으로 보내려면 RTMP 게시자 장치에 URL 중 하나를 입력하세요. 일반적으로 WiFi URL을 입력합니다."
+            "state" : "needs_review",
+            "value" : "이 장치에 연결하려면 스트리머 장치에 URL 중 하나를 \"보조 URL\"로 입력하세요."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Voer een van de URL's in op het RTMP-uitgeverapparaat om video naar deze stream te verzenden. Voer meestal de WiFi-URL in."
+            "value" : "Voer een van de URL's in als 'Assistent-URL' in het streamerapparaat om verbinding te maken met dit apparaat."
           }
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wprowadź jeden z adresów URL w urządzeniu wydawcy RTMP, aby wysłać wideo do tego strumienia. Zwykle wprowadź adres URL Wi-Fi."
+            "state" : "needs_review",
+            "value" : "Wprowadź jeden z adresów URL jako „URL asystenta” w urządzeniu do przesyłania strumieniowego, aby połączyć się z tym urządzeniem."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Insira um dos URLs no dispositivo do editor RTMP para enviar o vídeo para este stream. Geralmente insira o URL do WiFi."
+            "value" : "Insira um dos URLs como \"URL do assistente\" no dispositivo streamer para conectar-se a este dispositivo."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Insira um dos URLs no dispositivo do editor RTMP para enviar o vídeo para este stream. Geralmente insira o URL do WiFi."
+            "value" : "Insira um dos URLs como \"URL do assistente\" no dispositivo streamer para conectar-se a este dispositivo."
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Введите один из URL из списка выше в устройство-источник RTMP, чтобы отправить видео на этот стрим. Обычно используется URL в сети Wi-Fi."
+            "state" : "needs_review",
+            "value" : "Введите один из URL-адресов в качестве «URL-адреса помощника» на стримерном устройстве, чтобы подключиться к этому устройству."
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ange en av webbadresserna i RTMP-utgivarenheten för att skicka video till den här strömmen. Ange vanligtvis WiFi-URL."
+            "value" : "Ange en av webbadresserna som \"Assistent-URL\" i streamerenheten för att ansluta till den här enheten."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Bu akışa video göndermek için URL'lerden birini RTMP yayıncı cihazına girin. Genellikle WiFi URL'sini girin."
+            "value" : "Bu cihaza bağlanmak için yayıncı cihaza URL'lerden birini \"Asistan URL'si\" olarak girin."
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Nhập một trong các URL vào thiết bị của nhà xuất bản RTMP để gửi video tới luồng này. Thường nhập URL WiFi."
+            "value" : "Nhập một trong các URL làm \"URL trợ lý\" trong thiết bị phát trực tuyến để kết nối với thiết bị này."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "将 URL 之一输入 RTMP 发布者设备以将视频发送到该流。通常输入 WiFi URL。"
+            "value" : "在流媒体设备中输入其中一个 URL 作为“助理 URL”以连接到该设备。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "在串流媒體裝置中輸入其中一個 URL 作為「助理 URL」以連接到該裝置。"
+          }
+        }
+      }
+    },
+    "Enter one of the URLs into the RTMP publisher device to send video to this stream. Usually enter the WiFi or Personal Hotspot URL." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Geben Sie eine der URLs in das RTMP-Publisher-Gerät ein, um Videos an diesen Stream zu senden. Geben Sie normalerweise die WLAN- oder persönliche Hotspot-URL ein."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Εισαγάγετε μία από τις διευθύνσεις URL στη συσκευή εκδότη RTMP για αποστολή βίντεο σε αυτήν τη ροή. Συνήθως εισάγετε τη διεύθυνση URL WiFi ή Προσωπικού Hotspot."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ingrese una de las URL en el dispositivo del editor RTMP para enviar video a esta transmisión. Por lo general, ingrese la URL de WiFi o punto de acceso personal."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Entrez l'une des URL dans l'appareil de l'éditeur RTMP pour envoyer la vidéo à ce flux. Entrez généralement l'URL du WiFi ou du point d'accès personnel."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "इस स्ट्रीम पर वीडियो भेजने के लिए आरटीएमपी प्रकाशक डिवाइस में एक यूआरएल दर्ज करें। आमतौर पर वाईफाई या पर्सनल हॉटस्पॉट यूआरएल दर्ज करें।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Masukkan salah satu URL ke perangkat penerbit RTMP untuk mengirim video ke aliran ini. Biasanya masukkan URL WiFi atau Personal Hotspot."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Inserisci uno degli URL nel dispositivo editore RTMP per inviare video a questo stream. Di solito inserisci l'URL del WiFi o dell'hotspot personale."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL の 1 つを RTMP パブリッシャ デバイスに入力して、ビデオをこのストリームに送信します。通常は、WiFi またはパーソナル ホットスポットの URL を入力します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "이 스트림으로 비디오를 보내려면 RTMP 게시자 장치에 URL 중 하나를 입력하세요. 일반적으로 WiFi 또는 개인 핫스팟 URL을 입력합니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Voer een van de URL's in op het RTMP-uitgeverapparaat om video naar deze stream te verzenden. Voer meestal de WiFi- of persoonlijke hotspot-URL in."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Wprowadź jeden z adresów URL w urządzeniu wydawcy RTMP, aby wysłać wideo do tego strumienia. Zwykle wprowadź adres URL Wi-Fi lub osobistego hotspotu."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Insira um dos URLs no dispositivo do editor RTMP para enviar o vídeo para este stream. Geralmente insira o URL do WiFi ou do ponto de acesso pessoal."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Insira um dos URLs no dispositivo do editor RTMP para enviar o vídeo para este stream. Geralmente insira o URL do WiFi ou do ponto de acesso pessoal."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Введите один из URL-адресов в устройство RTMP-издателя, чтобы отправить видео в этот поток. Обычно введите URL-адрес Wi-Fi или персональной точки доступа."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
             "state" : "translated",
-            "value" : "輸入其中一個 RTMP publisher的 URL 來發送影像到串流中。通常會輸入 WiFi URL。"
+            "value" : "Ange en av webbadresserna i RTMP-utgivarenheten för att skicka video till den här strömmen. Ange vanligtvis WiFi- eller personlig hotspot-URL."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bu akışa video göndermek için URL'lerden birini RTMP yayıncı cihazına girin. Genellikle WiFi veya Kişisel Erişim Noktası URL'sini girin."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nhập một trong các URL vào thiết bị của nhà xuất bản RTMP để gửi video tới luồng này. Thường nhập URL WiFi hoặc Điểm truy cập cá nhân."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "将 URL 之一输入 RTMP 发布者设备以将视频发送到该流。通常输入 WiFi 或个人热点 URL。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "將 URL 之一輸入 RTMP 發布者裝置以將影片傳送到該串流。通常會輸入 WiFi 或個人熱點 URL。"
           }
         }
       }
@@ -22039,7 +22380,122 @@
       }
     },
     "Example URL: ws://foo.org:5443/ws" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Beispiel-URL: ws://foo.org:5443/ws"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Παράδειγμα URL: ws://foo.org:5443/ws"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL de ejemplo: ws://foo.org:5443/ws"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Exemple d'URL : ws://foo.org:5443/ws"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "उदाहरण यूआरएल: ws://foo.org:5443/ws"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Contoh URL: ws://foo.org:5443/ws"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL di esempio: ws://foo.org:5443/ws"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL の例: ws://foo.org:5443/ws"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "예제 URL: ws://foo.org:5443/ws"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Voorbeeld-URL: ws://foo.org:5443/ws"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Przykładowy adres URL: ws://foo.org:5443/ws"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL de exemplo: ws://foo.org:5443/ws"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL de exemplo: ws://foo.org:5443/ws"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Пример URL-адреса: ws://foo.org:5443/ws."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exempel URL: ws://foo.org:5443/ws"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Örnek URL: ws://foo.org:5443/ws"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "URL ví dụ: ws://foo.org:5443/ws"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "示例 URL：ws://foo.org:5443/ws"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "範例 URL：ws://foo.org:5443/ws"
+          }
+        }
+      }
     },
     "Example:  rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef" : {
       "localizations" : {
@@ -25700,10 +26156,240 @@
       }
     },
     "Fix %@ source" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%@ Quelle reparieren"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Διορθώστε την πηγή %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Arreglar %@ fuente"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Corriger %@ source"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%@ स्रोत ठीक करें"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Perbaiki %@ sumber"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Correggi la fonte %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%@ ソースを修正"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%@ 소스 수정"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%@ bron repareren"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Napraw %@ źródło"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Corrigir %@ fonte"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Corrigir %@ fonte"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Исправить источник %@"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fixa %@ källa"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%@ kaynağını düzelt"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sửa nguồn %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "修复%@源"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "修復%@來源"
+          }
+        }
+      }
     },
     "Fixing..." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Festsetzung..."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Διόρθωση..."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fijación..."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fixation..."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ठीक कर रहा हूँ..."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pemasangan..."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fissaggio..."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "修正中..."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "고정..."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Repareren..."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ustalenie..."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Reparando..."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Reparando..."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Исправление..."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fixar..."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Düzeltiliyor..."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Đang sửa..."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "定影..."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "定影..."
+          }
+        }
+      }
     },
     "Font size" : {
       "localizations" : {
@@ -30662,7 +31348,122 @@
       }
     },
     "Is live" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ist live"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Είναι ζωντανό"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Es en vivo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Est en direct"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "लाइव है"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sedang siaran langsung"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "È in diretta"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ライブです"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "라이브 중"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Is live"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Jest na żywo"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Está ao vivo"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Está ao vivo"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Живой"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Är live"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Canlı"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Là sống"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "正在直播"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "正在直播"
+          }
+        }
+      }
     },
     "jo304F4gr" : {
       "localizations" : {
@@ -38453,7 +39254,122 @@
       }
     },
     "No widgets found. Create widgets in Settings → Scenes → Widgets." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Keine Widgets gefunden. Erstellen Sie Widgets unter Einstellungen → Szenen → Widgets."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Δεν βρέθηκαν γραφικά στοιχεία. Δημιουργήστε γραφικά στοιχεία στις Ρυθμίσεις → Σκηνές → Γραφικά στοιχεία."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "No se encontraron widgets. Cree widgets en Configuración → Escenas → Widgets."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aucun widget trouvé. Créez des widgets dans Paramètres → Scènes → Widgets."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "कोई विजेट नहीं मिला. सेटिंग्स → दृश्य → विजेट में विजेट बनाएं।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Tidak ada widget yang ditemukan. Buat widget di Pengaturan → Pemandangan → Widget."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nessun widget trovato. Crea widget in Impostazioni → Scene → Widget."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ウィジェットが見つかりません。 「設定」→「シーン」→「ウィジェット」でウィジェットを作成します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "위젯을 찾을 수 없습니다. 설정 → 장면 → 위젯에서 위젯을 생성하세요."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Geen widgets gevonden. Maak widgets in Instellingen → Scènes → Widgets."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nie znaleziono widżetów. Utwórz widżety w Ustawienia → Sceny → Widżety."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nenhum widget encontrado. Crie widgets em Configurações → Cenas → Widgets."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nenhum widget encontrado. Crie widgets em Configurações → Cenas → Widgets."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Виджеты не найдены. Создавайте виджеты в «Настройки» → «Сцены» → «Виджеты»."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inga widgets hittades. Skapa widgetar i Inställningar → Scener → Widgets."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Hiçbir widget bulunamadı. Ayarlar → Sahneler → Widget'lar bölümünde widget'lar oluşturun."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Không tìm thấy vật dụng nào. Tạo tiện ích trong Cài đặt → Cảnh → Tiện ích."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "没有找到小部件。在设置 → 场景 → 小部件中创建小部件。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "沒有找到小部件。在設定 → 場景 → 小工具中建立小工具。"
+          }
+        }
+      }
     },
     "Noise level" : {
       "localizations" : {
@@ -40344,7 +41260,122 @@
       }
     },
     "Open Streaming Platform" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Offene Streaming-Plattform"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ανοίξτε την πλατφόρμα ροής"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Plataforma de transmisión abierta"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Plateforme de streaming ouverte"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "स्ट्रीमिंग प्लेटफ़ॉर्म खोलें"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Buka Platform Streaming"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Apri la piattaforma di streaming"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "オープンストリーミングプラットフォーム"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "오픈 스트리밍 플랫폼"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Open streamingplatform"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Otwarta platforma streamingowa"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Plataforma de streaming aberta"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Plataforma de streaming aberta"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Открытая потоковая платформа"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Streaming Platform"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Açık Yayın Platformu"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nền tảng phát trực tuyến mở"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "开放流媒体平台"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "開放串流平台"
+          }
+        }
+      }
     },
     "Overhead bandwidth" : {
       "localizations" : {
@@ -44359,7 +45390,122 @@
       }
     },
     "Restarts the %@ source to hopefully fix audio and video issues." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Startet die %@-Quelle neu, um hoffentlich Audio- und Videoprobleme zu beheben."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Επανεκκινεί την πηγή %@ για να επιλύσει προβλήματα ήχου και βίντεο."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Reinicia la fuente %@ para, con suerte, solucionar problemas de audio y video."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Redémarre la source %@ pour, espérons-le, résoudre les problèmes audio et vidéo."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "आशा है कि ऑडियो और वीडियो समस्याओं को ठीक करने के लिए %@ स्रोत को पुनरारंभ करता है।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mulai ulang %@ sumber agar dapat memperbaiki masalah audio dan video."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Riavvia la sorgente %@ per risolvere, si spera, i problemi audio e video."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "オーディオとビデオの問題を修正するために、%@ ソースを再起動します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "오디오 및 비디오 문제를 해결하기 위해 %@ 소스를 다시 시작합니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Start de %@-bron opnieuw om hopelijk audio- en videoproblemen op te lossen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Uruchamia ponownie źródło %@, aby, miejmy nadzieję, rozwiązać problemy z dźwiękiem i obrazem."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Reinicia a fonte %@ para corrigir problemas de áudio e vídeo."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Reinicia a fonte %@ para corrigir problemas de áudio e vídeo."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Перезапускает источник %@, чтобы исправить проблемы со звуком и видео."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Startar om %@-källan för att förhoppningsvis fixa ljud- och videoproblem."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ses ve video sorunlarını düzeltmek için %@ kaynağını yeniden başlatır."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Khởi động lại nguồn %@ để hy vọng khắc phục được sự cố âm thanh và video."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "重新启动 %@ 源以有望解决音频和视频问题。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "重新啟動 %@ 來源以有望解決音訊和視訊問題。"
+          }
+        }
+      }
     },
     "Restore purchases" : {
       "localizations" : {
@@ -46717,125 +47863,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "棕褐色"
-          }
-        }
-      }
-    },
-    "Server address" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Server Adresse"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Διεύθυνση διακομιστή"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dirección del servidor"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Adresse du serveur"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "सर्वर पता"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Alamat server"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Indirizzo del server"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "サーバーアドレス"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "서버 주소"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Server adres"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Adres serwera"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Endereço do servidor"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Endereço do servidor"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Адрес сервера"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Server adress"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Sunucu adresi"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Địa chỉ máy chủ"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "服务器地址"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "伺服器位址"
           }
         }
       }
@@ -58641,7 +59668,122 @@
       }
     },
     "Use game controllers to zoom, set scene, and more, from a distance." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Verwenden Sie Gamecontroller zum Zoomen, Einstellen von Szenen und mehr aus der Ferne."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Χρησιμοποιήστε χειριστήρια παιχνιδιών για μεγέθυνση, ρύθμιση σκηνής και άλλα, από απόσταση."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Utilice controladores de juegos para hacer zoom, establecer escenas y más, desde la distancia."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Utilisez les contrôleurs de jeu pour zoomer, définir une scène et bien plus encore, à distance."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "दूर से ज़ूम करने, दृश्य सेट करने और बहुत कुछ करने के लिए गेम कंट्रोलर का उपयोग करें।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Gunakan pengontrol game untuk memperbesar, mengatur adegan, dan lainnya, dari jarak jauh."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Usa i controller di gioco per zoomare, impostare scene e altro ancora, a distanza."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ゲーム コントローラーを使用して、離れた場所からズームしたり、シーンを設定したりできます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "게임 컨트롤러를 사용하여 멀리서 확대/축소, 장면 설정 등을 수행할 수 있습니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Gebruik gamecontrollers om vanaf een afstand in te zoomen, scènes in te stellen en meer."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Użyj kontrolerów do gier, aby powiększać, ustawiać scenę i nie tylko, z dużej odległości."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Use controladores de jogo para ampliar, definir cenas e muito mais, à distância."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Use controladores de jogo para ampliar, definir cenas e muito mais, à distância."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Используйте игровые контроллеры для масштабирования, настройки сцены и т. д. на расстоянии."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Använd spelkontroller för att zooma, välja scen och mer, på avstånd."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Uzaktan yakınlaştırmak, sahneyi ayarlamak ve daha fazlasını yapmak için oyun kumandalarını kullanın."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sử dụng bộ điều khiển trò chơi để thu phóng, đặt cảnh và hơn thế nữa từ xa."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "使用游戏控制器从远处进行缩放、设置场景等。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "使用遊戲控制器從遠處進行縮放、設定場景等。"
+          }
+        }
+      }
     },
     "Use https://streamscharts.com/tools/convert-username to convert your channel name to your channel id." : {
       "localizations" : {

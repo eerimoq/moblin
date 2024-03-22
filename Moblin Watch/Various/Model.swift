@@ -64,6 +64,7 @@ class Model: NSObject, ObservableObject {
     private func setupPeriodicTimers() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             self.updatePreview()
+            self.keepAlive()
         })
     }
 
@@ -221,6 +222,11 @@ class Model: NSObject, ObservableObject {
 
     func setIsLive(value: Bool) {
         let message = WatchMessageFromWatch.pack(type: .setIsLive, data: value)
+        WCSession.default.sendMessage(message, replyHandler: nil)
+    }
+
+    func keepAlive() {
+        let message = WatchMessageFromWatch.pack(type: .keepAlive, data: true)
         WCSession.default.sendMessage(message, replyHandler: nil)
     }
 }
