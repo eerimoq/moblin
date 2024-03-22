@@ -8,6 +8,12 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.210.0", date: "2024-03-22", changes: [
+        "• 120 FPS (for devices that supports it). 💡 Tony Mah",
+        "• Try to make speed units more universal. 🐛 Murrito",
+        "• Watch companion app.",
+        "  • Go live and end stream toggle. 💡 BoostedBen",
+    ]),
     Version(version: "0.209.0", date: "2024-03-21", changes: [
         "• Support for more LUT formats.",
         "  • 16 bits per pixel component, not only 8.",
