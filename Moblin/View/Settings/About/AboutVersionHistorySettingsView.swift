@@ -15,6 +15,7 @@ private let versions = [
         "• Remove 120 FPS for now as it made the app crash more frequently than other FPSs.",
         "• Crop widget. 💡 Tony Mah",
         "  • Can only use a browser widget as source for now.",
+        "• German translation updated.",
     ]),
     Version(version: "0.210.0", date: "2024-03-22", changes: [
         "• 120 FPS (for devices that supports it). 💡 Tony Mah",
