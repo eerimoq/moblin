@@ -282,13 +282,13 @@ class OpenStreamingPlatformChat {
     private func sendPresence() async throws {
         try await sendString(
             message: """
-                     <presence
-                        from=\"\(jid)\"
-                        to=\"\(channelId)@conference.osp.internal/\(username)\"
-                        xmlns=\"jabber:client\">
-                       <x xmlns=\"http://jabber.org/protocol/muc\"/>
-                     </presence>
-                     """
+            <presence
+               from=\"\(jid)\"
+               to=\"\(channelId)@conference.osp.internal/\(username)\"
+               xmlns=\"jabber:client\">
+              <x xmlns=\"http://jabber.org/protocol/muc\"/>
+            </presence>
+            """
         )
     }
 
