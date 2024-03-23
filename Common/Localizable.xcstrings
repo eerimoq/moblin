@@ -23511,6 +23511,7 @@
       }
     },
     "Example URL: ws://foo.org:5443/ws" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

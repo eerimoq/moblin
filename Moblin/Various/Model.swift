@@ -2661,7 +2661,8 @@ final class Model: NSObject, ObservableObject {
                 model: self,
                 url: stream.openStreamingPlatformUrl!,
                 username: stream.openStreamingPlatformUsername!,
-                password: stream.openStreamingPlatformPassword!
+                password: stream.openStreamingPlatformPassword!,
+                channelId: stream.openStreamingPlatformChannelId!
             )
             openStreamingPlatformChat!.start()
         } else {
@@ -2894,6 +2895,11 @@ final class Model: NSObject, ObservableObject {
     }
 
     func openStreamingPlatformPasswordUpdated() {
+        reloadOpenStreamingPlatformChat()
+        resetChat()
+    }
+
+    func openStreamingPlatformRoomUpdated() {
         reloadOpenStreamingPlatformChat()
         resetChat()
     }

@@ -41,6 +41,19 @@ private struct SuccessContainer: Codable {
     let success: Success
 }
 
+private struct IqBind: Codable {
+    var jid: String
+}
+
+private struct Iq: Codable {
+    var bind: IqBind
+}
+
+// periphery:ignore
+private struct IqContainer: Codable {
+    let iq: Iq
+}
+
 // periphery:ignore
 private struct Auth: Codable, DynamicNodeEncoding {
     let xmlns: String
@@ -85,13 +98,16 @@ class OpenStreamingPlatformChat {
     private let url: String
     private let username: String
     private let password: String
+    private let channelId: String
     private var authenticated = false
+    private var jid: String = ""
 
-    init(model: Model, url: String, username: String, password: String) {
+    init(model: Model, url: String, username: String, password: String, channelId: String) {
         self.model = model
         self.url = url
         self.username = username
         self.password = password
+        self.channelId = channelId
         let url = URL(string: "ws://192.168.50.72:5443/ws")!
         webSocket = URLSession(configuration: .default).webSocketTask(with: url)
     }
@@ -184,6 +200,11 @@ class OpenStreamingPlatformChat {
             return
         } catch {}
         do {
+            let message = try XMLDecoder().decode(IqContainer.self, from: data)
+            try await handleMessageIq(message: message.iq)
+            return
+        } catch {}
+        do {
             let decoder = XMLDecoder()
             decoder.shouldProcessNamespaces = true
             let message = try decoder.decode(FeaturesContainer.self, from: data)
@@ -211,6 +232,12 @@ class OpenStreamingPlatformChat {
         }
     }
 
+    private func handleMessageIq(message: Iq) async throws {
+        jid = message.bind.jid
+        logger.info("open-streaming-platform: Got JID \(jid)")
+        try await sendPresence()
+    }
+
     private func handleMessageSuccess() async throws {
         logger.info("open-streaming-platform: handle success")
         authenticated = true
@@ -221,18 +248,16 @@ class OpenStreamingPlatformChat {
     private func handleMessageFeatures(message _: Features) async throws {
         logger.info("open-streaming-platform: handle features")
         if authenticated {
-            try await webSocket.send(.string(
+            try await sendString(message:
                 """
                 <iq id=\"_bind_auth_2\" type=\"set\" xmlns=\"jabber:client\">\
                 <bind xmlns=\"urn:ietf:params:xml:ns:xmpp-bind\"/></iq>
-                """
-            ))
-            try await webSocket.send(.string(
+                """)
+            try await sendString(message:
                 """
                 <iq id=\"_session_auth_2\" type=\"set\" xmlns=\"jabber:client\">\
                 <session xmlns=\"urn:ietf:params:xml:ns:xmpp-session\"/></iq>
-                """
-            ))
+                """)
         } else {
             guard let value = packPlainAuth() else {
                 return
@@ -246,11 +271,24 @@ class OpenStreamingPlatformChat {
             root: "open",
             data: Open(
                 xmlns: "urn:ietf:params:xml:ns:xmpp-framing",
-                to: "localhost",
+                to: "osp.internal",
                 from: nil,
                 version: "1.0",
                 id: nil
             )
+        )
+    }
+
+    private func sendPresence() async throws {
+        try await sendString(
+            message: """
+                     <presence
+                        from=\"\(jid)\"
+                        to=\"\(channelId)@conference.osp.internal/\(username)\"
+                        xmlns=\"jabber:client\">
+                       <x xmlns=\"http://jabber.org/protocol/muc\"/>
+                     </presence>
+                     """
         )
     }
 
@@ -270,6 +308,10 @@ class OpenStreamingPlatformChat {
         guard let message = String(bytes: message, encoding: .utf8) else {
             return
         }
+        try await sendString(message: message)
+    }
+
+    private func sendString(message: String) async throws {
         // logger.info("open-streaming-platform: Sending \(message)")
         try await webSocket.send(.string(message))
     }

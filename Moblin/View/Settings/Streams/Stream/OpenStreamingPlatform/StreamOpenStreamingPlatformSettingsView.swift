@@ -15,6 +15,14 @@ struct StreamOpenStreamingPlatformSettingsView: View {
         }
     }
 
+    func submitRoom(value: String) {
+        stream.openStreamingPlatformChannelId = value
+        model.store()
+        if stream.enabled {
+            model.openStreamingPlatformRoomUpdated()
+        }
+    }
+
     func submitUsername(value: String) {
         stream.openStreamingPlatformUsername = value
         model.store()
@@ -37,7 +45,14 @@ struct StreamOpenStreamingPlatformSettingsView: View {
                 TextEditNavigationView(
                     title: String(localized: "URL"),
                     value: stream.openStreamingPlatformUrl!,
-                    onSubmit: submitUrl
+                    onSubmit: submitUrl,
+                    placeholder: "ws://foo.org:5443/ws"
+                )
+                TextEditNavigationView(
+                    title: String(localized: "Channel id"),
+                    value: stream.openStreamingPlatformChannelId!,
+                    onSubmit: submitRoom,
+                    placeholder: "4e9f02fc-cee9-4d1c-b4b5-99b9496375c8"
                 )
                 TextEditNavigationView(
                     title: String(localized: "Username"),
@@ -50,12 +65,6 @@ struct StreamOpenStreamingPlatformSettingsView: View {
                     onSubmit: submitPassword,
                     sensitive: true
                 )
-            } footer: {
-                VStack(alignment: .leading) {
-                    Text("Very experimental and very secret!")
-                    Text("")
-                    Text("Example URL: ws://foo.org:5443/ws")
-                }
             }
         }
         .navigationTitle("Open Streaming Platform")

@@ -283,6 +283,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var openStreamingPlatformUrl: String? = ""
     var openStreamingPlatformUsername: String? = ""
     var openStreamingPlatformPassword: String? = ""
+    var openStreamingPlatformChannelId: String? = ""
     var obsWebSocketEnabled: Bool? = true
     var obsWebSocketUrl: String? = ""
     var obsWebSocketPassword: String? = ""
@@ -326,6 +327,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
         new.openStreamingPlatformUrl = openStreamingPlatformUrl
         new.openStreamingPlatformUsername = openStreamingPlatformUsername
         new.openStreamingPlatformPassword = openStreamingPlatformPassword
+        new.openStreamingPlatformChannelId = openStreamingPlatformChannelId
         new.obsWebSocketEnabled = obsWebSocketEnabled
         new.obsWebSocketUrl = obsWebSocketUrl
         new.obsWebSocketPassword = obsWebSocketPassword
@@ -2336,6 +2338,10 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.openStreamingPlatformPassword == nil {
             stream.openStreamingPlatformPassword = ""
+            store()
+        }
+        for stream in realDatabase.streams where stream.openStreamingPlatformChannelId == nil {
+            stream.openStreamingPlatformChannelId = ""
             store()
         }
         for widget in realDatabase.widgets where widget.crop == nil {
