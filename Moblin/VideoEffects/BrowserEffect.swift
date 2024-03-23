@@ -24,8 +24,15 @@ final class BrowserEffect: VideoEffect {
     private var snapshotTimer: Timer?
     var startLoadingTime = Date()
     private var scale = UIScreen().scale
+    private var defaultEnabled = true
+    private var crops: [WidgetCrop] = []
 
-    init(url: URL, widget: SettingsWidgetBrowser, videoSize: CGSize, settingName: String) {
+    init(
+        url: URL,
+        widget: SettingsWidgetBrowser,
+        videoSize: CGSize,
+        settingName: String
+    ) {
         scaleToFitVideo = widget.scaleToFitVideo!
         self.url = url
         self.videoSize = videoSize
@@ -75,7 +82,7 @@ final class BrowserEffect: VideoEffect {
         webView.reload()
     }
 
-    func setSceneWidget(sceneWidget: SettingsSceneWidget?) {
+    func setSceneWidget(sceneWidget: SettingsSceneWidget?, crops: [WidgetCrop]) {
         if let sceneWidget {
             x = (videoSize.width * sceneWidget.x) / 100
             y = (videoSize.height * sceneWidget.y) / 100
@@ -84,6 +91,17 @@ final class BrowserEffect: VideoEffect {
                 webView.load(URLRequest(url: url))
                 isLoaded = true
             }
+            defaultEnabled = sceneWidget.enabled
+            self.crops = crops.map { WidgetCrop(
+                position: .init(x: (videoSize.width * $0.position.x) / 100,
+                                y: (videoSize.height * $0.position.y) / 100),
+                crop: .init(
+                    x: $0.crop.origin.x,
+                    y: height - $0.crop.height - $0.crop.origin.y,
+                    width: $0.crop.width,
+                    height: $0.crop.height
+                )
+            ) }
         } else if isLoaded {
             x = .nan
             y = .nan
@@ -132,6 +150,16 @@ final class BrowserEffect: VideoEffect {
         }
     }
 
+    private func moveDefault(image: CIImage) -> CIImage {
+        if scaleToFitVideo {
+            return image
+        }
+        return image.transformed(by: CGAffineTransform(
+            translationX: x,
+            y: videoSize.height - height - y
+        ))
+    }
+
     private func updateOverlay() {
         var newImage: UIImage?
         browserQueue.sync {
@@ -147,11 +175,30 @@ final class BrowserEffect: VideoEffect {
             return
         }
         overlay = CIImage(image: newImage)
-        if !scaleToFitVideo, let image = overlay {
-            overlay = image.transformed(by: CGAffineTransform(
-                translationX: x,
-                y: videoSize.height - height - y
+        guard let image = overlay else {
+            return
+        }
+        if defaultEnabled {
+            overlay = moveDefault(image: image)
+        }
+        for (i, crop) in crops.enumerated() {
+            var cropped = image.cropped(to: crop.crop)
+            cropped = cropped.transformed(by: CGAffineTransform(
+                translationX: -crop.crop.origin.x,
+                y: -crop.crop.origin.y
             ))
+            cropped = cropped.transformed(by: CGAffineTransform(
+                translationX: crop.position.x,
+                y: videoSize.height - crop.crop.height - crop.position.y
+            ))
+            if i == 0 && !defaultEnabled {
+                overlay = cropped
+            } else {
+                let filter = CIFilter.sourceOverCompositing()
+                filter.inputImage = cropped
+                filter.backgroundImage = overlay
+                overlay = filter.outputImage
+            }
         }
     }
 

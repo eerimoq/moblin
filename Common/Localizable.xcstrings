@@ -18671,6 +18671,9 @@
         }
       }
     },
+    "Crop" : {
+
+    },
     "Custom" : {
       "localizations" : {
         "de" : {
@@ -52026,6 +52029,9 @@
           }
         }
       }
+    },
+    "Source widget" : {
+
     },
     "Speed" : {
       "localizations" : {

@@ -3512,6 +3512,13 @@ final class Model: NSObject, ObservableObject {
         return rtmpServer?.isStreamConnected(streamKey: streamKey) ?? false
     }
 
+    private func isSceneWidgetEnabled(scene: SettingsScene, widget: SettingsSceneWidget) -> Bool {
+        if widget.enabled {
+            return true
+        }
+        return !findWidgetCrops(scene: scene, sourceWidgetId: widget.widgetId).isEmpty
+    }
+
     private func sceneUpdatedOn(scene: SettingsScene) {
         attachSingleLayout(scene: scene)
         if database.color!.lutEnabled {
@@ -3519,7 +3526,7 @@ final class Model: NSObject, ObservableObject {
         }
         registerGlobalVideoEffects()
         var usedBrowserEffects: [BrowserEffect] = []
-        for sceneWidget in scene.widgets.filter({ widget in widget.enabled }) {
+        for sceneWidget in scene.widgets.filter({ isSceneWidgetEnabled(scene: scene, widget: $0) }) {
             guard let widget = findWidget(id: sceneWidget.widgetId) else {
                 logger.error("Widget not found")
                 continue
@@ -3555,20 +3562,58 @@ final class Model: NSObject, ObservableObject {
                 }
             case .browser:
                 if let browserEffect = browserEffects[widget.id] {
-                    browserEffect.setSceneWidget(sceneWidget: sceneWidget)
+                    browserEffect.setSceneWidget(
+                        sceneWidget: sceneWidget,
+                        crops: findWidgetCrops(scene: scene, sourceWidgetId: widget.id)
+                    )
                     if !browserEffect.audioOnly {
                         media.registerEffect(browserEffect)
                     }
                     usedBrowserEffects.append(browserEffect)
                 }
+            case .crop:
+                break
             }
         }
         if !drawOnStreamLines.isEmpty {
             media.registerEffect(drawOnStreamEffect)
         }
         for browserEffect in browserEffects.values where !usedBrowserEffects.contains(browserEffect) {
-            browserEffect.setSceneWidget(sceneWidget: nil)
+            browserEffect.setSceneWidget(sceneWidget: nil, crops: [])
         }
+    }
+
+    private func findWidgetCrops(scene: SettingsScene, sourceWidgetId: UUID) -> [WidgetCrop] {
+        var crops: [WidgetCrop] = []
+        for sceneWidget in scene.widgets.filter({ $0.enabled }) {
+            guard let widget = findWidget(id: sceneWidget.widgetId) else {
+                logger.error("Widget not found")
+                continue
+            }
+            guard widget.type == .crop else {
+                continue
+            }
+            if let button = getEnabledButtonForWidgetControlledByScene(
+                widget: widget,
+                scene: scene
+            ) {
+                if !button.isOn {
+                    continue
+                }
+            }
+            let crop = widget.crop!
+            guard crop.sourceWidgetId == sourceWidgetId else {
+                continue
+            }
+            crops.append(WidgetCrop(position: .init(x: sceneWidget.x, y: sceneWidget.y),
+                                    crop: .init(
+                                        x: crop.x,
+                                        y: crop.y,
+                                        width: crop.width,
+                                        height: crop.height
+                                    )))
+        }
+        return crops
     }
 
     func setSceneId(id: UUID) {

@@ -12,7 +12,6 @@ final class TripleEffect: VideoEffect {
     }
 
     override func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {
-        // How to do this on GPU?
         let size = image.extent.size
         let width = size.width / 3
         let height = size.height

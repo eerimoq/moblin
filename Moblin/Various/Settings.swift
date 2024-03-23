@@ -551,6 +551,14 @@ class SettingsWidgetChat: Codable {}
 
 class SettingsWidgetRecording: Codable {}
 
+class SettingsWidgetCrop: Codable {
+    var sourceWidgetId: UUID = .init()
+    var x: Int = 0
+    var y: Int = 0
+    var width: Int = 200
+    var height: Int = 200
+}
+
 class SettingsWidgetBrowser: Codable {
     var url: String = ""
     var width: Int = 500
@@ -635,6 +643,7 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case image = "Image"
     case time = "Time"
     case videoEffect = "Video effect"
+    case crop = "Crop"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsWidgetType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
@@ -651,6 +660,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return .time
         case String(localized: "Video effect"):
             return .videoEffect
+        case String(localized: "Crop"):
+            return .crop
         default:
             return .videoEffect
         }
@@ -666,6 +677,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return String(localized: "Time")
         case .videoEffect:
             return String(localized: "Video effect")
+        case .crop:
+            return String(localized: "Crop")
         }
     }
 }
@@ -687,6 +700,7 @@ class SettingsWidget: Codable, Identifiable, Equatable {
     var recording: SettingsWidgetRecording? = .init()
     var browser: SettingsWidgetBrowser = .init()
     var videoEffect: SettingsWidgetVideoEffect = .init()
+    var crop: SettingsWidgetCrop? = .init()
 
     init(name: String) {
         self.name = name
@@ -2322,6 +2336,10 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.openStreamingPlatformPassword == nil {
             stream.openStreamingPlatformPassword = ""
+            store()
+        }
+        for widget in realDatabase.widgets where widget.crop == nil {
+            widget.crop = .init()
             store()
         }
     }

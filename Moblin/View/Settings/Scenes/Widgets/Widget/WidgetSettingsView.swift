@@ -48,6 +48,8 @@ struct WidgetSettingsView: View {
                 WidgetBrowserSettingsView(widget: widget)
             case .time:
                 EmptyView()
+            case .crop:
+                WidgetCropSettingsView(widget: widget)
             }
         }
         .navigationTitle("Widget")

@@ -45,6 +45,8 @@ func widgetImage(widget: SettingsWidget) -> String {
         return "globe"
     case .time:
         return "calendar.badge.clock"
+    case .crop:
+        return "crop"
     }
 }
 
@@ -376,4 +378,9 @@ extension MKCoordinateRegion: Equatable {
         }
         return true
     }
+}
+
+struct WidgetCrop {
+    let position: CGPoint
+    let crop: CGRect
 }
