@@ -17187,8 +17187,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Steuern und überwachen Sie Moblin von einem anderen Gerät aus."
+            "state" : "translated",
+            "value" : "Steuer und überwache Moblin von einem anderen Gerät aus."
           }
         },
         "el" : {
@@ -22274,8 +22274,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Aktivieren Sie den RTMP-Server, um URLs anzuzeigen."
+            "state" : "translated",
+            "value" : "Aktiviere den RTMP-Server, um URLs anzuzeigen."
           }
         },
         "el" : {
@@ -23142,8 +23142,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Geben Sie eine der URLs als „Assistant URL“ im Streamer-Gerät ein, um eine Verbindung zu diesem Gerät herzustellen."
+            "state" : "translated",
+            "value" : "Gebe eine der URLs als „Assistant URL“ im Streamer-Gerät ein, um eine Verbindung zu diesem Gerät herzustellen."
           }
         },
         "el" : {
@@ -23266,8 +23266,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Geben Sie eine der URLs in das RTMP-Publisher-Gerät ein, um Videos an diesen Stream zu senden. Geben Sie normalerweise die WLAN- oder persönliche Hotspot-URL ein."
+            "state" : "translated",
+            "value" : "Gebe eine der URLs in das RTMP-Publisher-Gerät ein, um Videos an diesen Stream zu senden. Gebe normalerweise die WLAN- oder persönliche Hotspot-URL ein."
           }
         },
         "el" : {
@@ -23514,7 +23514,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Beispiel-URL: ws://foo.org:5443/ws"
           }
         },
@@ -27482,7 +27482,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@ Quelle reparieren"
           }
         },
@@ -27606,8 +27606,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Festsetzung..."
+            "state" : "translated",
+            "value" : "Reparieren..."
           }
         },
         "el" : {
@@ -32938,7 +32938,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ist live"
           }
         },
@@ -41246,8 +41246,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Keine Widgets gefunden. Erstellen Sie Widgets unter Einstellungen → Szenen → Widgets."
+            "state" : "translated",
+            "value" : "Keine Widgets gefunden. Erstelle Widgets unter Einstellungen → Szenen → Widgets."
           }
         },
         "el" : {
@@ -43354,7 +43354,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Offene Streaming-Plattform"
           }
         },
@@ -47694,7 +47694,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Startet die %@-Quelle neu, um hoffentlich Audio- und Videoprobleme zu beheben."
           }
         },
@@ -62701,8 +62701,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Verwenden Sie Gamecontroller zum Zoomen, Einstellen von Szenen und mehr aus der Ferne."
+            "state" : "translated",
+            "value" : "Verwende Gamecontroller zum Zoomen, Einstellen von Szenen und mehr aus der Ferne."
           }
         },
         "el" : {
