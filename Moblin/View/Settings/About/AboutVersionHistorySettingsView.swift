@@ -8,14 +8,15 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
-    Version(version: "0.211.0", date: "2024-03-22", changes: [
+    Version(version: "0.211.0", date: "2024-03-23", changes: [
         "• Ukrainian translation started. 💡 Maksym",
         "• Try to fix app hangs when changing to some camera settings. 🐛 Tony Mah",
         "  • For example Apple Log and 120 FPS.",
         "• Remove 120 FPS for now as it made the app crash more frequently than other FPSs.",
         "• Crop widget. 💡 Tony Mah",
         "  • Can only use a browser widget as source for now.",
-        "• German translation updated.",
+        "• German translation updated. ✍️ MaurisonX",
+        "• Open Streaming Platform chat continued. Works now? 🐛 ErAzOr",
     ]),
     Version(version: "0.210.0", date: "2024-03-22", changes: [
         "• 120 FPS (for devices that supports it). 💡 Tony Mah",
