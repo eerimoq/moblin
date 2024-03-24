@@ -83,15 +83,17 @@ final class BrowserEffect: VideoEffect {
     }
 
     func setSceneWidget(sceneWidget: SettingsSceneWidget?, crops: [WidgetCrop]) {
-        if let sceneWidget {
-            x = (videoSize.width * sceneWidget.x) / 100
-            y = (videoSize.height * sceneWidget.y) / 100
-            if !isLoaded {
-                startLoadingTime = Date()
-                webView.load(URLRequest(url: url))
-                isLoaded = true
+        let enabled = !(sceneWidget == nil && crops.isEmpty)
+        if enabled {
+            if let sceneWidget {
+                x = (videoSize.width * sceneWidget.x) / 100
+                y = (videoSize.height * sceneWidget.y) / 100
+                defaultEnabled = sceneWidget.enabled
+            } else {
+                x = 0
+                y = 0
+                defaultEnabled = false
             }
-            defaultEnabled = sceneWidget.enabled
             self.crops = crops.map { WidgetCrop(
                 position: .init(x: (videoSize.width * $0.position.x) / 100,
                                 y: (videoSize.height * $0.position.y) / 100),
@@ -102,6 +104,11 @@ final class BrowserEffect: VideoEffect {
                     height: $0.crop.height
                 )
             ) }
+            if !isLoaded {
+                startLoadingTime = Date()
+                webView.load(URLRequest(url: url))
+                isLoaded = true
+            }
         } else if isLoaded {
             x = .nan
             y = .nan
@@ -111,7 +118,7 @@ final class BrowserEffect: VideoEffect {
             isLoaded = false
         }
         stopTakeSnapshots()
-        if sceneWidget != nil {
+        if enabled {
             startTakeSnapshots()
         }
     }

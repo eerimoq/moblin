@@ -3518,11 +3518,8 @@ final class Model: NSObject, ObservableObject {
         return rtmpServer?.isStreamConnected(streamKey: streamKey) ?? false
     }
 
-    private func isSceneWidgetEnabled(scene: SettingsScene, widget: SettingsSceneWidget) -> Bool {
-        if widget.enabled {
-            return true
-        }
-        return !findWidgetCrops(scene: scene, sourceWidgetId: widget.widgetId).isEmpty
+    private func findSceneWidget(scene: SettingsScene, widgetId: UUID) -> SettingsSceneWidget? {
+        return scene.widgets.first(where: { $0.widgetId == widgetId })
     }
 
     private func sceneUpdatedOn(scene: SettingsScene) {
@@ -3532,7 +3529,7 @@ final class Model: NSObject, ObservableObject {
         }
         registerGlobalVideoEffects()
         var usedBrowserEffects: [BrowserEffect] = []
-        for sceneWidget in scene.widgets.filter({ isSceneWidgetEnabled(scene: scene, widget: $0) }) {
+        for sceneWidget in scene.widgets.filter({ $0.enabled }) {
             guard let widget = findWidget(id: sceneWidget.widgetId) else {
                 logger.error("Widget not found")
                 continue
@@ -3567,7 +3564,9 @@ final class Model: NSObject, ObservableObject {
                     media.registerEffect(videoEffect)
                 }
             case .browser:
-                if let browserEffect = browserEffects[widget.id] {
+                if let browserEffect = browserEffects[widget.id],
+                   !usedBrowserEffects.contains(browserEffect)
+                {
                     browserEffect.setSceneWidget(
                         sceneWidget: sceneWidget,
                         crops: findWidgetCrops(scene: scene, sourceWidgetId: widget.id)
@@ -3578,7 +3577,18 @@ final class Model: NSObject, ObservableObject {
                     usedBrowserEffects.append(browserEffect)
                 }
             case .crop:
-                break
+                if let browserEffect = browserEffects[widget.crop!.sourceWidgetId],
+                   !usedBrowserEffects.contains(browserEffect)
+                {
+                    browserEffect.setSceneWidget(
+                        sceneWidget: findSceneWidget(scene: scene, widgetId: widget.crop!.sourceWidgetId),
+                        crops: findWidgetCrops(scene: scene, sourceWidgetId: widget.crop!.sourceWidgetId)
+                    )
+                    if !browserEffect.audioOnly {
+                        media.registerEffect(browserEffect)
+                    }
+                    usedBrowserEffects.append(browserEffect)
+                }
             }
         }
         if !drawOnStreamLines.isEmpty {
