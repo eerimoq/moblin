@@ -66542,6 +66542,9 @@
         }
       }
     },
+    "X" : {
+
+    },
     "X mark" : {
       "localizations" : {
         "de" : {
@@ -66795,6 +66798,9 @@
           }
         }
       }
+    },
+    "Y" : {
+
     },
     "You already bought everything!" : {
       "localizations" : {
