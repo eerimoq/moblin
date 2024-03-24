@@ -30,24 +30,24 @@ struct SceneWidgetSettingsView: View {
         Section {
             if hasPosition {
                 PositionEditView(
-                    title: "X",
+                    title: String(localized: "X"),
                     value: widget.x,
                     onSubmit: submitX
                 )
                 PositionEditView(
-                    title: "Y",
+                    title: String(localized: "Y"),
                     value: widget.y,
                     onSubmit: submitY
                 )
             }
             if hasSize {
                 SizeEditView(
-                    title: "Width",
+                    title: String(localized: "Width"),
                     value: widget.width,
                     onSubmit: submitWidth
                 )
                 SizeEditView(
-                    title: "Height",
+                    title: String(localized: "Height"),
                     value: widget.height,
                     onSubmit: submitHeight
                 )

@@ -70,11 +70,23 @@ struct WidgetCropSettingsView: View {
                     }
                 }
             }
-            TextEditNavigationView(title: "X", value: String(widget.crop!.x), onSubmit: submitX)
-            TextEditNavigationView(title: "Y", value: String(widget.crop!.y), onSubmit: submitY)
-            TextEditNavigationView(title: "Width", value: String(widget.crop!.width), onSubmit: submitWidth)
             TextEditNavigationView(
-                title: "Height",
+                title: String(localized: "X"),
+                value: String(widget.crop!.x),
+                onSubmit: submitX
+            )
+            TextEditNavigationView(
+                title: String(localized: "Y"),
+                value: String(widget.crop!.y),
+                onSubmit: submitY
+            )
+            TextEditNavigationView(
+                title: String(localized: "Width"),
+                value: String(widget.crop!.width),
+                onSubmit: submitWidth
+            )
+            TextEditNavigationView(
+                title: String(localized: "Height"),
                 value: String(widget.crop!.height),
                 onSubmit: submitHeight
             )

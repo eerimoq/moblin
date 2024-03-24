@@ -61,11 +61,11 @@ struct WidgetBrowserSettingsView: View {
             }
             if !widget.browser.audioOnly! {
                 TextEditNavigationView(
-                    title: "Width",
+                    title: String(localized: "Width"),
                     value: String(widget.browser.width),
                     onSubmit: submitWidth
                 )
-                TextEditNavigationView(title: "Height",
+                TextEditNavigationView(title: String(localized: "Height"),
                                        value: String(widget.browser.height),
                                        onSubmit: submitHeight)
                 Toggle(isOn: Binding(get: {
