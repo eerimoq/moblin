@@ -8,6 +8,10 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.212.0", date: "2024-03-24", changes: [
+        "• Make crop widgets work without source widget added to the scene.",
+        "• Quick buttons names styling.",
+    ]),
     Version(version: "0.211.0", date: "2024-03-23", changes: [
         "• Ukrainian translation started. 💡 Maksym",
         "• Try to fix app hangs when changing to some camera settings. 🐛 Tony Mah",
