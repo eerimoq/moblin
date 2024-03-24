@@ -101,6 +101,7 @@ struct RtmpServerStreamSettingsView: View {
                     value: String(stream.latency!),
                     onSubmit: submitLatency,
                     footer: Text("Zero or more milliseconds."),
+                    keyboardType: .numbersAndPunctuation,
                     valueFormat: { "\($0) ms" }
                 )
                 .disabled(model.rtmpServerEnabled())
@@ -111,7 +112,8 @@ struct RtmpServerStreamSettingsView: View {
                     footer: Text("""
                     Force given FPS, or set to 0 to use the publisher's FPS. B-frames \
                     does not work with forced FPS. Forced FPS is typically needed for DJI drones.
-                    """)
+                    """),
+                    keyboardType: .numbersAndPunctuation
                 )
                 .disabled(model.rtmpServerEnabled())
             } footer: {

@@ -46,7 +46,8 @@ struct RtmpServerSettingsView: View {
                 TextEditNavigationView(
                     title: String(localized: "Port"),
                     value: String(model.database.rtmpServer!.port),
-                    onSubmit: submitPort
+                    onSubmit: submitPort,
+                    keyboardType: .numbersAndPunctuation
                 )
                 .disabled(model.rtmpServerEnabled())
             } footer: {

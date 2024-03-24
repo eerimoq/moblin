@@ -30,6 +30,7 @@ struct ValueEditView: View {
                     value = onSubmit(value.trim())
                 }
             })
+            .keyboardType(.numbersAndPunctuation)
             .onSubmit {
                 value = onSubmit(value.trim())
             }

@@ -37,12 +37,13 @@ struct ZoomPresetSettingsView: View {
                 TextItemView(name: String(localized: "Name"), value: preset.name)
             }
             TextEditNavigationView(
-                title: "X",
+                title: String(localized: "X"),
                 value: String(preset.x!),
                 onSubmit: submitX,
                 footer: Text(
                     "Allowed range is \(formatX(x: minX)) - \(formatX(x: maxX))."
-                )
+                ),
+                keyboardType: .numbersAndPunctuation
             )
         }
         .navigationTitle("Zoom preset")

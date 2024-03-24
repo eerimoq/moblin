@@ -19,7 +19,8 @@ struct BitratePresetsPresetSettingsView: View {
         TextEditView(
             title: String(localized: "Bitrate"),
             value: String(bitrateToMbps(bitrate: preset.bitrate)),
-            onSubmit: submit
+            onSubmit: submit,
+            keyboardType: .numbersAndPunctuation
         )
     }
 }

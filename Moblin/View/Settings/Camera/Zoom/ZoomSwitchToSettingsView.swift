@@ -30,7 +30,8 @@ struct ZoomSwitchToSettingsView: View {
                 }
                 defaultZoom.x = x
                 model.store()
-            }
+            },
+            keyboardType: .numbersAndPunctuation
         )) {
             Toggle(isOn: Binding(get: {
                 defaultZoom.enabled

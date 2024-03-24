@@ -88,22 +88,26 @@ struct WidgetCropSettingsView: View {
             TextEditNavigationView(
                 title: String(localized: "X"),
                 value: String(widget.crop!.x),
-                onSubmit: submitX
+                onSubmit: submitX,
+                keyboardType: .numbersAndPunctuation
             )
             TextEditNavigationView(
                 title: String(localized: "Y"),
                 value: String(widget.crop!.y),
-                onSubmit: submitY
+                onSubmit: submitY,
+                keyboardType: .numbersAndPunctuation
             )
             TextEditNavigationView(
                 title: String(localized: "Width"),
                 value: String(widget.crop!.width),
-                onSubmit: submitWidth
+                onSubmit: submitWidth,
+                keyboardType: .numbersAndPunctuation
             )
             TextEditNavigationView(
                 title: String(localized: "Height"),
                 value: String(widget.crop!.height),
-                onSubmit: submitHeight
+                onSubmit: submitHeight,
+                keyboardType: .numbersAndPunctuation
             )
         }
     }

@@ -39,6 +39,7 @@ struct StreamSrtSettingsView: View {
                         overrides this value.
                         """
                     ),
+                    keyboardType: .numbersAndPunctuation,
                     valueFormat: { "\($0) ms" }
                 )
                 .disabled(stream.enabled && model.isLive)
@@ -65,6 +66,7 @@ struct StreamSrtSettingsView: View {
                     title: String(localized: "Overhead bandwidth"),
                     value: String(stream.srt.overheadBandwidth!),
                     onSubmit: submitOverheadBandwidth,
+                    keyboardType: .numbersAndPunctuation,
                     valueFormat: { "\($0)%" }
                 )
                 .disabled(stream.enabled && model.isLive)

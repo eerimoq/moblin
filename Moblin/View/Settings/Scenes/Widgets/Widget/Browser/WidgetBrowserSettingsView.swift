@@ -63,11 +63,13 @@ struct WidgetBrowserSettingsView: View {
                 TextEditNavigationView(
                     title: String(localized: "Width"),
                     value: String(widget.browser.width),
-                    onSubmit: submitWidth
+                    onSubmit: submitWidth,
+                    keyboardType: .numbersAndPunctuation
                 )
                 TextEditNavigationView(title: String(localized: "Height"),
                                        value: String(widget.browser.height),
-                                       onSubmit: submitHeight)
+                                       onSubmit: submitHeight,
+                                       keyboardType: .numbersAndPunctuation)
                 Toggle(isOn: Binding(get: {
                     widget.browser.scaleToFitVideo!
                 }, set: { value in

@@ -162,6 +162,7 @@ struct RemoteControlSettingsView: View {
                     title: String(localized: "Server port"),
                     value: String(model.database.remoteControl!.client.port),
                     onSubmit: submitAssistantPort,
+                    keyboardType: .numbersAndPunctuation,
                     placeholder: "2345"
                 )
             } header: {

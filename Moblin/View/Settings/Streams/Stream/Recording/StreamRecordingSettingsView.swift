@@ -50,7 +50,8 @@ struct StreamRecordingSettingsView: View {
                     title: String(localized: "Video bitrate"),
                     value: String(bitrateToMbps(bitrate: stream.recording!.videoBitrate)),
                     onSubmit: submitVideoBitrateChange,
-                    footer: Text("Up to 50 Mbps. Set to 0 for automatic.")
+                    footer: Text("Up to 50 Mbps. Set to 0 for automatic."),
+                    keyboardType: .numbersAndPunctuation
                 )) {
                     TextItemView(
                         name: String(localized: "Video bitrate"),
@@ -62,7 +63,8 @@ struct StreamRecordingSettingsView: View {
                     title: String(localized: "Key frame interval"),
                     value: String(stream.recording!.maxKeyFrameInterval),
                     onSubmit: submitMaxKeyFrameInterval,
-                    footer: Text("Maximum key frame interval in seconds. Set to 0 for automatic.")
+                    footer: Text("Maximum key frame interval in seconds. Set to 0 for automatic."),
+                    keyboardType: .numbersAndPunctuation
                 )) {
                     TextItemView(
                         name: String(localized: "Key frame interval"),
