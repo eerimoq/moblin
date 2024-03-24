@@ -49,6 +49,7 @@ class Model: NSObject, ObservableObject {
     private var logId = 1
     var numberOfMessagesReceived = 0
     @Published var isLive = false
+    @Published var isRecording = false
 
     func setup() {
         logger.handler = debugLog(message:)
@@ -196,6 +197,13 @@ class Model: NSObject, ObservableObject {
         isLive = value
     }
 
+    private func handleIsRecording(_ data: Any) throws {
+        guard let value = data as? Bool else {
+            return
+        }
+        isRecording = value
+    }
+
     private func handleSettings(_ data: Any) throws {
         guard let settings = data as? Data else {
             logger.info("Invalid settings message")
@@ -222,6 +230,11 @@ class Model: NSObject, ObservableObject {
 
     func setIsLive(value: Bool) {
         let message = WatchMessageFromWatch.pack(type: .setIsLive, data: value)
+        WCSession.default.sendMessage(message, replyHandler: nil)
+    }
+
+    func setIsRecording(value: Bool) {
+        let message = WatchMessageFromWatch.pack(type: .setIsRecording, data: value)
         WCSession.default.sendMessage(message, replyHandler: nil)
     }
 
@@ -270,6 +283,8 @@ extension Model: WCSessionDelegate {
                     try self.handleAudioLevel(data)
                 case .isLive:
                     try self.handleIsLive(data)
+                case .isRecording:
+                    try self.handleIsRecording(data)
                 }
             } catch {}
         }

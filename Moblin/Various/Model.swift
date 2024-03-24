@@ -2111,7 +2111,7 @@ final class Model: NSObject, ObservableObject {
             keyFrameInterval: keyFrameInterval != 0 ? keyFrameInterval : nil
         )
         makeToast(title: "Recording started")
-        isRecording = true
+        setIsRecording(value: true)
     }
 
     func stopRecording() {
@@ -2127,7 +2127,7 @@ final class Model: NSObject, ObservableObject {
         }
         updateRecordingLength(now: Date())
         currentRecording = nil
-        isRecording = false
+        setIsRecording(value: false)
     }
 
     func setGlobalButtonState(type: SettingsButtonType, isOn: Bool) {
@@ -2173,6 +2173,11 @@ final class Model: NSObject, ObservableObject {
     func setIsLive(value: Bool) {
         isLive = value
         sendIsLiveToWatch()
+    }
+
+    func setIsRecording(value: Bool) {
+        isRecording = value
+        sendIsRecordingToWatch()
     }
 
     func startStream(delayed: Bool = false) {
@@ -3140,6 +3145,13 @@ final class Model: NSObject, ObservableObject {
             return
         }
         sendMessageToWatch(type: .isLive, data: isLive)
+    }
+
+    private func sendIsRecordingToWatch() {
+        guard isWatchReachable() else {
+            return
+        }
+        sendMessageToWatch(type: .isRecording, data: isRecording)
     }
 
     func setLowFpsImage() {
@@ -4920,6 +4932,19 @@ extension Model: WCSessionDelegate {
         }
     }
 
+    private func handleSetIsRecording(_ data: Any) {
+        guard let value = data as? Bool else {
+            return
+        }
+        DispatchQueue.main.async {
+            if value {
+                self.startRecording()
+            } else {
+                self.stopRecording()
+            }
+        }
+    }
+
     func session(
         _: WCSession,
         didReceiveMessage message: [String: Any],
@@ -4946,6 +4971,8 @@ extension Model: WCSessionDelegate {
         switch type {
         case .setIsLive:
             handleSetIsLive(data)
+        case .setIsRecording:
+            handleSetIsRecording(data)
         case .keepAlive:
             break
         default:
