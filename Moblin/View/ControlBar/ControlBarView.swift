@@ -119,7 +119,7 @@ struct ControlBarView: View {
                     ScrollViewReader { reader in
                         VStack {
                             Spacer(minLength: 0)
-                            ButtonsView()
+                            ButtonsView(width: metrics.size.width)
                                 .frame(width: metrics.size.width)
                                 .onChange(of: model.scrollQuickButtons) { _ in
                                     let id = model.buttonPairs.last?.first.button.id ?? model.buttonPairs

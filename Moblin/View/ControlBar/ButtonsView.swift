@@ -431,6 +431,7 @@ struct ButtonsInnerView: View {
     var state: ButtonState
     var size: CGFloat
     var nameSize: CGFloat
+    var nameWidth: CGFloat
     @State private var isPresentingRecordConfirm: Bool = false
 
     private func torchAction(state: ButtonState) {
@@ -723,6 +724,8 @@ struct ButtonsInnerView: View {
             }
             if model.database.quickButtons!.showName {
                 Text(state.button.name)
+                    .multilineTextAlignment(.center)
+                    .frame(width: nameWidth, alignment: .center)
                     .foregroundColor(.white)
                     .font(.system(size: nameSize))
             }
@@ -732,6 +735,7 @@ struct ButtonsInnerView: View {
 
 struct ButtonsView: View {
     @EnvironmentObject var model: Model
+    var width: CGFloat
 
     var body: some View {
         VStack {
@@ -739,21 +743,41 @@ struct ButtonsView: View {
                 if model.database.quickButtons!.twoColumns {
                     HStack(alignment: .top) {
                         if let second = pair.second {
-                            ButtonsInnerView(state: second, size: buttonSize, nameSize: 10)
+                            ButtonsInnerView(
+                                state: second,
+                                size: buttonSize,
+                                nameSize: 10,
+                                nameWidth: buttonSize
+                            )
                         } else {
                             ButtonPlaceholderImage()
                         }
-                        ButtonsInnerView(state: pair.first, size: buttonSize, nameSize: 10)
+                        ButtonsInnerView(
+                            state: pair.first,
+                            size: buttonSize,
+                            nameSize: 10,
+                            nameWidth: buttonSize
+                        )
                     }
                     .id(pair.first.button.id)
                 } else {
                     if let second = pair.second {
-                        ButtonsInnerView(state: second, size: singleButtonSize, nameSize: 12)
+                        ButtonsInnerView(
+                            state: second,
+                            size: singleButtonSize,
+                            nameSize: 12,
+                            nameWidth: width - 10
+                        )
                     } else {
                         EmptyView()
                     }
-                    ButtonsInnerView(state: pair.first, size: singleButtonSize, nameSize: 12)
-                        .id(pair.first.button.id)
+                    ButtonsInnerView(
+                        state: pair.first,
+                        size: singleButtonSize,
+                        nameSize: 12,
+                        nameWidth: width - 10
+                    )
+                    .id(pair.first.button.id)
                 }
             }
         }
