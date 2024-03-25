@@ -2100,7 +2100,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func startRecording() {
-        setGlobalButtonState(type: .record, isOn: true)
+        setIsRecording(value: true)
         currentRecording = recordingsStorage.createRecording(settings: stream.clone())
         let bitrate = Int(stream.recording!.videoBitrate)
         let keyFrameInterval = Int(stream.recording!.maxKeyFrameInterval)
@@ -2111,14 +2111,13 @@ final class Model: NSObject, ObservableObject {
             keyFrameInterval: keyFrameInterval != 0 ? keyFrameInterval : nil
         )
         makeToast(title: "Recording started")
-        setIsRecording(value: true)
     }
 
     func stopRecording() {
-        setGlobalButtonState(type: .record, isOn: false)
         guard isRecording else {
             return
         }
+        setIsRecording(value: false)
         media.stopRecording()
         makeToast(title: "Recording stopped")
         if let currentRecording {
@@ -2127,7 +2126,6 @@ final class Model: NSObject, ObservableObject {
         }
         updateRecordingLength(now: Date())
         currentRecording = nil
-        setIsRecording(value: false)
     }
 
     func setGlobalButtonState(type: SettingsButtonType, isOn: Bool) {
@@ -2177,6 +2175,8 @@ final class Model: NSObject, ObservableObject {
 
     func setIsRecording(value: Bool) {
         isRecording = value
+        setGlobalButtonState(type: .record, isOn: value)
+        updateButtonStates()
         sendIsRecordingToWatch()
     }
 
@@ -4764,7 +4764,7 @@ extension Model: RemoteControlStreamerDelegate {
             isMuteOn = false
         }
         updateMute()
-        toggleGlobalButton(type: .mute)
+        setGlobalButtonState(type: .mute, isOn: value)
         updateButtonStates()
     }
 
@@ -4893,6 +4893,8 @@ extension Model: WCSessionDelegate {
             self.sendSettingsToWatch()
             self.sendAudioLevelToWatch()
             self.sendIsLiveToWatch()
+            self.sendIsRecordingToWatch()
+            self.sendIsMutedToWatch()
         }
     }
 
