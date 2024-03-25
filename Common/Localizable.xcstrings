@@ -17199,7 +17199,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Controla y monitorea Moblin desde otro dispositivo."
           }
         },
@@ -22286,8 +22286,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Habilite el servidor RTMP para ver las URL."
+            "state" : "translated",
+            "value" : "Habilita el servidor RTMP para ver las direcciones URL."
           }
         },
         "fr" : {
@@ -23154,8 +23154,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ingrese una de las URL como \"URL del asistente\" en el dispositivo transmisor para conectarse a este dispositivo."
+            "state" : "translated",
+            "value" : "Ingresa una de las URL de \"URL del asistente\" en el dispositivo transmisor para conectarse a este dispositivo."
           }
         },
         "fr" : {
@@ -23278,8 +23278,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ingrese una de las URL en el dispositivo del editor RTMP para enviar video a esta transmisión. Por lo general, ingrese la URL de WiFi o punto de acceso personal."
+            "state" : "translated",
+            "value" : "Ingresa una de las URL en el dispositivo del RTMP publisher para enviar video a esta transmisión. Por lo general, ingresa la URL de WiFi o punto de acceso personal."
           }
         },
         "fr" : {
@@ -23527,7 +23527,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "URL de ejemplo: ws://foo.org:5443/ws"
           }
         },
@@ -27495,8 +27495,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Arreglar %@ fuente"
+            "state" : "translated",
+            "value" : "Reiniciar fuente: %@"
           }
         },
         "fr" : {
@@ -27619,8 +27619,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Fijación..."
+            "state" : "translated",
+            "value" : "Reiniciando..."
           }
         },
         "fr" : {
@@ -32951,8 +32951,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Es en vivo"
+            "state" : "translated",
+            "value" : "Está en directo"
           }
         },
         "fr" : {
@@ -41265,8 +41265,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "No se encontraron widgets. Cree widgets en Configuración → Escenas → Widgets."
+            "state" : "translated",
+            "value" : "No se encontraron widgets. Crea widgets en Ajustes → Escenas → Widgets."
           }
         },
         "fr" : {
@@ -43373,8 +43373,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Plataforma de transmisión abierta"
+            "state" : "translated",
+            "value" : "Open Streaming Platform (OSP)"
           }
         },
         "fr" : {
@@ -47713,7 +47713,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Reinicia la fuente %@ para, con suerte, solucionar problemas de audio y video."
           }
         },
@@ -62723,8 +62723,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Utilice controladores de juegos para hacer zoom, establecer escenas y más, desde la distancia."
+            "state" : "translated",
+            "value" : "Utiliza controladores de juegos para hacer zoom, establecer escenas y más desde la distancia."
           }
         },
         "fr" : {
