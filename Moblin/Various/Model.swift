@@ -4748,12 +4748,12 @@ extension Model: RemoteControlStreamerDelegate {
     func setMute(on: Bool, onComplete: @escaping () -> Void) {
         DispatchQueue.main.async {
             if on {
-                self.isTorchOn = true
+                self.isMuteOn = true
             } else {
-                self.isTorchOn = false
+                self.isMuteOn = false
             }
-            self.updateTorch()
-            self.toggleGlobalButton(type: .torch)
+            self.updateMute()
+            self.toggleGlobalButton(type: .mute)
             self.updateButtonStates()
             onComplete()
         }
@@ -4762,12 +4762,12 @@ extension Model: RemoteControlStreamerDelegate {
     func setTorch(on: Bool, onComplete: @escaping () -> Void) {
         DispatchQueue.main.async {
             if on {
-                self.isMuteOn = true
+                self.isTorchOn = true
             } else {
-                self.isMuteOn = false
+                self.isTorchOn = false
             }
-            self.updateMute()
-            self.toggleGlobalButton(type: .mute)
+            self.updateTorch()
+            self.toggleGlobalButton(type: .torch)
             self.updateButtonStates()
             onComplete()
         }
