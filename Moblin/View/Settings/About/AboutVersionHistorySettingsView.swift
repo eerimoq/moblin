@@ -10,11 +10,13 @@ struct Version {
 private let versions = [
     Version(version: "0.215.0", date: "2024-03-25", changes: [
         "• Optional chat text to speech (TTS).",
+        "• Spanish translation updated. ✍️ adriportela95",
+        "• Ukrainian translation updated. ✍️ Maksym",
     ]),
     Version(version: "0.214.0", date: "2024-03-25", changes: [
-        "• Limit recording to two channels.",
+        "• Limit recording to two channels. 🐛 ariathome",
         "  • So it can record, but likely without audio. To be continued.",
-        "• Korean translation updated.",
+        "• Korean translation updated. ✍️ 고블린",
         "• Watch companion app.",
         "  • Improve state synchronization between watch and phone.",
     ]),
