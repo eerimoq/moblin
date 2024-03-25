@@ -10912,7 +10912,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "BELABOX 클라우드와 OBS"
+            "value" : "벨라박스 클라우드와 OBS"
           }
         },
         "nl" : {
@@ -19099,7 +19099,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "커스텀 루트"
+            "value" : "맞춤형 LUT"
           }
         },
         "nl" : {
@@ -31872,7 +31872,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "노출 보정"
+            "value" : "카메라이미지"
           }
         },
         "nl" : {

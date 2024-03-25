@@ -8,6 +8,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.214.0", date: "2024-03-25", changes: [
+        "• Limit recording to two channels.",
+        "  • So it can record, but likely without audio. To be continued.",
+        "• Korean translation updated.",
+        "• Watch companion app.",
+        "  • Improve state synchronization between watch and phone.",
+    ]),
     Version(version: "0.213.0", date: "2024-03-24", changes: [
         "• Use numbers and punctuation keyboard where applicable.",
         "• Watch companion app.",
