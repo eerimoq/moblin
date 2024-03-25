@@ -180,6 +180,17 @@ struct LocalOverlaysChatSettingsView: View {
                 NavigationLink(destination: LocalOverlaysChatUsernamesToIgnoreSettingsView()) {
                     Text("Usernames to ignore")
                 }
+                Toggle(isOn: Binding(get: {
+                    model.database.chat.textToSpeechEnabled!
+                }, set: { value in
+                    model.database.chat.textToSpeechEnabled = value
+                    model.store()
+                    if !value {
+                        model.synthesizer.stopSpeaking(at: .word)
+                    }
+                })) {
+                    Text("Text to speech")
+                }
             } header: {
                 Text("General")
             } footer: {

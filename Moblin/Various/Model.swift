@@ -370,6 +370,9 @@ final class Model: NSObject, ObservableObject {
     @Published var wizardCustomRtmpUrl = ""
     @Published var wizardCustomRtmpStreamKey = ""
 
+    let synthesizer = AVSpeechSynthesizer()
+    private var latestUserThatSaidSomething = ""
+
     @Published var remoteControlGeneral: RemoteControlStatusGeneral?
     @Published var remoteControlTopLeft: RemoteControlStatusTopLeft?
     @Published var remoteControlTopRight: RemoteControlStatusTopRight?
@@ -1940,6 +1943,10 @@ final class Model: NSObject, ObservableObject {
             }
             chatPosts.prepend(post)
             sendChatMessageToWatch(post: post)
+            if database.chat.textToSpeechEnabled!, let user = post.user {
+                let message = post.segments.filter { $0.text != nil }.map { $0.text! }.joined(separator: " ")
+                say(user: user ,message: message)
+            }
             numberOfChatPostsPerTick += 1
             streamTotalChatMessages += 1
         }
@@ -2182,6 +2189,23 @@ final class Model: NSObject, ObservableObject {
 
     private func setIsMuted(value: Bool) {
         setMuteOn(value: value)
+    }
+
+    private func say(user: String, message: String) {
+        let text: String
+        if user == latestUserThatSaidSomething {
+            text = message
+        } else {
+            text = "\(user) said \(message)"
+        }
+        latestUserThatSaidSomething = user
+        let utterance = AVSpeechUtterance(string: text)
+        utterance.rate = 0.3
+        utterance.pitchMultiplier = 0.8
+        utterance.postUtteranceDelay = 0.2
+        utterance.volume = 0.6
+        utterance.voice = AVSpeechSynthesisVoice()
+        synthesizer.speak(utterance)
     }
 
     func startStream(delayed: Bool = false) {

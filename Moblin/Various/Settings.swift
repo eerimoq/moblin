@@ -1126,6 +1126,7 @@ class SettingsChat: Codable {
     var meInUsernameColor: Bool? = true
     var enabled: Bool? = true
     var usernamesToIgnore: [SettingsChatUsername]? = []
+    var textToSpeechEnabled: Bool? = false
 }
 
 enum SettingsMic: String, Codable, CaseIterable {
@@ -2346,6 +2347,10 @@ final class Settings {
         }
         for widget in realDatabase.widgets where widget.crop == nil {
             widget.crop = .init()
+            store()
+        }
+        if realDatabase.chat.textToSpeechEnabled == nil {
+            realDatabase.chat.textToSpeechEnabled = false
             store()
         }
     }
