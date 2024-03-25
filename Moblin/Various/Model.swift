@@ -1945,7 +1945,7 @@ final class Model: NSObject, ObservableObject {
             sendChatMessageToWatch(post: post)
             if database.chat.textToSpeechEnabled!, let user = post.user {
                 let message = post.segments.filter { $0.text != nil }.map { $0.text! }.joined(separator: " ")
-                say(user: user ,message: message)
+                say(user: user, message: message)
             }
             numberOfChatPostsPerTick += 1
             streamTotalChatMessages += 1

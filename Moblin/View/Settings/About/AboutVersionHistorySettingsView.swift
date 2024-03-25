@@ -8,6 +8,9 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.215.0", date: "2024-03-25", changes: [
+        "• Optional chat text to speech (TTS).",
+    ]),
     Version(version: "0.214.0", date: "2024-03-25", changes: [
         "• Limit recording to two channels.",
         "  • So it can record, but likely without audio. To be continued.",
