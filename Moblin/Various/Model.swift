@@ -2180,6 +2180,10 @@ final class Model: NSObject, ObservableObject {
         sendIsRecordingToWatch()
     }
 
+    private func setIsMuted(value: Bool) {
+        setMuteOn(value: value)
+    }
+
     func startStream(delayed: Bool = false) {
         logger.info("stream: Start")
         guard !streaming else {
@@ -3154,6 +3158,13 @@ final class Model: NSObject, ObservableObject {
         sendMessageToWatch(type: .isRecording, data: isRecording)
     }
 
+    private func sendIsMutedToWatch() {
+        guard isWatchReachable() else {
+            return
+        }
+        sendMessageToWatch(type: .isMuted, data: isMuteOn)
+    }
+
     func setLowFpsImage() {
         media.setLowFpsImage(enabled: isWatchReachable())
     }
@@ -4048,6 +4059,7 @@ final class Model: NSObject, ObservableObject {
 
     private func updateMute() {
         media.setMute(on: isMuteOn)
+        sendIsMutedToWatch()
     }
 
     func setCameraZoomPreset(id: UUID) {
@@ -4745,16 +4757,20 @@ extension Model: RemoteControlStreamerDelegate {
         }
     }
 
+    private func setMuteOn(value: Bool) {
+        if value {
+            isMuteOn = true
+        } else {
+            isMuteOn = false
+        }
+        updateMute()
+        toggleGlobalButton(type: .mute)
+        updateButtonStates()
+    }
+
     func setMute(on: Bool, onComplete: @escaping () -> Void) {
         DispatchQueue.main.async {
-            if on {
-                self.isMuteOn = true
-            } else {
-                self.isMuteOn = false
-            }
-            self.updateMute()
-            self.toggleGlobalButton(type: .mute)
-            self.updateButtonStates()
+            self.setMuteOn(value: on)
             onComplete()
         }
     }
@@ -4945,6 +4961,15 @@ extension Model: WCSessionDelegate {
         }
     }
 
+    private func handleSetIsMuted(_ data: Any) {
+        guard let value = data as? Bool else {
+            return
+        }
+        DispatchQueue.main.async {
+            self.setIsMuted(value: value)
+        }
+    }
+
     func session(
         _: WCSession,
         didReceiveMessage message: [String: Any],
@@ -4973,6 +4998,8 @@ extension Model: WCSessionDelegate {
             handleSetIsLive(data)
         case .setIsRecording:
             handleSetIsRecording(data)
+        case .setIsMuted:
+            handleSetIsMuted(data)
         case .keepAlive:
             break
         default:

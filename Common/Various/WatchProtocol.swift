@@ -8,6 +8,7 @@ enum WatchMessageToWatch: String {
     case settings
     case isLive
     case isRecording
+    case isMuted
 
     static func pack(type: WatchMessageToWatch, data: Any) -> [String: Any] {
         return [
@@ -35,6 +36,7 @@ enum WatchMessageFromWatch: String {
     case getImage
     case setIsLive
     case setIsRecording
+    case setIsMuted
     case keepAlive
 
     // periphery:ignore

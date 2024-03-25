@@ -50,6 +50,7 @@ class Model: NSObject, ObservableObject {
     var numberOfMessagesReceived = 0
     @Published var isLive = false
     @Published var isRecording = false
+    @Published var isMuted = false
 
     func setup() {
         logger.handler = debugLog(message:)
@@ -204,6 +205,13 @@ class Model: NSObject, ObservableObject {
         isRecording = value
     }
 
+    private func handleIsMuted(_ data: Any) throws {
+        guard let value = data as? Bool else {
+            return
+        }
+        isMuted = value
+    }
+
     private func handleSettings(_ data: Any) throws {
         guard let settings = data as? Data else {
             logger.info("Invalid settings message")
@@ -235,6 +243,11 @@ class Model: NSObject, ObservableObject {
 
     func setIsRecording(value: Bool) {
         let message = WatchMessageFromWatch.pack(type: .setIsRecording, data: value)
+        WCSession.default.sendMessage(message, replyHandler: nil)
+    }
+
+    func setIsMuted(value: Bool) {
+        let message = WatchMessageFromWatch.pack(type: .setIsMuted, data: value)
         WCSession.default.sendMessage(message, replyHandler: nil)
     }
 
@@ -285,6 +298,8 @@ extension Model: WCSessionDelegate {
                     try self.handleIsLive(data)
                 case .isRecording:
                     try self.handleIsRecording(data)
+                case .isMuted:
+                    try self.handleIsMuted(data)
                 }
             } catch {}
         }

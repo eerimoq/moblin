@@ -3,12 +3,12 @@ import SwiftUI
 struct ControlView: View {
     @EnvironmentObject var model: Model
     @State private var isPresentingIsLiveConfirm: Bool = false
-    @State private var isPresentingIsRecordingConfirm: Bool = false
     @State private var pendingLiveValue = false
+    @State private var isPresentingIsRecordingConfirm: Bool = false
     @State private var pendingRecordingValue = false
 
     var body: some View {
-        VStack {
+        VStack(spacing: 10) {
             Toggle(isOn: Binding(get: {
                 model.isLive
             }, set: { value in
@@ -42,6 +42,13 @@ struct ControlView: View {
                 Button("Cancel") {
                     isPresentingIsRecordingConfirm = false
                 }
+            }
+            Toggle(isOn: Binding(get: {
+                model.isMuted
+            }, set: { value in
+                model.setIsMuted(value: value)
+            })) {
+                Text("Is muted")
             }
             Spacer()
         }
