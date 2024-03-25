@@ -253,7 +253,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "(потрібно авторизуватися)."
           }
         },
@@ -377,8 +377,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%lld гл"
+            "state" : "translated",
+            "value" : "%lld ch"
           }
         },
         "vi" : {
@@ -501,7 +501,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : ""
           }
         },
@@ -625,7 +625,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : ""
           }
         },
@@ -749,7 +749,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : ""
           }
         },
@@ -873,7 +873,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : ""
           }
         },
@@ -997,7 +997,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : ""
           }
         },
@@ -1121,7 +1121,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "/додаток/"
           }
         },
@@ -1245,7 +1245,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "/сек"
           }
         },
@@ -1369,7 +1369,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "#!::r=потік/-NDZ1WPA4zjMBTJTyNwU,m=публікувати,..."
           }
         },
@@ -1499,7 +1499,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%.1f/хв"
           }
         },
@@ -1623,7 +1623,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : ""
           }
         },
@@ -1753,7 +1753,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : ""
           }
         },
@@ -1883,7 +1883,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@ (усього %@)"
           }
         },
@@ -2013,7 +2013,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : ""
           }
         },
@@ -2143,7 +2143,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@ (%@) %lld"
           }
         },
@@ -2267,7 +2267,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@ дБ"
           }
         },
@@ -2391,7 +2391,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@ EV"
           }
         },
@@ -2515,7 +2515,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@ с"
           }
         },
@@ -2639,7 +2639,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Рівні звуку джерела %@"
           }
         },
@@ -2763,7 +2763,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Синхронізація вихідного звуку %@"
           }
         },
@@ -2887,7 +2887,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@ вихідний знімок"
           }
         },
@@ -3011,7 +3011,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%lld %%"
           }
         },
@@ -3135,7 +3135,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%lld дБ,"
           }
         },
@@ -3265,7 +3265,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%llu"
           }
         },
@@ -3389,7 +3389,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : ""
           }
         },
@@ -3513,7 +3513,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : ""
           }
         },
@@ -3637,7 +3637,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : ""
           }
         },
@@ -3761,7 +3761,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "⚠️ Аудіо ще не реалізовано."
           }
         },
@@ -3885,7 +3885,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "⚠️ Видалення старих налаштувань ⚠️"
           }
         },
@@ -4009,7 +4009,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "⚠️ Не вдалося завантажити налаштування ⚠️"
           }
         },
@@ -4133,8 +4133,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "🎉 Ви в прямому ефірі на %@ 🎉"
+            "state" : "translated",
+            "value" : "🎉 Ви в прямому етері на %@ 🎉"
           }
         },
         "vi" : {
@@ -4257,7 +4257,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "🤟 Потік закінчився 🤟"
           }
         },
@@ -4381,7 +4381,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "😢 Не вдалося підключитися до %@ 😢"
           }
         },
@@ -4505,7 +4505,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "😢 ФФФФ 😢"
           }
         },
@@ -4629,7 +4629,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "0,0/хв"
           }
         },
@@ -4753,7 +4753,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "1. Створіть медіа-джерело в OBS і налаштуйте його, як показано на зображенні нижче."
           }
         },
@@ -4877,7 +4877,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "2. Замініть 192.168.50.72 своєю локальною IP-адресою (зазвичай 192.168.x.y)."
           }
         },
@@ -5001,7 +5001,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "3. Замініть 7654 своїм портом."
           }
         },
@@ -5125,7 +5125,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "4bkf-8d03-g6w3-ekjh-emdc"
           }
         },
@@ -5249,7 +5249,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Емоції 7TV"
           }
         },
@@ -5373,7 +5373,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Рекомендується 128 Кбіт/с або вище."
           }
         },
@@ -5497,7 +5497,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "200 за замовчуванням."
           }
         },
@@ -5621,7 +5621,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "213.33.45.132"
           }
         },
@@ -5745,7 +5745,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "7654"
           }
         },
@@ -5869,7 +5869,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "18529305"
           }
         },
@@ -5993,7 +5993,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "908123903"
           }
         },
@@ -6117,7 +6117,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "З’єднання з високим пріоритетом використовуватиметься частіше, ніж з’єднання з низьким пріоритетом, якщо з’єднання з високим пріоритетом є стабільним. Нестабільні з’єднання матимуть найнижчий пріоритет незалежно від налаштованого пріоритету, доки вони знову не стануть стабільними."
           }
         },
@@ -6241,7 +6241,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Велика кількість. Використовуйте інструменти розробника (F11) у своєму браузері. Перегляньте повідомлення websocket."
           }
         },
@@ -6365,7 +6365,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Список усіх кнопок швидкого доступу до сцени, часто для приховування та показу віджетів. Кнопка сцени може бути використана в нуль або більше сцен."
           }
         },
@@ -6489,7 +6489,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Список усіх віджетів. Віджет можна використовувати в нуль або більше сцен."
           }
         },
@@ -6613,7 +6613,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "про"
           }
         },
@@ -6737,7 +6737,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Адаптивний бітрейт"
           }
         },
@@ -6861,7 +6861,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "додати"
           }
         },
@@ -6985,7 +6985,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "AfreecaTV"
           }
         },
@@ -7109,7 +7109,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Алгоритм"
           }
         },
@@ -7239,7 +7239,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Дозволений діапазон %@ - %@."
           }
         },
@@ -7363,7 +7363,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Дозволений стрибок RTT"
           }
         },
@@ -7487,7 +7487,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Неповний список людей, які внесли ідеї, програмування,\nтестування, просування та інше."
           }
         },
@@ -7611,7 +7611,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Анімовані емоції"
           }
         },
@@ -7735,7 +7735,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Анімовані емоції досить інтенсивно навантажують процесор. Вимкніть для меншого споживання енергії."
           }
         },
@@ -7859,7 +7859,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Оголошення"
           }
         },
@@ -7983,7 +7983,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ключ API"
           }
         },
@@ -8107,7 +8107,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Щоб набуло чинності, потрібно перезапустити додаток."
           }
         },
@@ -8231,7 +8231,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Зовнішній вигляд"
           }
         },
@@ -8355,7 +8355,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ти впевнений?"
           }
         },
@@ -8479,7 +8479,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "помічник"
           }
         },
@@ -8603,7 +8603,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Помічник і стример"
           }
         },
@@ -8727,7 +8727,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "URL-адреса помічника"
           }
         },
@@ -8851,7 +8851,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Повторна спроба через %lld секунд."
           }
         },
@@ -8975,7 +8975,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Аудіо"
           }
         },
@@ -9099,7 +9099,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Бітрейт аудіо"
           }
         },
@@ -9223,7 +9223,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Аудіокодек"
           }
         },
@@ -9347,7 +9347,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Рівень звуку"
           }
         },
@@ -9471,7 +9471,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Лише аудіо"
           }
         },
@@ -9595,7 +9595,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Автоматичні камери споживають більше енергії, оскільки ввімкнено кілька камер, навіть якщо одночасно використовується лише одна. Це дозволяє телефону швидко змінювати камеру під час масштабування."
           }
         },
@@ -9719,8 +9719,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Автоматично запускається в прямому ефірі під час перемикання потоку."
+            "state" : "translated",
+            "value" : "Автоматично запускається в прямому етері під час перемикання трансляції."
           }
         },
         "vi" : {
@@ -9843,7 +9843,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Середній бітрейт"
           }
         },
@@ -9967,7 +9967,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "B-рамки"
           }
         },
@@ -10091,7 +10091,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "назад"
           }
         },
@@ -10215,7 +10215,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Назад"
           }
         },
@@ -10339,7 +10339,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Попередні налаштування задньої камери"
           }
         },
@@ -10463,7 +10463,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Фон"
           }
         },
@@ -10587,7 +10587,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Бар"
           }
         },
@@ -10711,7 +10711,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Відсоток батареї"
           }
         },
@@ -10835,7 +10835,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Хмара BELABOX"
           }
         },
@@ -10959,7 +10959,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Хмара BELABOX і OBS"
           }
         },
@@ -11083,7 +11083,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "BELABOX cloud SRT"
           }
         },
@@ -11207,7 +11207,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Хмара BELABOX SRTLA"
           }
         },
@@ -11331,7 +11331,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Найкраща стабільність. Використовує склеювання. Платний сторонній сервіс."
           }
         },
@@ -11455,7 +11455,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Великі пакети"
           }
         },
@@ -11579,7 +11579,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Великі пакети означають 7 пакетів MPEG-TS на пакет SRT, 6 в іншому випадку. Іноді точки доступу Android не працюють із великими пакетами."
           }
         },
@@ -11703,7 +11703,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Бітрейт"
           }
         },
@@ -11827,7 +11827,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Швидкість зниження бітрейту"
           }
         },
@@ -11951,7 +11951,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Бітрейт збільшення швидкості"
           }
         },
@@ -12075,7 +12075,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Попередні налаштування бітрейту"
           }
         },
@@ -12199,7 +12199,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Чорний екран"
           }
         },
@@ -12323,7 +12323,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "цвітіння"
           }
         },
@@ -12447,7 +12447,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Тільки вихід Bluetooth"
           }
         },
@@ -12571,7 +12571,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Жирне повідомлення"
           }
         },
@@ -12695,7 +12695,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Жирне ім'я користувача"
           }
         },
@@ -12819,7 +12819,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Кордон"
           }
         },
@@ -12943,7 +12943,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Границя досить інтенсивно навантажує процесор. Вимкніть для меншого споживання енергії."
           }
         },
@@ -13067,7 +13067,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Праворуч внизу"
           }
         },
@@ -13191,7 +13191,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Браузер"
           }
         },
@@ -13315,7 +13315,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Віджети браузера"
           }
         },
@@ -13439,7 +13439,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Емоції BTTV"
           }
         },
@@ -13563,7 +13563,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Кнопка"
           }
         },
@@ -13687,7 +13687,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Назва кнопки"
           }
         },
@@ -13811,7 +13811,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Камера"
           }
         },
@@ -13935,7 +13935,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Перемикання камери"
           }
         },
@@ -14059,7 +14059,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Скасувати"
           }
         },
@@ -14183,7 +14183,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Змініть налаштування в Moblin на iPhone/iPad."
           }
         },
@@ -14307,7 +14307,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ідентифікатор каналу"
           }
         },
@@ -14431,7 +14431,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Назва каналу"
           }
         },
@@ -14555,7 +14555,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Відображення каналів"
           }
         },
@@ -14679,7 +14679,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Чат"
           }
         },
@@ -14803,7 +14803,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Чат порожній."
           }
         },
@@ -14927,7 +14927,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Чат приховано"
           }
         },
@@ -15051,7 +15051,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Повідомлення чату"
           }
         },
@@ -15175,7 +15175,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Чат призупинено: %lld нових повідомлень"
           }
         },
@@ -15299,7 +15299,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ідентифікатор чату"
           }
         },
@@ -15423,7 +15423,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Кінематографічний"
           }
         },
@@ -15547,7 +15547,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Коло"
           }
         },
@@ -15671,7 +15671,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Закрити"
           }
         },
@@ -15795,7 +15795,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Кодек"
           }
         },
@@ -15919,7 +15919,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "колір"
           }
         },
@@ -16043,7 +16043,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Колірний простір"
           }
         },
@@ -16167,7 +16167,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Кольори"
           }
         },
@@ -16291,7 +16291,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Налаштуйте його в Налаштуваннях → Дистанційне керування"
           }
         },
@@ -16415,8 +16415,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Налаштуйте його в Налаштуваннях → Потоки → %@ → Пульт дистанційного керування OBS."
+            "state" : "translated",
+            "value" : "Налаштуйте його в Налаштуваннях → Трансляції → %@ → Пульт дистанційного керування OBS."
           }
         },
         "vi" : {
@@ -16539,8 +16539,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Налаштуйте його в Налаштуваннях → Потоки → %@ → URL."
+            "state" : "translated",
+            "value" : "Налаштуйте його в Налаштуваннях → Трансляції → %@ → URL."
           }
         },
         "vi" : {
@@ -16663,7 +16663,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Налаштуйте OBS на своєму комп'ютері"
           }
         },
@@ -16787,7 +16787,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Налаштуйте переадресацію портів у маршрутизаторі, щоб пересилати вхідний трафік на OBS."
           }
         },
@@ -16911,8 +16911,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Налаштуйте ім’я джерела в меню Налаштування → Потоки → %@ → Пульт дистанційного керування OBS для знімка тощо."
+            "state" : "translated",
+            "value" : "Налаштуйте ім’я джерела в меню Налаштування → Трансляції → %@ → Пульт дистанційного керування OBS для знімка тощо."
           }
         },
         "vi" : {
@@ -17035,7 +17035,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Пріоритети підключення"
           }
         },
@@ -17159,7 +17159,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "КОНТРОЛЬ"
           }
         },
@@ -17283,7 +17283,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Контролюйте та контролюйте Moblin з іншого пристрою."
           }
         },
@@ -17407,7 +17407,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Контролер"
           }
         },
@@ -17531,7 +17531,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Контролер %lld"
           }
         },
@@ -17655,7 +17655,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Копіювати з"
           }
         },
@@ -17779,7 +17779,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Копіювати з ??? (потрібно авторизуватися)."
           }
         },
@@ -17903,7 +17903,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Скопіюйте з https://help.twitch.tv/s/twitch-ingest-recommendation. Видалити {stream_key}."
           }
         },
@@ -18027,7 +18027,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Скопіюйте з https://kick.com/dashboard/settings/stream (потрібно авторизуватися)."
           }
         },
@@ -18151,7 +18151,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Скопіюйте з https://youtube.com (потрібен вхід)."
           }
         },
@@ -18275,7 +18275,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Скопіюйте з OBS Show Connect Info, як показано на знімку екрана нижче. Інструменти → Параметри сервера WebSocket → Показати інформацію про підключення → Пароль сервера."
           }
         },
@@ -18399,7 +18399,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Косметика"
           }
         },
@@ -18523,7 +18523,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Створити"
           }
         },
@@ -18647,8 +18647,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Майстер створення потоку"
+            "state" : "translated",
+            "value" : "Налаштувати трансляцію"
           }
         },
         "vi" : {
@@ -18774,7 +18774,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Custom"
           }
         },
@@ -18898,7 +18898,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Спеціальний IRL"
           }
         },
@@ -19022,7 +19022,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Користувацька LUT"
           }
         },
@@ -19146,7 +19146,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Користувацькі luts"
           }
         },
@@ -19270,7 +19270,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Відлагоджувати"
           }
         },
@@ -19394,7 +19394,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Налагодження накладання"
           }
         },
@@ -19518,7 +19518,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Децибел"
           }
         },
@@ -19642,7 +19642,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Видалити"
           }
         },
@@ -19766,7 +19766,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Видалити старі налаштування та продовжити"
           }
         },
@@ -19890,7 +19890,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Спроектований"
           }
         },
@@ -20014,7 +20014,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Справність пристрою"
           }
         },
@@ -20138,7 +20138,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Розміри"
           }
         },
@@ -20262,7 +20262,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Прямий"
           }
         },
@@ -20386,7 +20386,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Вимкніть сервер RTMP, щоб змінити його налаштування."
           }
         },
@@ -20510,7 +20510,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Вимкнені підключення не використовуватимуться."
           }
         },
@@ -20634,8 +20634,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Розбрат"
+            "state" : "translated",
+            "value" : "Discord"
           }
         },
         "vi" : {
@@ -20758,7 +20758,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Дисплей"
           }
         },
@@ -20882,7 +20882,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Відображається в головному вікні та як значок програми."
           }
         },
@@ -21006,8 +21006,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Нікому не повідомляйте свої налаштування, оскільки вони можуть містити конфіденційні дані (ключі потоку тощо)!"
+            "state" : "translated",
+            "value" : "Нікому не повідомляйте свої налаштування, оскільки вони можуть містити конфіденційні дані (stream keys тощо)!"
           }
         },
         "vi" : {
@@ -21130,7 +21130,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Нікому не повідомляйте свою URL-адресу, інакше вони можуть захопити ваш канал!"
           }
         },
@@ -21254,7 +21254,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Двічі торкніться, щоб повернутися до головного перегляду"
           }
         },
@@ -21378,7 +21378,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "вниз"
           }
         },
@@ -21502,7 +21502,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "малювати"
           }
         },
@@ -21626,7 +21626,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Подвійний (авто)"
           }
         },
@@ -21750,7 +21750,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "дублікат"
           }
         },
@@ -21874,7 +21874,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Тривалість"
           }
         },
@@ -21998,7 +21998,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Кожен потік може отримувати відео від одного видавця RTMP, як правило, дрона."
           }
         },
@@ -22122,7 +22122,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Порожній буфер обміну"
           }
         },
@@ -22246,7 +22246,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Увімкніть «Вібрація», щоб вібрувати пристрій, коли з’являються такі повідомлення:"
           }
         },
@@ -22370,7 +22370,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Увімкніть сервер RTMP, щоб побачити URL-адреси."
           }
         },
@@ -22494,7 +22494,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Увімкніть, щоб дозволити помічнику контролювати та контролювати цей пристрій з іншого пристрою."
           }
         },
@@ -22618,7 +22618,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Увімкніть, щоб дозволити стрімеру підключатися до цього пристрою. Після підключення цей пристрій може контролювати та керувати пристроєм-стримером."
           }
         },
@@ -22742,7 +22742,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Увімкнено"
           }
         },
@@ -22866,7 +22866,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Кінець"
           }
         },
@@ -22990,7 +22990,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ліцензійна угода кінцевого користувача (EULA)"
           }
         },
@@ -23114,7 +23114,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Введіть адресу та порт помічника. Наприклад, ws://132.23.43.43:2345."
           }
         },
@@ -23238,7 +23238,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Введіть одну з URL-адрес як «URL-адреса помічника» на пристрої стримера, щоб підключитися до цього пристрою."
           }
         },
@@ -23362,7 +23362,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Введіть одну з URL-адрес у пристрій видавця RTMP, щоб надіслати відео в цей потік. Зазвичай введіть URL-адресу WiFi або персональної точки доступу."
           }
         },
@@ -23486,7 +23486,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Приклад URL-адреси: https://play.afreecatv.com/myChannelName/myVideoId"
           }
         },
@@ -23611,7 +23611,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Приклад URL-адреси: ws://foo.org:5443/ws"
           }
         },
@@ -23735,7 +23735,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Приклад: rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef"
           }
         },
@@ -23859,7 +23859,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Приклад: rtmp://foobar.org:3321/5678"
           }
         },
@@ -23983,7 +23983,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Приклад: rtmps://fa723fc1b171.global-contribute.live-video.net/sk_us-west-123hu43ui34hrkjh"
           }
         },
@@ -24107,7 +24107,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Приклад: srt://120.12.32.12:4000?streamid=publish/live/feed"
           }
         },
@@ -24231,7 +24231,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Приклад: srt://134.20.342.12:5000"
           }
         },
@@ -24355,7 +24355,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Приклад: srtla://foobar.org:4432"
           }
         },
@@ -24479,7 +24479,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Приклад: rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3"
           }
         },
@@ -24603,7 +24603,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Приклад: rtmps://live-api-s.facebook.com:443/rtmp/FB-11152522122511115-0-BctNCp9jzzz-AAA"
           }
         },
@@ -24727,7 +24727,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Приклад: srt://uk.srt.belabox.net:4000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
           }
         },
@@ -24851,7 +24851,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Приклад: srtla://uk.srt.belabox.net:5000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"
           }
         },
@@ -24975,7 +24975,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Експериментальний"
           }
         },
@@ -25099,7 +25099,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Експортувати в буфер обміну"
           }
         },
@@ -25223,7 +25223,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Зміщення експозиції"
           }
         },
@@ -25347,7 +25347,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Facebook"
           }
         },
@@ -25471,7 +25471,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Не вдалося отримати емоції каналу 7TV"
           }
         },
@@ -25595,7 +25595,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Не вдалося отримати глобальні емоції 7TV"
           }
         },
@@ -25719,7 +25719,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Не вдалося отримати емоції BTTV"
           }
         },
@@ -25843,7 +25843,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Не вдалося отримати емоції FFZ"
           }
         },
@@ -25967,7 +25967,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Не вдалося вибрати мікрофон"
           }
         },
@@ -26091,7 +26091,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Не вдалося встановити сцену OBS на %@"
           }
         },
@@ -26215,7 +26215,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Не вдалося запустити потік OBS"
           }
         },
@@ -26339,7 +26339,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Не вдалося зупинити потік OBS"
           }
         },
@@ -26463,7 +26463,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Швидкий IRL"
           }
         },
@@ -26587,7 +26587,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Не соромтеся приєднатися до сервера Moblin Discord або написати питання на Github, якщо вам потрібна допомога або ви хочете залишити відгук."
           }
         },
@@ -26711,7 +26711,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "FFFFF:s"
           }
         },
@@ -26835,7 +26835,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "FFZ емоції"
           }
         },
@@ -26959,8 +26959,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Знайдіть назву свого каналу (myChannelName) та ідентифікатор відео (myVideoId) в URL-адресі свого потоку."
+            "state" : "translated",
+            "value" : "Знайдіть назву свого каналу (myChannelName) та ідентифікатор відео (myVideoId) в URL-адресі своєї трансляції."
           }
         },
         "vi" : {
@@ -27083,7 +27083,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Знайдіть свій ідентифікатор чату за адресою"
           }
         },
@@ -27207,7 +27207,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Знайдіть свій ідентифікатор чату за адресою https://kick.com/api/v1/channels/my_user. Замініть my_user на ваш користувач."
           }
         },
@@ -27331,7 +27331,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Знайти хороші параметри важко. Ви самі по собі! =)"
           }
         },
@@ -27455,7 +27455,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Перша балачка"
           }
         },
@@ -27579,7 +27579,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Виправте джерело %@"
           }
         },
@@ -27703,7 +27703,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Виправлення..."
           }
         },
@@ -27827,7 +27827,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Розмір шрифту"
           }
         },
@@ -27951,7 +27951,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Для досвідчених користувачів або якщо вашої платформи немає у списку вище."
           }
         },
@@ -28075,7 +28075,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Наприклад, ws://232.32.45.332:4567."
           }
         },
@@ -28199,7 +28199,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Примусово наданий FPS або встановіть 0, щоб використовувати FPS видавця. B-кадри не працюють з примусовою FPS. Примусова FPS зазвичай потрібна для дронів DJI."
           }
         },
@@ -28323,7 +28323,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "FPS"
           }
         },
@@ -28447,7 +28447,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "спереду"
           }
         },
@@ -28571,7 +28571,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Фронт"
           }
         },
@@ -28695,7 +28695,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Передустановки передньої камери"
           }
         },
@@ -28819,7 +28819,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Повний"
           }
         },
@@ -28943,7 +28943,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "функція"
           }
         },
@@ -29067,7 +29067,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Кнопка ігрового контролера"
           }
         },
@@ -29191,7 +29191,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ігрові контролери"
           }
         },
@@ -29315,7 +29315,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Загальний"
           }
         },
@@ -29439,7 +29439,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Генерувати"
           }
         },
@@ -29563,7 +29563,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Геометрія"
           }
         },
@@ -29687,7 +29687,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Github"
           }
         },
@@ -29811,7 +29811,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Глобальне тональне відображення"
           }
         },
@@ -29935,8 +29935,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Йти жити"
+            "state" : "translated",
+            "value" : "Вийти Етер"
           }
         },
         "vi" : {
@@ -30059,8 +30059,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Перейдіть у прямому ефірі, щоб побачити рівні звуку."
+            "state" : "translated",
+            "value" : "Перейдіть у прямому етері, щоб побачити рівні звуку."
           }
         },
         "vi" : {
@@ -30183,8 +30183,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Перейдіть у прямому ефірі, щоб побачити знімок."
+            "state" : "translated",
+            "value" : "Перейдіть у прямому етері, щоб побачити знімок."
           }
         },
         "vi" : {
@@ -30307,7 +30307,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Гарна стабільність у більшості умов мережі."
           }
         },
@@ -30431,7 +30431,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "gr230gkwpj03"
           }
         },
@@ -30555,7 +30555,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Шкала сірого"
           }
         },
@@ -30679,7 +30679,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Сітка"
           }
         },
@@ -30803,7 +30803,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Висота"
           }
         },
@@ -30927,7 +30927,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Допомога та підтримка"
           }
         },
@@ -31051,7 +31051,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Приховати конфіденційну URL-адресу"
           }
         },
@@ -31175,7 +31175,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Найвищий бітрейт"
           }
         },
@@ -31299,7 +31299,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Найвищий термічний стан"
           }
         },
@@ -31423,7 +31423,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Відсутній хост"
           }
         },
@@ -31547,7 +31547,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ікони"
           }
         },
@@ -31671,7 +31671,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ікони в магазині"
           }
         },
@@ -31795,7 +31795,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ікон ще немає в магазині"
           }
         },
@@ -31919,7 +31919,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Зображення"
           }
         },
@@ -32043,7 +32043,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Негайно встановіть стару версію програми, щоб зберегти старі налаштування."
           }
         },
@@ -32167,7 +32167,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Негайно встановіть стару версію програми, щоб зберегти старі налаштування. Це останнє попередження!"
           }
         },
@@ -32291,7 +32291,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Налаштування імпорту та експорту"
           }
         },
@@ -32415,7 +32415,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Імпортувати з буфера обміну"
           }
         },
@@ -32539,7 +32539,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Не вдалося імпортувати налаштування"
           }
         },
@@ -32663,7 +32663,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ввести URL-адресу"
           }
         },
@@ -32787,7 +32787,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Інтерактивний чат"
           }
         },
@@ -32911,7 +32911,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "IP-адреса або доменне ім’я"
           }
         },
@@ -33035,7 +33035,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Живе"
           }
         },
@@ -33165,7 +33165,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "jo304F4gr"
           }
         },
@@ -33289,7 +33289,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Інтервал ключових кадрів"
           }
         },
@@ -33413,8 +33413,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "удар ногою"
+            "state" : "translated",
+            "value" : "Kick"
           }
         },
         "vi" : {
@@ -33537,7 +33537,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Затримка"
           }
         },
@@ -33661,7 +33661,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ліворуч"
           }
         },
@@ -33785,7 +33785,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Нехай сніжить"
           }
         },
@@ -33909,7 +33909,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ліцензії"
           }
         },
@@ -34033,7 +34033,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "live_48950233_okF4f455GRWEF443fFr23GRbt5rEv"
           }
         },
@@ -34157,7 +34157,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Локальні накладки"
           }
         },
@@ -34281,7 +34281,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Локальні накладання не відображаються в потоці."
           }
         },
@@ -34405,7 +34405,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Місцезнаходження"
           }
         },
@@ -34529,7 +34529,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Журнал"
           }
         },
@@ -34653,7 +34653,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Рівень журналу"
           }
         },
@@ -34777,7 +34777,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Низький заряд батареї"
           }
         },
@@ -34901,7 +34901,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Низький бітрейт"
           }
         },
@@ -35025,7 +35025,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Попередження про низький бітрейт"
           }
         },
@@ -35149,7 +35149,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Найнижчий відсоток батареї"
           }
         },
@@ -35273,7 +35273,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "LUT"
           }
         },
@@ -35397,7 +35397,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Щоб вібрація працювала, переконайтеся, що беззвучний режим вимкнено."
           }
         },
@@ -35521,7 +35521,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Неправильна URL-адреса RTMP"
           }
         },
@@ -35645,7 +35645,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Неправильні налаштування"
           }
         },
@@ -35769,7 +35769,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Неправильна URL-адреса SRT(LA)."
           }
         },
@@ -35893,7 +35893,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Неправильна URL-адреса"
           }
         },
@@ -36017,7 +36017,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ручне фокусування"
           }
         },
@@ -36141,7 +36141,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ця камера не підтримує ручне фокусування"
           }
         },
@@ -36265,7 +36265,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ця камера не підтримує ручне фокусування. Використовуйте не потрійну/подвійну камеру."
           }
         },
@@ -36389,7 +36389,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Велика подяка від розробників Moblin!"
           }
         },
@@ -36513,7 +36513,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Максимальна пропускна здатність слідує за введенням"
           }
         },
@@ -36637,7 +36637,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Максимальний вік"
           }
         },
@@ -36761,7 +36761,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Максимальний інтервал ключових кадрів у секундах. Встановіть 0 для автоматичного."
           }
         },
@@ -36885,7 +36885,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Максимальна тривалість повідомлення в секундах."
           }
         },
@@ -37009,7 +37009,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Я в колір імені користувача"
           }
         },
@@ -37133,7 +37133,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "повідомлення"
           }
         },
@@ -37257,7 +37257,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Повідомлення"
           }
         },
@@ -37381,7 +37381,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "мікрофон"
           }
         },
@@ -37505,7 +37505,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ідентифікатор мікрофона %@"
           }
         },
@@ -37629,7 +37629,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Мікрофон не знайдено"
           }
         },
@@ -37753,7 +37753,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Швидкість зниження мінімального бітрейту"
           }
         },
@@ -37877,7 +37877,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Дзеркало фронтальної камери на потоці"
           }
         },
@@ -38001,7 +38001,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Дзеркальна передня камера під час трансляції та поворот відео на 90 градусів у OBS для потокової передачі портретів бідних чоловіків."
           }
         },
@@ -38125,7 +38125,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Моблін"
           }
         },
@@ -38249,7 +38249,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Глибокі посилання moblin:// можна використовувати для імпорту деяких налаштувань, часто за допомогою QR-кодів або браузера. Див. https://github.com/eerimoq/moblin, щоб дізнатися більше."
           }
         },
@@ -38373,7 +38373,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "фільм"
           }
         },
@@ -38497,7 +38497,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Має бути число від 1 до 65535."
           }
         },
@@ -38621,7 +38621,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Вимкнути звук"
           }
         },
@@ -38745,7 +38745,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Вимкнено"
           }
         },
@@ -38869,7 +38869,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Вимкнено,"
           }
         },
@@ -38993,7 +38993,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Мої значки"
           }
         },
@@ -39117,7 +39117,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Моя сцена"
           }
         },
@@ -39241,7 +39241,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Моє джерело"
           }
         },
@@ -39365,7 +39365,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Мій віджет"
           }
         },
@@ -39489,8 +39489,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "мій_ключ_потоку"
+            "state" : "translated",
+            "value" : "my_stream_key"
           }
         },
         "vi" : {
@@ -39613,7 +39613,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Мій канал"
           }
         },
@@ -39737,7 +39737,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ім'я"
           }
         },
@@ -39861,7 +39861,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Кінцева точка прийому поблизу"
           }
         },
@@ -39985,7 +39985,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "nearby_ingest_endpoint"
           }
         },
@@ -40109,7 +40109,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Потрібен для емоцій чату каналу та кількості глядачів."
           }
         },
@@ -40233,7 +40233,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Потрібен для чату."
           }
         },
@@ -40357,7 +40357,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Імена мережевих інтерфейсів"
           }
         },
@@ -40481,7 +40481,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Налаштування мережі"
           }
         },
@@ -40605,7 +40605,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Далі"
           }
         },
@@ -40729,7 +40729,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Рівні звуку ще не отримані."
           }
         },
@@ -40853,7 +40853,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Немає відомих мережевих інтерфейсів Ethernet."
           }
         },
@@ -40977,7 +40977,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Налаштувань ще не отримано."
           }
         },
@@ -41101,7 +41101,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Знімок ще не отримано."
           }
         },
@@ -41225,7 +41225,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Статус ще не отримано."
           }
         },
@@ -41349,7 +41349,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Віджетів не знайдено. Створюйте віджети в меню Налаштування → Сцени → Віджети."
           }
         },
@@ -41473,7 +41473,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Рівень шуму"
           }
         },
@@ -41597,7 +41597,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Зменшення шуму"
           }
         },
@@ -41721,7 +41721,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Не налаштовано"
           }
         },
@@ -41845,7 +41845,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Сповіщення про повідомлення"
           }
         },
@@ -41969,7 +41969,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "OBS"
           }
         },
@@ -42093,7 +42093,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "OBS Media Source (SRT)"
           }
         },
@@ -42217,8 +42217,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Пульт дистанційного керування OBS"
+            "state" : "translated",
+            "value" : "OBS вітдалене керування"
           }
         },
         "vi" : {
@@ -42341,7 +42341,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Пульт дистанційного керування OBS не налаштований"
           }
         },
@@ -42465,7 +42465,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "статус OBS"
           }
         },
@@ -42589,7 +42589,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Вимкнено"
           }
         },
@@ -42713,7 +42713,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Часто погана стабільність, якщо з’єднання з мережею нестабільне. Захист від відключення на стороні сервера неможливий (без NOALBS)."
           }
         },
@@ -42837,7 +42837,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "в порядку"
           }
         },
@@ -42961,7 +42961,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Увімкнено"
           }
         },
@@ -43085,7 +43085,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Потрібен тільки для чату."
           }
         },
@@ -43209,7 +43209,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Можна видалити лише невикористані швидкі кнопки."
           }
         },
@@ -43333,7 +43333,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Можна видалити лише невикористані віджети."
           }
         },
@@ -43457,8 +43457,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Відкрити потокову платформу"
+            "state" : "translated",
+            "value" : "Open Streaming Platform"
           }
         },
         "vi" : {
@@ -43581,7 +43581,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Пропускна здатність накладних витрат"
           }
         },
@@ -43705,7 +43705,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Пакети в польоті знижують поріг"
           }
         },
@@ -43829,7 +43829,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Параметри"
           }
         },
@@ -43953,7 +43953,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Пароль"
           }
         },
@@ -44077,7 +44077,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Pixellate"
           }
         },
@@ -44201,7 +44201,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Платформа для трансляції"
           }
         },
@@ -44325,8 +44325,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Будь ласка, введіть URL-адресу свого потоку в налаштуваннях потоку, перш ніж розпочати трансляцію."
+            "state" : "translated",
+            "value" : "Будь ласка, Введіть URL-адресу в налаштуваннях своєї трансляції перед виходом в етер."
           }
         },
         "vi" : {
@@ -44449,7 +44449,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "po3Gg4pflp3s"
           }
         },
@@ -44573,7 +44573,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Порт"
           }
         },
@@ -44697,7 +44697,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Натисніть «Додати автоматично до Moblin» на https://cloud.belabox.net SRT(LA) relays (потрібен вхід). Дивіться знімок екрана нижче."
           }
         },
@@ -44821,7 +44821,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Політика конфіденційності"
           }
         },
@@ -44945,7 +44945,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Регіони конфіденційності"
           }
         },
@@ -45069,7 +45069,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Протокол"
           }
         },
@@ -45193,7 +45193,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Опублікуйте URL-адреси"
           }
         },
@@ -45317,7 +45317,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Натисніть клавішу"
           }
         },
@@ -45441,7 +45441,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Швидкі кнопки"
           }
         },
@@ -45565,7 +45565,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Швидкі кнопки відображаються знизу вгору."
           }
         },
@@ -45689,7 +45689,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Випадковий"
           }
         },
@@ -45813,7 +45813,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "RealtimeIRL"
           }
         },
@@ -45937,7 +45937,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "запис"
           }
         },
@@ -46061,7 +46061,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Запис"
           }
         },
@@ -46185,7 +46185,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Підтвердження запису"
           }
         },
@@ -46309,7 +46309,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Записи"
           }
         },
@@ -46433,7 +46433,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Оновити статус"
           }
         },
@@ -46557,7 +46557,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Перезавантажте віджети браузера"
           }
         },
@@ -46681,7 +46681,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Перезавантажте браузери"
           }
         },
@@ -46805,7 +46805,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Дистанційний"
           }
         },
@@ -46929,7 +46929,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Пульт"
           }
         },
@@ -47053,7 +47053,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Помічник дистанційного керування"
           }
         },
@@ -47177,7 +47177,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Помічник дистанційного керування не налаштований"
           }
         },
@@ -47301,7 +47301,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Скинути"
           }
         },
@@ -47425,7 +47425,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Скидання налаштувань"
           }
         },
@@ -47549,7 +47549,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "роздільна здатність"
           }
         },
@@ -47673,7 +47673,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Роздільна здатність і FPS такі ж, як і для прямої трансляції."
           }
         },
@@ -47797,7 +47797,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Перезапускає джерело %@, щоб, сподіваюся, вирішити проблеми зі звуком і відео."
           }
         },
@@ -47921,7 +47921,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Відновити покупки"
           }
         },
@@ -48045,7 +48045,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Повторна спроба пізніше"
           }
         },
@@ -48169,7 +48169,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "правильно"
           }
         },
@@ -48293,7 +48293,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "RTMP"
           }
         },
@@ -48417,7 +48417,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "сервер RTMP"
           }
         },
@@ -48541,8 +48541,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Відсутня назва потоку RTMP"
+            "state" : "translated",
+            "value" : "Відсутня назва трансляції RTMP"
           }
         },
         "vi" : {
@@ -48665,7 +48665,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "rtmp://a.rtmp.youtube.com/live2"
           }
         },
@@ -48789,7 +48789,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "rtmp://arn03.contribute.live-video.net/app"
           }
         },
@@ -48913,7 +48913,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "rtmp://arn03.contribute.live-video.net/app/"
           }
         },
@@ -49037,7 +49037,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "RTMP(S)"
           }
         },
@@ -49161,7 +49161,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "rtmps://fa723fc1b171.global-contribute.live-video.net"
           }
         },
@@ -49285,7 +49285,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Масштаб відповідно до ширини відео"
           }
         },
@@ -49409,7 +49409,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Сцена"
           }
         },
@@ -49533,7 +49533,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Сцени"
           }
         },
@@ -49657,7 +49657,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Відсутня схема"
           }
         },
@@ -49781,7 +49781,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Прокрутка"
           }
         },
@@ -49905,7 +49905,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Знайдіть на цій сторінці \"чат\". 18529305 — це ідентифікатор чату на прикладі знімка екрана нижче."
           }
         },
@@ -50029,7 +50029,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Виберіть зображення"
           }
         },
@@ -50153,7 +50153,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Надішліть своє місцезнаходження на https://rtirl.com, щоб ваші глядачі знали, де ви знаходитесь."
           }
         },
@@ -50277,7 +50277,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "сепія"
           }
         },
@@ -50401,7 +50401,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Порт сервера"
           }
         },
@@ -50525,7 +50525,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Налаштування"
           }
         },
@@ -50649,7 +50649,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Налаштування імпортовано"
           }
         },
@@ -50773,8 +50773,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Налаштування, які зупиняють трансляцію, вимкнено під час прямого ефіру."
+            "state" : "translated",
+            "value" : "Налаштування, які зупиняють трансляцію, вимкнено під час прямого етеру."
           }
         },
         "vi" : {
@@ -50897,7 +50897,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Налаштування"
           }
         },
@@ -51021,7 +51021,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Різкість"
           }
         },
@@ -51145,7 +51145,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Показати назву"
           }
         },
@@ -51269,7 +51269,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Показати конфіденційну URL-адресу"
           }
         },
@@ -51393,7 +51393,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "sk_us-west-2_okfef49k34k_34g59gGDDHGHSREj754gYJYTJERH"
           }
         },
@@ -51517,7 +51517,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Пропустити"
           }
         },
@@ -51641,7 +51641,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Повільний IRL"
           }
         },
@@ -51765,7 +51765,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Джерело %@ не знайдено"
           }
         },
@@ -51889,7 +51889,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Назва джерела"
           }
         },
@@ -52013,7 +52013,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ім’я джерела – це ім’я джерела в OBS, яке отримує потік від Moblin."
           }
         },
@@ -52140,7 +52140,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "швидкість"
           }
         },
@@ -52264,7 +52264,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Майдан"
           }
         },
@@ -52388,7 +52388,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Помилка з’єднання SRT з %@"
           }
         },
@@ -52512,7 +52512,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Пріоритети підключення СТО"
           }
         },
@@ -52636,7 +52636,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "SRT відключено"
           }
         },
@@ -52760,7 +52760,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Помилка SRT: %@"
           }
         },
@@ -52884,7 +52884,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "SRT Live Server (SLS)"
           }
         },
@@ -53008,7 +53008,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "srt://107.32.12.132:5000"
           }
         },
@@ -53132,7 +53132,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "SRT(LA)"
           }
         },
@@ -53256,7 +53256,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Відсутній номер порту SRT(LA)."
           }
         },
@@ -53380,7 +53380,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Сервер SRTLA"
           }
         },
@@ -53504,7 +53504,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "srtla://uk.srt.belabox.net:5000?streamid=jO4ijfFgrlpv4m2375msdoG3DDr2"
           }
         },
@@ -53628,7 +53628,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Стандартний"
           }
         },
@@ -53752,7 +53752,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "старт"
           }
         },
@@ -53876,7 +53876,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Почати трансляцію"
           }
         },
@@ -54000,7 +54000,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Час початку"
           }
         },
@@ -54124,7 +54124,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Починаючи..."
           }
         },
@@ -54248,7 +54248,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "СТІЙ"
           }
         },
@@ -54372,7 +54372,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Зупинити трансляцію"
           }
         },
@@ -54496,7 +54496,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Зупинка..."
           }
         },
@@ -54620,8 +54620,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Потік"
+            "state" : "translated",
+            "value" : "Стрім"
           }
         },
         "vi" : {
@@ -54744,7 +54744,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Кнопка трансляції"
           }
         },
@@ -54868,8 +54868,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ідентифікатор потоку"
+            "state" : "translated",
+            "value" : "Stream id"
           }
         },
         "vi" : {
@@ -54992,8 +54992,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ключ потоку"
+            "state" : "translated",
+            "value" : "Stream key"
           }
         },
         "vi" : {
@@ -55116,8 +55116,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Відсутній ключ потоку"
+            "state" : "translated",
+            "value" : "Stream key відсутній"
           }
         },
         "vi" : {
@@ -55240,8 +55240,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Назва потоку"
+            "state" : "translated",
+            "value" : "Назва трансляції"
           }
         },
         "vi" : {
@@ -55364,8 +55364,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Підсумок потоку"
+            "state" : "translated",
+            "value" : "Підсумок трансляції"
           }
         },
         "vi" : {
@@ -55488,8 +55488,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "URL-адреса потоку"
+            "state" : "translated",
+            "value" : "URL-адреса трансляції"
           }
         },
         "vi" : {
@@ -55612,7 +55612,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "stream_url"
           }
         },
@@ -55736,7 +55736,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Стрімер"
           }
         },
@@ -55860,7 +55860,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Історія потокового передавання"
           }
         },
@@ -55984,8 +55984,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Потоки"
+            "state" : "translated",
+            "value" : "Трансляції"
           }
         },
         "vi" : {
@@ -56108,8 +56108,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Підсумок і назва потоку"
+            "state" : "translated",
+            "value" : "Підсумок і назва трансляції"
           }
         },
         "vi" : {
@@ -56232,7 +56232,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Підтримайте розробників Moblin, купивши іконки."
           }
         },
@@ -56356,7 +56356,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Торкніться екрана, щоб сфокусуватися"
           }
         },
@@ -56480,7 +56480,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Торкніться, щоб сфокусуватися, ця камера не підтримує"
           }
         },
@@ -56604,7 +56604,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Телефото"
           }
         },
@@ -56728,7 +56728,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Шаблон: rtmp://"
           }
         },
@@ -56852,7 +56852,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Шаблон: rtmp://my_public_ip:my_public_port/my_stream_key"
           }
         },
@@ -56976,7 +56976,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Шаблон: rtmps://"
           }
         },
@@ -57100,7 +57100,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Шаблон: srt://my_public_ip:my_public_port"
           }
         },
@@ -57224,7 +57224,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Шаблон: srt://my_public_ip:my_public_port?streamid=publish/live/my_key"
           }
         },
@@ -57348,7 +57348,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Шаблон: srtla://my_public_ip:my_public_port"
           }
         },
@@ -57475,7 +57475,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Фактичний бітрейт може бути нижчим, якщо пристрій його не підтримує."
           }
         },
@@ -57599,7 +57599,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Бітрейт зменшується, коли RTT занадто високий."
           }
         },
@@ -57723,7 +57723,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Бітрейт швидко зменшиться, коли кількість пакетів у польоті перевищує це значення."
           }
         },
@@ -57847,7 +57847,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Журнал порожній."
           }
         },
@@ -57971,7 +57971,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Максимально дозволений стрибок RTT перед зменшенням бітрейту"
           }
         },
@@ -58095,7 +58095,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Швидкість зменшення мінімального бітрейту, коли RTT занадто високий."
           }
         },
@@ -58219,7 +58219,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ім'я джерела в OBS, яке отримує потік від Moblin."
           }
         },
@@ -58343,7 +58343,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Назва вашого каналу."
           }
         },
@@ -58467,7 +58467,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Сервер RTMP дозволяє Moblin отримувати відеопотоки через мережу. Це дозволяє використовувати деякі дрони та інші камери як джерела."
           }
         },
@@ -58591,8 +58591,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Назва потоку відображається у списку камер у налаштуваннях сцени."
+            "state" : "translated",
+            "value" : "Назва трансляції відображається у списку камер у налаштуваннях сцени."
           }
         },
         "vi" : {
@@ -58715,7 +58715,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "TCP-порт, на якому сервер RTMP прослуховує видавців RTMP."
           }
         },
@@ -58839,7 +58839,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ультраширока камера погано працює в умовах слабкого освітлення. Подібним чином автоматичні камери не працюють належним чином, коли масштаб становить 0,5-1,0x, оскільки використовуватиметься ультраширока камера."
           }
         },
@@ -58963,7 +58963,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Масштаб (у X), який потрібно встановити під час перемикання на певну камеру, якщо ввімкнено."
           }
         },
@@ -59087,7 +59087,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "час"
           }
         },
@@ -59211,7 +59211,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Мітка часу"
           }
         },
@@ -59335,7 +59335,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "На камеру %@"
           }
         },
@@ -59459,7 +59459,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Вгорі ліворуч"
           }
         },
@@ -59583,7 +59583,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Вгорі справа"
           }
         },
@@ -59707,7 +59707,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Факел"
           }
         },
@@ -59831,7 +59831,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Всього записів"
           }
         },
@@ -59955,7 +59955,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Всього надіслано"
           }
         },
@@ -60079,7 +60079,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Загальний розмір"
           }
         },
@@ -60203,7 +60203,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Всього потоків"
           }
         },
@@ -60327,7 +60327,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Загальний час"
           }
         },
@@ -60451,7 +60451,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Трикутник"
           }
         },
@@ -60575,7 +60575,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Тримісний"
           }
         },
@@ -60699,7 +60699,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Тримісний (авто)"
           }
         },
@@ -60823,8 +60823,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "смикатися"
+            "state" : "translated",
+            "value" : "Twitch"
           }
         },
         "vi" : {
@@ -60947,7 +60947,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Дві колонки"
           }
         },
@@ -61071,7 +61071,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Тип"
           }
         },
@@ -61195,7 +61195,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Надширокі"
           }
         },
@@ -61319,7 +61319,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Неможливо підключитися до сервера OBS. Повторна спроба кожні 5 секунд."
           }
         },
@@ -61443,7 +61443,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Невідомий"
           }
         },
@@ -61567,7 +61567,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Невідомий стан трансляції."
           }
         },
@@ -61691,7 +61691,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "невідомий,"
           }
         },
@@ -61815,7 +61815,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Непідтримувана схема %@"
           }
         },
@@ -61939,7 +61939,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Невикористаний"
           }
         },
@@ -62063,7 +62063,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "вгору"
           }
         },
@@ -62187,7 +62187,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "До 50 Мбіт/с. Встановіть 0 для автоматичного."
           }
         },
@@ -62311,7 +62311,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Час роботи"
           }
         },
@@ -62435,7 +62435,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Url"
           }
         },
@@ -62559,7 +62559,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "URL"
           }
         },
@@ -62683,7 +62683,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Помилка імпорту URL-адреси"
           }
         },
@@ -62807,7 +62807,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Використовуйте ігрові контролери, щоб масштабувати, створювати сцени тощо на відстані."
           }
         },
@@ -62931,7 +62931,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Використовуйте https://streamscharts.com/tools/convert-username, щоб перетворити назву каналу на ідентифікатор каналу."
           }
         },
@@ -63055,7 +63055,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Використовуйте алгоритм Fast IRL, якщо не знаєте, що робите!"
           }
         },
@@ -63179,7 +63179,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Використовуйте свою загальнодоступну IP-адресу під час трансляції через Інтернет."
           }
         },
@@ -63303,7 +63303,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Використовується як стримером, так і асистентом."
           }
         },
@@ -63427,7 +63427,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ім'я користувача"
           }
         },
@@ -63551,7 +63551,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Імена користувачів, які потрібно ігнорувати"
           }
         },
@@ -63675,7 +63675,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Версія"
           }
         },
@@ -63799,7 +63799,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Історія версій"
           }
         },
@@ -63923,7 +63923,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Дуже експериментально і дуже секретно!"
           }
         },
@@ -64047,7 +64047,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Вібрувати"
           }
         },
@@ -64171,7 +64171,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "відео"
           }
         },
@@ -64295,7 +64295,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Бітрейт відео"
           }
         },
@@ -64419,7 +64419,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Відео темне"
           }
         },
@@ -64543,7 +64543,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Відеокодек"
           }
         },
@@ -64667,7 +64667,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Відео ефект"
           }
         },
@@ -64791,7 +64791,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ідентифікатор відео"
           }
         },
@@ -64915,7 +64915,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Стабілізація відео"
           }
         },
@@ -65039,7 +65039,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Стабілізація відео іноді викликає проблеми із синхронізацією аудіо-відео."
           }
         },
@@ -65163,7 +65163,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Глядачі"
           }
         },
@@ -65287,7 +65287,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Очікування підключення стримера дистанційного керування..."
           }
         },
@@ -65411,8 +65411,8 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Дивитися"
+            "state" : "translated",
+            "value" : "Watch"
           }
         },
         "vi" : {
@@ -65535,7 +65535,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "WebSocket"
           }
         },
@@ -65659,7 +65659,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Широкий"
           }
         },
@@ -65783,7 +65783,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Широкий подвійний (авто)"
           }
         },
@@ -65907,7 +65907,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Віджет"
           }
         },
@@ -66031,7 +66031,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Назва віджета"
           }
         },
@@ -66155,7 +66155,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Віджети"
           }
         },
@@ -66279,7 +66279,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Віджети розташовані ззаду вперед."
           }
         },
@@ -66403,7 +66403,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ширина"
           }
         },
@@ -66527,7 +66527,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ws://213.33.45.132:4567"
           }
         },
@@ -66654,7 +66654,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "знак X"
           }
         },
@@ -66784,7 +66784,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "X має бути %f - %f"
           }
         },
@@ -66911,7 +66911,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ви вже все купили!"
           }
         },
@@ -67035,7 +67035,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ваше місцезнаходження не буде передано жодній службі, якщо ви перебуваєте в будь-якому регіоні конфіденційності."
           }
         },
@@ -67159,7 +67159,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ваша публічна IP-адреса під час потокового передавання через Інтернет."
           }
         },
@@ -67283,7 +67283,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "YouTube"
           }
         },
@@ -67407,7 +67407,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Нуль або більше мілісекунд."
           }
         },
@@ -67531,7 +67531,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Нуль або більше мілісекунд. Будь-який параметр затримки, указаний в URL-адресі, замінює це значення."
           }
         },
@@ -67655,7 +67655,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Збільшити"
           }
         },
@@ -67779,7 +67779,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Збільшувати"
           }
         },
@@ -67903,7 +67903,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Зменшення"
           }
         },
@@ -68027,7 +68027,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Попереднє налаштування масштабу"
           }
         },
@@ -68151,7 +68151,7 @@
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Попередні налаштування масштабування"
           }
         },
