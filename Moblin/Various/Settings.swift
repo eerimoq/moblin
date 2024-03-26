@@ -1164,6 +1164,7 @@ class SettingsChat: Codable {
     var textToSpeechSayUsername: Bool? = true
     var textToSpeechRate: Float? = 0.4
     var textToSpeechSayVolume: Float? = 0.6
+    var textToSpeechPreferHighQuality: Bool? = true
 }
 
 enum SettingsMic: String, Codable, CaseIterable {
@@ -2408,6 +2409,10 @@ final class Settings {
         }
         if realDatabase.chat.textToSpeechSayVolume == nil {
             realDatabase.chat.textToSpeechSayVolume = 0.6
+            store()
+        }
+        if realDatabase.chat.textToSpeechPreferHighQuality == nil {
+            realDatabase.chat.textToSpeechPreferHighQuality = true
             store()
         }
     }

@@ -44616,6 +44616,9 @@
         }
       }
     },
+    "Prefer high quality" : {
+
+    },
     "Preferred gender" : {
 
     },
@@ -45734,9 +45737,6 @@
           }
         }
       }
-    },
-    "Rate" : {
-
     },
     "RealtimeIRL" : {
       "localizations" : {
@@ -65217,9 +65217,6 @@
           }
         }
       }
-    },
-    "Volume" : {
-
     },
     "Waiting for the remote control streamer to connect..." : {
       "localizations" : {

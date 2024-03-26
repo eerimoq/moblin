@@ -24,6 +24,17 @@ struct ChatTextToSpeechSettingsView: View {
                 })) {
                     Text("Say username")
                 }
+                Toggle(isOn: Binding(get: {
+                    model.database.chat.textToSpeechPreferHighQuality!
+                }, set: { value in
+                    model.database.chat.textToSpeechPreferHighQuality = value
+                    model
+                        .setPreferHighQualityVoices(prefer: model.database.chat
+                            .textToSpeechPreferHighQuality!)
+                    model.store()
+                })) {
+                    Text("Prefer high quality")
+                }
                 HStack {
                     Text("Preferred gender")
                     Spacer()
@@ -41,7 +52,7 @@ struct ChatTextToSpeechSettingsView: View {
                     }
                 }
                 HStack {
-                    Text("Rate")
+                    Image(systemName: "tortoise.fill")
                     Slider(
                         value: $rate,
                         in: 0.3 ... 0.6,
@@ -55,9 +66,10 @@ struct ChatTextToSpeechSettingsView: View {
                             model.setTextToSpeechRate(rate: rate)
                         }
                     )
+                    Image(systemName: "hare.fill")
                 }
                 HStack {
-                    Text("Volume")
+                    Image(systemName: "volume.1.fill")
                     Slider(
                         value: $volume,
                         in: 0.3 ... 1.0,
@@ -71,6 +83,7 @@ struct ChatTextToSpeechSettingsView: View {
                             model.setTextToSpeechVolume(volume: volume)
                         }
                     )
+                    Image(systemName: "volume.3.fill")
                 }
             }
         }

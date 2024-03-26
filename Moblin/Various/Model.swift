@@ -378,6 +378,7 @@ final class Model: NSObject, ObservableObject {
     private var sayGender: AVSpeechSynthesisVoiceGender?
     private var textToSpeechRate: Float = 0.4
     private var textToSpeechVolume: Float = 0.6
+    private var preferHighQualityVoices: Bool = true
 
     @Published var remoteControlGeneral: RemoteControlStatusGeneral?
     @Published var remoteControlTopLeft: RemoteControlStatusTopLeft?
@@ -1223,6 +1224,7 @@ final class Model: NSObject, ObservableObject {
         setSayGender(gender: database.chat.textToSpeechGender!)
         setTextToSpeechRate(rate: database.chat.textToSpeechRate!)
         setTextToSpeechVolume(volume: database.chat.textToSpeechSayVolume!)
+        setPreferHighQualityVoices(prefer: database.chat.textToSpeechPreferHighQuality!)
     }
 
     private func handleIpStatusUpdate(statuses: [IPMonitor.Status]) {
@@ -2226,8 +2228,13 @@ final class Model: NSObject, ObservableObject {
                 language = String(Locale.current.identifier.prefix(2))
             }
             if let language {
-                let voices = AVSpeechSynthesisVoice.speechVoices()
+                var voices = AVSpeechSynthesisVoice.speechVoices()
                     .filter { $0.language.starts(with: language) }
+                if self.preferHighQualityVoices {
+                    voices = voices.sorted { first, second in
+                        first.quality.rawValue > second.quality.rawValue
+                    }
+                }
                 if let gender = self.sayGender {
                     if let voice = voices.first(where: { $0.gender == gender }) ?? voices.first {
                         utterance.voice = AVSpeechSynthesisVoice(identifier: voice.identifier)
@@ -2262,6 +2269,12 @@ final class Model: NSObject, ObservableObject {
     func setTextToSpeechVolume(volume: Float) {
         textToSpeechQueue.async {
             self.textToSpeechVolume = volume
+        }
+    }
+
+    func setPreferHighQualityVoices(prefer: Bool) {
+        textToSpeechQueue.async {
+            self.preferHighQualityVoices = prefer
         }
     }
 
