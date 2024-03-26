@@ -2376,7 +2376,6 @@ final class Model: NSObject, ObservableObject {
         reloadYouTubeLiveChat()
         reloadAfreecaTvChat()
         reloadOpenStreamingPlatformChat()
-        stopTextToSpeech()
     }
 
     func stopTextToSpeech() {
@@ -2643,6 +2642,7 @@ final class Model: NSObject, ObservableObject {
         chatPostsRatePerSecond = 0
         chatPostsRatePerMinute = 0
         numberOfChatPostsPerMinute = 0
+        stopTextToSpeech()
     }
 
     private func reloadTwitchChat() {
