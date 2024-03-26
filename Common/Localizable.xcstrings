@@ -45735,6 +45735,9 @@
         }
       }
     },
+    "Rate" : {
+
+    },
     "RealtimeIRL" : {
       "localizations" : {
         "de" : {
@@ -65214,6 +65217,9 @@
           }
         }
       }
+    },
+    "Volume" : {
+
     },
     "Waiting for the remote control streamer to connect..." : {
       "localizations" : {

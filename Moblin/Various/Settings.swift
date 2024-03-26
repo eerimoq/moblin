@@ -1162,6 +1162,8 @@ class SettingsChat: Codable {
     var textToSpeechDetectLanguagePerMessage: Bool? = false
     var textToSpeechGender: SettingsGender? = .unspecified
     var textToSpeechSayUsername: Bool? = true
+    var textToSpeechRate: Float? = 0.4
+    var textToSpeechSayVolume: Float? = 0.6
 }
 
 enum SettingsMic: String, Codable, CaseIterable {
@@ -2398,6 +2400,14 @@ final class Settings {
         }
         if realDatabase.chat.textToSpeechSayUsername == nil {
             realDatabase.chat.textToSpeechSayUsername = true
+            store()
+        }
+        if realDatabase.chat.textToSpeechRate == nil {
+            realDatabase.chat.textToSpeechRate = 0.4
+            store()
+        }
+        if realDatabase.chat.textToSpeechSayVolume == nil {
+            realDatabase.chat.textToSpeechSayVolume = 0.6
             store()
         }
     }

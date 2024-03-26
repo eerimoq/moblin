@@ -2,6 +2,8 @@ import SwiftUI
 
 struct ChatTextToSpeechSettingsView: View {
     @EnvironmentObject var model: Model
+    @State var rate: Float
+    @State var volume: Float
 
     var body: some View {
         Form {
@@ -29,14 +31,7 @@ struct ChatTextToSpeechSettingsView: View {
                         model.database.chat.textToSpeechGender!.toString()
                     }, set: { value in
                         model.database.chat.textToSpeechGender = SettingsGender.fromString(value: value)
-                        switch model.database.chat.textToSpeechGender {
-                        case .male:
-                            model.sayGender = .male
-                        case .female:
-                            model.sayGender = .female
-                        default:
-                            model.sayGender = nil
-                        }
+                        model.setSayGender(gender: model.database.chat.textToSpeechGender!)
                         model.store()
                         model.objectWillChange.send()
                     })) {
@@ -44,6 +39,38 @@ struct ChatTextToSpeechSettingsView: View {
                             Text($0)
                         }
                     }
+                }
+                HStack {
+                    Text("Rate")
+                    Slider(
+                        value: $rate,
+                        in: 0.3 ... 0.6,
+                        step: 0.01,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            model.database.chat.textToSpeechRate = rate
+                            model.store()
+                            model.setTextToSpeechRate(rate: rate)
+                        }
+                    )
+                }
+                HStack {
+                    Text("Volume")
+                    Slider(
+                        value: $volume,
+                        in: 0.3 ... 1.0,
+                        step: 0.01,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            model.database.chat.textToSpeechSayVolume = rate
+                            model.store()
+                            model.setTextToSpeechVolume(volume: volume)
+                        }
+                    )
                 }
             }
         }

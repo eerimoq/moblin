@@ -113,7 +113,10 @@ struct ChatSettingsView: View {
                 NavigationLink(destination: ChatUsernamesToIgnoreSettingsView()) {
                     Text("Usernames to ignore")
                 }
-                NavigationLink(destination: ChatTextToSpeechSettingsView()) {
+                NavigationLink(destination: ChatTextToSpeechSettingsView(
+                    rate: model.database.chat.textToSpeechRate!,
+                    volume: model.database.chat.textToSpeechSayVolume!
+                )) {
                     Toggle(isOn: Binding(get: {
                         model.database.chat.textToSpeechEnabled!
                     }, set: { value in

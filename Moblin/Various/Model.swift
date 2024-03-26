@@ -27,7 +27,7 @@ class Browser: Identifiable {
     }
 }
 
-private let textToSpeechQueue = DispatchQueue(label: "com.eerimoq.tts")
+private let textToSpeechQueue = DispatchQueue(label: "com.eerimoq.textToSpeech", qos: .utility)
 private let maximumNumberOfChatMessages = 50
 private let secondsSuffix = String(localized: "/sec")
 private let fallbackStream = SettingsStream(name: "Fallback")
@@ -372,10 +372,12 @@ final class Model: NSObject, ObservableObject {
     @Published var wizardCustomRtmpUrl = ""
     @Published var wizardCustomRtmpStreamKey = ""
 
-    let synthesizer = AVSpeechSynthesizer()
+    private let synthesizer = AVSpeechSynthesizer()
     private let recognizer = NLLanguageRecognizer()
     private var latestUserThatSaidSomething = ""
-    var sayGender: AVSpeechSynthesisVoiceGender?
+    private var sayGender: AVSpeechSynthesisVoiceGender?
+    private var textToSpeechRate: Float = 0.4
+    private var textToSpeechVolume: Float = 0.6
 
     @Published var remoteControlGeneral: RemoteControlStatusGeneral?
     @Published var remoteControlTopLeft: RemoteControlStatusTopLeft?
@@ -1218,6 +1220,9 @@ final class Model: NSObject, ObservableObject {
         } else {
             logger.info("watch: Not supported")
         }
+        setSayGender(gender: database.chat.textToSpeechGender!)
+        setTextToSpeechRate(rate: database.chat.textToSpeechRate!)
+        setTextToSpeechVolume(volume: database.chat.textToSpeechSayVolume!)
     }
 
     private func handleIpStatusUpdate(statuses: [IPMonitor.Status]) {
@@ -1949,7 +1954,9 @@ final class Model: NSObject, ObservableObject {
             sendChatMessageToWatch(post: post)
             if database.chat.textToSpeechEnabled!, let user = post.user {
                 let message = post.segments.filter { $0.text != nil }.map { $0.text! }.joined(separator: " ")
-                say(user: user, message: message)
+                if !message.isEmpty {
+                    say(user: user, message: message)
+                }
             }
             numberOfChatPostsPerTick += 1
             streamTotalChatMessages += 1
@@ -2205,26 +2212,56 @@ final class Model: NSObject, ObservableObject {
         latestUserThatSaidSomething = user
         textToSpeechQueue.async {
             let utterance = AVSpeechUtterance(string: text)
-            utterance.rate = 0.3
+            utterance.rate = self.textToSpeechRate
             utterance.pitchMultiplier = 0.8
-            utterance.postUtteranceDelay = 0.2
-            utterance.volume = 0.6
+            utterance.postUtteranceDelay = 0.05
+            utterance.volume = self.textToSpeechVolume
+            var language: String?
             if self.database.chat.textToSpeechDetectLanguagePerMessage! {
                 self.recognizer.reset()
                 self.recognizer.processString(message)
-                if let language = self.recognizer.dominantLanguage {
-                    let voices = AVSpeechSynthesisVoice.speechVoices()
-                        .filter { $0.language.starts(with: language.rawValue) }
-                    if let gender = self.sayGender {
-                        if let voice = voices.first(where: { $0.gender == gender }) ?? voices.first {
-                            utterance.voice = AVSpeechSynthesisVoice(identifier: voice.identifier)
-                        }
-                    } else if let voice = voices.first {
+                language = self.recognizer.dominantLanguage?.rawValue
+            }
+            if language == nil {
+                language = String(Locale.current.identifier.prefix(2))
+            }
+            if let language {
+                let voices = AVSpeechSynthesisVoice.speechVoices()
+                    .filter { $0.language.starts(with: language) }
+                if let gender = self.sayGender {
+                    if let voice = voices.first(where: { $0.gender == gender }) ?? voices.first {
                         utterance.voice = AVSpeechSynthesisVoice(identifier: voice.identifier)
                     }
+                } else if let voice = voices.first {
+                    utterance.voice = AVSpeechSynthesisVoice(identifier: voice.identifier)
                 }
             }
             self.synthesizer.speak(utterance)
+        }
+    }
+
+    func setSayGender(gender: SettingsGender) {
+        textToSpeechQueue.async {
+            switch gender {
+            case .male:
+                self.sayGender = .male
+            case .female:
+                self.sayGender = .female
+            default:
+                self.sayGender = nil
+            }
+        }
+    }
+
+    func setTextToSpeechRate(rate: Float) {
+        textToSpeechQueue.async {
+            self.textToSpeechRate = rate
+        }
+    }
+
+    func setTextToSpeechVolume(volume: Float) {
+        textToSpeechQueue.async {
+            self.textToSpeechVolume = volume
         }
     }
 
@@ -2379,7 +2416,9 @@ final class Model: NSObject, ObservableObject {
     }
 
     func stopTextToSpeech() {
-        synthesizer.stopSpeaking(at: .immediate)
+        textToSpeechQueue.async {
+            self.synthesizer.stopSpeaking(at: .immediate)
+        }
     }
 
     private func reloadConnections() {
