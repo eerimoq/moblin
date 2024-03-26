@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		0302F07F2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0302F07E2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift */; };
 		0302F0832B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0302F0822B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift */; };
-		030399132AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030399122AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift */; };
+		030399132AE2D0FC00D27530 /* ChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030399122AE2D0FC00D27530 /* ChatSettingsView.swift */; };
 		0304A50C2B45ADC300310842 /* GameControllersControllerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0304A50B2B45ADC300310842 /* GameControllersControllerSettingsView.swift */; };
 		0307869A2AEC23FB0061FDE2 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 030786992AEC23FB0061FDE2 /* StoreKit.framework */; };
 		0307EBCA2B59B239006F7B2A /* Telegraph in Frameworks */ = {isa = PBXBuildFile; productRef = 0307EBC92B59B239006F7B2A /* Telegraph */; };
@@ -42,6 +42,8 @@
 		031F91EB2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031F91EA2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift */; };
 		0320D8762AED36860030418F /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 0320D8752AED36860030418F /* WrappingHStack */; };
 		032469A92AE1B3040097B18B /* StreamSrtSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032469A82AE1B3040097B18B /* StreamSrtSettingsView.swift */; };
+		0325D0B42BB29713007EE85B /* ChatUsernamesToIgnoreSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0325D0B32BB29713007EE85B /* ChatUsernamesToIgnoreSettingsView.swift */; };
+		0325D0B72BB29754007EE85B /* ChatTextToSpeechSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0325D0B62BB29754007EE85B /* ChatTextToSpeechSettingsView.swift */; };
 		03279CE72B4CD245006CEA5A /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03279CE62B4CD245006CEA5A /* Location.swift */; };
 		03279CF22B4D2AEC006CEA5A /* RealtimeIrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03279CF12B4D2AEC006CEA5A /* RealtimeIrl.swift */; };
 		032815D52AC855A5001F8A85 /* LicenseList in Frameworks */ = {isa = PBXBuildFile; productRef = 032815D42AC855A5001F8A85 /* LicenseList */; };
@@ -273,7 +275,7 @@
 /* Begin PBXFileReference section */
 		0302F07E2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardChatSettingsView.swift; sourceTree = "<group>"; };
 		0302F0822B32103D00B06FF0 /* StreamWizardSummarySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardSummarySettingsView.swift; sourceTree = "<group>"; };
-		030399122AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalOverlaysChatSettingsView.swift; sourceTree = "<group>"; };
+		030399122AE2D0FC00D27530 /* ChatSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSettingsView.swift; sourceTree = "<group>"; };
 		0304A50B2B45ADC300310842 /* GameControllersControllerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllersControllerSettingsView.swift; sourceTree = "<group>"; };
 		030786992AEC23FB0061FDE2 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		03085C072B4865D10009DAB6 /* GameControllersSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllersSettingsView.swift; sourceTree = "<group>"; };
@@ -301,6 +303,8 @@
 		031CCE2C2ACA76CF00CB5D46 /* NoiseReductionEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoiseReductionEffect.swift; sourceTree = "<group>"; };
 		031F91EA2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardObsRemoteControlSettingsView.swift; sourceTree = "<group>"; };
 		032469A82AE1B3040097B18B /* StreamSrtSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamSrtSettingsView.swift; sourceTree = "<group>"; };
+		0325D0B32BB29713007EE85B /* ChatUsernamesToIgnoreSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatUsernamesToIgnoreSettingsView.swift; sourceTree = "<group>"; };
+		0325D0B62BB29754007EE85B /* ChatTextToSpeechSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTextToSpeechSettingsView.swift; sourceTree = "<group>"; };
 		03279CE62B4CD245006CEA5A /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 		03279CF12B4D2AEC006CEA5A /* RealtimeIrl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeIrl.swift; sourceTree = "<group>"; };
 		032815DB2AC915AE001F8A85 /* RandomEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomEffect.swift; sourceTree = "<group>"; };
@@ -524,7 +528,9 @@
 		030399112AE2D0E900D27530 /* Chat */ = {
 			isa = PBXGroup;
 			children = (
-				030399122AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift */,
+				030399122AE2D0FC00D27530 /* ChatSettingsView.swift */,
+				0325D0B32BB29713007EE85B /* ChatUsernamesToIgnoreSettingsView.swift */,
+				0325D0B62BB29754007EE85B /* ChatTextToSpeechSettingsView.swift */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
@@ -1697,6 +1703,7 @@
 				03D541752B32095B00B9D595 /* StreamWizardCustomSettingsView.swift in Sources */,
 				0315A3462AA31E9000295443 /* StreamTwitchSettingsView.swift in Sources */,
 				03D3C0512B452D61006BAEAC /* StreamRecordingSettingsView.swift in Sources */,
+				0325D0B42BB29713007EE85B /* ChatUsernamesToIgnoreSettingsView.swift in Sources */,
 				0302F07F2B320B0500B06FF0 /* StreamWizardChatSettingsView.swift in Sources */,
 				0379BBAF2AAD96B200B718B6 /* DebugSettingsView.swift in Sources */,
 				03FB4B2F2AD8CF83005AA183 /* BitratePresetsSettingsView.swift in Sources */,
@@ -1781,6 +1788,7 @@
 				03085C0F2B487D950009DAB6 /* PixellateEffect.swift in Sources */,
 				03831D522AD90AB5008D26CC /* MoblinSettingsUrl.swift in Sources */,
 				032A49BA2AC54E6500ED3916 /* ImportSettingsView.swift in Sources */,
+				0325D0B72BB29754007EE85B /* ChatTextToSpeechSettingsView.swift in Sources */,
 				03A14BE32ACC903E00D180FF /* ZoomSettingsView.swift in Sources */,
 				03A983682A9A05D7008FF0DB /* SceneSettingsView.swift in Sources */,
 				03B7DAB22BA63F7400CEFC1B /* OpenStreamingPlatformChat.swift in Sources */,
@@ -1826,7 +1834,7 @@
 				032FDBFC2B0B1183007BE85E /* ValueEditView.swift in Sources */,
 				0318391B2AF79DDF00320FB2 /* StreamSrtAdaptiveBitrateSettingsView.swift in Sources */,
 				03F5A8E52AD6FF8E00F354D2 /* StreamOverlayDebugView.swift in Sources */,
-				030399132AE2D0FC00D27530 /* LocalOverlaysChatSettingsView.swift in Sources */,
+				030399132AE2D0FC00D27530 /* ChatSettingsView.swift in Sources */,
 				034844F52B57AB840089B874 /* RemoteControlSettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

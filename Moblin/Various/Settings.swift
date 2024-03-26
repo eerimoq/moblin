@@ -1104,6 +1104,38 @@ class SettingsChatUsername: Identifiable, Codable {
     var value: String = ""
 }
 
+enum SettingsGender: String, Codable, CaseIterable {
+    case unspecified = "Unspecified"
+    case male = "Male"
+    case female = "Female"
+
+    static func fromString(value: String) -> SettingsGender {
+        switch value {
+        case String(localized: "Unspecified"):
+            return .unspecified
+        case String(localized: "Male"):
+            return .male
+        case String(localized: "Female"):
+            return .female
+        default:
+            return .unspecified
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .unspecified:
+            return String(localized: "Unspecified")
+        case .male:
+            return String(localized: "Male")
+        case .female:
+            return String(localized: "Female")
+        }
+    }
+}
+
+let genders = SettingsGender.allCases.map { $0.rawValue }
+
 class SettingsChat: Codable {
     var fontSize: Float = 17.0
     var usernameColor: RgbColor = .init(red: 255, green: 163, blue: 0)
@@ -1127,6 +1159,9 @@ class SettingsChat: Codable {
     var enabled: Bool? = true
     var usernamesToIgnore: [SettingsChatUsername]? = []
     var textToSpeechEnabled: Bool? = false
+    var textToSpeechDetectLanguagePerMessage: Bool? = false
+    var textToSpeechGender: SettingsGender? = .unspecified
+    var textToSpeechSayUsername: Bool? = true
 }
 
 enum SettingsMic: String, Codable, CaseIterable {
@@ -2351,6 +2386,18 @@ final class Settings {
         }
         if realDatabase.chat.textToSpeechEnabled == nil {
             realDatabase.chat.textToSpeechEnabled = false
+            store()
+        }
+        if realDatabase.chat.textToSpeechDetectLanguagePerMessage == nil {
+            realDatabase.chat.textToSpeechDetectLanguagePerMessage = false
+            store()
+        }
+        if realDatabase.chat.textToSpeechGender == nil {
+            realDatabase.chat.textToSpeechGender = .unspecified
+            store()
+        }
+        if realDatabase.chat.textToSpeechSayUsername == nil {
+            realDatabase.chat.textToSpeechSayUsername = true
             store()
         }
     }

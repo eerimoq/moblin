@@ -113,7 +113,7 @@ struct SettingsView: View {
                 NavigationLink(destination: ScenesSettingsView()) {
                     IconAndText(image: "photo.on.rectangle", text: String(localized: "Scenes"))
                 }
-                NavigationLink(destination: LocalOverlaysChatSettingsView(
+                NavigationLink(destination: ChatSettingsView(
                     timestampColor: chat.timestampColor.color(),
                     usernameColor: chat.usernameColor.color(),
                     messageColor: chat.messageColor.color(),

@@ -6,6 +6,7 @@ import GameController
 import HaishinKit
 import Logboard
 import MapKit
+import NaturalLanguage
 import Network
 import PhotosUI
 import SDWebImageSwiftUI
@@ -26,6 +27,7 @@ class Browser: Identifiable {
     }
 }
 
+private let textToSpeechQueue = DispatchQueue(label: "com.eerimoq.tts")
 private let maximumNumberOfChatMessages = 50
 private let secondsSuffix = String(localized: "/sec")
 private let fallbackStream = SettingsStream(name: "Fallback")
@@ -371,7 +373,9 @@ final class Model: NSObject, ObservableObject {
     @Published var wizardCustomRtmpStreamKey = ""
 
     let synthesizer = AVSpeechSynthesizer()
+    private let recognizer = NLLanguageRecognizer()
     private var latestUserThatSaidSomething = ""
+    var sayGender: AVSpeechSynthesisVoiceGender?
 
     @Published var remoteControlGeneral: RemoteControlStatusGeneral?
     @Published var remoteControlTopLeft: RemoteControlStatusTopLeft?
@@ -2193,19 +2197,35 @@ final class Model: NSObject, ObservableObject {
 
     private func say(user: String, message: String) {
         let text: String
-        if user == latestUserThatSaidSomething {
+        if user == latestUserThatSaidSomething || !database.chat.textToSpeechSayUsername! {
             text = message
         } else {
-            text = "\(user) said \(message)"
+            text = String(localized: "\(user) said \(message)")
         }
         latestUserThatSaidSomething = user
-        let utterance = AVSpeechUtterance(string: text)
-        utterance.rate = 0.3
-        utterance.pitchMultiplier = 0.8
-        utterance.postUtteranceDelay = 0.2
-        utterance.volume = 0.6
-        utterance.voice = AVSpeechSynthesisVoice()
-        synthesizer.speak(utterance)
+        textToSpeechQueue.async {
+            let utterance = AVSpeechUtterance(string: text)
+            utterance.rate = 0.3
+            utterance.pitchMultiplier = 0.8
+            utterance.postUtteranceDelay = 0.2
+            utterance.volume = 0.6
+            if self.database.chat.textToSpeechDetectLanguagePerMessage! {
+                self.recognizer.reset()
+                self.recognizer.processString(message)
+                if let language = self.recognizer.dominantLanguage {
+                    let voices = AVSpeechSynthesisVoice.speechVoices()
+                        .filter { $0.language.starts(with: language.rawValue) }
+                    if let gender = self.sayGender {
+                        if let voice = voices.first(where: { $0.gender == gender }) ?? voices.first {
+                            utterance.voice = AVSpeechSynthesisVoice(identifier: voice.identifier)
+                        }
+                    } else if let voice = voices.first {
+                        utterance.voice = AVSpeechSynthesisVoice(identifier: voice.identifier)
+                    }
+                }
+            }
+            self.synthesizer.speak(utterance)
+        }
     }
 
     func startStream(delayed: Bool = false) {
@@ -2356,6 +2376,11 @@ final class Model: NSObject, ObservableObject {
         reloadYouTubeLiveChat()
         reloadAfreecaTvChat()
         reloadOpenStreamingPlatformChat()
+        stopTextToSpeech()
+    }
+
+    func stopTextToSpeech() {
+        synthesizer.stopSpeaking(at: .immediate)
     }
 
     private func reloadConnections() {

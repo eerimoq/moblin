@@ -2539,6 +2539,16 @@
         }
       }
     },
+    "%@ said %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ said %2$@"
+          }
+        }
+      }
+    },
     "%@ source audio levels" : {
       "localizations" : {
         "de" : {
@@ -19914,6 +19924,9 @@
         }
       }
     },
+    "Detect language per message" : {
+
+    },
     "Device health" : {
       "localizations" : {
         "de" : {
@@ -26610,6 +26623,9 @@
           }
         }
       }
+    },
+    "Female" : {
+
     },
     "FFFFF:s" : {
       "localizations" : {
@@ -35420,6 +35436,9 @@
           }
         }
       }
+    },
+    "Male" : {
+
     },
     "Malformed RTMP URL" : {
       "localizations" : {
@@ -44597,6 +44616,9 @@
         }
       }
     },
+    "Preferred gender" : {
+
+    },
     "Press \"Add automatically to Moblin\" on https://cloud.belabox.net SRT(LA) relays (requires login). See screenshot below." : {
       "localizations" : {
         "de" : {
@@ -49184,6 +49206,9 @@
           }
         }
       }
+    },
+    "Say username" : {
+
     },
     "Scale to fit video width" : {
       "localizations" : {
@@ -61714,6 +61739,9 @@
           }
         }
       }
+    },
+    "Unspecified" : {
+
     },
     "Unsupported scheme %@" : {
       "localizations" : {
