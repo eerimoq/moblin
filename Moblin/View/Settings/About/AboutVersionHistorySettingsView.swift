@@ -8,6 +8,15 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.216.0", date: "2024-03-26", changes: [
+        "• Chat text to speech settings.",
+        "  • Detect language per message toggle.",
+        "  • Say username toggle.",
+        "  • Preferred gender (Unspecified/Male/Female).",
+        "    • Many languages only have one gender.",
+        "  • Rate.",
+        "  • Volume.",
+    ]),
     Version(version: "0.215.0", date: "2024-03-25", changes: [
         "• Optional chat text to speech (TTS).",
         "• Spanish translation updated. ✍️ adriportela95",
