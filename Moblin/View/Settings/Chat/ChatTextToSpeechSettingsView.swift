@@ -5,6 +5,10 @@ struct ChatTextToSpeechSettingsView: View {
     @State var rate: Float
     @State var volume: Float
 
+    private func usePersonalVoice() -> Bool {
+        return model.database.chat.textToSpeechUsePersonalVoice!
+    }
+
     var body: some View {
         Form {
             Section {
@@ -16,6 +20,7 @@ struct ChatTextToSpeechSettingsView: View {
                 })) {
                     Text("Detect language per message")
                 }
+                .disabled(usePersonalVoice())
                 Toggle(isOn: Binding(get: {
                     model.database.chat.textToSpeechSayUsername!
                 }, set: { value in
@@ -35,12 +40,14 @@ struct ChatTextToSpeechSettingsView: View {
                 })) {
                     Text("Prefer high quality")
                 }
+                .disabled(usePersonalVoice())
                 if #available(iOS 17.0, *) {
                     Toggle(isOn: Binding(get: {
                         model.database.chat.textToSpeechUsePersonalVoice!
                     }, set: { value in
                         model.database.chat.textToSpeechUsePersonalVoice = value
                         model.setUsePersonalVoice(value: value)
+                        model.objectWillChange.send()
                     })) {
                         Text("Use personal voice")
                     }

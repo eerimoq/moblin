@@ -2235,7 +2235,6 @@ final class Model: NSObject, ObservableObject {
             var voices = AVSpeechSynthesisVoice.speechVoices()
             if self.usePersonalVoice, #available(iOS 17.0, *) {
                 voices = voices.filter { $0.voiceTraits.contains(.isPersonalVoice) }
-                print(voices)
             } else {
                 var language: String?
                 if self.database.chat.textToSpeechDetectLanguagePerMessage! {
@@ -2755,7 +2754,7 @@ final class Model: NSObject, ObservableObject {
     private func reloadTwitchPubSub() {
         twitchPubSub?.stop()
         if stream.twitchChannelId != "" {
-            twitchPubSub = TwitchPubSub(model: self, channelId: stream.twitchChannelId)
+            twitchPubSub = TwitchPubSub(channelId: stream.twitchChannelId)
             twitchPubSub!.start()
         } else {
             logger.info("Twitch channel id not configured. No viewers.")

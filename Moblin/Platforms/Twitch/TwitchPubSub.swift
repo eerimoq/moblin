@@ -54,7 +54,6 @@ private func decodeMessageViewCount(message: String) throws -> MessageViewCount 
 private var url = URL(string: "wss://pubsub-edge.twitch.tv/v1")!
 
 final class TwitchPubSub: NSObject {
-    private var model: Model
     private var webSocket: URLSessionWebSocketTask
     private var channelId: String
     private var keepAliveTimer: Timer?
@@ -63,8 +62,7 @@ final class TwitchPubSub: NSObject {
     private var running = true
     var numberOfViewers: Int?
 
-    init(model: Model, channelId: String) {
-        self.model = model
+    init(channelId: String) {
         self.channelId = channelId
         webSocket = URLSession(configuration: .default).webSocketTask(with: url)
     }
