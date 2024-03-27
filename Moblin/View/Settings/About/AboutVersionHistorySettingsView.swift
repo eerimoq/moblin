@@ -8,6 +8,10 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.218.0", date: "2024-03-27", changes: [
+        "• Use personal voice in chat text to speech toggle.",
+        "  • Disables language detection per message.",
+    ]),
     Version(version: "0.217.0", date: "2024-03-26", changes: [
         "• Toggle to prefer high quality text to speech voices (Premium > Enhanced > Default). 💡 nn2p",
         "  • Install high quality voices in iOS settings (Accessibility → VoiceOver → Speech → Voice).",
