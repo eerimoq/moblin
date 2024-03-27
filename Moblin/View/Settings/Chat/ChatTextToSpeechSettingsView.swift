@@ -35,6 +35,16 @@ struct ChatTextToSpeechSettingsView: View {
                 })) {
                     Text("Prefer high quality")
                 }
+                if #available(iOS 17.0, *) {
+                    Toggle(isOn: Binding(get: {
+                        model.database.chat.textToSpeechUsePersonalVoice!
+                    }, set: { value in
+                        model.database.chat.textToSpeechUsePersonalVoice = value
+                        model.setUsePersonalVoice(value: value)
+                    })) {
+                        Text("Use personal voice")
+                    }
+                }
                 HStack {
                     Text("Preferred gender")
                     Spacer()
@@ -78,7 +88,7 @@ struct ChatTextToSpeechSettingsView: View {
                             guard !begin else {
                                 return
                             }
-                            model.database.chat.textToSpeechSayVolume = rate
+                            model.database.chat.textToSpeechSayVolume = volume
                             model.store()
                             model.setTextToSpeechVolume(volume: volume)
                         }

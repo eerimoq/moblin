@@ -44,6 +44,8 @@
 		032469A92AE1B3040097B18B /* StreamSrtSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032469A82AE1B3040097B18B /* StreamSrtSettingsView.swift */; };
 		0325D0B42BB29713007EE85B /* ChatUsernamesToIgnoreSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0325D0B32BB29713007EE85B /* ChatUsernamesToIgnoreSettingsView.swift */; };
 		0325D0B72BB29754007EE85B /* ChatTextToSpeechSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0325D0B62BB29754007EE85B /* ChatTextToSpeechSettingsView.swift */; };
+		0325D0BB2BB3D7DD007EE85B /* KickViewers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0325D0BA2BB3D7DD007EE85B /* KickViewers.swift */; };
+		0325D0BE2BB3DDD6007EE85B /* KickChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0325D0BD2BB3DDD6007EE85B /* KickChannel.swift */; };
 		03279CE72B4CD245006CEA5A /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03279CE62B4CD245006CEA5A /* Location.swift */; };
 		03279CF22B4D2AEC006CEA5A /* RealtimeIrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03279CF12B4D2AEC006CEA5A /* RealtimeIrl.swift */; };
 		032815D52AC855A5001F8A85 /* LicenseList in Frameworks */ = {isa = PBXBuildFile; productRef = 032815D42AC855A5001F8A85 /* LicenseList */; };
@@ -305,6 +307,8 @@
 		032469A82AE1B3040097B18B /* StreamSrtSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamSrtSettingsView.swift; sourceTree = "<group>"; };
 		0325D0B32BB29713007EE85B /* ChatUsernamesToIgnoreSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatUsernamesToIgnoreSettingsView.swift; sourceTree = "<group>"; };
 		0325D0B62BB29754007EE85B /* ChatTextToSpeechSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTextToSpeechSettingsView.swift; sourceTree = "<group>"; };
+		0325D0BA2BB3D7DD007EE85B /* KickViewers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KickViewers.swift; sourceTree = "<group>"; };
+		0325D0BD2BB3DDD6007EE85B /* KickChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KickChannel.swift; sourceTree = "<group>"; };
 		03279CE62B4CD245006CEA5A /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 		03279CF12B4D2AEC006CEA5A /* RealtimeIrl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeIrl.swift; sourceTree = "<group>"; };
 		032815DB2AC915AE001F8A85 /* RandomEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomEffect.swift; sourceTree = "<group>"; };
@@ -916,6 +920,8 @@
 			isa = PBXGroup;
 			children = (
 				036BE2CE2ABD4CA60048F9C5 /* KickPusher.swift */,
+				0325D0BA2BB3D7DD007EE85B /* KickViewers.swift */,
+				0325D0BD2BB3DDD6007EE85B /* KickChannel.swift */,
 			);
 			path = Kick;
 			sourceTree = "<group>";
@@ -1663,6 +1669,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0325D0BE2BB3DDD6007EE85B /* KickChannel.swift in Sources */,
 				035D37282AB0EBB500045B92 /* IconAndTextView.swift in Sources */,
 				03AD440A2B78A8A700B1B9B9 /* StreamButtonsSettingsView.swift in Sources */,
 				03A9836B2A9A05D7008FF0DB /* StreamOverlayView.swift in Sources */,
@@ -1718,6 +1725,7 @@
 				031839172AF6A03100320FB2 /* DebugAudioSettingsView.swift in Sources */,
 				03487F262B334B63003D9ED9 /* StreamingHistory.swift in Sources */,
 				032FDBFF2B0B11B0007BE85E /* PositionEditView.swift in Sources */,
+				0325D0BB2BB3D7DD007EE85B /* KickViewers.swift in Sources */,
 				03D691532B36EDB600038F13 /* TextValueView.swift in Sources */,
 				0364662E2B456B3B005AB9FA /* StreamWizardCustonRtmpSettingsView.swift in Sources */,
 				0379BBA02AAD823900B718B6 /* StreamOverlayTextView.swift in Sources */,

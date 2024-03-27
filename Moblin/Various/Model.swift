@@ -249,6 +249,7 @@ final class Model: NSObject, ObservableObject {
     private var twitchChat: TwitchChatMoblin!
     private var twitchPubSub: TwitchPubSub?
     private var kickPusher: KickPusher?
+    private var kickViewers: KickViewers?
     private var youTubeLiveChat: YouTubeLiveChat?
     private var afreecaTvChat: AfreecaTvChat?
     private var openStreamingPlatformChat: OpenStreamingPlatformChat!
@@ -268,7 +269,6 @@ final class Model: NSObject, ObservableObject {
     private var nextWatchChatPostId = 1
     private var chatSpeedTicks = 0
     @Published var numberOfViewers = noValue
-    var numberOfViewersUpdateDate = Date()
     @Published var batteryLevel = Double(UIDevice.current.batteryLevel)
     @Published var batteryState: UIDevice.BatteryState = .full
     @Published var speedAndTotal = noValue
@@ -379,6 +379,7 @@ final class Model: NSObject, ObservableObject {
     private var textToSpeechRate: Float = 0.4
     private var textToSpeechVolume: Float = 0.6
     private var preferHighQualityVoices: Bool = true
+    private var usePersonalVoice: Bool = true
 
     @Published var remoteControlGeneral: RemoteControlStatusGeneral?
     @Published var remoteControlTopLeft: RemoteControlStatusTopLeft?
@@ -1225,6 +1226,7 @@ final class Model: NSObject, ObservableObject {
         setTextToSpeechRate(rate: database.chat.textToSpeechRate!)
         setTextToSpeechVolume(volume: database.chat.textToSpeechSayVolume!)
         setPreferHighQualityVoices(prefer: database.chat.textToSpeechPreferHighQuality!)
+        usePersonalVoice = database.chat.textToSpeechUsePersonalVoice!
     }
 
     private func handleIpStatusUpdate(statuses: [IPMonitor.Status]) {
@@ -1728,7 +1730,6 @@ final class Model: NSObject, ObservableObject {
             self.media.updateSrtSpeed()
             self.updateSpeed(now: now)
             self.updateRtmpSpeed()
-            self.updateTwitchPubSub(now: now)
             if !self.database.show.audioBar {
                 self.updateAudioLevel()
             }
@@ -1751,6 +1752,7 @@ final class Model: NSObject, ObservableObject {
                 self.media.updateVideoStreamBitrate(bitrate: self.stream.bitrate)
             }
             self.media.logTiming()
+            self.updateViewers()
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
             self.updateAdaptiveBitrate()
@@ -1854,9 +1856,21 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    private func updateTwitchPubSub(now: Date) {
-        if numberOfViewersUpdateDate + 60 < now {
-            numberOfViewers = noValue
+    private func updateViewers() {
+        var newNumberOfViewers = 0
+        var hasInfo = false
+        if let twitchPubSub, twitchPubSub.isConnected(), let numberOfViewers = twitchPubSub.numberOfViewers {
+            newNumberOfViewers += numberOfViewers
+            hasInfo = true
+        }
+        var newValue: String
+        if hasInfo {
+            newValue = countFormatter.format(newNumberOfViewers)
+        } else {
+            newValue = noValue
+        }
+        if newValue != numberOfViewers {
+            numberOfViewers = newValue
         }
     }
 
@@ -2218,30 +2232,36 @@ final class Model: NSObject, ObservableObject {
             utterance.pitchMultiplier = 0.8
             utterance.postUtteranceDelay = 0.05
             utterance.volume = self.textToSpeechVolume
-            var language: String?
-            if self.database.chat.textToSpeechDetectLanguagePerMessage! {
-                self.recognizer.reset()
-                self.recognizer.processString(message)
-                language = self.recognizer.dominantLanguage?.rawValue
-            }
-            if language == nil {
-                language = String(Locale.current.identifier.prefix(2))
-            }
-            if let language {
-                var voices = AVSpeechSynthesisVoice.speechVoices()
-                    .filter { $0.language.starts(with: language) }
+            var voices = AVSpeechSynthesisVoice.speechVoices()
+            if self.usePersonalVoice, #available(iOS 17.0, *) {
+                voices = voices.filter { $0.voiceTraits.contains(.isPersonalVoice) }
+                print(voices)
+            } else {
+                var language: String?
+                if self.database.chat.textToSpeechDetectLanguagePerMessage! {
+                    self.recognizer.reset()
+                    self.recognizer.processString(message)
+                    language = self.recognizer.dominantLanguage?.rawValue
+                }
+                if language == nil {
+                    language = String(Locale.current.identifier.prefix(2))
+                }
+                guard let language else {
+                    return
+                }
+                voices = voices.filter { $0.language.starts(with: language) }
                 if self.preferHighQualityVoices {
                     voices = voices.sorted { first, second in
                         first.quality.rawValue > second.quality.rawValue
                     }
                 }
-                if let gender = self.sayGender {
-                    if let voice = voices.first(where: { $0.gender == gender }) ?? voices.first {
-                        utterance.voice = AVSpeechSynthesisVoice(identifier: voice.identifier)
-                    }
-                } else if let voice = voices.first {
+            }
+            if let gender = self.sayGender {
+                if let voice = voices.first(where: { $0.gender == gender }) ?? voices.first {
                     utterance.voice = AVSpeechSynthesisVoice(identifier: voice.identifier)
                 }
+            } else if let voice = voices.first {
+                utterance.voice = AVSpeechSynthesisVoice(identifier: voice.identifier)
             }
             self.synthesizer.speak(utterance)
         }
@@ -2275,6 +2295,27 @@ final class Model: NSObject, ObservableObject {
     func setPreferHighQualityVoices(prefer: Bool) {
         textToSpeechQueue.async {
             self.preferHighQualityVoices = prefer
+        }
+    }
+
+    func setUsePersonalVoice(value: Bool) {
+        if value, #available(iOS 17.0, *) {
+            AVSpeechSynthesizer.requestPersonalVoiceAuthorization { status in
+                DispatchQueue.main.async {
+                    switch status {
+                    case .authorized:
+                        self.database.chat.textToSpeechUsePersonalVoice = true
+                    default:
+                        self.database.chat.textToSpeechUsePersonalVoice = false
+                    }
+                    self.store()
+                    self.usePersonalVoice = self.database.chat.textToSpeechUsePersonalVoice!
+                }
+            }
+        } else {
+            database.chat.textToSpeechUsePersonalVoice = false
+            usePersonalVoice = database.chat.textToSpeechUsePersonalVoice!
+            store()
         }
     }
 
@@ -2440,6 +2481,7 @@ final class Model: NSObject, ObservableObject {
         reloadObsWebSocket()
         reloadRemoteControlStreamer()
         reloadRemoteControlAssistant()
+        reloadKickViewers()
     }
 
     func storeAndReloadStreamIfEnabled(stream: SettingsStream) {
@@ -2712,13 +2754,22 @@ final class Model: NSObject, ObservableObject {
 
     private func reloadTwitchPubSub() {
         twitchPubSub?.stop()
-        numberOfViewers = noValue
         if stream.twitchChannelId != "" {
             twitchPubSub = TwitchPubSub(model: self, channelId: stream.twitchChannelId)
             twitchPubSub!.start()
         } else {
             logger.info("Twitch channel id not configured. No viewers.")
         }
+    }
+
+    private func reloadKickViewers() {
+        kickViewers?.stop()
+        // if stream.kickChatroomId != "" {
+        //    twitchPubSub = TwitchPubSub(model: self, channelId: stream.twitchChannelId)
+        //    twitchPubSub!.start()
+        // } else {
+        //    logger.info("Twitch channel id not configured. No viewers.")
+        // }
     }
 
     private func reloadKickPusher() {

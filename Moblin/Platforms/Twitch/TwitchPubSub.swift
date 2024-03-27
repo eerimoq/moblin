@@ -61,6 +61,7 @@ final class TwitchPubSub: NSObject {
     private var reconnectTimer: Timer?
     private var reconnectTime = firstReconnectTime
     private var running = true
+    var numberOfViewers: Int?
 
     init(model: Model, channelId: String) {
         self.model = model
@@ -112,8 +113,7 @@ final class TwitchPubSub: NSObject {
         let type = try getMessageType(message: message.data.message)
         if type == "viewcount" {
             let message = try decodeMessageViewCount(message: message.data.message)
-            model.numberOfViewers = countFormatter.format(message.viewers)
-            model.numberOfViewersUpdateDate = Date()
+            numberOfViewers = message.viewers
         } else {
             logger
                 .debug("""
