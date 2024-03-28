@@ -15,7 +15,7 @@ struct ControlView: View {
                 pendingLiveValue = value
                 isPresentingIsLiveConfirm = true
             })) {
-                Text("Is live")
+                Text("Live")
             }
             .confirmationDialog("", isPresented: $isPresentingIsLiveConfirm) {
                 Button(pendingLiveValue ? String(localized: "Go Live") : String(localized: "End")) {
@@ -32,7 +32,7 @@ struct ControlView: View {
                 pendingRecordingValue = value
                 isPresentingIsRecordingConfirm = true
             })) {
-                Text("Is recording")
+                Text("Recording")
             }
             .confirmationDialog("", isPresented: $isPresentingIsRecordingConfirm) {
                 Button(pendingRecordingValue ? String(localized: "Start") : String(localized: "Stop")) {
@@ -48,7 +48,7 @@ struct ControlView: View {
             }, set: { value in
                 model.setIsMuted(value: value)
             })) {
-                Text("Is muted")
+                Text("Muted")
             }
             Spacer()
         }

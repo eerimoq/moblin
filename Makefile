@@ -26,7 +26,7 @@ lint:
 periphery:
 	periphery scan
 
-auto-translate:
+machine-translate:
 	python3 utils/translate.py Common/Localizable.xcstrings
 
 pack-exported-localizations:
