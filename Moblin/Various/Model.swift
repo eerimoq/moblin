@@ -375,11 +375,9 @@ final class Model: NSObject, ObservableObject {
     private let synthesizer = AVSpeechSynthesizer()
     private let recognizer = NLLanguageRecognizer()
     private var latestUserThatSaidSomething = ""
-    private var sayGender: AVSpeechSynthesisVoiceGender?
     private var textToSpeechRate: Float = 0.4
     private var textToSpeechVolume: Float = 0.6
-    private var preferHighQualityVoices: Bool = true
-    private var usePersonalVoice: Bool = true
+    private var textToSpeechVoices: [String: String] = [:]
 
     @Published var remoteControlGeneral: RemoteControlStatusGeneral?
     @Published var remoteControlTopLeft: RemoteControlStatusTopLeft?
@@ -1213,11 +1211,9 @@ final class Model: NSObject, ObservableObject {
         } else {
             logger.info("watch: Not supported")
         }
-        setSayGender(gender: database.chat.textToSpeechGender!)
         setTextToSpeechRate(rate: database.chat.textToSpeechRate!)
         setTextToSpeechVolume(volume: database.chat.textToSpeechSayVolume!)
-        setPreferHighQualityVoices(prefer: database.chat.textToSpeechPreferHighQuality!)
-        usePersonalVoice = database.chat.textToSpeechUsePersonalVoice!
+        setTextToSpeechVoices(voices: database.chat.textToSpeechLanguageVoices!)
     }
 
     private func handleIpStatusUpdate(statuses: [IPMonitor.Status]) {
@@ -2209,6 +2205,29 @@ final class Model: NSObject, ObservableObject {
         setMuteOn(value: value)
     }
 
+    private func getVoice(message: String) -> AVSpeechSynthesisVoice? {
+        var language: String?
+        if database.chat.textToSpeechDetectLanguagePerMessage! {
+            recognizer.reset()
+            recognizer.processString(message)
+            language = recognizer.dominantLanguage?.rawValue
+        }
+        if language == nil {
+            language = String(Locale.current.identifier)
+        }
+        guard let language else {
+            return nil
+        }
+        if let voiceIdentifier = textToSpeechVoices[language] {
+            return AVSpeechSynthesisVoice(identifier: voiceIdentifier)
+        } else if let voice = AVSpeechSynthesisVoice.speechVoices()
+            .filter({ $0.language.starts(with: language) }).first
+        {
+            return AVSpeechSynthesisVoice(identifier: voice.identifier)
+        }
+        return nil
+    }
+
     private func say(user: String, message: String) {
         let text: String
         if user == latestUserThatSaidSomething || !database.chat.textToSpeechSayUsername! {
@@ -2223,50 +2242,10 @@ final class Model: NSObject, ObservableObject {
             utterance.pitchMultiplier = 0.8
             utterance.postUtteranceDelay = 0.05
             utterance.volume = self.textToSpeechVolume
-            var voices = AVSpeechSynthesisVoice.speechVoices()
-            if self.usePersonalVoice, #available(iOS 17.0, *) {
-                voices = voices.filter { $0.voiceTraits.contains(.isPersonalVoice) }
-            } else {
-                var language: String?
-                if self.database.chat.textToSpeechDetectLanguagePerMessage! {
-                    self.recognizer.reset()
-                    self.recognizer.processString(message)
-                    language = self.recognizer.dominantLanguage?.rawValue
-                }
-                if language == nil {
-                    language = String(Locale.current.identifier.prefix(2))
-                }
-                guard let language else {
-                    return
-                }
-                voices = voices.filter { $0.language.starts(with: language) }
-                if self.preferHighQualityVoices {
-                    voices = voices.sorted { first, second in
-                        first.quality.rawValue > second.quality.rawValue
-                    }
-                }
-            }
-            if let gender = self.sayGender {
-                if let voice = voices.first(where: { $0.gender == gender }) ?? voices.first {
-                    utterance.voice = AVSpeechSynthesisVoice(identifier: voice.identifier)
-                }
-            } else if let voice = voices.first {
-                utterance.voice = AVSpeechSynthesisVoice(identifier: voice.identifier)
+            if let voice = self.getVoice(message: message) {
+                utterance.voice = voice
             }
             self.synthesizer.speak(utterance)
-        }
-    }
-
-    func setSayGender(gender: SettingsGender) {
-        textToSpeechQueue.async {
-            switch gender {
-            case .male:
-                self.sayGender = .male
-            case .female:
-                self.sayGender = .female
-            default:
-                self.sayGender = nil
-            }
         }
     }
 
@@ -2282,30 +2261,9 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    func setPreferHighQualityVoices(prefer: Bool) {
+    func setTextToSpeechVoices(voices: [String: String]) {
         textToSpeechQueue.async {
-            self.preferHighQualityVoices = prefer
-        }
-    }
-
-    func setUsePersonalVoice(value: Bool) {
-        if value, #available(iOS 17.0, *) {
-            AVSpeechSynthesizer.requestPersonalVoiceAuthorization { status in
-                DispatchQueue.main.async {
-                    switch status {
-                    case .authorized:
-                        self.database.chat.textToSpeechUsePersonalVoice = true
-                    default:
-                        self.database.chat.textToSpeechUsePersonalVoice = false
-                    }
-                    self.store()
-                    self.usePersonalVoice = self.database.chat.textToSpeechUsePersonalVoice!
-                }
-            }
-        } else {
-            database.chat.textToSpeechUsePersonalVoice = false
-            usePersonalVoice = database.chat.textToSpeechUsePersonalVoice!
-            store()
+            self.textToSpeechVoices = voices
         }
     }
 

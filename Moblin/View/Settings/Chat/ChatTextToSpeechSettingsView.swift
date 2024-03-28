@@ -1,17 +1,103 @@
+import AVFAudio
 import SwiftUI
+
+private func localize(identifier: String) -> String {
+    return NSLocale.current.localizedString(forIdentifier: identifier) ?? identifier
+}
+
+private struct LanguageView: View {
+    @EnvironmentObject var model: Model
+    var language: String
+    @State var voice: String
+
+    private func voices(language: String) -> [AVSpeechSynthesisVoice] {
+        return AVSpeechSynthesisVoice.speechVoices().filter { $0.language == language }
+    }
+
+    var body: some View {
+        Form {
+            Picker("", selection: $voice) {
+                ForEach(voices(language: language), id: \.identifier) { voice in
+                    Text(voice.name)
+                        .tag(voice.identifier)
+                }
+            }
+            .pickerStyle(.inline)
+            .labelsHidden()
+            .onChange(of: voice) { _ in
+                model.database.chat.textToSpeechLanguageVoices![language] = voice
+                model.store()
+                model.setTextToSpeechVoices(voices: model.database.chat.textToSpeechLanguageVoices!)
+            }
+        }
+        .navigationTitle(localize(identifier: language))
+        .toolbar {
+            SettingsToolbar()
+        }
+    }
+}
+
+private struct Language {
+    let name: String
+    let code: String
+    let selectedVoiceIdentifier: String
+    let selectedVoiceName: String
+}
+
+private struct VoicesView: View {
+    @EnvironmentObject var model: Model
+
+    private func languages() -> [Language] {
+        var languages: [Language] = []
+        var seen: Set<String> = []
+        let voices = AVSpeechSynthesisVoice.speechVoices()
+        for voice in voices where !seen.contains(voice.language) {
+            let selectedVoiceIdentifier = model.database.chat
+                .textToSpeechLanguageVoices![voice.language] ?? ""
+            let selectedVoiceName = voices.first(where: { $0.identifier == selectedVoiceIdentifier })?
+                .name ?? ""
+            languages.append(.init(name: localize(identifier: voice.language),
+                                   code: voice.language,
+                                   selectedVoiceIdentifier: selectedVoiceIdentifier,
+                                   selectedVoiceName: selectedVoiceName))
+            seen.insert(voice.language)
+        }
+        return languages
+    }
+
+    var body: some View {
+        Form {
+            ForEach(languages(), id: \.code) { language in
+                NavigationLink(destination: LanguageView(
+                    language: language.code,
+                    voice: language.selectedVoiceIdentifier
+                )) {
+                    HStack {
+                        Text(language.name)
+                        Spacer()
+                        Text(language.selectedVoiceName)
+                    }
+                }
+            }
+        }
+        .navigationTitle("Voices")
+        .toolbar {
+            SettingsToolbar()
+        }
+    }
+}
 
 struct ChatTextToSpeechSettingsView: View {
     @EnvironmentObject var model: Model
     @State var rate: Float
     @State var volume: Float
 
-    private func usePersonalVoice() -> Bool {
-        return model.database.chat.textToSpeechUsePersonalVoice!
-    }
-
     var body: some View {
         Form {
             Section {
+                NavigationLink(destination: VoicesView()) {
+                    Text("Voices")
+                }
                 Toggle(isOn: Binding(get: {
                     model.database.chat.textToSpeechDetectLanguagePerMessage!
                 }, set: { value in
@@ -20,7 +106,6 @@ struct ChatTextToSpeechSettingsView: View {
                 })) {
                     Text("Detect language per message")
                 }
-                .disabled(usePersonalVoice())
                 Toggle(isOn: Binding(get: {
                     model.database.chat.textToSpeechSayUsername!
                 }, set: { value in
@@ -28,45 +113,6 @@ struct ChatTextToSpeechSettingsView: View {
                     model.store()
                 })) {
                     Text("Say username")
-                }
-                Toggle(isOn: Binding(get: {
-                    model.database.chat.textToSpeechPreferHighQuality!
-                }, set: { value in
-                    model.database.chat.textToSpeechPreferHighQuality = value
-                    model
-                        .setPreferHighQualityVoices(prefer: model.database.chat
-                            .textToSpeechPreferHighQuality!)
-                    model.store()
-                })) {
-                    Text("Prefer high quality")
-                }
-                .disabled(usePersonalVoice())
-                if #available(iOS 17.0, *) {
-                    Toggle(isOn: Binding(get: {
-                        model.database.chat.textToSpeechUsePersonalVoice!
-                    }, set: { value in
-                        model.database.chat.textToSpeechUsePersonalVoice = value
-                        model.setUsePersonalVoice(value: value)
-                        model.objectWillChange.send()
-                    })) {
-                        Text("Use personal voice")
-                    }
-                }
-                HStack {
-                    Text("Preferred gender")
-                    Spacer()
-                    Picker("", selection: Binding(get: {
-                        model.database.chat.textToSpeechGender!.toString()
-                    }, set: { value in
-                        model.database.chat.textToSpeechGender = SettingsGender.fromString(value: value)
-                        model.setSayGender(gender: model.database.chat.textToSpeechGender!)
-                        model.store()
-                        model.objectWillChange.send()
-                    })) {
-                        ForEach(genders, id: \.self) {
-                            Text($0)
-                        }
-                    }
                 }
                 HStack {
                     Image(systemName: "tortoise.fill")
@@ -101,6 +147,12 @@ struct ChatTextToSpeechSettingsView: View {
                         }
                     )
                     Image(systemName: "volume.3.fill")
+                }
+            }
+        }
+        .onAppear {
+            if #available(iOS 17.0, *) {
+                AVSpeechSynthesizer.requestPersonalVoiceAuthorization { _ in
                 }
             }
         }

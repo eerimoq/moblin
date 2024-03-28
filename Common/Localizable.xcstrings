@@ -26624,9 +26624,6 @@
         }
       }
     },
-    "Female" : {
-
-    },
     "FFFFF:s" : {
       "localizations" : {
         "de" : {
@@ -35436,9 +35433,6 @@
           }
         }
       }
-    },
-    "Male" : {
-
     },
     "Malformed RTMP URL" : {
       "localizations" : {
@@ -44615,12 +44609,6 @@
           }
         }
       }
-    },
-    "Prefer high quality" : {
-
-    },
-    "Preferred gender" : {
-
     },
     "Press \"Add automatically to Moblin\" on https://cloud.belabox.net SRT(LA) relays (requires login). See screenshot below." : {
       "localizations" : {
@@ -61743,9 +61731,6 @@
         }
       }
     },
-    "Unspecified" : {
-
-    },
     "Unsupported scheme %@" : {
       "localizations" : {
         "de" : {
@@ -62985,9 +62970,6 @@
           }
         }
       }
-    },
-    "Use personal voice" : {
-
     },
     "Use the Fast IRL algorithm unless you know what you are doing!" : {
       "localizations" : {
@@ -65220,6 +65202,9 @@
           }
         }
       }
+    },
+    "Voices" : {
+
     },
     "Waiting for the remote control streamer to connect..." : {
       "localizations" : {
