@@ -9,7 +9,7 @@ struct Version {
 // swiftlint:disable line_length
 private let versions = [
     Version(version: "0.219.0", date: "2024-03-28", changes: [
-        "• Chat text to speech voice selection per language and country.",
+        "• Chat text to speech voice selection per language.",
     ]),
     Version(version: "0.218.0", date: "2024-03-27", changes: [
         "• Use personal voice in chat text to speech toggle.",
