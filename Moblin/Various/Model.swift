@@ -855,10 +855,6 @@ final class Model: NSObject, ObservableObject {
         return data
     }
 
-    func clearRemoteControlAssistantLog() {
-        remoteControlAssistantLog = []
-    }
-
     func setAllowHapticsAndSystemSoundsDuringRecording() {
         do {
             try AVAudioSession.sharedInstance()
@@ -1048,11 +1044,6 @@ final class Model: NSObject, ObservableObject {
         } else {
             try dataSource.setPreferredPolarPattern(.none)
         }
-    }
-
-    func isObsRemoteControlConfigured() -> Bool {
-        return stream.obsWebSocketEnabled! && stream.obsWebSocketUrl != "" && stream
-            .obsWebSocketPassword != ""
     }
 
     func isObsConnected() -> Bool {
@@ -2857,131 +2848,6 @@ final class Model: NSObject, ObservableObject {
         obsWebSocket!.start()
     }
 
-    func reloadRemoteControlStreamer() {
-        remoteControlStreamer?.stop()
-        remoteControlStreamer = nil
-        guard isRemoteControlStreamerConfigured() else {
-            return
-        }
-        let server = database.remoteControl!.server
-        guard let url = URL(string: server.url) else {
-            return
-        }
-        remoteControlStreamer = RemoteControlStreamer(
-            clientUrl: url,
-            password: database.remoteControl!.password!,
-            delegate: self
-        )
-        remoteControlStreamer!.start()
-    }
-
-    private func updateRemoteControlStatus() {
-        if isRemoteControlAssistantConnected() && isRemoteControlStreamerConnected() {
-            remoteControlStatus = String(localized: "Assistant and streamer")
-        } else if isRemoteControlAssistantConnected() {
-            remoteControlStatus = String(localized: "Assistant")
-        } else if isRemoteControlStreamerConnected() {
-            remoteControlStatus = String(localized: "Streamer")
-        } else {
-            let assistantError = remoteControlAssistant?.connectionErrorMessage ?? ""
-            let streamerError = remoteControlStreamer?.connectionErrorMessage ?? ""
-            if isRemoteControlAssistantConfigured() && isRemoteControlStreamerConfigured() {
-                remoteControlStatus = "\(assistantError), \(streamerError)"
-            } else if isRemoteControlAssistantConfigured() {
-                remoteControlStatus = assistantError
-            } else if isRemoteControlStreamerConfigured() {
-                remoteControlStatus = streamerError
-            } else {
-                remoteControlStatus = noValue
-            }
-        }
-    }
-
-    func isRemoteControlStreamerConfigured() -> Bool {
-        let server = database.remoteControl!.server
-        return server.enabled && !server.url.isEmpty && !database.remoteControl!.password!.isEmpty
-    }
-
-    func isRemoteControlStreamerConnected() -> Bool {
-        return remoteControlStreamer?.isConnected() ?? false
-    }
-
-    func reloadRemoteControlAssistant() {
-        remoteControlAssistant?.stop()
-        remoteControlAssistant = nil
-        guard isRemoteControlAssistantConfigured() else {
-            return
-        }
-        let client = database.remoteControl!.client
-        remoteControlAssistant = RemoteControlAssistant(
-            port: client.port,
-            password: database.remoteControl!.password!,
-            delegate: self
-        )
-        remoteControlAssistant!.start()
-    }
-
-    func isRemoteControlAssistantConnected() -> Bool {
-        return remoteControlAssistant?.isConnected() ?? false
-    }
-
-    func updateRemoteControlAssistantStatus() {
-        guard showingRemoteControl && remoteControlAssistant?.isConnected() == true else {
-            return
-        }
-        remoteControlAssistant?.getStatus { general, topLeft, topRight in
-            self.remoteControlGeneral = general
-            self.remoteControlTopLeft = topLeft
-            self.remoteControlTopRight = topRight
-        }
-        remoteControlAssistant?.getSettings { settings in
-            self.remoteControlSettings = settings
-        }
-    }
-
-    func isRemoteControlAssistantConfigured() -> Bool {
-        let client = database.remoteControl!.client
-        return client.enabled && client.port > 0 && !database.remoteControl!.password!.isEmpty
-    }
-
-    func remoteControlAssistantSetScene(id: UUID) {
-        remoteControlAssistant?.setScene(id: id) {}
-    }
-
-    func remoteControlAssistantSetMic(id: String) {
-        remoteControlAssistant?.setMic(id: id) {}
-    }
-
-    func remoteControlAssistantSetZoom(x: Float) {
-        remoteControlAssistant?.setZoom(x: x) {}
-    }
-
-    func remoteControlAssistantSetBitratePreset(id: UUID) {
-        remoteControlAssistant?.setBitratePreset(id: id) {}
-    }
-
-    func remoteControlAssistantReloadBrowserWidgets() {
-        remoteControlAssistant?.reloadBrowserWidgets {
-            DispatchQueue.main.async {
-                self.makeToast(title: "Browser widgets reloaded")
-            }
-        }
-    }
-
-    func remoteControlAssistantSetSrtConnectionPriorityEnabled(enabled: Bool) {
-        remoteControlAssistant?.setSrtConnectionPrioritiesEnabled(
-            enabled: enabled
-        ) {}
-    }
-
-    func remoteControlAssistantSetSrtConnectionPriority(priority: RemoteControlSettingsSrtConnectionPriority) {
-        remoteControlAssistant?.setSrtConnectionPriority(
-            id: priority.id,
-            priority: priority.priority,
-            enabled: priority.enabled
-        ) {}
-    }
-
     func twitchEnabledUpdated() {
         reloadTwitchPubSub()
         reloadTwitchChat()
@@ -3196,124 +3062,6 @@ final class Model: NSObject, ObservableObject {
             }
             failedVideoEffect = newFailedVideoEffect
         }
-    }
-
-    func isWatchReachable() -> Bool {
-        return WCSession.default.activationState == .activated && WCSession.default.isReachable
-    }
-
-    private func sendMessageToWatch(
-        type: WatchMessageToWatch,
-        data: Any,
-        replyHandler: (([String: Any]) -> Void)? = nil,
-        errorHandler: ((Error) -> Void)? = nil
-    ) {
-        WCSession.default.sendMessage(
-            WatchMessageToWatch.pack(type: type, data: data),
-            replyHandler: replyHandler,
-            errorHandler: errorHandler
-        )
-    }
-
-    private func sendSpeedAndTotalToWatch() {
-        guard isWatchReachable() else {
-            return
-        }
-        sendMessageToWatch(type: .speedAndTotal, data: speedAndTotal)
-    }
-
-    private func sendAudioLevelToWatch() {
-        guard isWatchReachable() else {
-            return
-        }
-        sendMessageToWatch(type: .audioLevel, data: audioLevel)
-    }
-
-    private func enqueueWatchChatPost(post: ChatPost) {
-        guard WCSession.default.isWatchAppInstalled else {
-            return
-        }
-        guard let user = post.user else {
-            return
-        }
-        var userColor: WatchProtocolColor
-        if let hexColor = post.userColor,
-           let color = WatchProtocolColor.fromHex(value: hexColor)
-        {
-            userColor = color
-        } else {
-            let color = database.chat.usernameColor
-            userColor = WatchProtocolColor(red: color.red, green: color.green, blue: color.blue)
-        }
-        let post = WatchProtocolChatMessage(
-            id: nextWatchChatPostId,
-            timestamp: post.timestamp,
-            user: user,
-            userColor: userColor,
-            segments: post.segments
-                .map { WatchProtocolChatSegment(text: $0.text, url: $0.url?.absoluteString) }
-        )
-        nextWatchChatPostId += 1
-        watchChatPosts.append(post)
-        if watchChatPosts.count > maximumNumberOfWatchChatMessages {
-            _ = watchChatPosts.popFirst()
-        }
-    }
-
-    private func trySendNextChatPostToWatch() {
-        guard isWatchReachable(), let post = watchChatPosts.popFirst() else {
-            return
-        }
-        var data: Data
-        do {
-            data = try JSONEncoder().encode(post)
-        } catch {
-            logger.info("watch: Chat message send failed")
-            return
-        }
-        sendMessageToWatch(type: .chatMessage, data: data)
-    }
-
-    private func sendChatMessageToWatch(post: ChatPost) {
-        enqueueWatchChatPost(post: post)
-    }
-
-    private func sendPreviewToWatch(image: Data) {
-        guard isWatchReachable() else {
-            return
-        }
-        sendMessageToWatch(type: .preview, data: image)
-    }
-
-    private func sendSettingsToWatch() {
-        guard isWatchReachable() else {
-            return
-        }
-        do {
-            let settings = try JSONEncoder().encode(database.watch)
-            sendMessageToWatch(type: .settings, data: settings)
-        } catch {}
-    }
-
-    private func sendIsLiveToWatch() {
-        guard isWatchReachable() else {
-            return
-        }
-        sendMessageToWatch(type: .isLive, data: isLive)
-    }
-
-    private func sendIsRecordingToWatch() {
-        guard isWatchReachable() else {
-            return
-        }
-        sendMessageToWatch(type: .isRecording, data: isRecording)
-    }
-
-    private func sendIsMutedToWatch() {
-        guard isWatchReachable() else {
-            return
-        }
-        sendMessageToWatch(type: .isMuted, data: isMuteOn)
     }
 
     func setLowFpsImage() {
@@ -4969,6 +4717,142 @@ extension Model: RemoteControlStreamerDelegate {
     }
 }
 
+extension Model {
+    func isObsRemoteControlConfigured() -> Bool {
+        return stream.obsWebSocketEnabled! && stream.obsWebSocketUrl != "" && stream
+            .obsWebSocketPassword != ""
+    }
+
+    func clearRemoteControlAssistantLog() {
+        remoteControlAssistantLog = []
+    }
+
+    func reloadRemoteControlStreamer() {
+        remoteControlStreamer?.stop()
+        remoteControlStreamer = nil
+        guard isRemoteControlStreamerConfigured() else {
+            return
+        }
+        let server = database.remoteControl!.server
+        guard let url = URL(string: server.url) else {
+            return
+        }
+        remoteControlStreamer = RemoteControlStreamer(
+            clientUrl: url,
+            password: database.remoteControl!.password!,
+            delegate: self
+        )
+        remoteControlStreamer!.start()
+    }
+
+    private func updateRemoteControlStatus() {
+        if isRemoteControlAssistantConnected(), isRemoteControlStreamerConnected() {
+            remoteControlStatus = String(localized: "Assistant and streamer")
+        } else if isRemoteControlAssistantConnected() {
+            remoteControlStatus = String(localized: "Assistant")
+        } else if isRemoteControlStreamerConnected() {
+            remoteControlStatus = String(localized: "Streamer")
+        } else {
+            let assistantError = remoteControlAssistant?.connectionErrorMessage ?? ""
+            let streamerError = remoteControlStreamer?.connectionErrorMessage ?? ""
+            if isRemoteControlAssistantConfigured(), isRemoteControlStreamerConfigured() {
+                remoteControlStatus = "\(assistantError), \(streamerError)"
+            } else if isRemoteControlAssistantConfigured() {
+                remoteControlStatus = assistantError
+            } else if isRemoteControlStreamerConfigured() {
+                remoteControlStatus = streamerError
+            } else {
+                remoteControlStatus = noValue
+            }
+        }
+    }
+
+    func isRemoteControlStreamerConfigured() -> Bool {
+        let server = database.remoteControl!.server
+        return server.enabled && !server.url.isEmpty && !database.remoteControl!.password!.isEmpty
+    }
+
+    func isRemoteControlStreamerConnected() -> Bool {
+        return remoteControlStreamer?.isConnected() ?? false
+    }
+
+    func reloadRemoteControlAssistant() {
+        remoteControlAssistant?.stop()
+        remoteControlAssistant = nil
+        guard isRemoteControlAssistantConfigured() else {
+            return
+        }
+        let client = database.remoteControl!.client
+        remoteControlAssistant = RemoteControlAssistant(
+            port: client.port,
+            password: database.remoteControl!.password!,
+            delegate: self
+        )
+        remoteControlAssistant!.start()
+    }
+
+    func isRemoteControlAssistantConnected() -> Bool {
+        return remoteControlAssistant?.isConnected() ?? false
+    }
+
+    func updateRemoteControlAssistantStatus() {
+        guard showingRemoteControl, remoteControlAssistant?.isConnected() == true else {
+            return
+        }
+        remoteControlAssistant?.getStatus { general, topLeft, topRight in
+            self.remoteControlGeneral = general
+            self.remoteControlTopLeft = topLeft
+            self.remoteControlTopRight = topRight
+        }
+        remoteControlAssistant?.getSettings { settings in
+            self.remoteControlSettings = settings
+        }
+    }
+
+    func isRemoteControlAssistantConfigured() -> Bool {
+        let client = database.remoteControl!.client
+        return client.enabled && client.port > 0 && !database.remoteControl!.password!.isEmpty
+    }
+
+    func remoteControlAssistantSetScene(id: UUID) {
+        remoteControlAssistant?.setScene(id: id) {}
+    }
+
+    func remoteControlAssistantSetMic(id: String) {
+        remoteControlAssistant?.setMic(id: id) {}
+    }
+
+    func remoteControlAssistantSetZoom(x: Float) {
+        remoteControlAssistant?.setZoom(x: x) {}
+    }
+
+    func remoteControlAssistantSetBitratePreset(id: UUID) {
+        remoteControlAssistant?.setBitratePreset(id: id) {}
+    }
+
+    func remoteControlAssistantReloadBrowserWidgets() {
+        remoteControlAssistant?.reloadBrowserWidgets {
+            DispatchQueue.main.async {
+                self.makeToast(title: "Browser widgets reloaded")
+            }
+        }
+    }
+
+    func remoteControlAssistantSetSrtConnectionPriorityEnabled(enabled: Bool) {
+        remoteControlAssistant?.setSrtConnectionPrioritiesEnabled(
+            enabled: enabled
+        ) {}
+    }
+
+    func remoteControlAssistantSetSrtConnectionPriority(priority: RemoteControlSettingsSrtConnectionPriority) {
+        remoteControlAssistant?.setSrtConnectionPriority(
+            id: priority.id,
+            priority: priority.priority,
+            enabled: priority.enabled
+        ) {}
+    }
+}
+
 extension Model: RemoteControlAssistantDelegate {
     func assistantConnected() {
         makeToast(title: "Remote control streamer connected")
@@ -5008,6 +4892,126 @@ extension Model: RemoteControlAssistantDelegate {
         }
         logId += 1
         remoteControlAssistantLog.append(LogEntry(id: logId, message: entry))
+    }
+}
+
+extension Model {
+    private func isWatchReachable() -> Bool {
+        return WCSession.default.activationState == .activated && WCSession.default.isReachable
+    }
+
+    private func sendMessageToWatch(
+        type: WatchMessageToWatch,
+        data: Any,
+        replyHandler: (([String: Any]) -> Void)? = nil,
+        errorHandler: ((Error) -> Void)? = nil
+    ) {
+        WCSession.default.sendMessage(
+            WatchMessageToWatch.pack(type: type, data: data),
+            replyHandler: replyHandler,
+            errorHandler: errorHandler
+        )
+    }
+
+    private func sendSpeedAndTotalToWatch() {
+        guard isWatchReachable() else {
+            return
+        }
+        sendMessageToWatch(type: .speedAndTotal, data: speedAndTotal)
+    }
+
+    private func sendAudioLevelToWatch() {
+        guard isWatchReachable() else {
+            return
+        }
+        sendMessageToWatch(type: .audioLevel, data: audioLevel)
+    }
+
+    private func enqueueWatchChatPost(post: ChatPost) {
+        guard WCSession.default.isWatchAppInstalled else {
+            return
+        }
+        guard let user = post.user else {
+            return
+        }
+        var userColor: WatchProtocolColor
+        if let hexColor = post.userColor,
+           let color = WatchProtocolColor.fromHex(value: hexColor)
+        {
+            userColor = color
+        } else {
+            let color = database.chat.usernameColor
+            userColor = WatchProtocolColor(red: color.red, green: color.green, blue: color.blue)
+        }
+        let post = WatchProtocolChatMessage(
+            id: nextWatchChatPostId,
+            timestamp: post.timestamp,
+            user: user,
+            userColor: userColor,
+            segments: post.segments
+                .map { WatchProtocolChatSegment(text: $0.text, url: $0.url?.absoluteString) }
+        )
+        nextWatchChatPostId += 1
+        watchChatPosts.append(post)
+        if watchChatPosts.count > maximumNumberOfWatchChatMessages {
+            _ = watchChatPosts.popFirst()
+        }
+    }
+
+    private func trySendNextChatPostToWatch() {
+        guard isWatchReachable(), let post = watchChatPosts.popFirst() else {
+            return
+        }
+        var data: Data
+        do {
+            data = try JSONEncoder().encode(post)
+        } catch {
+            logger.info("watch: Chat message send failed")
+            return
+        }
+        sendMessageToWatch(type: .chatMessage, data: data)
+    }
+
+    private func sendChatMessageToWatch(post: ChatPost) {
+        enqueueWatchChatPost(post: post)
+    }
+
+    private func sendPreviewToWatch(image: Data) {
+        guard isWatchReachable() else {
+            return
+        }
+        sendMessageToWatch(type: .preview, data: image)
+    }
+
+    private func sendSettingsToWatch() {
+        guard isWatchReachable() else {
+            return
+        }
+        do {
+            let settings = try JSONEncoder().encode(database.watch)
+            sendMessageToWatch(type: .settings, data: settings)
+        } catch {}
+    }
+
+    private func sendIsLiveToWatch() {
+        guard isWatchReachable() else {
+            return
+        }
+        sendMessageToWatch(type: .isLive, data: isLive)
+    }
+
+    private func sendIsRecordingToWatch() {
+        guard isWatchReachable() else {
+            return
+        }
+        sendMessageToWatch(type: .isRecording, data: isRecording)
+    }
+
+    private func sendIsMutedToWatch() {
+        guard isWatchReachable() else {
+            return
+        }
+        sendMessageToWatch(type: .isMuted, data: isMuteOn)
     }
 }
 
