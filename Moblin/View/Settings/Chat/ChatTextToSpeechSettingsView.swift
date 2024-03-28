@@ -1,36 +1,47 @@
 import AVFAudio
 import SwiftUI
 
-private func localize(identifier: String) -> String {
-    return NSLocale.current.localizedString(forIdentifier: identifier) ?? identifier
+private func localize(_ languageCode: String) -> String {
+    return NSLocale.current.localizedString(forLanguageCode: languageCode) ?? languageCode
+}
+
+private func flag(country: String) -> String {
+    let base: UInt32 = 127_397
+    var emote = ""
+    for ch in country.unicodeScalars {
+        emote.unicodeScalars.append(UnicodeScalar(base + ch.value)!)
+    }
+
+    return emote
 }
 
 private struct LanguageView: View {
     @EnvironmentObject var model: Model
-    var language: String
+    var languageCode: String
     @State var voice: String
 
     private func voices(language: String) -> [AVSpeechSynthesisVoice] {
-        return AVSpeechSynthesisVoice.speechVoices().filter { $0.language == language }
+        return AVSpeechSynthesisVoice.speechVoices().filter { $0.language.prefix(2) == language }
     }
 
     var body: some View {
         Form {
             Picker("", selection: $voice) {
-                ForEach(voices(language: language), id: \.identifier) { voice in
-                    Text(voice.name)
+                ForEach(voices(language: languageCode), id: \.identifier) { voice in
+                    let emote = flag(country: Locale(identifier: voice.language).region?.identifier ?? "")
+                    Text("\(emote) \(voice.name)")
                         .tag(voice.identifier)
                 }
             }
             .pickerStyle(.inline)
             .labelsHidden()
             .onChange(of: voice) { _ in
-                model.database.chat.textToSpeechLanguageVoices![language] = voice
+                model.database.chat.textToSpeechLanguageVoices![languageCode] = voice
                 model.store()
                 model.setTextToSpeechVoices(voices: model.database.chat.textToSpeechLanguageVoices!)
             }
         }
-        .navigationTitle(localize(identifier: language))
+        .navigationTitle(localize(languageCode))
         .toolbar {
             SettingsToolbar()
         }
@@ -51,16 +62,20 @@ private struct VoicesView: View {
         var languages: [Language] = []
         var seen: Set<String> = []
         let voices = AVSpeechSynthesisVoice.speechVoices()
-        for voice in voices where !seen.contains(voice.language) {
+        for voice in voices {
+            let code = String(voice.language.prefix(2))
+            guard !seen.contains(code) else {
+                continue
+            }
             let selectedVoiceIdentifier = model.database.chat
-                .textToSpeechLanguageVoices![voice.language] ?? ""
+                .textToSpeechLanguageVoices![code] ?? ""
             let selectedVoiceName = voices.first(where: { $0.identifier == selectedVoiceIdentifier })?
                 .name ?? ""
-            languages.append(.init(name: localize(identifier: voice.language),
-                                   code: voice.language,
+            languages.append(.init(name: localize(voice.language),
+                                   code: code,
                                    selectedVoiceIdentifier: selectedVoiceIdentifier,
                                    selectedVoiceName: selectedVoiceName))
-            seen.insert(voice.language)
+            seen.insert(code)
         }
         return languages
     }
@@ -69,7 +84,7 @@ private struct VoicesView: View {
         Form {
             ForEach(languages(), id: \.code) { language in
                 NavigationLink(destination: LanguageView(
-                    language: language.code,
+                    languageCode: language.code,
                     voice: language.selectedVoiceIdentifier
                 )) {
                     HStack {

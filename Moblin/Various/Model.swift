@@ -2213,7 +2213,7 @@ final class Model: NSObject, ObservableObject {
             language = recognizer.dominantLanguage?.rawValue
         }
         if language == nil {
-            language = String(Locale.current.identifier)
+            language = Locale.current.language.languageCode?.identifier
         }
         guard let language else {
             return nil
