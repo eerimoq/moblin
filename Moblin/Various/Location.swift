@@ -7,7 +7,7 @@ class Location: NSObject, CLLocationManagerDelegate {
     private var latestLocation: CLLocation?
 
     func start(onUpdate: @escaping (CLLocation) -> Void) {
-        logger.info("location: Start")
+        logger.debug("location: Start")
         self.onUpdate = onUpdate
         manager.delegate = self
         manager.requestWhenInUseAuthorization()
@@ -15,7 +15,7 @@ class Location: NSObject, CLLocationManagerDelegate {
     }
 
     func stop() {
-        logger.info("location: Stop")
+        logger.debug("location: Stop")
         onUpdate = nil
         manager.stopUpdatingLocation()
     }
