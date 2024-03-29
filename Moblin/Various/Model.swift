@@ -455,182 +455,6 @@ final class Model: NSObject, ObservableObject {
     private var realtimeIrl: RealtimeIrl?
     private var failedVideoEffect: String?
 
-    func drawOnStreamLineComplete() {
-        drawOnStreamEffect.updateOverlay(
-            videoSize: media.getVideoSize(),
-            size: drawOnStreamSize,
-            lines: drawOnStreamLines
-        )
-        media.registerEffect(drawOnStreamEffect)
-    }
-
-    func drawOnStreamWipe() {
-        drawOnStreamLines = []
-        drawOnStreamEffect.updateOverlay(
-            videoSize: media.getVideoSize(),
-            size: drawOnStreamSize,
-            lines: drawOnStreamLines
-        )
-        media.unregisterEffect(drawOnStreamEffect)
-    }
-
-    func drawOnStreamUndo() {
-        guard !drawOnStreamLines.isEmpty else {
-            return
-        }
-        drawOnStreamLines.removeLast()
-        drawOnStreamEffect.updateOverlay(
-            videoSize: media.getVideoSize(),
-            size: drawOnStreamSize,
-            lines: drawOnStreamLines
-        )
-        if drawOnStreamLines.isEmpty {
-            media.unregisterEffect(drawOnStreamEffect)
-        }
-    }
-
-    private func cleanWizardUrl(url: String) -> String {
-        var cleanedUrl = cleanUrl(url: url)
-        if isValidUrl(url: cleanedUrl) != nil {
-            cleanedUrl = defaultStreamUrl
-            makeErrorToast(title: "Malformed stream URL", subTitle: "Using default")
-        }
-        return cleanedUrl
-    }
-
-    private func createStreamFromWizardUrl() -> String {
-        var url = defaultStreamUrl
-        if wizardPlatform == .custom {
-            switch wizardCustomProtocol {
-            case .none:
-                break
-            case .srt:
-                if var urlComponents = URLComponents(string: wizardCustomSrtUrl.trim()) {
-                    urlComponents.queryItems = [
-                        URLQueryItem(name: "streamid", value: wizardCustomSrtStreamId.trim()),
-                    ]
-                    if let fullUrl = urlComponents.url {
-                        url = fullUrl.absoluteString
-                    }
-                }
-            case .rtmp:
-                let rtmpUrl = wizardCustomRtmpUrl
-                    .trim()
-                    .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-                url = "\(rtmpUrl)/\(wizardCustomRtmpStreamKey.trim())"
-            }
-        } else {
-            switch wizardNetworkSetup {
-            case .none:
-                break
-            case .obs:
-                url = "srt://\(wizardObsAddress):\(wizardObsPort)"
-            case .belaboxCloudObs:
-                url = wizardBelaboxUrl
-            case .direct:
-                let ingestUrl = wizardDirectIngest.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-                url = "\(ingestUrl)/\(wizardDirectStreamKey)"
-            }
-        }
-        return cleanWizardUrl(url: url)
-    }
-
-    func createStreamFromWizard() {
-        let stream = SettingsStream(name: wizardName.trim())
-        stream.twitchEnabled = false
-        stream.kickEnabled = false
-        stream.youTubeEnabled = false
-        stream.afreecaTvEnabled = false
-        stream.openStreamingPlatformEnabled = false
-        stream.obsWebSocketEnabled = false
-        if wizardPlatform != .custom {
-            if wizardNetworkSetup != .direct {
-                if wizardObsRemoteControlEnabled {
-                    let url = cleanUrl(url: wizardObsRemoteControlUrl.trim())
-                    if isValidWebSocketUrl(url: url) == nil {
-                        stream.obsWebSocketEnabled = true
-                        stream.obsWebSocketUrl = url
-                        stream.obsWebSocketPassword = wizardObsRemoteControlPassword.trim()
-                        stream.obsSourceName = wizardObsRemoteControlSourceName.trim()
-                    }
-                }
-            }
-        }
-        switch wizardPlatform {
-        case .twitch:
-            stream.twitchEnabled = true
-            stream.twitchChannelName = wizardTwitchChannelName.trim()
-            stream.twitchChannelId = wizardTwitchChannelId.trim()
-        case .kick:
-            stream.kickEnabled = true
-            stream.kickChannelName = wizardKickChannelName.trim()
-        case .youTube:
-            if !wizardYouTubeApiKey.isEmpty && !wizardYouTubeVideoId.isEmpty {
-                stream.youTubeEnabled = true
-                stream.youTubeApiKey = wizardYouTubeApiKey.trim()
-                stream.youTubeVideoId = wizardYouTubeVideoId.trim()
-            }
-        case .afreecaTv:
-            if !wizardAfreecaTvChannelName.isEmpty && !wizardAfreecsTvCStreamId.isEmpty {
-                stream.afreecaTvEnabled = true
-                stream.afreecaTvChannelName = wizardAfreecaTvChannelName.trim()
-                stream.afreecaTvStreamId = wizardAfreecsTvCStreamId.trim()
-            }
-        case .custom:
-            break
-        }
-        stream.chat!.bttvEmotes = wizardChatBttv
-        stream.chat!.ffzEmotes = wizardChatFfz
-        stream.chat!.seventvEmotes = wizardChatSeventv
-        stream.url = createStreamFromWizardUrl()
-        switch wizardNetworkSetup {
-        case .none:
-            switch wizardCustomProtocol {
-            case .none:
-                stream.codec = .h264avc
-            case .srt:
-                stream.codec = .h265hevc
-            case .rtmp:
-                stream.codec = .h264avc
-            }
-        case .obs:
-            stream.codec = .h265hevc
-        case .belaboxCloudObs:
-            stream.codec = .h265hevc
-        case .direct:
-            stream.codec = .h264avc
-        }
-        stream.audioBitrate = 128_000
-        database.streams.append(stream)
-        setCurrentStream(stream: stream)
-        reloadStream()
-        sceneUpdated()
-    }
-
-    func resetWizard() {
-        wizardPlatform = .custom
-        wizardNetworkSetup = .none
-        wizardName = ""
-        wizardTwitchChannelName = ""
-        wizardTwitchChannelId = ""
-        wizardKickChannelName = ""
-        wizardYouTubeApiKey = ""
-        wizardYouTubeVideoId = ""
-        wizardAfreecaTvChannelName = ""
-        wizardAfreecsTvCStreamId = ""
-        wizardObsAddress = ""
-        wizardObsPort = ""
-        wizardObsRemoteControlEnabled = false
-        wizardObsRemoteControlUrl = ""
-        wizardObsRemoteControlPassword = ""
-        wizardDirectIngest = ""
-        wizardDirectStreamKey = ""
-        wizardChatBttv = true
-        wizardChatFfz = true
-        wizardChatSeventv = true
-        wizardBelaboxUrl = ""
-    }
-
     func updateAdaptiveBitrateSrtIfEnabled(stream: SettingsStream) {
         switch stream.srt.adaptiveBitrate!.algorithm {
         case .fastIrl:
@@ -859,190 +683,6 @@ final class Model: NSObject, ObservableObject {
         } catch {}
     }
 
-    private func setupAudioSession() {
-        let session = AVAudioSession.sharedInstance()
-        do {
-            let bluetoothOption: AVAudioSession.CategoryOptions
-            if database.debug!.bluetoothOutputOnly! {
-                bluetoothOption = .allowBluetoothA2DP
-            } else {
-                bluetoothOption = .allowBluetooth
-            }
-            try session.setCategory(
-                .playAndRecord,
-                options: [.mixWithOthers, bluetoothOption, .defaultToSpeaker]
-            )
-            try session.setActive(true)
-        } catch {
-            logger.error("app: Session error \(error)")
-        }
-        setAllowHapticsAndSystemSoundsDuringRecording()
-    }
-
-    @objc func handleAudioRouteChange(notification _: Notification) {
-        guard let inputPort = AVAudioSession.sharedInstance().currentRoute.inputs.first
-        else {
-            return
-        }
-        var newMic: Mic
-        if let dataSource = inputPort.preferredDataSource {
-            var name: String
-            var builtInMicOrientation: SettingsMic?
-            if inputPort.portType == .builtInMic {
-                name = dataSource.dataSourceName
-                builtInMicOrientation = getBuiltInMicOrientation(orientation: dataSource.orientation)
-            } else {
-                name = "\(inputPort.portName): \(dataSource.dataSourceName)"
-            }
-            newMic = Mic(
-                name: name,
-                inputUid: inputPort.uid,
-                dataSourceID: dataSource.dataSourceID,
-                builtInOrientation: builtInMicOrientation
-            )
-        } else if inputPort.portType != .builtInMic {
-            newMic = Mic(name: inputPort.portName, inputUid: inputPort.uid)
-        } else {
-            return
-        }
-        if newMic == micChange {
-            return
-        }
-        if micChange != noMic {
-            makeToast(title: newMic.name)
-        }
-        logger.info("Mic: \(newMic.name)")
-        mic = newMic
-        micChange = newMic
-    }
-
-    private func getBuiltInMicOrientation(orientation: AVAudioSession.Orientation?) -> SettingsMic? {
-        guard let orientation else {
-            return nil
-        }
-        switch orientation {
-        case .bottom:
-            return .bottom
-        case .front:
-            return .front
-        case .back:
-            return .back
-        default:
-            return nil
-        }
-    }
-
-    func listMics() -> [Mic] {
-        var mics: [Mic] = []
-        let session = AVAudioSession.sharedInstance()
-        for inputPort in session.availableInputs ?? [] {
-            if let dataSources = inputPort.dataSources, !dataSources.isEmpty {
-                for dataSource in dataSources {
-                    var name: String
-                    var builtInOrientation: SettingsMic?
-                    if inputPort.portType == .builtInMic {
-                        name = dataSource.dataSourceName
-                        builtInOrientation = getBuiltInMicOrientation(orientation: dataSource.orientation)
-                    } else {
-                        name = "\(inputPort.portName): \(dataSource.dataSourceName)"
-                    }
-                    mics.append(Mic(
-                        name: name,
-                        inputUid: inputPort.uid,
-                        dataSourceID: dataSource.dataSourceID,
-                        builtInOrientation: builtInOrientation
-                    ))
-                }
-            } else {
-                mics.append(Mic(name: inputPort.portName, inputUid: inputPort.uid))
-            }
-        }
-        return mics
-    }
-
-    private func setMic() {
-        var wantedOrientation: AVAudioSession.Orientation
-        switch database.mic! {
-        case .bottom:
-            wantedOrientation = .bottom
-        case .front:
-            wantedOrientation = .front
-        case .back:
-            wantedOrientation = .back
-        case .top:
-            wantedOrientation = .top
-        }
-        let session = AVAudioSession.sharedInstance()
-        for inputPort in session.availableInputs ?? [] {
-            if inputPort.portType != .builtInMic {
-                continue
-            }
-            if let dataSources = inputPort.dataSources, !dataSources.isEmpty {
-                for dataSource in dataSources where dataSource.orientation == wantedOrientation {
-                    do {
-                        try setBuiltInMicAudioMode(dataSource: dataSource)
-                        try inputPort.setPreferredDataSource(dataSource)
-                    } catch {
-                        logger.error("Failed to set mic as preferred with error \(error)")
-                    }
-                }
-            }
-        }
-    }
-
-    func selectMicById(id: String) {
-        guard let mic = listMics().first(where: { mic in mic.id == id }) else {
-            logger.info("Mic with id \(id) not found")
-            makeErrorToast(
-                title: String(localized: "Mic not found"),
-                subTitle: String(localized: "Mic id \(id)")
-            )
-            return
-        }
-        if let builtInOrientation = mic.builtInOrientation {
-            database.mic = builtInOrientation
-            store()
-        }
-        selectMic(mic: mic)
-    }
-
-    private func selectMic(mic: Mic) {
-        let session = AVAudioSession.sharedInstance()
-        do {
-            for inputPort in session.availableInputs ?? [] {
-                if mic.inputUid != inputPort.uid {
-                    continue
-                }
-                try session.setPreferredInput(inputPort)
-                if let dataSourceID = mic.dataSourceID {
-                    for dataSource in inputPort.dataSources ?? [] {
-                        if dataSourceID != dataSource.dataSourceID {
-                            continue
-                        }
-                        try setBuiltInMicAudioMode(dataSource: dataSource)
-                        try session.setInputDataSource(dataSource)
-                    }
-                }
-            }
-            self.mic = mic
-            remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
-        } catch {
-            logger.error("Failed to select mic: \(error)")
-            makeErrorToast(
-                title: String(localized: "Failed to select mic"),
-                subTitle: error.localizedDescription
-            )
-        }
-    }
-
-    private func setBuiltInMicAudioMode(dataSource: AVAudioSessionDataSourceDescription) throws {
-        if false && dataSource.supportedPolarPatterns?.contains(.stereo) == true {
-            try dataSource.setPreferredPolarPattern(.stereo)
-        } else {
-            try dataSource.setPreferredPolarPattern(.none)
-        }
-    }
-
     func isObsConnected() -> Bool {
         return obsWebSocket?.isConnected() ?? false
     }
@@ -1236,58 +876,6 @@ final class Model: NSObject, ObservableObject {
                 database.networkInterfaceNames!.append(interface)
                 store()
             }
-        }
-    }
-
-    private func updateLocation() {
-        var newLocation = locationManager.status()
-        if let realtimeIrl {
-            newLocation += realtimeIrl.status()
-        }
-        if location != newLocation {
-            location = newLocation
-        }
-    }
-
-    func reloadLocation() {
-        locationManager.stop()
-        if isLocationEnabled() {
-            locationManager.start(onUpdate: handleLocationUpdate)
-        }
-        reloadRealtimeIrl()
-    }
-
-    func isLocationEnabled() -> Bool {
-        return database.location!.enabled
-    }
-
-    private func handleLocationUpdate(location: CLLocation) {
-        guard isLive else {
-            return
-        }
-        guard !isLocationInPrivacyRegion(location: location) else {
-            return
-        }
-        realtimeIrl?.update(location: location)
-    }
-
-    private func isLocationInPrivacyRegion(location: CLLocation) -> Bool {
-        for region in database.location!.privacyRegions
-            where region.contains(coordinate: location.coordinate)
-        {
-            return true
-        }
-        return false
-    }
-
-    func isRealtimeIrlConfigured() -> Bool {
-        return stream.realtimeIrlEnabled! && !stream.realtimeIrlPushKey!.isEmpty
-    }
-
-    func reloadRealtimeIrl() {
-        realtimeIrl = nil
-        if isRealtimeIrlConfigured() {
-            realtimeIrl = RealtimeIrl(pushKey: stream.realtimeIrlPushKey!)
         }
     }
 
@@ -1660,22 +1248,6 @@ final class Model: NSObject, ObservableObject {
             title: "URL import successful",
             subTitle: "Created \(streamCount) stream(s)"
         )
-    }
-
-    func handleSettingsUrlsInWizard(settings: MoblinSettingsUrl) {
-        switch wizardNetworkSetup {
-        case .none:
-            break
-        case .obs:
-            break
-        case .belaboxCloudObs:
-            for stream in settings.streams ?? [] {
-                wizardName = stream.name
-                wizardBelaboxUrl = stream.url
-            }
-        case .direct:
-            break
-        }
     }
 
     func handleSettingsUrls(urls: Set<UIOpenURLContext>) {
@@ -3037,10 +2609,6 @@ final class Model: NSObject, ObservableObject {
 
     func setLowFpsImage() {
         media.setLowFpsImage(enabled: isWatchReachable())
-    }
-
-    func toggleDrawOnStream() {
-        showDrawOnStream.toggle()
     }
 
     func toggleLocalOverlays() {
@@ -5130,6 +4698,446 @@ extension Model: WCSessionDelegate {
             break
         default:
             break
+        }
+    }
+}
+
+extension Model {
+    private func cleanWizardUrl(url: String) -> String {
+        var cleanedUrl = cleanUrl(url: url)
+        if isValidUrl(url: cleanedUrl) != nil {
+            cleanedUrl = defaultStreamUrl
+            makeErrorToast(title: "Malformed stream URL", subTitle: "Using default")
+        }
+        return cleanedUrl
+    }
+
+    private func createStreamFromWizardUrl() -> String {
+        var url = defaultStreamUrl
+        if wizardPlatform == .custom {
+            switch wizardCustomProtocol {
+            case .none:
+                break
+            case .srt:
+                if var urlComponents = URLComponents(string: wizardCustomSrtUrl.trim()) {
+                    urlComponents.queryItems = [
+                        URLQueryItem(name: "streamid", value: wizardCustomSrtStreamId.trim()),
+                    ]
+                    if let fullUrl = urlComponents.url {
+                        url = fullUrl.absoluteString
+                    }
+                }
+            case .rtmp:
+                let rtmpUrl = wizardCustomRtmpUrl
+                    .trim()
+                    .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+                url = "\(rtmpUrl)/\(wizardCustomRtmpStreamKey.trim())"
+            }
+        } else {
+            switch wizardNetworkSetup {
+            case .none:
+                break
+            case .obs:
+                url = "srt://\(wizardObsAddress):\(wizardObsPort)"
+            case .belaboxCloudObs:
+                url = wizardBelaboxUrl
+            case .direct:
+                let ingestUrl = wizardDirectIngest.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+                url = "\(ingestUrl)/\(wizardDirectStreamKey)"
+            }
+        }
+        return cleanWizardUrl(url: url)
+    }
+
+    func createStreamFromWizard() {
+        let stream = SettingsStream(name: wizardName.trim())
+        stream.twitchEnabled = false
+        stream.kickEnabled = false
+        stream.youTubeEnabled = false
+        stream.afreecaTvEnabled = false
+        stream.openStreamingPlatformEnabled = false
+        stream.obsWebSocketEnabled = false
+        if wizardPlatform != .custom {
+            if wizardNetworkSetup != .direct {
+                if wizardObsRemoteControlEnabled {
+                    let url = cleanUrl(url: wizardObsRemoteControlUrl.trim())
+                    if isValidWebSocketUrl(url: url) == nil {
+                        stream.obsWebSocketEnabled = true
+                        stream.obsWebSocketUrl = url
+                        stream.obsWebSocketPassword = wizardObsRemoteControlPassword.trim()
+                        stream.obsSourceName = wizardObsRemoteControlSourceName.trim()
+                    }
+                }
+            }
+        }
+        switch wizardPlatform {
+        case .twitch:
+            stream.twitchEnabled = true
+            stream.twitchChannelName = wizardTwitchChannelName.trim()
+            stream.twitchChannelId = wizardTwitchChannelId.trim()
+        case .kick:
+            stream.kickEnabled = true
+            stream.kickChannelName = wizardKickChannelName.trim()
+        case .youTube:
+            if !wizardYouTubeApiKey.isEmpty, !wizardYouTubeVideoId.isEmpty {
+                stream.youTubeEnabled = true
+                stream.youTubeApiKey = wizardYouTubeApiKey.trim()
+                stream.youTubeVideoId = wizardYouTubeVideoId.trim()
+            }
+        case .afreecaTv:
+            if !wizardAfreecaTvChannelName.isEmpty, !wizardAfreecsTvCStreamId.isEmpty {
+                stream.afreecaTvEnabled = true
+                stream.afreecaTvChannelName = wizardAfreecaTvChannelName.trim()
+                stream.afreecaTvStreamId = wizardAfreecsTvCStreamId.trim()
+            }
+        case .custom:
+            break
+        }
+        stream.chat!.bttvEmotes = wizardChatBttv
+        stream.chat!.ffzEmotes = wizardChatFfz
+        stream.chat!.seventvEmotes = wizardChatSeventv
+        stream.url = createStreamFromWizardUrl()
+        switch wizardNetworkSetup {
+        case .none:
+            switch wizardCustomProtocol {
+            case .none:
+                stream.codec = .h264avc
+            case .srt:
+                stream.codec = .h265hevc
+            case .rtmp:
+                stream.codec = .h264avc
+            }
+        case .obs:
+            stream.codec = .h265hevc
+        case .belaboxCloudObs:
+            stream.codec = .h265hevc
+        case .direct:
+            stream.codec = .h264avc
+        }
+        stream.audioBitrate = 128_000
+        database.streams.append(stream)
+        setCurrentStream(stream: stream)
+        reloadStream()
+        sceneUpdated()
+    }
+
+    func resetWizard() {
+        wizardPlatform = .custom
+        wizardNetworkSetup = .none
+        wizardName = ""
+        wizardTwitchChannelName = ""
+        wizardTwitchChannelId = ""
+        wizardKickChannelName = ""
+        wizardYouTubeApiKey = ""
+        wizardYouTubeVideoId = ""
+        wizardAfreecaTvChannelName = ""
+        wizardAfreecsTvCStreamId = ""
+        wizardObsAddress = ""
+        wizardObsPort = ""
+        wizardObsRemoteControlEnabled = false
+        wizardObsRemoteControlUrl = ""
+        wizardObsRemoteControlPassword = ""
+        wizardDirectIngest = ""
+        wizardDirectStreamKey = ""
+        wizardChatBttv = true
+        wizardChatFfz = true
+        wizardChatSeventv = true
+        wizardBelaboxUrl = ""
+    }
+
+    func handleSettingsUrlsInWizard(settings: MoblinSettingsUrl) {
+        switch wizardNetworkSetup {
+        case .none:
+            break
+        case .obs:
+            break
+        case .belaboxCloudObs:
+            for stream in settings.streams ?? [] {
+                wizardName = stream.name
+                wizardBelaboxUrl = stream.url
+            }
+        case .direct:
+            break
+        }
+    }
+}
+
+extension Model {
+    private func setupAudioSession() {
+        let session = AVAudioSession.sharedInstance()
+        do {
+            let bluetoothOption: AVAudioSession.CategoryOptions
+            if database.debug!.bluetoothOutputOnly! {
+                bluetoothOption = .allowBluetoothA2DP
+            } else {
+                bluetoothOption = .allowBluetooth
+            }
+            try session.setCategory(
+                .playAndRecord,
+                options: [.mixWithOthers, bluetoothOption, .defaultToSpeaker]
+            )
+            try session.setActive(true)
+        } catch {
+            logger.error("app: Session error \(error)")
+        }
+        setAllowHapticsAndSystemSoundsDuringRecording()
+    }
+
+    @objc func handleAudioRouteChange(notification _: Notification) {
+        guard let inputPort = AVAudioSession.sharedInstance().currentRoute.inputs.first
+        else {
+            return
+        }
+        var newMic: Mic
+        if let dataSource = inputPort.preferredDataSource {
+            var name: String
+            var builtInMicOrientation: SettingsMic?
+            if inputPort.portType == .builtInMic {
+                name = dataSource.dataSourceName
+                builtInMicOrientation = getBuiltInMicOrientation(orientation: dataSource.orientation)
+            } else {
+                name = "\(inputPort.portName): \(dataSource.dataSourceName)"
+            }
+            newMic = Mic(
+                name: name,
+                inputUid: inputPort.uid,
+                dataSourceID: dataSource.dataSourceID,
+                builtInOrientation: builtInMicOrientation
+            )
+        } else if inputPort.portType != .builtInMic {
+            newMic = Mic(name: inputPort.portName, inputUid: inputPort.uid)
+        } else {
+            return
+        }
+        if newMic == micChange {
+            return
+        }
+        if micChange != noMic {
+            makeToast(title: newMic.name)
+        }
+        logger.info("Mic: \(newMic.name)")
+        mic = newMic
+        micChange = newMic
+    }
+
+    private func getBuiltInMicOrientation(orientation: AVAudioSession.Orientation?) -> SettingsMic? {
+        guard let orientation else {
+            return nil
+        }
+        switch orientation {
+        case .bottom:
+            return .bottom
+        case .front:
+            return .front
+        case .back:
+            return .back
+        default:
+            return nil
+        }
+    }
+
+    func listMics() -> [Mic] {
+        var mics: [Mic] = []
+        let session = AVAudioSession.sharedInstance()
+        for inputPort in session.availableInputs ?? [] {
+            if let dataSources = inputPort.dataSources, !dataSources.isEmpty {
+                for dataSource in dataSources {
+                    var name: String
+                    var builtInOrientation: SettingsMic?
+                    if inputPort.portType == .builtInMic {
+                        name = dataSource.dataSourceName
+                        builtInOrientation = getBuiltInMicOrientation(orientation: dataSource.orientation)
+                    } else {
+                        name = "\(inputPort.portName): \(dataSource.dataSourceName)"
+                    }
+                    mics.append(Mic(
+                        name: name,
+                        inputUid: inputPort.uid,
+                        dataSourceID: dataSource.dataSourceID,
+                        builtInOrientation: builtInOrientation
+                    ))
+                }
+            } else {
+                mics.append(Mic(name: inputPort.portName, inputUid: inputPort.uid))
+            }
+        }
+        return mics
+    }
+
+    private func setMic() {
+        var wantedOrientation: AVAudioSession.Orientation
+        switch database.mic! {
+        case .bottom:
+            wantedOrientation = .bottom
+        case .front:
+            wantedOrientation = .front
+        case .back:
+            wantedOrientation = .back
+        case .top:
+            wantedOrientation = .top
+        }
+        let session = AVAudioSession.sharedInstance()
+        for inputPort in session.availableInputs ?? [] {
+            if inputPort.portType != .builtInMic {
+                continue
+            }
+            if let dataSources = inputPort.dataSources, !dataSources.isEmpty {
+                for dataSource in dataSources where dataSource.orientation == wantedOrientation {
+                    do {
+                        try setBuiltInMicAudioMode(dataSource: dataSource)
+                        try inputPort.setPreferredDataSource(dataSource)
+                    } catch {
+                        logger.error("Failed to set mic as preferred with error \(error)")
+                    }
+                }
+            }
+        }
+    }
+
+    func selectMicById(id: String) {
+        guard let mic = listMics().first(where: { mic in mic.id == id }) else {
+            logger.info("Mic with id \(id) not found")
+            makeErrorToast(
+                title: String(localized: "Mic not found"),
+                subTitle: String(localized: "Mic id \(id)")
+            )
+            return
+        }
+        if let builtInOrientation = mic.builtInOrientation {
+            database.mic = builtInOrientation
+            store()
+        }
+        selectMic(mic: mic)
+    }
+
+    private func selectMic(mic: Mic) {
+        let session = AVAudioSession.sharedInstance()
+        do {
+            for inputPort in session.availableInputs ?? [] {
+                if mic.inputUid != inputPort.uid {
+                    continue
+                }
+                try session.setPreferredInput(inputPort)
+                if let dataSourceID = mic.dataSourceID {
+                    for dataSource in inputPort.dataSources ?? [] {
+                        if dataSourceID != dataSource.dataSourceID {
+                            continue
+                        }
+                        try setBuiltInMicAudioMode(dataSource: dataSource)
+                        try session.setInputDataSource(dataSource)
+                    }
+                }
+            }
+            self.mic = mic
+            remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
+        } catch {
+            logger.error("Failed to select mic: \(error)")
+            makeErrorToast(
+                title: String(localized: "Failed to select mic"),
+                subTitle: error.localizedDescription
+            )
+        }
+    }
+
+    private func setBuiltInMicAudioMode(dataSource: AVAudioSessionDataSourceDescription) throws {
+        if false, dataSource.supportedPolarPatterns?.contains(.stereo) == true {
+            try dataSource.setPreferredPolarPattern(.stereo)
+        } else {
+            try dataSource.setPreferredPolarPattern(.none)
+        }
+    }
+}
+
+extension Model {
+    private func updateLocation() {
+        var newLocation = locationManager.status()
+        if let realtimeIrl {
+            newLocation += realtimeIrl.status()
+        }
+        if location != newLocation {
+            location = newLocation
+        }
+    }
+
+    func reloadLocation() {
+        locationManager.stop()
+        if isLocationEnabled() {
+            locationManager.start(onUpdate: handleLocationUpdate)
+        }
+        reloadRealtimeIrl()
+    }
+
+    func isLocationEnabled() -> Bool {
+        return database.location!.enabled
+    }
+
+    private func handleLocationUpdate(location: CLLocation) {
+        guard isLive else {
+            return
+        }
+        guard !isLocationInPrivacyRegion(location: location) else {
+            return
+        }
+        realtimeIrl?.update(location: location)
+    }
+
+    private func isLocationInPrivacyRegion(location: CLLocation) -> Bool {
+        for region in database.location!.privacyRegions
+            where region.contains(coordinate: location.coordinate)
+        {
+            return true
+        }
+        return false
+    }
+
+    func isRealtimeIrlConfigured() -> Bool {
+        return stream.realtimeIrlEnabled! && !stream.realtimeIrlPushKey!.isEmpty
+    }
+
+    func reloadRealtimeIrl() {
+        realtimeIrl = nil
+        if isRealtimeIrlConfigured() {
+            realtimeIrl = RealtimeIrl(pushKey: stream.realtimeIrlPushKey!)
+        }
+    }
+}
+
+extension Model {
+    func toggleDrawOnStream() {
+        showDrawOnStream.toggle()
+    }
+
+    func drawOnStreamLineComplete() {
+        drawOnStreamEffect.updateOverlay(
+            videoSize: media.getVideoSize(),
+            size: drawOnStreamSize,
+            lines: drawOnStreamLines
+        )
+        media.registerEffect(drawOnStreamEffect)
+    }
+
+    func drawOnStreamWipe() {
+        drawOnStreamLines = []
+        drawOnStreamEffect.updateOverlay(
+            videoSize: media.getVideoSize(),
+            size: drawOnStreamSize,
+            lines: drawOnStreamLines
+        )
+        media.unregisterEffect(drawOnStreamEffect)
+    }
+
+    func drawOnStreamUndo() {
+        guard !drawOnStreamLines.isEmpty else {
+            return
+        }
+        drawOnStreamLines.removeLast()
+        drawOnStreamEffect.updateOverlay(
+            videoSize: media.getVideoSize(),
+            size: drawOnStreamSize,
+            lines: drawOnStreamLines
+        )
+        if drawOnStreamLines.isEmpty {
+            media.unregisterEffect(drawOnStreamEffect)
         }
     }
 }
