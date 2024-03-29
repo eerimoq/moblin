@@ -371,8 +371,8 @@ final class Model: NSObject, ObservableObject {
     @Published var wizardCustomRtmpUrl = ""
     @Published var wizardCustomRtmpStreamKey = ""
 
-    private let synthesizer = AVSpeechSynthesizer()
-    private let recognizer = NLLanguageRecognizer()
+    private var synthesizer = AVSpeechSynthesizer()
+    private var recognizer = NLLanguageRecognizer()
     private var latestUserThatSaidSomething = ""
     private var textToSpeechRate: Float = 0.4
     private var textToSpeechVolume: Float = 0.6
@@ -1488,6 +1488,7 @@ final class Model: NSObject, ObservableObject {
     @objc func handleWillEnterForegroundNotification() {
         reloadConnections()
         reloadRtmpServer()
+        newTextToSpeech()
     }
 
     @objc func handleBatteryStateDidChangeNotification() {
@@ -2422,10 +2423,18 @@ final class Model: NSObject, ObservableObject {
         reloadOpenStreamingPlatformChat()
     }
 
+    func newTextToSpeech() {
+        textToSpeechQueue.async {
+            self.synthesizer = AVSpeechSynthesizer()
+            self.recognizer = NLLanguageRecognizer()
+        }
+    }
+
     func stopTextToSpeech() {
         textToSpeechQueue.async {
-            self.synthesizer.stopSpeaking(at: .immediate)
+            self.synthesizer.stopSpeaking(at: .word)
         }
+        newTextToSpeech()
     }
 
     private func reloadConnections() {
