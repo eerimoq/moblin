@@ -140,12 +140,16 @@ struct MainView: View {
             }
             .overlay(alignment: .topLeading) {
                 ForEach(model.browsers) { browser in
-                    BrowserView(browser: browser)
-                        .frame(
-                            width: browser.browserEffect.width,
-                            height: browser.browserEffect.height
-                        )
-                        .opacity(0)
+                    ScrollView([.vertical, .horizontal]) {
+                        BrowserView(browser: browser)
+                            .frame(
+                                width: browser.browserEffect.width,
+                                height: browser.browserEffect.height
+                            )
+                            .opacity(0)
+                    }
+                    .frame(width: browser.browserEffect.width, height: browser.browserEffect.height)
+                    .allowsHitTesting(false)
                 }
             }
             if model.showingSettings {
