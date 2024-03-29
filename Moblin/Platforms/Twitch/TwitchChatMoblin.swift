@@ -82,8 +82,7 @@ final class TwitchChatMoblin {
                         return
                     }
                     connected = false
-                    try await Task
-                        .sleep(nanoseconds: UInt64(reconnectTime * 1_000_000_000))
+                    try await sleep(seconds: Int(reconnectTime))
                     reconnectTime = nextReconnectTime(reconnectTime)
                     logger.info("twitch: chat: \(channelName): Reconnecting")
                 }

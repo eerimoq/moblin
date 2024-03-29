@@ -1846,7 +1846,13 @@ final class Model: NSObject, ObservableObject {
     private func updateViewers() {
         var newNumberOfViewers = 0
         var hasInfo = false
-        if let twitchPubSub, twitchPubSub.isConnected(), let numberOfViewers = twitchPubSub.numberOfViewers {
+        if isTwitchViewersConfigured(), let twitchPubSub, twitchPubSub.isConnected(),
+           let numberOfViewers = twitchPubSub.numberOfViewers
+        {
+            newNumberOfViewers += numberOfViewers
+            hasInfo = true
+        }
+        if isKickViewersConfigured(), let numberOfViewers = kickViewers?.numberOfViewers {
             newNumberOfViewers += numberOfViewers
             hasInfo = true
         }
@@ -2568,7 +2574,11 @@ final class Model: NSObject, ObservableObject {
     }
 
     func isViewersConfigured() -> Bool {
-        return stream.twitchChannelId != ""
+        return isTwitchViewersConfigured() || isKickViewersConfigured()
+    }
+
+    func isTwitchViewersConfigured() -> Bool {
+        return stream.twitchEnabled! && stream.twitchChannelId != ""
     }
 
     func isTwitchChatConfigured() -> Bool {
@@ -2597,6 +2607,10 @@ final class Model: NSObject, ObservableObject {
 
     func hasKickPusherEmotes() -> Bool {
         return kickPusher?.hasEmotes() ?? false
+    }
+
+    func isKickViewersConfigured() -> Bool {
+        return stream.kickEnabled! && stream.kickChannelName != ""
     }
 
     func isYouTubeLiveChatConfigured() -> Bool {
@@ -2695,29 +2709,23 @@ final class Model: NSObject, ObservableObject {
                 channelId: stream.twitchChannelId,
                 settings: stream.chat!
             )
-        } else {
-            logger.info("Twitch channel name not configured. No Twitch chat.")
         }
     }
 
     private func reloadTwitchPubSub() {
         twitchPubSub?.stop()
-        if stream.twitchChannelId != "" {
+        if isTwitchViewersConfigured() {
             twitchPubSub = TwitchPubSub(channelId: stream.twitchChannelId)
             twitchPubSub!.start()
-        } else {
-            logger.info("Twitch channel id not configured. No viewers.")
         }
     }
 
     private func reloadKickViewers() {
         kickViewers?.stop()
-        // if stream.kickChatroomId != "" {
-        //    twitchPubSub = TwitchPubSub(model: self, channelId: stream.twitchChannelId)
-        //    twitchPubSub!.start()
-        // } else {
-        //    logger.info("Twitch channel id not configured. No viewers.")
-        // }
+        if isKickViewersConfigured() {
+            kickViewers = KickViewers()
+            kickViewers!.start(channelName: stream.kickChannelName!)
+        }
     }
 
     private func reloadKickPusher() {
@@ -2726,8 +2734,6 @@ final class Model: NSObject, ObservableObject {
         if isKickPusherConfigured() {
             kickPusher = KickPusher(model: self, channelId: stream.kickChatroomId, settings: stream.chat!)
             kickPusher!.start()
-        } else {
-            logger.info("Kick chatroom id not configured. No Kick chat.")
         }
     }
 
@@ -2742,8 +2748,6 @@ final class Model: NSObject, ObservableObject {
                 settings: stream.chat!
             )
             youTubeLiveChat!.start()
-        } else {
-            logger.info("YouTube chat id not configured. No YouTube chat.")
         }
     }
 
@@ -2757,8 +2761,6 @@ final class Model: NSObject, ObservableObject {
                 streamId: stream.afreecaTvStreamId!
             )
             afreecaTvChat!.start()
-        } else {
-            logger.info("AfreecaTV chat id not configured. No AfreecaTV chat.")
         }
     }
 
@@ -2774,8 +2776,6 @@ final class Model: NSObject, ObservableObject {
                 channelId: stream.openStreamingPlatformChannelId!
             )
             openStreamingPlatformChat!.start()
-        } else {
-            logger.info("Open Streaming Platform chat id not configured. No Open Streaming Platform chat.")
         }
     }
 
@@ -2830,6 +2830,12 @@ final class Model: NSObject, ObservableObject {
 
     func kickChatroomIdUpdated() {
         reloadKickPusher()
+        resetChat()
+    }
+
+    func kickChannelNameUpdated() {
+        reloadKickPusher()
+        reloadKickViewers()
         resetChat()
     }
 
@@ -4362,9 +4368,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func statusViewersText() -> String {
-        if !isViewersConfigured() {
-            return String(localized: "Not configured")
-        } else if isTwitchPubSubConnected() {
+        if isViewersConfigured() {
             return numberOfViewers
         } else {
             return ""

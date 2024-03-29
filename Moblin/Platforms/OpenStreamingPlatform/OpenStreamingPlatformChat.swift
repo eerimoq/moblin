@@ -131,7 +131,7 @@ class OpenStreamingPlatformChat {
                 }
                 logger.info("open-streaming-platform: Disconnected")
                 connected = false
-                try await Task.sleep(nanoseconds: 5_000_000_000)
+                try await sleep(seconds: 5)
                 logger.info("open-streaming-platform: Reconnecting")
             }
         }

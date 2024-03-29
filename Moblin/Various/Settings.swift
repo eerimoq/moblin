@@ -273,6 +273,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var twitchChannelId: String = ""
     var kickEnabled: Bool? = true
     var kickChatroomId: String = ""
+    var kickChannelName: String? = ""
     var youTubeEnabled: Bool? = true
     var youTubeApiKey: String? = ""
     var youTubeVideoId: String? = ""
@@ -317,6 +318,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
         new.twitchChannelId = twitchChannelId
         new.kickEnabled = kickEnabled
         new.kickChatroomId = kickChatroomId
+        new.kickChannelName = kickChannelName
         new.youTubeEnabled = youTubeEnabled
         new.youTubeApiKey = youTubeApiKey
         new.youTubeVideoId = youTubeVideoId
@@ -2376,6 +2378,10 @@ final class Settings {
         }
         if realDatabase.chat.textToSpeechLanguageVoices == nil {
             realDatabase.chat.textToSpeechLanguageVoices = .init()
+            store()
+        }
+        for stream in realDatabase.streams where stream.kickChannelName == nil {
+            stream.kickChannelName = ""
             store()
         }
     }

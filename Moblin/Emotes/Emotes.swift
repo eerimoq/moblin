@@ -36,7 +36,7 @@ class Emotes {
         emotes.removeAll()
         task = Task.init {
             var firstRetry = true
-            var retryTime: UInt64 = 30_000_000_000
+            var retryTime = 30
             while !self.ready {
                 let (bttvEmotes, bttvError) = await fetchBttvEmotes(
                     platform: platform,
@@ -67,9 +67,9 @@ class Emotes {
                     firstRetry = false
                     self.ready = false
                     do {
-                        try await Task.sleep(nanoseconds: retryTime)
+                        try await sleep(seconds: retryTime)
                         retryTime *= 2
-                        retryTime = min(retryTime, 3_600_000_000_000)
+                        retryTime = min(retryTime, 3600)
                     } catch {
                         return
                     }

@@ -5,13 +5,10 @@ struct LeftOverlayView: View {
     @EnvironmentObject var model: Model
 
     func viewersColor() -> Color {
-        if model.stream.twitchChannelId == "" {
-            return .white
-        } else if model.isTwitchPubSubConnected() {
-            return .white
-        } else {
+        if model.isTwitchViewersConfigured() && !model.isTwitchPubSubConnected() {
             return .red
         }
+        return .white
     }
 
     func messageColor() -> Color {

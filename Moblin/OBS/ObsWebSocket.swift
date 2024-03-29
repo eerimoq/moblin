@@ -404,7 +404,7 @@ class ObsWebSocket {
                 }
                 logger.debug("obs-websocket: Disconnected")
                 connected = false
-                try await Task.sleep(nanoseconds: 5_000_000_000)
+                try await sleep(seconds: 5)
                 logger.debug("obs-websocket: Reconnecting")
             }
         }

@@ -442,3 +442,7 @@ func urlImage(interfaceType: NWInterface.InterfaceType) -> String {
         return "questionmark"
     }
 }
+
+func sleep(seconds: Int) async throws {
+    try await Task.sleep(nanoseconds: UInt64(seconds) * 1_000_000_000)
+}

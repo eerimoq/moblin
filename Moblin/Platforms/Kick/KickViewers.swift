@@ -2,13 +2,22 @@ import Foundation
 
 class KickViewers {
     private var task: Task<Void, Error>?
+    var numberOfViewers: Int?
 
-    func start(channelId _: String) {
+    func start(channelName: String) {
         task = Task.init {
+            var delay = 1
             while true {
+                do {
+                    try await sleep(seconds: delay)
+                    let info = try await getKickChannelInfo(channelName: channelName)
+                    self.numberOfViewers = info.livestream?.viewers
+                } catch {}
                 if Task.isCancelled {
-                    return
+                    self.numberOfViewers = nil
+                    break
                 }
+                delay = 30
             }
         }
     }

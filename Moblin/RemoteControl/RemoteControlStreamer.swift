@@ -59,7 +59,7 @@ class RemoteControlStreamer {
                     connected = false
                 }
                 logger.debug("remote-control-streamer: Disconnected")
-                try await Task.sleep(nanoseconds: 5_000_000_000)
+                try await sleep(seconds: 5)
                 logger.debug("remote-control-streamer: Reconnecting")
             }
         }

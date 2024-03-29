@@ -153,7 +153,7 @@ final class AfreecaTvChat: NSObject {
                 }
                 logger.info("afreecatv: Disconnected")
                 connected = false
-                try await Task.sleep(nanoseconds: 5_000_000_000)
+                try await sleep(seconds: 5)
                 logger.info("afreecatv: Reconnecting")
             }
         }
@@ -192,7 +192,7 @@ final class AfreecaTvChat: NSObject {
         keepAliveTask = Task.init {
             let message = packMessage(kind: .null, parts: [])
             while !Task.isCancelled {
-                try await Task.sleep(nanoseconds: 60_000_000_000)
+                try await sleep(seconds: 60)
                 logger.debug("afreecatv: Sending keep alive")
                 try await webSocket.send(.data(message))
             }
