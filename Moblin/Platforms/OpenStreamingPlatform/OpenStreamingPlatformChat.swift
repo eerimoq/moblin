@@ -114,7 +114,7 @@ class OpenStreamingPlatformChat {
 
     func start() {
         stop()
-        logger.info("open-streaming-platform: start")
+        logger.debug("open-streaming-platform: start")
         task = Task.init {
             while true {
                 do {
@@ -122,23 +122,23 @@ class OpenStreamingPlatformChat {
                     try await sendOpen()
                     try await receiveMessages()
                 } catch {
-                    logger.error("open-streaming-platform: error: \(error)")
+                    logger.debug("open-streaming-platform: error: \(error)")
                 }
                 if Task.isCancelled {
-                    logger.info("open-streaming-platform: Cancelled")
+                    logger.debug("open-streaming-platform: Cancelled")
                     connected = false
                     break
                 }
-                logger.info("open-streaming-platform: Disconnected")
+                logger.debug("open-streaming-platform: Disconnected")
                 connected = false
                 try await sleep(seconds: 5)
-                logger.info("open-streaming-platform: Reconnecting")
+                logger.debug("open-streaming-platform: Reconnecting")
             }
         }
     }
 
     func stop() {
-        logger.info("open-streaming-platform: stop")
+        logger.debug("open-streaming-platform: stop")
         task?.cancel()
         task = nil
     }
@@ -156,7 +156,7 @@ class OpenStreamingPlatformChat {
         guard let url = URL(string: url) else {
             throw "Faield to create URL"
         }
-        logger.info("open-streaming-platform: URL \(url)")
+        logger.debug("open-streaming-platform: URL \(url)")
         webSocket = URLSession.shared.webSocketTask(
             with: url,
             protocols: ["xmpp"]
@@ -174,13 +174,13 @@ class OpenStreamingPlatformChat {
             case let .string(message):
                 try await handleMessage(message: message)
             default:
-                logger.info("open-streaming-platform: ???")
+                logger.debug("open-streaming-platform: ???")
             }
         }
     }
 
     private func handleMessage(message: String) async throws {
-        logger.info("open-streaming-platform: Got string \(message)")
+        logger.debug("open-streaming-platform: Got string \(message)")
         guard let data = "<container>\(message)</container>".data(using: .utf8) else {
             return
         }
@@ -211,11 +211,11 @@ class OpenStreamingPlatformChat {
             try await handleMessageFeatures(message: message.features)
             return
         } catch {}
-        logger.info("open-streaming-platform: Ignoring message \(message)")
+        logger.debug("open-streaming-platform: Ignoring message \(message)")
     }
 
     private func handleMessageOpen(message _: Open) async throws {
-        logger.info("open-streaming-platform: handle open")
+        logger.debug("open-streaming-platform: handle open")
     }
 
     private func handleMessageMessage(message: Message) async throws {
@@ -234,19 +234,19 @@ class OpenStreamingPlatformChat {
 
     private func handleMessageIq(message: Iq) async throws {
         jid = message.bind.jid
-        logger.info("open-streaming-platform: Got JID \(jid)")
+        logger.debug("open-streaming-platform: Got JID \(jid)")
         try await sendPresence()
     }
 
     private func handleMessageSuccess() async throws {
-        logger.info("open-streaming-platform: handle success")
+        logger.debug("open-streaming-platform: handle success")
         authenticated = true
         connected = true
         try await sendOpen()
     }
 
     private func handleMessageFeatures(message _: Features) async throws {
-        logger.info("open-streaming-platform: handle features")
+        logger.debug("open-streaming-platform: handle features")
         if authenticated {
             try await sendString(message:
                 """

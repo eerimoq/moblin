@@ -350,7 +350,6 @@ final class Model: NSObject, ObservableObject {
     @Published var wizardTwitchChannelName = ""
     @Published var wizardTwitchChannelId = ""
     @Published var wizardKickChannelName = ""
-    @Published var wizardKickChatroomId = ""
     @Published var wizardYouTubeApiKey = ""
     @Published var wizardYouTubeVideoId = ""
     @Published var wizardAfreecaTvChannelName = ""
@@ -542,6 +541,7 @@ final class Model: NSObject, ObservableObject {
         stream.kickEnabled = false
         stream.youTubeEnabled = false
         stream.afreecaTvEnabled = false
+        stream.openStreamingPlatformEnabled = false
         stream.obsWebSocketEnabled = false
         if wizardPlatform != .custom {
             if wizardNetworkSetup != .direct {
@@ -563,7 +563,7 @@ final class Model: NSObject, ObservableObject {
             stream.twitchChannelId = wizardTwitchChannelId.trim()
         case .kick:
             stream.kickEnabled = true
-            stream.kickChatroomId = wizardKickChatroomId.trim()
+            stream.kickChannelName = wizardKickChannelName.trim()
         case .youTube:
             if !wizardYouTubeApiKey.isEmpty && !wizardYouTubeVideoId.isEmpty {
                 stream.youTubeEnabled = true
@@ -614,7 +614,6 @@ final class Model: NSObject, ObservableObject {
         wizardTwitchChannelName = ""
         wizardTwitchChannelId = ""
         wizardKickChannelName = ""
-        wizardKickChatroomId = ""
         wizardYouTubeApiKey = ""
         wizardYouTubeVideoId = ""
         wizardAfreecaTvChannelName = ""
@@ -2598,7 +2597,8 @@ final class Model: NSObject, ObservableObject {
     }
 
     func isKickPusherConfigured() -> Bool {
-        return database.chat.enabled! && stream.kickEnabled! && stream.kickChatroomId != ""
+        return database.chat.enabled! && stream
+            .kickEnabled! && (stream.kickChatroomId != "" || stream.kickChannelName != "")
     }
 
     func isKickPusherConnected() -> Bool {
@@ -2732,7 +2732,10 @@ final class Model: NSObject, ObservableObject {
         kickPusher?.stop()
         kickPusher = nil
         if isKickPusherConfigured() {
-            kickPusher = KickPusher(model: self, channelId: stream.kickChatroomId, settings: stream.chat!)
+            kickPusher = KickPusher(model: self,
+                                    channelId: stream.kickChatroomId,
+                                    channelName: stream.kickChannelName!,
+                                    settings: stream.chat!)
             kickPusher!.start()
         }
     }
@@ -2824,11 +2827,6 @@ final class Model: NSObject, ObservableObject {
     }
 
     func kickEnabledUpdated() {
-        reloadKickPusher()
-        resetChat()
-    }
-
-    func kickChatroomIdUpdated() {
         reloadKickPusher()
         resetChat()
     }

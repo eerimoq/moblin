@@ -18,7 +18,6 @@ struct StreamWizardSummarySettingsView: View {
             } else if model.wizardPlatform == .kick {
                 Section {
                     TextValueView(name: String(localized: "Channel name"), value: model.wizardKickChannelName)
-                    TextValueView(name: String(localized: "Chatroom id"), value: model.wizardKickChatroomId)
                 } header: {
                     Text("Kick")
                 }

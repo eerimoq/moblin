@@ -40,20 +40,72 @@ private var url =
 
 final class KickPusher: NSObject {
     private var model: Model
-    private var webSocket: URLSessionWebSocketTask
+    private var channelName: String
     private var channelId: String
-    private var reconnectTimer: Timer?
-    private var reconnectTime = firstReconnectTime
-    private var running = true
+    private var task: Task<Void, Error>?
+    private var connected: Bool = false
+    private var webSocket: URLSessionWebSocketTask
     private var emotes: Emotes
-    private var settings: SettingsStreamChat
+    private let settings: SettingsStreamChat
 
-    init(model: Model, channelId: String, settings: SettingsStreamChat) {
+    init(model: Model, channelId: String, channelName: String, settings: SettingsStreamChat) {
         self.model = model
         self.channelId = channelId
+        self.channelName = channelName
         self.settings = settings.clone()
         emotes = Emotes()
         webSocket = URLSession(configuration: .default).webSocketTask(with: url)
+    }
+
+    func start() {
+        stop()
+        emotes.start(
+            platform: .twitch,
+            channelId: channelId,
+            onError: handleError,
+            onOk: handleOk,
+            settings: settings
+        )
+        logger.debug("kick: start")
+        task = Task.init {
+            while true {
+                do {
+                    if !channelName.isEmpty {
+                        let info = try await getKickChannelInfo(channelName: channelName)
+                        channelId = String(info.chatroom.id)
+                    }
+                    try await setupConnection(chatroomId: channelId)
+                    connected = true
+                    try await receiveMessages()
+                } catch {
+                    logger.debug("kick: error: \(error)")
+                }
+                if Task.isCancelled {
+                    logger.debug("kick: Cancelled")
+                    connected = false
+                    break
+                }
+                logger.debug("kick: Disconnected")
+                connected = false
+                try await sleep(seconds: 5)
+                logger.debug("kick: Reconnecting")
+            }
+        }
+    }
+
+    func stop() {
+        logger.debug("kick: stop")
+        emotes.stop()
+        task?.cancel()
+        task = nil
+    }
+
+    func isConnected() -> Bool {
+        return connected
+    }
+
+    func hasEmotes() -> Bool {
+        return emotes.isReady()
     }
 
     private func handleError(title: String, subTitle: String) {
@@ -68,60 +120,56 @@ final class KickPusher: NSObject {
         }
     }
 
-    func start() {
-        reconnectTime = firstReconnectTime
-        setupWebsocket()
-        emotes.start(
-            platform: .kick,
-            channelId: channelId,
-            onError: handleError,
-            onOk: handleOk,
-            settings: settings
+    private func setupConnection(chatroomId _: String) async throws {
+        webSocket = URLSession.shared.webSocketTask(with: url)
+        webSocket.resume()
+        try await sendMessage(
+            message: """
+            {\"event\":\"pusher:subscribe\",
+             \"data\":{\"auth\":\"\",\"channel\":\"chatrooms.\(channelId).v2\"}}
+            """
         )
     }
 
-    func stop() {
-        emotes.stop()
-        webSocket.cancel()
-        reconnectTimer?.invalidate()
-        reconnectTimer = nil
-        running = false
-    }
-
-    func isConnected() -> Bool {
-        return webSocket.state == .running
-    }
-
-    func hasEmotes() -> Bool {
-        return emotes.isReady()
-    }
-
-    private func setupWebsocket() {
-        reconnectTimer?.invalidate()
-        reconnectTimer = nil
-        let session = URLSession(configuration: .default,
-                                 delegate: self,
-                                 delegateQueue: OperationQueue.main)
-        webSocket = session.webSocketTask(with: url)
-        webSocket.resume()
-        readMessage()
-    }
-
-    private func createKickSegments(message: String) -> [ChatPostSegment] {
-        var segments: [ChatPostSegment] = []
-        var startIndex = message.startIndex
-        for match in message[startIndex...].matches(of: /\[emote:(\d+):[^\]]+\]/) {
-            let emoteId = match.output.1
-            let textBeforeEmote = message[startIndex ..< match.range.lowerBound]
-            let url = URL(string: "https://files.kick.com/emotes/\(emoteId)/fullsize")
-            segments += makeChatPostTextSegments(text: String(textBeforeEmote))
-            segments.append(ChatPostSegment(url: url))
-            startIndex = match.range.upperBound
+    private func receiveMessages() async throws {
+        while true {
+            let message = try await webSocket.receive()
+            if Task.isCancelled {
+                break
+            }
+            switch message {
+            case let .string(text):
+                handleStringMessage(message: text)
+            case let .data(data):
+                logger
+                    .error("""
+                    kick: pusher: \(channelId): Received binary \
+                    message: \(data)
+                    """)
+            @unknown default:
+                logger
+                    .warning(
+                        "kick: pusher: \(channelId): Unknown message type"
+                    )
+            }
         }
-        if startIndex != message.endIndex {
-            segments += makeChatPostTextSegments(text: String(message[startIndex...]))
+    }
+
+    private func handleStringMessage(message: String) {
+        do {
+            let (type, data) = try decodeEvent(message: message)
+            if type == "App\\Events\\ChatMessageEvent" {
+                try handleChatMessageEvent(data: data)
+            } else {
+                logger.debug("kick: pusher: \(channelId): Unsupported type: \(type)")
+            }
+        } catch {
+            logger
+                .error("""
+                kick: pusher: \(channelId): Failed to process \
+                message \"\(message)\" with error \(error)
+                """)
         }
-        return segments
     }
 
     private func handleChatMessageEvent(data: String) throws {
@@ -146,118 +194,25 @@ final class KickPusher: NSObject {
         )
     }
 
-    private func handleStringMessage(message: String) {
-        do {
-            let (type, data) = try decodeEvent(message: message)
-            if type == "App\\Events\\ChatMessageEvent" {
-                try handleChatMessageEvent(data: data)
-            } else {
-                logger.debug("kick: pusher: \(channelId): Unsupported type: \(type)")
-            }
-        } catch {
-            logger
-                .error("""
-                kick: pusher: \(channelId): Failed to process \
-                message \"\(message)\" with error \(error)
-                """)
-        }
-    }
-
-    private func reconnect() {
-        webSocket.cancel()
-        reconnectTimer?.invalidate()
-        reconnectTimer = Timer
-            .scheduledTimer(withTimeInterval: reconnectTime, repeats: false) { _ in
-                logger.warning("kick: pusher: \(self.channelId): Reconnecting")
-                self.setupWebsocket()
-                self.reconnectTime = nextReconnectTime(self.reconnectTime)
-            }
-    }
-
-    private func readMessage() {
-        webSocket.receive { result in
-            switch result {
-            case .failure:
-                return
-            case let .success(message):
-                switch message {
-                case let .string(text):
-                    self.handleStringMessage(message: text)
-                case let .data(data):
-                    logger
-                        .error("""
-                        kick: pusher: \(self.channelId): Received binary \
-                        message: \(data)
-                        """)
-                @unknown default:
-                    logger
-                        .warning(
-                            "kick: pusher: \(self.channelId): Unknown message type"
-                        )
-                }
-                self.readMessage()
-            }
-        }
-    }
-
-    private func sendMessage(message: String) {
+    private func sendMessage(message: String) async throws {
         logger.debug("kick: pusher: \(channelId): Sending \(message)")
-        let message = URLSessionWebSocketTask.Message.string(message)
-        webSocket.send(message) { error in
-            if let error {
-                logger
-                    .error("""
-                    kick: pusher: \(self.channelId): Failed to send \
-                    message to server with error \(error)
-                    """)
-                self.reconnect()
-            }
+        try await webSocket.send(URLSessionWebSocketTask.Message.string(message))
+    }
+
+    private func createKickSegments(message: String) -> [ChatPostSegment] {
+        var segments: [ChatPostSegment] = []
+        var startIndex = message.startIndex
+        for match in message[startIndex...].matches(of: /\[emote:(\d+):[^\]]+\]/) {
+            let emoteId = match.output.1
+            let textBeforeEmote = message[startIndex ..< match.range.lowerBound]
+            let url = URL(string: "https://files.kick.com/emotes/\(emoteId)/fullsize")
+            segments += makeChatPostTextSegments(text: String(textBeforeEmote))
+            segments.append(ChatPostSegment(url: url))
+            startIndex = match.range.upperBound
         }
-    }
-}
-
-extension KickPusher: URLSessionWebSocketDelegate {
-    func urlSession(
-        _: URLSession,
-        webSocketTask _: URLSessionWebSocketTask,
-        didOpenWithProtocol _: String?
-    ) {
-        logger.debug("kick: pusher: \(channelId): Connected to \(url)")
-        reconnectTime = firstReconnectTime
-        sendMessage(
-            message: """
-            {\"event\":\"pusher:subscribe\",
-             \"data\":{\"auth\":\"\",\"channel\":\"chatrooms.\(channelId).v2\"}}
-            """
-        )
-    }
-
-    func urlSession(
-        _: URLSession,
-        webSocketTask _: URLSessionWebSocketTask,
-        didCloseWith closeCode: URLSessionWebSocketTask.CloseCode,
-        reason: Data?
-    ) {
-        logger
-            .warning(
-                """
-                kick: pusher: \(channelId): Disconnected from server with close \
-                code \(closeCode) and reason \(String(describing: reason))
-                """
-            )
-        reconnect()
-    }
-
-    func urlSession(
-        _: URLSession,
-        task _: URLSessionTask,
-        didCompleteWithError _: Error?
-    ) {
-        if running {
-            logger.info("kick: pusher: \(channelId): Completed")
-            reconnect()
-        } else {
-            logger.info("kick: pusher: \(channelId): Completed by us")
+        if startIndex != message.endIndex {
+            segments += makeChatPostTextSegments(text: String(message[startIndex...]))
         }
+        return segments
     }
 }

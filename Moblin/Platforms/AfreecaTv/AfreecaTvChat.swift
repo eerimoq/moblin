@@ -135,7 +135,7 @@ final class AfreecaTvChat: NSObject {
 
     func start() {
         stop()
-        logger.info("afreecatv: start")
+        logger.debug("afreecatv: start")
         task = Task.init {
             while true {
                 do {
@@ -144,23 +144,23 @@ final class AfreecaTvChat: NSObject {
                     setupKeepAlive()
                     try await receiveMessages(info: info)
                 } catch {
-                    logger.error("afreecatv: error: \(error)")
+                    logger.debug("afreecatv: error: \(error)")
                 }
                 if Task.isCancelled {
-                    logger.info("afreecatv: Cancelled")
+                    logger.debug("afreecatv: Cancelled")
                     connected = false
                     break
                 }
-                logger.info("afreecatv: Disconnected")
+                logger.debug("afreecatv: Disconnected")
                 connected = false
                 try await sleep(seconds: 5)
-                logger.info("afreecatv: Reconnecting")
+                logger.debug("afreecatv: Reconnecting")
             }
         }
     }
 
     func stop() {
-        logger.info("afreecatv: stop")
+        logger.debug("afreecatv: stop")
         keepAliveTask?.cancel()
         keepAliveTask = nil
         task?.cancel()
@@ -179,7 +179,7 @@ final class AfreecaTvChat: NSObject {
         guard let url = makeWebSocketUrl(chdomain: info.chdomain, chpt: info.chpt) else {
             throw "Faield to create URL"
         }
-        logger.info("afreecatv: URL \(url)")
+        logger.debug("afreecatv: URL \(url)")
         webSocket = URLSession.shared.webSocketTask(
             with: url,
             protocols: ["chat"]
@@ -217,7 +217,7 @@ final class AfreecaTvChat: NSObject {
                 }
                 switch kind {
                 case .one:
-                    logger.info("afreecatv: Connected?")
+                    logger.debug("afreecatv: Connected?")
                     connected = true
                     try await sendTwo(chatno: info.chatno, ftk: info.ftk)
                 case .post:
@@ -226,9 +226,9 @@ final class AfreecaTvChat: NSObject {
                     break
                 }
             case let .string(message):
-                logger.info("afreecatv: Got string \(message)")
+                logger.debug("afreecatv: Got string \(message)")
             default:
-                logger.info("afreecatv: ???")
+                logger.debug("afreecatv: ???")
             }
         }
     }

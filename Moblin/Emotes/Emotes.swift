@@ -80,7 +80,7 @@ class Emotes {
                     }
                 }
             }
-            logger.info("emotes: Emotes lists fetched")
+            logger.debug("emotes: Emotes lists fetched")
         }
     }
 

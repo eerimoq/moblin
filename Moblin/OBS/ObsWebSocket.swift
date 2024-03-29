@@ -386,7 +386,7 @@ class ObsWebSocket {
 
     func start() {
         stop()
-        logger.info("obs-websocket: start")
+        logger.debug("obs-websocket: start")
         task = Task.init {
             while true {
                 setupConnection()
@@ -411,7 +411,7 @@ class ObsWebSocket {
     }
 
     func stop() {
-        logger.info("obs-websocket: stop")
+        logger.debug("obs-websocket: stop")
         task?.cancel()
         task = nil
     }
