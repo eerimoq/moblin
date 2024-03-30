@@ -165,7 +165,7 @@ final class YouTubeLiveChat: NSObject {
             return unknownUser
         }
         do {
-            let (data, response) = try await httpGet(from: url)
+            let (data, response) = try await fetch(from: url)
             if response.isSuccessful {
                 let channel = try JSONDecoder().decode(Channel.self, from: data)
                 if channel.items.count != 1 {
@@ -183,7 +183,7 @@ final class YouTubeLiveChat: NSObject {
         guard let url = makeMessagesUrl() else {
             throw "Failed to create URL"
         }
-        let (data, response) = try await httpGet(from: url)
+        let (data, response) = try await fetch(from: url)
         if !response.isSuccessful {
             throw "Unsuccessful HTTP response"
         }
@@ -244,7 +244,7 @@ final class YouTubeLiveChat: NSObject {
             return nil
         }
         do {
-            let (data, response) = try await httpGet(from: url)
+            let (data, response) = try await fetch(from: url)
             if response.isSuccessful {
                 let videos = try JSONDecoder().decode(Videos.self, from: data)
                 if videos.items.count != 1 {
@@ -254,5 +254,10 @@ final class YouTubeLiveChat: NSObject {
             }
         } catch {}
         return nil
+    }
+
+    private func fetch(from: URL) async throws -> (Data, HTTPURLResponse) {
+        // logger.info("youtube: Fetching \(from)")
+        return try await httpGet(from: from)
     }
 }
