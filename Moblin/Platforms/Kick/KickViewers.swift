@@ -11,14 +11,20 @@ class KickViewers {
                 do {
                     try await sleep(seconds: delay)
                     let info = try await getKickChannelInfo(channelName: channelName)
-                    self.numberOfViewers = info.livestream?.viewers
+                    await self.setNumberOfViewers(value: info.livestream?.viewers)
                 } catch {}
                 if Task.isCancelled {
-                    self.numberOfViewers = nil
+                    await self.setNumberOfViewers(value: nil)
                     break
                 }
                 delay = 30
             }
+        }
+    }
+
+    private func setNumberOfViewers(value: Int?) async {
+        await MainActor.run {
+            self.numberOfViewers = value
         }
     }
 

@@ -111,13 +111,19 @@ final class TwitchPubSub: NSObject {
         let type = try getMessageType(message: message.data.message)
         if type == "viewcount" {
             let message = try decodeMessageViewCount(message: message.data.message)
-            numberOfViewers = message.viewers
+            setNumberOfViewers(value: message.viewers)
         } else {
             logger
                 .debug("""
                 twitch: pubsub: \(channelId): Unsupported message \
                 type \(type) (message: \(message))
                 """)
+        }
+    }
+
+    private func setNumberOfViewers(value: Int?) {
+        DispatchQueue.main.async {
+            self.numberOfViewers = value
         }
     }
 
