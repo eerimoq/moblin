@@ -159,6 +159,20 @@ Main app
 
   - Optional message timestamp.
 
+- Color spaces (for devices that supports them).
+
+  - sRGB.
+
+  - P3 D65.
+
+  - HLG BT2020.
+
+  - Apple Log.
+
+- Bundled and custom 3D LUT effects.
+
+  - Especially useful when using Apple Log.
+
 - Battery indicator.
 
   - Charging icon.
