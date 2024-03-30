@@ -190,7 +190,8 @@ final class KickPusher: NSObject {
             timestampDate: Date(),
             isAction: false,
             isAnnouncement: false,
-            isFirstMessage: false
+            isFirstMessage: false,
+            isSubscriber: false
         )
     }
 

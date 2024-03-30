@@ -1134,6 +1134,7 @@ class SettingsChat: Codable {
     var textToSpeechRate: Float? = 0.4
     var textToSpeechSayVolume: Float? = 0.6
     var textToSpeechLanguageVoices: [String: String]? = .init()
+    var textToSpeechSubscribersOnly: Bool? = false
 }
 
 enum SettingsMic: String, Codable, CaseIterable {
@@ -2382,6 +2383,10 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.kickChannelName == nil {
             stream.kickChannelName = ""
+            store()
+        }
+        if realDatabase.chat.textToSpeechSubscribersOnly == nil {
+            realDatabase.chat.textToSpeechSubscribersOnly = false
             store()
         }
     }

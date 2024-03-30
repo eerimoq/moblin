@@ -70,7 +70,8 @@ final class TwitchChatMoblin {
                                     timestampDate: Date(),
                                     isAction: isAction,
                                     isAnnouncement: message.announcement,
-                                    isFirstMessage: message.firstMessage
+                                    isFirstMessage: message.firstMessage,
+                                    isSubscriber: message.subscriber
                                 )
                             }
                         }

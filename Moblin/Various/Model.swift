@@ -150,6 +150,7 @@ struct ChatPost: Identifiable, Equatable {
     var isAction: Bool
     var isAnnouncement: Bool
     var isFirstMessage: Bool
+    var isSubscriber: Bool
 }
 
 class ButtonState {
@@ -1497,7 +1498,8 @@ final class Model: NSObject, ObservableObject {
             timestampDate: Date(),
             isAction: false,
             isAnnouncement: false,
-            isFirstMessage: false
+            isFirstMessage: false,
+            isSubscriber: false
         )
     }
 
@@ -1529,7 +1531,7 @@ final class Model: NSObject, ObservableObject {
             }
             chatPosts.prepend(post)
             sendChatMessageToWatch(post: post)
-            if database.chat.textToSpeechEnabled!, let user = post.user {
+            if isTextToSpeechEnabledForMessage(post: post), let user = post.user {
                 let message = post.segments.filter { $0.text != nil }.map { $0.text! }.joined(separator: " ")
                 if !message.isEmpty {
                     say(user: user, message: message)
@@ -1538,6 +1540,18 @@ final class Model: NSObject, ObservableObject {
             numberOfChatPostsPerTick += 1
             streamTotalChatMessages += 1
         }
+    }
+
+    private func isTextToSpeechEnabledForMessage(post: ChatPost) -> Bool {
+        guard database.chat.textToSpeechEnabled! else {
+            return false
+        }
+        if database.chat.textToSpeechSubscribersOnly! {
+            guard post.isSubscriber else {
+                return false
+            }
+        }
+        return true
     }
 
     private func reloadImageEffects() {
@@ -2725,7 +2739,8 @@ final class Model: NSObject, ObservableObject {
                           timestampDate: post.timestampDate,
                           isAction: post.isAction,
                           isAnnouncement: post.isAnnouncement,
-                          isFirstMessage: post.isFirstMessage)
+                          isFirstMessage: post.isFirstMessage,
+                          isSubscriber: post.isSubscriber)
     }
 
     func appendChatMessage(
@@ -2736,7 +2751,8 @@ final class Model: NSObject, ObservableObject {
         timestampDate: Date,
         isAction: Bool,
         isAnnouncement: Bool,
-        isFirstMessage: Bool
+        isFirstMessage: Bool,
+        isSubscriber: Bool
     ) {
         if database.chat.usernamesToIgnore!.contains(where: { user == $0.value }) {
             return
@@ -2750,7 +2766,8 @@ final class Model: NSObject, ObservableObject {
             timestampDate: timestampDate,
             isAction: isAction,
             isAnnouncement: isAnnouncement,
-            isFirstMessage: isFirstMessage
+            isFirstMessage: isFirstMessage,
+            isSubscriber: isSubscriber
         )
         chatPostId += 1
         if chatPaused {

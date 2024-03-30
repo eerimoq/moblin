@@ -129,6 +129,14 @@ struct ChatTextToSpeechSettingsView: View {
                 })) {
                     Text("Say username")
                 }
+                Toggle(isOn: Binding(get: {
+                    model.database.chat.textToSpeechSubscribersOnly!
+                }, set: { value in
+                    model.database.chat.textToSpeechSubscribersOnly = value
+                    model.store()
+                })) {
+                    Text("Subscribers only")
+                }
                 HStack {
                     Image(systemName: "tortoise.fill")
                     Slider(
@@ -163,6 +171,8 @@ struct ChatTextToSpeechSettingsView: View {
                     )
                     Image(systemName: "volume.3.fill")
                 }
+            } footer: {
+                Text("Subscribers only is only available for Twitch.")
             }
         }
         .onAppear {

@@ -204,7 +204,8 @@ final class YouTubeLiveChat: NSObject {
                     timestampDate: Date(),
                     isAction: false,
                     isAnnouncement: false,
-                    isFirstMessage: false
+                    isFirstMessage: false,
+                    isSubscriber: false
                 )
             }
         }

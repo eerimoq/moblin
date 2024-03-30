@@ -228,7 +228,8 @@ class OpenStreamingPlatformChat {
                                     timestampDate: Date(),
                                     isAction: false,
                                     isAnnouncement: false,
-                                    isFirstMessage: false)
+                                    isFirstMessage: false,
+                                    isSubscriber: false)
         }
     }
 

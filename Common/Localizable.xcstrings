@@ -55759,6 +55759,12 @@
         }
       }
     },
+    "Subscribers only" : {
+
+    },
+    "Subscribers only is only available for Twitch." : {
+
+    },
     "Summary and stream name" : {
       "localizations" : {
         "de" : {
