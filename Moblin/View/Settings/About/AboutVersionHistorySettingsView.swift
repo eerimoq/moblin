@@ -8,6 +8,10 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.222.0", date: "2024-03-30", changes: [
+        "• Username colors in Kick chat.",
+        "• Chat text to speech subscribers only for Kick.",
+    ]),
     Version(version: "0.221.0", date: "2024-03-30", changes: [
         "• Try to make chat text to speech more stable when switching to another app and back.",
         "• Fix upside down external camera when the USB port is to the left. 🐛 Atlantis_Court",

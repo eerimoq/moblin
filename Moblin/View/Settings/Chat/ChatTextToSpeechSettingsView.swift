@@ -172,7 +172,7 @@ struct ChatTextToSpeechSettingsView: View {
                     Image(systemName: "volume.3.fill")
                 }
             } footer: {
-                Text("Subscribers only is only available for Twitch ans Kick.")
+                Text("Subscribers only is not available for all platforms.")
             }
         }
         .onAppear {
