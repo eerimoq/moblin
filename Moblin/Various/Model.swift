@@ -1194,13 +1194,9 @@ final class Model: NSObject, ObservableObject {
     private func updateOrientation() {
         switch UIDevice.current.orientation {
         case .landscapeLeft:
-            if videoView.videoOrientation != .landscapeRight {
-                videoView.videoOrientation = .landscapeRight
-            }
+            videoView.videoOrientation = .landscapeRight
         case .landscapeRight:
-            if videoView.videoOrientation != .landscapeLeft {
-                videoView.videoOrientation = .landscapeLeft
-            }
+            videoView.videoOrientation = .landscapeLeft
         default:
             break
         }
