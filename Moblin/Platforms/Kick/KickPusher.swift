@@ -1,12 +1,26 @@
 import Foundation
 
+private struct Badge: Decodable {
+    var type: String
+}
+
+private struct Identity: Decodable {
+    var color: String
+    var badges: [Badge]
+}
+
 private struct Sender: Decodable {
     var username: String
+    var identity: Identity
 }
 
 private struct ChatMessage: Decodable {
     var content: String
     var sender: Sender
+
+    func isSubscriber() -> Bool {
+        return sender.identity.badges.contains(where: { $0.type == "subscriber" })
+    }
 }
 
 private func decodeEvent(message: String) throws -> (String, String) {
@@ -184,14 +198,14 @@ final class KickPusher: NSObject {
         }
         model.appendChatMessage(
             user: message.sender.username,
-            userColor: nil,
+            userColor: message.sender.identity.color,
             segments: segments,
             timestamp: model.digitalClock,
             timestampDate: Date(),
             isAction: false,
             isAnnouncement: false,
             isFirstMessage: false,
-            isSubscriber: false
+            isSubscriber: message.isSubscriber()
         )
     }
 
