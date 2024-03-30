@@ -8019,6 +8019,9 @@
         }
       }
     },
+    "API key for YouTube Data API v3 is needed." : {
+
+    },
     "App restart needed to take effect." : {
       "localizations" : {
         "de" : {
@@ -58740,6 +58743,9 @@
           }
         }
       }
+    },
+    "The video id is the last part in your live streams URL." : {
+
     },
     "The zoom (in X) to set when switching to given camera, if enabled." : {
       "localizations" : {

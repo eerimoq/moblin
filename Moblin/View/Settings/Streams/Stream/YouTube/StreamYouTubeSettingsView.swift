@@ -34,7 +34,13 @@ struct StreamYouTubeSettingsView: View {
                     onSubmit: submitVideoId
                 )
             } footer: {
-                Text("Very experimental and very secret!")
+                VStack(alignment: .leading) {
+                    Text("Very experimental and very secret!")
+                    Text("")
+                    Text("API key for YouTube Data API v3 is needed.")
+                    Text("")
+                    Text("The video id is the last part in your live streams URL.")
+                }
             }
         }
         .navigationTitle("YouTube")

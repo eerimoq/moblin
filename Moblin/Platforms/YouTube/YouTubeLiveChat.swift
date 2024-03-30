@@ -2,7 +2,8 @@ import Foundation
 
 private struct MessagesSnippet: Codable {
     var authorChannelId: String
-    var displayMessage: String
+    var displayMessage: String?
+    var publishedAt: String
 }
 
 private struct MessagesItem: Codable {
@@ -54,6 +55,7 @@ final class YouTubeLiveChat: NSObject {
     private var channelToTitle: [String: String] = [:]
     private var pollingIntervalMillis: UInt64 = minimumPollingIntervalMillis
     private var connected: Bool = false
+    private var lastPublishedAtTime: Date?
 
     init(model: Model, apiKey: String, videoId: String, settings: SettingsStreamChat) {
         self.model = model
@@ -87,6 +89,8 @@ final class YouTubeLiveChat: NSObject {
                     } catch {
                         logger.info("youtube: chat: \(error)")
                         connected = false
+                        pollingIntervalMillis = 5000
+                        nextToken = nil
                     }
                 }
                 if Task.isCancelled {
@@ -177,11 +181,11 @@ final class YouTubeLiveChat: NSObject {
 
     private func getMessages() async throws {
         guard let url = makeMessagesUrl() else {
-            return
+            throw "Failed to create URL"
         }
         let (data, response) = try await httpGet(from: url)
         if !response.isSuccessful {
-            return
+            throw "Unsuccessful HTTP response"
         }
         let messages = try JSONDecoder().decode(
             Messages.self,
@@ -193,7 +197,19 @@ final class YouTubeLiveChat: NSObject {
         )
         nextToken = messages.nextPageToken
         for item in messages.items {
-            let segments = createSegments(message: item.snippet.displayMessage)
+            guard let displayMessage = item.snippet.displayMessage else {
+                continue
+            }
+            guard let publishedAt = parseIso8601(value: item.snippet.publishedAt) else {
+                continue
+            }
+            if let lastPublishedAtTime {
+                guard publishedAt > lastPublishedAtTime else {
+                    continue
+                }
+            }
+            lastPublishedAtTime = publishedAt
+            let segments = createSegments(message: displayMessage)
             let user = await getChannelTitle(channelId: item.snippet.authorChannelId)
             await MainActor.run {
                 self.model.appendChatMessage(

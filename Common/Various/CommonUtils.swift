@@ -309,7 +309,6 @@ extension HTTPURLResponse {
 func httpGet(from: URL) async throws -> (Data, HTTPURLResponse) {
     let (data, response) = try await URLSession.shared.data(from: from)
     if let response = response.http {
-        // logger.info("\(from) \(response.statusCode) \(data.count)")
         return (data, response)
     } else {
         throw "Not an HTTP response"
@@ -445,4 +444,16 @@ func urlImage(interfaceType: NWInterface.InterfaceType) -> String {
 
 func sleep(seconds: Int) async throws {
     try await Task.sleep(nanoseconds: UInt64(seconds) * 1_000_000_000)
+}
+
+func parseIso8601(value: String) -> Date? {
+    let formatter = ISO8601DateFormatter()
+    formatter.formatOptions = [
+        .withInternetDateTime,
+        .withDashSeparatorInDate,
+        .withFullDate,
+        .withFractionalSeconds,
+        .withColonSeparatorInTimeZone,
+    ]
+    return formatter.date(from: value)
 }
