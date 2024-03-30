@@ -8,12 +8,17 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.221.0", date: "2024-03-30", changes: [
+        "• Try to make chat text to speech more stable when switching to another app and back.",
+        "• Fix upside down external camera when the USB port is to the left. 🐛 Atlantis_Court",
+        "• Chat text to speech subscribers only toggle (Twitch only for now). 💡 evitichi",
+    ]),
     Version(version: "0.220.0", date: "2024-03-29", changes: [
-        "- Show number of Kick viewers (combined with Twitch, if enabled). 💡 Onur",
-        "  - Configure you channel's name in Settings → Streams → My stream → Kick.",
-        "- Only Kick channel name needed for chat and number of viewers.",
-        "  - Chatroom id still used if channel name is not configured.",
-        "- Make browser widget use full width and height. 🐛 Onur",
+        "• Show number of Kick viewers (combined with Twitch, if enabled). 💡 Onur",
+        "  • Configure you channel's name in Settings → Streams → My stream → Kick.",
+        "• Only Kick channel name needed for chat and number of viewers.",
+        "  • Chatroom id still used if channel name is not configured.",
+        "• Make browser widget use full width and height. 🐛 Onur",
     ]),
     Version(version: "0.219.0", date: "2024-03-28", changes: [
         "• Chat text to speech voice selection per language.",
