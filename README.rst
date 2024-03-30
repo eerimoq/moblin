@@ -139,6 +139,14 @@ Main app
 
 - Chat styling.
 
+  - Optional text to speech (TTS).
+
+    - Optionally subscribers only.
+
+    - Many voices.
+
+    - Detect language per message.
+
   - Colors, background, border and bold.
 
   - Twitch, Kick, BTTV, FFZ and 7TV emotes.
@@ -217,21 +225,22 @@ Apple Watch companion app
 
 - Chat.
 
-  - Not all emotes are supported.
+  - Limited to 20 messages.
 
-  - Limited to 10 messages.
+- Control.
+
+  - Go live.
+
+  - Record.
+
+  - Mute.
 
 - Watch face complication.
-
-ToDo
-====
 
 Ideas/plan
 ==========
 
 - Show two cameras at the same time.
-
-- Rework zoom. Fine tune similar to builtin camera app.
 
 - Audio filters. For example volume limiter.
 
@@ -240,19 +249,11 @@ Ideas/plan
     filters when you have the time. I think that would be the same
     order in terms of complexity to implement as well.
 
-- Reduce brightness when thermal state is critical.
-
 - Add Twitch/Kick Icons next to chat messages depending on which
   platform the message came from.
 
 - Lookup Twitch channel id from channel name. Possibly login to
   Twitch.
-
-- Something that is important for professional streamers: Ad
-  management. There are new endpoints to get and snooze the next ad
-  schedule. No app uses it afaik yet.
-
-  - https://dev.twitch.tv/docs/api/reference/#get-ad-schedule
 
 Import settings using moblin:// (custom URL)
 ============================================
