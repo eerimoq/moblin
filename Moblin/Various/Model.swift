@@ -1533,25 +1533,13 @@ final class Model: NSObject, ObservableObject {
             sendChatMessageToWatch(post: post)
             if isTextToSpeechEnabledForMessage(post: post), let user = post.user {
                 let message = post.segments.filter { $0.text != nil }.map { $0.text! }.joined(separator: " ")
-                if !message.isEmpty {
+                if !message.trimmingCharacters(in: .whitespaces).isEmpty {
                     say(user: user, message: message)
                 }
             }
             numberOfChatPostsPerTick += 1
             streamTotalChatMessages += 1
         }
-    }
-
-    private func isTextToSpeechEnabledForMessage(post: ChatPost) -> Bool {
-        guard database.chat.textToSpeechEnabled! else {
-            return false
-        }
-        if database.chat.textToSpeechSubscribersOnly! {
-            guard post.isSubscriber else {
-                return false
-            }
-        }
-        return true
     }
 
     private func reloadImageEffects() {
@@ -1793,68 +1781,6 @@ final class Model: NSObject, ObservableObject {
         setMuteOn(value: value)
     }
 
-    private func getVoice(message: String) -> AVSpeechSynthesisVoice? {
-        var language: String?
-        if database.chat.textToSpeechDetectLanguagePerMessage! {
-            recognizer.reset()
-            recognizer.processString(message)
-            language = recognizer.dominantLanguage?.rawValue
-        }
-        if language == nil {
-            language = Locale.current.language.languageCode?.identifier
-        }
-        guard let language else {
-            return nil
-        }
-        if let voiceIdentifier = textToSpeechVoices[language] {
-            return AVSpeechSynthesisVoice(identifier: voiceIdentifier)
-        } else if let voice = AVSpeechSynthesisVoice.speechVoices()
-            .filter({ $0.language.starts(with: language) }).first
-        {
-            return AVSpeechSynthesisVoice(identifier: voice.identifier)
-        }
-        return nil
-    }
-
-    private func say(user: String, message: String) {
-        let text: String
-        if user == latestUserThatSaidSomething || !database.chat.textToSpeechSayUsername! {
-            text = message
-        } else {
-            text = String(localized: "\(user) said \(message)")
-        }
-        latestUserThatSaidSomething = user
-        textToSpeechQueue.async {
-            let utterance = AVSpeechUtterance(string: text)
-            utterance.rate = self.textToSpeechRate
-            utterance.pitchMultiplier = 0.8
-            utterance.postUtteranceDelay = 0.05
-            utterance.volume = self.textToSpeechVolume
-            if let voice = self.getVoice(message: message) {
-                utterance.voice = voice
-            }
-            self.synthesizer.speak(utterance)
-        }
-    }
-
-    func setTextToSpeechRate(rate: Float) {
-        textToSpeechQueue.async {
-            self.textToSpeechRate = rate
-        }
-    }
-
-    func setTextToSpeechVolume(volume: Float) {
-        textToSpeechQueue.async {
-            self.textToSpeechVolume = volume
-        }
-    }
-
-    func setTextToSpeechVoices(voices: [String: String]) {
-        textToSpeechQueue.async {
-            self.textToSpeechVoices = voices
-        }
-    }
-
     func startStream(delayed: Bool = false) {
         logger.info("stream: Start")
         guard !streaming else {
@@ -2003,20 +1929,6 @@ final class Model: NSObject, ObservableObject {
         reloadYouTubeLiveChat()
         reloadAfreecaTvChat()
         reloadOpenStreamingPlatformChat()
-    }
-
-    func newTextToSpeech() {
-        textToSpeechQueue.async {
-            self.synthesizer = AVSpeechSynthesizer()
-            self.recognizer = NLLanguageRecognizer()
-        }
-    }
-
-    func stopTextToSpeech() {
-        textToSpeechQueue.async {
-            self.synthesizer.stopSpeaking(at: .word)
-        }
-        newTextToSpeech()
     }
 
     private func reloadConnections() {
@@ -5152,5 +5064,95 @@ extension Model {
         if drawOnStreamLines.isEmpty {
             media.unregisterEffect(drawOnStreamEffect)
         }
+    }
+}
+
+extension Model {
+    private func getVoice(message: String) -> AVSpeechSynthesisVoice? {
+        var language: String?
+        if database.chat.textToSpeechDetectLanguagePerMessage! {
+            recognizer.reset()
+            recognizer.processString(message)
+            language = recognizer.dominantLanguage?.rawValue
+        }
+        if language == nil {
+            language = Locale.current.language.languageCode?.identifier
+        }
+        guard let language else {
+            return nil
+        }
+        if let voiceIdentifier = textToSpeechVoices[language] {
+            return AVSpeechSynthesisVoice(identifier: voiceIdentifier)
+        } else if let voice = AVSpeechSynthesisVoice.speechVoices()
+            .filter({ $0.language.starts(with: language) }).first
+        {
+            return AVSpeechSynthesisVoice(identifier: voice.identifier)
+        }
+        return nil
+    }
+
+    private func say(user: String, message: String) {
+        let text: String
+        if user == latestUserThatSaidSomething || !database.chat.textToSpeechSayUsername! {
+            text = message
+        } else {
+            text = String(localized: "\(user) said \(message)")
+        }
+        latestUserThatSaidSomething = user
+        textToSpeechQueue.async {
+            let utterance = AVSpeechUtterance(string: text)
+            utterance.rate = self.textToSpeechRate
+            utterance.pitchMultiplier = 0.8
+            utterance.postUtteranceDelay = 0.05
+            utterance.volume = self.textToSpeechVolume
+            if let voice = self.getVoice(message: message) {
+                utterance.voice = voice
+            }
+            self.synthesizer.speak(utterance)
+        }
+    }
+
+    func setTextToSpeechRate(rate: Float) {
+        textToSpeechQueue.async {
+            self.textToSpeechRate = rate
+        }
+    }
+
+    func setTextToSpeechVolume(volume: Float) {
+        textToSpeechQueue.async {
+            self.textToSpeechVolume = volume
+        }
+    }
+
+    func setTextToSpeechVoices(voices: [String: String]) {
+        textToSpeechQueue.async {
+            self.textToSpeechVoices = voices
+        }
+    }
+
+    private func isTextToSpeechEnabledForMessage(post: ChatPost) -> Bool {
+        guard database.chat.textToSpeechEnabled! else {
+            return false
+        }
+        if database.chat.textToSpeechSubscribersOnly! {
+            guard post.isSubscriber else {
+                return false
+            }
+        }
+        return true
+    }
+
+    func newTextToSpeech() {
+        textToSpeechQueue.async {
+            self.synthesizer = AVSpeechSynthesizer()
+            self.recognizer = NLLanguageRecognizer()
+        }
+    }
+
+    func stopTextToSpeech() {
+        textToSpeechQueue.async {
+            self.synthesizer.stopSpeaking(at: .word)
+        }
+        newTextToSpeech()
     }
 }
