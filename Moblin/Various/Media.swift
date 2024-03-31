@@ -557,12 +557,12 @@ final class Media: NSObject {
             videoProperties[AVVideoCompressionPropertiesKey] = compressionProperties
         }
         netStream.startRecording(url: url,
-            audioSettings: [
-                AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-                AVSampleRateKey: 0,
-                AVNumberOfChannelsKey: 0,
-            ],
-            videoSettings: videoProperties)
+                                 audioSettings: [
+                                     AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+                                     AVSampleRateKey: 0,
+                                     AVNumberOfChannelsKey: 0,
+                                 ],
+                                 videoSettings: videoProperties)
     }
 
     func stopRecording() {
