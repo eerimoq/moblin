@@ -2047,7 +2047,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%1$@ %2$@"
           }
         },
@@ -2549,7 +2549,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@ sagte %@"
           }
         },
@@ -6282,7 +6282,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Eine Liste aller Szenen-Quick Buttons, häufig zum Ein- und Ausblenden von Widgets. Eine Szenentaste kann in null oder mehreren Szenen verwendet werden."
+            "value" : "Eine Liste aller Szenen-Schnelltasten, häufig zum Ein- und Ausblenden von Widgets. Eine Szenentaste kann in null oder mehreren Szenen verwendet werden."
           }
         },
         "el" : {
@@ -18566,8 +18566,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ernte"
+            "state" : "translated",
+            "value" : "Schnitt"
           }
         },
         "el" : {
@@ -19930,7 +19930,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Sprache pro Nachricht erkennen"
           }
         },
@@ -33570,7 +33570,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Live"
           }
         },
@@ -42747,7 +42747,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Es können nur nicht verwendete Quick Buttons gelöscht werden."
+            "value" : "Es können nur nicht verwendete Schnelltasten gelöscht werden."
           }
         },
         "el" : {
@@ -44979,7 +44979,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Quick Buttons"
+            "value" : "Schnelltasten"
           }
         },
         "el" : {
@@ -45103,7 +45103,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Die Quick Buttons werden von unten nach oben angezeigt."
+            "value" : "Die Schnelltasten werden von unten nach oben angezeigt."
           }
         },
         "el" : {
@@ -48822,8 +48822,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Sagen Sie den Benutzernamen"
+            "state" : "translated",
+            "value" : "Sagt den Benutzernamen"
           }
         },
         "el" : {
@@ -51674,7 +51674,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Quell-Widget"
           }
         },
@@ -55763,7 +55763,14 @@
       }
     },
     "Subscribers only" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Endast prenumeranter"
+          }
+        }
+      }
     },
     "Subscribers only is not available for all platforms." : {
 
@@ -57136,7 +57143,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Text zu Sprache"
           }
         },
@@ -65075,7 +65082,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Stimmen"
           }
         },
@@ -66563,7 +66570,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "X"
           }
         },
@@ -66941,7 +66948,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Y"
           }
         },
