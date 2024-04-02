@@ -8,9 +8,12 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.225.0", date: "2024-04-02", changes: [
+        "• Apply audio channel mapping for recordings.",
+    ]),
     Version(version: "0.224.0", date: "2024-04-01", changes: [
-        "- No chat text to speech for emote-only messages.",
-        "- Maybe fix flashing black image that sometimes starts after changing camera when widgets or LUTs are enabled. 🐛 MrPol",
+        "• No chat text to speech for emote-only messages.",
+        "• Maybe fix flashing black image that sometimes starts after changing camera when widgets or LUTs are enabled. 🐛 MrPol",
     ]),
     Version(version: "0.223.0", date: "2024-03-30", changes: [
         "• Make YouTube chat more robust.",
