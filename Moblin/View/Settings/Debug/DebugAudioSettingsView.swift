@@ -10,6 +10,8 @@ struct DebugAudioSettingsView: View {
         }
         model.database.debug!.audioOutputToInputChannelsMap!.channel0 = max(channel - 1, -1)
         model.store()
+        model.objectWillChange.send()
+        model.reloadStream()
     }
 
     private func submitOutputChannel2(value: String) {
@@ -18,6 +20,8 @@ struct DebugAudioSettingsView: View {
         }
         model.database.debug!.audioOutputToInputChannelsMap!.channel1 = max(channel - 1, -1)
         model.store()
+        model.objectWillChange.send()
+        model.reloadStream()
     }
 
     var body: some View {

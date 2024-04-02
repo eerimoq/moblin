@@ -446,7 +446,7 @@ final class Media: NSObject {
     }
 
     func setAudioChannelsMap(channelsMap: [Int: Int]) {
-        netStream.audioSettings.outputChannelsMap = channelsMap
+        netStream.setAudioChannelsMap(map: channelsMap)
     }
 
     func setCameraZoomLevel(level: Float, rate: Float?) -> Float? {

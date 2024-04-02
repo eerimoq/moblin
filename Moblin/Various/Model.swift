@@ -4965,11 +4965,7 @@ extension Model {
     }
 
     private func setBuiltInMicAudioMode(dataSource: AVAudioSessionDataSourceDescription) throws {
-        if false, dataSource.supportedPolarPatterns?.contains(.stereo) == true {
-            try dataSource.setPreferredPolarPattern(.stereo)
-        } else {
-            try dataSource.setPreferredPolarPattern(.none)
-        }
+        try dataSource.setPreferredPolarPattern(.none)
     }
 }
 
