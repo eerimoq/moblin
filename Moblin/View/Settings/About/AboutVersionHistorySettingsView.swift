@@ -9,7 +9,7 @@ struct Version {
 // swiftlint:disable line_length
 private let versions = [
     Version(version: "0.225.0", date: "2024-04-02", changes: [
-        "• Apply audio channel mapping for recordings.",
+        "• Apply audio channel mapping for recordings. 💡 ariathome",
     ]),
     Version(version: "0.224.0", date: "2024-04-01", changes: [
         "• No chat text to speech for emote-only messages.",
