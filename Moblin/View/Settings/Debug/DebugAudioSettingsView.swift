@@ -9,7 +9,8 @@ struct DebugAudioSettingsView: View {
             return
         }
         model.database.debug!.audioOutputToInputChannelsMap!.channel0 = max(channel - 1, -1)
-        model.store()
+        model.reloadStream()
+        model.sceneUpdated()
     }
 
     private func submitOutputChannel2(value: String) {
@@ -17,22 +18,25 @@ struct DebugAudioSettingsView: View {
             return
         }
         model.database.debug!.audioOutputToInputChannelsMap!.channel1 = max(channel - 1, -1)
-        model.store()
+        model.reloadStream()
+        model.sceneUpdated()
     }
 
     var body: some View {
         Form {
             Section {
                 TextEditNavigationView(
-                    title: "Output channel 1",
+                    title: String(localized: "Output channel 1 (Left)"),
                     value: String(model.database.debug!.audioOutputToInputChannelsMap!.channel0 + 1),
                     onSubmit: submitOutputChannel1
                 )
+                .disabled(model.isLive || model.isRecording)
                 TextEditNavigationView(
-                    title: "Output channel 2",
+                    title: String(localized: "Output channel2 2 (Right)"),
                     value: String(model.database.debug!.audioOutputToInputChannelsMap!.channel1 + 1),
                     onSubmit: submitOutputChannel2
                 )
+                .disabled(model.isLive || model.isRecording)
             } header: {
                 Text("Channels mapping")
             }
