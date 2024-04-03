@@ -32,7 +32,7 @@ struct DebugAudioSettingsView: View {
                 )
                 .disabled(model.isLive || model.isRecording)
                 TextEditNavigationView(
-                    title: String(localized: "Output channel2 2 (Right)"),
+                    title: String(localized: "Output channel 2 (Right)"),
                     value: String(model.database.debug!.audioOutputToInputChannelsMap!.channel1 + 1),
                     onSubmit: submitOutputChannel2
                 )
