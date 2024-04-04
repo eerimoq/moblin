@@ -7896,6 +7896,7 @@
       }
     },
     "API key" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -8018,9 +8019,6 @@
           }
         }
       }
-    },
-    "API key for YouTube Data API v3 is needed." : {
-
     },
     "App restart needed to take effect." : {
       "localizations" : {
@@ -30095,6 +30093,7 @@
       }
     },
     "gr230gkwpj03" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

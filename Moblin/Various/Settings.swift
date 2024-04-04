@@ -1912,10 +1912,6 @@ final class Settings {
             realDatabase.chat.width = 1.0
             store()
         }
-        for stream in realDatabase.streams where stream.youTubeApiKey == nil {
-            stream.youTubeApiKey = ""
-            store()
-        }
         for stream in realDatabase.streams where stream.youTubeVideoId == nil {
             stream.youTubeVideoId = ""
             store()

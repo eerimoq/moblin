@@ -23,7 +23,6 @@ struct StreamWizardSummarySettingsView: View {
                 }
             } else if model.wizardPlatform == .youTube {
                 Section {
-                    TextValueView(name: String(localized: "API key"), value: model.wizardYouTubeApiKey)
                     TextValueView(name: String(localized: "Video id"), value: model.wizardYouTubeVideoId)
                 } header: {
                     Text("YouTube")

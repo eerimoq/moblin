@@ -446,6 +446,10 @@ func sleep(seconds: Int) async throws {
     try await Task.sleep(nanoseconds: UInt64(seconds) * 1_000_000_000)
 }
 
+func sleep(milliSeconds: Int) async throws {
+    try await Task.sleep(nanoseconds: UInt64(milliSeconds) * 1_000_000)
+}
+
 func parseIso8601(value: String) -> Date? {
     let formatter = ISO8601DateFormatter()
     formatter.formatOptions = [

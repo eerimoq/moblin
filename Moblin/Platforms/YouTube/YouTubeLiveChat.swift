@@ -1,73 +1,80 @@
 import Foundation
 
-private struct MessagesSnippet: Codable {
-    var authorChannelId: String
-    var displayMessage: String?
-    var publishedAt: String
+private let userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:124.0) Gecko/20100101 Firefox/124.0"
+private let minimumPollDelayMs = 200
+private let maximumPollDelayMs = 3000
+
+private struct InvalidationContinuationData: Codable {
+    let continuation: String
 }
 
-private struct MessagesItem: Codable {
-    var snippet: MessagesSnippet
+private struct Continuations: Codable {
+    let invalidationContinuationData: InvalidationContinuationData
 }
 
-private struct Messages: Codable {
-    var pollingIntervalMillis: UInt64
-    var nextPageToken: String
-    var items: [MessagesItem]
+private struct Run: Codable {
+    let text: String?
 }
 
-private struct ChannelSnippet: Codable {
-    var title: String
+private struct Message: Codable {
+    let runs: [Run]
 }
 
-private struct ChannelItem: Codable {
-    var snippet: ChannelSnippet
+private struct Author: Codable {
+    let simpleText: String
 }
 
-private struct Channel: Codable {
-    var items: [ChannelItem]
+private struct ChatDescription: Codable {
+    let authorName: Author
+    let message: Message?
 }
 
-private struct VideosLiveStreamingDetails: Codable {
-    var activeLiveChatId: String?
+private struct AddChatItemActionItem: Codable {
+    let liveChatTextMessageRenderer: ChatDescription?
+    let liveChatPaidMessageRenderer: ChatDescription?
+    let liveChatPaidStickerRenderer: ChatDescription?
+    let liveChatMembershipItemRenderer: ChatDescription?
 }
 
-private struct VideosItem: Codable {
-    var liveStreamingDetails: VideosLiveStreamingDetails
+private struct AddChatItemAction: Codable {
+    let item: AddChatItemActionItem
 }
 
-private struct Videos: Codable {
-    var items: [VideosItem]
+private struct Action: Codable {
+    let addChatItemAction: AddChatItemAction?
 }
 
-private let unknownUser = "Unknown"
-private let minimumPollingIntervalMillis: UInt64 = 500
+private struct LiveChatContinuation: Codable {
+    let continuations: [Continuations]
+    let actions: [Action]?
+}
+
+private struct ContinuationContents: Codable {
+    let liveChatContinuation: LiveChatContinuation
+}
+
+private struct GetLiveChat: Codable {
+    let continuationContents: ContinuationContents
+}
 
 final class YouTubeLiveChat: NSObject {
     private var model: Model
-    private var apiKey: String
     private var videoId: String
-    private var liveChatId: String?
-    private var nextToken: String?
     private var task: Task<Void, Error>?
     private var emotes: Emotes
     private var settings: SettingsStreamChat
-    private var channelToTitle: [String: String] = [:]
-    private var pollingIntervalMillis: UInt64 = minimumPollingIntervalMillis
     private var connected: Bool = false
-    private var lastPublishedAtTime: Date?
+    private var continuation: String = ""
+    private var delay = 2000
 
-    init(model: Model, apiKey: String, videoId: String, settings: SettingsStreamChat) {
+    init(model: Model, videoId: String, settings: SettingsStreamChat) {
         self.model = model
-        self.apiKey = apiKey
         self.videoId = videoId
         self.settings = settings.clone()
         emotes = Emotes()
     }
 
     func start() {
-        nextToken = nil
-        pollingIntervalMillis = minimumPollingIntervalMillis
         emotes.start(
             platform: .youtube,
             channelId: videoId,
@@ -77,30 +84,16 @@ final class YouTubeLiveChat: NSObject {
         )
         task = Task.init {
             while true {
-                if liveChatId == nil {
-                    liveChatId = await getLiveChatId()
-                    if liveChatId == nil {
-                        pollingIntervalMillis = 5000
-                    }
-                } else {
-                    do {
-                        try await getMessages()
-                        connected = true
-                    } catch {
-                        logger.info("youtube: chat: \(error)")
-                        connected = false
-                        pollingIntervalMillis = 5000
-                        nextToken = nil
-                    }
-                }
+                do {
+                    try await getInitialContinuation()
+                    connected = true
+                    try await readMessages()
+                } catch {}
+                connected = false
                 if Task.isCancelled {
                     break
                 }
-                do {
-                    try await Task.sleep(nanoseconds: pollingIntervalMillis * 1_000_000)
-                } catch {
-                    break
-                }
+                try await sleep(seconds: 5)
             }
         }
     }
@@ -132,99 +125,130 @@ final class YouTubeLiveChat: NSObject {
         }
     }
 
-    private func makeMessagesUrl() -> URL? {
-        var url = """
-        https://www.googleapis.com/youtube/v3/liveChat/messages\
-        ?part=id,snippet&key=\(apiKey)&liveChatId=\(liveChatId!)
-        """
-        if let nextToken {
-            url += "&pageToken=\(nextToken)"
-        }
-        return URL(string: url)
+    private func makeLiveChatUrl() -> URL? {
+        return URL(string: "https://www.youtube.com/live_chat?is_popout=1&v=\(videoId)")
     }
 
-    private func makeChannelsUrl(channelId: String) -> URL? {
-        return URL(string: """
-        https://www.googleapis.com/youtube/v3/channels\
-        ?part=snippet&key=\(apiKey)&id=\(channelId)
-        """)
+    private func makeGetLiveChatUrl() -> URL? {
+        return URL(string: "https://www.youtube.com/youtubei/v1/live_chat/get_live_chat")
     }
 
-    private func makeVideosUrl(videoId: String) -> URL? {
-        return URL(string: """
-        https://www.googleapis.com/youtube/v3/videos\
-        ?part=liveStreamingDetails&key=\(apiKey)&id=\(videoId)
-        """)
-    }
-
-    private func getChannelTitle(channelId: String) async -> String {
-        if let title = channelToTitle[channelId] {
-            return title
-        }
-        guard let url = makeChannelsUrl(channelId: channelId) else {
-            return unknownUser
-        }
-        do {
-            let (data, response) = try await fetch(from: url)
-            if response.isSuccessful {
-                let channel = try JSONDecoder().decode(Channel.self, from: data)
-                if channel.items.count != 1 {
-                    return unknownUser
-                }
-                let title = channel.items[0].snippet.title
-                channelToTitle[channelId] = title
-                return title
-            }
-        } catch {}
-        return unknownUser
-    }
-
-    private func getMessages() async throws {
-        guard let url = makeMessagesUrl() else {
+    private func getInitialContinuation() async throws {
+        guard let url = makeLiveChatUrl() else {
             throw "Failed to create URL"
         }
         let (data, response) = try await fetch(from: url)
         if !response.isSuccessful {
             throw "Unsuccessful HTTP response"
         }
-        let messages = try JSONDecoder().decode(
-            Messages.self,
-            from: data
-        )
-        pollingIntervalMillis = max(
-            messages.pollingIntervalMillis,
-            minimumPollingIntervalMillis
-        )
-        nextToken = messages.nextPageToken
-        for item in messages.items {
-            guard let displayMessage = item.snippet.displayMessage else {
-                continue
+        guard let body = String(bytes: data, encoding: .utf8) else {
+            throw "Not UTF-8 body"
+        }
+        let re_continuation = /"continuation":"([^"]+)"/
+        guard let match = try re_continuation.firstMatch(in: body) else {
+            throw "No continuation"
+        }
+        continuation = String(match.1)
+    }
+
+    private func readMessages() async throws {
+        guard let url = makeGetLiveChatUrl() else {
+            throw "Failed to create URL"
+        }
+        while true {
+            let (data, response) = try await upload(from: url, data: makeGetLiveChatBody())
+            if !response.isSuccessful {
+                throw "Unsuccessful HTTP response"
             }
-            guard let publishedAt = parseIso8601(value: item.snippet.publishedAt) else {
-                continue
-            }
-            if let lastPublishedAtTime {
-                guard publishedAt > lastPublishedAtTime else {
-                    continue
+            var numberOfMessages = 0
+            let getLiveChat = try JSONDecoder().decode(GetLiveChat.self, from: data)
+            if let actions = getLiveChat.continuationContents.liveChatContinuation.actions {
+                for action in actions {
+                    guard let item = action.addChatItemAction?.item else {
+                        continue
+                    }
+                    if let chatDescription = item.liveChatTextMessageRenderer {
+                        numberOfMessages += await handleChatDescription(chatDescription: chatDescription)
+                    }
+                    if let chatDescription = item.liveChatPaidMessageRenderer {
+                        numberOfMessages += await handleChatDescription(chatDescription: chatDescription)
+                    }
+                    if let chatDescription = item.liveChatPaidStickerRenderer {
+                        numberOfMessages += await handleChatDescription(chatDescription: chatDescription)
+                    }
+                    if let chatDescription = item.liveChatMembershipItemRenderer {
+                        numberOfMessages += await handleChatDescription(chatDescription: chatDescription)
+                    }
                 }
             }
-            lastPublishedAtTime = publishedAt
-            let segments = createSegments(message: displayMessage)
-            let user = await getChannelTitle(channelId: item.snippet.authorChannelId)
-            await MainActor.run {
-                self.model.appendChatMessage(
-                    user: user,
-                    userColor: nil,
-                    segments: segments,
-                    timestamp: model.digitalClock,
-                    timestampDate: Date(),
-                    isAction: false,
-                    isAnnouncement: false,
-                    isFirstMessage: false,
-                    isSubscriber: false
-                )
-            }
+            try updateContinuation(getLiveChat: getLiveChat)
+            updateDelayMs(numberOfMessages: numberOfMessages)
+            try await sleep(milliSeconds: delay)
         }
+    }
+
+    private func updateDelayMs(numberOfMessages: Int) {
+        if numberOfMessages > 0 {
+            delay = delay * 5 / numberOfMessages
+        } else {
+            delay = maximumPollDelayMs
+        }
+
+        if delay > maximumPollDelayMs {
+            delay = maximumPollDelayMs
+        }
+
+        if delay < minimumPollDelayMs {
+            delay = minimumPollDelayMs
+        }
+    }
+
+    private func handleChatDescription(chatDescription: ChatDescription) async -> Int {
+        guard let message = chatDescription.message else {
+            return 0
+        }
+        var messageText = ""
+        for run in message.runs {
+            guard let text = run.text else {
+                return 0
+            }
+            messageText += text
+        }
+        let segments = createSegments(message: messageText)
+        await MainActor.run {
+            model.appendChatMessage(user: chatDescription.authorName.simpleText,
+                                    userColor: nil,
+                                    segments: segments,
+                                    timestamp: model.digitalClock,
+                                    timestampDate: Date(),
+                                    isAction: false,
+                                    isAnnouncement: false,
+                                    isFirstMessage: false,
+                                    isSubscriber: false)
+        }
+        return 1
+    }
+
+    private func updateContinuation(getLiveChat: GetLiveChat) throws {
+        guard let continuation = getLiveChat.continuationContents.liveChatContinuation.continuations.first
+        else {
+            throw "Continuation missing"
+        }
+        self.continuation = continuation.invalidationContinuationData.continuation
+    }
+
+    private func makeGetLiveChatBody() -> Data {
+        return """
+        {
+            "context": {
+                "client": {
+                    "clientName": "WEB",
+                    "clientVersion": "2.20210128.02.00"
+                }
+            },
+            "continuation": "\(continuation)"
+        }
+        """.utf8Data
     }
 
     private func createSegments(message: String) -> [ChatPostSegment] {
@@ -239,25 +263,27 @@ final class YouTubeLiveChat: NSObject {
         return segments
     }
 
-    private func getLiveChatId() async -> String? {
-        guard let url = makeVideosUrl(videoId: videoId) else {
-            return nil
+    private func fetch(from: URL) async throws -> (Data, HTTPURLResponse) {
+        var request = URLRequest(url: from)
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        let (data, response) = try await URLSession.shared.data(for: request)
+        if let response = response.http {
+            return (data, response)
+        } else {
+            throw "Not an HTTP response"
         }
-        do {
-            let (data, response) = try await fetch(from: url)
-            if response.isSuccessful {
-                let videos = try JSONDecoder().decode(Videos.self, from: data)
-                if videos.items.count != 1 {
-                    return nil
-                }
-                return videos.items[0].liveStreamingDetails.activeLiveChatId
-            }
-        } catch {}
-        return nil
     }
 
-    private func fetch(from: URL) async throws -> (Data, HTTPURLResponse) {
-        // logger.info("youtube: Fetching \(from)")
-        return try await httpGet(from: from)
+    private func upload(from: URL, data: Data) async throws -> (Data, HTTPURLResponse) {
+        var request = URLRequest(url: from)
+        request.httpMethod = "POST"
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        let (data, response) = try await URLSession.shared.upload(for: request, from: data)
+        if let response = response.http {
+            return (data, response)
+        } else {
+            throw "Not an HTTP response"
+        }
     }
 }

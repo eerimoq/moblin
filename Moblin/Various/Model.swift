@@ -351,7 +351,6 @@ final class Model: NSObject, ObservableObject {
     @Published var wizardTwitchChannelName = ""
     @Published var wizardTwitchChannelId = ""
     @Published var wizardKickChannelName = ""
-    @Published var wizardYouTubeApiKey = ""
     @Published var wizardYouTubeVideoId = ""
     @Published var wizardAfreecaTvChannelName = ""
     @Published var wizardAfreecsTvCStreamId = ""
@@ -2117,8 +2116,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func isYouTubeLiveChatConfigured() -> Bool {
-        return database.chat.enabled! && stream.youTubeEnabled! && stream.youTubeApiKey! != "" && stream
-            .youTubeVideoId! != ""
+        return database.chat.enabled! && stream.youTubeEnabled! && stream.youTubeVideoId! != ""
     }
 
     func isYouTubeLiveChatConnected() -> Bool {
@@ -2249,7 +2247,6 @@ final class Model: NSObject, ObservableObject {
         if isYouTubeLiveChatConfigured() {
             youTubeLiveChat = YouTubeLiveChat(
                 model: self,
-                apiKey: stream.youTubeApiKey!,
                 videoId: stream.youTubeVideoId!,
                 settings: stream.chat!
             )
@@ -2341,11 +2338,6 @@ final class Model: NSObject, ObservableObject {
     }
 
     func youTubeEnabledUpdated() {
-        reloadYouTubeLiveChat()
-        resetChat()
-    }
-
-    func youTubeApiKeyUpdated() {
         reloadYouTubeLiveChat()
         resetChat()
     }
@@ -4704,9 +4696,8 @@ extension Model {
             stream.kickEnabled = true
             stream.kickChannelName = wizardKickChannelName.trim()
         case .youTube:
-            if !wizardYouTubeApiKey.isEmpty, !wizardYouTubeVideoId.isEmpty {
+            if !wizardYouTubeVideoId.isEmpty {
                 stream.youTubeEnabled = true
-                stream.youTubeApiKey = wizardYouTubeApiKey.trim()
                 stream.youTubeVideoId = wizardYouTubeVideoId.trim()
             }
         case .afreecaTv:
@@ -4753,7 +4744,6 @@ extension Model {
         wizardTwitchChannelName = ""
         wizardTwitchChannelId = ""
         wizardKickChannelName = ""
-        wizardYouTubeApiKey = ""
         wizardYouTubeVideoId = ""
         wizardAfreecaTvChannelName = ""
         wizardAfreecsTvCStreamId = ""
