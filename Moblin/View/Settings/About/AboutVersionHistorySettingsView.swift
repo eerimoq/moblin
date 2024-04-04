@@ -8,6 +8,10 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.227.0", date: "2024-04-04", changes: [
+        "• Total makeover of the YouTube chat.",
+        "  • No need for API key anymore.",
+    ]),
     Version(version: "0.226.0", date: "2024-04-03", changes: [
         "• Use full range image format for more colors.",
         "• Only allow changing audio channel mapping if not live and not recording.",
