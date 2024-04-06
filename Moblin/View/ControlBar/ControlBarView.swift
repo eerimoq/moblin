@@ -152,7 +152,7 @@ struct ControlBarPortraitView: View {
     @Environment(\.accessibilityShowButtonShapes)
     private var accessibilityShowButtonShapes
 
-    private func controlBarWidth() -> CGFloat {
+    private func controlBarHeight() -> CGFloat {
         if accessibilityShowButtonShapes {
             return 150
         } else {
@@ -172,7 +172,7 @@ struct ControlBarPortraitView: View {
                                 .onChange(of: model.scrollQuickButtons) { _ in
                                     let id = model.buttonPairs.last?.first.button.id ?? model.buttonPairs
                                         .last?.second?.button.id ?? UUID()
-                                    reader.scrollTo(id, anchor: .bottom)
+                                    reader.scrollTo(id, anchor: .trailing)
                                 }
                         }
                         .frame(minWidth: metrics.size.width)
@@ -187,13 +187,9 @@ struct ControlBarPortraitView: View {
             .padding([.leading, .trailing], 0)
             VStack(spacing: 0) {
                 HStack(spacing: 0) {
-                    BatteryView()
                     Spacer(minLength: 0)
                     ThermalStateView(thermalState: model.thermalState)
                     Spacer(minLength: 0)
-                    Text(model.digitalClock)
-                        .foregroundColor(.white)
-                        .font(smallFont)
                 }
                 .padding([.bottom], 5)
                 .padding([.leading], 0)
@@ -227,11 +223,11 @@ struct ControlBarPortraitView: View {
                     .padding([.top], 10)
                     .padding([.leading, .trailing], 5)
             }
-            .frame(width: controlBarWidth())
+            .frame(width: controlBarHeight())
         }
         .padding([.top], 10)
         .padding([.bottom], 0)
-        .frame(height: controlBarWidth())
+        .frame(height: controlBarHeight())
         .background(.black)
     }
 }
