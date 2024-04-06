@@ -117,14 +117,16 @@ struct StreamSettingsView: View {
                         }
                     }))
                 }
-                Toggle(isOn: Binding(get: {
-                    stream.portrait!
-                }, set: { value in
-                    stream.portrait = value
-                    model.store()
-                    model.updateOrientationLock()
-                })) {
-                    Text("Portrait")
+                if UIDevice.current.userInterfaceIdiom == .phone {
+                    Toggle(isOn: Binding(get: {
+                        stream.portrait!
+                    }, set: { value in
+                        stream.portrait = value
+                        model.store()
+                        model.updateOrientationLock()
+                    })) {
+                        Text("Portrait")
+                    }
                 }
                 if stream.getProtocol() == .srt {
                     NavigationLink(destination: StreamSrtSettingsView(stream: stream)) {
