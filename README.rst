@@ -223,10 +223,14 @@ Main app
 
 - Deep link settings (moblin://).
 
-- Landscape only.
+- Landscape.
 
   - Both 0 and 180 degrees orientation. Video always with gravity down
     (never upside down).
+
+- Portrait.
+
+  - UI in portrait, but video in landscape. To be improved.
 
 Apple Watch companion app
 -------------------------
