@@ -722,7 +722,7 @@ struct ButtonsInnerView: View {
                     ButtonImage(state: state, buttonSize: size)
                 })
             }
-            if model.database.quickButtons!.showName {
+            if model.database.quickButtons!.showName && !model.stream.portrait! {
                 Text(state.button.name)
                     .multilineTextAlignment(.center)
                     .frame(width: nameWidth, alignment: .center)
@@ -733,7 +733,7 @@ struct ButtonsInnerView: View {
     }
 }
 
-struct ButtonsView: View {
+struct ButtonsLandscapeView: View {
     @EnvironmentObject var model: Model
     var width: CGFloat
 
@@ -742,6 +742,57 @@ struct ButtonsView: View {
             ForEach(model.buttonPairs) { pair in
                 if model.database.quickButtons!.twoColumns {
                     HStack(alignment: .top) {
+                        if let second = pair.second {
+                            ButtonsInnerView(
+                                state: second,
+                                size: buttonSize,
+                                nameSize: 10,
+                                nameWidth: buttonSize
+                            )
+                        } else {
+                            ButtonPlaceholderImage()
+                        }
+                        ButtonsInnerView(
+                            state: pair.first,
+                            size: buttonSize,
+                            nameSize: 10,
+                            nameWidth: buttonSize
+                        )
+                    }
+                    .id(pair.first.button.id)
+                } else {
+                    if let second = pair.second {
+                        ButtonsInnerView(
+                            state: second,
+                            size: singleButtonSize,
+                            nameSize: 12,
+                            nameWidth: width - 10
+                        )
+                    } else {
+                        EmptyView()
+                    }
+                    ButtonsInnerView(
+                        state: pair.first,
+                        size: singleButtonSize,
+                        nameSize: 12,
+                        nameWidth: width - 10
+                    )
+                    .id(pair.first.button.id)
+                }
+            }
+        }
+    }
+}
+
+struct ButtonsPortraitView: View {
+    @EnvironmentObject var model: Model
+    var width: CGFloat
+
+    var body: some View {
+        HStack {
+            ForEach(model.buttonPairs) { pair in
+                if model.database.quickButtons!.twoColumns {
+                    VStack(alignment: .leading) {
                         if let second = pair.second {
                             ButtonsInnerView(
                                 state: second,

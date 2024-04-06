@@ -44,6 +44,8 @@ struct GlobalQuickButtonsSettingsView: View {
                 }))
             } header: {
                 Text("Appearence")
+            } footer: {
+                Text("Names are not shown in portrait mode.")
             }
             Section {
                 List {

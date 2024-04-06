@@ -37534,6 +37534,7 @@
       }
     },
     "Mirror front camera on stream" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -37658,6 +37659,7 @@
       }
     },
     "Mirror front camera on stream and rotate video 90 degrees in OBS for poor mans portrait streaming." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -39516,6 +39518,9 @@
           }
         }
       }
+    },
+    "Names are not shown in portrait mode." : {
+
     },
     "Nearby ingest endpoint" : {
       "localizations" : {
@@ -44234,6 +44239,9 @@
           }
         }
       }
+    },
+    "Portrait" : {
+
     },
     "Press \"Add automatically to Moblin\" on https://cloud.belabox.net SRT(LA) relays (requires login). See screenshot below." : {
       "localizations" : {
@@ -58508,6 +58516,9 @@
         }
       }
     },
+    "The streamed (and recorded) video is always in landscape, even if the portrait toggle is enabled. Rotate it in to portrait in OBS. To be improved in the future." : {
+
+    },
     "The TCP port the RTMP server listens for RTMP publishers on." : {
       "localizations" : {
         "de" : {
@@ -66322,6 +66333,9 @@
           }
         }
       }
+    },
+    "Widgets will be wrongly rotated when the portrait toggle is enabled." : {
+
     },
     "Width" : {
       "localizations" : {

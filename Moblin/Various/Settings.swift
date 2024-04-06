@@ -305,6 +305,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var recording: SettingsStreamRecording? = .init()
     var realtimeIrlEnabled: Bool? = false
     var realtimeIrlPushKey: String? = ""
+    var portrait: Bool? = false
 
     init(name: String) {
         self.name = name
@@ -350,6 +351,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
         new.recording = recording?.clone()
         new.realtimeIrlEnabled = realtimeIrlEnabled
         new.realtimeIrlPushKey = realtimeIrlPushKey
+        new.portrait = portrait
         return new
     }
 
@@ -2269,10 +2271,6 @@ final class Settings {
             realDatabase.color!.diskLuts = []
             store()
         }
-        if realDatabase.mirrorFrontCameraOnStream == nil {
-            realDatabase.mirrorFrontCameraOnStream = false
-            store()
-        }
         for scene in realDatabase.scenes where scene.externalCameraId == nil {
             scene.externalCameraId = ""
             store()
@@ -2383,6 +2381,10 @@ final class Settings {
         }
         if realDatabase.chat.textToSpeechSubscribersOnly == nil {
             realDatabase.chat.textToSpeechSubscribersOnly = false
+            store()
+        }
+        for stream in database.streams where stream.portrait == nil {
+            stream.portrait = false
             store()
         }
     }

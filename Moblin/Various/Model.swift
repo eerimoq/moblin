@@ -853,6 +853,8 @@ final class Model: NSObject, ObservableObject {
         setTextToSpeechRate(rate: database.chat.textToSpeechRate!)
         setTextToSpeechVolume(volume: database.chat.textToSpeechSayVolume!)
         setTextToSpeechVoices(voices: database.chat.textToSpeechLanguageVoices!)
+        AppDelegate.orientationLock = .landscape
+        updateOrientationLock()
     }
 
     private func handleIpStatusUpdate(statuses: [IPMonitor.Status]) {
@@ -1681,6 +1683,16 @@ final class Model: NSObject, ObservableObject {
         media.setNetworkInterfaceNames(networkInterfaceNames: database.networkInterfaceNames!)
     }
 
+    func updateOrientationLock() {
+        if stream.portrait! {
+            AppDelegate.orientationLock = .portrait
+            videoView.isPortrait = true
+        } else {
+            AppDelegate.orientationLock = .landscape
+            videoView.isPortrait = false
+        }
+    }
+
     private func toggleRecording() {
         if isRecording {
             stopRecording()
@@ -1885,6 +1897,7 @@ final class Model: NSObject, ObservableObject {
             ostream.enabled = false
         }
         currentStreamId = stream.id
+        updateOrientationLock()
     }
 
     func setCurrentStream(streamId: UUID) -> Bool {
@@ -3243,11 +3256,11 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func getVideoMirroredOnStream() -> Bool {
-        return cameraPosition == .front && database.mirrorFrontCameraOnStream!
+        return cameraPosition == .front && stream.portrait!
     }
 
     private func getVideoMirroredOnScreen() -> Bool {
-        return cameraPosition == .front && !database.mirrorFrontCameraOnStream!
+        return cameraPosition == .front && !stream.portrait!
     }
 
     private func hasCameraChanged(
@@ -3607,7 +3620,10 @@ final class Model: NSObject, ObservableObject {
             return
         }
         var focusPointOfInterest = focusPoint
-        if getOrientation() == .landscapeRight {
+        if stream.portrait! {
+            focusPointOfInterest.x = focusPoint.y
+            focusPointOfInterest.y = 1 - focusPoint.x
+        } else if getOrientation() == .landscapeRight {
             focusPointOfInterest.x = 1 - focusPoint.x
             focusPointOfInterest.y = 1 - focusPoint.y
         }

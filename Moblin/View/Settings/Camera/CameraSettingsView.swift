@@ -180,20 +180,6 @@ struct CameraSettingsView: View {
                         Text(currentLut())
                     }
                 }
-                Toggle("Mirror front camera on stream", isOn: Binding(get: {
-                    model.database.mirrorFrontCameraOnStream!
-                }, set: { value in
-                    model.database.mirrorFrontCameraOnStream = value
-                    model.store()
-                    model.reattachCamera()
-                }))
-            } footer: {
-                Text(
-                    """
-                    Mirror front camera on stream and rotate video 90 degrees in OBS for poor mans \
-                    portrait streaming.
-                    """
-                )
             }
         }
         .navigationTitle("Camera")

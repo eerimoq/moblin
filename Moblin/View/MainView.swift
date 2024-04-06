@@ -71,85 +71,170 @@ struct MainView: View {
 
     var body: some View {
         ZStack {
-            HStack(spacing: 0) {
-                ZStack {
-                    HStack {
-                        Spacer(minLength: /*@START_MENU_TOKEN@*/0/*@END_MENU_TOKEN@*/)
-                        VStack {
-                            Spacer(minLength: 0)
-                            GeometryReader { metrics in
-                                ZStack {
-                                    streamView
-                                        .onTapGesture(count: 1) { location in
-                                            guard model.database.tapToFocus else {
-                                                return
+            if model.stream.portrait! {
+                VStack(spacing: 0) {
+                    ZStack {
+                        HStack {
+                            Spacer(minLength: /*@START_MENU_TOKEN@*/0/*@END_MENU_TOKEN@*/)
+                            VStack {
+                                Spacer(minLength: 0)
+                                GeometryReader { metrics in
+                                    ZStack {
+                                        streamView
+                                            .onTapGesture(count: 1) { location in
+                                                guard model.database.tapToFocus else {
+                                                    return
+                                                }
+                                                let x = (location.x / metrics.size.width)
+                                                    .clamped(to: 0 ... 1)
+                                                let y = (location.y / metrics.size.height)
+                                                    .clamped(to: 0 ... 1)
+                                                model.setFocusPointOfInterest(focusPoint: CGPoint(
+                                                    x: x,
+                                                    y: y
+                                                ))
                                             }
-                                            let x = (location.x / metrics.size.width)
-                                                .clamped(to: 0 ... 1)
-                                            let y = (location.y / metrics.size.height)
-                                                .clamped(to: 0 ... 1)
-                                            model.setFocusPointOfInterest(focusPoint: CGPoint(
-                                                x: x,
-                                                y: y
-                                            ))
-                                        }
-                                        .onLongPressGesture(perform: {
-                                            guard model.database.tapToFocus else {
-                                                return
+                                            .onLongPressGesture(perform: {
+                                                guard model.database.tapToFocus else {
+                                                    return
+                                                }
+                                                model.setAutoFocus()
+                                            })
+                                        if model.database.tapToFocus,
+                                           let focusPoint = model.manualFocusPoint
+                                        {
+                                            Canvas { context, _ in
+                                                drawFocus(
+                                                    context: context,
+                                                    metrics: metrics,
+                                                    focusPoint: focusPoint
+                                                )
                                             }
-                                            model.setAutoFocus()
-                                        })
-                                    if model.database.tapToFocus, let focusPoint = model.manualFocusPoint {
-                                        Canvas { context, _ in
-                                            drawFocus(
-                                                context: context,
-                                                metrics: metrics,
-                                                focusPoint: focusPoint
-                                            )
+                                            .allowsHitTesting(false)
                                         }
-                                        .allowsHitTesting(false)
-                                    }
-                                    if model.showingGrid {
-                                        StreamGridView()
+                                        if model.showingGrid {
+                                            StreamGridView()
+                                        }
                                     }
                                 }
+                                .aspectRatio(9 / 16, contentMode: .fit)
+                                Spacer(minLength: 0)
                             }
-                            .aspectRatio(16 / 9, contentMode: .fit)
-                            Spacer(minLength: 0)
                         }
+                        .background(.black)
+                        .ignoresSafeArea()
+                        .edgesIgnoringSafeArea(.all)
+                        StreamOverlayView()
+                            .opacity(model.showLocalOverlays ? 1 : 0)
                     }
-                    .background(.black)
-                    .ignoresSafeArea()
-                    .edgesIgnoringSafeArea(.all)
-                    StreamOverlayView()
-                        .opacity(model.showLocalOverlays ? 1 : 0)
-                    if model.showDrawOnStream {
-                        DrawOnStreamView()
+                    .gesture(
+                        MagnificationGesture()
+                            .onChanged { amount in
+                                model.changeZoomX(amount: Float(amount))
+                            }
+                            .onEnded { amount in
+                                model.commitZoomX(amount: Float(amount))
+                            }
+                    )
+                    ControlBarPortraitView()
+                }
+                .overlay(alignment: .topLeading) {
+                    ForEach(model.browsers) { browser in
+                        ScrollView([.vertical, .horizontal]) {
+                            BrowserView(browser: browser)
+                                .frame(
+                                    width: browser.browserEffect.width,
+                                    height: browser.browserEffect.height
+                                )
+                                .opacity(0)
+                        }
+                        .frame(width: browser.browserEffect.width, height: browser.browserEffect.height)
+                        .allowsHitTesting(false)
                     }
                 }
-                .gesture(
-                    MagnificationGesture()
-                        .onChanged { amount in
-                            model.changeZoomX(amount: Float(amount))
+            } else {
+                HStack(spacing: 0) {
+                    ZStack {
+                        HStack {
+                            Spacer(minLength: /*@START_MENU_TOKEN@*/0/*@END_MENU_TOKEN@*/)
+                            VStack {
+                                Spacer(minLength: 0)
+                                GeometryReader { metrics in
+                                    ZStack {
+                                        streamView
+                                            .onTapGesture(count: 1) { location in
+                                                guard model.database.tapToFocus else {
+                                                    return
+                                                }
+                                                let x = (location.x / metrics.size.width)
+                                                    .clamped(to: 0 ... 1)
+                                                let y = (location.y / metrics.size.height)
+                                                    .clamped(to: 0 ... 1)
+                                                model.setFocusPointOfInterest(focusPoint: CGPoint(
+                                                    x: x,
+                                                    y: y
+                                                ))
+                                            }
+                                            .onLongPressGesture(perform: {
+                                                guard model.database.tapToFocus else {
+                                                    return
+                                                }
+                                                model.setAutoFocus()
+                                            })
+                                        if model.database.tapToFocus,
+                                           let focusPoint = model.manualFocusPoint
+                                        {
+                                            Canvas { context, _ in
+                                                drawFocus(
+                                                    context: context,
+                                                    metrics: metrics,
+                                                    focusPoint: focusPoint
+                                                )
+                                            }
+                                            .allowsHitTesting(false)
+                                        }
+                                        if model.showingGrid {
+                                            StreamGridView()
+                                        }
+                                    }
+                                }
+                                .aspectRatio(16 / 9, contentMode: .fit)
+                                Spacer(minLength: 0)
+                            }
                         }
-                        .onEnded { amount in
-                            model.commitZoomX(amount: Float(amount))
+                        .background(.black)
+                        .ignoresSafeArea()
+                        .edgesIgnoringSafeArea(.all)
+                        StreamOverlayView()
+                            .opacity(model.showLocalOverlays ? 1 : 0)
+                        if model.showDrawOnStream {
+                            DrawOnStreamView()
                         }
-                )
-                ControlBarView()
-            }
-            .overlay(alignment: .topLeading) {
-                ForEach(model.browsers) { browser in
-                    ScrollView([.vertical, .horizontal]) {
-                        BrowserView(browser: browser)
-                            .frame(
-                                width: browser.browserEffect.width,
-                                height: browser.browserEffect.height
-                            )
-                            .opacity(0)
                     }
-                    .frame(width: browser.browserEffect.width, height: browser.browserEffect.height)
-                    .allowsHitTesting(false)
+                    .gesture(
+                        MagnificationGesture()
+                            .onChanged { amount in
+                                model.changeZoomX(amount: Float(amount))
+                            }
+                            .onEnded { amount in
+                                model.commitZoomX(amount: Float(amount))
+                            }
+                    )
+                    ControlBarLandscapeView()
+                }
+                .overlay(alignment: .topLeading) {
+                    ForEach(model.browsers) { browser in
+                        ScrollView([.vertical, .horizontal]) {
+                            BrowserView(browser: browser)
+                                .frame(
+                                    width: browser.browserEffect.width,
+                                    height: browser.browserEffect.height
+                                )
+                                .opacity(0)
+                        }
+                        .frame(width: browser.browserEffect.width, height: browser.browserEffect.height)
+                        .allowsHitTesting(false)
+                    }
                 }
             }
             if model.showingSettings {
