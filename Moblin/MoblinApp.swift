@@ -36,7 +36,7 @@ class SceneDelegate: NSObject, UIWindowSceneDelegate {
 class AppDelegate: NSObject, UIApplicationDelegate {
     static var orientationLock: UIInterfaceOrientationMask = .landscape {
         didSet {
-            UIApplication.shared.connectedScenes.forEach { scene in
+            for scene in UIApplication.shared.connectedScenes {
                 if let windowScene = scene as? UIWindowScene {
                     windowScene
                         .requestGeometryUpdate(
