@@ -1456,6 +1456,15 @@ class SettingsLocation: Codable {
     var privacyRegions: [SettingsPrivacyRegion] = []
 }
 
+class SettingsAudioOutputToInputChannelsMap: Codable {
+    var channel1: Int = 0
+    var channel2: Int = 1
+}
+
+class AudioSettings: Codable {
+    var audioOutputToInputChannelsMap: SettingsAudioOutputToInputChannelsMap? = .init()
+}
+
 class Database: Codable {
     var streams: [SettingsStream] = []
     var scenes: [SettingsScene] = []
@@ -1488,6 +1497,7 @@ class Database: Codable {
     var streamButtonColor: RgbColor? = defaultStreamButtonColor
     var location: SettingsLocation? = .init()
     var watch: WatchSettings? = .init()
+    var audio: AudioSettings? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -2386,6 +2396,14 @@ final class Settings {
         }
         for stream in database.streams where stream.portrait == nil {
             stream.portrait = false
+            store()
+        }
+        if realDatabase.audio == nil {
+            realDatabase.audio = .init()
+            realDatabase.audio!.audioOutputToInputChannelsMap!.channel1 = realDatabase.debug!
+                .audioOutputToInputChannelsMap!.channel0
+            realDatabase.audio!.audioOutputToInputChannelsMap!.channel2 = realDatabase.debug!
+                .audioOutputToInputChannelsMap!.channel1
             store()
         }
     }

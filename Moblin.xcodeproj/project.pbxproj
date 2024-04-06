@@ -120,6 +120,7 @@
 		0379BBB62AAD9B5B00B718B6 /* QuickButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBB52AAD9B5B00B718B6 /* QuickButtonsSettingsView.swift */; };
 		0379BBB82AAD9B7200B718B6 /* WidgetsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBB72AAD9B7200B718B6 /* WidgetsSettingsView.swift */; };
 		0379BBC02AADC4EC00B718B6 /* AboutLicensesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379BBBF2AADC4EC00B718B6 /* AboutLicensesSettingsView.swift */; };
+		037CE22D2BC17EBD004E9B18 /* AudioSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037CE22C2BC17EBD004E9B18 /* AudioSettingsView.swift */; };
 		037EBE772B666F66004D5774 /* DrawOnStreamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037EBE762B666F66004D5774 /* DrawOnStreamView.swift */; };
 		0382933B2A9A73ED008963AA /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0382933A2A9A73ED008963AA /* Settings.swift */; };
 		03831D522AD90AB5008D26CC /* MoblinSettingsUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03831D512AD90AB5008D26CC /* MoblinSettingsUrl.swift */; };
@@ -385,6 +386,7 @@
 		0379BBB52AAD9B5B00B718B6 /* QuickButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickButtonsSettingsView.swift; sourceTree = "<group>"; };
 		0379BBB72AAD9B7200B718B6 /* WidgetsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetsSettingsView.swift; sourceTree = "<group>"; };
 		0379BBBF2AADC4EC00B718B6 /* AboutLicensesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutLicensesSettingsView.swift; sourceTree = "<group>"; };
+		037CE22C2BC17EBD004E9B18 /* AudioSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSettingsView.swift; sourceTree = "<group>"; };
 		037EBE762B666F66004D5774 /* DrawOnStreamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawOnStreamView.swift; sourceTree = "<group>"; };
 		0382933A2A9A73ED008963AA /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		03831D512AD90AB5008D26CC /* MoblinSettingsUrl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoblinSettingsUrl.swift; sourceTree = "<group>"; };
@@ -1083,6 +1085,14 @@
 			path = Buttons;
 			sourceTree = "<group>";
 		};
+		037CE22B2BC17EA3004E9B18 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				037CE22C2BC17EBD004E9B18 /* AudioSettingsView.swift */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
 		03831D562AD9A188008D26CC /* Cosmetics */ = {
 			isa = PBXGroup;
 			children = (
@@ -1201,6 +1211,7 @@
 			isa = PBXGroup;
 			children = (
 				0379BBAB2AAD962700B718B6 /* About */,
+				037CE22B2BC17EA3004E9B18 /* Audio */,
 				03FB4B2C2AD8CF6B005AA183 /* BitratePresets */,
 				03B16A2A2B35D70D00E5AB07 /* Camera */,
 				030399112AE2D0E900D27530 /* Chat */,
@@ -1829,6 +1840,7 @@
 				036333282AAE2E5100FF1231 /* ImageStorage.swift in Sources */,
 				03487F242B334AD0003D9ED9 /* StreamingHistorySettingsView.swift in Sources */,
 				03BC115D2AE4BD7B00C38FC4 /* Bttv.swift in Sources */,
+				037CE22D2BC17EBD004E9B18 /* AudioSettingsView.swift in Sources */,
 				0315A3702AA3771F00295443 /* SceneWidgetSettingsView.swift in Sources */,
 				0379BB9E2AAD81AA00B718B6 /* StreamOverlayRightView.swift in Sources */,
 				03BDE2262B24656400DF193A /* StreamObsSettingsView.swift in Sources */,

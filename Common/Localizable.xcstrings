@@ -14469,6 +14469,7 @@
       }
     },
     "Channels mapping" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -32449,6 +32450,9 @@
         }
       }
     },
+    "Input to output channel mapping" : {
+
+    },
     "Interactive chat" : {
       "localizations" : {
         "de" : {
@@ -38031,6 +38035,9 @@
         }
       }
     },
+    "Mono audio only uses output channel 1. Stereo audio uses both output channels." : {
+
+    },
     "Movie" : {
       "localizations" : {
         "de" : {
@@ -43118,10 +43125,10 @@
         }
       }
     },
-    "Output channel 1 (Left)" : {
+    "Output channel 1" : {
 
     },
-    "Output channel 2 (Right)" : {
+    "Output channel 2" : {
 
     },
     "Overhead bandwidth" : {

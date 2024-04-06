@@ -131,6 +131,9 @@ struct SettingsView: View {
                 NavigationLink(destination: CameraSettingsView()) {
                     IconAndText(image: "camera", text: String(localized: "Camera"))
                 }
+                NavigationLink(destination: AudioSettingsView()) {
+                    IconAndText(image: "waveform", text: String(localized: "Audio"))
+                }
                 NavigationLink(destination: BitratePresetsSettingsView()) {
                     IconAndText(image: "speedometer", text: String(localized: "Bitrate presets"))
                 }

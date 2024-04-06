@@ -1927,8 +1927,8 @@ final class Model: NSObject, ObservableObject {
         setStreamBitrate(stream: stream)
         setAudioStreamBitrate(stream: stream)
         setAudioChannelsMap(channelsMap: [
-            0: database.debug!.audioOutputToInputChannelsMap!.channel0,
-            1: database.debug!.audioOutputToInputChannelsMap!.channel1,
+            0: database.audio!.audioOutputToInputChannelsMap!.channel1,
+            1: database.audio!.audioOutputToInputChannelsMap!.channel2,
         ])
         reloadConnections()
         resetChat()
