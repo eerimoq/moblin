@@ -20,6 +20,7 @@ private let versions = [
         "  • There are probably more limitations that I can't think of right now. 😀",
         "• Fix BTTV, FFZ and 7TV Kick emotes.",
         "  • Was using Twitch emotes.",
+        "• Make zoom and scene selection buttons easier to tap. 🐛 JohannesLiv",
     ]),
     Version(version: "0.227.0", date: "2024-04-04", changes: [
         "• Total makeover of the YouTube chat.",

@@ -43,6 +43,7 @@ private struct SegmentedPicker<T: Equatable, Content: View>: View {
                         }
                     }, label: {
                         self.content(self.items[index])
+                            .contentShape(Rectangle())
                     })
                     .buttonStyle(.plain)
                 }
