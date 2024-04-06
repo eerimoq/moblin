@@ -74,7 +74,7 @@ final class KickPusher: NSObject {
     func start() {
         stop()
         emotes.start(
-            platform: .twitch,
+            platform: .kick,
             channelId: channelId,
             onError: handleError,
             onOk: handleOk,
