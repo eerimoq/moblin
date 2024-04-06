@@ -8,6 +8,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.229.0", date: "2024-04-06", changes: [
+        "• Move audio channel mapping settings to Settings → Audio.",
+        "• Basic automatic chat text to speech filtering. 💡 OhItsLaz",
+        "  • Ignore messages that the natural language model does find a known language for, but always say messages shorter than 8 letters.",
+        "• Remove \"Icons not yet in store\" as they will never be in store.",
+        "• \"says\" instead of \"said\" in chat text to speech.",
+    ]),
     Version(version: "0.228.0", date: "2024-04-06", changes: [
         "• Improved portrait streaming (iPhone only).",
         "  • Enable per stream in Settings → Streams → My stream → Portrait.",
