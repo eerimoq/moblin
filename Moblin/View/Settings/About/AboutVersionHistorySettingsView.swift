@@ -8,6 +8,18 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.228.0", date: "2024-04-06", changes: [
+        "• Improved portrait streaming.",
+        "  • UI in portrait when streaming in portrait.",
+        "  • The streamed video is still in landscape, so has to be rotated in OBS.",
+        "  • Quick button names are not supported.",
+        "  • Draw on stream is not supported.",
+        "  • Widgets are wrongly rotated 90 degrees.",
+        "  • Chat is partly hidden by scene and zoom buttons.",
+        "  • There are probably more limitations that I can't think of right now. 😀",
+        "• Fix BTTV, FFZ and 7TV Kick emotes.",
+        "  • Was using Twitch emotes.",
+    ]),
     Version(version: "0.227.0", date: "2024-04-04", changes: [
         "• Total makeover of the YouTube chat.",
         "  • No need for API key anymore.",
