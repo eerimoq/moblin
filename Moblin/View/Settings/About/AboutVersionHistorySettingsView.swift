@@ -9,7 +9,8 @@ struct Version {
 // swiftlint:disable line_length
 private let versions = [
     Version(version: "0.228.0", date: "2024-04-06", changes: [
-        "• Improved portrait streaming.",
+        "• Improved portrait streaming (iPhone only).",
+        "  • Enable per stream in Settings → Streams → My stream → Portrait.",
         "  • UI in portrait when streaming in portrait.",
         "  • The streamed video is still in landscape, so has to be rotated in OBS.",
         "  • Quick button names are not supported.",
