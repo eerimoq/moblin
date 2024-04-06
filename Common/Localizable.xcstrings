@@ -2676,12 +2676,12 @@
         }
       }
     },
-    "%@ said: %@" : {
+    "%@ says: %@" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "%1$@ said: %2$@"
+            "value" : "%1$@ says: %2$@"
           }
         }
       }

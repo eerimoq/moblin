@@ -5085,7 +5085,7 @@ extension Model {
         if user == latestUserThatSaidSomething || !database.chat.textToSpeechSayUsername! {
             text = message
         } else {
-            text = String(localized: "\(user) said: \(message)")
+            text = String(localized: "\(user) says: \(message)")
         }
         latestUserThatSaidSomething = user
         textToSpeechQueue.async {
