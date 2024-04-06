@@ -64,15 +64,15 @@ struct StreamOverlayView: View {
             .opacity(model.database.chat.enabled! ? 1 : 0)
             .allowsHitTesting(model.interactiveChat)
             HStack {
-                Spacer()
-                RightOverlayView()
-            }
-            HStack {
                 LeftOverlayView()
                     .padding([.leading], leadingPadding())
                 Spacer()
             }
             .allowsHitTesting(false)
+            HStack {
+                Spacer()
+                RightOverlayView()
+            }
             HStack {
                 StreamOverlayDebugView()
                     .padding([.leading], leadingPadding())
