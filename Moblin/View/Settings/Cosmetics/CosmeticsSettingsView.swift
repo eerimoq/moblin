@@ -112,24 +112,6 @@ struct CosmeticsSettingsView: View {
                 }
             }
             Section {
-                List {
-                    ForEach(model.iconsNotYetInStore) { icon in
-                        HStack {
-                            Text("")
-                            Image(icon.imageNoBackground())
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: buttonSize, height: buttonSize)
-                            Spacer()
-                            Text(icon.name)
-                        }
-                        .tag(icon.image())
-                    }
-                }
-            } header: {
-                Text("Icons not yet in store")
-            }
-            Section {
                 Button {
                     Task {
                         await model.updateProductFromAppStore()

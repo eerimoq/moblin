@@ -2546,6 +2546,7 @@
       }
     },
     "%@ said %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2671,6 +2672,16 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "％@ 說 ％@"
+          }
+        }
+      }
+    },
+    "%@ said: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ said: %2$@"
           }
         }
       }
@@ -31459,6 +31470,7 @@
       }
     },
     "Icons not yet in store" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

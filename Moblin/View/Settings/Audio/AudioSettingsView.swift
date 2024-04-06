@@ -5,7 +5,7 @@ struct AudioSettingsView: View {
     @EnvironmentObject var model: Model
 
     private func submitOutputChannel1(value: String) {
-        guard var channel = Int(value) else {
+        guard let channel = Int(value) else {
             return
         }
         model.database.audio!.audioOutputToInputChannelsMap!.channel1 = max(channel - 1, -1)
@@ -14,7 +14,7 @@ struct AudioSettingsView: View {
     }
 
     private func submitOutputChannel2(value: String) {
-        guard var channel = Int(value) else {
+        guard let channel = Int(value) else {
             return
         }
         model.database.audio!.audioOutputToInputChannelsMap!.channel2 = max(channel - 1, -1)

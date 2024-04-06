@@ -101,19 +101,6 @@ private let iconsProductIds = [
     "AppIconIreland",
 ]
 
-private let globalIconsNotYetInStore = [
-    Icon(name: "Basque", id: "AppIconBasque", price: ""),
-    Icon(name: "China", id: "AppIconChina", price: ""),
-    Icon(name: "France", id: "AppIconFrance", price: ""),
-    Icon(name: "Poland", id: "AppIconPoland", price: ""),
-    Icon(name: "Spain", id: "AppIconSpain", price: ""),
-    Icon(name: "Sweden", id: "AppIconSweden", price: ""),
-    Icon(name: "South Korea", id: "AppIconSouthKorea", price: ""),
-    Icon(name: "United Kingdom", id: "AppIconUnitedKingdom", price: ""),
-    Icon(name: "United States", id: "AppIconUnitedStates", price: ""),
-    Icon(name: "Eyebrows", id: "AppIconEyebrows", price: ""),
-]
-
 struct ChatMessageEmote: Identifiable {
     var id = UUID()
     var url: URL
@@ -438,7 +425,6 @@ final class Model: NSObject, ObservableObject {
 
     @Published var myIcons: [Icon] = []
     @Published var iconsInStore: [Icon] = []
-    @Published var iconsNotYetInStore = globalIconsNotYetInStore
     private var appStoreUpdateListenerTask: Task<Void, Error>?
     private var products: [String: Product] = [:]
     private var streamTotalBytes: UInt64 = 0
@@ -1533,7 +1519,7 @@ final class Model: NSObject, ObservableObject {
             chatPosts.prepend(post)
             sendChatMessageToWatch(post: post)
             if isTextToSpeechEnabledForMessage(post: post), let user = post.user {
-                let message = post.segments.filter { $0.text != nil }.map { $0.text! }.joined(separator: " ")
+                let message = post.segments.filter { $0.text != nil }.map { $0.text! }.joined(separator: "")
                 if !message.trimmingCharacters(in: .whitespaces).isEmpty {
                     say(user: user, message: message)
                 }
@@ -5071,13 +5057,14 @@ extension Model {
 
 extension Model {
     private func getVoice(message: String) -> AVSpeechSynthesisVoice? {
-        var language: String?
-        if database.chat.textToSpeechDetectLanguagePerMessage! {
-            recognizer.reset()
-            recognizer.processString(message)
-            language = recognizer.dominantLanguage?.rawValue
+        recognizer.reset()
+        recognizer.processString(message)
+        var language = recognizer.dominantLanguage?.rawValue
+        let probability = recognizer.languageHypotheses(withMaximum: 1).first?.value ?? 0.0
+        if probability < 0.7 && message.count > 8 {
+            return nil
         }
-        if language == nil {
+        if !database.chat.textToSpeechDetectLanguagePerMessage! || language == nil {
             language = Locale.current.language.languageCode?.identifier
         }
         guard let language else {
@@ -5098,7 +5085,7 @@ extension Model {
         if user == latestUserThatSaidSomething || !database.chat.textToSpeechSayUsername! {
             text = message
         } else {
-            text = String(localized: "\(user) said \(message)")
+            text = String(localized: "\(user) said: \(message)")
         }
         latestUserThatSaidSomething = user
         textToSpeechQueue.async {
@@ -5107,9 +5094,10 @@ extension Model {
             utterance.pitchMultiplier = 0.8
             utterance.postUtteranceDelay = 0.05
             utterance.volume = self.textToSpeechVolume
-            if let voice = self.getVoice(message: message) {
-                utterance.voice = voice
+            guard let voice = self.getVoice(message: message) else {
+                return
             }
+            utterance.voice = voice
             self.synthesizer.speak(utterance)
         }
     }
