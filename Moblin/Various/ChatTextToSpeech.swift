@@ -120,7 +120,7 @@ class ChatTextToSpeech: NSObject {
 
     func skipCurrentMessage() {
         textToSpeechDispatchQueue.async {
-            self.synthesizer.stopSpeaking(at: .immediate)
+            self.synthesizer.stopSpeaking(at: .word)
             self.trySayNextMessage()
         }
     }

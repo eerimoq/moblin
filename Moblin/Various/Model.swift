@@ -4591,8 +4591,8 @@ extension Model: WCSessionDelegate {
             self.setIsMuted(value: value)
         }
     }
-    
-    private func handleSkipCurrentChatTextToSpeechMessage(_ data: Any) {
+
+    private func handleSkipCurrentChatTextToSpeechMessage(_: Any) {
         DispatchQueue.main.async {
             self.chatTextToSpeech.skipCurrentMessage()
         }
