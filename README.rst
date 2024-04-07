@@ -1,4 +1,4 @@
-|app-store|_
+|app-store|
 
 Moblin - IRL Streaming
 ======================
