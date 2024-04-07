@@ -3211,6 +3211,7 @@ final class Model: NSObject, ObservableObject {
     private func updateThermalState() {
         thermalState = ProcessInfo.processInfo.thermalState
         streamingHistoryStream?.updateHighestThermalState(thermalState: ThermalState(from: thermalState))
+        sendThermalStateToWatch()
         logger.info("Thermal state is \(thermalState.string())")
     }
 
@@ -4398,6 +4399,13 @@ extension Model {
         sendMessageToWatch(type: .audioLevel, data: audioLevel)
     }
 
+    private func sendThermalStateToWatch() {
+        guard isWatchReachable() else {
+            return
+        }
+        sendMessageToWatch(type: .thermalState, data: thermalState)
+    }
+
     private func enqueueWatchChatPost(post: ChatPost) {
         guard WCSession.default.isWatchAppInstalled else {
             return
@@ -4518,6 +4526,7 @@ extension Model: WCSessionDelegate {
             self.trySendNextChatPostToWatch()
             self.sendSettingsToWatch()
             self.sendAudioLevelToWatch()
+            self.sendThermalStateToWatch()
             self.sendIsLiveToWatch()
             self.sendIsRecordingToWatch()
             self.sendIsMutedToWatch()

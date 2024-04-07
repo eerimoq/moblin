@@ -51,6 +51,8 @@ class Model: NSObject, ObservableObject {
     @Published var isLive = false
     @Published var isRecording = false
     @Published var isMuted = false
+    @Published var thermalState = ProcessInfo.ThermalState.nominal
+    private var latestThermalState = Date()
 
     func setup() {
         logger.handler = debugLog(message:)
@@ -90,6 +92,9 @@ class Model: NSObject, ObservableObject {
         }
         if latestAudioLevel + previewTimeout < now, audioLevel != defaultAudioLevel {
             audioLevel = defaultAudioLevel
+        }
+        if latestThermalState + previewTimeout < now, thermalState != ProcessInfo.ThermalState.nominal {
+            thermalState = ProcessInfo.ThermalState.nominal
         }
     }
 
@@ -226,6 +231,15 @@ class Model: NSObject, ObservableObject {
         }
     }
 
+    private func handleThermalState(_ data: Any) throws {
+        guard let thermalState = data as? ProcessInfo.ThermalState else {
+            logger.info("Invalid thermal state message")
+            return
+        }
+        self.thermalState = thermalState
+        latestThermalState = Date()
+    }
+
     private func handlePreview(_ data: Any) throws {
         guard let image = data as? Data else {
             logger.info("Invalid preview message")
@@ -305,6 +319,8 @@ extension Model: WCSessionDelegate {
                     try self.handleIsRecording(data)
                 case .isMuted:
                     try self.handleIsMuted(data)
+                case .thermalState:
+                    try self.handleThermalState(data)
                 }
             } catch {}
         }
