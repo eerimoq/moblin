@@ -51206,6 +51206,9 @@
         }
       }
     },
+    "Skip current TTS" : {
+
+    },
     "Slow IRL" : {
       "localizations" : {
         "de" : {

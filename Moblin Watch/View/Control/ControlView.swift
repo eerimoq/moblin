@@ -50,6 +50,11 @@ struct ControlView: View {
             })) {
                 Text("Muted")
             }
+            Button {
+                model.skipCurrentChatTextToSpeechMessage()
+            } label: {
+                Text("Skip current TTS")
+            }
             Spacer()
         }
     }

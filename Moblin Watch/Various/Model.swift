@@ -255,6 +255,11 @@ class Model: NSObject, ObservableObject {
         let message = WatchMessageFromWatch.pack(type: .keepAlive, data: true)
         WCSession.default.sendMessage(message, replyHandler: nil)
     }
+    
+    func skipCurrentChatTextToSpeechMessage() {
+        let message = WatchMessageFromWatch.pack(type: .skipCurrentChatTextToSpeechMessage, data: true)
+        WCSession.default.sendMessage(message, replyHandler: nil)
+    }
 }
 
 extension Model: WCSessionDelegate {

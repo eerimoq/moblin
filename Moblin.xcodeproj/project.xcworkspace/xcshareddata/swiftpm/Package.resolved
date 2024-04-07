@@ -1,4 +1,5 @@
 {
+  "originHash" : "785f24ee193af5f3b7779271e8ee5ca67dfa4dd828d037a904372768435d03d1",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -24,7 +25,7 @@
       "location" : "https://github.com/eerimoq/HaishinKit.swift",
       "state" : {
         "branch" : "main",
-        "revision" : "0c3e908b56d3b0efaabb759402860e8a6e53ad13"
+        "revision" : "5a40dead0a4e15d8270264025f40a297042d794d"
       }
     },
     {
@@ -154,5 +155,5 @@
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }

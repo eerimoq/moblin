@@ -38,6 +38,7 @@ enum WatchMessageFromWatch: String {
     case setIsRecording
     case setIsMuted
     case keepAlive
+    case skipCurrentChatTextToSpeechMessage
 
     // periphery:ignore
     static func pack(type: WatchMessageFromWatch, data: Any) -> [String: Any] {

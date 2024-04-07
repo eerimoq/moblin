@@ -18,7 +18,7 @@ class ChatTextToSpeech: NSObject {
     private var messageQueue: Deque<TextToSpeechMessage> = .init()
     private var synthesizer = AVSpeechSynthesizer()
     private var recognizer = NLLanguageRecognizer()
-    private var latestUserThatSaidSomething = ""
+    private var latestUserThatSaidSomething: String?
 
     private func getVoice(message: String) -> AVSpeechSynthesisVoice? {
         recognizer.reset()
@@ -110,7 +110,7 @@ class ChatTextToSpeech: NSObject {
     func reset() {
         textToSpeechDispatchQueue.async {
             self.synthesizer.stopSpeaking(at: .word)
-            self.latestUserThatSaidSomething = ""
+            self.latestUserThatSaidSomething = nil
             self.messageQueue.removeAll()
             self.synthesizer = AVSpeechSynthesizer()
             self.synthesizer.delegate = self

@@ -4591,6 +4591,12 @@ extension Model: WCSessionDelegate {
             self.setIsMuted(value: value)
         }
     }
+    
+    private func handleSkipCurrentChatTextToSpeechMessage(_ data: Any) {
+        DispatchQueue.main.async {
+            self.chatTextToSpeech.skipCurrentMessage()
+        }
+    }
 
     func session(
         _: WCSession,
@@ -4624,6 +4630,8 @@ extension Model: WCSessionDelegate {
             handleSetIsMuted(data)
         case .keepAlive:
             break
+        case .skipCurrentChatTextToSpeechMessage:
+            handleSkipCurrentChatTextToSpeechMessage(data)
         default:
             break
         }
