@@ -241,6 +241,8 @@ Apple Watch companion app
 
 - Show bitrate.
 
+- Show iPhone/iPad thremal state.
+
 - Chat.
 
   - Limited to 20 messages.
@@ -252,6 +254,8 @@ Apple Watch companion app
   - Record.
 
   - Mute.
+
+  - Skip current TTS message.
 
 - Watch face complication.
 
