@@ -8,9 +8,6 @@ struct AboutSettingsView: View {
                 NavigationLink(destination: AboutVersionHistorySettingsView()) {
                     Text("Version history")
                 }
-                NavigationLink(destination: AboutDesignedBySettingsView()) {
-                    Text("Designed by")
-                }
                 NavigationLink(destination: AboutLicensesSettingsView()) {
                     Text("Licenses")
                 }

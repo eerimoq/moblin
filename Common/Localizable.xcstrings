@@ -7411,6 +7411,7 @@
       }
     },
     "An incomplete list of people who has contributed ideas, programming,\ntesting, promotion and more." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -19813,6 +19814,7 @@
       }
     },
     "Designed by" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
