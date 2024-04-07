@@ -38,7 +38,7 @@ private struct LanguageView: View {
             .onChange(of: voice) { _ in
                 model.database.chat.textToSpeechLanguageVoices![languageCode] = voice
                 model.store()
-                model.setTextToSpeechVoices(voices: model.database.chat.textToSpeechLanguageVoices!)
+                model.chatTextToSpeech.setVoices(voices: model.database.chat.textToSpeechLanguageVoices!)
             }
         }
         .navigationTitle(localize(languageCode))
@@ -118,7 +118,7 @@ struct ChatTextToSpeechSettingsView: View {
                 }, set: { value in
                     model.database.chat.textToSpeechDetectLanguagePerMessage = value
                     model.store()
-                    model.setTextToSpeechDetectLanguagePerMessage(value: value)
+                    model.chatTextToSpeech.setDetectLanguagePerMessage(value: value)
                 })) {
                     Text("Detect language per message")
                 }
@@ -127,7 +127,7 @@ struct ChatTextToSpeechSettingsView: View {
                 }, set: { value in
                     model.database.chat.textToSpeechSayUsername = value
                     model.store()
-                    model.setTextToSpeechSayUsername(value: value)
+                    model.chatTextToSpeech.setSayUsername(value: value)
                 })) {
                     Text("Say username")
                 }
@@ -151,7 +151,7 @@ struct ChatTextToSpeechSettingsView: View {
                             }
                             model.database.chat.textToSpeechRate = rate
                             model.store()
-                            model.setTextToSpeechRate(rate: rate)
+                            model.chatTextToSpeech.setRate(rate: rate)
                         }
                     )
                     Image(systemName: "hare.fill")
@@ -168,7 +168,7 @@ struct ChatTextToSpeechSettingsView: View {
                             }
                             model.database.chat.textToSpeechSayVolume = volume
                             model.store()
-                            model.setTextToSpeechVolume(volume: volume)
+                            model.chatTextToSpeech.setVolume(volume: volume)
                         }
                     )
                     Image(systemName: "volume.3.fill")
