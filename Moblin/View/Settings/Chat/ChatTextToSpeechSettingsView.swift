@@ -118,6 +118,7 @@ struct ChatTextToSpeechSettingsView: View {
                 }, set: { value in
                     model.database.chat.textToSpeechDetectLanguagePerMessage = value
                     model.store()
+                    model.setTextToSpeechDetectLanguagePerMessage(value: value)
                 })) {
                     Text("Detect language per message")
                 }
@@ -126,6 +127,7 @@ struct ChatTextToSpeechSettingsView: View {
                 }, set: { value in
                     model.database.chat.textToSpeechSayUsername = value
                     model.store()
+                    model.setTextToSpeechSayUsername(value: value)
                 })) {
                     Text("Say username")
                 }

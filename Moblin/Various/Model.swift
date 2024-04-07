@@ -27,7 +27,7 @@ class Browser: Identifiable {
     }
 }
 
-private let textToSpeechQueue = DispatchQueue(label: "com.eerimoq.textToSpeech", qos: .utility)
+private let textToSpeechDispatchQueue = DispatchQueue(label: "com.eerimoq.textToSpeech", qos: .utility)
 private let maximumNumberOfChatMessages = 50
 private let secondsSuffix = String(localized: "/sec")
 private let fallbackStream = SettingsStream(name: "Fallback")
@@ -190,6 +190,11 @@ enum WizardCustomProtocol {
     case none
     case srt
     case rtmp
+}
+
+private struct TextToSpeechMessage {
+    let user: String
+    let message: String
 }
 
 final class Model: NSObject, ObservableObject {
@@ -363,7 +368,10 @@ final class Model: NSObject, ObservableObject {
     private var latestUserThatSaidSomething = ""
     private var textToSpeechRate: Float = 0.4
     private var textToSpeechVolume: Float = 0.6
+    private var textToSpeechSayUsername: Bool = false
+    private var textToSpeechDetectLanguagePerMessage: Bool = false
     private var textToSpeechVoices: [String: String] = [:]
+    private var textToSpeechMessageQueue: Deque<TextToSpeechMessage> = .init()
 
     @Published var remoteControlGeneral: RemoteControlStatusGeneral?
     @Published var remoteControlTopLeft: RemoteControlStatusTopLeft?
@@ -839,6 +847,8 @@ final class Model: NSObject, ObservableObject {
         setTextToSpeechRate(rate: database.chat.textToSpeechRate!)
         setTextToSpeechVolume(volume: database.chat.textToSpeechSayVolume!)
         setTextToSpeechVoices(voices: database.chat.textToSpeechLanguageVoices!)
+        setTextToSpeechSayUsername(value: database.chat.textToSpeechSayUsername!)
+        setTextToSpeechDetectLanguagePerMessage(value: database.chat.textToSpeechDetectLanguagePerMessage!)
         AppDelegate.orientationLock = .landscape
         updateOrientationLock()
     }
@@ -5064,7 +5074,7 @@ extension Model {
         if probability < 0.7 && message.count > 8 {
             return nil
         }
-        if !database.chat.textToSpeechDetectLanguagePerMessage! || language == nil {
+        if !textToSpeechDetectLanguagePerMessage || language == nil {
             language = Locale.current.language.languageCode?.identifier
         }
         guard let language else {
@@ -5080,43 +5090,66 @@ extension Model {
         return nil
     }
 
-    private func say(user: String, message: String) {
-        let text: String
-        if user == latestUserThatSaidSomething || !database.chat.textToSpeechSayUsername! {
-            text = message
-        } else {
-            text = String(localized: "\(user) says: \(message)")
+    private func trySayNextMessage() {
+        guard !synthesizer.isSpeaking else {
+            return
         }
-        latestUserThatSaidSomething = user
-        textToSpeechQueue.async {
-            let utterance = AVSpeechUtterance(string: text)
-            utterance.rate = self.textToSpeechRate
-            utterance.pitchMultiplier = 0.8
-            utterance.postUtteranceDelay = 0.05
-            utterance.volume = self.textToSpeechVolume
-            guard let voice = self.getVoice(message: message) else {
-                return
-            }
-            utterance.voice = voice
-            self.synthesizer.speak(utterance)
+        guard let message = textToSpeechMessageQueue.popFirst() else {
+            return
+        }
+        let text: String
+        if message.user == latestUserThatSaidSomething || !textToSpeechSayUsername {
+            text = message.message
+        } else {
+            text = String(localized: "\(message.user) says: \(message.message)")
+        }
+        latestUserThatSaidSomething = message.user
+        let utterance = AVSpeechUtterance(string: text)
+        utterance.rate = textToSpeechRate
+        utterance.pitchMultiplier = 0.8
+        utterance.preUtteranceDelay = 0.05
+        utterance.volume = textToSpeechVolume
+        guard let voice = getVoice(message: message.message) else {
+            return
+        }
+        utterance.voice = voice
+        synthesizer.speak(utterance)
+    }
+
+    private func say(user: String, message: String) {
+        textToSpeechDispatchQueue.async {
+            self.textToSpeechMessageQueue.append(.init(user: user, message: message))
+            self.trySayNextMessage()
         }
     }
 
     func setTextToSpeechRate(rate: Float) {
-        textToSpeechQueue.async {
+        textToSpeechDispatchQueue.async {
             self.textToSpeechRate = rate
         }
     }
 
     func setTextToSpeechVolume(volume: Float) {
-        textToSpeechQueue.async {
+        textToSpeechDispatchQueue.async {
             self.textToSpeechVolume = volume
         }
     }
 
     func setTextToSpeechVoices(voices: [String: String]) {
-        textToSpeechQueue.async {
+        textToSpeechDispatchQueue.async {
             self.textToSpeechVoices = voices
+        }
+    }
+
+    func setTextToSpeechSayUsername(value: Bool) {
+        textToSpeechDispatchQueue.async {
+            self.textToSpeechSayUsername = value
+        }
+    }
+
+    func setTextToSpeechDetectLanguagePerMessage(value: Bool) {
+        textToSpeechDispatchQueue.async {
+            self.textToSpeechDetectLanguagePerMessage = value
         }
     }
 
@@ -5133,16 +5166,34 @@ extension Model {
     }
 
     func newTextToSpeech() {
-        textToSpeechQueue.async {
+        textToSpeechDispatchQueue.async {
+            self.latestUserThatSaidSomething = ""
+            self.textToSpeechMessageQueue.removeAll()
             self.synthesizer = AVSpeechSynthesizer()
+            self.synthesizer.delegate = self
             self.recognizer = NLLanguageRecognizer()
         }
     }
 
     func stopTextToSpeech() {
-        textToSpeechQueue.async {
+        textToSpeechDispatchQueue.async {
             self.synthesizer.stopSpeaking(at: .word)
         }
         newTextToSpeech()
+    }
+
+    func skipCurrentTextToSpeechMessage() {
+        textToSpeechDispatchQueue.async {
+            self.synthesizer.stopSpeaking(at: .immediate)
+            self.trySayNextMessage()
+        }
+    }
+}
+
+extension Model: AVSpeechSynthesizerDelegate {
+    func speechSynthesizer(_: AVSpeechSynthesizer, didFinish _: AVSpeechUtterance) {
+        textToSpeechDispatchQueue.async {
+            self.trySayNextMessage()
+        }
     }
 }
