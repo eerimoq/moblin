@@ -8,6 +8,12 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.230.0", date: "2024-04-07", changes: [
+        "• Another attempt to fix flashing black image that sometimes starts after changing camera when widgets or LUTs are enabled. 🐛 NiWenWen",
+        "• Make chat text to speech settings changes take effect at next message.",
+        "• Watch companion app.",
+        "  • Skip current chat text to speech message button.",
+    ]),
     Version(version: "0.229.0", date: "2024-04-06", changes: [
         "• Move audio channel mapping settings to Settings → Audio.",
         "• Basic automatic chat text to speech filtering. 💡 OhItsLaz",
