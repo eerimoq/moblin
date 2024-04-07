@@ -2,7 +2,7 @@ import SpriteKit
 import SwiftUI
 import WebKit
 
-struct BrowserView: UIViewRepresentable {
+struct BrowserWidgetView: UIViewRepresentable {
     var browser: Browser
 
     func makeUIView(context _: Context) -> WKWebView {
@@ -126,6 +126,9 @@ struct MainView: View {
                         .edgesIgnoringSafeArea(.all)
                         StreamOverlayView()
                             .opacity(model.showLocalOverlays ? 1 : 0)
+                        if model.showBrowser {
+                            BrowserView()
+                        }
                     }
                     .gesture(
                         MagnificationGesture()
@@ -141,7 +144,7 @@ struct MainView: View {
                 .overlay(alignment: .topLeading) {
                     ForEach(model.browsers) { browser in
                         ScrollView([.vertical, .horizontal]) {
-                            BrowserView(browser: browser)
+                            BrowserWidgetView(browser: browser)
                                 .frame(
                                     width: browser.browserEffect.width,
                                     height: browser.browserEffect.height
@@ -210,6 +213,9 @@ struct MainView: View {
                         if model.showDrawOnStream {
                             DrawOnStreamView()
                         }
+                        if model.showBrowser {
+                            BrowserView()
+                        }
                     }
                     .gesture(
                         MagnificationGesture()
@@ -225,7 +231,7 @@ struct MainView: View {
                 .overlay(alignment: .topLeading) {
                     ForEach(model.browsers) { browser in
                         ScrollView([.vertical, .horizontal]) {
-                            BrowserView(browser: browser)
+                            BrowserWidgetView(browser: browser)
                                 .frame(
                                     width: browser.browserEffect.width,
                                     height: browser.browserEffect.height

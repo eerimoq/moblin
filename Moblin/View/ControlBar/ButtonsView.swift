@@ -569,6 +569,13 @@ struct ButtonsInnerView: View {
         model.toggleLocalOverlays()
     }
 
+    private func browserAction(state _: ButtonState) {
+        state.button.isOn.toggle()
+        model.setGlobalButtonState(type: .browser, isOn: state.button.isOn)
+        model.updateButtonStates()
+        model.toggleBrowser()
+    }
+
     var body: some View {
         VStack {
             switch state.button.type {
@@ -718,6 +725,12 @@ struct ButtonsInnerView: View {
             case .localOverlays:
                 Button(action: {
                     localOverlaysAction(state: state)
+                }, label: {
+                    ButtonImage(state: state, buttonSize: size)
+                })
+            case .browser:
+                Button(action: {
+                    browserAction(state: state)
                 }, label: {
                     ButtonImage(state: state, buttonSize: size)
                 })

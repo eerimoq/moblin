@@ -323,10 +323,12 @@ final class Model: NSObject, ObservableObject {
 
     @Published var showDrawOnStream: Bool = false
     @Published var showLocalOverlays: Bool = true
+    @Published var showBrowser: Bool = false
     @Published var drawOnStreamLines: [DrawOnStreamLine] = []
     @Published var drawOnStreamSelectedColor: Color = .pink
     @Published var drawOnStreamSelectedWidth: CGFloat = 4
     var drawOnStreamSize: CGSize = .zero
+    @Published var browserUrl: String = "https://google.com"
 
     @Published var isPresentingWizard: Bool = false
     @Published var isPresentingSetupWizard: Bool = false
@@ -2535,6 +2537,10 @@ final class Model: NSObject, ObservableObject {
 
     func toggleLocalOverlays() {
         showLocalOverlays.toggle()
+    }
+
+    func toggleBrowser() {
+        showBrowser.toggle()
     }
 
     func startObsSourceScreenshot() {

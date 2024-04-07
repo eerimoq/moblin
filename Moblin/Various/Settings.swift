@@ -786,6 +786,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case remote = "Remote"
     case draw = "Draw"
     case localOverlays = "Local overlays"
+    case browser = "Browser"
 
     public init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -845,6 +846,8 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return .draw
         case String(localized: "Local overlays"):
             return .localOverlays
+        case String(localized: "Browser"):
+            return .browser
         default:
             return .torch
         }
@@ -900,6 +903,8 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return String(localized: "Draw")
         case .localOverlays:
             return String(localized: "Local overlays")
+        case .browser:
+            return String(localized: "Browser")
         }
     }
 }
@@ -1734,6 +1739,14 @@ private func addMissingGlobalButtons(database: Database) {
     button.imageType = "System name"
     button.systemImageNameOn = "photo.on.rectangle.angled"
     button.systemImageNameOff = "photo.on.rectangle.angled"
+    updateGlobalButton(database: database, button: button)
+
+    button = SettingsButton(name: String(localized: "Browser"))
+    button.id = UUID()
+    button.type = .browser
+    button.imageType = "System name"
+    button.systemImageNameOn = "globe"
+    button.systemImageNameOff = "globe"
     updateGlobalButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Grid"))
