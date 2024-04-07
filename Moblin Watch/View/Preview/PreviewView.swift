@@ -35,6 +35,12 @@ struct PreviewView: View {
                 Spacer()
                 HStack {
                     Spacer()
+                    ThermalStateView(thermalState: model.thermalState)
+                }
+                .padding([.bottom], 4)
+                .padding([.trailing], 5)
+                HStack {
+                    Spacer()
                     AudioLevelView(showBar: true, level: model.audioLevel)
                 }
                 HStack {

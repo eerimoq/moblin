@@ -9,6 +9,7 @@ enum WatchMessageToWatch: String {
     case isLive
     case isRecording
     case isMuted
+    case thermalState
 
     static func pack(type: WatchMessageToWatch, data: Any) -> [String: Any] {
         return [

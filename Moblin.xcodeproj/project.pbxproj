@@ -233,6 +233,7 @@
 		03FB4B312AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FB4B302AD8D046005AA183 /* BitratePresetsPresetSettingsView.swift */; };
 		03FBD1812B3B0DE500757CA9 /* RtmpServerClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FBD1802B3B0DE500757CA9 /* RtmpServerClient.swift */; };
 		03FBD1852B3B0DF300757CA9 /* RtmpServerChunkStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FBD1842B3B0DF300757CA9 /* RtmpServerChunkStream.swift */; };
+		C7E682562BC2E3FE004EB747 /* ThermalStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FE2A9FCA790028DDD5 /* ThermalStateView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -717,6 +718,7 @@
 				0379BB9F2AAD823900B718B6 /* StreamOverlayTextView.swift */,
 				0379BBA12AAD824600B718B6 /* StreamOverlayIconAndTextView.swift */,
 				031C15C32B9340FB00BA967D /* AudioLevelView.swift */,
+				03B373FE2A9FCA790028DDD5 /* ThermalStateView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1255,7 +1257,6 @@
 				03B373F82A9EFB340028DDD5 /* BatteryView.swift */,
 				03B374032AA036D10028DDD5 /* ButtonsView.swift */,
 				03B373F52A9EF98E0028DDD5 /* ControlBarView.swift */,
-				03B373FE2A9FCA790028DDD5 /* ThermalStateView.swift */,
 			);
 			path = ControlBar;
 			sourceTree = "<group>";
@@ -1897,6 +1898,7 @@
 				0361EA792B96D5BE005923ED /* Log.swift in Sources */,
 				0361EA722B96D37B005923ED /* SettingsView.swift in Sources */,
 				031C15C52B9340FB00BA967D /* AudioLevelView.swift in Sources */,
+				C7E682562BC2E3FE004EB747 /* ThermalStateView.swift in Sources */,
 				03B89D9A2B92DDA80022EAE7 /* ChatView.swift in Sources */,
 				0361EA772B96D476005923ED /* DebugLogSettingsView.swift in Sources */,
 				03ECDF4B2B8E4E5F00BD920E /* MainView.swift in Sources */,
