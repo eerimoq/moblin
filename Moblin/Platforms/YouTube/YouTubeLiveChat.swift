@@ -209,10 +209,12 @@ final class YouTubeLiveChat: NSObject {
         }
         var messageText = ""
         for run in message.runs {
-            guard let text = run.text else {
-                return 0
+            if let text = run.text {
+                messageText += text
             }
-            messageText += text
+        }
+        guard !messageText.isEmpty else {
+            return 0
         }
         let segments = createSegments(message: messageText)
         await MainActor.run {
