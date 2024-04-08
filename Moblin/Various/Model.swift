@@ -464,26 +464,6 @@ final class Model: NSObject, ObservableObject {
         media.setAdaptiveBitrateAlgorithm(settings: settings)
     }
 
-    func loadBrowserUrl() {
-        guard let url = URL(string: browserUrl) else {
-            return
-        }
-        browser?.load(URLRequest(url: url))
-    }
-
-    func loadBrowserHome() {
-        // browser?.loadHTMLString("<html>Welcome!</html>", baseURL: nil)
-    }
-
-    func getBrowser() -> WKWebView {
-        if browser == nil {
-            browser = WKWebView()
-            browser?.navigationDelegate = self
-            loadBrowserHome()
-        }
-        return browser!
-    }
-
     @MainActor
     private func getProductsFromAppStore() async {
         do {
@@ -5105,6 +5085,41 @@ extension Model {
         if drawOnStreamLines.isEmpty {
             media.unregisterEffect(drawOnStreamEffect)
         }
+    }
+}
+
+extension Model {
+    private func getBrowserUrl() -> URL? {
+        if let url = URL(string: browserUrl), let scehme = url.scheme, !scehme.isEmpty {
+            return url
+        }
+        if browserUrl.contains("."), let url = URL(string: "https://\(browserUrl)") {
+            return url
+        }
+        return URL(string: "https://www.google.com/search?q=\(browserUrl)")
+    }
+
+    func loadBrowserUrl() {
+        guard let url = getBrowserUrl() else {
+            return
+        }
+        browser?.load(URLRequest(url: url))
+    }
+
+    func loadBrowserHome() {
+        browserUrl = "https://google.com"
+        loadBrowserUrl()
+    }
+
+    func getBrowser() -> WKWebView {
+        if browser == nil {
+            browser = WKWebView()
+            browser?.navigationDelegate = self
+            DispatchQueue.main.async {
+                self.loadBrowserHome()
+            }
+        }
+        return browser!
     }
 }
 
