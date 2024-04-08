@@ -1470,6 +1470,10 @@ class AudioSettings: Codable {
     var audioOutputToInputChannelsMap: SettingsAudioOutputToInputChannelsMap? = .init()
 }
 
+class WebBrowserSettings: Codable {
+    var home: String = "https://google.com"
+}
+
 class Database: Codable {
     var streams: [SettingsStream] = []
     var scenes: [SettingsScene] = []
@@ -1503,6 +1507,7 @@ class Database: Codable {
     var location: SettingsLocation? = .init()
     var watch: WatchSettings? = .init()
     var audio: AudioSettings? = .init()
+    var webBrowser: WebBrowserSettings? = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -2417,6 +2422,10 @@ final class Settings {
                 .audioOutputToInputChannelsMap!.channel0
             realDatabase.audio!.audioOutputToInputChannelsMap!.channel2 = realDatabase.debug!
                 .audioOutputToInputChannelsMap!.channel1
+            store()
+        }
+        if realDatabase.webBrowser == nil {
+            realDatabase.webBrowser = .init()
             store()
         }
     }

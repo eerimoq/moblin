@@ -328,7 +328,7 @@ final class Model: NSObject, ObservableObject {
     @Published var drawOnStreamSelectedColor: Color = .pink
     @Published var drawOnStreamSelectedWidth: CGFloat = 4
     var drawOnStreamSize: CGSize = .zero
-    @Published var webBrowserUrl: String = "https://google.com"
+    @Published var webBrowserUrl: String = ""
     private var webBrowser: WKWebView?
 
     @Published var isPresentingWizard: Bool = false
@@ -841,6 +841,8 @@ final class Model: NSObject, ObservableObject {
             .setDetectLanguagePerMessage(value: database.chat.textToSpeechDetectLanguagePerMessage!)
         AppDelegate.orientationLock = .landscape
         updateOrientationLock()
+        loadWebBrowserHome()
+        webBrowserUrl = database.webBrowser!.home
     }
 
     private func handleIpStatusUpdate(statuses: [IPMonitor.Status]) {
@@ -5107,7 +5109,7 @@ extension Model {
     }
 
     func loadWebBrowserHome() {
-        webBrowserUrl = "https://google.com"
+        webBrowserUrl = database.webBrowser!.home
         loadWebBrowserUrl()
     }
 

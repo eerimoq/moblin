@@ -149,6 +149,9 @@ struct SettingsView: View {
                 NavigationLink(destination: LocationSettingsView()) {
                     IconAndText(image: "location", text: String(localized: "Location"))
                 }
+                NavigationLink(destination: WebBrowserSettingsView()) {
+                    IconAndText(image: "globe", text: String(localized: "Web browser"))
+                }
             }
             Section {
                 NavigationLink(destination: CosmeticsSettingsView()) {
