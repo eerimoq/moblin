@@ -329,6 +329,7 @@ final class Model: NSObject, ObservableObject {
     @Published var drawOnStreamSelectedWidth: CGFloat = 4
     var drawOnStreamSize: CGSize = .zero
     @Published var browserUrl: String = "https://google.com"
+    private var browser: WKWebView?
 
     @Published var isPresentingWizard: Bool = false
     @Published var isPresentingSetupWizard: Bool = false
@@ -461,6 +462,26 @@ final class Model: NSObject, ObservableObject {
         var settings = adaptiveBitrateFastSettings
         settings.rttDiffHighAllowedSpike = 500
         media.setAdaptiveBitrateAlgorithm(settings: settings)
+    }
+
+    func loadBrowserUrl() {
+        guard let url = URL(string: browserUrl) else {
+            return
+        }
+        browser?.load(URLRequest(url: url))
+    }
+
+    func loadBrowserHome() {
+        // browser?.loadHTMLString("<html>Welcome!</html>", baseURL: nil)
+    }
+
+    func getBrowser() -> WKWebView {
+        if browser == nil {
+            browser = WKWebView()
+            browser?.navigationDelegate = self
+            loadBrowserHome()
+        }
+        return browser!
     }
 
     @MainActor
@@ -5084,5 +5105,11 @@ extension Model {
         if drawOnStreamLines.isEmpty {
             media.unregisterEffect(drawOnStreamEffect)
         }
+    }
+}
+
+extension Model: WKNavigationDelegate {
+    func webView(_ webView: WKWebView, didStartProvisionalNavigation _: WKNavigation!) {
+        browserUrl = webView.url?.absoluteString ?? ""
     }
 }
