@@ -8,6 +8,12 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.234.0", date: "2024-04-08", changes: [
+        "• Web browser settings in Settings → Web browser.",
+        "  • Configure home button URL.",
+        "• Machine translation of new strings.",
+        "• Spanish translation updated. ✍️ adriportela95",
+    ]),
     Version(version: "0.233.0", date: "2024-04-08", changes: [
         "• Interactive browser improvements.",
     ]),
