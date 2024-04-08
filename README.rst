@@ -179,6 +179,10 @@ Main app
 
   - Optionally with percentage.
 
+- Web browser.
+
+  - Only visible to the streamer.
+
 - Game controllers for remote control.
 
   - Zoom in and out.
