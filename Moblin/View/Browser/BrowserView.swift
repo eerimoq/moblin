@@ -85,7 +85,6 @@ struct BrowserView: View {
                     }
                 }
                 .padding(3)
-                .background(ignoresSafeAreaEdges: .bottom)
             } else {
                 HStack {
                     NextPrevView()
@@ -93,9 +92,9 @@ struct BrowserView: View {
                     RefreshHomeView()
                 }
                 .padding(3)
-                .background(ignoresSafeAreaEdges: .bottom)
             }
             WebView()
         }
+        .background(ignoresSafeAreaEdges: .bottom)
     }
 }
