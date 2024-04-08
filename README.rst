@@ -292,7 +292,7 @@ An example creating a new stream is
 
 where the URL decoded pretty printed JSON blob is
 
-.. code-block:: json
+.. code-block:: js
 
    {
      "streams": [
