@@ -841,8 +841,6 @@ final class Model: NSObject, ObservableObject {
             .setDetectLanguagePerMessage(value: database.chat.textToSpeechDetectLanguagePerMessage!)
         AppDelegate.orientationLock = .landscape
         updateOrientationLock()
-        loadWebBrowserHome()
-        webBrowserUrl = database.webBrowser!.home
     }
 
     private func handleIpStatusUpdate(statuses: [IPMonitor.Status]) {
