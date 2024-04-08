@@ -39,7 +39,7 @@ class SnowScene: SKScene {
 struct MainView: View {
     @EnvironmentObject var model: Model
     var streamView: StreamView
-    var browserView: BrowserView
+    var webBrowserView: WebBrowserView
     @State var showAreYouReallySure = false
 
     private var scene: SKScene {
@@ -128,7 +128,7 @@ struct MainView: View {
                         StreamOverlayView()
                             .opacity(model.showLocalOverlays ? 1 : 0)
                         if model.showBrowser {
-                            browserView
+                            webBrowserView
                         }
                     }
                     .gesture(
@@ -215,7 +215,7 @@ struct MainView: View {
                             DrawOnStreamView()
                         }
                         if model.showBrowser {
-                            browserView
+                            webBrowserView
                         }
                     }
                     .gesture(

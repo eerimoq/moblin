@@ -328,8 +328,8 @@ final class Model: NSObject, ObservableObject {
     @Published var drawOnStreamSelectedColor: Color = .pink
     @Published var drawOnStreamSelectedWidth: CGFloat = 4
     var drawOnStreamSize: CGSize = .zero
-    @Published var browserUrl: String = "https://google.com"
-    private var browser: WKWebView?
+    @Published var webBrowserUrl: String = "https://google.com"
+    private var webBrowser: WKWebView?
 
     @Published var isPresentingWizard: Bool = false
     @Published var isPresentingSetupWizard: Bool = false
@@ -5089,42 +5089,42 @@ extension Model {
 }
 
 extension Model {
-    private func getBrowserUrl() -> URL? {
-        if let url = URL(string: browserUrl), let scehme = url.scheme, !scehme.isEmpty {
+    private func getWebBrowserUrl() -> URL? {
+        if let url = URL(string: webBrowserUrl), let scehme = url.scheme, !scehme.isEmpty {
             return url
         }
-        if browserUrl.contains("."), let url = URL(string: "https://\(browserUrl)") {
+        if webBrowserUrl.contains("."), let url = URL(string: "https://\(webBrowserUrl)") {
             return url
         }
-        return URL(string: "https://www.google.com/search?q=\(browserUrl)")
+        return URL(string: "https://www.google.com/search?q=\(webBrowserUrl)")
     }
 
-    func loadBrowserUrl() {
-        guard let url = getBrowserUrl() else {
+    func loadWebBrowserUrl() {
+        guard let url = getWebBrowserUrl() else {
             return
         }
-        browser?.load(URLRequest(url: url))
+        webBrowser?.load(URLRequest(url: url))
     }
 
-    func loadBrowserHome() {
-        browserUrl = "https://google.com"
-        loadBrowserUrl()
+    func loadWebBrowserHome() {
+        webBrowserUrl = "https://google.com"
+        loadWebBrowserUrl()
     }
 
-    func getBrowser() -> WKWebView {
-        if browser == nil {
-            browser = WKWebView()
-            browser?.navigationDelegate = self
+    func getWebBrowser() -> WKWebView {
+        if webBrowser == nil {
+            webBrowser = WKWebView()
+            webBrowser?.navigationDelegate = self
             DispatchQueue.main.async {
-                self.loadBrowserHome()
+                self.loadWebBrowserHome()
             }
         }
-        return browser!
+        return webBrowser!
     }
 }
 
 extension Model: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didStartProvisionalNavigation _: WKNavigation!) {
-        browserUrl = webView.url?.absoluteString ?? ""
+        webBrowserUrl = webView.url?.absoluteString ?? ""
     }
 }
