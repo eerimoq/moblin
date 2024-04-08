@@ -2065,7 +2065,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%1$@ %2$@"
           }
         },
@@ -2568,8 +2568,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ dicho %@"
+            "state" : "translated",
+            "value" : "%@ dice: %@"
           }
         },
         "fr" : {
@@ -18589,8 +18589,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Cultivo"
+            "state" : "translated",
+            "value" : "Recorte"
           }
         },
         "fr" : {
@@ -19954,7 +19954,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Detectar idioma por mensaje"
           }
         },
@@ -33599,8 +33599,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Vivir"
+            "state" : "translated",
+            "value" : "En vivo"
           }
         },
         "fr" : {
@@ -48868,8 +48868,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "decir nombre de usuario"
+            "state" : "translated",
+            "value" : "Decir nombre del usuario"
           }
         },
         "fr" : {
@@ -51726,7 +51726,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Widget de origen"
           }
         },
@@ -57195,7 +57195,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Texto a voz"
           }
         },
@@ -65137,7 +65137,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Voces"
           }
         },
@@ -66628,7 +66628,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "X"
           }
         },
@@ -67006,7 +67006,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Y"
           }
         },
