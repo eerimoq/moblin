@@ -12,8 +12,21 @@ private struct Continuations: Codable {
     let invalidationContinuationData: InvalidationContinuationData
 }
 
+private struct Thumbnail: Codable {
+    let url: String
+}
+
+private struct Image: Codable {
+    let thumbnails: [Thumbnail]
+}
+
+private struct Emoji: Codable {
+    let image: Image
+}
+
 private struct Run: Codable {
     let text: String?
+    let emoji: Emoji?
 }
 
 private struct Message: Codable {
@@ -207,20 +220,23 @@ final class YouTubeLiveChat: NSObject {
         guard let message = chatDescription.message else {
             return 0
         }
-        var messageText = ""
+        var segments: [ChatPostSegment] = []
         for run in message.runs {
             if let text = run.text {
-                messageText += text
+                segments += createSegments(message: text)
+            }
+            if let emojiUrl = run.emoji?.image.thumbnails.first?.url {
+                segments.append(.init(url: URL(string: emojiUrl)))
             }
         }
-        guard !messageText.isEmpty else {
+        guard !segments.isEmpty else {
             return 0
         }
-        let segments = createSegments(message: messageText)
+        let nonMutSegments = segments
         await MainActor.run {
             model.appendChatMessage(user: chatDescription.authorName.simpleText,
                                     userColor: nil,
-                                    segments: segments,
+                                    segments: nonMutSegments,
                                     timestamp: model.digitalClock,
                                     timestampDate: Date(),
                                     isAction: false,
