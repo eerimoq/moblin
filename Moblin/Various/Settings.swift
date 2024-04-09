@@ -1142,6 +1142,7 @@ class SettingsChat: Codable {
     var textToSpeechSayVolume: Float? = 0.6
     var textToSpeechLanguageVoices: [String: String]? = .init()
     var textToSpeechSubscribersOnly: Bool? = false
+    var textToSpeechFilter: Bool? = true
 }
 
 enum SettingsMic: String, Codable, CaseIterable {
@@ -2426,6 +2427,10 @@ final class Settings {
         }
         if realDatabase.webBrowser == nil {
             realDatabase.webBrowser = .init()
+            store()
+        }
+        if realDatabase.chat.textToSpeechFilter == nil {
+            realDatabase.chat.textToSpeechFilter = true
             store()
         }
     }

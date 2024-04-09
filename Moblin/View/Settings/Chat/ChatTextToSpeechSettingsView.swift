@@ -113,32 +113,6 @@ struct ChatTextToSpeechSettingsView: View {
                 NavigationLink(destination: VoicesView()) {
                     Text("Voices")
                 }
-                Toggle(isOn: Binding(get: {
-                    model.database.chat.textToSpeechDetectLanguagePerMessage!
-                }, set: { value in
-                    model.database.chat.textToSpeechDetectLanguagePerMessage = value
-                    model.store()
-                    model.chatTextToSpeech.setDetectLanguagePerMessage(value: value)
-                })) {
-                    Text("Detect language per message")
-                }
-                Toggle(isOn: Binding(get: {
-                    model.database.chat.textToSpeechSayUsername!
-                }, set: { value in
-                    model.database.chat.textToSpeechSayUsername = value
-                    model.store()
-                    model.chatTextToSpeech.setSayUsername(value: value)
-                })) {
-                    Text("Say username")
-                }
-                Toggle(isOn: Binding(get: {
-                    model.database.chat.textToSpeechSubscribersOnly!
-                }, set: { value in
-                    model.database.chat.textToSpeechSubscribersOnly = value
-                    model.store()
-                })) {
-                    Text("Subscribers only")
-                }
                 HStack {
                     Image(systemName: "tortoise.fill")
                     Slider(
@@ -173,8 +147,49 @@ struct ChatTextToSpeechSettingsView: View {
                     )
                     Image(systemName: "volume.3.fill")
                 }
+            }
+            Section {
+                Toggle(isOn: Binding(get: {
+                    model.database.chat.textToSpeechDetectLanguagePerMessage!
+                }, set: { value in
+                    model.database.chat.textToSpeechDetectLanguagePerMessage = value
+                    model.store()
+                    model.chatTextToSpeech.setDetectLanguagePerMessage(value: value)
+                })) {
+                    Text("Detect language per message")
+                }
+                Toggle(isOn: Binding(get: {
+                    model.database.chat.textToSpeechSayUsername!
+                }, set: { value in
+                    model.database.chat.textToSpeechSayUsername = value
+                    model.store()
+                    model.chatTextToSpeech.setSayUsername(value: value)
+                })) {
+                    Text("Say username")
+                }
+                Toggle(isOn: Binding(get: {
+                    model.database.chat.textToSpeechSubscribersOnly!
+                }, set: { value in
+                    model.database.chat.textToSpeechSubscribersOnly = value
+                    model.store()
+                })) {
+                    Text("Subscribers only")
+                }
             } footer: {
                 Text("Subscribers only is not available for all platforms.")
+            }
+            Section {
+                Toggle(isOn: Binding(get: {
+                    model.database.chat.textToSpeechFilter!
+                }, set: { value in
+                    model.database.chat.textToSpeechFilter = value
+                    model.store()
+                    model.chatTextToSpeech.setFilter(value: value)
+                })) {
+                    Text("Filter")
+                }
+            } footer: {
+                Text("Do not say messages that are likely spam or bot commands.")
             }
         }
         .onAppear {

@@ -19,15 +19,32 @@ class ChatTextToSpeech: NSObject {
     private var synthesizer = AVSpeechSynthesizer()
     private var recognizer = NLLanguageRecognizer()
     private var latestUserThatSaidSomething: String?
+    private var filterEnabled: Bool = true
+
+    private func isFilteredOut(message: String) -> Bool {
+        if !filterEnabled {
+            return false
+        }
+        let probability = recognizer.languageHypotheses(withMaximum: 1).first?.value ?? 0.0
+        if probability < 0.7 && message.count > 30 {
+            return true
+        }
+        if message.hasPrefix("!") {
+            return true
+        }
+        if message.contains("https") {
+            return true
+        }
+        return false
+    }
 
     private func getVoice(message: String) -> AVSpeechSynthesisVoice? {
         recognizer.reset()
         recognizer.processString(message)
-        var language = recognizer.dominantLanguage?.rawValue
-        let probability = recognizer.languageHypotheses(withMaximum: 1).first?.value ?? 0.0
-        if probability < 0.7 && message.count > 8 {
+        guard !isFilteredOut(message: message) else {
             return nil
         }
+        var language = recognizer.dominantLanguage?.rawValue
         if !detectLanguagePerMessage || language == nil {
             language = Locale.current.language.languageCode?.identifier
         }
@@ -57,7 +74,6 @@ class ChatTextToSpeech: NSObject {
         } else {
             text = String(localized: "\(message.user) says: \(message.message)")
         }
-        latestUserThatSaidSomething = message.user
         let utterance = AVSpeechUtterance(string: text)
         utterance.rate = rate
         utterance.pitchMultiplier = 0.8
@@ -68,6 +84,7 @@ class ChatTextToSpeech: NSObject {
         }
         utterance.voice = voice
         synthesizer.speak(utterance)
+        latestUserThatSaidSomething = message.user
     }
 
     func say(user: String, message: String) {
@@ -98,6 +115,12 @@ class ChatTextToSpeech: NSObject {
     func setSayUsername(value: Bool) {
         textToSpeechDispatchQueue.async {
             self.sayUsername = value
+        }
+    }
+
+    func setFilter(value: Bool) {
+        textToSpeechDispatchQueue.async {
+            self.filterEnabled = value
         }
     }
 

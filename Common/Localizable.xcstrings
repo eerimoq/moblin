@@ -20543,6 +20543,9 @@
         }
       }
     },
+    "Do not say messages that are likely spam or bot commands." : {
+
+    },
     "Do not share your settings with anyone as they may contain sensitive data (stream keys, etc.)!" : {
       "localizations" : {
         "de" : {
@@ -26370,6 +26373,9 @@
           }
         }
       }
+    },
+    "Filter" : {
+
     },
     "Find your channel name (myChannelName) and video id (myVideoId) in your stream's URL." : {
       "localizations" : {
