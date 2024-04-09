@@ -9,6 +9,22 @@ private struct TextToSpeechMessage {
     let message: String
 }
 
+private let saysByLanguage = [
+    "en": "says",
+    "sv": "säger",
+    "no": "sier",
+    "es": "dice",
+    "de": "sagt",
+    "fr": "dit",
+    "pl": "mówi",
+    "vi": "nói",
+    "nl": "zegt",
+    "zh": "说",
+    "ko": "라고",
+    "ru": "говорит",
+    "uk": "каже",
+]
+
 class ChatTextToSpeech: NSObject {
     private var rate: Float = 0.4
     private var volume: Float = 0.6
@@ -38,7 +54,11 @@ class ChatTextToSpeech: NSObject {
         return false
     }
 
-    private func getVoice(message: String) -> AVSpeechSynthesisVoice? {
+    private func getSays(_ language: String) -> String {
+        return saysByLanguage[language] ?? ""
+    }
+
+    private func getVoice(message: String) -> (AVSpeechSynthesisVoice?, String)? {
         recognizer.reset()
         recognizer.processString(message)
         guard !isFilteredOut(message: message) else {
@@ -52,11 +72,11 @@ class ChatTextToSpeech: NSObject {
             return nil
         }
         if let voiceIdentifier = voices[language] {
-            return AVSpeechSynthesisVoice(identifier: voiceIdentifier)
+            return (AVSpeechSynthesisVoice(identifier: voiceIdentifier), getSays(language))
         } else if let voice = AVSpeechSynthesisVoice.speechVoices()
             .filter({ $0.language.starts(with: language) }).first
         {
-            return AVSpeechSynthesisVoice(identifier: voice.identifier)
+            return (AVSpeechSynthesisVoice(identifier: voice.identifier), getSays(language))
         }
         return nil
     }
@@ -68,20 +88,23 @@ class ChatTextToSpeech: NSObject {
         guard let message = messageQueue.popFirst() else {
             return
         }
+        guard let (voice, says) = getVoice(message: message.message) else {
+            return
+        }
+        guard let voice else {
+            return
+        }
         let text: String
         if message.user == latestUserThatSaidSomething || !sayUsername {
             text = message.message
         } else {
-            text = String(localized: "\(message.user) says: \(message.message)")
+            text = String(localized: "\(message.user) \(says): \(message.message)")
         }
         let utterance = AVSpeechUtterance(string: text)
         utterance.rate = rate
         utterance.pitchMultiplier = 0.8
         utterance.preUtteranceDelay = 0.05
         utterance.volume = volume
-        guard let voice = getVoice(message: message.message) else {
-            return
-        }
         utterance.voice = voice
         synthesizer.speak(utterance)
         latestUserThatSaidSomething = message.user
