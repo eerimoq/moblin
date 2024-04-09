@@ -1630,7 +1630,7 @@
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : ""
+            "value" : "%1$@ - %2$@"
           }
         },
         "vi" : {
@@ -1730,13 +1730,13 @@
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ (%2$@total)"
+            "value" : "%1$@ (%2$@ total)"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ (%2$@total)"
+            "value" : "%1$@ (%2$@ total)"
           }
         },
         "ru" : {
@@ -2175,9 +2175,129 @@
     },
     "%@ %@: %@" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ %2$@: %3$@"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ %2$@: %3$@y"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "%1$@ %2$@: %3$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ %2$@: %3$@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ %2$@: %3$@"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ %2$@: %3$@"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ %2$@: %3$@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ %2$@: %3$@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ %2$@: %3$@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ %2$@: %3$@"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ %2$@: %3$@"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ %2$@: %3$@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ %2$@: %3$@"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ %2$@: %3$@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ %2$@: %3$@"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ %2$@: %3$@"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ %2$@: %3$@"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ %2$@: %3$@"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ %2$@: %3$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ %2$@: %3$@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
             "value" : "%1$@ %2$@: %3$@"
           }
         }
@@ -2206,7 +2326,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@dB"
+            "value" : "%@ dB"
           }
         },
         "hi" : {
@@ -2230,13 +2350,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@dB"
+            "value" : "%@ dB"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@dB"
+            "value" : "%@ dB"
           }
         },
         "nl" : {
@@ -2254,13 +2374,13 @@
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@dB"
+            "value" : "%@ dB"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@dB"
+            "value" : "%@ dB"
           }
         },
         "ru" : {
@@ -2278,7 +2398,7 @@
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@dB"
+            "value" : "%@ dB"
           }
         },
         "uk" : {
@@ -2290,19 +2410,19 @@
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@dB"
+            "value" : "%@ dB"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "％@ D b"
+            "value" : "%@ Db"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "％@ dB"
+            "value" : "%@ dB"
           }
         }
       }
@@ -2502,13 +2622,13 @@
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@s"
+            "value" : "%@ s"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@s"
+            "value" : "%@ s"
           }
         },
         "ru" : {
@@ -2538,7 +2658,7 @@
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@s"
+            "value" : "%@ s"
           }
         },
         "zh-Hans" : {
@@ -2551,137 +2671,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "%@ s"
-          }
-        }
-      }
-    },
-    "%@ says: %@" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ sagt: %@"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ο %@ λέει: %@"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ says: %2$@"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ dice: %@"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ dit: %@"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ कहते हैं: %@"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ berkata: %@"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ dice: %@"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ の発言: %@"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ 말: %@"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ zegt: %@"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ mówi: %@"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ diz: %@"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ diz: %@"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ говорит: %@"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ säger: %2$@"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ diyor: %@"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ каже: %@"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ nói: %@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ 说： %@"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ 說： %@"
           }
         }
       }
@@ -20555,7 +20544,128 @@
       }
     },
     "Do not say messages that are likely spam or bot commands." : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sagen Sie keine Nachrichten, bei denen es sich wahrscheinlich um Spam oder Bot-Befehle handelt."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Μην λέτε μηνύματα που είναι πιθανώς ανεπιθύμητα ή εντολές bot."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "No digas mensajes que probablemente sean spam o comandos de bot."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ne prononcez pas de messages susceptibles d'être du spam ou des commandes de robot."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ऐसे संदेश न कहें जो संभवतः स्पैम या बॉट कमांड हों।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Jangan ucapkan pesan yang kemungkinan merupakan perintah spam atau bot."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Non dire messaggi che potrebbero essere spam o comandi di bot."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "スパムまたはボット コマンドの可能性があるメッセージを言わないでください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "스팸이나 봇 명령일 가능성이 있는 메시지는 말하지 마세요."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Zeg geen berichten die waarschijnlijk spam of botopdrachten zijn."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nie wypowiadaj wiadomości, które prawdopodobnie są spamem lub poleceniami botów."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Não diga mensagens que provavelmente sejam spam ou comandos de bot."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Não diga mensagens que provavelmente sejam spam ou comandos de bot."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Не произносите сообщения, которые могут быть спамом или командами ботов."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Säg inte meddelanden som sannolikt är spam eller botkommandon."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Spam veya bot komutu olma ihtimali olan mesajları söylemeyin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Не вимовляйте повідомлення, які ймовірно є спамом або командами ботів."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Không nói những tin nhắn có khả năng là lệnh spam hoặc bot."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "不要说出可能是垃圾邮件或机器人命令的消息。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "不要說出可能是垃圾郵件或機器人命令的訊息。"
+          }
+        }
+      }
     },
     "Do not share your settings with anyone as they may contain sensitive data (stream keys, etc.)!" : {
       "localizations" : {
@@ -26386,7 +26496,128 @@
       }
     },
     "Filter" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Filter"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Φίλτρο"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Filtrar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Filtre"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "फ़िल्टर"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Saring"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Filtro"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "フィルター"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "필터"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Filter"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Filtr"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Filtro"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Filtro"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Фильтр"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filtrera"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Filtre"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "фільтр"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Lọc"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "筛选"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "篩選"
+          }
+        }
+      }
     },
     "Find your channel name (myChannelName) and video id (myVideoId) in your stream's URL." : {
       "localizations" : {
