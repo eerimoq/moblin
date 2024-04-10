@@ -79,6 +79,8 @@
 		03507F6B2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03507F6A2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift */; };
 		035192E02B53EF2C00B09E3B /* GlobalQuickButtonsButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035192DF2B53EF2C00B09E3B /* GlobalQuickButtonsButtonSettingsView.swift */; };
 		0352679E2B99A00C00B49B72 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03F853B22B151FA700719B89 /* Localizable.xcstrings */; };
+		035735802BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0357357F2BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift */; };
+		035735822BC6303F00F4E87D /* WatchDisplaySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035735812BC6303F00F4E87D /* WatchDisplaySettingsView.swift */; };
 		035D37282AB0EBB500045B92 /* IconAndTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37272AB0EBB500045B92 /* IconAndTextView.swift */; };
 		035D37372AB230E700045B92 /* StreamVideoBitrateSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37362AB230E700045B92 /* StreamVideoBitrateSettingsView.swift */; };
 		035E775C2ACC969D00738DCE /* ZoomPresetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035E775B2ACC969D00738DCE /* ZoomPresetSettingsView.swift */; };
@@ -346,6 +348,8 @@
 		034FC8512B2B6D4A00EF0C62 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		03507F6A2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllersControllerButtonSettingsView.swift; sourceTree = "<group>"; };
 		035192DF2B53EF2C00B09E3B /* GlobalQuickButtonsButtonSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalQuickButtonsButtonSettingsView.swift; sourceTree = "<group>"; };
+		0357357F2BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchLocalOverlaysSettingsView.swift; sourceTree = "<group>"; };
+		035735812BC6303F00F4E87D /* WatchDisplaySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchDisplaySettingsView.swift; sourceTree = "<group>"; };
 		035D37272AB0EBB500045B92 /* IconAndTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconAndTextView.swift; sourceTree = "<group>"; };
 		035D37362AB230E700045B92 /* StreamVideoBitrateSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoBitrateSettingsView.swift; sourceTree = "<group>"; };
 		035E775B2ACC969D00738DCE /* ZoomPresetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomPresetSettingsView.swift; sourceTree = "<group>"; };
@@ -691,6 +695,7 @@
 			isa = PBXGroup;
 			children = (
 				031C15B32B93324B00BA967D /* Chat */,
+				0357357C2BC62FA200F4E87D /* Display */,
 				031C15B82B93339C00BA967D /* WatchSettingsView.swift */,
 			);
 			path = Watch;
@@ -825,6 +830,23 @@
 				03FBD1842B3B0DF300757CA9 /* RtmpServerChunkStream.swift */,
 			);
 			path = RtmpServer;
+			sourceTree = "<group>";
+		};
+		0357357C2BC62FA200F4E87D /* Display */ = {
+			isa = PBXGroup;
+			children = (
+				0357357D2BC62FAC00F4E87D /* LocalOverlays */,
+				035735812BC6303F00F4E87D /* WatchDisplaySettingsView.swift */,
+			);
+			path = Display;
+			sourceTree = "<group>";
+		};
+		0357357D2BC62FAC00F4E87D /* LocalOverlays */ = {
+			isa = PBXGroup;
+			children = (
+				0357357F2BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift */,
+			);
+			path = LocalOverlays;
 			sourceTree = "<group>";
 		};
 		035D372A2AB103E600045B92 /* Frameworks */ = {
@@ -1710,6 +1732,7 @@
 				03DBD1032B300D55004B0BE6 /* StreamWizardNetworkSetupBelaboxSettingsView.swift in Sources */,
 				0315A37A2AA39DA800295443 /* TextItemView.swift in Sources */,
 				0379BBA22AAD824600B718B6 /* StreamOverlayIconAndTextView.swift in Sources */,
+				035735802BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift in Sources */,
 				03D445E22AE5966B00A0F6E9 /* CacheAsyncImage.swift in Sources */,
 				03F3BF192ADAAA94009A8D3E /* TextEffect.swift in Sources */,
 				038ED3DB2B403664005DEC08 /* LocalOverlaysNetworkInterfaceNamesSettingsView.swift in Sources */,
@@ -1844,6 +1867,7 @@
 				03E877F72B2DB27800086355 /* GlobalQuickButtonsSettingsView.swift in Sources */,
 				032FDC022B0B11C5007BE85E /* SizeEditView.swift in Sources */,
 				031A4DC72B2CED460053F67D /* StreamAudioSettingsView.swift in Sources */,
+				035735822BC6303F00F4E87D /* WatchDisplaySettingsView.swift in Sources */,
 				03E95AC62ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift in Sources */,
 				03A983632A9A05D7008FF0DB /* SettingsView.swift in Sources */,
 				034844EF2B579D4C0089B874 /* RemoteControlAssistant.swift in Sources */,

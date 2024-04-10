@@ -31,29 +31,31 @@ struct PreviewView: View {
                 .frame(maxWidth: .infinity)
                 .padding([.bottom], 3)
             }
-            VStack(spacing: 1) {
+            HStack {
                 Spacer()
-                HStack {
+                VStack(alignment: .trailing, spacing: 1) {
                     Spacer()
-                    ThermalStateView(thermalState: model.thermalState)
-                }
-                .padding([.bottom], 4)
-                .padding([.trailing], 5)
-                HStack {
-                    Spacer()
-                    AudioLevelView(showBar: true, level: model.audioLevel)
-                }
-                HStack {
-                    Spacer()
+                    if model.isShowingStatusThermalState() {
+                        Image(systemName: "flame")
+                            .frame(width: 17, height: 17)
+                            .font(smallFont)
+                            .padding([.leading, .trailing], 2)
+                            .foregroundColor(model.thermalState.color())
+                            .background(Color(white: 0, opacity: 0.6))
+                            .cornerRadius(5)
+                    }
+                    if model.isShowingStatusAudioLevel() {
+                        AudioLevelView(showBar: true, level: model.audioLevel)
+                    }
                     StreamOverlayIconAndTextView(
-                        show: true,
+                        show: model.isShowingStatusBitrate(),
                         icon: "speedometer",
                         text: model.speedAndTotal,
                         textFirst: true
                     )
                 }
-                .padding([.bottom], 4)
             }
+            .padding([.bottom], 4)
             .padding([.leading], 3)
         }
     }

@@ -11,6 +11,9 @@ struct WatchSettingsView: View {
                 {
                     Text("Chat")
                 }
+                NavigationLink(destination: WatchDisplaySettingsView()) {
+                    Text("Display")
+                }
             }
         }
         .navigationTitle("Watch")

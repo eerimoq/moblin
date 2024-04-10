@@ -6,6 +6,13 @@ class WatchSettingsChat: Codable {
     var notificationOnMessage: Bool? = false
 }
 
+class WatchSettingsShow: Codable {
+    var thermalState: Bool = true
+    var audioLevel: Bool = true
+    var speed: Bool = true
+}
+
 class WatchSettings: Codable {
     var chat: WatchSettingsChat = .init()
+    var show: WatchSettingsShow? = .init()
 }

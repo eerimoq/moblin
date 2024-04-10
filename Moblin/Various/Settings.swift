@@ -2433,5 +2433,9 @@ final class Settings {
             realDatabase.chat.textToSpeechFilter = true
             store()
         }
+        if realDatabase.watch!.show == nil {
+            realDatabase.watch!.show = .init()
+            store()
+        }
     }
 }

@@ -229,6 +229,9 @@ class Model: NSObject, ObservableObject {
         if self.settings.chat.notificationOnMessage == nil {
             self.settings.chat.notificationOnMessage = false
         }
+        if self.settings.show == nil {
+            self.settings.show = .init()
+        }
     }
 
     private func handleThermalState(_ data: Any) throws {
@@ -273,6 +276,18 @@ class Model: NSObject, ObservableObject {
     func skipCurrentChatTextToSpeechMessage() {
         let message = WatchMessageFromWatch.pack(type: .skipCurrentChatTextToSpeechMessage, data: true)
         WCSession.default.sendMessage(message, replyHandler: nil)
+    }
+
+    func isShowingStatusThermalState() -> Bool {
+        return settings.show!.thermalState
+    }
+
+    func isShowingStatusAudioLevel() -> Bool {
+        return settings.show!.audioLevel
+    }
+
+    func isShowingStatusBitrate() -> Bool {
+        return settings.show!.speed && isLive
     }
 }
 
