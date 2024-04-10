@@ -8,6 +8,14 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.236.0", date: "2024-04-10", changes: [
+        "• Watch companion app.",
+        "  • Toggles to show/hide local overlays.",
+        "    • Settings → Watch → Display → Local overlays.",
+        "  • Thermal state background.",
+        "  • Only show bitrate status when live.",
+        "• German translation updated. :writing_hand: pomerial",
+    ]),
     Version(version: "0.235.0", date: "2024-04-09", changes: [
         "• Chat text to speech filter toggle.",
         "• Chat text to speech filter reworked.",
