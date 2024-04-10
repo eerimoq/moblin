@@ -2177,7 +2177,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%1$@ %2$@: %3$@"
           }
         },
@@ -20547,8 +20547,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Sagen Sie keine Nachrichten, bei denen es sich wahrscheinlich um Spam oder Bot-Befehle handelt."
+            "state" : "translated",
+            "value" : "Auslassen von Spam oder Bot-Befehle handelt."
           }
         },
         "el" : {
@@ -26499,7 +26499,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Filter"
           }
         },
@@ -30715,8 +30715,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Heim"
+            "state" : "translated",
+            "value" : "Home"
           }
         },
         "el" : {
@@ -32079,7 +32079,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Zuordnung von Eingangs- zu Ausgangskanälen"
           }
         },
@@ -37535,7 +37535,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mono-Audio verwendet nur Ausgangskanal 1. Stereo-Audio verwendet beide Ausgangskanäle."
           }
         },
@@ -39147,7 +39147,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Namen werden im Hochformat nicht angezeigt."
           }
         },
@@ -42867,7 +42867,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ausgangskanal 1"
           }
         },
@@ -42991,7 +42991,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ausgangskanal 2"
           }
         },
@@ -44231,7 +44231,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Porträt"
           }
         },
@@ -49687,7 +49687,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Suchen Sie mit Google oder geben Sie die Adresse ein"
           }
         },
@@ -51423,7 +51423,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Aktuelle TTS überspringen"
           }
         },
@@ -56135,7 +56135,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nur für Abonnenten"
           }
         },
@@ -56259,7 +56259,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "„Nur Abonnenten“ ist nicht für alle Plattformen verfügbar."
           }
         },
@@ -59111,7 +59111,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Das gestreamte (und aufgezeichnete) Video ist immer im Querformat, auch wenn die Hochformat-Umschaltung aktiviert ist. Drehen Sie es in OBS ins Hochformat. Wird in Zukunft verbessert."
           }
         },
@@ -59483,7 +59483,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Die Video-ID ist der letzte Teil Ihrer Livestream-URL."
           }
         },
@@ -66306,7 +66306,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Webbrowser"
           }
         },
@@ -67298,7 +67298,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Widgets werden falsch gedreht, wenn die Hochformat-Umschaltung aktiviert ist."
           }
         },
