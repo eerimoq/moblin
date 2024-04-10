@@ -2195,7 +2195,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%1$@ %2$@: %3$@"
           }
         },
@@ -20559,8 +20559,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "No digas mensajes que probablemente sean spam o comandos de bot."
+            "state" : "translated",
+            "value" : "No decir mensajes que probablemente sean spam o comandos de bot."
           }
         },
         "fr" : {
@@ -26511,7 +26511,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Filtrar"
           }
         },
@@ -30727,8 +30727,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Hogar"
+            "state" : "translated",
+            "value" : "Principal"
           }
         },
         "fr" : {
@@ -32091,7 +32091,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mapeo de canales de entrada a salida"
           }
         },
@@ -37547,7 +37547,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "El audio mono solo usa el canal de salida 1. El audio estéreo usa ambos canales de salida."
           }
         },
@@ -39159,7 +39159,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Los nombres no se muestran en modo vertical."
           }
         },
@@ -42879,7 +42879,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Canal de salida 1"
           }
         },
@@ -43003,7 +43003,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Canal de salida 2"
           }
         },
@@ -44243,8 +44243,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Retrato"
+            "state" : "translated",
+            "value" : "Modo vertical"
           }
         },
         "fr" : {
@@ -49699,8 +49699,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Buscar con Google o ingresar dirección"
+            "state" : "translated",
+            "value" : "Buscar con Google o introducir dirección"
           }
         },
         "fr" : {
@@ -51435,8 +51435,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Saltar TTS actual"
+            "state" : "translated",
+            "value" : "Saltar el TTS actual"
           }
         },
         "fr" : {
@@ -56147,7 +56147,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Sólo suscriptores"
           }
         },
@@ -56271,8 +56271,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Solo suscriptores no está disponible para todas las plataformas."
+            "state" : "translated",
+            "value" : "Sólo suscriptores no está disponible para todas las plataformas."
           }
         },
         "fr" : {
@@ -59123,8 +59123,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "El vídeo transmitido (y grabado) siempre está en formato horizontal, incluso si la opción vertical está habilitada. Gírelo en posición vertical en OBS. A mejorar en el futuro."
+            "state" : "translated",
+            "value" : "El vídeo transmitido (y grabado) siempre está en formato horizontal, incluso si el modo vertical está habilitado. Gíralo en posición vertical en OBS. A mejorar en el futuro."
           }
         },
         "fr" : {
@@ -59495,8 +59495,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "La identificación del video es la última parte de la URL de tu transmisión en vivo."
+            "state" : "translated",
+            "value" : "El ID del video es la última parte de la URL de tu transmisión en vivo."
           }
         },
         "fr" : {
@@ -66318,8 +66318,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "navegador web"
+            "state" : "translated",
+            "value" : "Navegador Web"
           }
         },
         "fr" : {
@@ -67310,8 +67310,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Los widgets se rotarán incorrectamente cuando la opción vertical esté habilitada."
+            "state" : "translated",
+            "value" : "Los widgets se rotarán incorrectamente cuando el modo vertical esté habilitado."
           }
         },
         "fr" : {

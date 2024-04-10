@@ -14,7 +14,8 @@ private let versions = [
         "    • Settings → Watch → Display → Local overlays.",
         "  • Thermal state background.",
         "  • Only show bitrate status when live.",
-        "• German translation updated. :writing_hand: pomerial",
+        "• German translation updated. ✍️ pomerial",
+        "• Spanish translation updated. ✍️ adriportela95",
     ]),
     Version(version: "0.235.0", date: "2024-04-09", changes: [
         "• Chat text to speech filter toggle.",
