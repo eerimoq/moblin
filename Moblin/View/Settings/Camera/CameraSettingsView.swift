@@ -188,6 +188,7 @@ struct CameraSettingsView: View {
                         Text(space)
                     }
                 }
+                .disabled(model.isLive || model.isRecording)
                 NavigationLink(destination: CameraSettingsAppleLogLutView(selectedId: model.database.color!
                         .lut))
                 {
