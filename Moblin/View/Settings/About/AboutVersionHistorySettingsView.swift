@@ -8,6 +8,14 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.237.0", date: "2024-04-12", changes: [
+        "• Fix colors? 🐛 onigiri",
+        "• Automatically apply Apple Log LUT when using the Apple Log color space. 💡 JohannesLiv",
+        "• Remove HLG BT.2020 color space.",
+        "  • Was problematic when using widgets. Colors were way off.",
+        "• Fix scene duplicate.",
+        "  • Did not copy all settings.",
+    ]),
     Version(version: "0.236.0", date: "2024-04-10", changes: [
         "• Watch companion app.",
         "  • Toggles to show/hide local overlays.",
