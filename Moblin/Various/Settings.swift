@@ -528,7 +528,11 @@ class SettingsScene: Codable, Identifiable, Equatable {
         new.enabled = enabled
         new.cameraType = cameraType
         new.cameraPosition = cameraPosition
+        new.backCameraId = backCameraId
+        new.frontCameraId = frontCameraId
         new.rtmpCameraId = rtmpCameraId
+        new.externalCameraId = externalCameraId
+        new.externalCameraName = externalCameraName
         for widget in widgets {
             new.widgets.append(widget.clone())
         }
@@ -787,6 +791,7 @@ enum SettingsButtonType: String, Codable, CaseIterable {
     case draw = "Draw"
     case localOverlays = "Local overlays"
     case browser = "Browser"
+    case lut = "LUT"
 
     public init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -848,6 +853,8 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return .localOverlays
         case String(localized: "Browser"):
             return .browser
+        case String(localized: "LUT"):
+            return .lut
         default:
             return .torch
         }
@@ -905,6 +912,8 @@ enum SettingsButtonType: String, Codable, CaseIterable {
             return String(localized: "Local overlays")
         case .browser:
             return String(localized: "Browser")
+        case .lut:
+            return String(localized: "LUT")
         }
     }
 }
@@ -964,6 +973,7 @@ class SettingsColorAppleLogLut: Codable, Identifiable {
     var id: UUID = .init()
     var type: SettingsColorAppleLogLutType = .bundled
     var name: String = ""
+    var buttonId: UUID?
 
     init(type: SettingsColorAppleLogLutType, name: String) {
         self.type = type
@@ -974,7 +984,7 @@ class SettingsColorAppleLogLut: Codable, Identifiable {
 enum SettingsColorSpace: String, Codable, CaseIterable {
     case srgb = "Standard RGB"
     case p3D65 = "P3 D65"
-    case hlgBt2020 = "HLG BT2020"
+    // case hlgBt2020 = "HLG BT2020"
     case appleLog = "Apple Log"
 
     public init(from decoder: Decoder) throws {
@@ -991,7 +1001,7 @@ private let allBundledLuts = [
 
 class SettingsColor: Codable {
     var space: SettingsColorSpace = .srgb
-    var lutEnabled: Bool = false
+    var lutEnabled: Bool = true
     var lut: UUID = .init()
     var bundledLuts = allBundledLuts
     var diskLuts: [SettingsColorAppleLogLut]? = []

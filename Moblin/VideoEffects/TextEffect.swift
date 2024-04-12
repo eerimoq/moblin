@@ -13,13 +13,18 @@ final class TextEffect: VideoEffect {
     private var overlay: CIImage?
     private var image: UIImage?
     private var nextUpdateTime = -1.0
+    private let settingName: String
 
     init(format _: String, fontSize: CGFloat, settingName: String) {
         self.fontSize = fontSize
+        self.settingName = settingName
         x = 0
         y = 0
         super.init()
-        name = "\(settingName) time widget"
+    }
+
+    override func getName() -> String {
+        return "\(settingName) browser widget"
     }
 
     private func formatted() -> String {

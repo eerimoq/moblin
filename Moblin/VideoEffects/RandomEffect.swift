@@ -28,7 +28,10 @@ final class RandomEffect: VideoEffect {
     override init() {
         effetName = randomEffects.shuffled().first!
         super.init()
-        name = "random filter"
+    }
+
+    override func getName() -> String {
+        return "random filter"
     }
 
     private var extent = CGRect.zero {

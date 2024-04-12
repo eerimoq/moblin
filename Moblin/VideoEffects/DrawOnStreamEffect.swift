@@ -34,9 +34,8 @@ final class DrawOnStreamEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
     private var overlay: CIImage?
 
-    override init() {
-        super.init()
-        name = "draw on stream"
+    override func getName() -> String {
+        return "random filter"
     }
 
     func updateOverlay(videoSize: CGSize, size: CGSize, lines: [DrawOnStreamLine]) {

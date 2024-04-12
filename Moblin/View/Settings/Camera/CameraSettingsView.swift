@@ -6,8 +6,7 @@ struct CustomLutView: View {
     var lut: SettingsColorAppleLogLut
 
     private func submitName(value: String) {
-        lut.name = value
-        model.store()
+        model.setLutName(lut: lut, name: value)
         model.objectWillChange.send()
     }
 
@@ -51,45 +50,19 @@ struct CustomLutView: View {
 
 struct CameraSettingsLutsView: View {
     @EnvironmentObject var model: Model
-    @State var selectedId: UUID
     @State var selectedImageItem: PhotosPickerItem?
-
-    private func submitLut(id: UUID) {
-        model.database.color!.lut = id
-        model.store()
-        model.lutUpdated()
-        model.objectWillChange.send()
-    }
-
-    private func luts() -> [SettingsColorAppleLogLut] {
-        return model.database.color!.diskLuts! + model.database.color!.bundledLuts
-    }
 
     var body: some View {
         Form {
             Section {
-                Toggle(isOn: Binding(get: {
-                    model.database.color!.lutEnabled
-                }, set: { value in
-                    model.database.color!.lutEnabled = value
-                    model.lutEnabledUpdated()
-                    model.store()
-                })) {
-                    Text("Enabled")
-                }
-            }
-            Section {
-                Picker("", selection: $selectedId) {
-                    ForEach(luts()) { lut in
+                List {
+                    ForEach(model.database.color!.bundledLuts) { lut in
                         Text(lut.name)
                             .tag(lut.id)
                     }
                 }
-                .onChange(of: selectedId) { id in
-                    submitLut(id: id)
-                }
-                .pickerStyle(.inline)
-                .labelsHidden()
+            } header: {
+                Text("Bundled")
             }
             Section {
                 List {
@@ -100,12 +73,7 @@ struct CameraSettingsLutsView: View {
                         .tag(lut.id)
                     }
                     .onDelete(perform: { offsets in
-                        for offset in offsets {
-                            let lut = model.database.color!.diskLuts![offset]
-                            model.imageStorage.remove(id: lut.id)
-                        }
-                        model.database.color!.diskLuts!.remove(atOffsets: offsets)
-                        model.store()
+                        model.removeLut(offsets: offsets)
                         model.objectWillChange.send()
                     })
                 }
@@ -132,10 +100,63 @@ struct CameraSettingsLutsView: View {
                     }
                 }
             } header: {
-                Text("Custom luts")
+                Text("Custom")
+            } footer: {
+                Text("Add your own LUTs.")
             }
         }
-        .navigationTitle("LUT")
+        .navigationTitle("LUTs")
+        .toolbar {
+            SettingsToolbar()
+        }
+    }
+}
+
+struct CameraSettingsAppleLogLutView: View {
+    @EnvironmentObject var model: Model
+    @State var selectedId: UUID
+
+    private func submitLut(id: UUID) {
+        model.database.color!.lut = id
+        model.store()
+        model.lutUpdated()
+        model.objectWillChange.send()
+    }
+
+    private func luts() -> [SettingsColorAppleLogLut] {
+        return model.database.color!.bundledLuts + model.database.color!.diskLuts!
+    }
+
+    var body: some View {
+        Form {
+            Section {
+                Toggle(isOn: Binding(get: {
+                    model.database.color!.lutEnabled
+                }, set: { value in
+                    model.database.color!.lutEnabled = value
+                    model.lutEnabledUpdated()
+                    model.store()
+                })) {
+                    Text("Enabled")
+                }
+            } footer: {
+                Text("If enabled, selected LUT is applied when the Apple Log color space is used.")
+            }
+            Section {
+                Picker("", selection: $selectedId) {
+                    ForEach(luts()) { lut in
+                        Text(lut.name)
+                            .tag(lut.id)
+                    }
+                }
+                .onChange(of: selectedId) { id in
+                    submitLut(id: id)
+                }
+                .pickerStyle(.inline)
+                .labelsHidden()
+            }
+        }
+        .navigationTitle("Apple Log LUT")
         .toolbar {
             SettingsToolbar()
         }
@@ -145,14 +166,6 @@ struct CameraSettingsLutsView: View {
 struct CameraSettingsView: View {
     @EnvironmentObject var model: Model
 
-    private func currentLut() -> String {
-        if model.database.color!.lutEnabled {
-            return model.getLogLutById(id: model.database.color!.lut)?.name ?? ""
-        } else {
-            return ""
-        }
-    }
-
     var body: some View {
         Form {
             Section {
@@ -161,6 +174,8 @@ struct CameraSettingsView: View {
                 }
                 VideoStabilizationSettingsView()
                 TapScreenToFocusSettingsView()
+            }
+            Section {
                 Picker("Color space", selection: Binding(get: {
                     model.database.color!.space.rawValue
                 }, set: { value in
@@ -173,13 +188,20 @@ struct CameraSettingsView: View {
                         Text(space)
                     }
                 }
-                NavigationLink(destination: CameraSettingsLutsView(selectedId: model.database.color!.lut)) {
-                    HStack {
-                        Text("LUT")
-                        Spacer()
-                        Text(currentLut())
-                    }
+                NavigationLink(destination: CameraSettingsAppleLogLutView(selectedId: model.database.color!
+                        .lut))
+                {
+                    Text("Apple Log LUT")
                 }
+            } footer: {
+                Text("The Apple Log LUT is only applied when the Apple Log color space is selected.")
+            }
+            Section {
+                NavigationLink(destination: CameraSettingsLutsView()) {
+                    Text("LUTs")
+                }
+            } footer: {
+                Text("LUTs modifies image colors when applied.")
             }
         }
         .navigationTitle("Camera")

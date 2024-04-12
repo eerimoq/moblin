@@ -5,9 +5,8 @@ import UIKit
 final class PixellateEffect: VideoEffect {
     private let filter = CIFilter.pixellate()
 
-    override init() {
-        super.init()
-        name = "pixellate filter"
+    override func getName() -> String {
+        return "pixellate filter"
     }
 
     override func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {

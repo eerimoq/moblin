@@ -26,6 +26,7 @@ final class BrowserEffect: VideoEffect {
     private var scale = UIScreen().scale
     private var defaultEnabled = true
     private var crops: [WidgetCrop] = []
+    private let settingName: String
 
     init(
         url: URL,
@@ -36,6 +37,7 @@ final class BrowserEffect: VideoEffect {
         scaleToFitVideo = widget.scaleToFitVideo!
         self.url = url
         self.videoSize = videoSize
+        self.settingName = settingName
         fps = widget.fps!
         isLoaded = false
         x = .nan
@@ -59,7 +61,10 @@ final class BrowserEffect: VideoEffect {
         webView.scrollView.showsVerticalScrollIndicator = false
         webView.scrollView.showsHorizontalScrollIndicator = false
         super.init()
-        name = "\(settingName) browser widget"
+    }
+
+    override func getName() -> String {
+        return "\(settingName) browser widget"
     }
 
     var host: String {

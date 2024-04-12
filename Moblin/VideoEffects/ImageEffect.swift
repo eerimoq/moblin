@@ -33,6 +33,7 @@ final class ImageEffect: VideoEffect {
     private let y: Double
     private let width: Double
     private let height: Double
+    private let settingName: String
 
     init(image: UIImage, x: Double, y: Double, width: Double, height: Double, settingName: String) {
         originalImage = image
@@ -40,8 +41,12 @@ final class ImageEffect: VideoEffect {
         self.y = y
         self.width = width
         self.height = height
+        self.settingName = settingName
         super.init()
-        name = "\(settingName) image widget"
+    }
+
+    override func getName() -> String {
+        return "\(settingName) image widget"
     }
 
     override func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {

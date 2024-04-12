@@ -576,6 +576,13 @@ struct ButtonsInnerView: View {
         model.toggleBrowser()
     }
 
+    private func lutAction(state _: ButtonState) {
+        state.button.isOn.toggle()
+        model.updateButtonStates()
+        print("LUT button \(state.button.id) pressed")
+        // model.toggleBrowser()
+    }
+
     var body: some View {
         VStack {
             switch state.button.type {
@@ -731,6 +738,12 @@ struct ButtonsInnerView: View {
             case .browser:
                 Button(action: {
                     browserAction(state: state)
+                }, label: {
+                    ButtonImage(state: state, buttonSize: size)
+                })
+            case .lut:
+                Button(action: {
+                    lutAction(state: state)
                 }, label: {
                     ButtonImage(state: state, buttonSize: size)
                 })

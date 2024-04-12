@@ -6897,6 +6897,9 @@
         }
       }
     },
+    "Add your own LUTs." : {
+
+    },
     "AfreecaTV" : {
       "localizations" : {
         "de" : {
@@ -8018,6 +8021,9 @@
           }
         }
       }
+    },
+    "Apple Log LUT" : {
+
     },
     "Are you sure?" : {
       "localizations" : {
@@ -13226,6 +13232,9 @@
           }
         }
       }
+    },
+    "Bundled" : {
+
     },
     "Button" : {
       "localizations" : {
@@ -18684,6 +18693,7 @@
       }
     },
     "Custom luts" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -31207,6 +31217,9 @@
         }
       }
     },
+    "If enabled, selected LUT is applied when the Apple Log color space is used." : {
+
+    },
     "Image" : {
       "localizations" : {
         "de" : {
@@ -34803,6 +34816,12 @@
         }
       }
     },
+    "LUTs" : {
+
+    },
+    "LUTs modifies image colors when applied." : {
+
+    },
     "Make sure silent mode is off for vibrations to work." : {
       "localizations" : {
         "de" : {
@@ -38398,6 +38417,9 @@
           }
         }
       }
+    },
+    "My LUT" : {
+
     },
     "My scene" : {
       "localizations" : {
@@ -57990,6 +58012,9 @@
           }
         }
       }
+    },
+    "The Apple Log LUT is only applied when the Apple Log color space is selected." : {
+
     },
     "The bitrate decrease speed when RTT is too high." : {
       "localizations" : {

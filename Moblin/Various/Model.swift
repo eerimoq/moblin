@@ -1313,7 +1313,8 @@ final class Model: NSObject, ObservableObject {
     }
 
     func lutEnabledUpdated() {
-        if database.color!.lutEnabled {
+        if database.color!.lutEnabled && database.color!.space == .appleLog {
+            media.registerEffect(lutEffect)
             media.registerEffect(lutEffect)
         } else {
             media.unregisterEffect(lutEffect)
@@ -1353,9 +1354,34 @@ final class Model: NSObject, ObservableObject {
     }
 
     func addLut(data: Data) {
-        let lut = SettingsColorAppleLogLut(type: .disk, name: "My LUT")
+        let button = SettingsButton(name: String(localized: "My LUT"))
+        button.type = .lut
+        button.systemImageNameOn = "camera.filters"
+        button.systemImageNameOff = "camera.filters"
+        button.enabled = false
+        let lut = SettingsColorAppleLogLut(type: .disk, name: button.name)
+        lut.buttonId = button.id
         imageStorage.write(id: lut.id, data: data)
         database.color!.diskLuts!.append(lut)
+        database.globalButtons!.append(button)
+        store()
+        updateButtonStates()
+    }
+
+    func removeLut(offsets: IndexSet) {
+        for offset in offsets {
+            let lut = database.color!.diskLuts![offset]
+            imageStorage.remove(id: lut.id)
+            database.globalButtons!.removeAll(where: { $0.id == lut.buttonId })
+        }
+        database.color!.diskLuts!.remove(atOffsets: offsets)
+        store()
+        updateButtonStates()
+    }
+
+    func setLutName(lut: SettingsColorAppleLogLut, name: String) {
+        lut.name = name
+        database.globalButtons!.first(where: { $0.id == lut.buttonId })?.name = name
         store()
     }
 
@@ -2018,8 +2044,6 @@ final class Model: NSObject, ObservableObject {
             colorSpace = .sRGB
         case .p3D65:
             colorSpace = .P3_D65
-        case .hlgBt2020:
-            colorSpace = .HLG_BT2020
         case .appleLog:
             if #available(iOS 17.0, *) {
                 colorSpace = .appleLog
@@ -2032,6 +2056,7 @@ final class Model: NSObject, ObservableObject {
                 if let x = self.setCameraZoomX(x: self.zoomX) {
                     self.setZoomX(x: x)
                 }
+                self.lutEnabledUpdated()
             }
         })
     }
@@ -2918,9 +2943,7 @@ final class Model: NSObject, ObservableObject {
 
     private func sceneUpdatedOn(scene: SettingsScene) {
         attachSingleLayout(scene: scene)
-        if database.color!.lutEnabled {
-            media.registerEffect(lutEffect)
-        }
+        lutEnabledUpdated()
         registerGlobalVideoEffects()
         var usedBrowserEffects: [BrowserEffect] = []
         for sceneWidget in scene.widgets.filter({ $0.enabled }) {
