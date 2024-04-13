@@ -1355,7 +1355,7 @@ final class Model: NSObject, ObservableObject {
             return
         }
         do {
-            try lutEffect.setLut(name: lut.name, image: image)
+            try lutEffect.setLut(image: image)
         } catch {
             let message = "\(error)"
             makeErrorToast(title: message)
@@ -1368,7 +1368,6 @@ final class Model: NSObject, ObservableObject {
         button.type = .lut
         button.systemImageNameOn = "camera.filters"
         button.systemImageNameOff = "camera.filters"
-        button.enabled = false
         let lut = SettingsColorAppleLogLut(type: .disk, name: button.name)
         lut.buttonId = button.id
         imageStorage.write(id: lut.id, data: data)
@@ -1725,7 +1724,7 @@ final class Model: NSObject, ObservableObject {
             }
             let lutEffect = LutEffect()
             do {
-                try lutEffect.setLut(name: lut.name, image: image)
+                try lutEffect.setLut(image: image)
             } catch {
                 continue
             }
@@ -2984,6 +2983,9 @@ final class Model: NSObject, ObservableObject {
         lutEnabledUpdated()
         for lut in allLuts() {
             guard let button = findLutButton(lut: lut), button.enabled!, button.isOn else {
+                continue
+            }
+            guard let lutEffect = lutEffects[lut.id] else {
                 continue
             }
             media.registerEffect(lutEffect)

@@ -79,10 +79,8 @@ final class LutEffect: VideoEffect {
         return "LUT"
     }
 
-    func setLut(name: String, image: UIImage) throws {
+    func setLut(image: UIImage) throws {
         let (dimension, data) = try convertLut(image: image)
-        logger
-            .debug("lut: Applying filter \(name) with dimension \(dimension) and data \(data.count)")
         let filter = CIFilter.colorCubeWithColorSpace()
         filter.cubeData = data
         filter.cubeDimension = dimension
