@@ -10,7 +10,7 @@ struct Version {
 private let versions = [
     Version(version: "0.237.0", date: "2024-04-12", changes: [
         "• Fix colors? 🐛 onigiri",
-        "  • Not sure exactly what I changed.",
+        "  • Colors may be slightly different on phone screen and stream. Unknown why.",
         "• Automatically apply Apple Log LUT when using the Apple Log color space. 💡 JohannesLiv",
         "• Remove HLG BT.2020 color space.",
         "  • Was problematic when using widgets. Colors were way off.",
