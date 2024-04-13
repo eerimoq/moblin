@@ -8,6 +8,10 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.238.0", date: "2024-04-13", changes: [
+        "• Only show Apple Log color space alternative if the device supports it.",
+        "• Quick buttons for bundled and custom LUTs.",
+    ]),
     Version(version: "0.237.0", date: "2024-04-12", changes: [
         "• Fix colors? 🐛 onigiri",
         "  • Colors may be slightly different on phone screen and stream. Unknown why.",
