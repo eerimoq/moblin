@@ -579,8 +579,7 @@ struct ButtonsInnerView: View {
     private func lutAction(state _: ButtonState) {
         state.button.isOn.toggle()
         model.updateButtonStates()
-        print("LUT button \(state.button.id) pressed")
-        // model.toggleBrowser()
+        model.sceneUpdated(store: false)
     }
 
     var body: some View {

@@ -265,6 +265,7 @@ final class Model: NSObject, ObservableObject {
     private var imageEffects: [UUID: ImageEffect] = [:]
     private var videoEffects: [UUID: VideoEffect] = [:]
     private var browserEffects: [UUID: BrowserEffect] = [:]
+    private var lutEffects: [UUID: LutEffect] = [:]
     private var drawOnStreamEffect = DrawOnStreamEffect()
     private var lutEffect = LutEffect()
     @Published var browsers: [Browser] = []
@@ -715,17 +716,6 @@ final class Model: NSObject, ObservableObject {
             self.handleObsRecordStatusChanged(active: false)
         })
         listObsScenes()
-    }
-
-    private func hasAppleLog() -> Bool {
-        if #available(iOS 17.0, *) {
-            for format in getBestBackCameraDevice()?.formats ?? []
-                where format.supportedColorSpaces.contains(.appleLog)
-            {
-                return true
-            }
-        }
-        return false
     }
 
     func setup() {
@@ -1334,16 +1324,12 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    func lutUpdated() {
-        guard let lut = getLogLutById(id: database.color!.lut) else {
-            media.unregisterEffect(lutEffect)
-            return
-        }
+    func loadLutImage(lut: SettingsColorAppleLogLut) -> UIImage? {
         var image: UIImage?
         switch lut.type {
         case .bundled:
             guard let path = Bundle.main.path(forResource: "LUTs.bundle/\(lut.name).png", ofType: nil) else {
-                return
+                return nil
             }
             image = UIImage(contentsOfFile: path)
         case .disk:
@@ -1355,6 +1341,17 @@ final class Model: NSObject, ObservableObject {
             let message = "Failed to load LUT image \(lut.name)"
             makeErrorToast(title: message)
             logger.info(message)
+            return nil
+        }
+        return image
+    }
+
+    func lutUpdated() {
+        guard let lut = getLogLutById(id: database.color!.lut) else {
+            media.unregisterEffect(lutEffect)
+            return
+        }
+        guard let image = loadLutImage(lut: lut) else {
             return
         }
         do {
@@ -1379,6 +1376,7 @@ final class Model: NSObject, ObservableObject {
         database.globalButtons!.append(button)
         store()
         updateButtonStates()
+        resetSelectedScene()
     }
 
     func removeLut(offsets: IndexSet) {
@@ -1390,17 +1388,25 @@ final class Model: NSObject, ObservableObject {
         database.color!.diskLuts!.remove(atOffsets: offsets)
         store()
         updateButtonStates()
+        resetSelectedScene()
+    }
+
+    func findLutButton(lut: SettingsColorAppleLogLut) -> SettingsButton? {
+        return database.globalButtons!.first(where: { $0.id == lut.buttonId })
     }
 
     func setLutName(lut: SettingsColorAppleLogLut, name: String) {
         lut.name = name
-        database.globalButtons!.first(where: { $0.id == lut.buttonId })?.name = name
+        findLutButton(lut: lut)?.name = name
         store()
     }
 
+    private func allLuts() -> [SettingsColorAppleLogLut] {
+        return database.color!.bundledLuts + database.color!.diskLuts!
+    }
+
     func getLogLutById(id: UUID) -> SettingsColorAppleLogLut? {
-        let luts = database.color!.bundledLuts + database.color!.diskLuts!
-        return luts.first { $0.id == id }
+        return allLuts().first { $0.id == id }
     }
 
     private func updateAdaptiveBitrate() {
@@ -1709,6 +1715,22 @@ final class Model: NSObject, ObservableObject {
             size: drawOnStreamSize,
             lines: drawOnStreamLines
         )
+        for lutEffect in lutEffects.values {
+            media.unregisterEffect(lutEffect)
+        }
+        lutEffects.removeAll()
+        for lut in allLuts() {
+            guard let image = loadLutImage(lut: lut) else {
+                continue
+            }
+            let lutEffect = LutEffect()
+            do {
+                try lutEffect.setLut(name: lut.name, image: image)
+            } catch {
+                continue
+            }
+            lutEffects[lut.id] = lutEffect
+        }
         sceneUpdated(imageEffectChanged: true, store: false)
     }
 
@@ -2807,6 +2829,9 @@ final class Model: NSObject, ObservableObject {
         }
         media.unregisterEffect(drawOnStreamEffect)
         media.unregisterEffect(lutEffect)
+        for lutEffect in lutEffects.values {
+            media.unregisterEffect(lutEffect)
+        }
     }
 
     private func attachSingleLayout(scene: SettingsScene) {
@@ -2957,6 +2982,12 @@ final class Model: NSObject, ObservableObject {
     private func sceneUpdatedOn(scene: SettingsScene) {
         attachSingleLayout(scene: scene)
         lutEnabledUpdated()
+        for lut in allLuts() {
+            guard let button = findLutButton(lut: lut), button.enabled!, button.isOn else {
+                continue
+            }
+            media.registerEffect(lutEffect)
+        }
         registerGlobalVideoEffects()
         var usedBrowserEffects: [BrowserEffect] = []
         for sceneWidget in scene.widgets.filter({ $0.enabled }) {
