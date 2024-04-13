@@ -1213,7 +1213,7 @@ final class Model: NSObject, ObservableObject {
         iconImage = database.iconImage
     }
 
-    func handleSettingsUrlsDefault(settings: MoblinSettingsUrl) {
+    private func handleSettingsUrlsDefault(settings: MoblinSettingsUrl) {
         var streamCount = 0
         for stream in settings.streams ?? [] {
             let newStream = SettingsStream(name: stream.name)
@@ -4865,7 +4865,7 @@ extension Model {
         wizardBelaboxUrl = ""
     }
 
-    func handleSettingsUrlsInWizard(settings: MoblinSettingsUrl) {
+    private func handleSettingsUrlsInWizard(settings: MoblinSettingsUrl) {
         switch wizardNetworkSetup {
         case .none:
             break
