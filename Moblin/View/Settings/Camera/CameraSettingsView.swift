@@ -175,27 +175,46 @@ struct CameraSettingsView: View {
                 VideoStabilizationSettingsView()
                 TapScreenToFocusSettingsView()
             }
-            Section {
-                Picker("Color space", selection: Binding(get: {
-                    model.database.color!.space.rawValue
-                }, set: { value in
-                    model.database.color!.space = SettingsColorSpace(rawValue: value)!
-                    model.store()
-                    model.colorSpaceUpdated()
-                    model.objectWillChange.send()
-                })) {
-                    ForEach(colorSpaces, id: \.self) { space in
-                        Text(space)
+            if model.supportsAppleLog {
+                Section {
+                    Picker("Color space", selection: Binding(get: {
+                        model.database.color!.space.rawValue
+                    }, set: { value in
+                        model.database.color!.space = SettingsColorSpace(rawValue: value)!
+                        model.store()
+                        model.colorSpaceUpdated()
+                        model.objectWillChange.send()
+                    })) {
+                        ForEach(colorSpaces, id: \.self) { space in
+                            Text(space)
+                        }
                     }
+                    .disabled(model.isLive || model.isRecording)
+                    NavigationLink(destination: CameraSettingsAppleLogLutView(selectedId: model.database
+                            .color!
+                            .lut))
+                    {
+                        Text("Apple Log LUT")
+                    }
+                } footer: {
+                    Text("The Apple Log LUT is only applied when the Apple Log color space is selected.")
                 }
-                .disabled(model.isLive || model.isRecording)
-                NavigationLink(destination: CameraSettingsAppleLogLutView(selectedId: model.database.color!
-                        .lut))
-                {
-                    Text("Apple Log LUT")
+            } else {
+                Section {
+                    Picker("Color space", selection: Binding(get: {
+                        model.database.color!.space.rawValue
+                    }, set: { value in
+                        model.database.color!.space = SettingsColorSpace(rawValue: value)!
+                        model.store()
+                        model.colorSpaceUpdated()
+                        model.objectWillChange.send()
+                    })) {
+                        ForEach(colorSpaces.filter { $0 != "Apple Log" }, id: \.self) { space in
+                            Text(space)
+                        }
+                    }
+                    .disabled(model.isLive || model.isRecording)
                 }
-            } footer: {
-                Text("The Apple Log LUT is only applied when the Apple Log color space is selected.")
             }
             Section {
                 NavigationLink(destination: CameraSettingsLutsView()) {

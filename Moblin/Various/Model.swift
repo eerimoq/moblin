@@ -437,6 +437,7 @@ final class Model: NSObject, ObservableObject {
     private var locationManager = Location()
     private var realtimeIrl: RealtimeIrl?
     private var failedVideoEffect: String?
+    var supportsAppleLog: Bool = false
 
     func updateAdaptiveBitrateSrtIfEnabled(stream: SettingsStream) {
         switch stream.srt.adaptiveBitrate!.algorithm {
@@ -716,7 +717,19 @@ final class Model: NSObject, ObservableObject {
         listObsScenes()
     }
 
+    private func hasAppleLog() -> Bool {
+        if #available(iOS 17.0, *) {
+            for format in getBestBackCameraDevice()?.formats ?? []
+                where format.supportedColorSpaces.contains(.appleLog)
+            {
+                return true
+            }
+        }
+        return false
+    }
+
     func setup() {
+        supportsAppleLog = hasAppleLog()
         ioVideoUnitIgnoreFramesAfterAttachSeconds = Double(database.debug!.cameraSwitchRemoveBlackish!)
         let WebPCoder = SDImageWebPCoder.shared
         SDImageCodersManager.shared.addCoder(WebPCoder)
