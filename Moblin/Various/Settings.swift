@@ -955,13 +955,13 @@ class SettingsButton: Codable, Identifiable, Equatable, Hashable {
     }
 }
 
-enum SettingsColorAppleLogLutType: String, Codable {
+enum SettingsColorLutType: String, Codable {
     case bundled
     case disk
 
     public init(from decoder: Decoder) throws {
         do {
-            self = try SettingsColorAppleLogLutType(rawValue: decoder.singleValueContainer()
+            self = try SettingsColorLutType(rawValue: decoder.singleValueContainer()
                 .decode(RawValue.self)) ?? .bundled
         } catch {
             self = .bundled
@@ -969,13 +969,13 @@ enum SettingsColorAppleLogLutType: String, Codable {
     }
 }
 
-class SettingsColorAppleLogLut: Codable, Identifiable {
+class SettingsColorLut: Codable, Identifiable {
     var id: UUID = .init()
-    var type: SettingsColorAppleLogLutType = .bundled
+    var type: SettingsColorLutType = .bundled
     var name: String = ""
     var buttonId: UUID?
 
-    init(type: SettingsColorAppleLogLutType, name: String) {
+    init(type: SettingsColorLutType, name: String) {
         self.type = type
         self.name = name
     }
@@ -995,8 +995,13 @@ enum SettingsColorSpace: String, Codable, CaseIterable {
 let colorSpaces = SettingsColorSpace.allCases.map { $0.rawValue }
 
 private let allBundledLuts = [
-    SettingsColorAppleLogLut(type: .bundled, name: "Apple Log To Rec 709"),
-    SettingsColorAppleLogLut(type: .bundled, name: "Moblin Meme"),
+    SettingsColorLut(type: .bundled, name: "Apple Log To Rec 709"),
+    SettingsColorLut(type: .bundled, name: "Moblin Meme"),
+]
+
+private let bundledLutsButtonIcons = [
+    "Apple Log To Rec 709": "apple.logo",
+    "Moblin Meme": "tornado",
 ]
 
 class SettingsColor: Codable {
@@ -1004,7 +1009,7 @@ class SettingsColor: Codable {
     var lutEnabled: Bool = true
     var lut: UUID = .init()
     var bundledLuts = allBundledLuts
-    var diskLuts: [SettingsColorAppleLogLut]? = []
+    var diskLuts: [SettingsColorLut]? = []
 }
 
 class SettingsShow: Codable {
@@ -1834,15 +1839,32 @@ private func addMissingGlobalButtons(database: Database) {
     }
 }
 
-private func addMissingBundledLuts(database: Database) {
-    database.color!.bundledLuts = database.color!.bundledLuts
-        .filter { lut in allBundledLuts.contains { $0.name == lut.name } }
-    for bundledLut in allBundledLuts {
-        if database.color!.bundledLuts.contains(where: { $0.name == bundledLut.name }) {
-            continue
-        }
-        database.color!.bundledLuts.append(bundledLut)
+private func addMissingBundledLutButton(database: Database, lut: SettingsColorLut) {
+    if lut.buttonId == nil {
+        let button = SettingsButton(name: lut.name)
+        button.type = .lut
+        lut.buttonId = button.id
+        database.globalButtons!.append(button)
     }
+    if let button = database.globalButtons!.first(where: { $0.id == lut.buttonId }) {
+        let imageName = bundledLutsButtonIcons[lut.name] ?? "apple.logo"
+        button.systemImageNameOn = imageName
+        button.systemImageNameOff = imageName
+    }
+}
+
+private func addMissingBundledLuts(database: Database) {
+    var bundledLuts: [SettingsColorLut] = []
+    for lut in allBundledLuts {
+        if let existingLut = database.color!.bundledLuts.first(where: { $0.name == lut.name }) {
+            addMissingBundledLutButton(database: database, lut: existingLut)
+            bundledLuts.append(existingLut)
+        } else {
+            addMissingBundledLutButton(database: database, lut: lut)
+            bundledLuts.append(lut)
+        }
+    }
+    database.color!.bundledLuts = bundledLuts
 }
 
 private func addScenesToGameController(database: Database) {

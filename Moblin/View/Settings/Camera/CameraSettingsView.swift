@@ -3,7 +3,7 @@ import SwiftUI
 
 struct CustomLutView: View {
     @EnvironmentObject var model: Model
-    var lut: SettingsColorAppleLogLut
+    var lut: SettingsColorLut
 
     private func submitName(value: String) {
         model.setLutName(lut: lut, name: value)
@@ -72,7 +72,7 @@ struct CameraSettingsLutsView: View {
     @EnvironmentObject var model: Model
     @State var selectedImageItem: PhotosPickerItem?
 
-    private func getIcon(lut: SettingsColorAppleLogLut) -> String {
+    private func getIcon(lut: SettingsColorLut) -> String {
         return model.findLutButton(lut: lut)?.systemImageNameOn ?? "camera.filters"
     }
 
@@ -153,7 +153,7 @@ struct CameraSettingsAppleLogLutView: View {
         model.objectWillChange.send()
     }
 
-    private func luts() -> [SettingsColorAppleLogLut] {
+    private func luts() -> [SettingsColorLut] {
         return model.database.color!.bundledLuts + model.database.color!.diskLuts!
     }
 

@@ -1324,7 +1324,7 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    func loadLutImage(lut: SettingsColorAppleLogLut) -> UIImage? {
+    func loadLutImage(lut: SettingsColorLut) -> UIImage? {
         var image: UIImage?
         switch lut.type {
         case .bundled:
@@ -1368,7 +1368,7 @@ final class Model: NSObject, ObservableObject {
         button.type = .lut
         button.systemImageNameOn = "camera.filters"
         button.systemImageNameOff = "camera.filters"
-        let lut = SettingsColorAppleLogLut(type: .disk, name: button.name)
+        let lut = SettingsColorLut(type: .disk, name: button.name)
         lut.buttonId = button.id
         imageStorage.write(id: lut.id, data: data)
         database.color!.diskLuts!.append(lut)
@@ -1390,21 +1390,21 @@ final class Model: NSObject, ObservableObject {
         resetSelectedScene()
     }
 
-    func findLutButton(lut: SettingsColorAppleLogLut) -> SettingsButton? {
+    func findLutButton(lut: SettingsColorLut) -> SettingsButton? {
         return database.globalButtons!.first(where: { $0.id == lut.buttonId })
     }
 
-    func setLutName(lut: SettingsColorAppleLogLut, name: String) {
+    func setLutName(lut: SettingsColorLut, name: String) {
         lut.name = name
         findLutButton(lut: lut)?.name = name
         store()
     }
 
-    private func allLuts() -> [SettingsColorAppleLogLut] {
+    private func allLuts() -> [SettingsColorLut] {
         return database.color!.bundledLuts + database.color!.diskLuts!
     }
 
-    func getLogLutById(id: UUID) -> SettingsColorAppleLogLut? {
+    func getLogLutById(id: UUID) -> SettingsColorLut? {
         return allLuts().first { $0.id == id }
     }
 
