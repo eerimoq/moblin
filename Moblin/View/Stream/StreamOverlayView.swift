@@ -43,35 +43,55 @@ struct StreamOverlayView: View {
 
     var body: some View {
         ZStack {
-            ZStack {
-                GeometryReader { metrics in
-                    if model.stream.portrait! {
-                        VStack {
-                            StreamOverlayChatView()
-                            Rectangle()
-                                .foregroundColor(.clear)
-                                .frame(height: 85)
+            if model.stream.portrait! {
+                VStack {
+                    ZStack {
+                        StreamOverlayChatView()
+                            .opacity(model.showChatMessages ? 1 : 0)
+                        if !model.showChatMessages {
+                            ChatInfo(
+                                message: String(localized: "Chat is hidden"),
+                                icon: "exclamationmark.triangle.fill",
+                                iconColor: .yellow
+                            )
+                        } else if model.chatPaused {
+                            ChatInfo(
+                                message: String(
+                                    localized: "Chat paused: \(model.pausedChatPostsCount) new messages"
+                                )
+                            )
                         }
-                    } else {
+                    }
+                    .opacity(model.database.chat.enabled! ? 1 : 0)
+                    .allowsHitTesting(model.interactiveChat)
+                    Rectangle()
+                        .foregroundColor(.clear)
+                        .frame(height: 85)
+                }
+            } else {
+                ZStack {
+                    GeometryReader { metrics in
                         StreamOverlayChatView()
                             .frame(width: metrics.size.width * 0.95)
                     }
+                    .opacity(model.showChatMessages ? 1 : 0)
+                    if !model.showChatMessages {
+                        ChatInfo(
+                            message: String(localized: "Chat is hidden"),
+                            icon: "exclamationmark.triangle.fill",
+                            iconColor: .yellow
+                        )
+                    } else if model.chatPaused {
+                        ChatInfo(
+                            message: String(
+                                localized: "Chat paused: \(model.pausedChatPostsCount) new messages"
+                            )
+                        )
+                    }
                 }
-                .opacity(model.showChatMessages ? 1 : 0)
-                if !model.showChatMessages {
-                    ChatInfo(
-                        message: String(localized: "Chat is hidden"),
-                        icon: "exclamationmark.triangle.fill",
-                        iconColor: .yellow
-                    )
-                } else if model.chatPaused {
-                    ChatInfo(
-                        message: String(localized: "Chat paused: \(model.pausedChatPostsCount) new messages")
-                    )
-                }
+                .opacity(model.database.chat.enabled! ? 1 : 0)
+                .allowsHitTesting(model.interactiveChat)
             }
-            .opacity(model.database.chat.enabled! ? 1 : 0)
-            .allowsHitTesting(model.interactiveChat)
             HStack {
                 LeftOverlayView()
                     .padding([.leading], leadingPadding())
