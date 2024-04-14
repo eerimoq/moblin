@@ -23,11 +23,8 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
 
 - Stream using RTMP, RTMPS, SRT or SRTLA to any platform that supports
   them.
-
 - H.264/AVC and H.265/HEVC video codecs.
-
 - Up to 4K resolution and 60 FPS.
-
 - SRTLA.
 
   - Can use one cellular, one WiFi and multiple Ethernet connections
