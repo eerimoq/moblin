@@ -284,6 +284,12 @@ Ideas/plan
 Import settings using moblin:// (custom URL)
 ============================================
 
+Examples
+--------
+
+New stream
+^^^^^^^^^^
+
 An example creating a new stream is
 
 .. code-block::
@@ -309,6 +315,41 @@ where the URL decoded pretty printed JSON blob is
        }
      ]
    }
+
+Quick button settings
+^^^^^^^^^^^^^^^^^^^^^
+
+An example that only shows a few quick buttons is
+
+.. code-block::
+
+   moblin://?{"quickButtons":{"twoColumns":false,"showName":true,"enableScroll":true,"disableAllButtons":true,"buttons":[{"type":"Mute","enabled":true},{"type":"Draw","enabled":true}]}}
+
+where the URL decoded pretty printed JSON blob is
+
+.. code-block:: js
+
+   {
+     "quickButtons": {
+       "twoColumns": false,
+       "showName": true,
+       "enableScroll": true,
+       "disableAllButtons": true,
+       "buttons": [
+         {
+           "type": "Mute",
+           "enabled": true
+         },
+         {
+           "type": "Draw",
+           "enabled": true
+         }
+       ]
+     }
+   }
+
+Specification
+-------------
 
 Format: ``moblin://?<URL encoded JSON blob>``
 

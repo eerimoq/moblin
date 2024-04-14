@@ -16,8 +16,23 @@ class MoblinSettingsUrlStream: Codable {
     var obs: MoblinSettingsUrlStreamObs?
 }
 
+class MoblinSettingsButton: Codable {
+    var type: SettingsButtonType
+    var enabled: Bool?
+}
+
+class MoblinQuickButtons: Codable {
+    var twoColumns: Bool?
+    var showName: Bool?
+    var enableScroll: Bool?
+    // Use "buttons" to enable buttons after disabling all.
+    var disableAllButtons: Bool?
+    var buttons: [MoblinSettingsButton]?
+}
+
 class MoblinSettingsUrl: Codable {
     var streams: [MoblinSettingsUrlStream]?
+    var quickButtons: MoblinQuickButtons?
 
     static func fromString(query: String) throws -> MoblinSettingsUrl {
         let query = try JSONDecoder().decode(

@@ -1214,7 +1214,6 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func handleSettingsUrlsDefault(settings: MoblinSettingsUrl) {
-        var streamCount = 0
         for stream in settings.streams ?? [] {
             let newStream = SettingsStream(name: stream.name)
             newStream.url = stream.url
@@ -1228,14 +1227,36 @@ final class Model: NSObject, ObservableObject {
                 newStream.obsWebSocketPassword = obs.webSocketPassword
             }
             database.streams.append(newStream)
-            logger.info("Created stream \(newStream.name)")
-            streamCount += 1
+        }
+        if let quickButtons = settings.quickButtons {
+            if let twoColumns = quickButtons.twoColumns {
+                database.quickButtons!.twoColumns = twoColumns
+            }
+            if let showName = quickButtons.showName {
+                database.quickButtons!.showName = showName
+            }
+            if let enableScroll = quickButtons.enableScroll {
+                database.quickButtons!.enableScroll = enableScroll
+            }
+            if quickButtons.disableAllButtons == true {
+                for globalButton in database.globalButtons! {
+                    globalButton.enabled = false
+                }
+            }
+            for button in quickButtons.buttons ?? [] {
+                for globalButton in database.globalButtons! {
+                    guard button.type == globalButton.type else {
+                        continue
+                    }
+                    if let enabled = button.enabled {
+                        globalButton.enabled = enabled
+                    }
+                }
+            }
         }
         store()
-        makeToast(
-            title: "URL import successful",
-            subTitle: "Created \(streamCount) stream(s)"
-        )
+        makeToast(title: "URL import successful")
+        updateButtonStates()
     }
 
     func handleSettingsUrls(urls: Set<UIOpenURLContext>) {
