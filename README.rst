@@ -319,7 +319,7 @@ where the URL decoded pretty printed JSON blob is
 Quick button settings
 ^^^^^^^^^^^^^^^^^^^^^
 
-An example that only shows a few quick buttons is
+An example with only two quick buttons enabled is
 
 .. code-block::
 
