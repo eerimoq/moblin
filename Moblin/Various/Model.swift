@@ -1255,7 +1255,7 @@ final class Model: NSObject, ObservableObject {
             }
         }
         store()
-        makeToast(title: "URL impo  rt successful")
+        makeToast(title: "URL import successful")
         updateButtonStates()
     }
 
