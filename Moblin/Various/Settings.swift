@@ -465,25 +465,8 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable {
     }
 }
 
-class SettingsSceneButton: Codable, Identifiable, Equatable {
-    static func == (lhs: SettingsSceneButton, rhs: SettingsSceneButton) -> Bool {
-        return lhs.id == rhs.id
-    }
-
-    var buttonId: UUID
-    var id: UUID = .init()
-    var enabled: Bool = true
-
-    init(buttonId: UUID) {
-        self.buttonId = buttonId
-    }
-
-    func clone() -> SettingsSceneButton {
-        let new = SettingsSceneButton(buttonId: buttonId)
-        new.enabled = enabled
-        return new
-    }
-}
+// periphery:ignore
+class SettingsSceneButton: Codable {}
 
 enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
     case back = "Back"
@@ -509,7 +492,8 @@ class SettingsScene: Codable, Identifiable, Equatable {
     var externalCameraId: String? = ""
     var externalCameraName: String? = ""
     var widgets: [SettingsSceneWidget] = []
-    var buttons: [SettingsSceneButton] = []
+    // periphery:ignore
+    var buttons: [SettingsSceneButton]? = []
 
     init(name: String) {
         self.name = name
@@ -517,10 +501,6 @@ class SettingsScene: Codable, Identifiable, Equatable {
 
     static func == (lhs: SettingsScene, rhs: SettingsScene) -> Bool {
         return lhs.id == rhs.id
-    }
-
-    func addButton(id: UUID) {
-        buttons.append(SettingsSceneButton(buttonId: id))
     }
 
     func clone() -> SettingsScene {
@@ -535,9 +515,6 @@ class SettingsScene: Codable, Identifiable, Equatable {
         new.externalCameraName = externalCameraName
         for widget in widgets {
             new.widgets.append(widget.clone())
-        }
-        for button in buttons {
-            new.buttons.append(button.clone())
         }
         return new
     }
@@ -800,126 +777,9 @@ enum SettingsButtonType: String, Codable, CaseIterable {
         }
         self = SettingsButtonType(rawValue: value) ?? .unknown
     }
-
-    static func fromString(value: String) -> SettingsButtonType {
-        switch value {
-        case String(localized: "Unknown"):
-            return .unknown
-        case String(localized: "Torch"):
-            return .torch
-        case String(localized: "Mute"):
-            return .mute
-        case String(localized: "Bitrate"):
-            return .bitrate
-        case String(localized: "Widget"):
-            return .widget
-        case String(localized: "Mic"):
-            return .mic
-        case String(localized: "Chat"):
-            return .chat
-        case String(localized: "Interactive chat"):
-            return .interactiveChat
-        case String(localized: "Black screen"):
-            return .blackScreen
-        case String(localized: "Record"):
-            return .record
-        case String(localized: "Recordings"):
-            return .recordings
-        case String(localized: "Image"):
-            return .image
-        case String(localized: "Movie"):
-            return .movie
-        case String(localized: "Gray scale"):
-            return .grayScale
-        case String(localized: "Sepia"):
-            return .sepia
-        case String(localized: "Random"):
-            return .random
-        case String(localized: "Triple"):
-            return .triple
-        case String(localized: "Pixellate"):
-            return .pixellate
-        case String(localized: "Stream"):
-            return .stream
-        case String(localized: "Grid"):
-            return .grid
-        case String(localized: "OBS"):
-            return .obs
-        case String(localized: "Remote"):
-            return .remote
-        case String(localized: "Draw"):
-            return .draw
-        case String(localized: "Local overlays"):
-            return .localOverlays
-        case String(localized: "Browser"):
-            return .browser
-        case String(localized: "LUT"):
-            return .lut
-        default:
-            return .torch
-        }
-    }
-
-    func toString() -> String {
-        switch self {
-        case .unknown:
-            return String(localized: "Unknown")
-        case .torch:
-            return String(localized: "Torch")
-        case .mute:
-            return String(localized: "Mute")
-        case .bitrate:
-            return String(localized: "Bitrate")
-        case .widget:
-            return String(localized: "Widget")
-        case .mic:
-            return String(localized: "Mic")
-        case .chat:
-            return String(localized: "Chat")
-        case .interactiveChat:
-            return String(localized: "Interactive chat")
-        case .blackScreen:
-            return String(localized: "Black screen")
-        case .record:
-            return String(localized: "Record")
-        case .recordings:
-            return String(localized: "Recordings")
-        case .image:
-            return String(localized: "Image")
-        case .movie:
-            return String(localized: "Movie")
-        case .grayScale:
-            return String(localized: "Gray scale")
-        case .sepia:
-            return String(localized: "Sepia")
-        case .random:
-            return String(localized: "Random")
-        case .triple:
-            return String(localized: "Triple")
-        case .pixellate:
-            return String(localized: "Pixellate")
-        case .stream:
-            return String(localized: "Stream")
-        case .grid:
-            return String(localized: "Grid")
-        case .obs:
-            return String(localized: "OBS")
-        case .remote:
-            return String(localized: "Remote")
-        case .draw:
-            return String(localized: "Draw")
-        case .localOverlays:
-            return String(localized: "Local overlays")
-        case .browser:
-            return String(localized: "Browser")
-        case .lut:
-            return String(localized: "LUT")
-        }
-    }
 }
 
-let buttonTypes = ["Widget"]
-
+// periphery:ignore
 class SettingsButtonWidget: Codable, Identifiable {
     var widgetId: UUID
     var id: UUID = .init()
@@ -937,7 +797,8 @@ class SettingsButton: Codable, Identifiable, Equatable, Hashable {
     var imageType: String? = "System name"
     var systemImageNameOn: String = "mic.slash"
     var systemImageNameOff: String = "mic"
-    var widget: SettingsButtonWidget = .init(widgetId: UUID())
+    // periphery:ignore
+    var widget: SettingsButtonWidget? = .init(widgetId: UUID())
     var isOn: Bool = false
     var enabled: Bool? = true
     var backgroundColor: RgbColor? = defaultQuickButtonColor
@@ -1496,7 +1357,8 @@ class Database: Codable {
     var widgets: [SettingsWidget] = []
     // periphery:ignore
     var variables: [SettingsVariable]? = []
-    var buttons: [SettingsButton] = []
+    // periphery:ignore
+    var buttons: [SettingsButton]? = []
     var show: SettingsShow = .init()
     var zoom: SettingsZoom = .init()
     var tapToFocus: Bool = false
@@ -1530,9 +1392,6 @@ class Database: Codable {
             Database.self,
             from: settings.data(using: .utf8)!
         )
-        for button in database.buttons {
-            button.isOn = false
-        }
         if database.zoom.back.isEmpty {
             addDefaultBackZoomPresets(database: database)
         }
@@ -2059,27 +1918,6 @@ final class Settings {
             }
             store()
         }
-        var bloomButtons: [SettingsButton] = []
-        for button in realDatabase.buttons where button.type == .widget {
-            if bloomWidgets.contains(where: { widget in
-                widget.id == button.widget.widgetId
-            }) {
-                bloomButtons.append(button)
-            }
-        }
-        if !bloomButtons.isEmpty {
-            realDatabase.buttons = realDatabase.buttons.filter { button in
-                !bloomButtons.contains(button)
-            }
-            for scene in realDatabase.scenes {
-                scene.buttons = scene.buttons.filter { button in
-                    !bloomButtons.contains { bloomButton in
-                        bloomButton.id == button.buttonId
-                    }
-                }
-            }
-            store()
-        }
         for stream in realDatabase.streams where stream.obsWebSocketUrl == nil {
             stream.obsWebSocketUrl = ""
             store()
@@ -2130,27 +1968,6 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.bFrames == nil {
             stream.bFrames = false
-            store()
-        }
-        for button in realDatabase.buttons where button.enabled == nil {
-            button.enabled = true
-            store()
-        }
-        var nonWidgetButtons: [SettingsButton] = []
-        for button in realDatabase.buttons where button.type != .widget {
-            nonWidgetButtons.append(button)
-        }
-        if !nonWidgetButtons.isEmpty {
-            realDatabase.buttons = realDatabase.buttons.filter { button in
-                button.type == .widget
-            }
-            for scene in realDatabase.scenes {
-                scene.buttons = scene.buttons.filter { button in
-                    !nonWidgetButtons.contains { nonWidgetButton in
-                        nonWidgetButton.id == button.buttonId
-                    }
-                }
-            }
             store()
         }
         if realDatabase.debug!.letItSnow == nil {
@@ -2255,10 +2072,6 @@ final class Settings {
         }
         if realDatabase.debug!.maximumBandwidthFollowInput == nil {
             realDatabase.debug!.maximumBandwidthFollowInput = true
-            store()
-        }
-        for button in realDatabase.buttons where button.backgroundColor == nil {
-            button.backgroundColor = defaultQuickButtonColor
             store()
         }
         if realDatabase.remoteControl == nil {

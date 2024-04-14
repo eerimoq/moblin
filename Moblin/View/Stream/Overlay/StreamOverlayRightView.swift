@@ -230,7 +230,7 @@ struct RightOverlayView: View {
                 }
                 .onChange(of: model.sceneIndex) { tag in
                     model.setSceneId(id: model.enabledScenes[tag].id)
-                    model.sceneUpdated(store: false, scrollQuickButtons: true)
+                    model.sceneUpdated(store: false)
                 }
                 .background(pickerBackgroundColor)
                 .foregroundColor(.white)

@@ -39,7 +39,7 @@ struct CustomLutView: View {
                     TextItemView(name: String(localized: "Name"), value: lut.name)
                 }
                 if let button = model.findLutButton(lut: lut) {
-                    NavigationLink(destination: ButtonImagePickerSettingsView(
+                    NavigationLink(destination: ImagePickerView(
                         title: String(localized: "Icon"),
                         selectedImageSystemName: button.systemImageNameOn,
                         onChange: onSystemImageName

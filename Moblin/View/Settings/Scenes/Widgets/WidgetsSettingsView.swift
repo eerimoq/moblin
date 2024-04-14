@@ -13,11 +13,6 @@ struct WidgetsSettingsView: View {
                 return true
             }
         }
-        for button in database.buttons {
-            if button.type == .widget && button.widget.widgetId == widget.id {
-                return true
-            }
-        }
         return false
     }
 

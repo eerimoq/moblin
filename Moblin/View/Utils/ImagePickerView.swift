@@ -148,7 +148,20 @@ private let columns = [
     GridItem(.adaptive(minimum: 40), alignment: .center),
 ]
 
-struct ButtonImagePickerSettingsView: View {
+struct ImageItemView: View {
+    var name: String
+    var image: String
+
+    var body: some View {
+        HStack {
+            Text(name)
+            Spacer()
+            Image(systemName: image)
+        }
+    }
+}
+
+struct ImagePickerView: View {
     @Environment(\.dismiss) var dismiss
     var title: String
     @State var selectedImageSystemName: String

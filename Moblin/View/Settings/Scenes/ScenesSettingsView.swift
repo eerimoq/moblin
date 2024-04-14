@@ -58,13 +58,8 @@ struct ScenesSettingsView: View {
                 })
             }
             Section {
-                NavigationLink(destination: WidgetsSettingsView(
-                )) {
+                NavigationLink(destination: WidgetsSettingsView()) {
                     Text("Widgets")
-                }
-                NavigationLink(destination: QuickButtonsSettingsView(
-                )) {
-                    Text("Quick buttons")
                 }
             }
         }

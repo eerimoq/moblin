@@ -573,10 +573,6 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    func findButton(id: UUID) -> SettingsButton? {
-        return database.buttons.first(where: { button in button.id == id })
-    }
-
     func makeToast(title: String, subTitle: String? = nil) {
         toast = AlertToast(type: .regular, title: title, subTitle: subTitle)
         showingToast = true
@@ -608,22 +604,11 @@ final class Model: NSObject, ObservableObject {
     }
 
     func updateButtonStates() {
-        guard let scene = findEnabledScene(id: selectedSceneId) else {
-            buttonPairs = []
-            return
-        }
-        var states = database.globalButtons!.filter { button in
+        let states = database.globalButtons!.filter { button in
             button.enabled!
         }.map { button in
             ButtonState(isOn: button.isOn, button: button)
         }
-        states += scene
-            .buttons
-            .filter { button in button.enabled }
-            .map { button in
-                let button = findButton(id: button.buttonId)!
-                return ButtonState(isOn: button.isOn, button: button)
-            }
         var pairs: [ButtonPair] = []
         for index in stride(from: 0, to: states.count, by: 2) {
             if states.count - index > 1 {
@@ -2815,23 +2800,6 @@ final class Model: NSObject, ObservableObject {
         }?.name ?? "Unknown"
     }
 
-    private func getEnabledButtonForWidgetControlledByScene(
-        widget: SettingsWidget,
-        scene: SettingsScene
-    ) -> SettingsButton? {
-        for button in scene.buttons {
-            if !button.enabled {
-                continue
-            }
-            if let button = findButton(id: button.buttonId) {
-                if widget.id == button.widget.widgetId {
-                    return button
-                }
-            }
-        }
-        return nil
-    }
-
     private func sceneUpdatedOff() {
         unregisterGlobalVideoEffects()
         for videoEffect in videoEffects.values {
@@ -3018,14 +2986,6 @@ final class Model: NSObject, ObservableObject {
                 logger.error("Widget not found")
                 continue
             }
-            if let button = getEnabledButtonForWidgetControlledByScene(
-                widget: widget,
-                scene: scene
-            ) {
-                if !button.isOn {
-                    continue
-                }
-            }
             switch widget.type {
             case .image:
                 if let imageEffect = imageEffects[sceneWidget.id] {
@@ -3093,14 +3053,6 @@ final class Model: NSObject, ObservableObject {
             guard widget.type == .crop else {
                 continue
             }
-            if let button = getEnabledButtonForWidgetControlledByScene(
-                widget: widget,
-                scene: scene
-            ) {
-                if !button.isOn {
-                    continue
-                }
-            }
             let crop = widget.crop!
             guard crop.sourceWidgetId == sourceWidgetId else {
                 continue
@@ -3127,7 +3079,6 @@ final class Model: NSObject, ObservableObject {
         }) {
             sceneIndex = index
             setSceneId(id: id)
-            sceneUpdated(scrollQuickButtons: true)
         }
     }
 

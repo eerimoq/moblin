@@ -3,16 +3,11 @@ import SwiftUI
 struct SceneSettingsView: View {
     @EnvironmentObject var model: Model
     @State private var showingAddWidget = false
-    @State private var showingAddButton = false
     @State private var expandedWidget: SettingsSceneWidget?
     var scene: SettingsScene
 
     var widgets: [SettingsWidget] {
         model.database.widgets
-    }
-
-    var buttons: [SettingsButton] {
-        model.database.buttons
     }
 
     func submitName(name: String) {
@@ -227,81 +222,6 @@ struct SceneSettingsView: View {
                 Text("Widgets")
             } footer: {
                 Text("Widgets are stacked from back to front.")
-            }
-            Section {
-                List {
-                    ForEach(scene.buttons) { button in
-                        if let realButton = model.findButton(id: button.buttonId) {
-                            HStack {
-                                DraggableItemPrefixView()
-                                Toggle(isOn: Binding(get: {
-                                    button.enabled
-                                }, set: { value in
-                                    button.enabled = value
-                                    model.sceneUpdated()
-                                })) {
-                                    IconAndTextView(
-                                        image: realButton.systemImageNameOff,
-                                        text: realButton.name
-                                    )
-                                }
-                            }
-                        }
-                    }
-                    .onMove(perform: { froms, to in
-                        scene.buttons.move(fromOffsets: froms, toOffset: to)
-                        model.sceneUpdated()
-                    })
-                    .onDelete(perform: { offsets in
-                        scene.buttons.remove(atOffsets: offsets)
-                        model.sceneUpdated()
-                    })
-                }
-                AddButtonView(action: {
-                    showingAddButton = true
-                })
-                .popover(isPresented: $showingAddButton) {
-                    VStack {
-                        if UIDevice.current.userInterfaceIdiom == .phone {
-                            HStack {
-                                Spacer()
-                                Button(action: {
-                                    showingAddButton = false
-                                }, label: {
-                                    Text("Cancel")
-                                        .padding(5)
-                                        .foregroundColor(.blue)
-                                })
-                            }
-                        }
-                        let form = Form {
-                            Section("Button name") {
-                                ForEach(buttons) { button in
-                                    Button(action: {
-                                        scene.addButton(id: button.id)
-                                        model.sceneUpdated()
-                                        showingAddButton = false
-                                    }, label: {
-                                        IconAndTextView(
-                                            image: button.systemImageNameOff,
-                                            text: button.name
-                                        )
-                                    })
-                                }
-                            }
-                        }
-                        if UIDevice.current.userInterfaceIdiom != .phone {
-                            form
-                                .frame(width: 300, height: 400)
-                        } else {
-                            form
-                        }
-                    }
-                }
-            } header: {
-                Text("Quick buttons")
-            } footer: {
-                Text("Quick buttons appear from bottom to top.")
             }
         }
         .navigationTitle("Scene")
