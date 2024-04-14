@@ -6,8 +6,10 @@ A free iOS app for IRL streaming. Mainly targeting [Twitch](https://twitch.tv), 
 stream to [YouTube](https://youtube.com), [Kick](https://kick.com), [Facebook](https://facebook.com)
 and [OBS Studio](https://obsproject.com) as well (and probably more).
 
-![](https://github.com/eerimoq/moblin/raw/main/docs/iphone15-pro-max-screenshot.png){: style="height:50px"}
-![](https://github.com/eerimoq/moblin/raw/main/docs/watch-series-9-screenshot.png){: style="height:50px"}
+<p>
+    <img src="https://github.com/eerimoq/moblin/raw/main/docs/iphone15-pro-max-screenshot.png" >
+    <img src="https://github.com/eerimoq/moblin/raw/main/docs/watch-series-9-screenshot.png" >
+</p>
 
 Discord: https://discord.gg/nt3UwHqbMM
 
