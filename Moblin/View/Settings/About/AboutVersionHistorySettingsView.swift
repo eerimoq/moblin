@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.239.0", date: "2024-04-14", changes: [
+        "• Fix \"Chat is hidden\" positioning in portrait.",
+        "• Quick buttons settings using deep links (moblin:// custom URL). 💡 Arrow768",
+        "  • See https://github.com/eerimoq/moblin?tab=readme-ov-file#quick-button-settings.",
+    ]),
     Version(version: "0.238.0", date: "2024-04-13", changes: [
         "• Only show Apple Log color space alternative if the device supports it.",
         "• Quick buttons for bundled and custom LUTs.",
