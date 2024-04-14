@@ -136,7 +136,7 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
 - Stream preview.
 - Show audio level.
 - Show bitrate.
-- Show iPhone/iPad thremal state.
+- Show iPhone/iPad thermal state.
 - Chat.
   - Limited to 20 messages.
 - Control.
