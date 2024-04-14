@@ -35,9 +35,10 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
     - Announcements.
     - /me styling.
 - Kick integration.
+  - Number of viewers.
   - Chat.
 - YouTube integration.
-  - Scuffed chat.
+  - Chat.
 - AfreecaTv integration.
   - Scuffed chat.
 - Basic scenes.
@@ -46,7 +47,7 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
   - Browser widget. Show a web page on stream.
 - Back or front camera.
   - Front camera mirrored on screen for natural experience.
-- Back, front, bottom or external mic.
+- Back, front, top, bottom or external mic.
   - Automatically changes to external mic when connected.
 - Video stabilization.
 - Zoom.
