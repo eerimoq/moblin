@@ -26,12 +26,9 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
 - H.264/AVC and H.265/HEVC video codecs.
 - Up to 4K resolution and 60 FPS.
 - SRTLA.
-
   - Can use one cellular, one WiFi and multiple Ethernet connections
     simultaneously. Often called bonding.
-
   - Upload statistics per active connection.
-
 - Twitch integration.
 
   - Number of viewers.
