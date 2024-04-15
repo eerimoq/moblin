@@ -8,6 +8,12 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.240.0", date: "2024-04-15", changes: [
+        "• Remove scene quick buttons.",
+        "  • Were not very useful and made the code complicated.",
+        "• Show widgets at first frame of new scene after switching scene.",
+        "  • Should make scene switching smoother.",
+    ]),
     Version(version: "0.239.0", date: "2024-04-14", changes: [
         "• Fix \"Chat is hidden\" positioning in portrait.",
         "• Quick buttons settings using deep links (moblin:// custom URL). 💡 Arrow768",
