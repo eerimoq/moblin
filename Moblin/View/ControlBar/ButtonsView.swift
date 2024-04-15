@@ -455,12 +455,14 @@ struct ButtonsInnerView: View {
         state.button.isOn.toggle()
         model.showChatMessages.toggle()
         model.sceneUpdated(store: false)
+        model.updateButtonStates()
     }
 
     private func interactiveChatAction(state: ButtonState) {
         state.button.isOn.toggle()
         model.toggleInteractiveChat()
         model.sceneUpdated(store: false)
+        model.updateButtonStates()
     }
 
     private func blackScreenAction(state _: ButtonState) {
@@ -485,6 +487,7 @@ struct ButtonsInnerView: View {
         state.button.isOn.toggle()
         model.setGlobalButtonState(type: type, isOn: state.button.isOn)
         model.sceneUpdated(store: false)
+        model.updateButtonStates()
     }
 
     private func movieAction(state: ButtonState) {
@@ -519,6 +522,7 @@ struct ButtonsInnerView: View {
         state.button.isOn.toggle()
         model.showingGrid.toggle()
         model.sceneUpdated(store: false)
+        model.updateButtonStates()
     }
 
     private func obsAction(state _: ButtonState) {
