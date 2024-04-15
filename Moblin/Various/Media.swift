@@ -377,13 +377,19 @@ final class Media: NSObject {
     }
 
     func registerEffect(_ effect: VideoEffect) {
-        if !netStream.registerVideoEffect(effect) {
-            logger.debug("Failed to register video effect")
-        }
+        netStream.registerVideoEffect(effect)
     }
 
     func unregisterEffect(_ effect: VideoEffect) {
-        _ = netStream.unregisterVideoEffect(effect)
+        netStream.unregisterVideoEffect(effect)
+    }
+
+    func setPendingAfterAttachEffects(effects: [VideoEffect]) {
+        netStream.setPendingAfterAttachEffects(effects: effects)
+    }
+
+    func usePendingAfterAttachEffects() {
+        netStream.usePendingAfterAttachEffects()
     }
 
     func setLowFpsImage(enabled: Bool) {

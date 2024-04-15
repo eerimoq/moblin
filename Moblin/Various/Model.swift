@@ -1324,7 +1324,6 @@ final class Model: NSObject, ObservableObject {
     func lutEnabledUpdated() {
         if database.color!.lutEnabled && database.color!.space == .appleLog {
             media.registerEffect(lutEffect)
-            media.registerEffect(lutEffect)
         } else {
             media.unregisterEffect(lutEffect)
         }
@@ -1650,25 +1649,27 @@ final class Model: NSObject, ObservableObject {
         })?.isOn ?? false
     }
 
-    private func registerGlobalVideoEffects() {
+    private func registerGlobalVideoEffects() -> [VideoEffect] {
+        var effects: [VideoEffect] = []
         if isGlobalButtonOn(type: .movie) {
-            media.registerEffect(movieEffect)
+            effects.append(movieEffect)
         }
         if isGlobalButtonOn(type: .grayScale) {
-            media.registerEffect(grayScaleEffect)
+            effects.append(grayScaleEffect)
         }
         if isGlobalButtonOn(type: .sepia) {
-            media.registerEffect(sepiaEffect)
+            effects.append(sepiaEffect)
         }
         if isGlobalButtonOn(type: .random) {
-            media.registerEffect(randomEffect)
+            effects.append(randomEffect)
         }
         if isGlobalButtonOn(type: .triple) {
-            media.registerEffect(tripleEffect)
+            effects.append(tripleEffect)
         }
         if isGlobalButtonOn(type: .pixellate) {
-            media.registerEffect(pixellateEffect)
+            effects.append(pixellateEffect)
         }
+        return effects
     }
 
     func resetSelectedScene(changeScene: Bool = true) {
@@ -2968,8 +2969,10 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func sceneUpdatedOn(scene: SettingsScene) {
-        attachSingleLayout(scene: scene)
-        lutEnabledUpdated()
+        var effects: [VideoEffect] = []
+        if database.color!.lutEnabled && database.color!.space == .appleLog {
+            effects.append(lutEffect)
+        }
         for lut in allLuts() {
             guard let button = findLutButton(lut: lut), button.enabled!, button.isOn else {
                 continue
@@ -2977,25 +2980,24 @@ final class Model: NSObject, ObservableObject {
             guard let lutEffect = lutEffects[lut.id] else {
                 continue
             }
-            media.registerEffect(lutEffect)
+            effects.append(lutEffect)
         }
-        registerGlobalVideoEffects()
+        effects += registerGlobalVideoEffects()
         var usedBrowserEffects: [BrowserEffect] = []
         for sceneWidget in scene.widgets.filter({ $0.enabled }) {
             guard let widget = findWidget(id: sceneWidget.widgetId) else {
-                logger.error("Widget not found")
                 continue
             }
             switch widget.type {
             case .image:
                 if let imageEffect = imageEffects[sceneWidget.id] {
-                    media.registerEffect(imageEffect)
+                    effects.append(imageEffect)
                 }
             case .time:
                 if let textEffect = textEffects[widget.id] {
                     textEffect.x = sceneWidget.x
                     textEffect.y = sceneWidget.y
-                    media.registerEffect(textEffect)
+                    effects.append(textEffect)
                 }
             case .videoEffect:
                 if let videoEffect = videoEffects[widget.id] {
@@ -3005,7 +3007,7 @@ final class Model: NSObject, ObservableObject {
                         noiseReductionEffect.sharpness = widget.videoEffect
                             .noiseReductionSharpness
                     }
-                    media.registerEffect(videoEffect)
+                    effects.append(videoEffect)
                 }
             case .browser:
                 if let browserEffect = browserEffects[widget.id],
@@ -3016,7 +3018,7 @@ final class Model: NSObject, ObservableObject {
                         crops: findWidgetCrops(scene: scene, sourceWidgetId: widget.id)
                     )
                     if !browserEffect.audioOnly {
-                        media.registerEffect(browserEffect)
+                        effects.append(browserEffect)
                     }
                     usedBrowserEffects.append(browserEffect)
                 }
@@ -3029,18 +3031,20 @@ final class Model: NSObject, ObservableObject {
                         crops: findWidgetCrops(scene: scene, sourceWidgetId: widget.crop!.sourceWidgetId)
                     )
                     if !browserEffect.audioOnly {
-                        media.registerEffect(browserEffect)
+                        effects.append(browserEffect)
                     }
                     usedBrowserEffects.append(browserEffect)
                 }
             }
         }
         if !drawOnStreamLines.isEmpty {
-            media.registerEffect(drawOnStreamEffect)
+            effects.append(drawOnStreamEffect)
         }
+        media.setPendingAfterAttachEffects(effects: effects)
         for browserEffect in browserEffects.values where !usedBrowserEffects.contains(browserEffect) {
             browserEffect.setSceneWidget(sceneWidget: nil, crops: [])
         }
+        attachSingleLayout(scene: scene)
     }
 
     private func findWidgetCrops(scene: SettingsScene, sourceWidgetId: UUID) -> [WidgetCrop] {
@@ -3082,21 +3086,15 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    func sceneUpdated(imageEffectChanged: Bool = false, store: Bool = true,
-                      scrollQuickButtons: Bool = false)
-    {
+    func sceneUpdated(imageEffectChanged: Bool = false, store: Bool = true) {
         if store {
             self.store()
         }
-        updateButtonStates()
-        if scrollQuickButtons {
-            scrollQuickButtonsToBottom()
-        }
-        sceneUpdatedOff()
         if imageEffectChanged {
             reloadImageEffects()
         }
         guard let scene = findEnabledScene(id: selectedSceneId) else {
+            sceneUpdatedOff()
             return
         }
         sceneUpdatedOn(scene: scene)
@@ -3332,6 +3330,7 @@ final class Model: NSObject, ObservableObject {
             oldPosition: cameraPosition,
             newPosition: position
         ) else {
+            media.usePendingAfterAttachEffects()
             return
         }
         cameraDevice = preferredCamera(position: position)
