@@ -1,3 +1,4 @@
+import AVFAudio
 import CoreMedia
 import Foundation
 import HaishinKit
@@ -86,6 +87,10 @@ class RtmpServerClient {
 
     func handleFrame(sampleBuffer: CMSampleBuffer) {
         server?.onFrame(streamKey, sampleBuffer)
+    }
+
+    func handleAudioBuffer(audioBuffer: AVAudioPCMBuffer) {
+        server?.onAudioBuffer(streamKey, audioBuffer)
     }
 
     private func handleData(data: Data) {

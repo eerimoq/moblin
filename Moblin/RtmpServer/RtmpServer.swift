@@ -1,3 +1,4 @@
+import AVFAudio
 import CoreMedia
 import Foundation
 import HaishinKit
@@ -21,6 +22,7 @@ class RtmpServer {
     var onPublishStart: (String) -> Void
     var onPublishStop: (String) -> Void
     var onFrame: (String, CMSampleBuffer) -> Void
+    var onAudioBuffer: (String, AVAudioPCMBuffer) -> Void
     var settings: SettingsRtmpServer
     private var periodicTimer: DispatchSourceTimer?
     var totalBytesReceived: UInt64 = 0
@@ -29,12 +31,14 @@ class RtmpServer {
     init(settings: SettingsRtmpServer,
          onPublishStart: @escaping (String) -> Void,
          onPublishStop: @escaping (String) -> Void,
-         onFrame: @escaping (String, CMSampleBuffer) -> Void)
+         onFrame: @escaping (String, CMSampleBuffer) -> Void,
+         onAudioBuffer: @escaping (String, AVAudioPCMBuffer) -> Void)
     {
         self.settings = settings
         self.onPublishStart = onPublishStart
         self.onPublishStop = onPublishStop
         self.onFrame = onFrame
+        self.onAudioBuffer = onAudioBuffer
         clients = []
     }
 

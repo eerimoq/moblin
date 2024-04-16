@@ -1072,7 +1072,8 @@ final class Model: NSObject, ObservableObject {
             rtmpServer = RtmpServer(settings: database.rtmpServer!.clone(),
                                     onPublishStart: handleRtmpServerPublishStart,
                                     onPublishStop: handleRtmpServerPublishStop,
-                                    onFrame: handleRtmpServerFrame)
+                                    onFrame: handleRtmpServerFrame,
+                                    onAudioBuffer: handleRtmpServerAudioBuffer)
             rtmpServer!.start()
         }
     }
@@ -1104,6 +1105,13 @@ final class Model: NSObject, ObservableObject {
             return
         }
         media.addRtmpSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+    }
+
+    func handleRtmpServerAudioBuffer(streamKey: String, audioBuffer: AVAudioPCMBuffer) {
+        guard let cameraId = getRtmpStream(streamKey: streamKey)?.id else {
+            return
+        }
+        media.addRtmpAudioBuffer(cameraId: cameraId, audioBuffer: audioBuffer)
     }
 
     private func listCameras(position: AVCaptureDevice.Position) -> [Camera] {

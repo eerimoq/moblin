@@ -28,9 +28,12 @@ class RtmpServerChunkStream: VideoCodecDelegate {
     private var videoTimestampZero: Double
     private var videoTimestamp: Double
     private var formatDescription: CMVideoFormatDescription?
-    private var videoCodec: VideoCodec?
+    private var videoDecoder: VideoCodec?
     private var numberOfFrames: UInt64 = 0
     private var videoCodecLockQueue = DispatchQueue(label: "com.eerimoq.Moblin.VideoCodec")
+    private var audioBuffer: AVAudioCompressedBuffer?
+    private var audioDecoder: AVAudioConverter?
+    private var pcmAudioFormat: AVAudioFormat?
 
     init(client: RtmpServerClient, streamId: UInt16) {
         self.client = client
@@ -49,8 +52,8 @@ class RtmpServerChunkStream: VideoCodecDelegate {
     }
 
     func stop() {
-        videoCodec?.stopRunning()
-        videoCodec = nil
+        videoDecoder?.stopRunning()
+        videoDecoder = nil
         client = nil
     }
 
@@ -324,17 +327,92 @@ class RtmpServerChunkStream: VideoCodecDelegate {
          PTS: \(timing.presentationTimeStamp.seconds), \
          DTS: \(timing.decodeTimeStamp.seconds)
          """) */
-        switch messageData[1] {
-        case FLVAACPacketType.seq.rawValue:
-            if let config =
-                AudioSpecificConfig(bytes: [UInt8](messageData[codec.headerSize ..< messageData.count]))
-            {
-                logger.info("rtmp-server: client: \(config.audioStreamBasicDescription())")
-            }
-        case FLVAACPacketType.raw.rawValue:
-            break
+        switch FLVAACPacketType(rawValue: messageData[1]) {
+        case .seq:
+            processMessageAudioTypeSeq(client: client, codec: codec)
+        case .raw:
+            processMessageAudioTypeRaw(client: client, codec: codec)
         default:
             break
+        }
+    }
+
+    private func processMessageAudioTypeSeq(client _: RtmpServerClient, codec: FLVAudioCodec) {
+        if let config =
+            AudioSpecificConfig(bytes: [UInt8](messageData[codec.headerSize ..< messageData.count]))
+        {
+            var streamDescription = config.audioStreamBasicDescription()
+            logger.info("rtmp-server: client: \(streamDescription)")
+            if let audioFormat = AVAudioFormat(streamDescription: &streamDescription) {
+                logger.info("rtmp-server: client: \(audioFormat)")
+                audioBuffer = AVAudioCompressedBuffer(
+                    format: audioFormat,
+                    packetCapacity: 1,
+                    maximumPacketSize: 1024 * Int(audioFormat.channelCount)
+                )
+                pcmAudioFormat = AVAudioFormat(
+                    commonFormat: .pcmFormatInt16,
+                    sampleRate: audioFormat.sampleRate,
+                    channels: audioFormat.channelCount,
+                    interleaved: audioFormat.isInterleaved
+                )
+                guard let pcmAudioFormat else {
+                    logger.info("rtmp-server: client: Failed to create PCM audio format")
+                    return
+                }
+                audioDecoder = AVAudioConverter(from: audioFormat, to: pcmAudioFormat)
+                guard let audioDecoder else {
+                    logger.info("rtmp-server: client: Failed to create audio decdoer")
+                    return
+                }
+            } else {
+                logger.info("rtmp-server: client: Failed to create audio format")
+                audioBuffer = nil
+                audioDecoder = nil
+            }
+        }
+    }
+
+    private func processMessageAudioTypeRaw(client _: RtmpServerClient, codec: FLVAudioCodec) {
+        guard let audioBuffer else {
+            return
+        }
+        let length = messageData.count - codec.headerSize
+        messageData.withUnsafeBytes { (buffer: UnsafeRawBufferPointer) in
+            guard let baseAddress = buffer.baseAddress else {
+                return
+            }
+            audioBuffer.packetDescriptions?.pointee = AudioStreamPacketDescription(
+                mStartOffset: 0,
+                mVariableFramesInPacket: 0,
+                mDataByteSize: UInt32(length)
+            )
+            audioBuffer.packetCount = 1
+            audioBuffer.byteLength = UInt32(length)
+            audioBuffer.data.copyMemory(from: baseAddress.advanced(by: codec.headerSize), byteCount: length)
+        }
+        guard let audioDecoder, let pcmAudioFormat else {
+            return
+        }
+        var error: NSError?
+        guard let outputBuffer = AVAudioPCMBuffer(pcmFormat: pcmAudioFormat, frameCapacity: 1024) else {
+            return
+        }
+        let outputStatus = audioDecoder.convert(to: outputBuffer, error: &error) { _, inputStatus in
+            inputStatus.pointee = .haveData
+            return self.audioBuffer
+        }
+        switch outputStatus {
+        case .haveData:
+            client?.handleAudioBuffer(audioBuffer: outputBuffer)
+        case .error:
+            if let error {
+                logger.info("rtmp-server: client: Error \(error)")
+            } else {
+                logger.info("rtmp-server: client: Unknown error")
+            }
+        default:
+            logger.info("rtmp-server: client: Output status \(outputStatus.rawValue)")
         }
     }
 
@@ -381,17 +459,17 @@ class RtmpServerChunkStream: VideoCodecDelegate {
                 )
             return
         }
-        guard videoCodec == nil else {
+        guard videoDecoder == nil else {
             return
         }
         var config = AVCDecoderConfigurationRecord()
         config.data = messageData.subdata(in: FLVTagType.video.headerSize ..< messageData.count)
         let status = config.makeFormatDescription(&formatDescription)
         if status == noErr {
-            videoCodec = VideoCodec(lockQueue: videoCodecLockQueue)
-            videoCodec!.formatDescription = formatDescription
-            videoCodec!.delegate = self
-            videoCodec!.startRunning()
+            videoDecoder = VideoCodec(lockQueue: videoCodecLockQueue)
+            videoDecoder!.formatDescription = formatDescription
+            videoDecoder!.delegate = self
+            videoDecoder!.startRunning()
         } else {
             client.stopInternal(reason: "Format description error \(status)")
         }
@@ -403,7 +481,7 @@ class RtmpServerChunkStream: VideoCodecDelegate {
             return
         }
         if let sampleBuffer = makeSampleBuffer(client: client) {
-            videoCodec?.appendSampleBuffer(sampleBuffer)
+            videoDecoder?.appendSampleBuffer(sampleBuffer)
         } else {
             client.stopInternal(reason: "Make sample buffer failed")
         }
