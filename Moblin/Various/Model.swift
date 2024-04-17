@@ -1048,12 +1048,18 @@ final class Model: NSObject, ObservableObject {
 
     @objc func handleDidEnterBackgroundNotification() {
         stopRtmpServer()
+        if isRecording {
+            suspendRecording()
+        }
     }
 
     @objc func handleWillEnterForegroundNotification() {
         reloadConnections()
         reloadRtmpServer()
         chatTextToSpeech.reset()
+        if isRecording {
+            resumeRecording()
+        }
     }
 
     @objc func handleBatteryStateDidChangeNotification() {
@@ -1783,6 +1789,20 @@ final class Model: NSObject, ObservableObject {
 
     func startRecording() {
         setIsRecording(value: true)
+        resumeRecording()
+        makeToast(title: "Recording started")
+    }
+
+    func stopRecording() {
+        guard isRecording else {
+            return
+        }
+        setIsRecording(value: false)
+        makeToast(title: "Recording stopped")
+        suspendRecording()
+    }
+
+    func resumeRecording() {
         currentRecording = recordingsStorage.createRecording(settings: stream.clone())
         let bitrate = Int(stream.recording!.videoBitrate)
         let keyFrameInterval = Int(stream.recording!.maxKeyFrameInterval)
@@ -1792,16 +1812,10 @@ final class Model: NSObject, ObservableObject {
             videoBitrate: bitrate != 0 ? bitrate : nil,
             keyFrameInterval: keyFrameInterval != 0 ? keyFrameInterval : nil
         )
-        makeToast(title: "Recording started")
     }
 
-    func stopRecording() {
-        guard isRecording else {
-            return
-        }
-        setIsRecording(value: false)
+    private func suspendRecording() {
         media.stopRecording()
-        makeToast(title: "Recording stopped")
         if let currentRecording {
             recordingsStorage.append(recording: currentRecording)
             recordingsStorage.store()
