@@ -8,6 +8,12 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.241.0", date: "2024-04-17", changes: [
+        "• Stop recording when entering background, and automatically resume when entering foreground. 💡 Walk On Nick",
+        "  • Resumed recording will be written to new file.",
+        "  • No more corrupted recordings after being in background?",
+        "• No longer needed to restart the app to start a new recording after the previous recording failed (due to Moblin was recording in background). 🐛 Walk On Nick",
+    ]),
     Version(version: "0.240.0", date: "2024-04-15", changes: [
         "• Remove scene quick buttons.",
         "  • Were not very useful and made the code complicated.",
