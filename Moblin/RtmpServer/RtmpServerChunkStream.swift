@@ -394,25 +394,18 @@ class RtmpServerChunkStream: VideoCodecDelegate {
         guard let audioDecoder, let pcmAudioFormat else {
             return
         }
-        var error: NSError?
         guard let outputBuffer = AVAudioPCMBuffer(pcmFormat: pcmAudioFormat, frameCapacity: 1024) else {
             return
         }
-        let outputStatus = audioDecoder.convert(to: outputBuffer, error: &error) { _, inputStatus in
+        var error: NSError?
+        audioDecoder.convert(to: outputBuffer, error: &error) { _, inputStatus in
             inputStatus.pointee = .haveData
             return self.audioBuffer
         }
-        switch outputStatus {
-        case .haveData:
+        if let error {
+            logger.info("rtmp-server: client: Error \(error)")
+        } else {
             client?.handleAudioBuffer(audioBuffer: outputBuffer)
-        case .error:
-            if let error {
-                logger.info("rtmp-server: client: Error \(error)")
-            } else {
-                logger.info("rtmp-server: client: Unknown error")
-            }
-        default:
-            logger.info("rtmp-server: client: Output status \(outputStatus.rawValue)")
         }
     }
 
