@@ -555,8 +555,4 @@ extension RtmpServerChunkStream {
     func videoCodec(_: HaishinKit.VideoCodec, errorOccurred error: HaishinKit.VideoCodec.Error) {
         logger.info("rtmp-server: client: Codec error \(error)")
     }
-
-    func videoCodecWillDropFame(_: HaishinKit.VideoCodec) -> Bool {
-        return false
-    }
 }

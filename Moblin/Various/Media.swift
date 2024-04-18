@@ -111,7 +111,7 @@ final class Media: NSObject {
         video: \(CMClock.hostTimeClock.time.seconds - videoPts)
         """)
         if let audioClock = netStream.mixer.audioSession.synchronizationClock,
-           let videoClock = netStream.mixer.captureSession.synchronizationClock
+           let videoClock = netStream.mixer.videoSession.synchronizationClock
         {
             let audioRate = CMClock.hostTimeClock.rate(relativeTo: audioClock)
             let videoRate = CMClock.hostTimeClock.rate(relativeTo: videoClock)
@@ -629,10 +629,6 @@ extension Media: NetStreamDelegate {
                 audioCodecErrorOccurred error: HaishinKit.AudioCodec.Error)
     {
         logger.error("stream: \(kind(netStream)): Audio codec error: \(error)")
-    }
-
-    func streamWillDropFrame(_: NetStream) -> Bool {
-        return false
     }
 
     func streamDidOpen(_: NetStream) {}
