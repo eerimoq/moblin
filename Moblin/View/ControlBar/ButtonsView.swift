@@ -586,6 +586,12 @@ struct ButtonsInnerView: View {
         model.sceneUpdated(store: false)
     }
 
+    private func cameraPreviewAction(state _: ButtonState) {
+        state.button.isOn.toggle()
+        model.updateButtonStates()
+        model.showCameraPreview.toggle()
+    }
+
     var body: some View {
         VStack {
             switch state.button.type {
@@ -747,6 +753,12 @@ struct ButtonsInnerView: View {
             case .lut:
                 Button(action: {
                     lutAction(state: state)
+                }, label: {
+                    ButtonImage(state: state, buttonSize: size)
+                })
+            case .cameraPreview:
+                Button(action: {
+                    cameraPreviewAction(state: state)
                 }, label: {
                     ButtonImage(state: state, buttonSize: size)
                 })

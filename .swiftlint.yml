@@ -9,3 +9,4 @@ disabled_rules:
   - type_body_length
   - cyclomatic_complexity
   - function_body_length
+  - force_cast

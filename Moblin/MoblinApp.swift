@@ -13,8 +13,14 @@ struct MoblinApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MainView(streamView: StreamView(), webBrowserView: WebBrowserView())
-                .environmentObject(model)
+            MainView(
+                streamView: StreamView(
+                    cameraPreviewView: CameraPreviewView(),
+                    streamPreviewView: StreamPreviewView()
+                ),
+                webBrowserView: WebBrowserView()
+            )
+            .environmentObject(model)
         }
     }
 }

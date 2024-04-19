@@ -1,12 +1,56 @@
+import AVFoundation
 import HaishinKit
 import SwiftUI
 
-struct StreamView: UIViewRepresentable {
+struct StreamPreviewView: UIViewRepresentable {
     @EnvironmentObject var model: Model
 
     func makeUIView(context _: Context) -> PreviewView {
-        return model.videoView
+        return model.streamPreviewView
     }
 
     func updateUIView(_: HaishinKit.PreviewView, context _: Context) {}
+}
+
+class CameraPreviewUiView: UIView {
+    override class var layerClass: AnyClass {
+        AVCaptureVideoPreviewLayer.self
+    }
+
+    var previewLayer: AVCaptureVideoPreviewLayer {
+        layer as! AVCaptureVideoPreviewLayer
+    }
+
+    var session: AVCaptureSession? {
+        get {
+            previewLayer.session
+        }
+        set {
+            previewLayer.session = newValue
+        }
+    }
+}
+
+struct CameraPreviewView: UIViewRepresentable {
+    @EnvironmentObject var model: Model
+
+    func makeUIView(context _: Context) -> CameraPreviewUiView {
+        return model.cameraPreviewView
+    }
+
+    func updateUIView(_: CameraPreviewUiView, context _: Context) {}
+}
+
+struct StreamView: View {
+    @EnvironmentObject var model: Model
+    var cameraPreviewView: CameraPreviewView
+    var streamPreviewView: StreamPreviewView
+
+    var body: some View {
+        if model.showCameraPreview {
+            cameraPreviewView
+        } else {
+            streamPreviewView
+        }
+    }
 }

@@ -76,6 +76,7 @@ struct GlobalQuickButtonsSettingsView: View {
                     }
                     .onMove(perform: { froms, to in
                         model.database.globalButtons!.move(fromOffsets: froms, toOffset: to)
+                        model.updateButtonStates()
                         model.sceneUpdated()
                     })
                 }

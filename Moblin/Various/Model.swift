@@ -260,7 +260,9 @@ final class Model: NSObject, ObservableObject {
     @Published var batteryState: UIDevice.BatteryState = .full
     @Published var speedAndTotal = noValue
     @Published var thermalState = ProcessInfo.processInfo.thermalState
-    var videoView = PreviewView(frame: .zero)
+    let streamPreviewView = PreviewView(frame: .zero)
+    let cameraPreviewView = CameraPreviewUiView()
+    @Published var showCameraPreview = false
     private var textEffects: [UUID: TextEffect] = [:]
     private var imageEffects: [UUID: ImageEffect] = [:]
     private var videoEffects: [UUID: VideoEffect] = [:]
@@ -737,7 +739,7 @@ final class Model: NSObject, ObservableObject {
             zoomX = backZoomX
         }
         frontZoomPresetId = database.zoom.front[0].id
-        videoView.videoGravity = .resizeAspect
+        streamPreviewView.videoGravity = .resizeAspect
         updateDigitalClock(now: Date())
         twitchChat = TwitchChatMoblin(model: self)
         reloadStream()
@@ -1183,14 +1185,19 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func updateOrientation() {
-        switch UIDevice.current.orientation {
-        case .landscapeLeft:
-            videoView.videoOrientation = .landscapeRight
-        case .landscapeRight:
-            videoView.videoOrientation = .landscapeLeft
-        default:
-            break
+        if stream.portrait! {
+            streamPreviewView.videoOrientation = .landscapeRight
+        } else {
+            switch UIDevice.current.orientation {
+            case .landscapeLeft:
+                streamPreviewView.videoOrientation = .landscapeRight
+            case .landscapeRight:
+                streamPreviewView.videoOrientation = .landscapeLeft
+            default:
+                break
+            }
         }
+        updateCameraPreviewRotation()
     }
 
     @objc private func orientationDidChange(animated _: Bool) {
@@ -1766,10 +1773,17 @@ final class Model: NSObject, ObservableObject {
     func updateOrientationLock() {
         if stream.portrait! {
             AppDelegate.orientationLock = .portrait
-            videoView.isPortrait = true
+            streamPreviewView.isPortrait = true
         } else {
             AppDelegate.orientationLock = .landscape
-            videoView.isPortrait = false
+            streamPreviewView.isPortrait = false
+        }
+        if #available(iOS 17.0, *) {
+            if stream.portrait! {
+                cameraPreviewView.previewLayer.connection?.videoRotationAngle = 90
+            } else {
+                cameraPreviewView.previewLayer.connection?.videoRotationAngle = 0
+            }
         }
     }
 
@@ -2052,7 +2066,7 @@ final class Model: NSObject, ObservableObject {
         media.setNetStream(proto: stream.getProtocol())
         updateTorch()
         updateMute()
-        videoView.attachStream(media.getNetStream())
+        streamPreviewView.attachStream(media.getNetStream())
         setLowFpsImage()
     }
 
@@ -3295,7 +3309,29 @@ final class Model: NSObject, ObservableObject {
             videoStabilizationMode: getVideoStabilizationMode(),
             videoMirrored: getVideoMirroredOnStream()
         ) {
-            self.videoView.isMirrored = isMirrored
+            self.streamPreviewView.isMirrored = isMirrored
+            self.updateCameraPreview()
+        }
+    }
+
+    private func updateCameraPreview() {
+        cameraPreviewView.session = nil
+        cameraPreviewView.session = media.getNetStream().mixer.videoSession
+        updateCameraPreviewRotation()
+    }
+
+    private func updateCameraPreviewRotation() {
+        if stream.portrait! {
+            cameraPreviewView.previewLayer.connection?.videoOrientation = .portrait
+        } else {
+            switch UIDevice.current.orientation {
+            case .landscapeLeft:
+                cameraPreviewView.previewLayer.connection?.videoOrientation = .landscapeRight
+            case .landscapeRight:
+                cameraPreviewView.previewLayer.connection?.videoOrientation = .landscapeLeft
+            default:
+                break
+            }
         }
     }
 
@@ -3396,13 +3432,14 @@ final class Model: NSObject, ObservableObject {
                 if let device = self.cameraDevice {
                     logger.debug("FPS: \(device.fps)")
                 }
-                self.videoView.isMirrored = isMirrored
+                self.streamPreviewView.isMirrored = isMirrored
                 if let x = self.setCameraZoomX(x: self.zoomX) {
                     self.setZoomX(x: x)
                 }
                 if let device = self.cameraDevice {
                     self.setMaxAutoExposure(device: device)
                 }
+                self.updateCameraPreview()
             }
         )
         zoomXPinch = zoomX
@@ -3413,7 +3450,7 @@ final class Model: NSObject, ObservableObject {
         cameraDevice = nil
         cameraPosition = nil
         secondCameraDevice = nil
-        videoView.isMirrored = false
+        streamPreviewView.isMirrored = false
         hasZoom = false
         media.attachRtmpCamera(cameraId: cameraId, device: preferredCamera(position: .front))
     }
