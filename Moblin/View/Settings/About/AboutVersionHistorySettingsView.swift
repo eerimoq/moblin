@@ -8,6 +8,14 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.242.0", date: "2024-04-19", changes: [
+        "• Make OA4 work. 🐛 jaystreazy",
+        "  • Affects how image formats are selected for all cameras, so might affect their image as well.",
+        "  • OA4 only tested with 1080p30.",
+        "• Lots of audio refactoring and cleanup, which hopefully does not break anything.",
+        "• \"Camera perview\" quick button. The Camera preview image is without widgets, LUTs and other image effects, but instead very responsive.",
+        "  • Mainly for Cinematic stabilization (as it is super laggy normally).",
+    ]),
     Version(version: "0.241.0", date: "2024-04-17", changes: [
         "• Stop recording when entering background, and automatically resume when entering foreground. 💡 Walk On Nick",
         "  • Resumed recording will be written to new file.",
