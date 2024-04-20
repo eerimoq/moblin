@@ -184,14 +184,14 @@ final class RTMPTSocket: NSObject, RTMPSocketCompatible {
         }
     }
 
-    private func didIdent2(data: Data?, response: URLResponse?, error: Error?) {
+    private func didIdent2(data _: Data?, response _: URLResponse?, error: Error?) {
         if let error: Error = error {
             logger.error("\(error)")
         }
         doRequest("/open/1", Data([0x00]), didOpen)
     }
 
-    private func didOpen(data: Data?, response: URLResponse?, error: Error?) {
+    private func didOpen(data: Data?, response _: URLResponse?, error: Error?) {
         if let error: Error = error {
             logger.error("\(error)")
         }
@@ -202,14 +202,14 @@ final class RTMPTSocket: NSObject, RTMPSocketCompatible {
         doRequest("/idle/\(connectionID!)/0", Data([0x00]), didIdle0)
     }
 
-    private func didIdle0(data: Data?, response: URLResponse?, error: Error?) {
+    private func didIdle0(data _: Data?, response _: URLResponse?, error: Error?) {
         if let error: Error = error {
             logger.error("\(error)")
         }
         connected = true
     }
 
-    private func didClose(data: Data?, response: URLResponse?, error: Error?) {
+    private func didClose(data _: Data?, response _: URLResponse?, error: Error?) {
         if let error: Error = error {
             logger.error("\(error)")
         }

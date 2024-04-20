@@ -187,19 +187,19 @@ public class IORecorder {
                                  sourceFormatHint: CMFormatDescription?) -> AVAssetWriterInput?
     {
         var input: AVAssetWriterInput?
-        //nstry {
-            input = AVAssetWriterInput(
-                mediaType: mediaType,
-                outputSettings: outputSettings,
-                sourceFormatHint: sourceFormatHint
-            )
-            input?.expectsMediaDataInRealTime = true
-            if let input {
-                self.writer?.add(input)
-            }
-        //} _: { exception in
+        // nstry {
+        input = AVAssetWriterInput(
+            mediaType: mediaType,
+            outputSettings: outputSettings,
+            sourceFormatHint: sourceFormatHint
+        )
+        input?.expectsMediaDataInRealTime = true
+        if let input {
+            writer?.add(input)
+        }
+        // } _: { exception in
         //    logger.warn("Failed to create asset writer input \(exception)")
-        //}
+        // }
         return input
     }
 
