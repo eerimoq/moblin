@@ -94,7 +94,6 @@ public class RTMPSharedObject: EventDispatcher {
     }
 
     var name: String
-    var path: String
     var timestamp: TimeInterval = 0
     var persistence: Bool
     var currentVersion: UInt32 = 0
@@ -117,9 +116,8 @@ public class RTMPSharedObject: EventDispatcher {
 
     private var rtmpConnection: RTMPConnection?
 
-    init(name: String, path: String, persistence: Bool) {
+    init(name: String, path _: String, persistence: Bool) {
         self.name = name
-        self.path = path
         self.persistence = persistence
         super.init()
     }

@@ -228,7 +228,6 @@ open class RTMPStream: NetStream {
     private var audioWasSent = false
     private var videoWasSent = false
     private var pausedStatus = PausedStatus(hasAudio: false, hasVideo: false)
-    private var howToPublish: RTMPStream.HowToPublish = .live
     private var dataTimeStamps: [String: Date] = .init()
     private weak var rtmpConnection: RTMPConnection?
 
@@ -316,15 +315,10 @@ open class RTMPStream: NetStream {
                 }
                 return
             }
-
             if self.info.resourceName == name && self.readyState == .publishing {
-                self.howToPublish = type
                 return
             }
-
             self.info.resourceName = name
-            self.howToPublish = type
-
             let message = RTMPCommandMessage(
                 streamId: self.id,
                 transactionId: 0,
@@ -333,7 +327,6 @@ open class RTMPStream: NetStream {
                 commandObject: nil,
                 arguments: [name, type.rawValue]
             )
-
             switch self.readyState {
             case .initialized:
                 self.messages.append(message)

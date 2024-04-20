@@ -1,9 +1,5 @@
 import Foundation
 
-private func filename(_ file: String) -> String {
-    return file.components(separatedBy: "/").last ?? file
-}
-
 class EasyLogger {
     var handler: ((String) -> Void)?
     var debugEnabled: Bool = false

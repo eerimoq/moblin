@@ -14,7 +14,6 @@ public class SRTStream: NetStream {
         case closed = 6
     }
 
-    private var name: String?
     private var action: (() -> Void)?
     private var keyValueObservations: [NSKeyValueObservation] = []
     private weak var connection: SRTConnection?

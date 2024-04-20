@@ -1,9 +1,7 @@
 import Foundation
 import libsrt
 
-/// The SRTPerformanceData represents the SRT's performance statistics. This struct is wrapper for an
-/// CBytePerfMon.
-/// - seealso: https://github.com/Haivision/srt/blob/master/srtcore/srt.h
+// periphery:ignore
 public struct SRTPerformanceData {
     static let zero: SRTPerformanceData = .init(
         msTimeStamp: 0,

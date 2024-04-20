@@ -6,7 +6,7 @@ private let enummapTranstype: [String: Any] = [
     "file": SRTT_FILE,
 ]
 
-public enum SRTSocketOption: String {
+enum SRTSocketOption: String {
     static func from(uri: URL?) -> [SRTSocketOption: String] {
         guard let uri else {
             return [:]
@@ -82,7 +82,7 @@ public enum SRTSocketOption: String {
     case kmpreannounce
     case maxrexmitbw
 
-    public var symbol: SRT_SOCKOPT {
+    private var symbol: SRT_SOCKOPT {
         switch self {
         case .rcvsyn:
             return SRTO_RCVSYN

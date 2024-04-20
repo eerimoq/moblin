@@ -1,16 +1,10 @@
 import AVFoundation
 
 public protocol AudioCodecDelegate: AnyObject {
-    /// Tells the receiver to output an AVAudioFormat.
     func audioCodec(didOutput audioFormat: AVAudioFormat)
-    /// Tells the receiver to output an encoded or decoded CMSampleBuffer.
     func audioCodec(didOutput audioBuffer: AVAudioBuffer, presentationTimeStamp: CMTime)
 }
 
-/**
- * The AudioCodec translate audio data to another format.
- * - seealso: https://developer.apple.com/library/ios/technotes/tn2236/_index.html
- */
 public class AudioCodec {
     init(lockQueue: DispatchQueue) {
         self.lockQueue = lockQueue

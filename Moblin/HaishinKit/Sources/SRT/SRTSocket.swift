@@ -10,7 +10,6 @@ protocol SRTSocketDelegate: AnyObject {
 final class SRTSocket {
     static let defaultOptions: [SRTSocketOption: String] = [:]
 
-    var timeout: Int = 0
     var options: [SRTSocketOption: String] = [:]
     weak var delegate: (any SRTSocketDelegate)?
     private(set) var mode: SRTMode = .caller
@@ -50,8 +49,6 @@ final class SRTSocket {
             delegate?.socket(self, status: status)
         }
     }
-
-    private var windowSizeC: Int32 = 1024 * 4
 
     init() {}
 

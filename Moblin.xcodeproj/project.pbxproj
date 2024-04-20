@@ -160,7 +160,6 @@
 		0359F8F62BD3DA61005BFDA8 /* RTMPTSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F85E2BD3DA5F005BFDA8 /* RTMPTSocket.swift */; };
 		0359F8F72BD3DA61005BFDA8 /* SRTConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8602BD3DA5F005BFDA8 /* SRTConnection.swift */; };
 		0359F8F82BD3DA61005BFDA8 /* SRTError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8612BD3DA5F005BFDA8 /* SRTError.swift */; };
-		0359F8F92BD3DA61005BFDA8 /* SRTLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8622BD3DA5F005BFDA8 /* SRTLogger.swift */; };
 		0359F8FA2BD3DA61005BFDA8 /* SRTMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8632BD3DA5F005BFDA8 /* SRTMode.swift */; };
 		0359F8FB2BD3DA61005BFDA8 /* SRTPerformanceData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8642BD3DA5F005BFDA8 /* SRTPerformanceData.swift */; };
 		0359F8FC2BD3DA61005BFDA8 /* SRTSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8652BD3DA5F005BFDA8 /* SRTSocket.swift */; };
@@ -169,9 +168,6 @@
 		0359F9002BD3DA61005BFDA8 /* AnyUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F86D2BD3DA5F005BFDA8 /* AnyUtil.swift */; };
 		0359F9012BD3DA61005BFDA8 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F86E2BD3DA5F005BFDA8 /* Atomic.swift */; };
 		0359F9022BD3DA61005BFDA8 /* ByteArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F86F2BD3DA5F005BFDA8 /* ByteArray.swift */; };
-		0359F9032BD3DA61005BFDA8 /* CMAudioSampleBufferFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8702BD3DA5F005BFDA8 /* CMAudioSampleBufferFactory.swift */; };
-		0359F9052BD3DA61005BFDA8 /* DataBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8722BD3DA5F005BFDA8 /* DataBuffer.swift */; };
-		0359F9062BD3DA61005BFDA8 /* InstanceHolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8732BD3DA5F005BFDA8 /* InstanceHolder.swift */; };
 		0359F9072BD3DA61005BFDA8 /* MD5.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8742BD3DA5F005BFDA8 /* MD5.swift */; };
 		0359F9082BD3DA61005BFDA8 /* build-xcframework.sh in Resources */ = {isa = PBXBuildFile; fileRef = 0359F8A72BD3DA61005BFDA8 /* build-xcframework.sh */; };
 		0359F9092BD3DA61005BFDA8 /* libsrt.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0359F8A82BD3DA61005BFDA8 /* libsrt.xcframework */; };
@@ -523,7 +519,6 @@
 		0359F85E2BD3DA5F005BFDA8 /* RTMPTSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RTMPTSocket.swift; sourceTree = "<group>"; };
 		0359F8602BD3DA5F005BFDA8 /* SRTConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SRTConnection.swift; sourceTree = "<group>"; };
 		0359F8612BD3DA5F005BFDA8 /* SRTError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SRTError.swift; sourceTree = "<group>"; };
-		0359F8622BD3DA5F005BFDA8 /* SRTLogger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SRTLogger.swift; sourceTree = "<group>"; };
 		0359F8632BD3DA5F005BFDA8 /* SRTMode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SRTMode.swift; sourceTree = "<group>"; };
 		0359F8642BD3DA5F005BFDA8 /* SRTPerformanceData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SRTPerformanceData.swift; sourceTree = "<group>"; };
 		0359F8652BD3DA5F005BFDA8 /* SRTSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SRTSocket.swift; sourceTree = "<group>"; };
@@ -532,9 +527,6 @@
 		0359F86D2BD3DA5F005BFDA8 /* AnyUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnyUtil.swift; sourceTree = "<group>"; };
 		0359F86E2BD3DA5F005BFDA8 /* Atomic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
 		0359F86F2BD3DA5F005BFDA8 /* ByteArray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ByteArray.swift; sourceTree = "<group>"; };
-		0359F8702BD3DA5F005BFDA8 /* CMAudioSampleBufferFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CMAudioSampleBufferFactory.swift; sourceTree = "<group>"; };
-		0359F8722BD3DA5F005BFDA8 /* DataBuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataBuffer.swift; sourceTree = "<group>"; };
-		0359F8732BD3DA5F005BFDA8 /* InstanceHolder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InstanceHolder.swift; sourceTree = "<group>"; };
 		0359F8742BD3DA5F005BFDA8 /* MD5.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MD5.swift; sourceTree = "<group>"; };
 		0359F8772BD3DA61005BFDA8 /* access_control.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = access_control.h; sourceTree = "<group>"; };
 		0359F8782BD3DA61005BFDA8 /* api.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = api.h; sourceTree = "<group>"; };
@@ -1227,7 +1219,6 @@
 			children = (
 				0359F8602BD3DA5F005BFDA8 /* SRTConnection.swift */,
 				0359F8612BD3DA5F005BFDA8 /* SRTError.swift */,
-				0359F8622BD3DA5F005BFDA8 /* SRTLogger.swift */,
 				0359F8632BD3DA5F005BFDA8 /* SRTMode.swift */,
 				0359F8642BD3DA5F005BFDA8 /* SRTPerformanceData.swift */,
 				0359F8652BD3DA5F005BFDA8 /* SRTSocket.swift */,
@@ -1243,9 +1234,6 @@
 				0359F86D2BD3DA5F005BFDA8 /* AnyUtil.swift */,
 				0359F86E2BD3DA5F005BFDA8 /* Atomic.swift */,
 				0359F86F2BD3DA5F005BFDA8 /* ByteArray.swift */,
-				0359F8702BD3DA5F005BFDA8 /* CMAudioSampleBufferFactory.swift */,
-				0359F8722BD3DA5F005BFDA8 /* DataBuffer.swift */,
-				0359F8732BD3DA5F005BFDA8 /* InstanceHolder.swift */,
 				0359F8742BD3DA5F005BFDA8 /* MD5.swift */,
 			);
 			path = Util;
@@ -2215,7 +2203,6 @@
 				0359F8B22BD3DA61005BFDA8 /* VTSessionOption.swift in Sources */,
 				0315A37A2AA39DA800295443 /* TextItemView.swift in Sources */,
 				0359F8E82BD3DA61005BFDA8 /* AMF3Serializer.swift in Sources */,
-				0359F9032BD3DA61005BFDA8 /* CMAudioSampleBufferFactory.swift in Sources */,
 				0359F8CB2BD3DA61005BFDA8 /* FLVSoundType.swift in Sources */,
 				0359F8B92BD3DA61005BFDA8 /* AVFrameRateRange+Extension.swift in Sources */,
 				0379BBA22AAD824600B718B6 /* StreamOverlayIconAndTextView.swift in Sources */,
@@ -2346,7 +2333,6 @@
 				0364304F2B2FF9F400B7C448 /* StreamWizardTwitchSettingsView.swift in Sources */,
 				03403DF62AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift in Sources */,
 				032A49BC2AC5DF3F00ED3916 /* ImportExportSettingsView.swift in Sources */,
-				0359F9062BD3DA61005BFDA8 /* InstanceHolder.swift in Sources */,
 				03EF34BA2B1B028900A19221 /* StreamAfreecaTvSettingsView.swift in Sources */,
 				03A9836E2A9A05F9008FF0DB /* Model.swift in Sources */,
 				0359F8E42BD3DA61005BFDA8 /* TSWriter.swift in Sources */,
@@ -2357,7 +2343,6 @@
 				034CE2EC2B4D2E7200E2C1BD /* StreamRealtimeIrlSettingsView.swift in Sources */,
 				0359F8DE2BD3DA61005BFDA8 /* HEVCNALUnit.swift in Sources */,
 				0379BBA52AAD945D00B718B6 /* LocalOverlaysSettingsView.swift in Sources */,
-				0359F8F92BD3DA61005BFDA8 /* SRTLogger.swift in Sources */,
 				03FBD1852B3B0DF300757CA9 /* RtmpServerChunkStream.swift in Sources */,
 				03CB8BCD2B5090C700B96530 /* StreamGridView.swift in Sources */,
 				0359F8EB2BD3DA61005BFDA8 /* RTMPChunk.swift in Sources */,
@@ -2468,7 +2453,6 @@
 				0359F8BE2BD3DA61005BFDA8 /* CVPixelBuffer+Extension.swift in Sources */,
 				0359F8C32BD3DA61005BFDA8 /* VTCompressionSession+Extension.swift in Sources */,
 				0359F8E92BD3DA61005BFDA8 /* AMFFoundation.swift in Sources */,
-				0359F9052BD3DA61005BFDA8 /* DataBuffer.swift in Sources */,
 				030399132AE2D0FC00D27530 /* ChatSettingsView.swift in Sources */,
 				034844F52B57AB840089B874 /* RemoteControlSettingsView.swift in Sources */,
 			);

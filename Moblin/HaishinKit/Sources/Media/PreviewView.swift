@@ -3,20 +3,16 @@ import Foundation
 import UIKit
 
 public class PreviewView: UIView {
-    /// The view’s background color.
     public static var defaultBackgroundColor: UIColor = .black
 
-    /// Returns the class used to create the layer for instances of this class.
     override public class var layerClass: AnyClass {
         AVSampleBufferDisplayLayer.self
     }
 
-    /// The view’s Core Animation layer used for rendering.
     override public var layer: AVSampleBufferDisplayLayer {
         super.layer as! AVSampleBufferDisplayLayer
     }
 
-    /// A value that specifies how the video is displayed within a player layer’s bounds.
     public var videoGravity: AVLayerVideoGravity = .resizeAspect {
         didSet {
             if Thread.isMainThread {
@@ -29,7 +25,6 @@ public class PreviewView: UIView {
         }
     }
 
-    /// A value that displays a video format.
     public var videoFormatDescription: CMVideoFormatDescription? {
         return currentStream?.mixer.video.formatDescription
     }
@@ -62,19 +57,15 @@ public class PreviewView: UIView {
         }
     }
 
-    /// Initializes and returns a newly allocated view object with the specified frame rectangle.
     override public init(frame: CGRect) {
         super.init(frame: frame)
         awakeFromNib()
     }
 
-    /// Returns an object initialized from data in a given unarchiver.
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
 
-    /// Prepares the receiver for service after it has been loaded from an Interface Builder archive, or
-    /// nib file.
     override public func awakeFromNib() {
         super.awakeFromNib()
         backgroundColor = Self.defaultBackgroundColor

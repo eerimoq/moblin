@@ -1,7 +1,6 @@
 import Foundation
 
 final class RTMPTSocket: NSObject, RTMPSocketCompatible {
-    static let defaultWindowSizeC = Int(UInt8.max)
     static let contentType: String = "application/x-fcs"
 
     var timeout: Int = 0

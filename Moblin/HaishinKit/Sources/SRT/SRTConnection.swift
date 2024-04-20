@@ -1,13 +1,7 @@
 import Foundation
 import libsrt
 
-/// The SRTConnection class create a two-way SRT connection.
 public class SRTConnection: NSObject {
-    /// SRT Library version
-    public static let version: String = SRT_VERSION_STRING
-    /// The URI passed to the SRTConnection.connect() method.
-    public private(set) var uri: URL?
-    /// This instance connect to server(true) or not(false)
     @objc public private(set) dynamic var connected = false
 
     var socket: SRTSocket? {
@@ -20,7 +14,6 @@ public class SRTConnection: NSObject {
     var clients: [SRTSocket] = []
     private var sendHook: ((Data) -> Bool)?
 
-    /// The SRT's performance data.
     public var performanceData: SRTPerformanceData {
         guard let socket else {
             return .zero
@@ -29,7 +22,6 @@ public class SRTConnection: NSObject {
         return SRTPerformanceData(mon: socket.perf)
     }
 
-    /// Creates a new SRTConnection.
     override public init() {
         super.init()
         srt_startup()
@@ -40,14 +32,12 @@ public class SRTConnection: NSObject {
         srt_cleanup()
     }
 
-    /// Open a two-way connection to an application on SRT Server.
     public func open(_ uri: URL?, sendHook: @escaping (Data) -> Bool, mode: SRTMode = .caller) throws {
         guard let uri = uri, let scheme = uri.scheme, let host = uri.host, let port = uri.port,
               scheme == "srt"
         else {
             return
         }
-        self.uri = uri
         self.sendHook = sendHook
         let options = SRTSocketOption.from(uri: uri)
         let addr = sockaddr_in(mode.host(host), port: UInt16(port))
@@ -65,21 +55,6 @@ public class SRTConnection: NSObject {
         socket = nil
         clients.removeAll()
         connected = false
-    }
-
-    public func setOption(name: String, value: String) {
-        let uri = URL(string: "https:///?\(name)=\(value)")
-        let options = SRTSocketOption.from(uri: uri)
-        if let socket {
-            let failures = SRTSocketOption.configure(socket.socket,
-                                                     binding: .post,
-                                                     options: options)
-            if !failures.isEmpty {
-                logger.error("set option failure: \(failures)")
-            }
-        } else {
-            logger.info("No socket")
-        }
     }
 
     func removeStream() {
