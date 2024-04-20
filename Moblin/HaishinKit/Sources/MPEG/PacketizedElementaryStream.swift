@@ -161,13 +161,6 @@ struct PacketizedElementaryStream {
         }
     }
 
-    var isEntired: Bool {
-        if packetLength > 0 {
-            return data.count == packetLength - 8
-        }
-        return false
-    }
-
     init?(_ payload: Data) {
         self.payload = payload
         if startCode != PacketizedElementaryStream.startCode {

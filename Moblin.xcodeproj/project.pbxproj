@@ -129,7 +129,6 @@
 		0359F8D72BD3DA61005BFDA8 /* AudioSpecificConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F83D2BD3DA5F005BFDA8 /* AudioSpecificConfig.swift */; };
 		0359F8D82BD3DA61005BFDA8 /* AVCDecoderConfigurationRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F83E2BD3DA5F005BFDA8 /* AVCDecoderConfigurationRecord.swift */; };
 		0359F8D92BD3DA61005BFDA8 /* AVCFormatStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F83F2BD3DA5F005BFDA8 /* AVCFormatStream.swift */; };
-		0359F8DA2BD3DA61005BFDA8 /* AVCNALUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8402BD3DA5F005BFDA8 /* AVCNALUnit.swift */; };
 		0359F8DB2BD3DA61005BFDA8 /* CRC32.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8412BD3DA5F005BFDA8 /* CRC32.swift */; };
 		0359F8DC2BD3DA61005BFDA8 /* ESSpecificData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8422BD3DA5F005BFDA8 /* ESSpecificData.swift */; };
 		0359F8DD2BD3DA61005BFDA8 /* HEVCDecoderConfigurationRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8432BD3DA5F005BFDA8 /* HEVCDecoderConfigurationRecord.swift */; };
@@ -138,7 +137,6 @@
 		0359F8E02BD3DA61005BFDA8 /* TSField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8462BD3DA5F005BFDA8 /* TSField.swift */; };
 		0359F8E12BD3DA61005BFDA8 /* TSPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8472BD3DA5F005BFDA8 /* TSPacket.swift */; };
 		0359F8E22BD3DA61005BFDA8 /* TSProgram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8482BD3DA5F005BFDA8 /* TSProgram.swift */; };
-		0359F8E32BD3DA61005BFDA8 /* TSReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8492BD3DA5F005BFDA8 /* TSReader.swift */; };
 		0359F8E42BD3DA61005BFDA8 /* TSWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F84A2BD3DA5F005BFDA8 /* TSWriter.swift */; };
 		0359F8E52BD3DA61005BFDA8 /* NetStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F84C2BD3DA5F005BFDA8 /* NetStream.swift */; };
 		0359F8E62BD3DA61005BFDA8 /* NetStreamDrawable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F84D2BD3DA5F005BFDA8 /* NetStreamDrawable.swift */; };
@@ -484,7 +482,6 @@
 		0359F83D2BD3DA5F005BFDA8 /* AudioSpecificConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioSpecificConfig.swift; sourceTree = "<group>"; };
 		0359F83E2BD3DA5F005BFDA8 /* AVCDecoderConfigurationRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVCDecoderConfigurationRecord.swift; sourceTree = "<group>"; };
 		0359F83F2BD3DA5F005BFDA8 /* AVCFormatStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVCFormatStream.swift; sourceTree = "<group>"; };
-		0359F8402BD3DA5F005BFDA8 /* AVCNALUnit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVCNALUnit.swift; sourceTree = "<group>"; };
 		0359F8412BD3DA5F005BFDA8 /* CRC32.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CRC32.swift; sourceTree = "<group>"; };
 		0359F8422BD3DA5F005BFDA8 /* ESSpecificData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ESSpecificData.swift; sourceTree = "<group>"; };
 		0359F8432BD3DA5F005BFDA8 /* HEVCDecoderConfigurationRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HEVCDecoderConfigurationRecord.swift; sourceTree = "<group>"; };
@@ -493,7 +490,6 @@
 		0359F8462BD3DA5F005BFDA8 /* TSField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSField.swift; sourceTree = "<group>"; };
 		0359F8472BD3DA5F005BFDA8 /* TSPacket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSPacket.swift; sourceTree = "<group>"; };
 		0359F8482BD3DA5F005BFDA8 /* TSProgram.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSProgram.swift; sourceTree = "<group>"; };
-		0359F8492BD3DA5F005BFDA8 /* TSReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSReader.swift; sourceTree = "<group>"; };
 		0359F84A2BD3DA5F005BFDA8 /* TSWriter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSWriter.swift; sourceTree = "<group>"; };
 		0359F84C2BD3DA5F005BFDA8 /* NetStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetStream.swift; sourceTree = "<group>"; };
 		0359F84D2BD3DA5F005BFDA8 /* NetStreamDrawable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetStreamDrawable.swift; sourceTree = "<group>"; };
@@ -1159,7 +1155,6 @@
 				0359F83D2BD3DA5F005BFDA8 /* AudioSpecificConfig.swift */,
 				0359F83E2BD3DA5F005BFDA8 /* AVCDecoderConfigurationRecord.swift */,
 				0359F83F2BD3DA5F005BFDA8 /* AVCFormatStream.swift */,
-				0359F8402BD3DA5F005BFDA8 /* AVCNALUnit.swift */,
 				0359F8412BD3DA5F005BFDA8 /* CRC32.swift */,
 				0359F8422BD3DA5F005BFDA8 /* ESSpecificData.swift */,
 				0359F8432BD3DA5F005BFDA8 /* HEVCDecoderConfigurationRecord.swift */,
@@ -1168,7 +1163,6 @@
 				0359F8462BD3DA5F005BFDA8 /* TSField.swift */,
 				0359F8472BD3DA5F005BFDA8 /* TSPacket.swift */,
 				0359F8482BD3DA5F005BFDA8 /* TSProgram.swift */,
-				0359F8492BD3DA5F005BFDA8 /* TSReader.swift */,
 				0359F84A2BD3DA5F005BFDA8 /* TSWriter.swift */,
 			);
 			path = MPEG;
@@ -2176,7 +2170,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0359F8DA2BD3DA61005BFDA8 /* AVCNALUnit.swift in Sources */,
 				0359F8F52BD3DA61005BFDA8 /* RTMPStreamInfo.swift in Sources */,
 				0359F8C12BD3DA61005BFDA8 /* ExpressibleByIntegerLiteral+Extension.swift in Sources */,
 				0325D0BE2BB3DDD6007EE85B /* KickChannel.swift in Sources */,
@@ -2294,7 +2287,6 @@
 				03B373F62A9EF98E0028DDD5 /* ControlBarLandscapeView.swift in Sources */,
 				0359F8D82BD3DA61005BFDA8 /* AVCDecoderConfigurationRecord.swift in Sources */,
 				0379BB8E2AA90D1900B718B6 /* DebugLogSettingsView.swift in Sources */,
-				0359F8E32BD3DA61005BFDA8 /* TSReader.swift in Sources */,
 				03B16A2D2B35D72F00E5AB07 /* CameraSettingsView.swift in Sources */,
 				0359F8BA2BD3DA61005BFDA8 /* CMAudioFormatDescription+Extension.swift in Sources */,
 				0359F8E72BD3DA61005BFDA8 /* AMF0Serializer.swift in Sources */,
