@@ -63,24 +63,4 @@ extension CMSampleBuffer {
             Unmanaged.passUnretained(value ? kCFBooleanTrue : kCFBooleanFalse).toOpaque()
         )
     }
-
-    func makeCopy(videoBuffer: CVImageBuffer, format: CMFormatDescription) -> CMSampleBuffer {
-        var timing = CMSampleTimingInfo(
-            duration: duration,
-            presentationTimeStamp: presentationTimeStamp,
-            decodeTimeStamp: decodeTimeStamp
-        )
-        var sampleBuffer: CMSampleBuffer?
-        CMSampleBufferCreateReadyWithImageBuffer(
-            allocator: kCFAllocatorDefault,
-            imageBuffer: videoBuffer,
-            formatDescription: format,
-            sampleTiming: &timing,
-            sampleBufferOut: &sampleBuffer
-        )
-        guard let sampleBuffer else {
-            return self
-        }
-        return sampleBuffer
-    }
 }

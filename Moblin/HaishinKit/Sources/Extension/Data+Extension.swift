@@ -11,22 +11,6 @@ extension Data {
         }
     }
 
-    func replaceBlockBuffer(blockBuffer: CMBlockBuffer) {
-        withUnsafeBytes { (buffer: UnsafeRawBufferPointer) in
-            guard let baseAddress = buffer.baseAddress else {
-                return
-            }
-            guard CMBlockBufferReplaceDataBytes(
-                with: baseAddress,
-                blockBuffer: blockBuffer,
-                offsetIntoDestination: 0,
-                dataLength: count
-            ) == noErr else {
-                return
-            }
-        }
-    }
-
     func chunks(_ size: Int) -> [Data] {
         if count < size {
             return [self]
