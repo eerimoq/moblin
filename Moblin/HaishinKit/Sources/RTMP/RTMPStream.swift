@@ -434,8 +434,8 @@ extension RTMPStream: EventDispatcherConvertible {
         dispatcher.dispatch(event: event)
     }
 
-    public func dispatch(_ type: Event.Name, bubbles: Bool, data: Any?) {
-        dispatcher.dispatch(type, bubbles: bubbles, data: data)
+    public func dispatch(_ type: Event.Name, data: Any?) {
+        dispatcher.dispatch(type, data: data)
     }
 }
 

@@ -126,7 +126,7 @@ final class RTMPSocket {
         if isDisconnected {
             let data: ASObject = (readyState == .handshakeDone) ?
                 RTMPConnection.Code.connectClosed.data("") : RTMPConnection.Code.connectFailed.data("")
-            events.append(Event(type: .rtmpStatus, bubbles: false, data: data))
+            events.append(Event(type: .rtmpStatus, data: data))
         }
         readyState = .closing
         if !isDisconnected, connection.state == .ready {
@@ -256,7 +256,7 @@ final class RTMPSocket {
 
     private func didTimeout() {
         close(isDisconnected: false)
-        delegate?.dispatch(.ioError, bubbles: false, data: nil)
+        delegate?.dispatch(.ioError, data: nil)
         logger.info("connection timedout")
     }
 }

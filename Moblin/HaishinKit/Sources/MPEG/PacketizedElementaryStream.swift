@@ -58,24 +58,6 @@ struct PESOptionalHeader {
         pesHeaderLength = UInt8(optionalFields.count)
     }
 
-    func makeSampleTimingInfo(_ previousPresentationTimeStamp: CMTime) -> CMSampleTimingInfo? {
-        var presentationTimeStamp: CMTime = .invalid
-        var decodeTimeStamp: CMTime = .invalid
-        if ptsDtsIndicator & 0x02 == 0x02 {
-            let pts = TSTimestamp.decode(optionalFields, offset: 0)
-            presentationTimeStamp = .init(value: pts, timescale: CMTimeScale(TSTimestamp.resolution))
-        }
-        if ptsDtsIndicator & 0x01 == 0x01 {
-            let dts = TSTimestamp.decode(optionalFields, offset: TSTimestamp.dataSize)
-            decodeTimeStamp = .init(value: dts, timescale: CMTimeScale(TSTimestamp.resolution))
-        }
-        return CMSampleTimingInfo(
-            duration: presentationTimeStamp - previousPresentationTimeStamp,
-            presentationTimeStamp: presentationTimeStamp,
-            decodeTimeStamp: decodeTimeStamp
-        )
-    }
-
     var data: Data {
         get {
             var bytes = Data([0x00, 0x00])

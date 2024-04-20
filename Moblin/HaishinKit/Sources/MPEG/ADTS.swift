@@ -15,41 +15,6 @@ struct ADTSHeader: Equatable {
         self.data = data
     }
 
-    func makeFormatDescription() -> CMFormatDescription? {
-        guard
-            let type = AudioSpecificConfig.AudioObjectType(rawValue: profile + 1),
-            let frequency = AudioSpecificConfig.SamplingFrequency(rawValue: sampleFrequencyIndex),
-            let channel = AudioSpecificConfig.ChannelConfiguration(rawValue: channelConfiguration)
-        else {
-            return nil
-        }
-        var formatDescription: CMAudioFormatDescription?
-        var audioStreamBasicDescription = AudioStreamBasicDescription(
-            mSampleRate: frequency.sampleRate,
-            mFormatID: kAudioFormatMPEG4AAC,
-            mFormatFlags: UInt32(type.rawValue),
-            mBytesPerPacket: 0,
-            mFramesPerPacket: 1024,
-            mBytesPerFrame: 0,
-            mChannelsPerFrame: UInt32(channel.rawValue),
-            mBitsPerChannel: 0,
-            mReserved: 0
-        )
-        guard CMAudioFormatDescriptionCreate(
-            allocator: kCFAllocatorDefault,
-            asbd: &audioStreamBasicDescription,
-            layoutSize: 0,
-            layout: nil,
-            magicCookieSize: 0,
-            magicCookie: nil,
-            extensions: nil,
-            formatDescriptionOut: &formatDescription
-        ) == noErr else {
-            return nil
-        }
-        return formatDescription
-    }
-
     var data: Data {
         get {
             Data()

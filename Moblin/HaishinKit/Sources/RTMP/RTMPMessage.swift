@@ -335,7 +335,7 @@ final class RTMPCommandMessage: RTMPMessage {
             case "close":
                 connection.close(isDisconnected: true)
             default:
-                connection.dispatch(.rtmpStatus, bubbles: false, data: arguments.first as Any?)
+                connection.dispatch(.rtmpStatus, data: arguments.first as Any?)
             }
             return
         }
@@ -668,7 +668,7 @@ final class RTMPVideoMessage: RTMPMessage {
             status = config.makeFormatDescription(&stream.mixer.video.formatDescription)
         }
         if status == noErr {
-            stream.dispatch(.rtmpStatus, bubbles: false, data: RTMPStream.Code.videoDimensionChange.data(""))
+            stream.dispatch(.rtmpStatus, data: RTMPStream.Code.videoDimensionChange.data(""))
         }
     }
 }
@@ -751,13 +751,11 @@ final class RTMPUserControlMessage: RTMPMessage {
         case .bufferEmpty:
             connection.streams.first(where: { $0.id == UInt32(value) })?.dispatch(
                 .rtmpStatus,
-                bubbles: false,
                 data: RTMPStream.Code.bufferEmpty.data("")
             )
         case .bufferFull:
             connection.streams.first(where: { $0.id == UInt32(value) })?.dispatch(
                 .rtmpStatus,
-                bubbles: false,
                 data: RTMPStream.Code.bufferFull.data("")
             )
         default:

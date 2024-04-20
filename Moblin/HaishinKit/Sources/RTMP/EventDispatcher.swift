@@ -4,7 +4,7 @@ protocol EventDispatcherConvertible: AnyObject {
     func addEventListener(_ type: Event.Name, selector: Selector, observer: AnyObject?, useCapture: Bool)
     func removeEventListener(_ type: Event.Name, selector: Selector, observer: AnyObject?, useCapture: Bool)
     func dispatch(event: Event)
-    func dispatch(_ type: Event.Name, bubbles: Bool, data: Any?)
+    func dispatch(_ type: Event.Name, data: Any?)
 }
 
 open class Event {
@@ -42,15 +42,12 @@ open class Event {
 
     public fileprivate(set) var type: Name
 
-    public fileprivate(set) var bubbles: Bool
-
     public fileprivate(set) var data: Any?
 
     public fileprivate(set) var target: AnyObject?
 
-    public init(type: Name, bubbles: Bool = false, data: Any? = nil) {
+    public init(type: Name, data: Any? = nil) {
         self.type = type
-        self.bubbles = bubbles
         self.data = data
     }
 }
@@ -101,7 +98,7 @@ open class EventDispatcher: EventDispatcherConvertible {
         event.target = nil
     }
 
-    public func dispatch(_ type: Event.Name, bubbles: Bool, data: Any?) {
-        dispatch(event: Event(type: type, bubbles: bubbles, data: data))
+    public func dispatch(_ type: Event.Name, data: Any?) {
+        dispatch(event: Event(type: type, data: data))
     }
 }

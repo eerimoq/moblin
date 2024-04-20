@@ -145,20 +145,6 @@ class IOMixer {
         isRunning.mutate { $0 = audioSession.isRunning }
     }
 
-    func startCaptureSessionIfNeeded() {
-        guard isRunning.value else {
-            return
-        }
-        if !videoSession.isRunning {
-            videoSession.startRunning()
-        }
-        isRunning.mutate { $0 = videoSession.isRunning }
-        if !audioSession.isRunning {
-            audioSession.startRunning()
-        }
-        isRunning.mutate { $0 = audioSession.isRunning }
-    }
-
     private func addSessionObservers(_ session: AVCaptureSession) {
         NotificationCenter.default.addObserver(
             self,
@@ -203,39 +189,6 @@ class IOMixer {
         }
         let error = AVError(_nsError: errorValue)
         logger.info("sessionRuntimeError \(error)")
-        /* switch error.code {
-         case .unsupportedDeviceActiveFormat:
-             guard let device = error.device, let format = device.findVideoFormat(
-                 width: sessionPreset.width ?? video.codec.settings.videoSize.width,
-                 height: sessionPreset.height ?? video.codec.settings.videoSize.height,
-                 frameRate: video.frameRate,
-                 colorSpace: .sRGB
-             ), device.activeFormat != format else {
-                 return
-             }
-             do {
-                 try device.lockForConfiguration()
-                 device.activeFormat = format
-                 if format.isFrameRateSupported(video.frameRate) {
-                     device.activeVideoMinFrameDuration = CMTime(
-                         value: 100,
-                         timescale: CMTimeScale(100 * video.frameRate)
-                     )
-                     device.activeVideoMaxFrameDuration = CMTime(
-                         value: 100,
-                         timescale: CMTimeScale(100 * video.frameRate)
-                     )
-                 }
-                 device.unlockForConfiguration()
-                 captureSession.startRunning()
-             } catch {
-                 logger.warn(error)
-             }
-         case .mediaServicesWereReset:
-             startCaptureSessionIfNeeded()
-         default:
-             break
-         } */
     }
 
     @objc
