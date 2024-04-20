@@ -154,30 +154,14 @@ open class RTMPConnection: EventDispatcher {
         return command
     }
 
-    /// Specifies the URL of .swf.
-    public var swfUrl: String?
-    /// Specifies the URL of an HTTP referer.
-    public var pageUrl: String?
-    /// Specifies the time to wait for TCP/IP Handshake done.
-    public var timeout: Int {
-        get {
-            socket.timeout
-        }
-        set {
-            socket.timeout = newValue
-        }
-    }
-
-    public var flashVer: String = RTMPConnection.defaultFlashVer
-    public var chunkSize: Int = RTMPConnection.defaultChunkSizeS
-    public private(set) var uri: URL?
-    public private(set) var connected = false
-    public var parameters: Any?
-    public var objectEncoding: RTMPObjectEncoding = RTMPConnection.defaultObjectEncoding
-    public var totalBytesIn: Int64 {
-        socket.totalBytesIn.value
-    }
-
+    var swfUrl: String?
+    var pageUrl: String?
+    var flashVer: String = RTMPConnection.defaultFlashVer
+    var chunkSize: Int = RTMPConnection.defaultChunkSizeS
+    private(set) var uri: URL?
+    private(set) var connected = false
+    var parameters: Any?
+    var objectEncoding = RTMPConnection.defaultObjectEncoding
     var socket: RTMPSocket!
     var streams: [RTMPStream] = []
     var sequence: Int64 = 0
@@ -213,8 +197,7 @@ open class RTMPConnection: EventDispatcher {
     private var currentChunk: RTMPChunk?
     private var fragmentedChunks: [UInt16: RTMPChunk] = [:]
 
-    /// Creates a new connection.
-    override public init() {
+    override init() {
         super.init()
         addEventListener(.rtmpStatus, selector: #selector(on(status:)))
     }

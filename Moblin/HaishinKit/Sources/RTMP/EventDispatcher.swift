@@ -14,7 +14,6 @@ open class Event {
         // swiftlint:disable:next nesting
         public typealias StringLiteralType = String
 
-        public static let sync: Name = "sync"
         public static let event: Name = "event"
         public static let ioError: Name = "ioError"
         public static let rtmpStatus: Name = "rtmpStatus"

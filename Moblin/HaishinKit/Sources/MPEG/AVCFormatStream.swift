@@ -11,13 +11,6 @@ struct AVCFormatStream {
         self.init(data: Data(bytes: bytes, count: count))
     }
 
-    init?(data: Data?) {
-        guard let data = data else {
-            return nil
-        }
-        self.init(data: data)
-    }
-
     func toByteStream() -> Data {
         let buffer = ByteArray(data: data)
         var result = Data()

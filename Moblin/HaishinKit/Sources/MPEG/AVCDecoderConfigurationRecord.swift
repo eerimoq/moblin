@@ -69,7 +69,7 @@ struct AVCDecoderConfigurationRecord: DecoderConfigurationRecord {
         }
     }
 
-    public var data: Data {
+    var data: Data {
         get {
             let buffer = ByteArray()
                 .writeUInt8(configurationVersion)

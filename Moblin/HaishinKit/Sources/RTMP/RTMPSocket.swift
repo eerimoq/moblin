@@ -14,14 +14,12 @@ enum RTMPSocketReadyState: UInt8 {
 protocol RTMPSocketDelegate: EventDispatcherConvertible {
     func socket(_ socket: RTMPSocket, data: Data)
     func socket(_ socket: RTMPSocket, readyState: RTMPSocketReadyState)
-    func socket(_ socket: RTMPSocket, totalBytesIn: Int64)
     func socket(_ socket: RTMPSocket, totalBytesOut: Int64)
 }
 
 final class RTMPSocket {
     static let defaultWindowSizeC = Int(UInt8.max)
 
-    var timestamp: TimeInterval = 0.0
     var chunkSizeC: Int = RTMPChunk.defaultSize
     var chunkSizeS: Int = RTMPChunk.defaultSize
     var windowSizeC = RTMPSocket.defaultWindowSizeC
