@@ -136,7 +136,6 @@
 		0359F8E22BD3DA61005BFDA8 /* TSProgram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8482BD3DA5F005BFDA8 /* TSProgram.swift */; };
 		0359F8E42BD3DA61005BFDA8 /* TSWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F84A2BD3DA5F005BFDA8 /* TSWriter.swift */; };
 		0359F8E52BD3DA61005BFDA8 /* NetStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F84C2BD3DA5F005BFDA8 /* NetStream.swift */; };
-		0359F8E62BD3DA61005BFDA8 /* NetStreamDrawable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F84D2BD3DA5F005BFDA8 /* NetStreamDrawable.swift */; };
 		0359F8E72BD3DA61005BFDA8 /* AMF0Serializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F84F2BD3DA5F005BFDA8 /* AMF0Serializer.swift */; };
 		0359F8E92BD3DA61005BFDA8 /* AMFFoundation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8512BD3DA5F005BFDA8 /* AMFFoundation.swift */; };
 		0359F8EA2BD3DA61005BFDA8 /* EventDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8522BD3DA5F005BFDA8 /* EventDispatcher.swift */; };
@@ -486,7 +485,6 @@
 		0359F8482BD3DA5F005BFDA8 /* TSProgram.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSProgram.swift; sourceTree = "<group>"; };
 		0359F84A2BD3DA5F005BFDA8 /* TSWriter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSWriter.swift; sourceTree = "<group>"; };
 		0359F84C2BD3DA5F005BFDA8 /* NetStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetStream.swift; sourceTree = "<group>"; };
-		0359F84D2BD3DA5F005BFDA8 /* NetStreamDrawable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetStreamDrawable.swift; sourceTree = "<group>"; };
 		0359F84F2BD3DA5F005BFDA8 /* AMF0Serializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AMF0Serializer.swift; sourceTree = "<group>"; };
 		0359F8512BD3DA5F005BFDA8 /* AMFFoundation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AMFFoundation.swift; sourceTree = "<group>"; };
 		0359F8522BD3DA5F005BFDA8 /* EventDispatcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventDispatcher.swift; sourceTree = "<group>"; };
@@ -1163,7 +1161,6 @@
 			isa = PBXGroup;
 			children = (
 				0359F84C2BD3DA5F005BFDA8 /* NetStream.swift */,
-				0359F84D2BD3DA5F005BFDA8 /* NetStreamDrawable.swift */,
 			);
 			path = Net;
 			sourceTree = "<group>";
@@ -2324,7 +2321,6 @@
 				0379BBAD2AAD964000B718B6 /* AboutSettingsView.swift in Sources */,
 				03F5A8DF2AD5DACB00F354D2 /* Srt.swift in Sources */,
 				036BE2CF2ABD4CA60048F9C5 /* KickPusher.swift in Sources */,
-				0359F8E62BD3DA61005BFDA8 /* NetStreamDrawable.swift in Sources */,
 				03EF34B42B1AFBB600A19221 /* AfreecaTvChat.swift in Sources */,
 				0359F8B62BD3DA61005BFDA8 /* AVCaptureDevice.Format+Extension.swift in Sources */,
 				03BC11602AE4BD9200C38FC4 /* Ffz.swift in Sources */,

@@ -40,7 +40,7 @@ class IOMixer {
     private(set) var isRunning: Atomic<Bool> = .init(false)
     private var isEncoding = false
 
-    weak var drawable: (any NetStreamDrawable)? {
+    weak var drawable: PreviewView? {
         get {
             video.drawable
         }

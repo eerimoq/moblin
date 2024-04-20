@@ -97,7 +97,7 @@ public final class IOVideoUnit: NSObject {
     private var output: AVCaptureVideoDataOutput?
     private var connection: AVCaptureConnection?
     private let context = CIContext()
-    weak var drawable: (any NetStreamDrawable)?
+    weak var drawable: PreviewView?
 
     var formatDescription: CMVideoFormatDescription? {
         didSet {

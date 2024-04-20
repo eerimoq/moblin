@@ -74,7 +74,7 @@ class PreviewView: UIView {
     }
 }
 
-extension PreviewView: NetStreamDrawable {
+extension PreviewView {
     func attachStream(_ stream: NetStream?) {
         guard let stream else {
             currentStream = nil
