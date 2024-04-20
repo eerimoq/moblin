@@ -133,37 +133,6 @@ public class RTMPSharedObject: EventDispatcher {
         ]))
     }
 
-    /// Connects to a remove shared object on a server.
-    public func connect(_ rtmpConnection: RTMPConnection) {
-        if self.rtmpConnection != nil {
-            close()
-        }
-        self.rtmpConnection = rtmpConnection
-        rtmpConnection.addEventListener(.rtmpStatus, selector: #selector(rtmpStatusHandler), observer: self)
-        if rtmpConnection.connected {
-            timestamp = rtmpConnection.socket.timestamp
-            rtmpConnection.socket.doOutput(chunk: createChunk([RTMPSharedObjectEvent(type: .use)]))
-        }
-    }
-
-    /// Purges all of the data.
-    public func clear() {
-        data.removeAll(keepingCapacity: false)
-        rtmpConnection?.socket.doOutput(chunk: createChunk([RTMPSharedObjectEvent(type: .clear)]))
-    }
-
-    /// Closes the connection a server.
-    public func close() {
-        data.removeAll(keepingCapacity: false)
-        rtmpConnection?.removeEventListener(
-            .rtmpStatus,
-            selector: #selector(rtmpStatusHandler),
-            observer: self
-        )
-        rtmpConnection?.socket.doOutput(chunk: createChunk([RTMPSharedObjectEvent(type: .release)]))
-        rtmpConnection = nil
-    }
-
     final func on(message: RTMPSharedObjectMessage) {
         currentVersion = message.currentVersion
         var changeList: [[String: Any?]] = []

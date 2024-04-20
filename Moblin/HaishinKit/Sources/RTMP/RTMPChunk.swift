@@ -1,6 +1,6 @@
 import Foundation
 
-public enum RTMPChunkType: UInt8 {
+enum RTMPChunkType: UInt8 {
     case zero = 0
     case one = 1
     case two = 2
@@ -34,7 +34,7 @@ public enum RTMPChunkType: UInt8 {
     }
 }
 
-public final class RTMPChunk {
+final class RTMPChunk {
     enum StreamID: UInt16 {
         case control = 0x02
         case command = 0x03
@@ -184,7 +184,7 @@ public final class RTMPChunk {
     private(set) var fragmented = false
     private var _data = Data()
 
-    public init(type: RTMPChunkType, streamId: UInt16, message: RTMPMessage) {
+    init(type: RTMPChunkType, streamId: UInt16, message: RTMPMessage) {
         self.type = type
         self.streamId = streamId
         self.message = message
@@ -254,7 +254,7 @@ public final class RTMPChunk {
         return headerSize + message.length
     }
 
-    public func split(_ size: Int) -> [Data] {
+    func split(_ size: Int) -> [Data] {
         let data: Data = self.data
         message?.length = data.count
         guard let message: RTMPMessage = message, size < message.payload.count else {

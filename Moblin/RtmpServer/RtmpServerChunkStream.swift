@@ -360,9 +360,8 @@ class RtmpServerChunkStream: VideoCodecDelegate {
                     return
                 }
                 audioDecoder = AVAudioConverter(from: audioFormat, to: pcmAudioFormat)
-                guard let audioDecoder else {
+                if audioDecoder == nil {
                     logger.info("rtmp-server: client: Failed to create audio decdoer")
-                    return
                 }
             } else {
                 logger.info("rtmp-server: client: Failed to create audio format")

@@ -1,6 +1,6 @@
 import AVFoundation
 
-public enum RTMPMessageType: UInt8 {
+enum RTMPMessageType: UInt8 {
     case chunkSize = 0x01
     case abort = 0x02
     case ack = 0x03
@@ -10,10 +10,8 @@ public enum RTMPMessageType: UInt8 {
     case audio = 0x08
     case video = 0x09
     case amf3Data = 0x0F
-    case amf3Shared = 0x10
     case amf3Command = 0x11
     case amf0Data = 0x12
-    case amf0Shared = 0x13
     case amf0Command = 0x14
     case aggregate = 0x16
 
@@ -37,14 +35,10 @@ public enum RTMPMessageType: UInt8 {
             return RTMPVideoMessage()
         case .amf3Data:
             return RTMPDataMessage(objectEncoding: .amf3)
-        case .amf3Shared:
-            return RTMPSharedObjectMessage(objectEncoding: .amf3)
         case .amf3Command:
             return RTMPCommandMessage(objectEncoding: .amf3)
         case .amf0Data:
             return RTMPDataMessage(objectEncoding: .amf0)
-        case .amf0Shared:
-            return RTMPSharedObjectMessage(objectEncoding: .amf0)
         case .amf0Command:
             return RTMPCommandMessage(objectEncoding: .amf0)
         case .aggregate:
@@ -53,7 +47,7 @@ public enum RTMPMessageType: UInt8 {
     }
 }
 
-public class RTMPMessage {
+class RTMPMessage {
     let type: RTMPMessageType
     var length: Int = 0
     var streamId: UInt32 = 0
@@ -70,7 +64,7 @@ public class RTMPMessage {
 /**
  5.4.1. Set Chunk Size (1)
  */
-public final class RTMPSetChunkSizeMessage: RTMPMessage {
+final class RTMPSetChunkSizeMessage: RTMPMessage {
     var size: UInt32 = 0
 
     override var payload: Data {
@@ -90,11 +84,11 @@ public final class RTMPSetChunkSizeMessage: RTMPMessage {
         }
     }
 
-    public init() {
+    init() {
         super.init(type: .chunkSize)
     }
 
-    public init(_ size: UInt32) {
+    init(_ size: UInt32) {
         super.init(type: .chunkSize)
         self.size = size
     }
@@ -176,14 +170,14 @@ final class RTMPAcknowledgementMessage: RTMPMessage {
 /**
  5.4.4. Window Acknowledgement Size (5)
  */
-public final class RTMPWindowAcknowledgementSizeMessage: RTMPMessage {
+final class RTMPWindowAcknowledgementSizeMessage: RTMPMessage {
     var size: UInt32 = 0
 
-    public init() {
+    init() {
         super.init(type: .windowAck)
     }
 
-    public init(_ size: UInt32) {
+    init(_ size: UInt32) {
         super.init(type: .windowAck)
         self.size = size
     }
@@ -214,8 +208,8 @@ public final class RTMPWindowAcknowledgementSizeMessage: RTMPMessage {
 /**
  5.4.5. Set Peer Bandwidth (6)
  */
-public final class RTMPSetPeerBandwidthMessage: RTMPMessage {
-    public enum Limit: UInt8 {
+final class RTMPSetPeerBandwidthMessage: RTMPMessage {
+    enum Limit: UInt8 {
         case hard = 0x00
         case soft = 0x01
         case dynamic = 0x02
@@ -225,11 +219,11 @@ public final class RTMPSetPeerBandwidthMessage: RTMPMessage {
     var size: UInt32 = 0
     var limit: Limit = .hard
 
-    public init() {
+    init() {
         super.init(type: .bandwidth)
     }
 
-    public init(size: UInt32, limit: Limit) {
+    init(size: UInt32, limit: Limit) {
         super.init(type: .bandwidth)
         self.size = size
         self.limit = limit
@@ -264,8 +258,7 @@ public final class RTMPSetPeerBandwidthMessage: RTMPMessage {
 /**
  7.1.1. Command Message (20, 17)
  */
-public final class RTMPCommandMessage: RTMPMessage {
-    let objectEncoding: RTMPObjectEncoding
+final class RTMPCommandMessage: RTMPMessage {
     var commandName: String = ""
     var transactionId: Int = 0
     var commandObject: ASObject?
@@ -316,12 +309,11 @@ public final class RTMPCommandMessage: RTMPMessage {
 
     private var serializer: any AMFSerializer = AMF0Serializer()
 
-    public init(objectEncoding: RTMPObjectEncoding) {
-        self.objectEncoding = objectEncoding
+    init(objectEncoding: RTMPObjectEncoding) {
         super.init(type: objectEncoding.commandType)
     }
 
-    public init(
+    init(
         streamId: UInt32,
         transactionId: Int,
         objectEncoding: RTMPObjectEncoding,
@@ -330,7 +322,6 @@ public final class RTMPCommandMessage: RTMPMessage {
         arguments: [Any?]
     ) {
         self.transactionId = transactionId
-        self.objectEncoding = objectEncoding
         self.commandName = commandName
         self.commandObject = commandObject
         self.arguments = arguments
@@ -364,7 +355,6 @@ public final class RTMPCommandMessage: RTMPMessage {
  7.1.2. Data Message (18, 15)
  */
 final class RTMPDataMessage: RTMPMessage {
-    let objectEncoding: RTMPObjectEncoding
     var handlerName: String = ""
     var arguments: [Any?] = []
 
@@ -415,7 +405,6 @@ final class RTMPDataMessage: RTMPMessage {
     }
 
     init(objectEncoding: RTMPObjectEncoding) {
-        self.objectEncoding = objectEncoding
         super.init(type: objectEncoding.dataType)
     }
 
@@ -426,7 +415,6 @@ final class RTMPDataMessage: RTMPMessage {
         handlerName: String,
         arguments: [Any?] = []
     ) {
-        self.objectEncoding = objectEncoding
         self.handlerName = handlerName
         self.arguments = arguments
         super.init(type: objectEncoding.dataType)
@@ -439,105 +427,6 @@ final class RTMPDataMessage: RTMPMessage {
             return
         }
         stream.info.byteCount.mutate { $0 += Int64(payload.count) }
-    }
-}
-
-/**
- 7.1.3. Shared Object Message (19, 16)
- */
-final class RTMPSharedObjectMessage: RTMPMessage {
-    let objectEncoding: RTMPObjectEncoding
-    var sharedObjectName: String = ""
-    var currentVersion: UInt32 = 0
-    var flags = Data(count: 8)
-    var events: [RTMPSharedObjectEvent] = []
-
-    override var payload: Data {
-        get {
-            guard super.payload.isEmpty else {
-                return super.payload
-            }
-
-            if type == .amf3Shared {
-                serializer.writeUInt8(0)
-            }
-
-            serializer
-                .writeUInt16(UInt16(sharedObjectName.utf8.count))
-                .writeUTF8Bytes(sharedObjectName)
-                .writeUInt32(currentVersion)
-                .writeBytes(flags)
-            for event in events {
-                event.serialize(&serializer)
-            }
-            super.payload = serializer.data
-            serializer.clear()
-
-            return super.payload
-        }
-        set {
-            if super.payload == newValue {
-                return
-            }
-
-            if length == newValue.count {
-                serializer.writeBytes(newValue)
-                serializer.position = 0
-                if type == .amf3Shared {
-                    serializer.position = 1
-                }
-                do {
-                    sharedObjectName = try serializer.readUTF8()
-                    currentVersion = try serializer.readUInt32()
-                    flags = try serializer.readBytes(8)
-                    while serializer.bytesAvailable > 0 {
-                        if let event: RTMPSharedObjectEvent =
-                            try RTMPSharedObjectEvent(serializer: &serializer)
-                        {
-                            events.append(event)
-                        }
-                    }
-                } catch {
-                    logger.error("\(serializer)")
-                }
-                serializer.clear()
-            }
-
-            super.payload = newValue
-        }
-    }
-
-    private var serializer: any AMFSerializer = AMF0Serializer()
-
-    init(objectEncoding: RTMPObjectEncoding) {
-        self.objectEncoding = objectEncoding
-        super.init(type: objectEncoding.sharedObjectType)
-    }
-
-    init(
-        timestamp: UInt32,
-        objectEncoding: RTMPObjectEncoding,
-        sharedObjectName: String,
-        currentVersion: UInt32,
-        flags: Data,
-        events: [RTMPSharedObjectEvent]
-    ) {
-        self.objectEncoding = objectEncoding
-        self.sharedObjectName = sharedObjectName
-        self.currentVersion = currentVersion
-        self.flags = flags
-        self.events = events
-        super.init(type: objectEncoding.sharedObjectType)
-        self.timestamp = timestamp
-    }
-
-    override func execute(_ connection: RTMPConnection, type _: RTMPChunkType) {
-        let persistence: Bool = (flags[3] & 2) != 0
-        RTMPSharedObject.getRemote(
-            withName: sharedObjectName,
-            remotePath: connection.uri!.absoluteWithoutQueryString,
-            persistence: persistence
-        ).on(message: self)
     }
 }
 

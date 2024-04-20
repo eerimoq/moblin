@@ -2,30 +2,12 @@ import Foundation
 
 protocol ByteArrayConvertible {
     var data: Data { get }
-    var length: Int { get set }
     var position: Int { get set }
     var bytesAvailable: Int { get }
-
     @discardableResult
     func writeUInt8(_ value: UInt8) -> Self
-    func readUInt8() throws -> UInt8
-
-    @discardableResult
-    func writeUInt16(_ value: UInt16) -> Self
-
-    @discardableResult
-    func writeUInt32(_ value: UInt32) -> Self
-    func readUInt32() throws -> UInt32
-
-    func readUTF8() throws -> String
-
-    @discardableResult
-    func writeUTF8Bytes(_ value: String) -> Self
-
     @discardableResult
     func writeBytes(_ value: Data) -> Self
-    func readBytes(_ length: Int) throws -> Data
-
     @discardableResult
     func clear() -> Self
 }
@@ -170,10 +152,6 @@ open class ByteArray: ByteArrayConvertible {
     @discardableResult
     public func writeDouble(_ value: Double) -> Self {
         writeBytes(Data(value.data.reversed()))
-    }
-
-    public func readUTF8() throws -> String {
-        try readUTF8Bytes(Int(readUInt16()))
     }
 
     @discardableResult

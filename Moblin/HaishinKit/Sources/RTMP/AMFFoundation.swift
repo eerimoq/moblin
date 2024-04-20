@@ -1,64 +1,38 @@
 import Foundation
 
-/// The singleton ASUndefined object.
 public let kASUndefined = ASUndefined()
 
-/// The ASObject class represents an object for AcrionScript.
 public typealias ASObject = [String: Any?]
 
-/// The ASUndefined class represents an undefined for ActionScript.
 public struct ASUndefined: CustomStringConvertible {
     public var description: String {
         "undefined"
     }
 }
 
-/// The ASTypedObject class represents a typed object for ActionScript.
 public struct ASTypedObject {
-    public typealias TypedObjectDecoder = (_ type: String, _ data: ASObject) throws -> Any
+    public typealias TypedObjectDecoder = () throws -> Any
 
     static var decoders: [String: TypedObjectDecoder] = [:]
 
-    static func decode(typeName: String, data: ASObject) throws -> Any {
-        let decoder = decoders[typeName] ?? { ASTypedObject(typeName: $0, data: $1) }
-        return try decoder(typeName, data)
-    }
-
-    var typeName: String
-    var data: ASObject
-
-    public static func register(typeNamed name: String, decoder: @escaping TypedObjectDecoder) {
-        decoders[name] = decoder
-    }
-
-    public static func register<T: Decodable>(type: T.Type, named name: String) {
-        decoders[name] = {
-            let jsonData = try JSONSerialization.data(withJSONObject: $1, options: [])
-            return try JSONDecoder().decode(type, from: jsonData)
-        }
-    }
-
-    public static func unregister(typeNamed name: String) {
-        decoders.removeValue(forKey: name)
+    static func decode(typeName: String, data _: ASObject) throws -> Any {
+        let decoder = decoders[typeName] ?? { ASTypedObject() }
+        return try decoder()
     }
 }
 
-/// The ASArray class represents an array value for ActionScript.
 public struct ASArray {
     private(set) var data: [Any?]
     private(set) var dict: [String: Any?] = [:]
 
-    /// The length of an array.
     public var length: Int {
         data.count
     }
 
-    /// Creates a new instance containing the specified number of a single.
     public init(count: Int) {
         data = [Any?](repeating: kASUndefined, count: count)
     }
 
-    /// Creates a new instance of data.
     public init(data: [Any?]) {
         self.data = data
     }

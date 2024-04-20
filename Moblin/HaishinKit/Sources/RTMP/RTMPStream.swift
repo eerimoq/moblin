@@ -137,18 +137,6 @@ open class RTMPStream: NetStream {
         }
     }
 
-    /// The type of publish options.
-    public enum HowToPublish: String {
-        /// Publish with server-side recording.
-        case record
-        /// Publish with server-side recording which is to append file if exists.
-        case append
-        /// Publish with server-side recording which is to append and ajust time file if exists.
-        case appendWithGap
-        /// Publish.
-        case live
-    }
-
     enum ReadyState: UInt8 {
         case initialized
         case open
@@ -158,18 +146,10 @@ open class RTMPStream: NetStream {
         case publishing
     }
 
-    private struct PausedStatus {
-        let hasAudio: Bool
-        let hasVideo: Bool
-    }
-
     static let defaultID: UInt32 = 0
-    /// The NetStreamInfo object whose properties contain data.
     public internal(set) var info = RTMPStreamInfo()
-    /// The object encoding (AMF). Framework supports AMF0 only.
-    public private(set) var objectEncoding: RTMPObjectEncoding = RTMPConnection.defaultObjectEncoding
+    public private(set) var objectEncoding = RTMPConnection.defaultObjectEncoding
 
-    /// Incoming audio plays on the stream or not.
     open var receiveAudio = true {
         didSet {
             lockQueue.async {
@@ -188,7 +168,6 @@ open class RTMPStream: NetStream {
         }
     }
 
-    /// Incoming video plays on the stream or not.
     open var receiveVideo = true {
         didSet {
             lockQueue.async {
@@ -227,7 +206,6 @@ open class RTMPStream: NetStream {
     private var dispatcher: (any EventDispatcherConvertible)!
     private var audioWasSent = false
     private var videoWasSent = false
-    private var pausedStatus = PausedStatus(hasAudio: false, hasVideo: false)
     private var dataTimeStamps: [String: Date] = .init()
     private weak var rtmpConnection: RTMPConnection?
 
@@ -250,60 +228,8 @@ open class RTMPStream: NetStream {
         rtmpConnection?.removeEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
     }
 
-    /// Plays a live stream from RTMPServer.
-    open func play(_ arguments: Any?...) {
-        // swiftlint:disable:next closure_body_length
-        lockQueue.async {
-            guard let name: String = arguments.first as? String else {
-                switch self.readyState {
-                case .play, .playing:
-                    self.info.resourceName = nil
-                    self.close(withLockQueue: false)
-                default:
-                    break
-                }
-                return
-            }
-
-            self.info.resourceName = name
-            let message = RTMPCommandMessage(
-                streamId: self.id,
-                transactionId: 0,
-                objectEncoding: self.objectEncoding,
-                commandName: "play",
-                commandObject: nil,
-                arguments: arguments
-            )
-
-            switch self.readyState {
-            case .initialized:
-                self.messages.append(message)
-            default:
-                self.readyState = .play
-                self.rtmpConnection?.socket.doOutput(chunk: RTMPChunk(message: message))
-            }
-        }
-    }
-
-    /// Seeks the keyframe.
-    open func seek(_ offset: Double) {
-        lockQueue.async {
-            guard self.readyState == .playing else {
-                return
-            }
-            self.rtmpConnection?.socket.doOutput(chunk: RTMPChunk(message: RTMPCommandMessage(
-                streamId: self.id,
-                transactionId: 0,
-                objectEncoding: self.objectEncoding,
-                commandName: "seek",
-                commandObject: nil,
-                arguments: [offset]
-            )))
-        }
-    }
-
     /// Sends streaming audio, vidoe and data message from client.
-    open func publish(_ name: String?, type: RTMPStream.HowToPublish = .live) {
+    open func publish(_ name: String?) {
         // swiftlint:disable:next closure_body_length
         lockQueue.async {
             guard let name else {
@@ -325,7 +251,7 @@ open class RTMPStream: NetStream {
                 objectEncoding: self.objectEncoding,
                 commandName: "publish",
                 commandObject: nil,
-                arguments: [name, type.rawValue]
+                arguments: [name, "live"]
             )
             switch self.readyState {
             case .initialized:

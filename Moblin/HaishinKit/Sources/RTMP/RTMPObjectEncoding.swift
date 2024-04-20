@@ -14,15 +14,6 @@ public enum RTMPObjectEncoding: UInt8 {
         }
     }
 
-    var sharedObjectType: RTMPMessageType {
-        switch self {
-        case .amf0:
-            return .amf0Shared
-        case .amf3:
-            return .amf3Shared
-        }
-    }
-
     var commandType: RTMPMessageType {
         switch self {
         case .amf0:

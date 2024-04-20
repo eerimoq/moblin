@@ -178,19 +178,12 @@ open class RTMPConnection: EventDispatcher {
         }
     }
 
-    /// Specifies the name of application.
     public var flashVer: String = RTMPConnection.defaultFlashVer
-    /// Specifies theoutgoing RTMPChunkSize.
     public var chunkSize: Int = RTMPConnection.defaultChunkSizeS
-    /// Specifies the URI passed to the Self.connect() method.
     public private(set) var uri: URL?
-    /// Specifies the instance connected to server(true) or not(false).
     public private(set) var connected = false
-    /// Specifies the socket optional parameters.
     public var parameters: Any?
-    /// Specifies the object encoding for this RTMPConnection instance.
     public var objectEncoding: RTMPObjectEncoding = RTMPConnection.defaultObjectEncoding
-    /// The statistics of total incoming bytes.
     public var totalBytesIn: Int64 {
         socket.totalBytesIn.value
     }
