@@ -90,8 +90,6 @@ class TSProgram {
 }
 
 final class TSProgramAssociation: TSProgram {
-    static let tableID: UInt8 = 0
-
     var programs: [UInt16: UInt16] = [:]
 
     override var tableData: Data {
@@ -117,7 +115,6 @@ final class TSProgramAssociation: TSProgram {
 
 final class TSProgramMap: TSProgram {
     static let tableID: UInt8 = 2
-    static let unusedPCRID: UInt16 = 0x1FFF
 
     var PCRPID: UInt16 = 0
     var programInfoLength: UInt16 = 0
