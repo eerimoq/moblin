@@ -105,8 +105,7 @@ public class VideoCodec {
                 unowned self
             ] status, _, imageBuffer, presentationTimeStamp, duration in
                 guard let imageBuffer, status == noErr else {
-                    logger
-                        .info("Failed to decode frame status \(status) an got buffer \(sampleBuffer != nil)")
+                    logger.info("Failed to decode frame status \(status)")
                     return
                 }
                 var timingInfo = CMSampleTimingInfo(

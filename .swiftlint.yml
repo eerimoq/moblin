@@ -10,3 +10,4 @@ disabled_rules:
   - cyclomatic_complexity
   - function_body_length
   - force_cast
+  - closure_parameter_position
