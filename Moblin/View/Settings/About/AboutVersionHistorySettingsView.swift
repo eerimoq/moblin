@@ -13,7 +13,7 @@ private let versions = [
         "  • Affects how image formats are selected for all cameras, so might affect their image as well.",
         "  • OA4 only tested with 1080p30.",
         "• Lots of audio refactoring and cleanup, which hopefully does not break anything.",
-        "• \"Camera perview\" quick button. The Camera preview image is without widgets, LUTs and other image effects, but instead very responsive.",
+        "• \"Camera preview\" quick button. The Camera preview image is without widgets, LUTs and other image effects, but instead very responsive.",
         "  • Mainly for Cinematic stabilization (as it is super laggy normally).",
         "• Remove battery level and clock from iPad UI (as iPadOS shows them).",
     ]),
