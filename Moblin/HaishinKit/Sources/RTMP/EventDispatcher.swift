@@ -43,8 +43,6 @@ open class Event {
 
     public fileprivate(set) var data: Any?
 
-    public fileprivate(set) var target: AnyObject?
-
     public init(type: Name, data: Any? = nil) {
         self.type = type
         self.data = data
@@ -89,12 +87,10 @@ open class EventDispatcher: EventDispatcherConvertible {
     }
 
     open func dispatch(event: Event) {
-        event.target = target ?? self
         NotificationCenter.default.post(
             name: Notification.Name(rawValue: "\(event.type.rawValue)/false"), object: target ?? self,
             userInfo: ["event": event]
         )
-        event.target = nil
     }
 
     public func dispatch(_ type: Event.Name, data: Any?) {

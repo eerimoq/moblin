@@ -245,7 +245,7 @@ final class RTMPSetPeerBandwidthMessage: RTMPMessage {
         }
     }
 
-    override func execute(_ connection: RTMPConnection, type _: RTMPChunkType) {
+    override func execute(_: RTMPConnection, type _: RTMPChunkType) {
         // connection.bandWidth = size
     }
 }

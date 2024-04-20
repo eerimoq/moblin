@@ -1,9 +1,7 @@
 import AVFoundation
 import VideoToolbox
 
-protocol DecoderConfigurationRecord {
-    func makeFormatDescription(_ formatDescriptionOut: UnsafeMutablePointer<CMFormatDescription?>) -> OSStatus
-}
+protocol DecoderConfigurationRecord {}
 
 /*
  - seealso: ISO/IEC 14496-15 2010
