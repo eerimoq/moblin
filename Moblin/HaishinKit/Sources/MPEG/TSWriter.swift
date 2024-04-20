@@ -2,7 +2,7 @@ import AVFoundation
 import CoreMedia
 import Foundation
 
-public var payloadSize: Int = 1316
+var payloadSize: Int = 1316
 
 /// The interface an MPEG-2 TS (Transport Stream) writer uses to inform its delegates.
 public protocol TSWriterDelegate: AnyObject {

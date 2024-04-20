@@ -1,11 +1,11 @@
 import AVFoundation
 
-public protocol AudioCodecDelegate: AnyObject {
+protocol AudioCodecDelegate: AnyObject {
     func audioCodec(didOutput audioFormat: AVAudioFormat)
     func audioCodec(didOutput audioBuffer: AVAudioBuffer, presentationTimeStamp: CMTime)
 }
 
-public class AudioCodec {
+class AudioCodec {
     init(lockQueue: DispatchQueue) {
         self.lockQueue = lockQueue
     }
@@ -49,7 +49,7 @@ public class AudioCodec {
 
     weak var delegate: (any AudioCodecDelegate)?
     private var isRunning: Atomic<Bool> = .init(false)
-    public var outputSettings: AudioCodecOutputSettings = .default {
+    var outputSettings: AudioCodecOutputSettings = .default {
         didSet {
             guard let audioConverter else {
                 return
@@ -72,7 +72,7 @@ public class AudioCodec {
     private var ringBuffer: AudioCodecRingBuffer?
     private var audioConverter: AVAudioConverter?
 
-    public func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
+    func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
         guard isRunning.value else {
             return
         }
@@ -214,7 +214,7 @@ public class AudioCodec {
         return converter
     }
 
-    public func startRunning() {
+    func startRunning() {
         lockQueue.async {
             guard !self.isRunning.value else {
                 return
@@ -226,7 +226,7 @@ public class AudioCodec {
         }
     }
 
-    public func stopRunning() {
+    func stopRunning() {
         lockQueue.async {
             self.inSourceFormat = nil
             self.audioConverter = nil

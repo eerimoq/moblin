@@ -3,12 +3,9 @@ import Foundation
 
 struct ADTSHeader: Equatable {
     static let size: Int = 7
-    static let sizeWithCrc = 9
     static let sync: UInt8 = 0xFF
 
     var sync = Self.sync
-    var id: UInt8 = 0
-    var layer: UInt8 = 0
     var protectionAbsent = false
     var profile: UInt8 = 0
     var sampleFrequencyIndex: UInt8 = 0
@@ -18,8 +15,6 @@ struct ADTSHeader: Equatable {
     var copyrightIdBit = false
     var copyrightIdStart = false
     var aacFrameLength: UInt16 = 0
-    var bufferFullness: UInt16 = 0
-    var aacFrames: UInt8 = 0
 
     init() {}
 
@@ -71,8 +66,6 @@ struct ADTSHeader: Equatable {
                 return
             }
             sync = newValue[0]
-            id = (newValue[1] & 0b0000_1111) >> 3
-            layer = (newValue[1] >> 2) & 0b0000_0011
             protectionAbsent = (newValue[1] & 0b0000_0001) == 1
             profile = newValue[2] >> 6 & 0b11
             sampleFrequencyIndex = (newValue[2] >> 2) & 0b0000_1111
@@ -83,8 +76,6 @@ struct ADTSHeader: Equatable {
             copyrightIdStart = (newValue[3] & 0b0000_0100) == 0b0000_0100
             aacFrameLength = UInt16(newValue[3] & 0b0000_0011) << 11 | UInt16(newValue[4]) << 3 |
                 UInt16(newValue[5] >> 5)
-            bufferFullness = UInt16(newValue[5]) >> 2 | UInt16(newValue[6] >> 2)
-            aacFrames = newValue[6] & 0b0000_0011
         }
     }
 }

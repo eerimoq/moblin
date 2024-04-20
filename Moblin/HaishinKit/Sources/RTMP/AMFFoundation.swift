@@ -1,17 +1,17 @@
 import Foundation
 
-public let kASUndefined = ASUndefined()
+let kASUndefined = ASUndefined()
 
 public typealias ASObject = [String: Any?]
 
-public struct ASUndefined: CustomStringConvertible {
+struct ASUndefined: CustomStringConvertible {
     public var description: String {
         "undefined"
     }
 }
 
-public struct ASTypedObject {
-    public typealias TypedObjectDecoder = () throws -> Any
+struct ASTypedObject {
+    typealias TypedObjectDecoder = () throws -> Any
 
     static var decoders: [String: TypedObjectDecoder] = [:]
 
@@ -21,30 +21,29 @@ public struct ASTypedObject {
     }
 }
 
-public struct ASArray {
+struct ASArray {
     private(set) var data: [Any?]
     private(set) var dict: [String: Any?] = [:]
 
-    public var length: Int {
+    var length: Int {
         data.count
     }
 
-    public init(count: Int) {
+    init(count: Int) {
         data = [Any?](repeating: kASUndefined, count: count)
     }
 
-    public init(data: [Any?]) {
+    init(data: [Any?]) {
         self.data = data
     }
 }
 
 extension ASArray: ExpressibleByArrayLiteral {
-    public init(arrayLiteral elements: Any?...) {
+    init(arrayLiteral elements: Any?...) {
         self = ASArray(data: elements)
     }
 
-    /// Accesses the element at the specified position.
-    public subscript(i: Any) -> Any? {
+    subscript(i: Any) -> Any? {
         get {
             if let i: Int = i as? Int {
                 return i < data.count ? data[i] : kASUndefined

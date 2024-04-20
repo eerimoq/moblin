@@ -168,6 +168,7 @@ open class RTMPStream: NetStream {
         }
     }
 
+    /// Incoming video plays on the stream or not.
     open var receiveVideo = true {
         didSet {
             lockQueue.async {

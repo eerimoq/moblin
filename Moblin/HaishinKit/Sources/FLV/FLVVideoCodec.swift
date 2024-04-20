@@ -1,7 +1,7 @@
 import Foundation
 
 /// The type of flv supports video codecs.
-public enum FLVVideoCodec: UInt8 {
+enum FLVVideoCodec: UInt8 {
     /// The JPEG codec.
     case jpeg = 1
     /// The Sorenson H263 codec.
@@ -18,25 +18,4 @@ public enum FLVVideoCodec: UInt8 {
     case avc = 7
     /// The unknown codec.
     case unknown = 0xFF
-
-    var isSupported: Bool {
-        switch self {
-        case .jpeg:
-            return false
-        case .sorensonH263:
-            return false
-        case .screen1:
-            return false
-        case .on2VP6:
-            return false
-        case .on2VP6Alpha:
-            return false
-        case .screen2:
-            return false
-        case .avc:
-            return true
-        case .unknown:
-            return false
-        }
-    }
 }

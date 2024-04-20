@@ -26,8 +26,8 @@ public protocol NetStreamDelegate: AnyObject {
 
 open class NetStream: NSObject {
     let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.NetStream.lock")
-    public let mixer = IOMixer()
-    public weak var delegate: (any NetStreamDelegate)?
+    let mixer = IOMixer()
+    weak var delegate: (any NetStreamDelegate)?
 
     override init() {
         super.init()

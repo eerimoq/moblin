@@ -104,8 +104,6 @@ struct TSPacket {
 enum TSTimestamp {
     static let resolution: Double = 90 * 1000 // 90kHz
     static let dataSize: Int = 5
-    static let ptsMask: UInt8 = 0x10
-    static let ptsDtsMask: UInt8 = 0x30
 
     static func decode(_ data: Data, offset: Int = 0) -> Int64 {
         var result: Int64 = 0
@@ -127,22 +125,6 @@ enum TSTimestamp {
 }
 
 enum TSProgramClockReference {
-    static let resolutionForBase: Int32 = 90 * 1000 // 90kHz
-    static let resolutionForExtension: Int32 = 27 * 1000 * 1000 // 27MHz
-
-    static func decode(_ data: Data) -> (UInt64, UInt16) {
-        var b: UInt64 = 0
-        var e: UInt16 = 0
-        b |= UInt64(data[0]) << 25
-        b |= UInt64(data[1]) << 17
-        b |= UInt64(data[2]) << 9
-        b |= UInt64(data[3]) << 1
-        b |= ((data[4] & 0x80) == 0x80) ? 1 : 0
-        e |= UInt16(data[4] & 0x01) << 8
-        e |= UInt16(data[5])
-        return (b, e)
-    }
-
     static func encode(_ b: UInt64, _ e: UInt16) -> Data {
         var data = Data(count: 6)
         data[0] = UInt8(truncatingIfNeeded: b >> 25)

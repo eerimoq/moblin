@@ -41,7 +41,6 @@ struct AVCNALUnit: Equatable {
 }
 
 class AVCNALUnitReader {
-    static let defaultStartCodeLength: Int = 4
     static let defaultNALUnitHeaderLength: Int32 = 4
 
     var nalUnitHeaderLength: Int32 = AVCNALUnitReader.defaultNALUnitHeaderLength

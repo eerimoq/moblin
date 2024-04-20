@@ -26,7 +26,7 @@ protocol IOMixerDelegate: AnyObject {
 }
 
 /// An object that mixies audio and video for streaming.
-public class IOMixer {
+class IOMixer {
     public static let defaultFrameRate: Float64 = 30
 
     enum MediaSync {
@@ -40,7 +40,7 @@ public class IOMixer {
     public private(set) var isRunning: Atomic<Bool> = .init(false)
     private var isEncoding = false
 
-    public weak var drawable: (any NetStreamDrawable)? {
+    weak var drawable: (any NetStreamDrawable)? {
         get {
             video.drawable
         }
@@ -104,7 +104,7 @@ public class IOMixer {
         }
     }
 
-    public func startEncoding(_ delegate: any AudioCodecDelegate & VideoCodecDelegate) {
+    func startEncoding(_ delegate: any AudioCodecDelegate & VideoCodecDelegate) {
         guard !isEncoding else {
             return
         }
@@ -113,7 +113,7 @@ public class IOMixer {
         audio.startEncoding(delegate)
     }
 
-    public func stopEncoding() {
+    func stopEncoding() {
         guard isEncoding else {
             return
         }
@@ -123,7 +123,7 @@ public class IOMixer {
         isEncoding = false
     }
 
-    public func startRunning() {
+    func startRunning() {
         guard !isRunning.value else {
             return
         }
@@ -134,7 +134,7 @@ public class IOMixer {
         isRunning.mutate { $0 = audioSession.isRunning }
     }
 
-    public func stopRunning() {
+    func stopRunning() {
         guard isRunning.value else {
             return
         }
