@@ -25,10 +25,6 @@ class PreviewView: UIView {
         }
     }
 
-    var videoFormatDescription: CMVideoFormatDescription? {
-        return currentStream?.mixer.video.formatDescription
-    }
-
     var videoOrientation: AVCaptureVideoOrientation = .portrait {
         didSet {
             currentStream?.mixer.video.videoOrientation = videoOrientation
