@@ -1,5 +1,5 @@
 import Foundation
 
-struct ADTSHeader {
+enum ADTSHeader {
     static let size: Int = 7
 }
