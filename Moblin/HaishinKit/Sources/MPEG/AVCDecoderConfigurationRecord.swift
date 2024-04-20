@@ -33,7 +33,7 @@ struct AVCDecoderConfigurationRecord: DecoderConfigurationRecord {
     var sequenceParameterSets: [[UInt8]] = []
     var pictureParameterSets: [[UInt8]] = []
 
-    public init() {}
+    init() {}
 
     init(data: Data) {
         self.data = data

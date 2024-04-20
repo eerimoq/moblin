@@ -142,7 +142,7 @@ struct AudioSpecificConfig: Equatable {
         return bytes
     }
 
-    public init?(bytes: [UInt8]) {
+    init?(bytes: [UInt8]) {
         guard
             let type = AudioObjectType(rawValue: bytes[0] >> 3),
             let frequency = SamplingFrequency(rawValue: (bytes[0] & 0b0000_0111) << 1 | (bytes[1] >> 7)),

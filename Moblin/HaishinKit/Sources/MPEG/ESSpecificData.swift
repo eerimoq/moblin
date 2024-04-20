@@ -15,15 +15,6 @@ enum ESStreamType: UInt8 {
 
     case h264 = 0x1B
     case h265 = 0x24
-
-    var headerSize: Int {
-        switch self {
-        case .adtsAac:
-            return 7
-        default:
-            return 0
-        }
-    }
 }
 
 struct ESSpecificData {
