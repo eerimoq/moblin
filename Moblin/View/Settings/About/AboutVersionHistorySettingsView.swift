@@ -15,6 +15,7 @@ private let versions = [
         "• Lots of audio refactoring and cleanup, which hopefully does not break anything.",
         "• \"Camera perview\" quick button. The Camera preview image is without widgets, LUTs and other image effects, but instead very responsive.",
         "  • Mainly for Cinematic stabilization (as it is super laggy normally).",
+        "• Remove battery level and clock from iPad UI (as iPadOS shows them).",
     ]),
     Version(version: "0.241.0", date: "2024-04-17", changes: [
         "• Stop recording when entering background, and automatically resume when entering foreground. 💡 Walk On Nick",
