@@ -193,7 +193,7 @@ open class RTMPConnection: EventDispatcher {
         streams.count
     }
 
-    var socket: (any RTMPSocketCompatible)!
+    var socket: RTMPSocket!
     var streams: [RTMPStream] = []
     var sequence: Int64 = 0
     var bandWidth: UInt32 = 0
@@ -270,12 +270,7 @@ open class RTMPConnection: EventDispatcher {
         }
         self.uri = uri
         self.arguments = arguments
-        switch scheme {
-        case "rtmpt", "rtmpts":
-            socket = socket is RTMPTSocket ? socket : RTMPTSocket()
-        default:
-            socket = socket is RTMPSocket ? socket : RTMPSocket()
-        }
+        socket = socket != nil ? socket : RTMPSocket()
         socket.delegate = self
         socket.setProperty(parameters, forKey: "parameters")
         let secure = uri.scheme == "rtmps" || uri.scheme == "rtmpts"
@@ -422,7 +417,7 @@ open class RTMPConnection: EventDispatcher {
 }
 
 extension RTMPConnection: RTMPSocketDelegate {
-    func socket(_ socket: any RTMPSocketCompatible, readyState: RTMPSocketReadyState) {
+    func socket(_ socket: RTMPSocket, readyState: RTMPSocketReadyState) {
         switch readyState {
         case .handshakeDone:
             guard let chunk = makeConnectionChunk() else {
@@ -450,7 +445,7 @@ extension RTMPConnection: RTMPSocketDelegate {
         }
     }
 
-    func socket(_ socket: any RTMPSocketCompatible, totalBytesIn: Int64) {
+    func socket(_ socket: RTMPSocket, totalBytesIn: Int64) {
         guard windowSizeS * (sequence + 1) <= totalBytesIn else {
             return
         }
@@ -462,14 +457,14 @@ extension RTMPConnection: RTMPSocketDelegate {
         sequence += 1
     }
 
-    func socket(_: any RTMPSocketCompatible, totalBytesOut: Int64) {
+    func socket(_: RTMPSocket, totalBytesOut: Int64) {
         guard let stream = streams.first else {
             return
         }
         stream.info.onWritten(sequence: totalBytesOut)
     }
 
-    func socket(_ socket: any RTMPSocketCompatible, data: Data) {
+    func socket(_ socket: RTMPSocket, data: Data) {
         guard let chunk = currentChunk ?? RTMPChunk(data, size: socket.chunkSizeC) else {
             socket.inputBuffer.append(data)
             return

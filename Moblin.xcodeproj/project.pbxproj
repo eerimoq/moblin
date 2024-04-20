@@ -152,10 +152,8 @@
 		0359F8EF2BD3DA61005BFDA8 /* RTMPMuxer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8572BD3DA5F005BFDA8 /* RTMPMuxer.swift */; };
 		0359F8F02BD3DA61005BFDA8 /* RTMPObjectEncoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8582BD3DA5F005BFDA8 /* RTMPObjectEncoding.swift */; };
 		0359F8F22BD3DA61005BFDA8 /* RTMPSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F85A2BD3DA5F005BFDA8 /* RTMPSocket.swift */; };
-		0359F8F32BD3DA61005BFDA8 /* RTMPSocketCompatible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F85B2BD3DA5F005BFDA8 /* RTMPSocketCompatible.swift */; };
 		0359F8F42BD3DA61005BFDA8 /* RTMPStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F85C2BD3DA5F005BFDA8 /* RTMPStream.swift */; };
 		0359F8F52BD3DA61005BFDA8 /* RTMPStreamInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F85D2BD3DA5F005BFDA8 /* RTMPStreamInfo.swift */; };
-		0359F8F62BD3DA61005BFDA8 /* RTMPTSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F85E2BD3DA5F005BFDA8 /* RTMPTSocket.swift */; };
 		0359F8F72BD3DA61005BFDA8 /* SRTConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8602BD3DA5F005BFDA8 /* SRTConnection.swift */; };
 		0359F8F82BD3DA61005BFDA8 /* SRTError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8612BD3DA5F005BFDA8 /* SRTError.swift */; };
 		0359F8FA2BD3DA61005BFDA8 /* SRTMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8632BD3DA5F005BFDA8 /* SRTMode.swift */; };
@@ -509,10 +507,8 @@
 		0359F8572BD3DA5F005BFDA8 /* RTMPMuxer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RTMPMuxer.swift; sourceTree = "<group>"; };
 		0359F8582BD3DA5F005BFDA8 /* RTMPObjectEncoding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RTMPObjectEncoding.swift; sourceTree = "<group>"; };
 		0359F85A2BD3DA5F005BFDA8 /* RTMPSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RTMPSocket.swift; sourceTree = "<group>"; };
-		0359F85B2BD3DA5F005BFDA8 /* RTMPSocketCompatible.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RTMPSocketCompatible.swift; sourceTree = "<group>"; };
 		0359F85C2BD3DA5F005BFDA8 /* RTMPStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RTMPStream.swift; sourceTree = "<group>"; };
 		0359F85D2BD3DA5F005BFDA8 /* RTMPStreamInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RTMPStreamInfo.swift; sourceTree = "<group>"; };
-		0359F85E2BD3DA5F005BFDA8 /* RTMPTSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RTMPTSocket.swift; sourceTree = "<group>"; };
 		0359F8602BD3DA5F005BFDA8 /* SRTConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SRTConnection.swift; sourceTree = "<group>"; };
 		0359F8612BD3DA5F005BFDA8 /* SRTError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SRTError.swift; sourceTree = "<group>"; };
 		0359F8632BD3DA5F005BFDA8 /* SRTMode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SRTMode.swift; sourceTree = "<group>"; };
@@ -1200,10 +1196,8 @@
 				0359F8572BD3DA5F005BFDA8 /* RTMPMuxer.swift */,
 				0359F8582BD3DA5F005BFDA8 /* RTMPObjectEncoding.swift */,
 				0359F85A2BD3DA5F005BFDA8 /* RTMPSocket.swift */,
-				0359F85B2BD3DA5F005BFDA8 /* RTMPSocketCompatible.swift */,
 				0359F85C2BD3DA5F005BFDA8 /* RTMPStream.swift */,
 				0359F85D2BD3DA5F005BFDA8 /* RTMPStreamInfo.swift */,
-				0359F85E2BD3DA5F005BFDA8 /* RTMPTSocket.swift */,
 			);
 			path = RTMP;
 			sourceTree = "<group>";
@@ -2295,7 +2289,6 @@
 				0318514D2B5392A1006A7943 /* StreamSrtConnectionPriorityView.swift in Sources */,
 				0359F8D02BD3DA61005BFDA8 /* IOAudioUnit.swift in Sources */,
 				03A3F4C72AF4C0AD00F465D1 /* AdaptiveBitrate.swift in Sources */,
-				0359F8F62BD3DA61005BFDA8 /* RTMPTSocket.swift in Sources */,
 				038DF9ED2B387AAF0027363A /* StreamWizardYouTubeSettingsView.swift in Sources */,
 				0359F8C02BD3DA61005BFDA8 /* Data+Extension.swift in Sources */,
 				03B373F62A9EF98E0028DDD5 /* ControlBarLandscapeView.swift in Sources */,
@@ -2352,7 +2345,6 @@
 				03F5A8DF2AD5DACB00F354D2 /* Srt.swift in Sources */,
 				036BE2CF2ABD4CA60048F9C5 /* KickPusher.swift in Sources */,
 				0359F8E62BD3DA61005BFDA8 /* NetStreamDrawable.swift in Sources */,
-				0359F8F32BD3DA61005BFDA8 /* RTMPSocketCompatible.swift in Sources */,
 				03EF34B42B1AFBB600A19221 /* AfreecaTvChat.swift in Sources */,
 				0359F8B62BD3DA61005BFDA8 /* AVCaptureDevice.Format+Extension.swift in Sources */,
 				03BC11602AE4BD9200C38FC4 /* Ffz.swift in Sources */,

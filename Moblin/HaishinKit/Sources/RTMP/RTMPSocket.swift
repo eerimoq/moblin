@@ -1,7 +1,24 @@
 import Foundation
 import Network
 
-final class RTMPSocket: RTMPSocketCompatible {
+enum RTMPSocketReadyState: UInt8 {
+    case uninitialized = 0
+    case versionSent = 1
+    case ackSent = 2
+    case handshakeDone = 3
+    case closing = 4
+    case closed = 5
+}
+
+// swiftlint:disable:next class_delegate_protocol
+protocol RTMPSocketDelegate: EventDispatcherConvertible {
+    func socket(_ socket: RTMPSocket, data: Data)
+    func socket(_ socket: RTMPSocket, readyState: RTMPSocketReadyState)
+    func socket(_ socket: RTMPSocket, totalBytesIn: Int64)
+    func socket(_ socket: RTMPSocket, totalBytesOut: Int64)
+}
+
+final class RTMPSocket {
     static let defaultWindowSizeC = Int(UInt8.max)
 
     var timestamp: TimeInterval = 0.0
@@ -112,7 +129,7 @@ final class RTMPSocket: RTMPSocketCompatible {
             events.append(Event(type: .rtmpStatus, bubbles: false, data: data))
         }
         readyState = .closing
-        if !isDisconnected && connection.state == .ready {
+        if !isDisconnected, connection.state == .ready {
             connection.send(
                 content: nil,
                 contentContext: .finalMessage,
@@ -235,5 +252,11 @@ final class RTMPSocket: RTMPSocketCompatible {
         default:
             break
         }
+    }
+
+    private func didTimeout() {
+        close(isDisconnected: false)
+        delegate?.dispatch(.ioError, bubbles: false, data: nil)
+        logger.info("connection timedout")
     }
 }
