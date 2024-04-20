@@ -8,6 +8,9 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.243.0", date: "2024-04-20", changes: [
+        "• Revert \"Camera preview\" quick button. It made the image freeze randomly. 😢",
+    ]),
     Version(version: "0.242.0", date: "2024-04-19", changes: [
         "• Make OA4 work. 🐛 jaystreazy",
         "  • Affects how image formats are selected for all cameras, so might affect their image as well.",

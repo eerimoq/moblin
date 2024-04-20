@@ -1622,13 +1622,13 @@ private func addMissingGlobalButtons(database: Database) {
     button.systemImageNameOff = "photo.on.rectangle.angled"
     updateGlobalButton(database: database, button: button)
 
-    button = SettingsButton(name: String(localized: "Camera preview"))
-    button.id = UUID()
-    button.type = .cameraPreview
-    button.imageType = "System name"
-    button.systemImageNameOn = "photo.tv"
-    button.systemImageNameOff = "photo.tv"
-    updateGlobalButton(database: database, button: button)
+    // button = SettingsButton(name: String(localized: "Camera preview"))
+    // button.id = UUID()
+    // button.type = .cameraPreview
+    // button.imageType = "System name"
+    // button.systemImageNameOn = "photo.tv"
+    // button.systemImageNameOff = "photo.tv"
+    // updateGlobalButton(database: database, button: button)
 
     button = SettingsButton(name: String(localized: "Browser"))
     button.id = UUID()
