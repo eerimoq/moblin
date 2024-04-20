@@ -3,8 +3,6 @@ import Collections
 import Combine
 import CoreMotion
 import GameController
-import HaishinKit
-import Logboard
 import MapKit
 import NaturalLanguage
 import Network
@@ -713,9 +711,6 @@ final class Model: NSObject, ObservableObject {
         UIDevice.current.isBatteryMonitoringEnabled = true
         logger.handler = debugLog(message:)
         logger.debugEnabled = database.debug!.logLevel == .debug
-        let appender = LogAppender()
-        LBLogger.with("com.haishinkit.HaishinKit").appender = appender
-        LBLogger.with("com.haishinkit.HaishinKit").level = .debug
         updateCameraLists()
         updateBatteryLevel()
         media.onSrtConnected = handleSrtConnected

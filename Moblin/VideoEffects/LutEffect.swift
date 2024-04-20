@@ -1,5 +1,4 @@
 import AVFoundation
-import HaishinKit
 import UIKit
 
 private let lutQueue = DispatchQueue(label: "com.eerimoq.widget.cubeLut")

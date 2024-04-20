@@ -1,6 +1,5 @@
 import AVFoundation
 import Foundation
-import HaishinKit
 import Network
 
 private func makeTimingInfo(duration: Int64, presentationTimeStamp: Int64,
@@ -540,9 +539,9 @@ class RtmpServerChunkStream: VideoCodecDelegate {
 }
 
 extension RtmpServerChunkStream {
-    func videoCodec(_: HaishinKit.VideoCodec, didOutput _: CMFormatDescription?) {}
+    func videoCodec(_: VideoCodec, didOutput _: CMFormatDescription?) {}
 
-    func videoCodec(_: HaishinKit.VideoCodec, didOutput sampleBuffer: CMSampleBuffer) {
+    func videoCodec(_: VideoCodec, didOutput sampleBuffer: CMSampleBuffer) {
         guard let client else {
             return
         }

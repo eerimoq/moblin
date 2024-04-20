@@ -1,7 +1,6 @@
 import AVFAudio
 import CoreMedia
 import Foundation
-import HaishinKit
 import Network
 
 let rtmpServerDispatchQueue = DispatchQueue(label: "com.eerimoq.rtmp-server")

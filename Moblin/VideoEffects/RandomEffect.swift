@@ -1,5 +1,4 @@
 import AVFoundation
-import HaishinKit
 import UIKit
 
 let randomEffects = [

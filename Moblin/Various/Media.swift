@@ -1,5 +1,4 @@
 import AVFoundation
-import HaishinKit
 import SwiftUI
 
 let mediaDispatchQueue = DispatchQueue(label: "com.eerimoq.stream")
@@ -639,23 +638,23 @@ extension Media: NetStreamDelegate {
         }
     }
 
-    func streamVideo(_: HaishinKit.NetStream, presentationTimestamp: Double) {
+    func streamVideo(_: NetStream, presentationTimestamp: Double) {
         DispatchQueue.main.async {
             self.videoCapturePresentationTimestamp = presentationTimestamp
         }
     }
 
-    func streamVideo(_: HaishinKit.NetStream, failedEffect: String?) {
+    func streamVideo(_: NetStream, failedEffect: String?) {
         DispatchQueue.main.async {
             self.failedVideoEffect = failedEffect
         }
     }
 
-    func streamVideo(_: HaishinKit.NetStream, lowFpsImage: Data?) {
+    func streamVideo(_: NetStream, lowFpsImage: Data?) {
         onLowFpsImage(lowFpsImage)
     }
 
-    func stream(_: HaishinKit.NetStream, recorderFinishWriting _: AVAssetWriter) {
+    func stream(_: NetStream, recorderFinishWriting _: AVAssetWriter) {
         logger.info("stream: Recording finished")
     }
 }

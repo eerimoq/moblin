@@ -1,7 +1,6 @@
 import AVFAudio
 import CoreMedia
 import Foundation
-import HaishinKit
 import Network
 
 private let rtmpVersion: UInt8 = 3

@@ -1,5 +1,4 @@
 import AVFoundation
-import HaishinKit
 import SwiftUI
 
 struct StreamPreviewView: UIViewRepresentable {
@@ -9,7 +8,7 @@ struct StreamPreviewView: UIViewRepresentable {
         return model.streamPreviewView
     }
 
-    func updateUIView(_: HaishinKit.PreviewView, context _: Context) {}
+    func updateUIView(_: PreviewView, context _: Context) {}
 }
 
 class CameraPreviewUiView: UIView {
