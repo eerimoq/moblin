@@ -43,7 +43,6 @@ final class RTMPSocket {
         }
     }
 
-    var qualityOfService: DispatchQoS = .userInitiated
     var inputBuffer = Data()
     weak var delegate: (any RTMPSocketDelegate)?
 
@@ -80,7 +79,7 @@ final class RTMPSocket {
     private var parameters: NWParameters = .tcp
     private lazy var networkQueue = DispatchQueue(
         label: "com.haishinkit.HaishinKit.RTMPSocket.network",
-        qos: qualityOfService
+        qos: .userInitiated
     )
     private var timeoutHandler: DispatchWorkItem?
 

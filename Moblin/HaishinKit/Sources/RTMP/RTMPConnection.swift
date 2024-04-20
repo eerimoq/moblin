@@ -168,16 +168,6 @@ open class RTMPConnection: EventDispatcher {
         }
     }
 
-    /// Specifies the dispatchQos for socket.
-    public var qualityOfService: DispatchQoS {
-        get {
-            socket.qualityOfService
-        }
-        set {
-            socket.qualityOfService = newValue
-        }
-    }
-
     public var flashVer: String = RTMPConnection.defaultFlashVer
     public var chunkSize: Int = RTMPConnection.defaultChunkSizeS
     public private(set) var uri: URL?

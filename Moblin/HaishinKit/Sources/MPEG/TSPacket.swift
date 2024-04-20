@@ -26,13 +26,6 @@ struct TSPacket {
         self.pid = pid
     }
 
-    init?(data: Data) {
-        guard TSPacket.size == data.count else {
-            return nil
-        }
-        self.data = data
-    }
-
     mutating func fill(_ data: Data, useAdaptationField: Bool) -> Int {
         let length = min(data.count, remain, 182)
         payload.append(data[0 ..< length])
@@ -104,14 +97,6 @@ struct TSPacket {
 enum TSTimestamp {
     static let resolution: Double = 90 * 1000 // 90kHz
     static let dataSize: Int = 5
-
-    static func decode(_ data: Data, offset: Int = 0) -> Int64 {
-        var result: Int64 = 0
-        result |= Int64(data[offset + 0] & 0x0E) << 29
-        result |= Int64(data[offset + 1]) << 22 | Int64(data[offset + 2] & 0xFE) << 14
-        result |= Int64(data[offset + 3]) << 7 | Int64(data[offset + 3] & 0xFE) << 1
-        return result
-    }
 
     static func encode(_ b: Int64, _ m: UInt8) -> Data {
         var data = Data(count: dataSize)
