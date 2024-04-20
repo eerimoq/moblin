@@ -1,20 +1,13 @@
 import Foundation
 
-/// The EventDispatcherConvertible interface is in implementation which supports the DOM Event Model.
-public protocol EventDispatcherConvertible: AnyObject {
-    /// Registers the event listeners on the event target.
+protocol EventDispatcherConvertible: AnyObject {
     func addEventListener(_ type: Event.Name, selector: Selector, observer: AnyObject?, useCapture: Bool)
-    /// Unregister the event listeners on the event target.
     func removeEventListener(_ type: Event.Name, selector: Selector, observer: AnyObject?, useCapture: Bool)
-    /// Dispatches the events into the implementations event model.
     func dispatch(event: Event)
-    /// Dispatches the events into the implementations event model.
     func dispatch(_ type: Event.Name, bubbles: Bool, data: Any?)
 }
 
-/// The Event interface is used to provide information.
 open class Event {
-    /// A structure that defines the name of an event.
     public struct Name: RawRepresentable, ExpressibleByStringLiteral {
         // swiftlint:disable:next nesting
         public typealias RawValue = String
@@ -47,19 +40,14 @@ open class Event {
         return event
     }
 
-    /// The type represents the event name.
     public fileprivate(set) var type: Name
 
-    /// The isBubbles indicates whether ot not an event is a bubbling event.
     public fileprivate(set) var bubbles: Bool
 
-    /// The data indicates the to provide information.
     public fileprivate(set) var data: Any?
 
-    /// The target indicates the [IEventDispatcher].
     public fileprivate(set) var target: AnyObject?
 
-    /// Creates a new event.
     public init(type: Name, bubbles: Bool = false, data: Any? = nil) {
         self.type = type
         self.bubbles = bubbles
@@ -67,16 +55,11 @@ open class Event {
     }
 }
 
-/**
- * The EventDispatcher interface is in implementation which supports the DOM Event Model.
- */
 open class EventDispatcher: EventDispatcherConvertible {
     private weak var target: AnyObject?
 
-    /// Creates a new event dispatcher.
     public init() {}
 
-    /// Creates a new event dispatcher to proxy target.
     public init(target: AnyObject) {
         self.target = target
     }
@@ -85,7 +68,6 @@ open class EventDispatcher: EventDispatcherConvertible {
         target = nil
     }
 
-    /// Registers the event listeners on the event target.
     public func addEventListener(
         _ type: Event.Name,
         selector: Selector,
@@ -98,7 +80,6 @@ open class EventDispatcher: EventDispatcherConvertible {
         )
     }
 
-    /// Unregister the event listeners on the event target.
     public func removeEventListener(
         _ type: Event.Name,
         selector _: Selector,
@@ -111,7 +92,6 @@ open class EventDispatcher: EventDispatcherConvertible {
         )
     }
 
-    /// Dispatches the events into the implementations event model.
     open func dispatch(event: Event) {
         event.target = target ?? self
         NotificationCenter.default.post(
@@ -121,7 +101,6 @@ open class EventDispatcher: EventDispatcherConvertible {
         event.target = nil
     }
 
-    /// Dispatches the events into the implementations event model.
     public func dispatch(_ type: Event.Name, bubbles: Bool, data: Any?) {
         dispatch(event: Event(type: type, bubbles: bubbles, data: data))
     }
