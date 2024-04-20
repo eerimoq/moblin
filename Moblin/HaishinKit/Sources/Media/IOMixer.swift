@@ -27,7 +27,7 @@ protocol IOMixerDelegate: AnyObject {
 
 /// An object that mixies audio and video for streaming.
 class IOMixer {
-    public static let defaultFrameRate: Float64 = 30
+    static let defaultFrameRate: Float64 = 30
 
     enum MediaSync {
         case video
@@ -35,9 +35,9 @@ class IOMixer {
     }
 
     var sessionPreset: AVCaptureSession.Preset = .hd1280x720
-    public let videoSession = makeCaptureSession()
-    public let audioSession = makeCaptureSession()
-    public private(set) var isRunning: Atomic<Bool> = .init(false)
+    let videoSession = makeCaptureSession()
+    let audioSession = makeCaptureSession()
+    private(set) var isRunning: Atomic<Bool> = .init(false)
     private var isEncoding = false
 
     weak var drawable: (any NetStreamDrawable)? {
@@ -260,7 +260,7 @@ class IOMixer {
 }
 
 extension IOMixer: IORecorderDelegate {
-    public func recorder(_: IORecorder, finishWriting writer: AVAssetWriter) {
+    func recorder(_: IORecorder, finishWriting writer: AVAssetWriter) {
         delegate?.mixer(self, recorderFinishWriting: writer)
     }
 }

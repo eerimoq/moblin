@@ -1,6 +1,6 @@
 import AVFoundation
 
-public struct AudioSpecificConfig: Equatable {
+struct AudioSpecificConfig: Equatable {
     static let adtsHeaderSize: Int = 7
 
     enum AudioObjectType: UInt8 {

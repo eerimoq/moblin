@@ -1,5 +1,5 @@
 /// The type of flv supports audio sound rates.
-public enum FLVSoundRate: UInt8 {
+enum FLVSoundRate: UInt8 {
     /// The sound rate of  5,500.0kHz.
     case kHz5_5 = 0
     /// Ths sound rate of 11,000.0kHz.

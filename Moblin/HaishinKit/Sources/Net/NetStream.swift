@@ -3,8 +3,7 @@ import CoreImage
 import CoreMedia
 import UIKit
 
-/// The interface a NetStream uses to inform its delegate.
-public protocol NetStreamDelegate: AnyObject {
+protocol NetStreamDelegate: AnyObject {
     func stream(
         _ stream: NetStream,
         sessionWasInterrupted session: AVCaptureSession,

@@ -150,43 +150,6 @@ open class RTMPStream: NetStream {
     public internal(set) var info = RTMPStreamInfo()
     public private(set) var objectEncoding = RTMPConnection.defaultObjectEncoding
 
-    open var receiveAudio = true {
-        didSet {
-            lockQueue.async {
-                guard self.readyState == .playing else {
-                    return
-                }
-                self.rtmpConnection?.socket.doOutput(chunk: RTMPChunk(message: RTMPCommandMessage(
-                    streamId: self.id,
-                    transactionId: 0,
-                    objectEncoding: self.objectEncoding,
-                    commandName: "receiveAudio",
-                    commandObject: nil,
-                    arguments: [self.receiveAudio]
-                )))
-            }
-        }
-    }
-
-    /// Incoming video plays on the stream or not.
-    open var receiveVideo = true {
-        didSet {
-            lockQueue.async {
-                guard self.readyState == .playing else {
-                    return
-                }
-                self.rtmpConnection?.socket.doOutput(chunk: RTMPChunk(message: RTMPCommandMessage(
-                    streamId: self.id,
-                    transactionId: 0,
-                    objectEncoding: self.objectEncoding,
-                    commandName: "receiveVideo",
-                    commandObject: nil,
-                    arguments: [self.receiveVideo]
-                )))
-            }
-        }
-    }
-
     var id: UInt32 = RTMPStream.defaultID
     var readyState: ReadyState = .initialized {
         didSet {

@@ -25,10 +25,6 @@ struct ASArray {
     private(set) var data: [Any?]
     private(set) var dict: [String: Any?] = [:]
 
-    var length: Int {
-        data.count
-    }
-
     init(count: Int) {
         data = [Any?](repeating: kASUndefined, count: count)
     }
@@ -119,11 +115,6 @@ public struct ASXML: CustomStringConvertible {
     }
 
     private let data: String
-
-    /// Creates a new instance of string.
-    public init(data: String) {
-        self.data = data
-    }
 }
 
 extension ASXML: Equatable {

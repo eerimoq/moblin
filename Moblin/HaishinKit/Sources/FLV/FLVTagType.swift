@@ -1,7 +1,7 @@
 import Foundation
 
 /// The type of flv tag.
-public enum FLVTagType: UInt8 {
+enum FLVTagType: UInt8 {
     /// The Audio tag,
     case audio = 8
     /// The Video tag.
@@ -18,7 +18,7 @@ public enum FLVTagType: UInt8 {
         }
     }
 
-    public var headerSize: Int {
+    var headerSize: Int {
         switch self {
         case .audio:
             return 2

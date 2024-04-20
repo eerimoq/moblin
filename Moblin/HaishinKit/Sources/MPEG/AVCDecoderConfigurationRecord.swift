@@ -8,7 +8,7 @@ protocol DecoderConfigurationRecord {
 /*
  - seealso: ISO/IEC 14496-15 2010
  */
-public struct AVCDecoderConfigurationRecord: DecoderConfigurationRecord {
+struct AVCDecoderConfigurationRecord: DecoderConfigurationRecord {
     static func getData(_ formatDescription: CMFormatDescription?) -> Data? {
         guard let formatDescription else {
             return nil
@@ -22,11 +22,7 @@ public struct AVCDecoderConfigurationRecord: DecoderConfigurationRecord {
         return nil
     }
 
-    static let reserveLengthSizeMinusOne: UInt8 = 0x3F
     static let reserveNumOfSequenceParameterSets: UInt8 = 0xE0
-    static let reserveChromaFormat: UInt8 = 0xFC
-    static let reserveBitDepthLumaMinus8: UInt8 = 0xF8
-    static let reserveBitDepthChromaMinus8 = 0xF8
 
     var configurationVersion: UInt8 = 1
     var avcProfileIndication: UInt8 = 0
@@ -36,15 +32,6 @@ public struct AVCDecoderConfigurationRecord: DecoderConfigurationRecord {
     var numOfSequenceParameterSetsWithReserved: UInt8 = 0
     var sequenceParameterSets: [[UInt8]] = []
     var pictureParameterSets: [[UInt8]] = []
-
-    var chromaFormatWithReserve: UInt8 = 0
-    var bitDepthLumaMinus8WithReserve: UInt8 = 0
-    var bitDepthChromaMinus8WithReserve: UInt8 = 0
-    var sequenceParameterSetExt: [[UInt8]] = []
-
-    var naluLength: Int32 {
-        Int32((lengthSizeMinusOneWithReserved >> 6) + 1)
-    }
 
     public init() {}
 
