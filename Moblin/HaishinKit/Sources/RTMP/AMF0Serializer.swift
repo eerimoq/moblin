@@ -30,8 +30,7 @@ enum AMF0Type: UInt8 {
 
  -seealso: http://wwwimages.adobe.com/content/dam/Adobe/en/devnet/amf/pdf/amf0-file-format-specification.pdf
  */
-final class AMF0Serializer: ByteArray {
-}
+final class AMF0Serializer: ByteArray {}
 
 extension AMF0Serializer {
     @discardableResult
