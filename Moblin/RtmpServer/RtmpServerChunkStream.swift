@@ -540,19 +540,12 @@ class RtmpServerChunkStream: VideoCodecDelegate {
 }
 
 extension RtmpServerChunkStream {
-    func videoCodec(_: HaishinKit.VideoCodec, didOutput _: CMFormatDescription?) {
-        // logger.info("rtmp-server: client: Codec did output format description")
-    }
+    func videoCodec(_: HaishinKit.VideoCodec, didOutput _: CMFormatDescription?) {}
 
     func videoCodec(_: HaishinKit.VideoCodec, didOutput sampleBuffer: CMSampleBuffer) {
         guard let client else {
             return
         }
-        // logger.info("rtmp-server: client: Codec did output sample buffer")
         client.handleFrame(sampleBuffer: sampleBuffer)
-    }
-
-    func videoCodec(_: HaishinKit.VideoCodec, errorOccurred error: HaishinKit.VideoCodec.Error) {
-        logger.info("rtmp-server: client: Codec error \(error)")
     }
 }

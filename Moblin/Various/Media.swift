@@ -621,16 +621,6 @@ extension Media: NetStreamDelegate {
         logger.info("stream: \(kind(netStream)): Session interrupted ended.")
     }
 
-    func stream(_ netStream: NetStream, videoCodecErrorOccurred error: VideoCodec.Error) {
-        logger.error("stream: \(kind(netStream)): Video codec error: \(error)")
-    }
-
-    func stream(_ netStream: NetStream,
-                audioCodecErrorOccurred error: HaishinKit.AudioCodec.Error)
-    {
-        logger.error("stream: \(kind(netStream)): Audio codec error: \(error)")
-    }
-
     func streamDidOpen(_: NetStream) {}
 
     func stream(_: NetStream, audioLevel: Float, numberOfAudioChannels: Int, presentationTimestamp: Double) {
@@ -663,10 +653,6 @@ extension Media: NetStreamDelegate {
 
     func streamVideo(_: HaishinKit.NetStream, lowFpsImage: Data?) {
         onLowFpsImage(lowFpsImage)
-    }
-
-    func stream(_: HaishinKit.NetStream, recorderErrorOccured error: HaishinKit.IORecorder.Error) {
-        logger.info("stream: Recording failed with \(error)")
     }
 
     func stream(_: HaishinKit.NetStream, recorderFinishWriting _: AVAssetWriter) {
