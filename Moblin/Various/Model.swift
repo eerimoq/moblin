@@ -3310,24 +3310,24 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func updateCameraPreview() {
-        cameraPreviewView.session = nil
-        cameraPreviewView.session = media.getNetStream().mixer.videoSession
+        // cameraPreviewView.session = nil
+        // cameraPreviewView.session = media.getNetStream().mixer.videoSession
         updateCameraPreviewRotation()
     }
 
     private func updateCameraPreviewRotation() {
-        if stream.portrait! {
-            cameraPreviewView.previewLayer.connection?.videoOrientation = .portrait
-        } else {
-            switch UIDevice.current.orientation {
-            case .landscapeLeft:
-                cameraPreviewView.previewLayer.connection?.videoOrientation = .landscapeRight
-            case .landscapeRight:
-                cameraPreviewView.previewLayer.connection?.videoOrientation = .landscapeLeft
-            default:
-                break
-            }
-        }
+        // if stream.portrait! {
+        //     cameraPreviewView.previewLayer.connection?.videoOrientation = .portrait
+        // } else {
+        //     switch UIDevice.current.orientation {
+        //     case .landscapeLeft:
+        //         cameraPreviewView.previewLayer.connection?.videoOrientation = .landscapeRight
+        //     case .landscapeRight:
+        //         cameraPreviewView.previewLayer.connection?.videoOrientation = .landscapeLeft
+        //     default:
+        //         break
+        //     }
+        // }
     }
 
     func setGlobalToneMapping(on: Bool) {
