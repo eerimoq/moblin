@@ -164,8 +164,6 @@ open class RTMPConnection: EventDispatcher {
     var objectEncoding = RTMPConnection.defaultObjectEncoding
     var socket: RTMPSocket!
     var streams: [RTMPStream] = []
-    var sequence: Int64 = 0
-    var bandWidth: UInt32 = 0
     var streamsmap: [UInt16: UInt32] = [:]
     var operations: [Int: RTMPResponder] = [:]
     var windowSizeC: Int64 = RTMPConnection.defaultWindowSizeS {
@@ -181,7 +179,6 @@ open class RTMPConnection: EventDispatcher {
         }
     }
 
-    var windowSizeS: Int64 = RTMPConnection.defaultWindowSizeS
     var currentTransactionId: Int = 0
     private var timer: Timer? {
         didSet {
@@ -401,7 +398,6 @@ extension RTMPConnection: RTMPSocketDelegate {
             socket.doOutput(chunk: chunk)
         case .closed:
             connected = false
-            sequence = 0
             currentChunk = nil
             currentTransactionId = 0
             messages.removeAll()
@@ -410,18 +406,6 @@ extension RTMPConnection: RTMPSocketDelegate {
         default:
             break
         }
-    }
-
-    func socket(_ socket: RTMPSocket, totalBytesIn: Int64) {
-        guard windowSizeS * (sequence + 1) <= totalBytesIn else {
-            return
-        }
-        socket.doOutput(chunk: RTMPChunk(
-            type: sequence == 0 ? .zero : .one,
-            streamId: RTMPChunk.StreamID.control.rawValue,
-            message: RTMPAcknowledgementMessage(UInt32(totalBytesIn))
-        ))
-        sequence += 1
     }
 
     func socket(_: RTMPSocket, totalBytesOut: Int64) {

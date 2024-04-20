@@ -207,12 +207,14 @@ struct GetInputAudioSyncOffsetResponse: Codable {
     let inputAudioSyncOffset: Int
 }
 
+// periphery:ignore
 struct SetSceneItemEnabled: Codable {
     let sceneName: String
     let sceneItemId: Int
     let sceneItemEnabled: Bool
 }
 
+// periphery:ignore
 struct GetSceneItemId: Codable {
     let sceneName: String
     let sourceName: String

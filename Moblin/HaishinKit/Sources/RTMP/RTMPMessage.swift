@@ -153,11 +153,6 @@ final class RTMPAcknowledgementMessage: RTMPMessage {
         super.init(type: .ack)
     }
 
-    init(_ sequence: UInt32) {
-        super.init(type: .ack)
-        self.sequence = sequence
-    }
-
     override func execute(_ connection: RTMPConnection, type _: RTMPChunkType) {
         // We only have one stream
         guard let stream = connection.streams.first else {
@@ -201,7 +196,7 @@ final class RTMPWindowAcknowledgementSizeMessage: RTMPMessage {
 
     override func execute(_ connection: RTMPConnection, type _: RTMPChunkType) {
         connection.windowSizeC = Int64(size)
-        connection.windowSizeS = Int64(size)
+        // connection.windowSizeS = Int64(size)
     }
 }
 
@@ -251,7 +246,7 @@ final class RTMPSetPeerBandwidthMessage: RTMPMessage {
     }
 
     override func execute(_ connection: RTMPConnection, type _: RTMPChunkType) {
-        connection.bandWidth = size
+        // connection.bandWidth = size
     }
 }
 

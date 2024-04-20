@@ -1,6 +1,7 @@
 import Foundation
 
 struct KickLivestream: Codable {
+    // periphery:ignore
     let id: Int
     let viewers: Int
 }
@@ -10,6 +11,7 @@ struct KickChatroom: Codable {
 }
 
 struct KickChannel: Codable {
+    // periphery:ignore
     let slug: String
     let chatroom: KickChatroom
     let livestream: KickLivestream?

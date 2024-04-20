@@ -20,6 +20,7 @@ class CameraPreviewUiView: UIView {
         layer as! AVCaptureVideoPreviewLayer
     }
 
+    // periphery:ignore
     var session: AVCaptureSession? {
         get {
             previewLayer.session
