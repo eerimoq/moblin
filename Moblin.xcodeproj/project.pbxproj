@@ -175,6 +175,8 @@
 		0359F9072BD3DA61005BFDA8 /* MD5.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8742BD3DA5F005BFDA8 /* MD5.swift */; };
 		0359F9082BD3DA61005BFDA8 /* build-xcframework.sh in Resources */ = {isa = PBXBuildFile; fileRef = 0359F8A72BD3DA61005BFDA8 /* build-xcframework.sh */; };
 		0359F9092BD3DA61005BFDA8 /* libsrt.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0359F8A82BD3DA61005BFDA8 /* libsrt.xcframework */; };
+		0359F90F2BD3E038005BFDA8 /* LICENSE.md in Resources */ = {isa = PBXBuildFile; fileRef = 0359F90E2BD3E038005BFDA8 /* LICENSE.md */; };
+		0359F9122BD3E049005BFDA8 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 0359F9112BD3E049005BFDA8 /* README.md */; };
 		035D37282AB0EBB500045B92 /* IconAndTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37272AB0EBB500045B92 /* IconAndTextView.swift */; };
 		035D37372AB230E700045B92 /* StreamVideoBitrateSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035D37362AB230E700045B92 /* StreamVideoBitrateSettingsView.swift */; };
 		035E775C2ACC969D00738DCE /* ZoomPresetSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035E775B2ACC969D00738DCE /* ZoomPresetSettingsView.swift */; };
@@ -583,6 +585,8 @@
 		0359F8A52BD3DA61005BFDA8 /* window.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = window.h; sourceTree = "<group>"; };
 		0359F8A72BD3DA61005BFDA8 /* build-xcframework.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-xcframework.sh"; sourceTree = "<group>"; };
 		0359F8A82BD3DA61005BFDA8 /* libsrt.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = libsrt.xcframework; sourceTree = "<group>"; };
+		0359F90E2BD3E038005BFDA8 /* LICENSE.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
+		0359F9112BD3E049005BFDA8 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		035D37272AB0EBB500045B92 /* IconAndTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconAndTextView.swift; sourceTree = "<group>"; };
 		035D37362AB230E700045B92 /* StreamVideoBitrateSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamVideoBitrateSettingsView.swift; sourceTree = "<group>"; };
 		035E775B2ACC969D00738DCE /* ZoomPresetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomPresetSettingsView.swift; sourceTree = "<group>"; };
@@ -1085,6 +1089,8 @@
 		0359F80C2BD3DA4B005BFDA8 /* HaishinKit */ = {
 			isa = PBXGroup;
 			children = (
+				0359F9112BD3E049005BFDA8 /* README.md */,
+				0359F90E2BD3E038005BFDA8 /* LICENSE.md */,
 				0359F8762BD3DA5F005BFDA8 /* Sources */,
 				0359F8AA2BD3DA61005BFDA8 /* Vendor */,
 			);
@@ -2158,7 +2164,9 @@
 				038F42F42B685ACF00E68752 /* LUTs.bundle in Resources */,
 				031852A62B21890A00AEAD0D /* InfoPlist.strings in Resources */,
 				0359F9082BD3DA61005BFDA8 /* build-xcframework.sh in Resources */,
+				0359F90F2BD3E038005BFDA8 /* LICENSE.md in Resources */,
 				035E9E3B2A9A02D7009D4F5A /* Assets.xcassets in Resources */,
+				0359F9122BD3E049005BFDA8 /* README.md in Resources */,
 				03A173FA2B38312E00ACC4F8 /* Snow.sks in Resources */,
 				03F853B32B151FA700719B89 /* Localizable.xcstrings in Resources */,
 			);
