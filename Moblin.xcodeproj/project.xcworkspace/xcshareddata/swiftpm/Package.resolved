@@ -1,5 +1,4 @@
 {
-  "originHash" : "bfd8075241e187399ef619186ef0d5a8f626e3337f69df04cde6baa34cf5b109",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -119,5 +118,5 @@
       }
     }
   ],
-  "version" : 3
+  "version" : 2
 }
