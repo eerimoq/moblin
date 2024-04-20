@@ -4,13 +4,6 @@ import CoreMedia
 /**
  - seealso: https://en.wikipedia.org/wiki/Packetized_elementary_stream
  */
-protocol PESPacketHeader {
-    var startCode: Data { get set }
-    var streamID: UInt8 { get set }
-    var packetLength: UInt16 { get set }
-    var optionalPESHeader: PESOptionalHeader { get set }
-    var data: Data { get set }
-}
 
 enum PESPTSDTSIndicator: UInt8 {
     case none = 0
@@ -132,7 +125,7 @@ struct PESOptionalHeader {
     }
 }
 
-struct PacketizedElementaryStream: PESPacketHeader {
+struct PacketizedElementaryStream {
     static let untilPacketLengthSize: Int = 6
     static let startCode = Data([0x00, 0x00, 0x01])
 

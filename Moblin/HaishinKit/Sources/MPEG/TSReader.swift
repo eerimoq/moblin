@@ -2,15 +2,15 @@ import AVFoundation
 import Foundation
 
 /// The interface an MPEG-2 TS (Transport Stream) reader uses to inform its delegates.
-public protocol TSReaderDelegate: AnyObject {
+protocol TSReaderDelegate: AnyObject {
     func reader(_ reader: TSReader, id: UInt16, didRead formatDescription: CMFormatDescription)
     func reader(_ reader: TSReader, id: UInt16, didRead sampleBuffer: CMSampleBuffer)
 }
 
 /// The TSReader class represents read MPEG-2 transport stream data.
-public class TSReader {
+class TSReader {
     /// Specifies the delegate object.
-    public weak var delegate: (any TSReaderDelegate)?
+    weak var delegate: (any TSReaderDelegate)?
 
     private var pat: TSProgramAssociation? {
         didSet {
@@ -41,10 +41,10 @@ public class TSReader {
     private var previousPresentationTimeStamps: [UInt16: CMTime] = [:]
 
     /// Create a  new TSReader instance.
-    public init() {}
+    init() {}
 
     /// Reads transport-stream data.
-    public func read(_ data: Data) -> Int {
+    func read(_ data: Data) -> Int {
         let count = data.count / TSPacket.size
         for i in 0 ..< count {
             guard let packet = TSPacket(data: data
@@ -66,7 +66,7 @@ public class TSReader {
     }
 
     /// Clears the reader object for new transport stream.
-    public func clear() {
+    func clear() {
         pat = nil
         pmt.removeAll()
         programs.removeAll()

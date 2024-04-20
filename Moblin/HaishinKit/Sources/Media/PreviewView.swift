@@ -2,8 +2,8 @@ import AVFoundation
 import Foundation
 import UIKit
 
-public class PreviewView: UIView {
-    public static var defaultBackgroundColor: UIColor = .black
+class PreviewView: UIView {
+    static var defaultBackgroundColor: UIColor = .black
 
     override public class var layerClass: AnyClass {
         AVSampleBufferDisplayLayer.self
@@ -13,7 +13,7 @@ public class PreviewView: UIView {
         super.layer as! AVSampleBufferDisplayLayer
     }
 
-    public var videoGravity: AVLayerVideoGravity = .resizeAspect {
+    var videoGravity: AVLayerVideoGravity = .resizeAspect {
         didSet {
             if Thread.isMainThread {
                 layer.videoGravity = videoGravity
@@ -25,23 +25,23 @@ public class PreviewView: UIView {
         }
     }
 
-    public var videoFormatDescription: CMVideoFormatDescription? {
+    var videoFormatDescription: CMVideoFormatDescription? {
         return currentStream?.mixer.video.formatDescription
     }
 
-    public var videoOrientation: AVCaptureVideoOrientation = .portrait {
+    var videoOrientation: AVCaptureVideoOrientation = .portrait {
         didSet {
             currentStream?.mixer.video.videoOrientation = videoOrientation
         }
     }
 
-    public var isPortrait = false {
+    var isPortrait = false {
         didSet {
             applyIsMirrored()
         }
     }
 
-    public var isMirrored = false
+    var isMirrored = false
 
     private func applyIsMirrored() {
         var transform = CGAffineTransformMakeScale(isMirrored ? -1.0 : 1.0, 1.0)
@@ -62,7 +62,7 @@ public class PreviewView: UIView {
         awakeFromNib()
     }
 
-    public required init?(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
 
@@ -75,7 +75,7 @@ public class PreviewView: UIView {
 }
 
 extension PreviewView: NetStreamDrawable {
-    public func attachStream(_ stream: NetStream?) {
+    func attachStream(_ stream: NetStream?) {
         guard let stream else {
             currentStream = nil
             return
@@ -87,7 +87,7 @@ extension PreviewView: NetStreamDrawable {
         }
     }
 
-    public func enqueue(_ sampleBuffer: CMSampleBuffer?, isFirstAfterAttach: Bool) {
+    func enqueue(_ sampleBuffer: CMSampleBuffer?, isFirstAfterAttach: Bool) {
         guard let sampleBuffer else {
             return
         }

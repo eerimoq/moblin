@@ -2,8 +2,8 @@ import AVFoundation
 import CoreImage
 import UIKit
 
-public var ioVideoUnitIgnoreFramesAfterAttachSeconds = 0.3
-public var ioVideoUnitWatchInterval = 1.0
+var ioVideoUnitIgnoreFramesAfterAttachSeconds = 0.3
+var ioVideoUnitWatchInterval = 1.0
 let pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
 
 private func setOrientation(

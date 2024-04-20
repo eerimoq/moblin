@@ -3,29 +3,8 @@ import Foundation
 /**
  - seealso: https://en.wikipedia.org/wiki/Program-specific_information
  */
-protocol TSPSIPointer {
-    var pointerField: UInt8 { get set }
-    var pointerFillerBytes: Data { get set }
-}
 
-protocol TSPSITableHeader {
-    var tableId: UInt8 { get set }
-    var sectionSyntaxIndicator: Bool { get set }
-    var privateBit: Bool { get set }
-    var sectionLength: UInt16 { get set }
-}
-
-protocol TSPSITableSyntax {
-    var tableIdExtension: UInt16 { get set }
-    var versionNumber: UInt8 { get set }
-    var currentNextIndicator: Bool { get set }
-    var sectionNumber: UInt8 { get set }
-    var lastSectionNumber: UInt8 { get set }
-    var tableData: Data { get set }
-    var crc32: UInt32 { get set }
-}
-
-class TSProgram: TSPSIPointer, TSPSITableHeader, TSPSITableSyntax {
+class TSProgram {
     static let reservedBits: UInt8 = 0x03
     static let defaultTableIDExtension: UInt16 = 1
 
