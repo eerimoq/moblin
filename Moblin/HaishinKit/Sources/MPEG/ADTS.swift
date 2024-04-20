@@ -3,10 +3,7 @@ import Foundation
 
 struct ADTSHeader: Equatable {
     static let size: Int = 7
-    static let sync: UInt8 = 0xFF
 
-    var sync = Self.sync
-    var protectionAbsent = false
     var profile: UInt8 = 0
     var sampleFrequencyIndex: UInt8 = 0
     var channelConfiguration: UInt8 = 0
@@ -65,8 +62,6 @@ struct ADTSHeader: Equatable {
             guard ADTSHeader.size <= newValue.count else {
                 return
             }
-            sync = newValue[0]
-            protectionAbsent = (newValue[1] & 0b0000_0001) == 1
             profile = newValue[2] >> 6 & 0b11
             sampleFrequencyIndex = (newValue[2] >> 2) & 0b0000_1111
             channelConfiguration = ((newValue[2] & 0b1) << 2) | newValue[3] >> 6
@@ -77,38 +72,5 @@ struct ADTSHeader: Equatable {
             aacFrameLength = UInt16(newValue[3] & 0b0000_0011) << 11 | UInt16(newValue[4]) << 3 |
                 UInt16(newValue[5] >> 5)
         }
-    }
-}
-
-class ADTSReader: Sequence {
-    private var data: Data = .init()
-
-    func read(_ data: Data) {
-        self.data = data
-    }
-
-    func makeIterator() -> ADTSReaderIterator {
-        return ADTSReaderIterator(data: data)
-    }
-}
-
-struct ADTSReaderIterator: IteratorProtocol {
-    private let data: Data
-    private var cursor: Int = 0
-    private var header: ADTSHeader = .init()
-
-    init(data: Data) {
-        self.data = data
-    }
-
-    mutating func next() -> Int? {
-        guard cursor < data.count else {
-            return nil
-        }
-        header.data = data.advanced(by: cursor)
-        defer {
-            cursor += Int(header.aacFrameLength)
-        }
-        return Int(header.aacFrameLength)
     }
 }

@@ -155,12 +155,6 @@ struct AudioSpecificConfig: Equatable {
         self.channel = channel
     }
 
-    init(type: AudioObjectType, frequency: SamplingFrequency, channel: ChannelConfiguration) {
-        self.type = type
-        self.frequency = frequency
-        self.channel = channel
-    }
-
     init(formatDescription: CMFormatDescription) {
         let asbd: AudioStreamBasicDescription =
             CMAudioFormatDescriptionGetStreamBasicDescription(formatDescription)!.pointee
@@ -183,7 +177,7 @@ struct AudioSpecificConfig: Equatable {
         return adts
     }
 
-    public func audioStreamBasicDescription() -> AudioStreamBasicDescription {
+    func audioStreamBasicDescription() -> AudioStreamBasicDescription {
         AudioStreamBasicDescription(
             mSampleRate: frequency.sampleRate,
             mFormatID: kAudioFormatMPEG4AAC,

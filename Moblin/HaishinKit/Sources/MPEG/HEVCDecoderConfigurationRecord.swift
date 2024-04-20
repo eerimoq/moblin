@@ -17,21 +17,36 @@ struct HEVCDecoderConfigurationRecord: DecoderConfigurationRecord {
     }
 
     var configurationVersion: UInt8 = 1
+    // periphery:ignore
     var generalProfileSpace: UInt8 = 0
     var generalTierFlag = false
+    // periphery:ignore
     var generalProfileIdc: UInt8 = 0
+    // periphery:ignore
     var generalProfileCompatibilityFlags: UInt32 = 0
+    // periphery:ignore
     var generalConstraintIndicatorFlags: UInt64 = 0
+    // periphery:ignore
     var generalLevelIdc: UInt8 = 0
+    // periphery:ignore
     var minSpatialSegmentationIdc: UInt16 = 0
+    // periphery:ignore
     var parallelismType: UInt8 = 0
+    // periphery:ignore
     var chromaFormat: UInt8 = 0
+    // periphery:ignore
     var bitDepthLumaMinus8: UInt8 = 0
+    // periphery:ignore
     var bitDepthChromaMinus8: UInt8 = 0
+    // periphery:ignore
     var avgFrameRate: UInt16 = 0
+    // periphery:ignore
     var constantFrameRate: UInt8 = 0
+    // periphery:ignore
     var numTemporalLayers: UInt8 = 0
+    // periphery:ignore
     var temporalIdNested: UInt8 = 0
+    // periphery:ignore
     var lengthSizeMinusOne: UInt8 = 0
     var numberOfArrays: UInt8 = 0
     var array: [HEVCNALUnitType: [Data]] = [:]

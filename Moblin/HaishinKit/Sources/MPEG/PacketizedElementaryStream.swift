@@ -161,13 +161,6 @@ struct PacketizedElementaryStream {
         }
     }
 
-    init?(_ payload: Data) {
-        self.payload = payload
-        if startCode != PacketizedElementaryStream.startCode {
-            return nil
-        }
-    }
-
     init?(
         bytes: UnsafePointer<UInt8>,
         count: UInt32,
@@ -317,54 +310,5 @@ struct PacketizedElementaryStream {
         }
 
         return packets
-    }
-
-    mutating func append(_ data: Data) -> Int {
-        self.data.append(data)
-        return data.count
-    }
-
-    mutating func makeSampleBuffer(
-        _ streamType: ESStreamType,
-        previousPresentationTimeStamp: CMTime,
-        formatDescription: CMFormatDescription?
-    ) -> CMSampleBuffer? {
-        var blockBuffer: CMBlockBuffer?
-        var sampleSizes: [Int] = []
-        switch streamType {
-        case .h264:
-            _ = AVCFormatStream.toNALFileFormat(&data)
-            blockBuffer = data.makeBlockBuffer(advancedBy: 0)
-            sampleSizes.append(blockBuffer?.dataLength ?? 0)
-        case .adtsAac:
-            blockBuffer = data.makeBlockBuffer(advancedBy: 0)
-            let reader = ADTSReader()
-            reader.read(data)
-            var iterator = reader.makeIterator()
-            while let next = iterator.next() {
-                sampleSizes.append(next)
-            }
-        default:
-            break
-        }
-        var sampleBuffer: CMSampleBuffer?
-        var timing = optionalPESHeader.makeSampleTimingInfo(previousPresentationTimeStamp) ?? .invalid
-        guard let blockBuffer, CMSampleBufferCreate(
-            allocator: kCFAllocatorDefault,
-            dataBuffer: blockBuffer,
-            dataReady: true,
-            makeDataReadyCallback: nil,
-            refcon: nil,
-            formatDescription: formatDescription,
-            sampleCount: sampleSizes.count,
-            sampleTimingEntryCount: 1,
-            sampleTimingArray: &timing,
-            sampleSizeEntryCount: sampleSizes.count,
-            sampleSizeArray: &sampleSizes,
-            sampleBufferOut: &sampleBuffer
-        ) == noErr else {
-            return nil
-        }
-        return sampleBuffer
     }
 }

@@ -420,10 +420,6 @@ public final class IOVideoUnit: NSObject {
         }
     }
 
-    func unregisterAllEffects() {
-        effects.removeAll()
-    }
-
     func setPendingAfterAttachEffects(effects: [VideoEffect]) {
         pendingAfterAttachEffects = effects
     }

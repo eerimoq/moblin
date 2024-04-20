@@ -150,12 +150,6 @@ open class NetStream: NSObject {
         }
     }
 
-    public func unregisterAllEffects() {
-        mixer.video.lockQueue.sync {
-            self.mixer.video.unregisterAllEffects()
-        }
-    }
-
     public func setPendingAfterAttachEffects(effects: [VideoEffect]) {
         mixer.video.lockQueue.sync {
             self.mixer.video.setPendingAfterAttachEffects(effects: effects)
