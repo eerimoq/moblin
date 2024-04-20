@@ -66,7 +66,7 @@ enum FLVAudioCodec: UInt8 {
         }
     }
 
-    public var headerSize: Int {
+    var headerSize: Int {
         switch self {
         case .aac:
             return 2

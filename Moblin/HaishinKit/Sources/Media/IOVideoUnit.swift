@@ -107,7 +107,6 @@ public final class IOVideoUnit: NSObject {
 
     lazy var codec: VideoCodec = .init(lockQueue: lockQueue)
     weak var mixer: IOMixer?
-    var muted = false
     private var effects: [VideoEffect] = []
     private var pendingAfterAttachEffects: [VideoEffect]?
 

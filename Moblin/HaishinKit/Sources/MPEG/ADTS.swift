@@ -7,11 +7,7 @@ struct ADTSHeader: Equatable {
     var profile: UInt8 = 0
     var sampleFrequencyIndex: UInt8 = 0
     var channelConfiguration: UInt8 = 0
-    var originalOrCopy = false
     var home = false
-    var copyrightIdBit = false
-    var copyrightIdStart = false
-    var aacFrameLength: UInt16 = 0
 
     init() {}
 
@@ -65,12 +61,7 @@ struct ADTSHeader: Equatable {
             profile = newValue[2] >> 6 & 0b11
             sampleFrequencyIndex = (newValue[2] >> 2) & 0b0000_1111
             channelConfiguration = ((newValue[2] & 0b1) << 2) | newValue[3] >> 6
-            originalOrCopy = (newValue[3] & 0b0010_0000) == 0b0010_0000
             home = (newValue[3] & 0b0001_0000) == 0b0001_0000
-            copyrightIdBit = (newValue[3] & 0b0000_1000) == 0b0000_1000
-            copyrightIdStart = (newValue[3] & 0b0000_0100) == 0b0000_0100
-            aacFrameLength = UInt16(newValue[3] & 0b0000_0011) << 11 | UInt16(newValue[4]) << 3 |
-                UInt16(newValue[5] >> 5)
         }
     }
 }
