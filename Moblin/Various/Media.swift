@@ -184,7 +184,10 @@ final class Media: NSObject {
             }
             if let adaptiveBitrate {
                 return [
-                    "R: \(stats.pktRetransTotal) N: \(stats.pktRecvNAKTotal) S: \(stats.pktSndDropTotal)",
+                    """
+                    R: \(stats.pktRetransTotal) N: \(stats.pktRecvNAKTotal) \
+                    D: \(stats.pktSndDropTotal) E: \(numberOfFailedEncodings)
+                    """,
                     "msRTT: \(stats.msRTT)",
                     """
                     pktFlightSize: \(stats.pktFlightSize)   \

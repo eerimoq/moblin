@@ -3,6 +3,8 @@ import CoreFoundation
 import UIKit
 import VideoToolbox
 
+var numberOfFailedEncodings = 0
+
 protocol VideoCodecDelegate: AnyObject {
     func videoCodec(_ codec: VideoCodec, didOutput formatDescription: CMFormatDescription?)
     func videoCodec(_ codec: VideoCodec, didOutput sampleBuffer: CMSampleBuffer)
@@ -79,6 +81,7 @@ class VideoCodec {
         ) { [unowned self] status, _, sampleBuffer in
             guard let sampleBuffer, status == noErr else {
                 logger.info("Failed to encode frame status \(status) an got buffer \(sampleBuffer != nil)")
+                numberOfFailedEncodings += 1
                 return
             }
             formatDescription = sampleBuffer.formatDescription
@@ -145,6 +148,7 @@ class VideoCodec {
     func startRunning() {
         lockQueue.async {
             self.isRunning.mutate { $0 = true }
+            numberOfFailedEncodings = 0
             NotificationCenter.default.addObserver(
                 self,
                 selector: #selector(self.didAudioSessionInterruption),
