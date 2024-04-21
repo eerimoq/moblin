@@ -1,12 +1,12 @@
 import AVFoundation
 
-public protocol IORecorderDelegate: AnyObject {
+protocol IORecorderDelegate: AnyObject {
     func recorder(_ recorder: IORecorder, finishWriting writer: AVAssetWriter)
 }
 
 private let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.IORecorder.lock")
 
-public class IORecorder {
+class IORecorder {
     private static let defaultAudioOutputSettings: [String: Any] = [
         AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
         AVSampleRateKey: 0,
@@ -19,10 +19,10 @@ public class IORecorder {
         AVVideoWidthKey: 0,
     ]
 
-    public weak var delegate: (any IORecorderDelegate)?
-    public var audioOutputSettings = IORecorder.defaultAudioOutputSettings
-    public var videoOutputSettings = IORecorder.defaultVideoOutputSettings
-    public var url: URL?
+    weak var delegate: (any IORecorderDelegate)?
+    var audioOutputSettings = IORecorder.defaultAudioOutputSettings
+    var videoOutputSettings = IORecorder.defaultVideoOutputSettings
+    var url: URL?
     private var outputChannelsMap: [Int: Int] = [0: 0, 1: 1]
 
     private func isReadyForStartWriting() -> Bool {
@@ -36,13 +36,13 @@ public class IORecorder {
     private var pixelBufferAdaptor: AVAssetWriterInputPixelBufferAdaptor?
     private var dimensions: CMVideoDimensions = .init(width: 0, height: 0)
 
-    public func setAudioChannelsMap(map: [Int: Int]) {
+    func setAudioChannelsMap(map: [Int: Int]) {
         lockQueue.async {
             self.outputChannelsMap = map
         }
     }
 
-    public func appendAudio(_ sampleBuffer: CMSampleBuffer) {
+    func appendAudio(_ sampleBuffer: CMSampleBuffer) {
         lockQueue.async {
             self.appendAudioInner(sampleBuffer)
         }
@@ -103,7 +103,7 @@ public class IORecorder {
         return sampleBuffer
     }
 
-    public func appendVideo(_ pixelBuffer: CVPixelBuffer, withPresentationTime: CMTime) {
+    func appendVideo(_ pixelBuffer: CVPixelBuffer, withPresentationTime: CMTime) {
         lockQueue.async {
             self.appendVideoInner(pixelBuffer, withPresentationTime: withPresentationTime)
         }
@@ -278,7 +278,7 @@ public class IORecorder {
         return pixelBufferAdaptor
     }
 
-    public func startRunning() {
+    func startRunning() {
         lockQueue.async {
             self.startRunningInner()
         }
@@ -297,7 +297,7 @@ public class IORecorder {
         }
     }
 
-    public func stopRunning() {
+    func stopRunning() {
         lockQueue.async {
             self.stopRunningInner()
         }

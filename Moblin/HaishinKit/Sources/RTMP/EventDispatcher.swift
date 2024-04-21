@@ -29,7 +29,7 @@ open class Event {
         }
     }
 
-    public static func from(_ notification: Notification) -> Event {
+    static func from(_ notification: Notification) -> Event {
         guard
             let userInfo: [AnyHashable: Any] = notification.userInfo,
             let event: Event = userInfo["event"] as? Event
@@ -39,11 +39,11 @@ open class Event {
         return event
     }
 
-    public fileprivate(set) var type: Name
+    fileprivate(set) var type: Name
 
-    public fileprivate(set) var data: Any?
+    fileprivate(set) var data: Any?
 
-    public init(type: Name, data: Any? = nil) {
+    init(type: Name, data: Any? = nil) {
         self.type = type
         self.data = data
     }
@@ -52,9 +52,9 @@ open class Event {
 open class EventDispatcher: EventDispatcherConvertible {
     private weak var target: AnyObject?
 
-    public init() {}
+    init() {}
 
-    public init(target: AnyObject) {
+    init(target: AnyObject) {
         self.target = target
     }
 
@@ -62,7 +62,7 @@ open class EventDispatcher: EventDispatcherConvertible {
         target = nil
     }
 
-    public func addEventListener(
+    func addEventListener(
         _ type: Event.Name,
         selector: Selector,
         observer: AnyObject? = nil,
@@ -74,7 +74,7 @@ open class EventDispatcher: EventDispatcherConvertible {
         )
     }
 
-    public func removeEventListener(
+    func removeEventListener(
         _ type: Event.Name,
         selector _: Selector,
         observer: AnyObject? = nil,
@@ -93,7 +93,7 @@ open class EventDispatcher: EventDispatcherConvertible {
         )
     }
 
-    public func dispatch(_ type: Event.Name, data: Any?) {
+    func dispatch(_ type: Event.Name, data: Any?) {
         dispatch(event: Event(type: type, data: data))
     }
 }

@@ -2086,22 +2086,22 @@ final class Model: NSObject, ObservableObject {
         switch stream.resolution {
         case .r3840x2160:
             media.setVideoSessionPreset(preset: getPreset(preset: .hd4K3840x2160))
-            media.setVideoSize(size: .init(width: 3840, height: 2160))
+            media.setVideoSize(width: 3840, height: 2160)
         case .r1920x1080:
             media.setVideoSessionPreset(preset: getPreset(preset: .hd1920x1080))
-            media.setVideoSize(size: .init(width: 1920, height: 1080))
+            media.setVideoSize(width: 1920, height: 1080)
         case .r1280x720:
             media.setVideoSessionPreset(preset: getPreset(preset: .hd1280x720))
-            media.setVideoSize(size: .init(width: 1280, height: 720))
+            media.setVideoSize(width: 1280, height: 720)
         case .r854x480:
             media.setVideoSessionPreset(preset: getPreset(preset: .hd1280x720))
-            media.setVideoSize(size: .init(width: 854, height: 480))
+            media.setVideoSize(width: 854, height: 480)
         case .r640x360:
             media.setVideoSessionPreset(preset: getPreset(preset: .hd1280x720))
-            media.setVideoSize(size: .init(width: 640, height: 360))
+            media.setVideoSize(width: 640, height: 360)
         case .r426x240:
             media.setVideoSessionPreset(preset: getPreset(preset: .hd1280x720))
-            media.setVideoSize(size: .init(width: 426, height: 240))
+            media.setVideoSize(width: 426, height: 240)
         }
     }
 

@@ -5,29 +5,27 @@ import Foundation
 var payloadSize: Int = 1316
 
 /// The interface an MPEG-2 TS (Transport Stream) writer uses to inform its delegates.
-public protocol TSWriterDelegate: AnyObject {
+protocol TSWriterDelegate: AnyObject {
     func writer(_ writer: TSWriter, doOutput data: Data)
     func writer(_ writer: TSWriter, doOutputPointer pointer: UnsafeRawBufferPointer, count: Int)
 }
 
 /// The TSWriter class represents writes MPEG-2 transport stream data.
-public class TSWriter {
-    public static let defaultPATPID: UInt16 = 0
-    public static let defaultPMTPID: UInt16 = 4095
-    public static let defaultVideoPID: UInt16 = 256
-    public static let defaultAudioPID: UInt16 = 257
+class TSWriter {
+    static let defaultPATPID: UInt16 = 0
+    static let defaultPMTPID: UInt16 = 4095
+    static let defaultVideoPID: UInt16 = 256
+    static let defaultAudioPID: UInt16 = 257
 
     private static let audioStreamId: UInt8 = 192
     private static let videoStreamId: UInt8 = 224
 
-    public static let defaultSegmentDuration: Double = 2
+    static let defaultSegmentDuration: Double = 2
 
     /// The delegate instance.
-    public weak var delegate: (any TSWriterDelegate)?
-    /// This instance is running to process(true) or not(false).
-    public internal(set) var isRunning: Atomic<Bool> = .init(false)
-    /// The exptected medias = [.video, .audio].
-    public var expectedMedias: Set<AVMediaType> = []
+    weak var delegate: (any TSWriterDelegate)?
+    var isRunning: Atomic<Bool> = .init(false)
+    var expectedMedias: Set<AVMediaType> = []
 
     var audioContinuityCounter: UInt8 = 0
     var videoContinuityCounter: UInt8 = 0
@@ -69,18 +67,18 @@ public class TSWriter {
             && (expectedMedias.contains(.video) == (videoConfig != nil))
     }
 
-    public init(segmentDuration: Double = TSWriter.defaultSegmentDuration) {
+    init(segmentDuration: Double = TSWriter.defaultSegmentDuration) {
         self.segmentDuration = segmentDuration
     }
 
-    public func startRunning() {
+    func startRunning() {
         guard isRunning.value else {
             return
         }
         isRunning.mutate { $0 = true }
     }
 
-    public func stopRunning() {
+    func stopRunning() {
         guard !isRunning.value else {
             return
         }
@@ -271,7 +269,7 @@ public class TSWriter {
 }
 
 extension TSWriter: AudioCodecDelegate {
-    public func audioCodec(didOutput outputFormat: AVAudioFormat) {
+    func audioCodec(didOutput outputFormat: AVAudioFormat) {
         logger.info("Audio setup \(outputFormat) (forcing AAC)")
         var data = ESSpecificData()
         data.streamType = .adtsAac
@@ -281,7 +279,7 @@ extension TSWriter: AudioCodecDelegate {
         audioConfig = AudioSpecificConfig(formatDescription: outputFormat.formatDescription)
     }
 
-    public func audioCodec(didOutput audioBuffer: AVAudioBuffer, presentationTimeStamp: CMTime) {
+    func audioCodec(didOutput audioBuffer: AVAudioBuffer, presentationTimeStamp: CMTime) {
         guard let audioBuffer = audioBuffer as? AVAudioCompressedBuffer else {
             logger.info("Audio output no buffer")
             return
@@ -321,7 +319,7 @@ extension TSWriter: AudioCodecDelegate {
 }
 
 extension TSWriter: VideoCodecDelegate {
-    public func videoCodec(_: VideoCodec, didOutput formatDescription: CMFormatDescription?) {
+    func videoCodec(_: VideoCodec, didOutput formatDescription: CMFormatDescription?) {
         guard let formatDescription else {
             return
         }
@@ -339,7 +337,7 @@ extension TSWriter: VideoCodecDelegate {
         }
     }
 
-    public func videoCodec(_: VideoCodec, didOutput sampleBuffer: CMSampleBuffer) {
+    func videoCodec(_: VideoCodec, didOutput sampleBuffer: CMSampleBuffer) {
         guard let dataBuffer = sampleBuffer.dataBuffer else {
             return
         }

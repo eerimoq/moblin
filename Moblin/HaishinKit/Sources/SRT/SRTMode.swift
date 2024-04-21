@@ -2,7 +2,7 @@ import Foundation
 import libsrt
 
 /// The type of SRTHaishinKit supports srt modes.
-public enum SRTMode {
+enum SRTMode {
     /// The caller mode.
     case caller
     /// The listener mode.

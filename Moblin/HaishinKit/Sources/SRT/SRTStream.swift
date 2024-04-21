@@ -139,14 +139,14 @@ public class SRTStream: NetStream {
 }
 
 extension SRTStream: TSWriterDelegate {
-    public func writer(_: TSWriter, doOutput data: Data) {
+    func writer(_: TSWriter, doOutput data: Data) {
         guard readyState == .publishing else {
             return
         }
         connection?.socket?.doOutput(data: data)
     }
 
-    public func writer(_: TSWriter, doOutputPointer pointer: UnsafeRawBufferPointer, count: Int) {
+    func writer(_: TSWriter, doOutputPointer pointer: UnsafeRawBufferPointer, count: Int) {
         guard readyState == .publishing else {
             return
         }

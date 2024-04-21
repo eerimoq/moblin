@@ -399,8 +399,8 @@ final class Media: NSObject {
         netStream.setSessionPreset(preset: preset)
     }
 
-    func setVideoSize(size: VideoSize) {
-        netStream.videoSettings.videoSize = size
+    func setVideoSize(width: Int32, height: Int32) {
+        netStream.videoSettings.videoSize = .init(width: width, height: height)
     }
 
     func getVideoSize() -> CGSize {

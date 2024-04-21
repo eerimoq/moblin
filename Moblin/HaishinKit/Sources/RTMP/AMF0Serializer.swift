@@ -34,7 +34,7 @@ final class AMF0Serializer: ByteArray {}
 
 extension AMF0Serializer {
     @discardableResult
-    public func serialize(_ value: Any?) -> Self {
+    func serialize(_ value: Any?) -> Self {
         if value == nil {
             return writeUInt8(AMF0Type.null.rawValue)
         }
@@ -74,7 +74,7 @@ extension AMF0Serializer {
         }
     }
 
-    public func deserialize() throws -> Any? {
+    func deserialize() throws -> Any? {
         guard let type = try AMF0Type(rawValue: readUInt8()) else {
             return nil
         }
@@ -124,33 +124,33 @@ extension AMF0Serializer {
     /**
      * - seealso: 2.2 Number Type
      */
-    public func serialize(_ value: Double) -> Self {
+    func serialize(_ value: Double) -> Self {
         writeUInt8(AMF0Type.number.rawValue).writeDouble(value)
     }
 
-    public func deserialize() throws -> Double {
+    func deserialize() throws -> Double {
         guard try readUInt8() == AMF0Type.number.rawValue else {
             throw AMFSerializerError.deserialize
         }
         return try readDouble()
     }
 
-    public func serialize(_ value: Int) -> Self {
+    func serialize(_ value: Int) -> Self {
         serialize(Double(value))
     }
 
-    public func deserialize() throws -> Int {
+    func deserialize() throws -> Int {
         try Int(deserialize() as Double)
     }
 
     /**
      * - seealso: 2.3 Boolean Type
      */
-    public func serialize(_ value: Bool) -> Self {
+    func serialize(_ value: Bool) -> Self {
         writeBytes(Data([AMF0Type.bool.rawValue, value ? 0x01 : 0x00]))
     }
 
-    public func deserialize() throws -> Bool {
+    func deserialize() throws -> Bool {
         guard try readUInt8() == AMF0Type.bool.rawValue else {
             throw AMFSerializerError.deserialize
         }
@@ -160,13 +160,13 @@ extension AMF0Serializer {
     /**
      * - seealso: 2.4 String Type
      */
-    public func serialize(_ value: String) -> Self {
+    func serialize(_ value: String) -> Self {
         let isLong: Bool = UInt32(UInt16.max) < UInt32(value.count)
         writeUInt8(isLong ? AMF0Type.longString.rawValue : AMF0Type.string.rawValue)
         return serializeUTF8(value, isLong)
     }
 
-    public func deserialize() throws -> String {
+    func deserialize() throws -> String {
         switch try readUInt8() {
         case AMF0Type.string.rawValue:
             return try deserializeUTF8(false)
@@ -182,7 +182,7 @@ extension AMF0Serializer {
      * 2.5 Object Type
      * typealias ECMAObject = Dictionary<String, Any?>
      */
-    public func serialize(_ value: ASObject) -> Self {
+    func serialize(_ value: ASObject) -> Self {
         writeUInt8(AMF0Type.object.rawValue)
         for (key, data) in value {
             serializeUTF8(key, false).serialize(data)
@@ -190,7 +190,7 @@ extension AMF0Serializer {
         return serializeUTF8("", false).writeUInt8(AMF0Type.objectEnd.rawValue)
     }
 
-    public func deserialize() throws -> ASObject {
+    func deserialize() throws -> ASObject {
         var result = ASObject()
 
         switch try readUInt8() {
@@ -216,11 +216,11 @@ extension AMF0Serializer {
     /**
      * - seealso: 2.10 ECMA Array Type
      */
-    public func serialize(_: ASArray) -> Self {
+    func serialize(_: ASArray) -> Self {
         self
     }
 
-    public func deserialize() throws -> ASArray {
+    func deserialize() throws -> ASArray {
         switch try readUInt8() {
         case AMF0Type.null.rawValue:
             return ASArray()
@@ -247,7 +247,7 @@ extension AMF0Serializer {
      * - seealso: 2.12 Strict Array Type
      */
 
-    public func deserialize() throws -> [Any?] {
+    func deserialize() throws -> [Any?] {
         guard try readUInt8() == AMF0Type.strictArray.rawValue else {
             throw AMFSerializerError.deserialize
         }
@@ -262,14 +262,14 @@ extension AMF0Serializer {
     /**
      * - seealso: 2.13 Date Type
      */
-    public func serialize(_ value: Date) -> Self {
+    func serialize(_ value: Date) -> Self {
         writeUInt8(AMF0Type.date.rawValue).writeDouble(value.timeIntervalSince1970 * 1000).writeBytes(Data([
             0x00,
             0x00,
         ]))
     }
 
-    public func deserialize() throws -> Date {
+    func deserialize() throws -> Date {
         guard try readUInt8() == AMF0Type.date.rawValue else {
             throw AMFSerializerError.deserialize
         }
@@ -282,14 +282,14 @@ extension AMF0Serializer {
      * - seealso: 2.17 XML Document Type
      */
 
-    public func deserialize() throws -> ASXMLDocument {
+    func deserialize() throws -> ASXMLDocument {
         guard try readUInt8() == AMF0Type.xmlDocument.rawValue else {
             throw AMFSerializerError.deserialize
         }
         return try ASXMLDocument(data: deserializeUTF8(true))
     }
 
-    public func deserialize() throws -> Any {
+    func deserialize() throws -> Any {
         guard try readUInt8() == AMF0Type.typedObject.rawValue else {
             throw AMFSerializerError.deserialize
         }

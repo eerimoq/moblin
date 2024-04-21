@@ -2,10 +2,10 @@ import Foundation
 
 let kASUndefined = ASUndefined()
 
-public typealias ASObject = [String: Any?]
+typealias ASObject = [String: Any?]
 
 struct ASUndefined: CustomStringConvertible {
-    public var description: String {
+    var description: String {
         "undefined"
     }
 }
@@ -96,7 +96,7 @@ public struct ASXMLDocument: CustomStringConvertible {
     private let data: String
 
     /// Creates a new instance of string.
-    public init(data: String) {
+    init(data: String) {
         self.data = data
     }
 }

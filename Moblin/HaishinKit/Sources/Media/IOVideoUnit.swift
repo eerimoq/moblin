@@ -90,9 +90,9 @@ class ReplaceVideo {
     }
 }
 
-public final class IOVideoUnit: NSObject {
+final class IOVideoUnit: NSObject {
     let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.VideoIOComponent.lock")
-    public private(set) var device: AVCaptureDevice?
+    private(set) var device: AVCaptureDevice?
     private var input: AVCaptureInput?
     private var output: AVCaptureVideoDataOutput?
     private var connection: AVCaptureConnection?
@@ -574,7 +574,7 @@ public final class IOVideoUnit: NSObject {
         codec.delegate = nil
     }
 
-    public var isVideoMirrored = false {
+    var isVideoMirrored = false {
         didSet {
             output?.connections.filter { $0.isVideoMirroringSupported }.forEach {
                 $0.isVideoMirrored = isVideoMirrored
@@ -582,7 +582,7 @@ public final class IOVideoUnit: NSObject {
         }
     }
 
-    public var preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode = .off {
+    var preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode = .off {
         didSet {
             output?.connections.filter { $0.isVideoStabilizationSupported }.forEach {
                 $0.preferredVideoStabilizationMode = preferredVideoStabilizationMode
@@ -677,7 +677,7 @@ public final class IOVideoUnit: NSObject {
 }
 
 extension IOVideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
-    public func captureOutput(
+    func captureOutput(
         _: AVCaptureOutput,
         didOutput sampleBuffer: CMSampleBuffer,
         from _: AVCaptureConnection

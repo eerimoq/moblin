@@ -4,13 +4,13 @@ import Foundation
 /// The RTMPResponder class provides to use handle RTMPConnection's callback.
 open class RTMPResponder {
     /// A Handler represents RTMPResponder's callback function.
-    public typealias Handler = (_ data: [Any?]) -> Void
+    typealias Handler = (_ data: [Any?]) -> Void
 
     private var result: Handler
     private var status: Handler?
 
     /// Creates a new RTMPResponder object.
-    public init(result: @escaping Handler, status: Handler? = nil) {
+    init(result: @escaping Handler, status: Handler? = nil) {
         self.result = result
         self.status = status
     }

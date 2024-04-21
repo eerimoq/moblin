@@ -1,9 +1,9 @@
 import AVFAudio
 import Foundation
 
-public struct AudioCodecOutputSettings: Codable {
-    public static let `default` = AudioCodecOutputSettings()
-    public static let maximumNumberOfChannels: UInt32 = 2
+struct AudioCodecOutputSettings: Codable {
+    static let `default` = AudioCodecOutputSettings()
+    static let maximumNumberOfChannels: UInt32 = 2
 
     enum Format: Codable {
         case aac
@@ -57,11 +57,11 @@ public struct AudioCodecOutputSettings: Codable {
         }
     }
 
-    public var bitRate: Int
-    public var channelsMap: [Int: Int]
+    var bitRate: Int
+    var channelsMap: [Int: Int]
     var format: AudioCodecOutputSettings.Format = .aac
 
-    public init() {
+    init() {
         bitRate = 64 * 1000
         channelsMap = [0: 0, 1: 1]
     }

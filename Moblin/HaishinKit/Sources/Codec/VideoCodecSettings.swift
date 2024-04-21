@@ -1,7 +1,7 @@
 import Foundation
 import VideoToolbox
 
-public struct VideoCodecSettings {
+struct VideoCodecSettings {
     enum Format: Codable {
         case h264
         case hevc
@@ -16,11 +16,11 @@ public struct VideoCodecSettings {
         }
     }
 
-    public var videoSize: VideoSize
-    public var bitRate: UInt32
-    public var maxKeyFrameIntervalDuration: Int32
-    public var allowFrameReordering: Bool
-    public var profileLevel: String {
+    var videoSize: VideoSize
+    var bitRate: UInt32
+    var maxKeyFrameIntervalDuration: Int32
+    var allowFrameReordering: Bool
+    var profileLevel: String {
         didSet {
             if profileLevel.contains("HEVC") {
                 format = .hevc
@@ -32,7 +32,7 @@ public struct VideoCodecSettings {
 
     var format: Format = .h264
 
-    public init(
+    init(
         videoSize: VideoSize = .init(width: 854, height: 480),
         profileLevel: String = kVTProfileLevel_H264_Baseline_3_1 as String,
         bitRate: UInt32 = 640 * 1000,

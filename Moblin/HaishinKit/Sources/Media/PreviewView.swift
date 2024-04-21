@@ -5,11 +5,11 @@ import UIKit
 class PreviewView: UIView {
     static var defaultBackgroundColor: UIColor = .black
 
-    override public class var layerClass: AnyClass {
+    override class var layerClass: AnyClass {
         AVSampleBufferDisplayLayer.self
     }
 
-    override public var layer: AVSampleBufferDisplayLayer {
+    override var layer: AVSampleBufferDisplayLayer {
         super.layer as! AVSampleBufferDisplayLayer
     }
 
@@ -53,7 +53,7 @@ class PreviewView: UIView {
         }
     }
 
-    override public init(frame: CGRect) {
+    override init(frame: CGRect) {
         super.init(frame: frame)
         awakeFromNib()
     }
@@ -62,7 +62,7 @@ class PreviewView: UIView {
         super.init(coder: aDecoder)
     }
 
-    override public func awakeFromNib() {
+    override func awakeFromNib() {
         super.awakeFromNib()
         backgroundColor = Self.defaultBackgroundColor
         layer.backgroundColor = Self.defaultBackgroundColor.cgColor

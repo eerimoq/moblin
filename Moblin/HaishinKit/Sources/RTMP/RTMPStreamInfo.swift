@@ -5,16 +5,16 @@ private struct SendTiming {
     var sequence: Int64
 }
 
-public struct RTMPStreamStats {
-    public var rttMs: Double = 0
-    public var packetsInFlight: UInt32 = 0
+struct RTMPStreamStats {
+    var rttMs: Double = 0
+    var packetsInFlight: UInt32 = 0
 }
 
-public class RTMPStreamInfo {
-    public internal(set) var byteCount: Atomic<Int64> = .init(0)
-    public internal(set) var resourceName: String?
-    public internal(set) var currentBytesPerSecond: Int64 = 0
-    public internal(set) var stats: Atomic<RTMPStreamStats> = .init(RTMPStreamStats())
+class RTMPStreamInfo {
+    var byteCount: Atomic<Int64> = .init(0)
+    var resourceName: String?
+    var currentBytesPerSecond: Int64 = 0
+    var stats: Atomic<RTMPStreamStats> = .init(RTMPStreamStats())
 
     private var previousByteCount: Int64 = 0
     private var sendTimings: [SendTiming] = []

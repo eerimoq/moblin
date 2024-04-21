@@ -33,41 +33,40 @@ open class NetStream: NSObject {
         mixer.delegate = self
     }
 
-    public func setTorch(value: Bool) {
+    func setTorch(value: Bool) {
         lockQueue.async {
             self.mixer.video.torch = value
         }
     }
 
-    public func setFrameRate(value: Float64) {
+    func setFrameRate(value: Float64) {
         lockQueue.async {
             self.mixer.video.frameRate = value
         }
     }
 
-    /// Specifies if appleLog should be used.
-    public func setColorSpace(colorSpace: AVCaptureColorSpace, onComplete: @escaping () -> Void) {
+    func setColorSpace(colorSpace: AVCaptureColorSpace, onComplete: @escaping () -> Void) {
         lockQueue.async {
             self.mixer.video.colorSpace = colorSpace
             onComplete()
         }
     }
 
-    public func setSessionPreset(preset: AVCaptureSession.Preset) {
+    func setSessionPreset(preset: AVCaptureSession.Preset) {
         lockQueue.async {
             self.mixer.sessionPreset = preset
         }
     }
 
-    public func setVideoOrientation(value: AVCaptureVideoOrientation) {
+    func setVideoOrientation(value: AVCaptureVideoOrientation) {
         mixer.video.videoOrientation = value
     }
 
-    public func setHasAudio(value: Bool) {
+    func setHasAudio(value: Bool) {
         mixer.audio.muted = !value
     }
 
-    public var audioSettings: AudioCodecOutputSettings {
+    var audioSettings: AudioCodecOutputSettings {
         get {
             mixer.audio.codec.outputSettings
         }
@@ -76,7 +75,7 @@ open class NetStream: NSObject {
         }
     }
 
-    public var videoSettings: VideoCodecSettings {
+    var videoSettings: VideoCodecSettings {
         get {
             mixer.video.codec.settings
         }
@@ -85,7 +84,7 @@ open class NetStream: NSObject {
         }
     }
 
-    public func attachCamera(
+    func attachCamera(
         _ device: AVCaptureDevice?,
         onError: ((_ error: Error) -> Void)? = nil,
         onSuccess: (() -> Void)? = nil,
@@ -101,7 +100,7 @@ open class NetStream: NSObject {
         }
     }
 
-    public func attachAudio(
+    func attachAudio(
         _ device: AVCaptureDevice?,
         onError: ((_ error: Error) -> Void)? = nil
     ) {
@@ -114,66 +113,66 @@ open class NetStream: NSObject {
         }
     }
 
-    public func addReplaceVideoSampleBuffer(id: UUID, _ sampleBuffer: CMSampleBuffer) {
+    func addReplaceVideoSampleBuffer(id: UUID, _ sampleBuffer: CMSampleBuffer) {
         mixer.video.lockQueue.async {
             self.mixer.video.addReplaceVideoSampleBuffer(id: id, sampleBuffer)
         }
     }
 
-    public func addReplaceVideo(cameraId: UUID, latency: Double) {
+    func addReplaceVideo(cameraId: UUID, latency: Double) {
         mixer.video.lockQueue.async {
             self.mixer.video.addReplaceVideo(cameraId: cameraId, latency: latency)
         }
     }
 
-    public func removeReplaceVideo(cameraId: UUID) {
+    func removeReplaceVideo(cameraId: UUID) {
         mixer.video.lockQueue.async {
             self.mixer.video.removeReplaceVideo(cameraId: cameraId)
         }
     }
 
-    public func videoCapture() -> IOVideoUnit? {
+    func videoCapture() -> IOVideoUnit? {
         return mixer.video.lockQueue.sync {
             self.mixer.video
         }
     }
 
-    public func registerVideoEffect(_ effect: VideoEffect) {
+    func registerVideoEffect(_ effect: VideoEffect) {
         mixer.video.lockQueue.sync {
             self.mixer.video.registerEffect(effect)
         }
     }
 
-    public func unregisterVideoEffect(_ effect: VideoEffect) {
+    func unregisterVideoEffect(_ effect: VideoEffect) {
         mixer.video.lockQueue.sync {
             self.mixer.video.unregisterEffect(effect)
         }
     }
 
-    public func setPendingAfterAttachEffects(effects: [VideoEffect]) {
+    func setPendingAfterAttachEffects(effects: [VideoEffect]) {
         mixer.video.lockQueue.sync {
             self.mixer.video.setPendingAfterAttachEffects(effects: effects)
         }
     }
 
-    public func usePendingAfterAttachEffects() {
+    func usePendingAfterAttachEffects() {
         mixer.video.lockQueue.sync {
             self.mixer.video.usePendingAfterAttachEffects()
         }
     }
 
-    public func setLowFpsImage(enabled: Bool) {
+    func setLowFpsImage(enabled: Bool) {
         mixer.video.lockQueue.sync {
             self.mixer.video.setLowFpsImage(enabled: enabled)
         }
     }
 
-    public func setAudioChannelsMap(map: [Int: Int]) {
+    func setAudioChannelsMap(map: [Int: Int]) {
         audioSettings.channelsMap = map
         mixer.recorder.setAudioChannelsMap(map: map)
     }
 
-    public func startRecording(
+    func startRecording(
         url: URL,
         audioSettings: [String: Any],
         videoSettings: [String: Any]
@@ -184,7 +183,7 @@ open class NetStream: NSObject {
         mixer.recorder.startRunning()
     }
 
-    public func stopRecording() {
+    func stopRecording() {
         mixer.recorder.stopRunning()
     }
 }

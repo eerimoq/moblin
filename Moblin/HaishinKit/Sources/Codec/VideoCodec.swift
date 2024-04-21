@@ -3,24 +3,22 @@ import CoreFoundation
 import UIKit
 import VideoToolbox
 
-public protocol VideoCodecDelegate: AnyObject {
+protocol VideoCodecDelegate: AnyObject {
     func videoCodec(_ codec: VideoCodec, didOutput formatDescription: CMFormatDescription?)
     func videoCodec(_ codec: VideoCodec, didOutput sampleBuffer: CMSampleBuffer)
 }
 
-public class VideoCodec {
-    public init(lockQueue: DispatchQueue) {
+class VideoCodec {
+    init(lockQueue: DispatchQueue) {
         self.lockQueue = lockQueue
     }
 
-    /// The videoCodec's attributes value.
-    public static var defaultAttributes: [NSString: AnyObject]? = [
+    static var defaultAttributes: [NSString: AnyObject]? = [
         kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
         kCVPixelBufferMetalCompatibilityKey: kCFBooleanTrue,
     ]
 
-    /// Specifies the settings for a VideoCodec.
-    public var settings: VideoCodecSettings = .init() {
+    var settings: VideoCodecSettings = .init() {
         didSet {
             if settings.shouldInvalidateSession(oldValue) {
                 invalidateSession = true
@@ -31,11 +29,11 @@ public class VideoCodec {
     }
 
     /// The running value indicating whether the VideoCodec is running.
-    public private(set) var isRunning: Atomic<Bool> = .init(false)
+    private(set) var isRunning: Atomic<Bool> = .init(false)
 
     private var lockQueue: DispatchQueue
     var expectedFrameRate = IOMixer.defaultFrameRate
-    public var formatDescription: CMFormatDescription? {
+    var formatDescription: CMFormatDescription? {
         didSet {
             guard !CMFormatDescriptionEqual(formatDescription, otherFormatDescription: oldValue) else {
                 return
@@ -58,7 +56,7 @@ public class VideoCodec {
         return attributes
     }
 
-    public weak var delegate: (any VideoCodecDelegate)?
+    weak var delegate: (any VideoCodecDelegate)?
     private(set) var session: (any VTSessionConvertible)? {
         didSet {
             oldValue?.invalidate()
@@ -89,7 +87,7 @@ public class VideoCodec {
         }
     }
 
-    public func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
+    func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
         guard isRunning.value else {
             return
         }
@@ -165,7 +163,7 @@ public class VideoCodec {
         }
     }
 
-    public func startRunning() {
+    func startRunning() {
         lockQueue.async {
             self.isRunning.mutate { $0 = true }
             NotificationCenter.default.addObserver(
@@ -183,7 +181,7 @@ public class VideoCodec {
         }
     }
 
-    public func stopRunning() {
+    func stopRunning() {
         lockQueue.async {
             self.session = nil
             self.invalidateSession = true

@@ -14,7 +14,7 @@ public class SRTConnection: NSObject {
     var clients: [SRTSocket] = []
     private var sendHook: ((Data) -> Bool)?
 
-    public var performanceData: SRTPerformanceData {
+    var performanceData: SRTPerformanceData {
         guard let socket else {
             return .zero
         }
@@ -32,7 +32,7 @@ public class SRTConnection: NSObject {
         srt_cleanup()
     }
 
-    public func open(_ uri: URL?, sendHook: @escaping (Data) -> Bool, mode: SRTMode = .caller) throws {
+    func open(_ uri: URL?, sendHook: @escaping (Data) -> Bool, mode: SRTMode = .caller) throws {
         guard let uri = uri, let scheme = uri.scheme, let host = uri.host, let port = uri.port,
               scheme == "srt"
         else {
@@ -46,7 +46,7 @@ public class SRTConnection: NSObject {
     }
 
     /// Closes the connection from the server.
-    public func close() {
+    func close() {
         for client in clients {
             client.close()
         }

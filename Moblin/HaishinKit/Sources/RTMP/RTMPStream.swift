@@ -147,8 +147,8 @@ open class RTMPStream: NetStream {
     }
 
     static let defaultID: UInt32 = 0
-    public internal(set) var info = RTMPStreamInfo()
-    public private(set) var objectEncoding = RTMPConnection.defaultObjectEncoding
+    var info = RTMPStreamInfo()
+    private(set) var objectEncoding = RTMPConnection.defaultObjectEncoding
 
     var id: UInt32 = RTMPStream.defaultID
     var readyState: ReadyState = .initialized {
@@ -173,7 +173,6 @@ open class RTMPStream: NetStream {
     private var dataTimeStamps: [String: Date] = .init()
     private weak var rtmpConnection: RTMPConnection?
 
-    /// Creates a new stream.
     public init(connection: RTMPConnection) {
         rtmpConnection = connection
         super.init()
@@ -192,8 +191,7 @@ open class RTMPStream: NetStream {
         rtmpConnection?.removeEventListener(.rtmpStatus, selector: #selector(on(status:)), observer: self)
     }
 
-    /// Sends streaming audio, vidoe and data message from client.
-    open func publish(_ name: String?) {
+    func publish(_ name: String?) {
         // swiftlint:disable:next closure_body_length
         lockQueue.async {
             guard let name else {
@@ -227,13 +225,11 @@ open class RTMPStream: NetStream {
         }
     }
 
-    /// Stops playing or publishing and makes available other uses.
-    open func close() {
+    func close() {
         close(withLockQueue: true)
     }
 
-    /// Sends a message on a published stream to all subscribing clients.
-    open func send(handlerName: String, arguments: Any?...) {
+    func send(handlerName: String, arguments: Any?...) {
         lockQueue.async {
             guard let rtmpConnection = self.rtmpConnection, self.readyState == .publishing else {
                 return
@@ -259,8 +255,7 @@ open class RTMPStream: NetStream {
         }
     }
 
-    /// Creates flv metadata for a stream.
-    open func createMetaData() -> ASObject {
+    func createMetaData() -> ASObject {
         var metadata: [String: Any] = [:]
         if mixer.video.device != nil {
             metadata["width"] = mixer.video.codec.settings.videoSize.width
@@ -412,7 +407,7 @@ extension RTMPStream {
 }
 
 extension RTMPStream: EventDispatcherConvertible {
-    public func addEventListener(
+    func addEventListener(
         _ type: Event.Name,
         selector: Selector,
         observer: AnyObject? = nil,
@@ -421,7 +416,7 @@ extension RTMPStream: EventDispatcherConvertible {
         dispatcher.addEventListener(type, selector: selector, observer: observer, useCapture: useCapture)
     }
 
-    public func removeEventListener(
+    func removeEventListener(
         _ type: Event.Name,
         selector: Selector,
         observer: AnyObject? = nil,
@@ -430,11 +425,11 @@ extension RTMPStream: EventDispatcherConvertible {
         dispatcher.removeEventListener(type, selector: selector, observer: observer, useCapture: useCapture)
     }
 
-    public func dispatch(event: Event) {
+    func dispatch(event: Event) {
         dispatcher.dispatch(event: event)
     }
 
-    public func dispatch(_ type: Event.Name, data: Any?) {
+    func dispatch(_ type: Event.Name, data: Any?) {
         dispatcher.dispatch(type, data: data)
     }
 }

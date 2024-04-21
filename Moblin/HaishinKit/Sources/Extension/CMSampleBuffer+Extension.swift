@@ -2,7 +2,7 @@ import AVFoundation
 import CoreMedia
 
 extension CMSampleBuffer {
-    public var isNotSync: Bool {
+    var isNotSync: Bool {
         get {
             getAttachmentValue(for: kCMSampleAttachmentKey_NotSync) ?? false
         }
