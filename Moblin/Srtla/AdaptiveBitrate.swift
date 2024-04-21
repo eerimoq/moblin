@@ -15,6 +15,7 @@ struct AdaptiveBitrateSettings {
     var rttDiffHighAllowedSpike: Double
     var rttDiffHighMinDecrease: Int64
     var pifDiffIncreaseFactor: Int64
+    var minimumBitrate: Int64
 }
 
 let adaptiveBitrateFastSettings = AdaptiveBitrateSettings(
@@ -22,7 +23,8 @@ let adaptiveBitrateFastSettings = AdaptiveBitrateSettings(
     rttDiffHighFactor: 0.9,
     rttDiffHighAllowedSpike: 50,
     rttDiffHighMinDecrease: 250_000,
-    pifDiffIncreaseFactor: 100_000
+    pifDiffIncreaseFactor: 100_000,
+    minimumBitrate: 50000
 )
 
 let adaptiveBitrateSlowSettings = AdaptiveBitrateSettings(
@@ -30,16 +32,17 @@ let adaptiveBitrateSlowSettings = AdaptiveBitrateSettings(
     rttDiffHighFactor: 0.95,
     rttDiffHighAllowedSpike: 100,
     rttDiffHighMinDecrease: 100_000,
-    pifDiffIncreaseFactor: 25000
+    pifDiffIncreaseFactor: 25000,
+    minimumBitrate: 50000
 )
 
 class AdaptiveBitrate {
     private var avgRtt: Double = 0.0
     private var fastRtt: Double = 0.0
-    private var curBitrate: Int64 = 250_000
-    private var prevBitrate: Int64 = 250_000
+    private var currentBitrate: Int64 = 250_000
+    private var previousBitrate: Int64 = 250_000
     private var targetBitrate: Int64 = 250_000
-    private var tempMaxBitrate: Int64 = 250_000
+    private var currentMaximumBitrate: Int64 = 250_000
     private var smoothPif: Double = 0
     private var fastPif: Double = 0
     private weak var delegate: (any AdaptiveBitrateDelegate)!
@@ -105,9 +108,10 @@ class AdaptiveBitrate {
         pifDiffThing = settings.packetsInFlight - pifDiffThing
         if pif < Double(settings.packetsInFlight), fastRtt <= avgRtt + allowedRttJitter {
             if Int64(stats.packetsInFlight - pif) < allowedPifJitter {
-                tempMaxBitrate += (settings.pifDiffIncreaseFactor * pifDiffThing) / settings.packetsInFlight
-                if tempMaxBitrate > targetBitrate {
-                    tempMaxBitrate = targetBitrate
+                currentMaximumBitrate += (settings.pifDiffIncreaseFactor * pifDiffThing) / settings
+                    .packetsInFlight
+                if currentMaximumBitrate > targetBitrate {
+                    currentMaximumBitrate = targetBitrate
                 }
             }
         }
@@ -134,10 +138,10 @@ class AdaptiveBitrate {
         minimumDecrease: Int64
     ) {
         if smoothPif > pifMax {
-            let newMaxBitrate = Int64(Double(tempMaxBitrate) * factor)
-            let differece = tempMaxBitrate - newMaxBitrate
+            let newMaxBitrate = Int64(Double(currentMaximumBitrate) * factor)
+            let differece = currentMaximumBitrate - newMaxBitrate
             if differece < minimumDecrease {
-                tempMaxBitrate -= minimumDecrease
+                currentMaximumBitrate -= minimumDecrease
                 logAdaptiveAcion(
                     actionTaken: """
                     PIF: decreasing bitrate by \(minimumDecrease / 1000)k, \
@@ -145,7 +149,7 @@ class AdaptiveBitrate {
                     """
                 )
             } else {
-                tempMaxBitrate = Int64(Double(tempMaxBitrate) * factor)
+                currentMaximumBitrate = Int64(Double(currentMaximumBitrate) * factor)
                 logAdaptiveAcion(
                     actionTaken: """
                     PIF: decreasing bitrate by \(Int((100 * (1 - factor)).rounded()))%, \
@@ -173,17 +177,17 @@ class AdaptiveBitrate {
         minimumDecrease: Int64
     ) {
         if avgRtt > rttMax {
-            let newMaxBitrate = Int64(Double(tempMaxBitrate) * factor)
-            let differece = tempMaxBitrate - newMaxBitrate
+            let newMaxBitrate = Int64(Double(currentMaximumBitrate) * factor)
+            let differece = currentMaximumBitrate - newMaxBitrate
 
             if differece < minimumDecrease {
-                tempMaxBitrate -= minimumDecrease
+                currentMaximumBitrate -= minimumDecrease
                 logAdaptiveAcion(
                     actionTaken: "RTT: dec bitrate by \(minimumDecrease), avgrtt: \(avgRtt) > rttmax: \(rttMax)"
                 )
 
             } else {
-                tempMaxBitrate = newMaxBitrate
+                currentMaximumBitrate = newMaxBitrate
                 logAdaptiveAcion(
                     actionTaken: "RTT: dec bitrate to \(factor) %, avgrtt: \(avgRtt) > rttmax: \(rttMax)"
                 )
@@ -191,12 +195,12 @@ class AdaptiveBitrate {
         }
     }
 
-    var getCurrentBitrate: Int64 {
-        return curBitrate / 1000
+    func getCurrentBitrate() -> Int64 {
+        return currentBitrate / 1000
     }
 
-    var getTempMaxBitrate: Int64 {
-        return tempMaxBitrate / 1000
+    func getCurrentMaximumBitrate() -> Int64 {
+        return currentMaximumBitrate / 1000
     }
 
     var getAdaptiveActions: [String] {
@@ -218,10 +222,10 @@ class AdaptiveBitrate {
         minimumDecrease: Int64
     ) {
         if stats.rttMs > avgRtt + rttSpikeAllowed {
-            let newMaxBitrate = Int64(Double(tempMaxBitrate) * factor)
-            let differece = tempMaxBitrate - newMaxBitrate
+            let newMaxBitrate = Int64(Double(currentMaximumBitrate) * factor)
+            let differece = currentMaximumBitrate - newMaxBitrate
             if differece < minimumDecrease {
-                tempMaxBitrate -= minimumDecrease
+                currentMaximumBitrate -= minimumDecrease
                 logAdaptiveAcion(
                     actionTaken: """
                     RTT: decreasing bitrate by \(minimumDecrease / 1000)k, msrtt \
@@ -229,7 +233,7 @@ class AdaptiveBitrate {
                     """
                 )
             } else {
-                tempMaxBitrate = newMaxBitrate
+                currentMaximumBitrate = newMaxBitrate
                 logAdaptiveAcion(
                     actionTaken: """
                     RTT: decreasing bitrate by \(Int((100 * (1 - factor)).rounded()))%, msrtt \(Int(stats
@@ -248,7 +252,7 @@ class AdaptiveBitrate {
             logAdaptiveAcion(
                 actionTaken: "Lazy dec pifdiff \(pifDiffThing) > limit \(settings.packetsInFlight)"
             )
-            tempMaxBitrate = Int64(Double(tempMaxBitrate) * 0.95)
+            currentMaximumBitrate = Int64(Double(currentMaximumBitrate) * 0.95)
         }
         if pifDiffThing <= (settings.packetsInFlight / 5) {
             pifDiffThing = 0
@@ -261,26 +265,25 @@ class AdaptiveBitrate {
         }
         // harder decrease
         if pifDiffThing == settings.packetsInFlight {
-            tempMaxBitrate -= 500_000
+            currentMaximumBitrate -= 500_000
             logAdaptiveAcion(
                 actionTaken: "-500 dec pifdiff \(pifDiffThing) = limit \(settings.packetsInFlight)"
             )
         }
         pifDiffThing = settings.packetsInFlight - pifDiffThing
-        if tempMaxBitrate < 250_000 {
-            tempMaxBitrate = 250_000
+        if currentMaximumBitrate < 250_000 {
+            currentMaximumBitrate = 250_000
         }
-        // check for int overflows
-        var tempBitrate = Int64(tempMaxBitrate)
+        var tempBitrate = Int64(currentMaximumBitrate)
         tempBitrate *= Int64(pifDiffThing)
         tempBitrate /= Int64(settings.packetsInFlight)
-        curBitrate = Int64(tempBitrate)
-        if curBitrate < 50000 {
-            curBitrate = 50000
+        currentBitrate = Int64(tempBitrate)
+        if currentBitrate < settings.minimumBitrate {
+            currentBitrate = settings.minimumBitrate
         }
         // pif running away do a quick lower of bitrate temporarily
         if Int32(fastPif) - Int32(smoothPif) > settings.packetsInFlight * 2 {
-            curBitrate = 50000
+            currentBitrate = settings.minimumBitrate
         }
     }
 
@@ -315,9 +318,9 @@ class AdaptiveBitrate {
             minimumDecrease: settings.rttDiffHighMinDecrease
         )
         calculateCurrentBitrate()
-        if prevBitrate != curBitrate {
-            delegate.adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32(curBitrate))
-            prevBitrate = curBitrate
+        if previousBitrate != currentBitrate {
+            delegate.adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32(currentBitrate))
+            previousBitrate = currentBitrate
         }
     }
 }

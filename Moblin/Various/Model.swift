@@ -455,7 +455,8 @@ final class Model: NSObject, ObservableObject {
                 rttDiffHighFactor: Double(customSettings.rttDiffHighDecreaseFactor),
                 rttDiffHighAllowedSpike: Double(customSettings.rttDiffHighAllowedSpike),
                 rttDiffHighMinDecrease: Int64(customSettings.rttDiffHighMinimumDecrease * 1000),
-                pifDiffIncreaseFactor: Int64(customSettings.pifDiffIncreaseFactor * 1000)
+                pifDiffIncreaseFactor: Int64(customSettings.pifDiffIncreaseFactor * 1000),
+                minimumBitrate: 50000
             ))
         }
     }

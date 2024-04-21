@@ -194,7 +194,7 @@ final class Media: NSObject {
                     \(adaptiveBitrate.getFastPif)   \
                     \(adaptiveBitrate.getSmoothPif)
                     """,
-                    "B: \(adaptiveBitrate.getCurrentBitrate) /  \(adaptiveBitrate.getTempMaxBitrate)",
+                    "B: \(adaptiveBitrate.getCurrentBitrate()) /  \(adaptiveBitrate.getCurrentMaximumBitrate())",
                 ] + adaptiveBitrate.getAdaptiveActions
             } else {
                 return [
@@ -223,7 +223,7 @@ final class Media: NSObject {
                     \(adaptiveBitrate.getFastPif)   \
                     \(adaptiveBitrate.getSmoothPif)
                     """,
-                    "B: \(adaptiveBitrate.getCurrentBitrate) /  \(adaptiveBitrate.getTempMaxBitrate)",
+                    "B: \(adaptiveBitrate.getCurrentBitrate()) /  \(adaptiveBitrate.getCurrentMaximumBitrate())",
                 ] + adaptiveBitrate.getAdaptiveActions
             } else {
                 return [
@@ -425,7 +425,7 @@ final class Media: NSObject {
         multiplier ^= 1
         var bitRate: UInt32
         if let adaptiveBitrate {
-            bitRate = UInt32(1000 * adaptiveBitrate.getCurrentBitrate)
+            bitRate = UInt32(1000 * adaptiveBitrate.getCurrentBitrate())
         } else {
             bitRate = bitrate
         }
