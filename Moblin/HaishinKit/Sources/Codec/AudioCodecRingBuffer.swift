@@ -3,13 +3,9 @@ import AVFoundation
 import Foundation
 
 final class AudioCodecRingBuffer {
-    var isOutputBufferReady: Bool {
-        numSamplesPerBuffer == index
-    }
-
     private(set) var latestPresentationTimeStamp: CMTime = .invalid
     private var index = 0
-    private var numSamplesPerBuffer: Int
+    private let numSamplesPerBuffer: Int
     private var format: AVAudioFormat
     private(set) var outputBuffer: AVAudioPCMBuffer
     private var workingBuffer: AVAudioPCMBuffer
@@ -139,8 +135,14 @@ final class AudioCodecRingBuffer {
         return numSamples
     }
 
-    func next() {
-        latestPresentationTimeStamp = .invalid
-        index = 0
+    func getReadyOutputBuffer() -> (AVAudioPCMBuffer, CMTime)? {
+        guard numSamplesPerBuffer == index else {
+            return nil
+        }
+        defer {
+            latestPresentationTimeStamp = .invalid
+            index = 0
+        }
+        return (outputBuffer, latestPresentationTimeStamp)
     }
 }

@@ -93,13 +93,8 @@ class AudioCodec {
         var offset = 0
         while offset < sampleBuffer.numSamples {
             offset += ringBuffer.appendSampleBuffer(sampleBuffer, presentationTimeStamp, offset)
-            if ringBuffer.isOutputBufferReady {
-                convertBuffer(
-                    audioConverter: audioConverter,
-                    inputBuffer: ringBuffer.outputBuffer,
-                    presentationTimeStamp: ringBuffer.latestPresentationTimeStamp
-                )
-                ringBuffer.next()
+            if let (outputBuffer, latestPresentationTimeStamp) = ringBuffer.getReadyOutputBuffer() {
+                convertBuffer(audioConverter, outputBuffer, latestPresentationTimeStamp)
             }
         }
     }
@@ -146,17 +141,13 @@ class AudioCodec {
         guard isRunning.value, let audioConverter else {
             return
         }
-        convertBuffer(
-            audioConverter: audioConverter,
-            inputBuffer: audioBuffer,
-            presentationTimeStamp: presentationTimeStamp
-        )
+        convertBuffer(audioConverter, audioBuffer, presentationTimeStamp)
     }
 
     private func convertBuffer(
-        audioConverter: AVAudioConverter,
-        inputBuffer: AVAudioBuffer,
-        presentationTimeStamp: CMTime
+        _ audioConverter: AVAudioConverter,
+        _ inputBuffer: AVAudioBuffer,
+        _ presentationTimeStamp: CMTime
     ) {
         guard let outputBuffer = createOutputBuffer(audioConverter) else {
             return
