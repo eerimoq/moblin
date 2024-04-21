@@ -106,29 +106,22 @@ class VideoCodec {
                     logger.info("Failed to decode frame status \(status)")
                     return
                 }
+                guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: imageBuffer) else {
+                    return
+                }
                 var timingInfo = CMSampleTimingInfo(
                     duration: duration,
                     presentationTimeStamp: presentationTimeStamp,
                     decodeTimeStamp: sampleBuffer.decodeTimeStamp
                 )
-                var videoFormatDescription: CMVideoFormatDescription?
-                var status = CMVideoFormatDescriptionCreateForImageBuffer(
-                    allocator: kCFAllocatorDefault,
-                    imageBuffer: imageBuffer,
-                    formatDescriptionOut: &videoFormatDescription
-                )
-                guard status == noErr else {
-                    logger.info("Failed to decode frame status \(status)")
-                    return
-                }
                 var sampleBuffer: CMSampleBuffer?
-                status = CMSampleBufferCreateForImageBuffer(
+                let status = CMSampleBufferCreateForImageBuffer(
                     allocator: kCFAllocatorDefault,
                     imageBuffer: imageBuffer,
                     dataReady: true,
                     makeDataReadyCallback: nil,
                     refcon: nil,
-                    formatDescription: videoFormatDescription!,
+                    formatDescription: formatDescription,
                     sampleTiming: &timingInfo,
                     sampleBufferOut: &sampleBuffer
                 )

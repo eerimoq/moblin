@@ -2,6 +2,33 @@ import AVFoundation
 import CoreMedia
 
 extension CMSampleBuffer {
+    static func create(
+        imageBuffer: CVImageBuffer,
+        formatDescription: CMVideoFormatDescription,
+        duration: CMTime,
+        presentationTimeStamp: CMTime,
+        decodeTimeStamp: CMTime
+    ) -> CMSampleBuffer? {
+        var sampleTiming = CMSampleTimingInfo(
+            duration: duration,
+            presentationTimeStamp: presentationTimeStamp,
+            decodeTimeStamp: decodeTimeStamp
+        )
+        var sampleBuffer: CMSampleBuffer?
+        let status = CMSampleBufferCreateReadyWithImageBuffer(
+            allocator: kCFAllocatorDefault,
+            imageBuffer: imageBuffer,
+            formatDescription: formatDescription,
+            sampleTiming: &sampleTiming,
+            sampleBufferOut: &sampleBuffer
+        )
+        guard status == noErr else {
+            logger.info("Failed to create sample buffer with error \(status)")
+            return nil
+        }
+        return sampleBuffer
+    }
+
     var isNotSync: Bool {
         get {
             getAttachmentValue(for: kCMSampleAttachmentKey_NotSync) ?? false

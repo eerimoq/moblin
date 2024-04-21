@@ -275,6 +275,7 @@
 		03BC11642AE4BEC400C38FC4 /* Emotes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC11632AE4BEC400C38FC4 /* Emotes.swift */; };
 		03BC11672AE5654700C38FC4 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 03BC11662AE5654700C38FC4 /* SDWebImageSwiftUI */; };
 		03BC116B2AE56C2200C38FC4 /* SDWebImageWebPCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 03BC116A2AE56C2200C38FC4 /* SDWebImageWebPCoder */; };
+		03BC90A92BD4F6B000529987 /* CMVideoFormatDescription+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC90A82BD4F6B000529987 /* CMVideoFormatDescription+Extension.swift */; };
 		03BDE2222B24367D00DF193A /* ObsWebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BDE2212B24367D00DF193A /* ObsWebSocket.swift */; };
 		03BDE2262B24656400DF193A /* StreamObsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BDE2252B24656400DF193A /* StreamObsSettingsView.swift */; };
 		03BE504A2B3EB59A004720AF /* IpMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BE50492B3EB59A004720AF /* IpMonitor.swift */; };
@@ -665,6 +666,7 @@
 		03BC115F2AE4BD9200C38FC4 /* Ffz.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ffz.swift; sourceTree = "<group>"; };
 		03BC11612AE4BDA200C38FC4 /* Seventv.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Seventv.swift; sourceTree = "<group>"; };
 		03BC11632AE4BEC400C38FC4 /* Emotes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Emotes.swift; sourceTree = "<group>"; };
+		03BC90A82BD4F6B000529987 /* CMVideoFormatDescription+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CMVideoFormatDescription+Extension.swift"; sourceTree = "<group>"; };
 		03BDE2212B24367D00DF193A /* ObsWebSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObsWebSocket.swift; sourceTree = "<group>"; };
 		03BDE2252B24656400DF193A /* StreamObsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamObsSettingsView.swift; sourceTree = "<group>"; };
 		03BE50492B3EB59A004720AF /* IpMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IpMonitor.swift; sourceTree = "<group>"; };
@@ -1096,6 +1098,7 @@
 				0359F81D2BD3DA5F005BFDA8 /* CMAudioFormatDescription+Extension.swift */,
 				0359F81E2BD3DA5F005BFDA8 /* CMBlockBuffer+Extension.swift */,
 				0359F8202BD3DA5F005BFDA8 /* CMSampleBuffer+Extension.swift */,
+				03BC90A82BD4F6B000529987 /* CMVideoFormatDescription+Extension.swift */,
 				0359F8212BD3DA5F005BFDA8 /* CVPixelBuffer+Extension.swift */,
 				0359F8232BD3DA5F005BFDA8 /* Data+Extension.swift */,
 				0359F8242BD3DA5F005BFDA8 /* ExpressibleByIntegerLiteral+Extension.swift */,
@@ -2217,6 +2220,7 @@
 				0359F8CD2BD3DA61005BFDA8 /* FLVVideoCodec.swift in Sources */,
 				03B16A282B35614100E5AB07 /* RecordingsRecordingSettingsView.swift in Sources */,
 				032815DC2AC915AE001F8A85 /* RandomEffect.swift in Sources */,
+				03BC90A92BD4F6B000529987 /* CMVideoFormatDescription+Extension.swift in Sources */,
 				031C15B92B93339C00BA967D /* WatchSettingsView.swift in Sources */,
 				03AA89952BC434640007BFE8 /* WebBrowserSettingsView.swift in Sources */,
 				0359F8F42BD3DA61005BFDA8 /* RTMPStream.swift in Sources */,

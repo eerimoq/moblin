@@ -70,22 +70,16 @@ class ReplaceVideo {
     private func makeSampleBuffer(realSampleBuffer: CMSampleBuffer,
                                   replaceSampleBuffer: CMSampleBuffer) -> CMSampleBuffer?
     {
-        var timing = CMSampleTimingInfo(
+        guard let sampleBuffer = CMSampleBuffer.create(
+            imageBuffer: replaceSampleBuffer.imageBuffer!,
+            formatDescription: replaceSampleBuffer.formatDescription!,
             duration: realSampleBuffer.duration,
             presentationTimeStamp: realSampleBuffer.presentationTimeStamp,
             decodeTimeStamp: realSampleBuffer.decodeTimeStamp
-        )
-        var sampleBuffer: CMSampleBuffer?
-        guard CMSampleBufferCreateReadyWithImageBuffer(
-            allocator: kCFAllocatorDefault,
-            imageBuffer: replaceSampleBuffer.imageBuffer!,
-            formatDescription: replaceSampleBuffer.formatDescription!,
-            sampleTiming: &timing,
-            sampleBufferOut: &sampleBuffer
-        ) == noErr else {
+        ) else {
             return nil
         }
-        sampleBuffer?.isNotSync = replaceSampleBuffer.isNotSync
+        sampleBuffer.isNotSync = replaceSampleBuffer.isNotSync
         return sampleBuffer
     }
 }
@@ -199,27 +193,23 @@ final class IOVideoUnit: NSObject {
             return
         }
         let timeDelta = CMTime(seconds: delta, preferredTimescale: 1000)
-        var timing = CMSampleTimingInfo(
-            duration: latestSampleBuffer.duration,
-            presentationTimeStamp: latestSampleBuffer.presentationTimeStamp + timeDelta,
-            decodeTimeStamp: latestSampleBuffer.decodeTimeStamp + timeDelta
-        )
-        var sampleBuffer: CMSampleBuffer?
-        guard CMSampleBufferCreateReadyWithImageBuffer(
-            allocator: kCFAllocatorDefault,
-            imageBuffer: latestSampleBuffer.imageBuffer!,
-            formatDescription: latestSampleBuffer.formatDescription!,
-            sampleTiming: &timing,
-            sampleBufferOut: &sampleBuffer
-        ) == noErr else {
-            return
-        }
-        guard mixer?
-            .useSampleBuffer(sampleBuffer!.presentationTimeStamp, mediaType: AVMediaType.video) == true
+        guard let sampleBuffer = CMSampleBuffer.create(imageBuffer: latestSampleBuffer.imageBuffer!,
+                                                       formatDescription: latestSampleBuffer
+                                                           .formatDescription!,
+                                                       duration: latestSampleBuffer.duration,
+                                                       presentationTimeStamp: latestSampleBuffer
+                                                           .presentationTimeStamp + timeDelta,
+                                                       decodeTimeStamp: latestSampleBuffer
+                                                           .decodeTimeStamp + timeDelta)
         else {
             return
         }
-        _ = appendSampleBuffer(sampleBuffer!, isFirstAfterAttach: false)
+        guard mixer?
+            .useSampleBuffer(sampleBuffer.presentationTimeStamp, mediaType: AVMediaType.video) == true
+        else {
+            return
+        }
+        _ = appendSampleBuffer(sampleBuffer, isFirstAfterAttach: false)
     }
 
     func attach(_ device: AVCaptureDevice?, _ replaceVideo: UUID?) throws {
@@ -298,7 +288,7 @@ final class IOVideoUnit: NSObject {
             kCVPixelBufferHeightKey: NSNumber(value: dimensions.height),
         ]
         poolColorSpace = nil
-        // This is not correct, I'm sure. Colors are not alsays correct. At least for Apple Log.
+        // This is not correct, I'm sure. Colors are not always correct. At least for Apple Log.
         if let formatDescriptionExtension = formatDescriptionExtension as Dictionary? {
             let colorPrimaries = formatDescriptionExtension[kCVImageBufferColorPrimariesKey]
             if let colorPrimaries {
@@ -375,33 +365,16 @@ final class IOVideoUnit: NSObject {
         } else {
             context.render(image, to: outputImageBuffer)
         }
-        var formatDescription: CMVideoFormatDescription?
-        guard CMVideoFormatDescriptionCreateForImageBuffer(
-            allocator: nil,
-            imageBuffer: outputImageBuffer,
-            formatDescriptionOut: &formatDescription
-        ) == noErr else {
+        guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: outputImageBuffer) else {
             return (nil, nil)
         }
-        guard let formatDescription else {
-            return (nil, nil)
-        }
-        var timing = CMSampleTimingInfo(
-            duration: sampleBuffer.duration,
-            presentationTimeStamp: sampleBuffer.presentationTimeStamp,
-            decodeTimeStamp: sampleBuffer.decodeTimeStamp
-        )
-        var outputSampleBuffer: CMSampleBuffer?
-        guard CMSampleBufferCreateReadyWithImageBuffer(
-            allocator: kCFAllocatorDefault,
-            imageBuffer: outputImageBuffer,
-            formatDescription: formatDescription,
-            sampleTiming: &timing,
-            sampleBufferOut: &outputSampleBuffer
-        ) == noErr else {
-            return (nil, nil)
-        }
-        guard let outputSampleBuffer else {
+        guard let outputSampleBuffer = CMSampleBuffer.create(imageBuffer: outputImageBuffer,
+                                                             formatDescription: formatDescription,
+                                                             duration: sampleBuffer.duration,
+                                                             presentationTimeStamp: sampleBuffer
+                                                                 .presentationTimeStamp,
+                                                             decodeTimeStamp: sampleBuffer.decodeTimeStamp)
+        else {
             return (nil, nil)
         }
         return (outputImageBuffer, outputSampleBuffer)
@@ -480,29 +453,18 @@ final class IOVideoUnit: NSObject {
             }
             let image = createBlackImage(width: Double(width), height: Double(height))
             CIContext().render(image, to: blackImageBuffer)
-            CMVideoFormatDescriptionCreateForImageBuffer(
-                allocator: kCFAllocatorDefault,
-                imageBuffer: blackImageBuffer,
-                formatDescriptionOut: &blackFormatDescription
-            )
+            blackFormatDescription = CMVideoFormatDescription.create(imageBuffer: blackImageBuffer)
             guard blackFormatDescription != nil else {
                 return realSampleBuffer
             }
         }
-        var timing = CMSampleTimingInfo(
-            duration: realSampleBuffer.duration,
-            presentationTimeStamp: realSampleBuffer.presentationTimeStamp,
-            decodeTimeStamp: realSampleBuffer.decodeTimeStamp
-        )
-        var sampleBuffer: CMSampleBuffer?
-        CMSampleBufferCreateReadyWithImageBuffer(
-            allocator: kCFAllocatorDefault,
-            imageBuffer: blackImageBuffer!,
-            formatDescription: blackFormatDescription!,
-            sampleTiming: &timing,
-            sampleBufferOut: &sampleBuffer
-        )
-        guard let sampleBuffer else {
+        guard let sampleBuffer = CMSampleBuffer.create(imageBuffer: blackImageBuffer!,
+                                                       formatDescription: blackFormatDescription!,
+                                                       duration: realSampleBuffer.duration,
+                                                       presentationTimeStamp: realSampleBuffer
+                                                           .presentationTimeStamp,
+                                                       decodeTimeStamp: realSampleBuffer.decodeTimeStamp)
+        else {
             return realSampleBuffer
         }
         return sampleBuffer
