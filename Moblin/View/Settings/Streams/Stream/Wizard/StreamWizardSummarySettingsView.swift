@@ -88,7 +88,7 @@ struct StreamWizardSummarySettingsView: View {
                     Text("Direct")
                 }
             }
-            if model.wizardPlatform == .custom {
+            if model.wizardPlatform == .custom || model.wizardNetworkSetup == .myServers {
                 if model.wizardCustomProtocol == .srt {
                     Section {
                         TextValueView(name: String(localized: "URL"), value: model.wizardCustomSrtUrl)
@@ -110,7 +110,8 @@ struct StreamWizardSummarySettingsView: View {
                         Text("RTMP(S)")
                     }
                 }
-            } else {
+            }
+            if model.wizardPlatform != .custom {
                 if model.wizardNetworkSetup != .direct {
                     if model.wizardObsRemoteControlEnabled {
                         Section {

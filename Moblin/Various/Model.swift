@@ -181,6 +181,7 @@ enum WizardNetworkSetup {
     case obs
     case belaboxCloudObs
     case direct
+    case myServers
 }
 
 enum WizardCustomProtocol {
@@ -4760,26 +4761,33 @@ extension Model {
         return cleanedUrl
     }
 
+    private func createStreamFromWizardCustomUrl() -> String? {
+        switch wizardCustomProtocol {
+        case .none:
+            break
+        case .srt:
+            if var urlComponents = URLComponents(string: wizardCustomSrtUrl.trim()) {
+                urlComponents.queryItems = [
+                    URLQueryItem(name: "streamid", value: wizardCustomSrtStreamId.trim()),
+                ]
+                if let fullUrl = urlComponents.url {
+                    return fullUrl.absoluteString
+                }
+            }
+        case .rtmp:
+            let rtmpUrl = wizardCustomRtmpUrl
+                .trim()
+                .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+            return "\(rtmpUrl)/\(wizardCustomRtmpStreamKey.trim())"
+        }
+        return nil
+    }
+
     private func createStreamFromWizardUrl() -> String {
         var url = defaultStreamUrl
         if wizardPlatform == .custom {
-            switch wizardCustomProtocol {
-            case .none:
-                break
-            case .srt:
-                if var urlComponents = URLComponents(string: wizardCustomSrtUrl.trim()) {
-                    urlComponents.queryItems = [
-                        URLQueryItem(name: "streamid", value: wizardCustomSrtStreamId.trim()),
-                    ]
-                    if let fullUrl = urlComponents.url {
-                        url = fullUrl.absoluteString
-                    }
-                }
-            case .rtmp:
-                let rtmpUrl = wizardCustomRtmpUrl
-                    .trim()
-                    .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-                url = "\(rtmpUrl)/\(wizardCustomRtmpStreamKey.trim())"
+            if let customUrl = createStreamFromWizardCustomUrl() {
+                url = customUrl
             }
         } else {
             switch wizardNetworkSetup {
@@ -4792,6 +4800,10 @@ extension Model {
             case .direct:
                 let ingestUrl = wizardDirectIngest.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
                 url = "\(ingestUrl)/\(wizardDirectStreamKey)"
+            case .myServers:
+                if let customUrl = createStreamFromWizardCustomUrl() {
+                    url = customUrl
+                }
             }
         }
         return cleanWizardUrl(url: url)
@@ -4860,6 +4872,15 @@ extension Model {
             stream.codec = .h265hevc
         case .direct:
             stream.codec = .h264avc
+        case .myServers:
+            switch wizardCustomProtocol {
+            case .none:
+                stream.codec = .h264avc
+            case .srt:
+                stream.codec = .h265hevc
+            case .rtmp:
+                stream.codec = .h264avc
+            }
         }
         stream.audioBitrate = 128_000
         database.streams.append(stream)
@@ -4903,6 +4924,8 @@ extension Model {
                 wizardBelaboxUrl = stream.url
             }
         case .direct:
+            break
+        case .myServers:
             break
         }
     }

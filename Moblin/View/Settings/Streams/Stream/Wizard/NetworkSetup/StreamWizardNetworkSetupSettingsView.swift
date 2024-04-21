@@ -50,6 +50,19 @@ struct StreamWizardNetworkSetupSettingsView: View {
                         """
                     )
                 }
+                Section {
+                    NavigationLink(destination: StreamWizardNetworkSetupMyServersSettingsView()) {
+                        HStack {
+                            Text("Moblin")
+                            Image(systemName: "arrow.right")
+                            Text("My server(s)")
+                            Image(systemName: "arrow.right")
+                            Text(platform)
+                        }
+                    }
+                } footer: {
+                    Text("Best possible stability. May use bonding. Most flexible setup.")
+                }
             }
             Spacer()
         }

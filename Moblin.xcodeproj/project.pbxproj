@@ -276,6 +276,9 @@
 		03BC11672AE5654700C38FC4 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 03BC11662AE5654700C38FC4 /* SDWebImageSwiftUI */; };
 		03BC116B2AE56C2200C38FC4 /* SDWebImageWebPCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 03BC116A2AE56C2200C38FC4 /* SDWebImageWebPCoder */; };
 		03BC90A92BD4F6B000529987 /* CMVideoFormatDescription+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC90A82BD4F6B000529987 /* CMVideoFormatDescription+Extension.swift */; };
+		03BC90AC2BD57F6200529987 /* StreamWizardNetworkSetupMyServersSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC90AB2BD57F6200529987 /* StreamWizardNetworkSetupMyServersSettingsView.swift */; };
+		03BC90B02BD580E300529987 /* StreamWizardNetworkSetupMyServersSrtSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC90AF2BD580E300529987 /* StreamWizardNetworkSetupMyServersSrtSettingsView.swift */; };
+		03BC90B22BD580F800529987 /* StreamWizardNetworkSetupMyServersRtmpSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC90B12BD580F800529987 /* StreamWizardNetworkSetupMyServersRtmpSettingsView.swift */; };
 		03BDE2222B24367D00DF193A /* ObsWebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BDE2212B24367D00DF193A /* ObsWebSocket.swift */; };
 		03BDE2262B24656400DF193A /* StreamObsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BDE2252B24656400DF193A /* StreamObsSettingsView.swift */; };
 		03BE504A2B3EB59A004720AF /* IpMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BE50492B3EB59A004720AF /* IpMonitor.swift */; };
@@ -667,6 +670,9 @@
 		03BC11612AE4BDA200C38FC4 /* Seventv.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Seventv.swift; sourceTree = "<group>"; };
 		03BC11632AE4BEC400C38FC4 /* Emotes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Emotes.swift; sourceTree = "<group>"; };
 		03BC90A82BD4F6B000529987 /* CMVideoFormatDescription+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CMVideoFormatDescription+Extension.swift"; sourceTree = "<group>"; };
+		03BC90AB2BD57F6200529987 /* StreamWizardNetworkSetupMyServersSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardNetworkSetupMyServersSettingsView.swift; sourceTree = "<group>"; };
+		03BC90AF2BD580E300529987 /* StreamWizardNetworkSetupMyServersSrtSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardNetworkSetupMyServersSrtSettingsView.swift; sourceTree = "<group>"; };
+		03BC90B12BD580F800529987 /* StreamWizardNetworkSetupMyServersRtmpSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardNetworkSetupMyServersRtmpSettingsView.swift; sourceTree = "<group>"; };
 		03BDE2212B24367D00DF193A /* ObsWebSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObsWebSocket.swift; sourceTree = "<group>"; };
 		03BDE2252B24656400DF193A /* StreamObsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamObsSettingsView.swift; sourceTree = "<group>"; };
 		03BE50492B3EB59A004720AF /* IpMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IpMonitor.swift; sourceTree = "<group>"; };
@@ -1818,6 +1824,16 @@
 			path = Emotes;
 			sourceTree = "<group>";
 		};
+		03BC90AE2BD580BC00529987 /* MyServers */ = {
+			isa = PBXGroup;
+			children = (
+				03BC90AB2BD57F6200529987 /* StreamWizardNetworkSetupMyServersSettingsView.swift */,
+				03BC90B12BD580F800529987 /* StreamWizardNetworkSetupMyServersRtmpSettingsView.swift */,
+				03BC90AF2BD580E300529987 /* StreamWizardNetworkSetupMyServersSrtSettingsView.swift */,
+			);
+			path = MyServers;
+			sourceTree = "<group>";
+		};
 		03BDE2202B24364700DF193A /* OBS */ = {
 			isa = PBXGroup;
 			children = (
@@ -1876,6 +1892,7 @@
 		03DBD10D2B3013CE004B0BE6 /* NetworkSetup */ = {
 			isa = PBXGroup;
 			children = (
+				03BC90AE2BD580BC00529987 /* MyServers */,
 				03DBD1022B300D55004B0BE6 /* StreamWizardNetworkSetupBelaboxSettingsView.swift */,
 				03DBD1062B300D91004B0BE6 /* StreamWizardNetworkSetupObsSettingsView.swift */,
 				03DBD1092B300DA8004B0BE6 /* StreamWizardNetworkSetupDirectSettingsView.swift */,
@@ -2167,6 +2184,7 @@
 				0359F8AC2BD3DA61005BFDA8 /* AudioCodecOutputSettings.swift in Sources */,
 				035D37282AB0EBB500045B92 /* IconAndTextView.swift in Sources */,
 				0359F8AB2BD3DA61005BFDA8 /* AudioCodec.swift in Sources */,
+				03BC90B02BD580E300529987 /* StreamWizardNetworkSetupMyServersSrtSettingsView.swift in Sources */,
 				03AD440A2B78A8A700B1B9B9 /* StreamButtonsSettingsView.swift in Sources */,
 				03A9836B2A9A05D7008FF0DB /* StreamOverlayView.swift in Sources */,
 				0359F8EA2BD3DA61005BFDA8 /* EventDispatcher.swift in Sources */,
@@ -2248,6 +2266,7 @@
 				03487F262B334B63003D9ED9 /* StreamingHistory.swift in Sources */,
 				032FDBFF2B0B11B0007BE85E /* PositionEditView.swift in Sources */,
 				0325D0BB2BB3D7DD007EE85B /* KickViewers.swift in Sources */,
+				03BC90B22BD580F800529987 /* StreamWizardNetworkSetupMyServersRtmpSettingsView.swift in Sources */,
 				0359F8C42BD3DA61005BFDA8 /* VTDecompressionSession+Extension.swift in Sources */,
 				03D691532B36EDB600038F13 /* TextValueView.swift in Sources */,
 				0359F8D22BD3DA61005BFDA8 /* IORecorder.swift in Sources */,
@@ -2273,6 +2292,7 @@
 				03A3F4C72AF4C0AD00F465D1 /* AdaptiveBitrate.swift in Sources */,
 				038DF9ED2B387AAF0027363A /* StreamWizardYouTubeSettingsView.swift in Sources */,
 				0359F8C02BD3DA61005BFDA8 /* Data+Extension.swift in Sources */,
+				03BC90AC2BD57F6200529987 /* StreamWizardNetworkSetupMyServersSettingsView.swift in Sources */,
 				03B373F62A9EF98E0028DDD5 /* ControlBarLandscapeView.swift in Sources */,
 				0359F8D82BD3DA61005BFDA8 /* AVCDecoderConfigurationRecord.swift in Sources */,
 				0379BB8E2AA90D1900B718B6 /* DebugLogSettingsView.swift in Sources */,
