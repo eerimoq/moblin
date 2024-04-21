@@ -336,7 +336,7 @@ final class IOVideoUnit: NSObject {
         let extent = image.extent
         var failedEffect: String?
         for effect in effects {
-            let effectOutputImage = effect.execute(image, info: sampleBuffer)
+            let effectOutputImage = effect.execute(image)
             if effectOutputImage.extent == extent {
                 image = effectOutputImage
             } else {

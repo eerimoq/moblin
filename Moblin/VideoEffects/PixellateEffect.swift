@@ -8,7 +8,7 @@ final class PixellateEffect: VideoEffect {
         return "pixellate filter"
     }
 
-    override func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {
+    override func execute(_ image: CIImage) -> CIImage {
         filter.inputImage = image
         filter.center = .init(x: 0, y: 0)
         filter.scale = 10 * (Float(image.extent.width) / 1920)

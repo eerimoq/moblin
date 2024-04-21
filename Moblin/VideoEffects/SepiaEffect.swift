@@ -8,7 +8,7 @@ final class SepiaEffect: VideoEffect {
         return "sepia filter"
     }
 
-    override func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {
+    override func execute(_ image: CIImage) -> CIImage {
         filter.inputImage = image
         filter.intensity = 0.9
         return filter.outputImage ?? image

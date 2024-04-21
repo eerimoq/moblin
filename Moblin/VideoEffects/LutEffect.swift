@@ -89,7 +89,7 @@ final class LutEffect: VideoEffect {
         }
     }
 
-    override func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {
+    override func execute(_ image: CIImage) -> CIImage {
         let filter = lutQueue.sync {
             self.filter
         }

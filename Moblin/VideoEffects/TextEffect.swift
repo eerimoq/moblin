@@ -11,8 +11,8 @@ final class TextEffect: VideoEffect {
     var y: Double
     private var overlay: CIImage?
     private var image: UIImage?
-    private var nextUpdateTime = -1.0
     private let settingName: String
+    private var nextUpdateTime = Date()
 
     init(format _: String, fontSize: CGFloat, settingName: String) {
         self.fontSize = fontSize
@@ -34,12 +34,9 @@ final class TextEffect: VideoEffect {
         return fontSize * (width / 1920)
     }
 
-    private func updateOverlay(size: CGSize, time: Double) {
-        guard time > nextUpdateTime else {
+    private func updateOverlay(size: CGSize) {
+        guard Date() > nextUpdateTime else {
             return
-        }
-        if nextUpdateTime == -1.0 {
-            nextUpdateTime = time
         }
         nextUpdateTime += 1
         DispatchQueue.main.async {
@@ -77,11 +74,8 @@ final class TextEffect: VideoEffect {
         }
     }
 
-    override func execute(_ image: CIImage, info: CMSampleBuffer?) -> CIImage {
-        guard let info else {
-            return image
-        }
-        updateOverlay(size: image.extent.size, time: info.presentationTimeStamp.seconds)
+    override func execute(_ image: CIImage) -> CIImage {
+        updateOverlay(size: image.extent.size)
         filter.inputImage = overlay
         filter.backgroundImage = image
         return filter.outputImage ?? image

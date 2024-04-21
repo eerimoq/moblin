@@ -213,7 +213,7 @@ final class BrowserEffect: VideoEffect {
         }
     }
 
-    override func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {
+    override func execute(_ image: CIImage) -> CIImage {
         updateOverlay()
         filter.inputImage = overlay
         filter.backgroundImage = image

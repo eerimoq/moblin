@@ -54,7 +54,7 @@ final class RandomEffect: VideoEffect {
         }
     }
 
-    override func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {
+    override func execute(_ image: CIImage) -> CIImage {
         extent = image.extent
         guard let filter else {
             return image

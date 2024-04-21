@@ -8,7 +8,7 @@ final class GrayScaleEffect: VideoEffect {
         return "gray scale filter"
     }
 
-    override func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {
+    override func execute(_ image: CIImage) -> CIImage {
         filter.inputImage = image
         filter.color = CIColor(red: 0.75, green: 0.75, blue: 0.75)
         filter.intensity = 1.0

@@ -96,7 +96,7 @@ final class DrawOnStreamEffect: VideoEffect {
         }
     }
 
-    override func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {
+    override func execute(_ image: CIImage) -> CIImage {
         filter.inputImage = getOverlay()
         filter.backgroundImage = image
         return filter.outputImage ?? image

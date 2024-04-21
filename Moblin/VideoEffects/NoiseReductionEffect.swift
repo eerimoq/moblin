@@ -10,7 +10,7 @@ final class NoiseReductionEffect: VideoEffect {
         return "noise reduction"
     }
 
-    override func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {
+    override func execute(_ image: CIImage) -> CIImage {
         filter.inputImage = image
         filter.noiseLevel = noiseLevel
         filter.sharpness = sharpness

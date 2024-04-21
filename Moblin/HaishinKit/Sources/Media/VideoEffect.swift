@@ -6,7 +6,7 @@ open class VideoEffect: NSObject {
         return ""
     }
 
-    open func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {
+    open func execute(_ image: CIImage) -> CIImage {
         image
     }
 }

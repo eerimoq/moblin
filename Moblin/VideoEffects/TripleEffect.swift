@@ -9,7 +9,7 @@ final class TripleEffect: VideoEffect {
         return "triple filter"
     }
 
-    override func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {
+    override func execute(_ image: CIImage) -> CIImage {
         let size = image.extent.size
         let width = size.width / 3
         let height = size.height

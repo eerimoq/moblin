@@ -48,7 +48,7 @@ final class ImageEffect: VideoEffect {
         return "\(settingName) image widget"
     }
 
-    override func execute(_ image: CIImage, info _: CMSampleBuffer?) -> CIImage {
+    override func execute(_ image: CIImage) -> CIImage {
         extent = image.extent
         filter.inputImage = overlay
         filter.backgroundImage = image
