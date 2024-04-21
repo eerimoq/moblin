@@ -30,30 +30,21 @@ struct VideoCodecSettings {
         }
     }
 
-    var format: Format = .h264
+    private(set) var format: Format = .h264
 
-    init(
-        videoSize: VideoSize = .init(width: 854, height: 480),
-        profileLevel: String = kVTProfileLevel_H264_Baseline_3_1 as String,
-        bitRate: UInt32 = 640 * 1000,
-        maxKeyFrameIntervalDuration: Int32 = 2,
-        allowFrameReordering: Bool = false
-    ) {
-        self.videoSize = videoSize
-        self.profileLevel = profileLevel
-        self.bitRate = bitRate
-        self.maxKeyFrameIntervalDuration = maxKeyFrameIntervalDuration
-        self.allowFrameReordering = allowFrameReordering
-        if profileLevel.contains("HEVC") {
-            format = .hevc
-        }
+    init() {
+        videoSize = .init(width: 854, height: 480)
+        profileLevel = kVTProfileLevel_H264_Baseline_3_1 as String
+        bitRate = 640 * 1000
+        maxKeyFrameIntervalDuration = 2
+        allowFrameReordering = false
     }
 
-    func shouldInvalidateSession(_ rhs: VideoCodecSettings) -> Bool {
-        return !(videoSize == rhs.videoSize &&
-            maxKeyFrameIntervalDuration == rhs.maxKeyFrameIntervalDuration &&
-            allowFrameReordering == rhs.allowFrameReordering &&
-            profileLevel == rhs.profileLevel)
+    func shouldInvalidateSession(_ other: VideoCodecSettings) -> Bool {
+        return !(videoSize == other.videoSize &&
+            maxKeyFrameIntervalDuration == other.maxKeyFrameIntervalDuration &&
+            allowFrameReordering == other.allowFrameReordering &&
+            profileLevel == other.profileLevel)
     }
 
     private func createDataRateLimits(bitRate: UInt32) -> CFArray {
