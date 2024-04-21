@@ -58,7 +58,7 @@ class AudioCodec {
         }
     }
 
-    private var lockQueue: DispatchQueue
+    private let lockQueue: DispatchQueue
     var inSourceFormat: AudioStreamBasicDescription? {
         didSet {
             guard var inSourceFormat, inSourceFormat != oldValue else {

@@ -28,10 +28,9 @@ class VideoCodec {
         }
     }
 
-    /// The running value indicating whether the VideoCodec is running.
     private(set) var isRunning: Atomic<Bool> = .init(false)
 
-    private var lockQueue: DispatchQueue
+    private let lockQueue: DispatchQueue
     var expectedFrameRate = IOMixer.defaultFrameRate
     var formatDescription: CMFormatDescription? {
         didSet {
@@ -109,28 +108,15 @@ class VideoCodec {
                 guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: imageBuffer) else {
                     return
                 }
-                var timingInfo = CMSampleTimingInfo(
-                    duration: duration,
-                    presentationTimeStamp: presentationTimeStamp,
-                    decodeTimeStamp: sampleBuffer.decodeTimeStamp
-                )
-                var sampleBuffer: CMSampleBuffer?
-                let status = CMSampleBufferCreateForImageBuffer(
-                    allocator: kCFAllocatorDefault,
-                    imageBuffer: imageBuffer,
-                    dataReady: true,
-                    makeDataReadyCallback: nil,
-                    refcon: nil,
-                    formatDescription: formatDescription,
-                    sampleTiming: &timingInfo,
-                    sampleBufferOut: &sampleBuffer
-                )
-                guard let buffer = sampleBuffer, status == noErr else {
-                    logger
-                        .info("Failed to decode frame status \(status) an got buffer \(sampleBuffer != nil)")
+                guard let sampleBuffer = CMSampleBuffer.create(imageBuffer: imageBuffer,
+                                                               formatDescription: formatDescription,
+                                                               duration: duration,
+                                                               presentationTimeStamp: presentationTimeStamp,
+                                                               decodeTimeStamp: sampleBuffer.decodeTimeStamp)
+                else {
                     return
                 }
-                delegate?.videoCodec(self, didOutput: buffer)
+                delegate?.videoCodec(self, didOutput: sampleBuffer)
             }
     }
 
