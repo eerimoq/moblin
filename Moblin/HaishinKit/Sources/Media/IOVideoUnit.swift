@@ -565,7 +565,7 @@ final class IOVideoUnit: NSObject {
             logger.info("No matching video format found")
             return
         }
-        logger.info("Selected video format: \(format)")
+        logger.debug("Selected video format: \(format)")
         do {
             try device.lockForConfiguration()
             if device.activeFormat != format {

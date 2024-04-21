@@ -184,7 +184,7 @@ class VideoCodec {
 func makeVideoCompressionSession(_ videoCodec: VideoCodec) -> (any VTSessionConvertible)? {
     var session: VTCompressionSession?
     for attribute in videoCodec.attributes ?? [:] {
-        logger.info("video codec attribute: \(attribute.key) \(attribute.value)")
+        logger.debug("video codec attribute: \(attribute.key) \(attribute.value)")
     }
     var status = VTCompressionSessionCreate(
         allocator: kCFAllocatorDefault,
