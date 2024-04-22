@@ -9,17 +9,14 @@ enum ESStreamType: UInt8 {
     case mpeg2Audio = 0x04
     case mpeg2TabledData = 0x05
     case mpeg2PacketizedData = 0x06
-
     case adtsAac = 0x0F
     case h263 = 0x10
-
     case h264 = 0x1B
     case h265 = 0x24
 }
 
 struct ESSpecificData {
     static let fixedHeaderSize: Int = 5
-
     var streamType: ESStreamType = .unspecific
     var elementaryPID: UInt16 = 0
     var esInfoLength: UInt16 = 0
@@ -48,7 +45,7 @@ struct ESSpecificData {
                 esInfoLength = try buffer.readUInt16() & 0x01FF
                 esDescriptors = try buffer.readBytes(Int(esInfoLength))
             } catch {
-                logger.error("\(buffer)")
+                logger.error("Elementary stream data: \(buffer)")
             }
         }
     }

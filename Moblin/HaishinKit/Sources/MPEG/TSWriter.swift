@@ -270,9 +270,17 @@ class TSWriter {
 
 extension TSWriter: AudioCodecDelegate {
     func audioCodec(didOutput outputFormat: AVAudioFormat) {
-        logger.info("Audio setup \(outputFormat) (forcing AAC)")
+        logger.info("ts-writer: Audio setup \(outputFormat)")
         var data = ESSpecificData()
-        data.streamType = .adtsAac
+        switch outputFormat.formatDescription.audioStreamBasicDescription?.mFormatID {
+        case kAudioFormatMPEG4AAC:
+            data.streamType = .adtsAac
+        case kAudioFormatOpus:
+            data.streamType = .mpeg2PacketizedData
+        default:
+            logger.info("ts-writer: Unsupported audio format.")
+            return
+        }
         data.elementaryPID = TSWriter.defaultAudioPID
         PMT.elementaryStreamSpecificData.append(data)
         audioContinuityCounter = 0
@@ -281,11 +289,11 @@ extension TSWriter: AudioCodecDelegate {
 
     func audioCodec(didOutput audioBuffer: AVAudioBuffer, presentationTimeStamp: CMTime) {
         guard let audioBuffer = audioBuffer as? AVAudioCompressedBuffer else {
-            logger.info("Audio output no buffer")
+            logger.info("ts-writer: Audio output no buffer")
             return
         }
         guard canWriteFor else {
-            logger.info("Cannot write audio buffer")
+            logger.info("ts-writer: Cannot write audio buffer. Video config missing?")
             return
         }
         if baseAudioTimestamp == .invalid {
@@ -356,7 +364,7 @@ extension TSWriter: VideoCodecDelegate {
             return
         }
         guard canWriteFor else {
-            logger.info("Cannot write video buffer")
+            logger.info("ts-writer: Cannot write video buffer. Audio config missing?")
             return
         }
         if baseVideoTimestamp == .invalid {
