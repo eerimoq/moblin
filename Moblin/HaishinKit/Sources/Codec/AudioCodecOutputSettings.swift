@@ -66,7 +66,7 @@ struct AudioCodecOutputSettings: Codable {
                     mFormatID: kAudioFormatOpus,
                     mFormatFlags: 0,
                     mBytesPerPacket: 0,
-                    mFramesPerPacket: 1024,
+                    mFramesPerPacket: 2880,
                     mBytesPerFrame: 0,
                     mChannelsPerFrame: min(
                         inSourceFormat.mChannelsPerFrame,
