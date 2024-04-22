@@ -1,21 +1,17 @@
 import Foundation
 
 /**
- - seealso: https://en.wikipedia.org/wiki/Program-specific_information
+ - see: https://en.wikipedia.org/wiki/Program-specific_information
  */
-
 class TSProgram {
     static let reservedBits: UInt8 = 0x03
     static let defaultTableIDExtension: UInt16 = 1
-
     var pointerField: UInt8 = 0
     var pointerFillerBytes = Data()
-
     var tableId: UInt8 = 0
     var sectionSyntaxIndicator = false
     var privateBit = false
     var sectionLength: UInt16 = 0
-
     var tableIdExtension: UInt16 = TSProgram.defaultTableIDExtension
     var versionNumber: UInt8 = 0
     var currentNextIndicator = true

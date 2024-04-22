@@ -27,31 +27,18 @@ class TSAdaptationField {
     }
 
     var data: Data {
-        get {
-            var byte: UInt8 = 0
-            byte |= randomAccessIndicator ? 0x40 : 0
-            byte |= pcr != nil ? 0x10 : 0
-            let buffer = ByteArray()
-                .writeUInt8(length)
-                .writeUInt8(byte)
-            if let pcr {
-                buffer.writeBytes(pcr)
-            }
-            if let stuffingBytes {
-                buffer.writeBytes(stuffingBytes)
-            }
-            return buffer.data
+        var byte: UInt8 = 0
+        byte |= randomAccessIndicator ? 0x40 : 0
+        byte |= pcr != nil ? 0x10 : 0
+        let buffer = ByteArray()
+            .writeUInt8(length)
+            .writeUInt8(byte)
+        if let pcr {
+            buffer.writeBytes(pcr)
         }
-        set {
-            let buffer = ByteArray(data: newValue)
-            do {
-                length = try buffer.readUInt8()
-                let byte = try buffer.readUInt8()
-                randomAccessIndicator = (byte & 0x40) == 0x40
-                stuffingBytes = try buffer.readBytes(buffer.bytesAvailable)
-            } catch {
-                logger.error("\(buffer)")
-            }
+        if let stuffingBytes {
+            buffer.writeBytes(stuffingBytes)
         }
+        return buffer.data
     }
 }

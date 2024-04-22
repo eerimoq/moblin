@@ -21,7 +21,6 @@ struct AVCDecoderConfigurationRecord: DecoderConfigurationRecord {
     }
 
     static let reserveNumOfSequenceParameterSets: UInt8 = 0xE0
-
     var configurationVersion: UInt8 = 1
     var avcProfileIndication: UInt8 = 0
     var profileCompatibility: UInt8 = 0
