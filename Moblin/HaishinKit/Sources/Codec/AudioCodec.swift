@@ -77,25 +77,12 @@ class AudioCodec {
             return
         }
         switch outputSettings.format {
-        case .aac:
-            appendSampleBufferOutputAac(sampleBuffer, presentationTimeStamp)
         case .pcm:
             appendSampleBufferOutputPcm(sampleBuffer, presentationTimeStamp)
-        }
-    }
-
-    private func appendSampleBufferOutputAac(_ sampleBuffer: CMSampleBuffer,
-                                             _ presentationTimeStamp: CMTime)
-    {
-        guard let audioConverter, let ringBuffer else {
-            return
-        }
-        var offset = 0
-        while offset < sampleBuffer.numSamples {
-            offset += ringBuffer.appendSampleBuffer(sampleBuffer, presentationTimeStamp, offset)
-            if let (outputBuffer, latestPresentationTimeStamp) = ringBuffer.getReadyOutputBuffer() {
-                convertBuffer(audioConverter, outputBuffer, latestPresentationTimeStamp)
-            }
+        case .aac:
+            appendSampleBufferOutputAac(sampleBuffer, presentationTimeStamp)
+        case .opus:
+            appendSampleBufferOutputOpus(sampleBuffer, presentationTimeStamp)
         }
     }
 
@@ -133,6 +120,36 @@ class AudioCodec {
                     )
                 )
                 offset += sampleSize
+            }
+        }
+    }
+
+    private func appendSampleBufferOutputAac(_ sampleBuffer: CMSampleBuffer,
+                                             _ presentationTimeStamp: CMTime)
+    {
+        guard let audioConverter, let ringBuffer else {
+            return
+        }
+        var offset = 0
+        while offset < sampleBuffer.numSamples {
+            offset += ringBuffer.appendSampleBuffer(sampleBuffer, presentationTimeStamp, offset)
+            if let (outputBuffer, latestPresentationTimeStamp) = ringBuffer.getReadyOutputBuffer() {
+                convertBuffer(audioConverter, outputBuffer, latestPresentationTimeStamp)
+            }
+        }
+    }
+
+    private func appendSampleBufferOutputOpus(_ sampleBuffer: CMSampleBuffer,
+                                              _ presentationTimeStamp: CMTime)
+    {
+        guard let audioConverter, let ringBuffer else {
+            return
+        }
+        var offset = 0
+        while offset < sampleBuffer.numSamples {
+            offset += ringBuffer.appendSampleBuffer(sampleBuffer, presentationTimeStamp, offset)
+            if let (outputBuffer, latestPresentationTimeStamp) = ringBuffer.getReadyOutputBuffer() {
+                convertBuffer(audioConverter, outputBuffer, latestPresentationTimeStamp)
             }
         }
     }

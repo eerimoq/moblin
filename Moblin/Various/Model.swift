@@ -2025,6 +2025,7 @@ final class Model: NSObject, ObservableObject {
         setStreamKeyFrameInterval()
         setStreamBitrate(stream: stream)
         setAudioStreamBitrate(stream: stream)
+        setAudioStreamFormat(format: .aac)
         setAudioChannelsMap(channelsMap: [
             0: database.audio!.audioOutputToInputChannelsMap!.channel1,
             1: database.audio!.audioOutputToInputChannelsMap!.channel2,
@@ -2155,6 +2156,10 @@ final class Model: NSObject, ObservableObject {
 
     func setAudioStreamBitrate(stream: SettingsStream) {
         media.setAudioStreamBitrate(bitrate: stream.audioBitrate!)
+    }
+
+    func setAudioStreamFormat(format: AudioCodecOutputSettings.Format) {
+        media.setAudioStreamFormat(format: format)
     }
 
     func setAudioChannelsMap(channelsMap: [Int: Int]) {

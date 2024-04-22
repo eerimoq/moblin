@@ -6,19 +6,26 @@ struct AudioCodecOutputSettings: Codable {
     static let maximumNumberOfChannels: UInt32 = 2
 
     enum Format: Codable {
-        case aac
         case pcm
+        case aac
+        case opus
 
         func makeAudioBuffer(_ format: AVAudioFormat) -> AVAudioBuffer? {
             switch self {
+            case .pcm:
+                return AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 1024)
             case .aac:
                 return AVAudioCompressedBuffer(
                     format: format,
                     packetCapacity: 1,
                     maximumPacketSize: 1024 * Int(format.channelCount)
                 )
-            case .pcm:
-                return AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 1024)
+            case .opus:
+                return AVAudioCompressedBuffer(
+                    format: format,
+                    packetCapacity: 1,
+                    maximumPacketSize: 1024 * Int(format.channelCount)
+                )
             }
         }
 
@@ -27,6 +34,16 @@ struct AudioCodecOutputSettings: Codable {
                 return nil
             }
             switch self {
+            case .pcm:
+                return AVAudioFormat(
+                    commonFormat: .pcmFormatFloat32,
+                    sampleRate: inSourceFormat.mSampleRate,
+                    channels: min(
+                        inSourceFormat.mChannelsPerFrame,
+                        AudioCodecOutputSettings.maximumNumberOfChannels
+                    ),
+                    interleaved: true
+                )
             case .aac:
                 var streamDescription = AudioStreamBasicDescription(
                     mSampleRate: inSourceFormat.mSampleRate,
@@ -43,16 +60,22 @@ struct AudioCodecOutputSettings: Codable {
                     mReserved: 0
                 )
                 return AVAudioFormat(streamDescription: &streamDescription)
-            case .pcm:
-                return AVAudioFormat(
-                    commonFormat: .pcmFormatFloat32,
-                    sampleRate: inSourceFormat.mSampleRate,
-                    channels: min(
+            case .opus:
+                var streamDescription = AudioStreamBasicDescription(
+                    mSampleRate: inSourceFormat.mSampleRate,
+                    mFormatID: kAudioFormatOpus,
+                    mFormatFlags: 0,
+                    mBytesPerPacket: 0,
+                    mFramesPerPacket: 1024,
+                    mBytesPerFrame: 0,
+                    mChannelsPerFrame: min(
                         inSourceFormat.mChannelsPerFrame,
                         AudioCodecOutputSettings.maximumNumberOfChannels
                     ),
-                    interleaved: true
+                    mBitsPerChannel: 0,
+                    mReserved: 0
                 )
+                return AVAudioFormat(streamDescription: &streamDescription)
             }
         }
     }

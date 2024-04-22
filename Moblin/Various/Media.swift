@@ -453,6 +453,10 @@ final class Media: NSObject {
         netStream.audioSettings.bitRate = bitrate
     }
 
+    func setAudioStreamFormat(format: AudioCodecOutputSettings.Format) {
+        netStream.audioSettings.format = format
+    }
+
     func setAudioChannelsMap(channelsMap: [Int: Int]) {
         netStream.setAudioChannelsMap(map: channelsMap)
     }
