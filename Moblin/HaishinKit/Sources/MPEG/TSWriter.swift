@@ -4,7 +4,6 @@ import Foundation
 
 var payloadSize: Int = 1316
 
-/// The interface an MPEG-2 TS (Transport Stream) writer uses to inform its delegates.
 protocol TSWriterDelegate: AnyObject {
     func writer(_ writer: TSWriter, doOutput data: Data)
     func writer(_ writer: TSWriter, doOutputPointer pointer: UnsafeRawBufferPointer, count: Int)
@@ -22,7 +21,6 @@ class TSWriter {
 
     static let defaultSegmentDuration: Double = 2
 
-    /// The delegate instance.
     weak var delegate: (any TSWriterDelegate)?
     var isRunning: Atomic<Bool> = .init(false)
     var expectedMedias: Set<AVMediaType> = []
@@ -106,7 +104,6 @@ class TSWriter {
         let packets = split(PID, PES: PES, timestamp: timestamp)
         packets[0].adaptationField?.randomAccessIndicator = randomAccessIndicator
         rotateFileHandle(timestamp)
-
         let count = packets.count * 188
         var data = Data(
             bytesNoCopy: UnsafeMutableRawPointer.allocate(byteCount: count, alignment: 8),
@@ -116,17 +113,8 @@ class TSWriter {
         data.withUnsafeMutableBytes { (pointer: UnsafeMutableRawBufferPointer) in
             var pointer = pointer
             for var packet in packets {
-                switch PID {
-                case TSWriter.defaultAudioPID:
-                    packet.continuityCounter = audioContinuityCounter
-                    audioContinuityCounter = (audioContinuityCounter + 1) & 0x0F
-                case TSWriter.defaultVideoPID:
-                    packet.continuityCounter = videoContinuityCounter
-                    videoContinuityCounter = (videoContinuityCounter + 1) & 0x0F
-                default:
-                    break
-                }
-                packet.fixedHeader(pointer: pointer)
+                packet.continuityCounter = nextContinuityCounter(PID: PID)
+                packet.encodeFixedHeaderInto(pointer: pointer)
                 pointer = UnsafeMutableRawBufferPointer(rebasing: pointer[4...])
                 if let adaptationField = packet.adaptationField {
                     adaptationField.data.withUnsafeBytes { (adaptationPointer: UnsafeRawBufferPointer) in
@@ -140,8 +128,26 @@ class TSWriter {
                 pointer = UnsafeMutableRawBufferPointer(rebasing: pointer[packet.payload.count...])
             }
         }
-
         return data
+    }
+
+    private func nextContinuityCounter(PID: UInt16) -> UInt8 {
+        switch PID {
+        case TSWriter.defaultAudioPID:
+            defer {
+                audioContinuityCounter += 1
+                audioContinuityCounter &= 0x0F
+            }
+            return audioContinuityCounter
+        case TSWriter.defaultVideoPID:
+            defer {
+                videoContinuityCounter += 1
+                videoContinuityCounter &= 0x0F
+            }
+            return videoContinuityCounter
+        default:
+            return 0
+        }
     }
 
     func rotateFileHandle(_ timestamp: CMTime) {
@@ -235,7 +241,7 @@ class TSWriter {
         packets.append(contentsOf: PAT.arrayOfPackets(TSWriter.defaultPATPID))
         packets.append(contentsOf: PMT.arrayOfPackets(TSWriter.defaultPMTPID))
         for packet in packets {
-            bytes.append(packet.data)
+            bytes.append(packet.encode())
         }
         write(bytes)
     }
@@ -253,9 +259,6 @@ class TSWriter {
     private func split(_ PID: UInt16, PES: PacketizedElementaryStream, timestamp: CMTime) -> [TSPacket] {
         var PCR: UInt64?
         let timeSinceLatestPcr = timestamp.seconds - PCRTimestamp.seconds
-        /* if timeSinceLatestPcr <= 0 {
-             logger.info("timeSinceLatestPcr: \(PID) \(timeSinceLatestPcr)")
-         } */
         if PCRPID == PID, timeSinceLatestPcr >= 0.02 {
             PCR =
                 UInt64((timestamp

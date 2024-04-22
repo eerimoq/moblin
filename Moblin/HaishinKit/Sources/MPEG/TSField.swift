@@ -10,10 +10,6 @@ class TSAdaptationField {
 
     init() {}
 
-    init(data: Data) {
-        self.data = data
-    }
-
     func compute() {
         length = TSAdaptationField.fixedSectionSize
         if let pcr {

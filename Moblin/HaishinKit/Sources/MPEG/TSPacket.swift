@@ -1,12 +1,11 @@
 import AVFoundation
 
 /**
- - seealso: https://en.wikipedia.org/wiki/MPEG_transport_stream#Packet
+ - see: https://en.wikipedia.org/wiki/MPEG_transport_stream#Packet
  */
 struct TSPacket {
     static let size = 188
     static let headerSize = 4
-
     var payloadUnitStartIndicator = false
     var pid: UInt16 = 0
     var continuityCounter: UInt8 = 0
@@ -44,7 +43,7 @@ struct TSPacket {
         return length
     }
 
-    func fixedHeader(pointer: UnsafeMutableRawBufferPointer) {
+    func encodeFixedHeaderInto(pointer: UnsafeMutableRawBufferPointer) {
         pointer.storeBytes(of: 0x47, toByteOffset: 0, as: UInt8.self)
         pointer.storeBytes(
             of: (payloadUnitStartIndicator ? 0x40 : 0) | UInt8(pid >> 8),
@@ -59,38 +58,12 @@ struct TSPacket {
         )
     }
 
-    var data: Data {
-        get {
-            let bytes = Data([
-                0x47,
-                (payloadUnitStartIndicator ? 0x40 : 0) | UInt8(pid >> 8),
-                UInt8(pid & 0x00FF),
-                (adaptationField != nil ? 0x20 : 0) | 0x10 | continuityCounter,
-            ])
-            return ByteArray()
-                .writeBytes(bytes)
-                .writeBytes(adaptationField?.data ?? Data())
-                .writeBytes(payload)
-                .data
+    func encode() -> Data {
+        var header = Data(count: 4)
+        header.withUnsafeMutableBytes { pointer in
+            encodeFixedHeaderInto(pointer: pointer)
         }
-        set {
-            let buffer = ByteArray(data: newValue)
-            do {
-                let data: Data = try buffer.readBytes(4)
-                payloadUnitStartIndicator = (data[1] & 0x40) == 0x40
-                pid = UInt16(data[1] & 0x1F) << 8 | UInt16(data[2])
-                let adaptationFieldFlag = (data[3] & 0x20) == 0x20
-                continuityCounter = UInt8(data[3] & 0xF)
-                if adaptationFieldFlag {
-                    let length = try Int(buffer.readUInt8())
-                    buffer.position -= 1
-                    adaptationField = try TSAdaptationField(data: buffer.readBytes(length + 1))
-                }
-                payload = try buffer.readBytes(buffer.bytesAvailable)
-            } catch {
-                logger.error("\(buffer)")
-            }
-        }
+        return header + (adaptationField?.data ?? Data()) + payload
     }
 }
 
