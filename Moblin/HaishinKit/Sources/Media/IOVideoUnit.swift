@@ -4,7 +4,7 @@ import UIKit
 
 var ioVideoUnitIgnoreFramesAfterAttachSeconds = 0.3
 var ioVideoUnitWatchInterval = 1.0
-let pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
+var pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
 
 private func setOrientation(
     device: AVCaptureDevice?,
@@ -161,6 +161,7 @@ final class IOVideoUnit: NSObject {
     private var poolHeight: Int32 = 0
     private var poolColorSpace: CGColorSpace?
     private var poolFormatDescriptionExtension: CFDictionary?
+    private var firstFrame = true
 
     deinit {
         stopGapFillerTimer()
@@ -644,6 +645,10 @@ extension IOVideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
         didOutput sampleBuffer: CMSampleBuffer,
         from _: AVCaptureConnection
     ) {
+        if firstFrame {
+            firstFrame = false
+            logger.info("First video frame: \(sampleBuffer.imageBuffer.debugDescription)")
+        }
         for replaceVideo in replaceVideos.values {
             replaceVideo.updateSampleBuffer(sampleBuffer.presentationTimeStamp.seconds)
         }

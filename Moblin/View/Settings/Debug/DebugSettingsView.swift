@@ -21,6 +21,14 @@ struct DebugSettingsView: View {
         model.store()
     }
 
+    private func onPixelFormatChange(format: String) {
+        model.database.debug!.pixelFormat = format
+        model.setPixelFormat()
+        model.store()
+        model.reloadStream()
+        model.sceneUpdated()
+    }
+
     var body: some View {
         Form {
             Section {
@@ -34,11 +42,8 @@ struct DebugSettingsView: View {
                 NavigationLink(destination: InlinePickerView(
                     title: String(localized: "Log level"),
                     onChange: onLogLevelChange,
-                    items: InlinePickerItem
-                        .fromStrings(values: logLevels),
-                    selectedId: model.database
-                        .debug!.logLevel
-                        .rawValue
+                    items: InlinePickerItem.fromStrings(values: logLevels),
+                    selectedId: model.database.debug!.logLevel.rawValue
                 )) {
                     TextItemView(
                         name: String(localized: "Log level"),
@@ -90,6 +95,17 @@ struct DebugSettingsView: View {
                 }, set: { value in
                     model.setGlobalToneMapping(on: value)
                 }))
+                NavigationLink(destination: InlinePickerView(
+                    title: String(localized: "Pixel format"),
+                    onChange: onPixelFormatChange,
+                    items: InlinePickerItem.fromStrings(values: pixelFormats),
+                    selectedId: model.database.debug!.pixelFormat!
+                )) {
+                    TextItemView(
+                        name: String(localized: "Pixel format"),
+                        value: model.database.debug!.pixelFormat!
+                    )
+                }
             } header: {
                 Text("Experimental")
             }

@@ -1050,6 +1050,13 @@ class SettingsDebugAudioOutputToInputChannelsMap: Codable {
     var channel1: Int = 1
 }
 
+let pixelFormats = ["32BGRA", "420YpCbCr8BiPlanarFullRange", "420YpCbCr8BiPlanarVideoRange"]
+let pixelFormatTypes = [
+    kCVPixelFormatType_32BGRA,
+    kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
+    kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
+]
+
 class SettingsDebug: Codable {
     var logLevel: SettingsLogLevel = .error
     var srtOverlay: Bool = false
@@ -1061,6 +1068,7 @@ class SettingsDebug: Codable {
     var audioOutputToInputChannelsMap: SettingsDebugAudioOutputToInputChannelsMap? = .init()
     var bluetoothOutputOnly: Bool? = false
     var maximumLogLines: Int? = 500
+    var pixelFormat: String? = pixelFormats[1]
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -2289,6 +2297,10 @@ final class Settings {
         }
         if realDatabase.watch!.show == nil {
             realDatabase.watch!.show = .init()
+            store()
+        }
+        if realDatabase.debug!.pixelFormat == nil {
+            realDatabase.debug!.pixelFormat = pixelFormats[1]
             store()
         }
     }

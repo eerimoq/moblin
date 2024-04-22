@@ -722,6 +722,7 @@ final class Model: NSObject, ObservableObject {
         media.onAudioMuteChange = updateAudioLevel
         media.onVideoDeviceInUseByAnotherClient = handleVideoDeviceInUseByAnotherClient
         media.onLowFpsImage = handleLowFpsImage
+        setPixelFormat()
         setupAudioSession()
         setMic()
         if let cameraDevice = preferredCamera(position: .back) {
@@ -829,6 +830,15 @@ final class Model: NSObject, ObservableObject {
         chatTextToSpeech.setFilter(value: database.chat.textToSpeechFilter!)
         AppDelegate.orientationLock = .landscape
         updateOrientationLock()
+    }
+
+    func setPixelFormat() {
+        for (format, type) in zip(pixelFormats, pixelFormatTypes) where
+            database.debug!.pixelFormat == format
+        {
+            logger.info("Setting pixel format \(format)")
+            pixelFormatType = type
+        }
     }
 
     private func handleIpStatusUpdate(statuses: [IPMonitor.Status]) {
