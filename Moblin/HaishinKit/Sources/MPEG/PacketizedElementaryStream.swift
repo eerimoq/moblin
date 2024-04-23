@@ -246,27 +246,23 @@ struct PacketizedElementaryStream {
     func arrayOfPackets(_ PID: UInt16, PCR: UInt64?) -> [TSPacket] {
         let payload = self.payload
         var packets: [TSPacket] = []
-
         // start
         var packet = TSPacket(pid: PID)
-        if let PCR {
-            packet.adaptationField = TSAdaptationField()
-            packet.adaptationField!.pcr = TSProgramClockReference.encode(PCR, 0)
-            packet.adaptationField!.compute()
-        }
         packet.payloadUnitStartIndicator = true
-        var position = packet.fill(payload, useAdaptationField: true)
+        packet.adaptationField = TSAdaptationField()
+        if let PCR {
+            packet.adaptationField!.pcr = TSProgramClockReference.encode(PCR, 0)
+        }
+        var payloadOffset = packet.setPayload(payload)
         packets.append(packet)
-
         // middle
         packet = TSPacket(pid: PID)
-        while position <= payload.count - 184 {
-            packet.payload = payload[position ..< position + 184]
+        while payloadOffset <= payload.count - 184 {
+            packet.payload = payload[payloadOffset ..< payloadOffset + 184]
             packets.append(packet)
-            position += 184
+            payloadOffset += 184
         }
-
-        let rest = (payload.count - position) % 184
+        let rest = (payload.count - payloadOffset) % 184
         switch rest {
         case 0:
             break
@@ -274,23 +270,19 @@ struct PacketizedElementaryStream {
             let remain = payload.subdata(in: payload.endIndex - rest ..< payload.endIndex - 1)
             var packet = TSPacket(pid: PID)
             packet.adaptationField = TSAdaptationField()
-            packet.adaptationField!.compute()
-            _ = packet.fill(remain, useAdaptationField: true)
+            _ = packet.setPayload(remain)
             packets.append(packet)
             packet = TSPacket(pid: PID)
             packet.adaptationField = TSAdaptationField()
-            packet.adaptationField!.compute()
-            _ = packet.fill(Data([payload[payload.count - 1]]), useAdaptationField: true)
+            _ = packet.setPayload(Data([payload[payload.count - 1]]))
             packets.append(packet)
         default:
             let remain = payload.subdata(in: payload.count - rest ..< payload.count)
             var packet = TSPacket(pid: PID)
             packet.adaptationField = TSAdaptationField()
-            packet.adaptationField!.compute()
-            _ = packet.fill(remain, useAdaptationField: true)
+            _ = packet.setPayload(remain)
             packets.append(packet)
         }
-
         return packets
     }
 }

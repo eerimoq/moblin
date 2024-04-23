@@ -15,36 +15,31 @@ class TSWriter {
     static let defaultPMTPID: UInt16 = 4095
     static let defaultVideoPID: UInt16 = 256
     static let defaultAudioPID: UInt16 = 257
-
     private static let audioStreamId: UInt8 = 192
     private static let videoStreamId: UInt8 = 224
-
     static let defaultSegmentDuration: Double = 2
-
     weak var delegate: (any TSWriterDelegate)?
-    var isRunning: Atomic<Bool> = .init(false)
+    private var isRunning: Atomic<Bool> = .init(false)
     var expectedMedias: Set<AVMediaType> = []
-
-    var audioContinuityCounter: UInt8 = 0
-    var videoContinuityCounter: UInt8 = 0
-    let PCRPID: UInt16 = TSWriter.defaultVideoPID
-    var rotatedTimestamp = CMTime.zero
-    var segmentDuration: Double = TSWriter.defaultSegmentDuration
+    private var audioContinuityCounter: UInt8 = 0
+    private var videoContinuityCounter: UInt8 = 0
+    private let PCRPID: UInt16 = TSWriter.defaultVideoPID
+    private var rotatedTimestamp = CMTime.zero
+    private var segmentDuration: Double = TSWriter.defaultSegmentDuration
     private let outputLock: DispatchQueue = .init(
         label: "com.haishinkit.HaishinKit.TSWriter",
         qos: .userInitiated
     )
-
     private var videoData: [Data?] = [nil, nil]
     private var videoDataOffset: Int = 0
 
-    private(set) var PAT: TSProgramAssociation = {
+    private var PAT: TSProgramAssociation = {
         let PAT: TSProgramAssociation = .init()
         PAT.programs = [1: TSWriter.defaultPMTPID]
         return PAT
     }()
 
-    private(set) var PMT: TSProgramMap = .init()
+    private var PMT: TSProgramMap = .init()
     private var audioConfig: AudioSpecificConfig? {
         didSet {
             writeProgramIfNeeded()
@@ -117,10 +112,11 @@ class TSWriter {
                 packet.encodeFixedHeaderInto(pointer: pointer)
                 pointer = UnsafeMutableRawBufferPointer(rebasing: pointer[4...])
                 if let adaptationField = packet.adaptationField {
-                    adaptationField.data.withUnsafeBytes { (adaptationPointer: UnsafeRawBufferPointer) in
+                    adaptationField.encode().withUnsafeBytes { (adaptationPointer: UnsafeRawBufferPointer) in
                         pointer.copyMemory(from: adaptationPointer)
                     }
-                    pointer = UnsafeMutableRawBufferPointer(rebasing: pointer[adaptationField.data.count...])
+                    pointer =
+                        UnsafeMutableRawBufferPointer(rebasing: pointer[adaptationField.encode().count...])
                 }
                 packet.payload.withUnsafeBytes { (payloadPointer: UnsafeRawBufferPointer) in
                     pointer.copyMemory(from: payloadPointer)
@@ -150,7 +146,7 @@ class TSWriter {
         }
     }
 
-    func rotateFileHandle(_ timestamp: CMTime) {
+    private func rotateFileHandle(_ timestamp: CMTime) {
         let duration = timestamp.seconds - rotatedTimestamp.seconds
         if duration <= segmentDuration {
             return
@@ -159,7 +155,7 @@ class TSWriter {
         rotatedTimestamp = timestamp
     }
 
-    func write(_ data: Data) {
+    private func write(_ data: Data) {
         outputLock.sync {
             self.writeBytes(data)
         }
@@ -234,19 +230,13 @@ class TSWriter {
         }
     }
 
-    final func writeProgram() {
+    private func writeProgram() {
         PMT.PCRPID = PCRPID
-        var bytes = Data()
-        var packets: [TSPacket] = []
-        packets.append(contentsOf: PAT.arrayOfPackets(TSWriter.defaultPATPID))
-        packets.append(contentsOf: PMT.arrayOfPackets(TSWriter.defaultPMTPID))
-        for packet in packets {
-            bytes.append(packet.encode())
-        }
-        write(bytes)
+        write(PAT.packet(TSWriter.defaultPATPID).encode()
+            + PMT.packet(TSWriter.defaultPMTPID).encode())
     }
 
-    final func writeProgramIfNeeded() {
+    private func writeProgramIfNeeded() {
         guard !expectedMedias.isEmpty else {
             return
         }

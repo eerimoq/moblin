@@ -70,13 +70,12 @@ class ReplaceVideo {
     private func makeSampleBuffer(realSampleBuffer: CMSampleBuffer,
                                   replaceSampleBuffer: CMSampleBuffer) -> CMSampleBuffer?
     {
-        guard let sampleBuffer = CMSampleBuffer.create(
-            imageBuffer: replaceSampleBuffer.imageBuffer!,
-            formatDescription: replaceSampleBuffer.formatDescription!,
-            duration: realSampleBuffer.duration,
-            presentationTimeStamp: realSampleBuffer.presentationTimeStamp,
-            decodeTimeStamp: realSampleBuffer.decodeTimeStamp
-        ) else {
+        guard let sampleBuffer = CMSampleBuffer.create(replaceSampleBuffer.imageBuffer!,
+                                                       replaceSampleBuffer.formatDescription!,
+                                                       realSampleBuffer.duration,
+                                                       realSampleBuffer.presentationTimeStamp,
+                                                       realSampleBuffer.decodeTimeStamp)
+        else {
             return nil
         }
         sampleBuffer.isNotSync = replaceSampleBuffer.isNotSync
@@ -194,14 +193,11 @@ final class IOVideoUnit: NSObject {
             return
         }
         let timeDelta = CMTime(seconds: delta, preferredTimescale: 1000)
-        guard let sampleBuffer = CMSampleBuffer.create(imageBuffer: latestSampleBuffer.imageBuffer!,
-                                                       formatDescription: latestSampleBuffer
-                                                           .formatDescription!,
-                                                       duration: latestSampleBuffer.duration,
-                                                       presentationTimeStamp: latestSampleBuffer
-                                                           .presentationTimeStamp + timeDelta,
-                                                       decodeTimeStamp: latestSampleBuffer
-                                                           .decodeTimeStamp + timeDelta)
+        guard let sampleBuffer = CMSampleBuffer.create(latestSampleBuffer.imageBuffer!,
+                                                       latestSampleBuffer.formatDescription!,
+                                                       latestSampleBuffer.duration,
+                                                       latestSampleBuffer.presentationTimeStamp + timeDelta,
+                                                       latestSampleBuffer.decodeTimeStamp + timeDelta)
         else {
             return
         }
@@ -369,12 +365,11 @@ final class IOVideoUnit: NSObject {
         guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: outputImageBuffer) else {
             return (nil, nil)
         }
-        guard let outputSampleBuffer = CMSampleBuffer.create(imageBuffer: outputImageBuffer,
-                                                             formatDescription: formatDescription,
-                                                             duration: sampleBuffer.duration,
-                                                             presentationTimeStamp: sampleBuffer
-                                                                 .presentationTimeStamp,
-                                                             decodeTimeStamp: sampleBuffer.decodeTimeStamp)
+        guard let outputSampleBuffer = CMSampleBuffer.create(outputImageBuffer,
+                                                             formatDescription,
+                                                             sampleBuffer.duration,
+                                                             sampleBuffer.presentationTimeStamp,
+                                                             sampleBuffer.decodeTimeStamp)
         else {
             return (nil, nil)
         }
@@ -459,12 +454,11 @@ final class IOVideoUnit: NSObject {
                 return realSampleBuffer
             }
         }
-        guard let sampleBuffer = CMSampleBuffer.create(imageBuffer: blackImageBuffer!,
-                                                       formatDescription: blackFormatDescription!,
-                                                       duration: realSampleBuffer.duration,
-                                                       presentationTimeStamp: realSampleBuffer
-                                                           .presentationTimeStamp,
-                                                       decodeTimeStamp: realSampleBuffer.decodeTimeStamp)
+        guard let sampleBuffer = CMSampleBuffer.create(blackImageBuffer!,
+                                                       blackFormatDescription!,
+                                                       realSampleBuffer.duration,
+                                                       realSampleBuffer.presentationTimeStamp,
+                                                       realSampleBuffer.decodeTimeStamp)
         else {
             return realSampleBuffer
         }

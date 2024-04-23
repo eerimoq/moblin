@@ -2,37 +2,38 @@ import Foundation
 
 class TSAdaptationField {
     static let fixedSectionSize: UInt8 = 2
-
-    var length: UInt8 = 0
     var randomAccessIndicator = false
     var pcr: Data?
     var stuffingBytes: Data?
 
     init() {}
 
-    func compute() {
-        length = TSAdaptationField.fixedSectionSize
+    func calcLength() -> UInt8 {
+        var length = TSAdaptationField.fixedSectionSize
         if let pcr {
             length += UInt8(truncatingIfNeeded: pcr.count)
         }
         if let stuffingBytes {
             length += UInt8(truncatingIfNeeded: stuffingBytes.count)
         }
-        length -= 1
+        return length
     }
 
-    func stuffing(_ size: Int) {
+    func setStuffing(_ size: Int) {
         stuffingBytes = Data(repeating: 0xFF, count: size)
-        length += UInt8(size)
     }
 
-    var data: Data {
-        var byte: UInt8 = 0
-        byte |= randomAccessIndicator ? 0x40 : 0
-        byte |= pcr != nil ? 0x10 : 0
+    func encode() -> Data {
+        var flags: UInt8 = 0
+        if randomAccessIndicator {
+            flags |= 0x40
+        }
+        if pcr != nil {
+            flags |= 0x10
+        }
         let buffer = ByteArray()
-            .writeUInt8(length)
-            .writeUInt8(byte)
+            .writeUInt8(calcLength() - 1)
+            .writeUInt8(flags)
         if let pcr {
             buffer.writeBytes(pcr)
         }

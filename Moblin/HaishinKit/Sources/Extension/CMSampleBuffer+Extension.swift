@@ -3,11 +3,11 @@ import CoreMedia
 
 extension CMSampleBuffer {
     static func create(
-        imageBuffer: CVImageBuffer,
-        formatDescription: CMVideoFormatDescription,
-        duration: CMTime,
-        presentationTimeStamp: CMTime,
-        decodeTimeStamp: CMTime
+        _ imageBuffer: CVImageBuffer,
+        _ formatDescription: CMVideoFormatDescription,
+        _ duration: CMTime,
+        _ presentationTimeStamp: CMTime,
+        _ decodeTimeStamp: CMTime
     ) -> CMSampleBuffer? {
         var sampleTiming = CMSampleTimingInfo(
             duration: duration,
@@ -23,7 +23,7 @@ extension CMSampleBuffer {
             sampleBufferOut: &sampleBuffer
         )
         guard status == noErr else {
-            logger.info("Failed to create sample buffer with error \(status)")
+            logger.info("xxx Failed to create sample buffer with error \(status)")
             return nil
         }
         return sampleBuffer

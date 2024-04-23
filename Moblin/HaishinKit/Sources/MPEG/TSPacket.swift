@@ -5,42 +5,35 @@ import AVFoundation
  */
 struct TSPacket {
     static let size = 188
-    static let headerSize = 4
+    static let fixedHeaderSize = 4
     var payloadUnitStartIndicator = false
     var pid: UInt16 = 0
     var continuityCounter: UInt8 = 0
     var adaptationField: TSAdaptationField?
     var payload = Data()
 
-    private var remain: Int {
-        var adaptationFieldSize = 0
-        if let adaptationField {
-            adaptationField.compute()
-            adaptationFieldSize = Int(adaptationField.length) + 1
-        }
-        return TSPacket.size - TSPacket.headerSize - adaptationFieldSize - payload.count
+    private func unusedSize() -> Int {
+        let adaptationFieldSize = Int(adaptationField?.calcLength() ?? 0)
+        return TSPacket.size - TSPacket.fixedHeaderSize - adaptationFieldSize - payload.count
     }
 
     init(pid: UInt16) {
         self.pid = pid
     }
 
-    mutating func fill(_ data: Data, useAdaptationField: Bool) -> Int {
-        let length = min(data.count, remain, 182)
-        payload.append(data[0 ..< length])
-        if remain == 0 {
-            return length
+    mutating func setPayload(_ data: Data) -> Int {
+        let payloadSize = min(data.count, unusedSize())
+        payload = data[0 ..< payloadSize]
+        let unusedSize = unusedSize()
+        if unusedSize > 0 {
+            adaptationField!.setStuffing(unusedSize)
         }
-        if useAdaptationField {
-            if adaptationField == nil {
-                adaptationField = TSAdaptationField()
-            }
-            adaptationField?.stuffing(remain)
-            adaptationField?.compute()
-            return length
-        }
-        payload.append(Data(repeating: 0xFF, count: remain))
-        return length
+        return payloadSize
+    }
+
+    mutating func setPayloadNoAdaptation(_ data: Data) {
+        payload = data
+        payload.append(Data(repeating: 0xFF, count: unusedSize()))
     }
 
     func encodeFixedHeaderInto(pointer: UnsafeMutableRawBufferPointer) {
@@ -63,7 +56,7 @@ struct TSPacket {
         header.withUnsafeMutableBytes { pointer in
             encodeFixedHeaderInto(pointer: pointer)
         }
-        return header + (adaptationField?.data ?? Data()) + payload
+        return header + (adaptationField?.encode() ?? Data()) + payload
     }
 }
 

@@ -111,12 +111,13 @@ class VideoCodec {
                 guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: imageBuffer) else {
                     return
                 }
-                guard let sampleBuffer = CMSampleBuffer.create(imageBuffer: imageBuffer,
-                                                               formatDescription: formatDescription,
-                                                               duration: duration,
-                                                               presentationTimeStamp: presentationTimeStamp,
-                                                               decodeTimeStamp: sampleBuffer.decodeTimeStamp)
+                guard let sampleBuffer = CMSampleBuffer.create(imageBuffer,
+                                                               formatDescription,
+                                                               duration,
+                                                               presentationTimeStamp,
+                                                               sampleBuffer.decodeTimeStamp)
                 else {
+                    print("xxx decode")
                     return
                 }
                 delegate?.videoCodec(self, didOutput: sampleBuffer)

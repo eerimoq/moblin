@@ -17,7 +17,7 @@ class TSProgram {
     var currentNextIndicator = true
     var sectionNumber: UInt8 = 0
     var lastSectionNumber: UInt8 = 0
-    var tableData: Data = .init()
+    var tableData = Data()
     var crc32: UInt32 = 0
 
     init() {}
@@ -26,18 +26,15 @@ class TSProgram {
         self.data = data
     }
 
-    func arrayOfPackets(_ PID: UInt16) -> [TSPacket] {
-        var packets: [TSPacket] = []
+    func packet(_ PID: UInt16) -> TSPacket {
         var packet = TSPacket(pid: PID)
         packet.payloadUnitStartIndicator = true
-        _ = packet.fill(data, useAdaptationField: false)
-        packets.append(packet)
-        return packets
+        packet.setPayloadNoAdaptation(data)
+        return packet
     }
 
     var data: Data {
         get {
-            let tableData: Data = self.tableData
             sectionLength = UInt16(tableData.count) + 9
             sectionSyntaxIndicator = !tableData.isEmpty
             let buffer = ByteArray()
