@@ -5,12 +5,12 @@ import Foundation
 var payloadSize: Int = 1316
 
 protocol TSWriterDelegate: AnyObject {
-    func writer(_ writer: TSWriter, doOutput data: Data)
-    func writer(_ writer: TSWriter, doOutputPointer pointer: UnsafeRawBufferPointer, count: Int)
+    func writer(_ writer: MpegTsWriter, doOutput data: Data)
+    func writer(_ writer: MpegTsWriter, doOutputPointer pointer: UnsafeRawBufferPointer, count: Int)
 }
 
 /// The TSWriter class represents writes MPEG-2 transport stream data.
-class TSWriter {
+class MpegTsWriter {
     static let defaultPATPID: UInt16 = 0
     static let defaultPMTPID: UInt16 = 4095
     static let defaultVideoPID: UInt16 = 256
@@ -23,9 +23,9 @@ class TSWriter {
     var expectedMedias: Set<AVMediaType> = []
     private var audioContinuityCounter: UInt8 = 0
     private var videoContinuityCounter: UInt8 = 0
-    private let PCRPID: UInt16 = TSWriter.defaultVideoPID
+    private let PCRPID: UInt16 = MpegTsWriter.defaultVideoPID
     private var rotatedTimestamp = CMTime.zero
-    private var segmentDuration: Double = TSWriter.defaultSegmentDuration
+    private var segmentDuration: Double = MpegTsWriter.defaultSegmentDuration
     private let outputLock: DispatchQueue = .init(
         label: "com.haishinkit.HaishinKit.TSWriter",
         qos: .userInitiated
@@ -35,7 +35,7 @@ class TSWriter {
 
     private var PAT: TSProgramAssociation = {
         let PAT: TSProgramAssociation = .init()
-        PAT.programs = [1: TSWriter.defaultPMTPID]
+        PAT.programs = [1: MpegTsWriter.defaultPMTPID]
         return PAT
     }()
 
@@ -60,7 +60,7 @@ class TSWriter {
             && (expectedMedias.contains(.video) == (videoConfig != nil))
     }
 
-    init(segmentDuration: Double = TSWriter.defaultSegmentDuration) {
+    init(segmentDuration: Double = MpegTsWriter.defaultSegmentDuration) {
         self.segmentDuration = segmentDuration
     }
 
@@ -78,7 +78,7 @@ class TSWriter {
         audioContinuityCounter = 0
         videoContinuityCounter = 0
         PAT.programs.removeAll()
-        PAT.programs = [1: TSWriter.defaultPMTPID]
+        PAT.programs = [1: MpegTsWriter.defaultPMTPID]
         PMT = TSProgramMap()
         audioConfig = nil
         videoConfig = nil
@@ -88,16 +88,15 @@ class TSWriter {
         isRunning.mutate { $0 = false }
     }
 
-    // swiftlint:disable:next function_parameter_count
-    private func writeSampleBuffer(_ PID: UInt16,
-                                   presentationTimeStamp: CMTime,
-                                   decodeTimeStamp: CMTime,
-                                   randomAccessIndicator: Bool,
-                                   PES: PacketizedElementaryStream) -> Data
+    private func encode(_ PID: UInt16,
+                        presentationTimeStamp: CMTime,
+                        decodeTimeStamp: CMTime,
+                        randomAccessIndicator: Bool,
+                        PES: MpegTsPacketizedElementaryStream) -> Data
     {
         let timestamp = decodeTimeStamp == .invalid ? presentationTimeStamp : decodeTimeStamp
         let packets = split(PID, PES: PES, timestamp: timestamp)
-        packets[0].adaptationField?.randomAccessIndicator = randomAccessIndicator
+        packets[0].adaptationField!.randomAccessIndicator = randomAccessIndicator
         rotateFileHandle(timestamp)
         let count = packets.count * 188
         var data = Data(
@@ -129,13 +128,13 @@ class TSWriter {
 
     private func nextContinuityCounter(PID: UInt16) -> UInt8 {
         switch PID {
-        case TSWriter.defaultAudioPID:
+        case MpegTsWriter.defaultAudioPID:
             defer {
                 audioContinuityCounter += 1
                 audioContinuityCounter &= 0x0F
             }
             return audioContinuityCounter
-        case TSWriter.defaultVideoPID:
+        case MpegTsWriter.defaultVideoPID:
             defer {
                 videoContinuityCounter += 1
                 videoContinuityCounter &= 0x0F
@@ -232,8 +231,8 @@ class TSWriter {
 
     private func writeProgram() {
         PMT.PCRPID = PCRPID
-        write(PAT.packet(TSWriter.defaultPATPID).encode()
-            + PMT.packet(TSWriter.defaultPMTPID).encode())
+        write(PAT.packet(MpegTsWriter.defaultPATPID).encode()
+            + PMT.packet(MpegTsWriter.defaultPMTPID).encode())
     }
 
     private func writeProgramIfNeeded() {
@@ -246,13 +245,16 @@ class TSWriter {
         writeProgram()
     }
 
-    private func split(_ PID: UInt16, PES: PacketizedElementaryStream, timestamp: CMTime) -> [TSPacket] {
+    private func split(_ PID: UInt16, PES: MpegTsPacketizedElementaryStream,
+                       timestamp: CMTime) -> [MpegTsPacket]
+    {
         var PCR: UInt64?
         let timeSinceLatestPcr = timestamp.seconds - PCRTimestamp.seconds
         if PCRPID == PID, timeSinceLatestPcr >= 0.02 {
             PCR =
                 UInt64((timestamp
-                        .seconds - (PID == TSWriter.defaultVideoPID ? baseVideoTimestamp : baseAudioTimestamp)
+                        .seconds -
+                        (PID == MpegTsWriter.defaultVideoPID ? baseVideoTimestamp : baseAudioTimestamp)
                         .seconds) *
                     TSTimestamp.resolution)
             PCRTimestamp = timestamp
@@ -261,7 +263,7 @@ class TSWriter {
     }
 }
 
-extension TSWriter: AudioCodecDelegate {
+extension MpegTsWriter: AudioCodecDelegate {
     func audioCodec(didOutput outputFormat: AVAudioFormat) {
         logger.info("ts-writer: Audio setup \(outputFormat)")
         var data = ESSpecificData()
@@ -274,7 +276,7 @@ extension TSWriter: AudioCodecDelegate {
             logger.info("ts-writer: Unsupported audio format.")
             return
         }
-        data.elementaryPID = TSWriter.defaultAudioPID
+        data.elementaryPID = MpegTsWriter.defaultAudioPID
         PMT.elementaryStreamSpecificData.append(data)
         audioContinuityCounter = 0
         audioConfig = AudioSpecificConfig(formatDescription: outputFormat.formatDescription)
@@ -291,26 +293,25 @@ extension TSWriter: AudioCodecDelegate {
         }
         if baseAudioTimestamp == .invalid {
             baseAudioTimestamp = presentationTimeStamp
-            if PCRPID == TSWriter.defaultAudioPID {
+            if PCRPID == MpegTsWriter.defaultAudioPID {
                 PCRTimestamp = baseAudioTimestamp
             }
         }
         guard let audioConfig else {
             return
         }
-        guard let PES = PacketizedElementaryStream(
+        guard let PES = MpegTsPacketizedElementaryStream(
             bytes: audioBuffer.data.assumingMemoryBound(to: UInt8.self),
             count: audioBuffer.byteLength,
             presentationTimeStamp: presentationTimeStamp,
-            decodeTimeStamp: .invalid,
             timestamp: baseAudioTimestamp,
             config: audioConfig,
-            streamID: TSWriter.audioStreamId
+            streamID: MpegTsWriter.audioStreamId
         ) else {
             return
         }
-        writeAudio(data: writeSampleBuffer(
-            TSWriter.defaultAudioPID,
+        writeAudio(data: encode(
+            MpegTsWriter.defaultAudioPID,
             presentationTimeStamp: presentationTimeStamp,
             decodeTimeStamp: .invalid,
             randomAccessIndicator: true,
@@ -319,13 +320,13 @@ extension TSWriter: AudioCodecDelegate {
     }
 }
 
-extension TSWriter: VideoCodecDelegate {
+extension MpegTsWriter: VideoCodecDelegate {
     func videoCodec(_: VideoCodec, didOutput formatDescription: CMFormatDescription?) {
         guard let formatDescription else {
             return
         }
         var data = ESSpecificData()
-        data.elementaryPID = TSWriter.defaultVideoPID
+        data.elementaryPID = MpegTsWriter.defaultVideoPID
         videoContinuityCounter = 0
         if let avcC = AVCDecoderConfigurationRecord.getData(formatDescription) {
             data.streamType = .h264
@@ -362,7 +363,7 @@ extension TSWriter: VideoCodecDelegate {
         }
         if baseVideoTimestamp == .invalid {
             baseVideoTimestamp = sampleBuffer.presentationTimeStamp
-            if PCRPID == TSWriter.defaultVideoPID {
+            if PCRPID == MpegTsWriter.defaultVideoPID {
                 PCRTimestamp = baseVideoTimestamp
             }
         }
@@ -370,33 +371,33 @@ extension TSWriter: VideoCodecDelegate {
             return
         }
         let randomAccessIndicator = !sampleBuffer.isNotSync
-        let PES: PacketizedElementaryStream
+        let PES: MpegTsPacketizedElementaryStream
         let bytes = UnsafeRawPointer(buffer).bindMemory(to: UInt8.self, capacity: length)
         if let videoConfig = videoConfig as? AVCDecoderConfigurationRecord {
-            PES = PacketizedElementaryStream(
+            PES = MpegTsPacketizedElementaryStream(
                 bytes: bytes,
                 count: length,
                 presentationTimeStamp: sampleBuffer.presentationTimeStamp,
                 decodeTimeStamp: sampleBuffer.decodeTimeStamp,
                 timestamp: baseVideoTimestamp,
                 config: randomAccessIndicator ? videoConfig : nil,
-                streamID: TSWriter.videoStreamId
+                streamID: MpegTsWriter.videoStreamId
             )
         } else if let videoConfig = videoConfig as? HEVCDecoderConfigurationRecord {
-            PES = PacketizedElementaryStream(
+            PES = MpegTsPacketizedElementaryStream(
                 bytes: bytes,
                 count: length,
                 presentationTimeStamp: sampleBuffer.presentationTimeStamp,
                 decodeTimeStamp: sampleBuffer.decodeTimeStamp,
                 timestamp: baseVideoTimestamp,
                 config: randomAccessIndicator ? videoConfig : nil,
-                streamID: TSWriter.videoStreamId
+                streamID: MpegTsWriter.videoStreamId
             )
         } else {
             return
         }
-        writeVideo(data: writeSampleBuffer(
-            TSWriter.defaultVideoPID,
+        writeVideo(data: encode(
+            MpegTsWriter.defaultVideoPID,
             presentationTimeStamp: sampleBuffer.presentationTimeStamp,
             decodeTimeStamp: sampleBuffer.decodeTimeStamp,
             randomAccessIndicator: randomAccessIndicator,

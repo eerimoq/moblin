@@ -3,18 +3,18 @@ import AVFoundation
 /**
  - see: https://en.wikipedia.org/wiki/MPEG_transport_stream#Packet
  */
-struct TSPacket {
+struct MpegTsPacket {
     static let size = 188
     static let fixedHeaderSize = 4
     var payloadUnitStartIndicator = false
     var pid: UInt16 = 0
     var continuityCounter: UInt8 = 0
-    var adaptationField: TSAdaptationField?
+    var adaptationField: MpegTsAdaptationField?
     var payload = Data()
 
     private func unusedSize() -> Int {
         let adaptationFieldSize = Int(adaptationField?.calcLength() ?? 0)
-        return TSPacket.size - TSPacket.fixedHeaderSize - adaptationFieldSize - payload.count
+        return MpegTsPacket.size - MpegTsPacket.fixedHeaderSize - adaptationFieldSize - payload.count
     }
 
     init(pid: UInt16) {

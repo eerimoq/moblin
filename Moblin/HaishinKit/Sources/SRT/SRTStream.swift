@@ -18,8 +18,8 @@ public class SRTStream: NetStream {
     private var keyValueObservations: [NSKeyValueObservation] = []
     private weak var connection: SRTConnection?
 
-    private lazy var writer: TSWriter = {
-        var writer = TSWriter()
+    private lazy var writer: MpegTsWriter = {
+        var writer = MpegTsWriter()
         writer.delegate = self
         return writer
     }()
@@ -139,14 +139,14 @@ public class SRTStream: NetStream {
 }
 
 extension SRTStream: TSWriterDelegate {
-    func writer(_: TSWriter, doOutput data: Data) {
+    func writer(_: MpegTsWriter, doOutput data: Data) {
         guard readyState == .publishing else {
             return
         }
         connection?.socket?.doOutput(data: data)
     }
 
-    func writer(_: TSWriter, doOutputPointer pointer: UnsafeRawBufferPointer, count: Int) {
+    func writer(_: MpegTsWriter, doOutputPointer pointer: UnsafeRawBufferPointer, count: Int) {
         guard readyState == .publishing else {
             return
         }

@@ -3,7 +3,7 @@ import Foundation
 /**
  - see: https://en.wikipedia.org/wiki/Program-specific_information
  */
-class TSProgram {
+class MpegTsProgram {
     static let reservedBits: UInt8 = 0x03
     static let defaultTableIDExtension: UInt16 = 1
     var pointerField: UInt8 = 0
@@ -12,7 +12,7 @@ class TSProgram {
     var sectionSyntaxIndicator = false
     var privateBit = false
     var sectionLength: UInt16 = 0
-    var tableIdExtension: UInt16 = TSProgram.defaultTableIDExtension
+    var tableIdExtension: UInt16 = MpegTsProgram.defaultTableIDExtension
     var versionNumber: UInt8 = 0
     var currentNextIndicator = true
     var sectionNumber: UInt8 = 0
@@ -26,8 +26,8 @@ class TSProgram {
         self.data = data
     }
 
-    func packet(_ PID: UInt16) -> TSPacket {
-        var packet = TSPacket(pid: PID)
+    func packet(_ PID: UInt16) -> MpegTsPacket {
+        var packet = MpegTsPacket(pid: PID)
         packet.payloadUnitStartIndicator = true
         packet.setPayloadNoAdaptation(data)
         return packet
@@ -42,12 +42,12 @@ class TSProgram {
                 .writeUInt16(
                     (sectionSyntaxIndicator ? 0x8000 : 0) |
                         (privateBit ? 0x4000 : 0) |
-                        UInt16(TSProgram.reservedBits) << 12 |
+                        UInt16(MpegTsProgram.reservedBits) << 12 |
                         sectionLength
                 )
                 .writeUInt16(tableIdExtension)
                 .writeUInt8(
-                    TSProgram.reservedBits << 6 |
+                    MpegTsProgram.reservedBits << 6 |
                         versionNumber << 1 |
                         (currentNextIndicator ? 1 : 0)
                 )
@@ -82,7 +82,7 @@ class TSProgram {
     }
 }
 
-final class TSProgramAssociation: TSProgram {
+final class TSProgramAssociation: MpegTsProgram {
     var programs: [UInt16: UInt16] = [:]
 
     override var tableData: Data {
@@ -106,7 +106,7 @@ final class TSProgramAssociation: TSProgram {
     }
 }
 
-final class TSProgramMap: TSProgram {
+final class TSProgramMap: MpegTsProgram {
     static let tableID: UInt8 = 2
 
     var PCRPID: UInt16 = 0

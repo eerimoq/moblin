@@ -1,6 +1,6 @@
 import Foundation
 
-class TSAdaptationField {
+class MpegTsAdaptationField {
     static let fixedSectionSize: UInt8 = 2
     var randomAccessIndicator = false
     var pcr: Data?
@@ -9,7 +9,7 @@ class TSAdaptationField {
     init() {}
 
     func calcLength() -> UInt8 {
-        var length = TSAdaptationField.fixedSectionSize
+        var length = MpegTsAdaptationField.fixedSectionSize
         if let pcr {
             length += UInt8(truncatingIfNeeded: pcr.count)
         }

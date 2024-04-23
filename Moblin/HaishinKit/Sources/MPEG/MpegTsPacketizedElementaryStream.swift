@@ -5,24 +5,14 @@ import CoreMedia
  - seealso: https://en.wikipedia.org/wiki/Packetized_elementary_stream
  */
 
-enum PESPTSDTSIndicator: UInt8 {
-    case none = 0
-    case forbidden = 1
-    case onlyPTS = 2
-    case bothPresent = 3
-}
-
-struct PESOptionalHeader {
-    static let fixedSectionSize: Int = 3
-    static let defaultMarkerBits: UInt8 = 2
-
-    var markerBits: UInt8 = PESOptionalHeader.defaultMarkerBits
+private struct OptionalHeader {
+    var markerBits: UInt8 = 2
     var scramblingControl: UInt8 = 0
     var priority = false
     var dataAlignmentIndicator = false
     var copyright = false
     var originalOrCopy = false
-    var ptsDtsIndicator: UInt8 = PESPTSDTSIndicator.none.rawValue
+    var ptsDtsIndicator: UInt8 = 0
     var esCRFlag = false
     var esRateFlag = false
     var dsmTrickModeFlag = false
@@ -32,12 +22,6 @@ struct PESOptionalHeader {
     var pesHeaderLength: UInt8 = 0
     var optionalFields = Data()
     var stuffingBytes = Data()
-
-    init() {}
-
-    init(data: Data) {
-        self.data = data
-    }
 
     mutating func setTimestamp(_ timestamp: CMTime, presentationTimeStamp: CMTime, decodeTimeStamp: CMTime) {
         let base = Double(timestamp.seconds)
@@ -58,109 +42,55 @@ struct PESOptionalHeader {
         pesHeaderLength = UInt8(optionalFields.count)
     }
 
-    var data: Data {
-        get {
-            var bytes = Data([0x00, 0x00])
-            bytes[0] |= markerBits << 6
-            bytes[0] |= scramblingControl << 4
-            bytes[0] |= (priority ? 1 : 0) << 3
-            bytes[0] |= (dataAlignmentIndicator ? 1 : 0) << 2
-            bytes[0] |= (copyright ? 1 : 0) << 1
-            bytes[0] |= (originalOrCopy ? 1 : 0)
-            bytes[1] |= ptsDtsIndicator << 6
-            bytes[1] |= (esCRFlag ? 1 : 0) << 5
-            bytes[1] |= (esRateFlag ? 1 : 0) << 4
-            bytes[1] |= (dsmTrickModeFlag ? 1 : 0) << 3
-            bytes[1] |= (additionalCopyInfoFlag ? 1 : 0) << 2
-            bytes[1] |= (crcFlag ? 1 : 0) << 1
-            bytes[1] |= extentionFlag ? 1 : 0
-            return ByteArray()
-                .writeBytes(bytes)
-                .writeUInt8(pesHeaderLength)
-                .writeBytes(optionalFields)
-                .writeBytes(stuffingBytes)
-                .data
-        }
-        set {
-            let buffer = ByteArray(data: newValue)
-            do {
-                let bytes: Data = try buffer.readBytes(PESOptionalHeader.fixedSectionSize)
-                markerBits = (bytes[0] & 0b1100_0000) >> 6
-                scramblingControl = bytes[0] & 0b0011_0000 >> 4
-                priority = (bytes[0] & 0b0000_1000) == 0b0000_1000
-                dataAlignmentIndicator = (bytes[0] & 0b0000_0100) == 0b0000_0100
-                copyright = (bytes[0] & 0b0000_0010) == 0b0000_0010
-                originalOrCopy = (bytes[0] & 0b0000_0001) == 0b0000_0001
-                ptsDtsIndicator = (bytes[1] & 0b1100_0000) >> 6
-                esCRFlag = (bytes[1] & 0b0010_0000) == 0b0010_0000
-                esRateFlag = (bytes[1] & 0b0001_0000) == 0b0001_0000
-                dsmTrickModeFlag = (bytes[1] & 0b0000_1000) == 0b0000_1000
-                additionalCopyInfoFlag = (bytes[1] & 0b0000_0100) == 0b0000_0100
-                crcFlag = (bytes[1] & 0b0000_0010) == 0b0000_0010
-                extentionFlag = (bytes[1] & 0b0000_0001) == 0b0000_0001
-                pesHeaderLength = bytes[2]
-                optionalFields = try buffer.readBytes(Int(pesHeaderLength))
-            } catch {
-                logger.error("\(buffer)")
-            }
-        }
+    func encode() -> Data {
+        var bytes = Data([0x00, 0x00])
+        bytes[0] |= markerBits << 6
+        bytes[0] |= scramblingControl << 4
+        bytes[0] |= priority.uint8 << 3
+        bytes[0] |= dataAlignmentIndicator.uint8 << 2
+        bytes[0] |= copyright.uint8 << 1
+        bytes[0] |= originalOrCopy.uint8
+        bytes[1] |= ptsDtsIndicator << 6
+        bytes[1] |= esCRFlag.uint8 << 5
+        bytes[1] |= esRateFlag.uint8 << 4
+        bytes[1] |= dsmTrickModeFlag.uint8 << 3
+        bytes[1] |= additionalCopyInfoFlag.uint8 << 2
+        bytes[1] |= crcFlag.uint8 << 1
+        bytes[1] |= extentionFlag.uint8
+        return ByteArray()
+            .writeBytes(bytes)
+            .writeUInt8(pesHeaderLength)
+            .writeBytes(optionalFields)
+            .writeBytes(stuffingBytes)
+            .data
     }
 }
 
-struct PacketizedElementaryStream {
-    static let untilPacketLengthSize: Int = 6
+struct MpegTsPacketizedElementaryStream {
     static let startCode = Data([0x00, 0x00, 0x01])
-
-    var startCode: Data = PacketizedElementaryStream.startCode
-    var streamID: UInt8 = 0
-    var packetLength: UInt16 = 0
-    var optionalPESHeader: PESOptionalHeader = .init()
-    var data = Data()
-
-    var payload: Data {
-        get {
-            ByteArray()
-                .writeBytes(startCode)
-                .writeUInt8(streamID)
-                .writeUInt16(packetLength)
-                .writeBytes(optionalPESHeader.data)
-                .writeBytes(data)
-                .data
-        }
-        set {
-            let buffer = ByteArray(data: newValue)
-            do {
-                startCode = try buffer.readBytes(3)
-                streamID = try buffer.readUInt8()
-                packetLength = try buffer.readUInt16()
-                optionalPESHeader = try PESOptionalHeader(data: buffer.readBytes(buffer.bytesAvailable))
-                buffer.position = PacketizedElementaryStream
-                    .untilPacketLengthSize + 3 + Int(optionalPESHeader.pesHeaderLength)
-                data = try buffer.readBytes(buffer.bytesAvailable)
-            } catch {
-                logger.error("\(buffer)")
-            }
-        }
-    }
+    private var startCode = MpegTsPacketizedElementaryStream.startCode
+    private var streamID: UInt8 = 0
+    private var packetLength: UInt16 = 0
+    private var optionalHeader = OptionalHeader()
+    private var data = Data()
 
     init?(
         bytes: UnsafePointer<UInt8>,
         count: UInt32,
         presentationTimeStamp: CMTime,
-        decodeTimeStamp _: CMTime,
         timestamp: CMTime,
         config: AudioSpecificConfig,
         streamID: UInt8
     ) {
         data.append(contentsOf: config.makeHeader(Int(count)))
         data.append(bytes, count: Int(count))
-        optionalPESHeader.dataAlignmentIndicator = true
-        optionalPESHeader.setTimestamp(
+        optionalHeader.dataAlignmentIndicator = true
+        optionalHeader.setTimestamp(
             timestamp,
             presentationTimeStamp: presentationTimeStamp,
             decodeTimeStamp: CMTime.invalid
         )
-        let length = data.count + optionalPESHeader.data.count
+        let length = data.count + optionalHeader.encode().count
         if length < Int(UInt16.max) {
             packetLength = UInt16(length)
         } else {
@@ -191,13 +121,13 @@ struct PacketizedElementaryStream {
         if let stream = AVCFormatStream(bytes: bytes, count: count) {
             data.append(stream.toByteStream())
         }
-        optionalPESHeader.dataAlignmentIndicator = true
-        optionalPESHeader.setTimestamp(
+        optionalHeader.dataAlignmentIndicator = true
+        optionalHeader.setTimestamp(
             timestamp,
             presentationTimeStamp: presentationTimeStamp,
             decodeTimeStamp: decodeTimeStamp
         )
-        let length = data.count + optionalPESHeader.data.count
+        let length = data.count + optionalHeader.encode().count
         if length < Int(UInt16.max) {
             packetLength = UInt16(length)
         }
@@ -230,33 +160,43 @@ struct PacketizedElementaryStream {
         if let stream = AVCFormatStream(bytes: bytes, count: count) {
             data.append(stream.toByteStream())
         }
-        optionalPESHeader.dataAlignmentIndicator = true
-        optionalPESHeader.setTimestamp(
+        optionalHeader.dataAlignmentIndicator = true
+        optionalHeader.setTimestamp(
             timestamp,
             presentationTimeStamp: presentationTimeStamp,
             decodeTimeStamp: decodeTimeStamp
         )
-        let length = data.count + optionalPESHeader.data.count
+        let length = data.count + optionalHeader.encode().count
         if length < Int(UInt16.max) {
             packetLength = UInt16(length)
         }
         self.streamID = streamID
     }
 
-    func arrayOfPackets(_ PID: UInt16, PCR: UInt64?) -> [TSPacket] {
-        let payload = self.payload
-        var packets: [TSPacket] = []
+    private func encode() -> Data {
+        ByteArray()
+            .writeBytes(startCode)
+            .writeUInt8(streamID)
+            .writeUInt16(packetLength)
+            .writeBytes(optionalHeader.encode())
+            .writeBytes(data)
+            .data
+    }
+
+    func arrayOfPackets(_ PID: UInt16, PCR: UInt64?) -> [MpegTsPacket] {
+        let payload = encode()
+        var packets: [MpegTsPacket] = []
         // start
-        var packet = TSPacket(pid: PID)
+        var packet = MpegTsPacket(pid: PID)
         packet.payloadUnitStartIndicator = true
-        packet.adaptationField = TSAdaptationField()
+        packet.adaptationField = MpegTsAdaptationField()
         if let PCR {
             packet.adaptationField!.pcr = TSProgramClockReference.encode(PCR, 0)
         }
         var payloadOffset = packet.setPayload(payload)
         packets.append(packet)
         // middle
-        packet = TSPacket(pid: PID)
+        packet = MpegTsPacket(pid: PID)
         while payloadOffset <= payload.count - 184 {
             packet.payload = payload[payloadOffset ..< payloadOffset + 184]
             packets.append(packet)
@@ -268,18 +208,18 @@ struct PacketizedElementaryStream {
             break
         case 183:
             let remain = payload.subdata(in: payload.endIndex - rest ..< payload.endIndex - 1)
-            var packet = TSPacket(pid: PID)
-            packet.adaptationField = TSAdaptationField()
+            var packet = MpegTsPacket(pid: PID)
+            packet.adaptationField = MpegTsAdaptationField()
             _ = packet.setPayload(remain)
             packets.append(packet)
-            packet = TSPacket(pid: PID)
-            packet.adaptationField = TSAdaptationField()
+            packet = MpegTsPacket(pid: PID)
+            packet.adaptationField = MpegTsAdaptationField()
             _ = packet.setPayload(Data([payload[payload.count - 1]]))
             packets.append(packet)
         default:
             let remain = payload.subdata(in: payload.count - rest ..< payload.count)
-            var packet = TSPacket(pid: PID)
-            packet.adaptationField = TSAdaptationField()
+            var packet = MpegTsPacket(pid: PID)
+            packet.adaptationField = MpegTsAdaptationField()
             _ = packet.setPayload(remain)
             packets.append(packet)
         }
