@@ -53,7 +53,7 @@ class MpegTsWriter {
 
     private var baseVideoTimestamp: CMTime = .invalid
     private var baseAudioTimestamp: CMTime = .invalid
-    private var PCRTimestamp = CMTime.zero
+    private var programClockReferenceTimestamp = CMTime.zero
 
     init() {}
 
@@ -74,7 +74,7 @@ class MpegTsWriter {
         videoConfig = nil
         baseAudioTimestamp = .invalid
         baseVideoTimestamp = .invalid
-        PCRTimestamp = .zero
+        programClockReferenceTimestamp = .zero
         isRunning.mutate { $0 = false }
     }
 
@@ -241,13 +241,13 @@ class MpegTsWriter {
                        timestamp: CMTime) -> [MpegTsPacket]
     {
         var programClockReference: UInt64?
-        let timeSinceLatestPcr = timestamp.seconds - PCRTimestamp.seconds
-        if programClockReferencePacketId == packetId, timeSinceLatestPcr >= 0.02 {
+        let timeSinceLatestProgramClockReference = timestamp.seconds - programClockReferenceTimestamp.seconds
+        if programClockReferencePacketId == packetId, timeSinceLatestProgramClockReference >= 0.02 {
             let baseTimestamp = (packetId == MpegTsWriter
                 .videoPacketId ? baseVideoTimestamp : baseAudioTimestamp)
             programClockReference =
                 UInt64((timestamp.seconds - baseTimestamp.seconds) * TSTimestamp.resolution)
-            PCRTimestamp = timestamp
+            programClockReferenceTimestamp = timestamp
         }
         return PES.arrayOfPackets(packetId, programClockReference)
     }
@@ -283,7 +283,7 @@ extension MpegTsWriter: AudioCodecDelegate {
         if baseAudioTimestamp == .invalid {
             baseAudioTimestamp = presentationTimeStamp
             if programClockReferencePacketId == MpegTsWriter.audioPacketId {
-                PCRTimestamp = baseAudioTimestamp
+                programClockReferenceTimestamp = baseAudioTimestamp
             }
         }
         guard let audioConfig else {
@@ -347,7 +347,7 @@ extension MpegTsWriter: VideoCodecDelegate {
         if baseVideoTimestamp == .invalid {
             baseVideoTimestamp = sampleBuffer.presentationTimeStamp
             if programClockReferencePacketId == MpegTsWriter.videoPacketId {
-                PCRTimestamp = baseVideoTimestamp
+                programClockReferenceTimestamp = baseVideoTimestamp
             }
         }
         guard let videoConfig else {

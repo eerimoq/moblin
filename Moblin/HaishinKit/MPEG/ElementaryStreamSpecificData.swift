@@ -1,7 +1,7 @@
 import CoreMedia
 import Foundation
 
-enum ESStreamType: UInt8 {
+enum ElementaryStreamType: UInt8 {
     case unspecific = 0x00
     case mpeg1Video = 0x01
     case mpeg2Video = 0x02
@@ -17,7 +17,7 @@ enum ESStreamType: UInt8 {
 
 struct ElementaryStreamSpecificData {
     static let fixedHeaderSize: Int = 5
-    var streamType: ESStreamType = .unspecific
+    var streamType: ElementaryStreamType = .unspecific
     var elementaryPacketId: UInt16 = 0
     var esInfoLength: UInt16 = 0
     var esDescriptors = Data()
@@ -40,7 +40,7 @@ struct ElementaryStreamSpecificData {
         set {
             let buffer = ByteArray(data: newValue)
             do {
-                streamType = try ESStreamType(rawValue: buffer.readUInt8()) ?? .unspecific
+                streamType = try ElementaryStreamType(rawValue: buffer.readUInt8()) ?? .unspecific
                 elementaryPacketId = try buffer.readUInt16() & 0x0FFF
                 esInfoLength = try buffer.readUInt16() & 0x01FF
                 esDescriptors = try buffer.readBytes(Int(esInfoLength))
