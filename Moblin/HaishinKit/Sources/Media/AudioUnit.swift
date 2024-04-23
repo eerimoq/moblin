@@ -17,14 +17,14 @@ func makeChannelMap(
     return result.map { NSNumber(value: $0) }
 }
 
-final class IOAudioUnit: NSObject {
+final class AudioUnit: NSObject {
     lazy var codec: AudioCodec = .init(lockQueue: lockQueue)
     private(set) var device: AVCaptureDevice?
     private var input: AVCaptureInput?
     private var output: AVCaptureAudioDataOutput?
     private let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.AudioIOUnit.lock")
     var muted = false
-    weak var mixer: IOMixer?
+    weak var mixer: Mixer?
 
     private var inputSourceFormat: AudioStreamBasicDescription? {
         didSet {
@@ -98,7 +98,7 @@ final class IOAudioUnit: NSObject {
     }
 }
 
-extension IOAudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
+extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
     func captureOutput(
         _: AVCaptureOutput,
         didOutput sampleBuffer: CMSampleBuffer,
@@ -130,7 +130,7 @@ extension IOAudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
     }
 }
 
-private func syncTimeToVideo(mixer: IOMixer, sampleBuffer: CMSampleBuffer) -> CMTime {
+private func syncTimeToVideo(mixer: Mixer, sampleBuffer: CMSampleBuffer) -> CMTime {
     var presentationTimeStamp = sampleBuffer.presentationTimeStamp
     if #available(iOS 16.0, *) {
         if let audioClock = mixer.audioSession.synchronizationClock,

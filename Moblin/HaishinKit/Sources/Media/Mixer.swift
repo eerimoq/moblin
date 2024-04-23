@@ -11,22 +11,22 @@ private func makeCaptureSession() -> AVCaptureSession {
     return session
 }
 
-protocol IOMixerDelegate: AnyObject {
+protocol MixerDelegate: AnyObject {
     func mixer(
-        _ mixer: IOMixer,
+        _ mixer: Mixer,
         sessionWasInterrupted session: AVCaptureSession,
         reason: AVCaptureSession.InterruptionReason?
     )
-    func mixer(_ mixer: IOMixer, sessionInterruptionEnded session: AVCaptureSession)
-    func mixer(_ mixer: IOMixer, audioLevel: Float, numberOfAudioChannels: Int, presentationTimestamp: Double)
-    func mixerVideo(_ mixer: IOMixer, presentationTimestamp: Double)
-    func mixerVideo(_ mixer: IOMixer, failedEffect: String?)
-    func mixerVideo(_ mixer: IOMixer, lowFpsImage: Data?)
-    func mixer(_ mixer: IOMixer, recorderFinishWriting writer: AVAssetWriter)
+    func mixer(_ mixer: Mixer, sessionInterruptionEnded session: AVCaptureSession)
+    func mixer(_ mixer: Mixer, audioLevel: Float, numberOfAudioChannels: Int, presentationTimestamp: Double)
+    func mixerVideo(_ mixer: Mixer, presentationTimestamp: Double)
+    func mixerVideo(_ mixer: Mixer, failedEffect: String?)
+    func mixerVideo(_ mixer: Mixer, lowFpsImage: Data?)
+    func mixer(_ mixer: Mixer, recorderFinishWriting writer: AVAssetWriter)
 }
 
 /// An object that mixies audio and video for streaming.
-class IOMixer {
+class Mixer {
     static let defaultFrameRate: Float64 = 30
 
     enum MediaSync {
@@ -41,23 +41,23 @@ class IOMixer {
     private var isEncoding = false
 
     var mediaSync = MediaSync.passthrough
-    weak var delegate: (any IOMixerDelegate)?
+    weak var delegate: (any MixerDelegate)?
     private var videoTimeStamp = CMTime.zero
 
-    lazy var audio: IOAudioUnit = {
-        var audio = IOAudioUnit()
+    lazy var audio: AudioUnit = {
+        var audio = AudioUnit()
         audio.mixer = self
         return audio
     }()
 
-    lazy var video: IOVideoUnit = {
-        var video = IOVideoUnit()
+    lazy var video: VideoUnit = {
+        var video = VideoUnit()
         video.mixer = self
         return video
     }()
 
-    lazy var recorder: IORecorder = {
-        var recorder = IORecorder()
+    lazy var recorder: Recorder = {
+        var recorder = Recorder()
         recorder.delegate = self
         return recorder
     }()
@@ -203,8 +203,8 @@ class IOMixer {
     }
 }
 
-extension IOMixer: IORecorderDelegate {
-    func recorder(_: IORecorder, finishWriting writer: AVAssetWriter) {
+extension Mixer: IORecorderDelegate {
+    func recorder(_: Recorder, finishWriting writer: AVAssetWriter) {
         delegate?.mixer(self, recorderFinishWriting: writer)
     }
 }

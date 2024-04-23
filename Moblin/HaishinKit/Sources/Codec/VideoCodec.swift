@@ -33,7 +33,7 @@ class VideoCodec {
     private(set) var isRunning: Atomic<Bool> = .init(false)
 
     private let lockQueue: DispatchQueue
-    var expectedFrameRate = IOMixer.defaultFrameRate
+    var expectedFrameRate = Mixer.defaultFrameRate
     var formatDescription: CMFormatDescription? {
         didSet {
             guard !CMFormatDescriptionEqual(formatDescription, otherFormatDescription: oldValue) else {

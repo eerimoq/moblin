@@ -18,7 +18,7 @@ private func setOrientation(
     }
 }
 
-class ReplaceVideo {
+private class ReplaceVideo {
     var sampleBuffers: [CMSampleBuffer] = []
     var firstPresentationTimeStamp: Double = .nan
     var currentSampleBuffer: CMSampleBuffer?
@@ -83,7 +83,7 @@ class ReplaceVideo {
     }
 }
 
-final class IOVideoUnit: NSObject {
+final class VideoUnit: NSObject {
     let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.VideoIOComponent.lock")
     private(set) var device: AVCaptureDevice?
     private var input: AVCaptureInput?
@@ -99,11 +99,11 @@ final class IOVideoUnit: NSObject {
     }
 
     lazy var codec: VideoCodec = .init(lockQueue: lockQueue)
-    weak var mixer: IOMixer?
+    weak var mixer: Mixer?
     private var effects: [VideoEffect] = []
     private var pendingAfterAttachEffects: [VideoEffect]?
 
-    var frameRate = IOMixer.defaultFrameRate {
+    var frameRate = Mixer.defaultFrameRate {
         didSet {
             setDeviceFormat(frameRate: frameRate, colorSpace: colorSpace)
         }
@@ -633,7 +633,7 @@ final class IOVideoUnit: NSObject {
     }
 }
 
-extension IOVideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
+extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
     func captureOutput(
         _: AVCaptureOutput,
         didOutput sampleBuffer: CMSampleBuffer,

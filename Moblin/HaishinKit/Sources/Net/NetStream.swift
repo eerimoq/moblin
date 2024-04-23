@@ -25,7 +25,7 @@ protocol NetStreamDelegate: AnyObject {
 
 open class NetStream: NSObject {
     let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.NetStream.lock")
-    let mixer = IOMixer()
+    let mixer = Mixer()
     weak var delegate: (any NetStreamDelegate)?
 
     override init() {
@@ -131,7 +131,7 @@ open class NetStream: NSObject {
         }
     }
 
-    func videoCapture() -> IOVideoUnit? {
+    func videoCapture() -> VideoUnit? {
         return mixer.video.lockQueue.sync {
             self.mixer.video
         }
@@ -188,20 +188,20 @@ open class NetStream: NSObject {
     }
 }
 
-extension NetStream: IOMixerDelegate {
+extension NetStream: MixerDelegate {
     func mixer(
-        _: IOMixer,
+        _: Mixer,
         sessionWasInterrupted session: AVCaptureSession,
         reason: AVCaptureSession.InterruptionReason?
     ) {
         delegate?.stream(self, sessionWasInterrupted: session, reason: reason)
     }
 
-    func mixer(_: IOMixer, sessionInterruptionEnded session: AVCaptureSession) {
+    func mixer(_: Mixer, sessionInterruptionEnded session: AVCaptureSession) {
         delegate?.stream(self, sessionInterruptionEnded: session)
     }
 
-    func mixer(_: IOMixer, audioLevel: Float, numberOfAudioChannels: Int, presentationTimestamp: Double) {
+    func mixer(_: Mixer, audioLevel: Float, numberOfAudioChannels: Int, presentationTimestamp: Double) {
         delegate?.stream(
             self,
             audioLevel: audioLevel,
@@ -210,19 +210,19 @@ extension NetStream: IOMixerDelegate {
         )
     }
 
-    func mixerVideo(_: IOMixer, presentationTimestamp: Double) {
+    func mixerVideo(_: Mixer, presentationTimestamp: Double) {
         delegate?.streamVideo(self, presentationTimestamp: presentationTimestamp)
     }
 
-    func mixerVideo(_: IOMixer, failedEffect: String?) {
+    func mixerVideo(_: Mixer, failedEffect: String?) {
         delegate?.streamVideo(self, failedEffect: failedEffect)
     }
 
-    func mixerVideo(_: IOMixer, lowFpsImage: Data?) {
+    func mixerVideo(_: Mixer, lowFpsImage: Data?) {
         delegate?.streamVideo(self, lowFpsImage: lowFpsImage)
     }
 
-    func mixer(_: IOMixer, recorderFinishWriting writer: AVAssetWriter) {
+    func mixer(_: Mixer, recorderFinishWriting writer: AVAssetWriter) {
         delegate?.stream(self, recorderFinishWriting: writer)
     }
 }

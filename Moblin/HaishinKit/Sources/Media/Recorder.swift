@@ -1,12 +1,12 @@
 import AVFoundation
 
 protocol IORecorderDelegate: AnyObject {
-    func recorder(_ recorder: IORecorder, finishWriting writer: AVAssetWriter)
+    func recorder(_ recorder: Recorder, finishWriting writer: AVAssetWriter)
 }
 
 private let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.IORecorder.lock")
 
-class IORecorder {
+class Recorder {
     private static let defaultAudioOutputSettings: [String: Any] = [
         AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
         AVSampleRateKey: 0,
@@ -20,8 +20,8 @@ class IORecorder {
     ]
 
     weak var delegate: (any IORecorderDelegate)?
-    var audioOutputSettings = IORecorder.defaultAudioOutputSettings
-    var videoOutputSettings = IORecorder.defaultVideoOutputSettings
+    var audioOutputSettings = Recorder.defaultAudioOutputSettings
+    var videoOutputSettings = Recorder.defaultVideoOutputSettings
     var url: URL?
     private var outputChannelsMap: [Int: Int] = [0: 0, 1: 1]
 
