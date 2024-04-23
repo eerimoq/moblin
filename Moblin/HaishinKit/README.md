@@ -1,3 +1,5 @@
+This folder contains a heavily modified fork of HaishinKit.
+
 # HaishinKit for iOS, macOS, tvOS, and [Android](https://github.com/shogo4405/HaishinKit.kt).
 [![GitHub Stars](https://img.shields.io/github/stars/shogo4405/HaishinKit.swift?style=social)](https://github.com/shogo4405/HaishinKit.swift/stargazers)
 [![Release](https://img.shields.io/github/v/release/shogo4405/HaishinKit.swift)](https://github.com/shogo4405/HaishinKit.swift/releases/latest)
