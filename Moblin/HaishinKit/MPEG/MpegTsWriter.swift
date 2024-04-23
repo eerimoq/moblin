@@ -321,15 +321,24 @@ extension MpegTsWriter: AudioCodecDelegate {
 }
 
 extension MpegTsWriter: VideoCodecDelegate {
-    func videoCodecOutputFormat(_: VideoCodec, _ formatDescription: CMFormatDescription) {
+    func videoCodecOutputFormat(_ codec: VideoCodec, _ formatDescription: CMFormatDescription) {
         var data = ElementaryStreamSpecificData()
         data.elementaryPID = MpegTsWriter.defaultVideoPID
         videoContinuityCounter = 0
-        if let avcC = AVCDecoderConfigurationRecord.getData(formatDescription) {
+        switch codec.settings.format {
+        case .h264:
+            guard let avcC = AVCDecoderConfigurationRecord.getData(formatDescription) else {
+                logger.info("mpeg-ts: Failed to create avcC")
+                return
+            }
             data.streamType = .h264
             PMT.elementaryStreamSpecificData.append(data)
             videoConfig = AVCDecoderConfigurationRecord(data: avcC)
-        } else if let hvcC = HEVCDecoderConfigurationRecord.getData(formatDescription) {
+        case .hevc:
+            guard let hvcC = HEVCDecoderConfigurationRecord.getData(formatDescription) else {
+                logger.info("mpeg-ts: Failed to create hvcC")
+                return
+            }
             data.streamType = .h265
             PMT.elementaryStreamSpecificData.append(data)
             videoConfig = HEVCDecoderConfigurationRecord(data: hvcC)

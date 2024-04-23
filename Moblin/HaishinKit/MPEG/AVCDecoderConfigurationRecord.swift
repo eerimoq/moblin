@@ -7,10 +7,7 @@ protocol DecoderConfigurationRecord {}
  - seealso: ISO/IEC 14496-15 2010
  */
 struct AVCDecoderConfigurationRecord: DecoderConfigurationRecord {
-    static func getData(_ formatDescription: CMFormatDescription?) -> Data? {
-        guard let formatDescription else {
-            return nil
-        }
+    static func getData(_ formatDescription: CMFormatDescription) -> Data? {
         if let atoms = CMFormatDescriptionGetExtension(
             formatDescription,
             extensionKey: "SampleDescriptionExtensionAtoms" as CFString
