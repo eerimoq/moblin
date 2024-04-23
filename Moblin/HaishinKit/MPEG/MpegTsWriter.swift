@@ -33,12 +33,12 @@ class MpegTsWriter {
     private var videoDataOffset: Int = 0
 
     private var programAssociationTable: TSProgramAssociation = {
-        let PAT: TSProgramAssociation = .init()
-        PAT.programs = [1: MpegTsWriter.programMappingTablePacketId]
-        return PAT
+        let programAssociationTable = TSProgramAssociation()
+        programAssociationTable.programs = [1: MpegTsWriter.programMappingTablePacketId]
+        return programAssociationTable
     }()
 
-    private var programMappingTable: TSProgramMap = .init()
+    private var programMappingTable = TSProgramMap()
     private var audioConfig: AudioSpecificConfig? {
         didSet {
             writeProgramIfNeeded()
