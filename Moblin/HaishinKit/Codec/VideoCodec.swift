@@ -6,8 +6,8 @@ import VideoToolbox
 var numberOfFailedEncodings = 0
 
 protocol VideoCodecDelegate: AnyObject {
-    func videoCodec(_ codec: VideoCodec, didOutput formatDescription: CMFormatDescription?)
-    func videoCodec(_ codec: VideoCodec, didOutput sampleBuffer: CMSampleBuffer)
+    func videoCodecOutputFormat(_ codec: VideoCodec, _ formatDescription: CMFormatDescription)
+    func videoCodecOutputSampleBuffer(_ codec: VideoCodec, _ sampleBuffer: CMSampleBuffer)
 }
 
 class VideoCodec {
@@ -39,7 +39,10 @@ class VideoCodec {
             guard !CMFormatDescriptionEqual(formatDescription, otherFormatDescription: oldValue) else {
                 return
             }
-            delegate?.videoCodec(self, didOutput: formatDescription)
+            guard let formatDescription else {
+                return
+            }
+            delegate?.videoCodecOutputFormat(self, formatDescription)
         }
     }
 
@@ -85,7 +88,7 @@ class VideoCodec {
                 return
             }
             formatDescription = sampleBuffer.formatDescription
-            delegate?.videoCodec(self, didOutput: sampleBuffer)
+            delegate?.videoCodecOutputSampleBuffer(self, sampleBuffer)
         }
     }
 
@@ -120,7 +123,7 @@ class VideoCodec {
                     print("xxx decode")
                     return
                 }
-                delegate?.videoCodec(self, didOutput: sampleBuffer)
+                delegate?.videoCodecOutputSampleBuffer(self, sampleBuffer)
             }
     }
 

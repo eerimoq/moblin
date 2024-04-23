@@ -111,7 +111,7 @@ final class TSProgramMap: MpegTsProgram {
 
     var PCRPID: UInt16 = 0
     var programInfoLength: UInt16 = 0
-    var elementaryStreamSpecificData: [ESSpecificData] = []
+    var elementaryStreamSpecificData: [ElementaryStreamSpecificData] = []
 
     override init() {
         super.init()
@@ -126,7 +126,10 @@ final class TSProgramMap: MpegTsProgram {
     override var tableData: Data {
         get {
             var bytes = Data()
-            elementaryStreamSpecificData.sort { (lhs: ESSpecificData, rhs: ESSpecificData) -> Bool in
+            elementaryStreamSpecificData.sort { (
+                lhs: ElementaryStreamSpecificData,
+                rhs: ElementaryStreamSpecificData
+            ) -> Bool in
                 lhs.elementaryPID < rhs.elementaryPID
             }
             for essd in elementaryStreamSpecificData {
@@ -147,10 +150,13 @@ final class TSProgramMap: MpegTsProgram {
                 var position = 0
                 while buffer.bytesAvailable > 0 {
                     position = buffer.position
-                    guard let data = try ESSpecificData(buffer.readBytes(buffer.bytesAvailable)) else {
+                    guard let data = try ElementaryStreamSpecificData(buffer
+                        .readBytes(buffer.bytesAvailable))
+                    else {
                         break
                     }
-                    buffer.position = position + ESSpecificData.fixedHeaderSize + Int(data.esInfoLength)
+                    buffer.position = position + ElementaryStreamSpecificData
+                        .fixedHeaderSize + Int(data.esInfoLength)
                     elementaryStreamSpecificData.append(data)
                 }
             } catch {

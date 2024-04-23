@@ -266,7 +266,7 @@ class MpegTsWriter {
 extension MpegTsWriter: AudioCodecDelegate {
     func audioCodecOutputFormat(_ format: AVAudioFormat) {
         logger.info("ts-writer: Audio setup \(format)")
-        var data = ESSpecificData()
+        var data = ElementaryStreamSpecificData()
         switch format.formatDescription.audioStreamBasicDescription?.mFormatID {
         case kAudioFormatMPEG4AAC:
             data.streamType = .adtsAac
@@ -321,11 +321,8 @@ extension MpegTsWriter: AudioCodecDelegate {
 }
 
 extension MpegTsWriter: VideoCodecDelegate {
-    func videoCodec(_: VideoCodec, didOutput formatDescription: CMFormatDescription?) {
-        guard let formatDescription else {
-            return
-        }
-        var data = ESSpecificData()
+    func videoCodecOutputFormat(_: VideoCodec, _ formatDescription: CMFormatDescription) {
+        var data = ElementaryStreamSpecificData()
         data.elementaryPID = MpegTsWriter.defaultVideoPID
         videoContinuityCounter = 0
         if let avcC = AVCDecoderConfigurationRecord.getData(formatDescription) {
@@ -339,7 +336,7 @@ extension MpegTsWriter: VideoCodecDelegate {
         }
     }
 
-    func videoCodec(_: VideoCodec, didOutput sampleBuffer: CMSampleBuffer) {
+    func videoCodecOutputSampleBuffer(_: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
         guard let dataBuffer = sampleBuffer.dataBuffer else {
             return
         }

@@ -12,7 +12,7 @@ private func makeTimingInfo(duration: Int64, presentationTimeStamp: Int64,
     )
 }
 
-class RtmpServerChunkStream: VideoCodecDelegate {
+class RtmpServerChunkStream {
     private var messageData: Data
     var messageLength: Int
     var messageTypeId: UInt8
@@ -537,10 +537,10 @@ class RtmpServerChunkStream: VideoCodecDelegate {
     }
 }
 
-extension RtmpServerChunkStream {
-    func videoCodec(_: VideoCodec, didOutput _: CMFormatDescription?) {}
+extension RtmpServerChunkStream: VideoCodecDelegate {
+    func videoCodecOutputFormat(_: VideoCodec, _: CMFormatDescription) {}
 
-    func videoCodec(_: VideoCodec, didOutput sampleBuffer: CMSampleBuffer) {
+    func videoCodecOutputSampleBuffer(_: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
         guard let client else {
             return
         }

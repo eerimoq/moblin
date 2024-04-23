@@ -44,10 +44,7 @@ extension RTMPMuxer: AudioCodecDelegate {
 }
 
 extension RTMPMuxer: VideoCodecDelegate {
-    func videoCodec(_ codec: VideoCodec, didOutput formatDescription: CMFormatDescription?) {
-        guard let formatDescription else {
-            return
-        }
+    func videoCodecOutputFormat(_ codec: VideoCodec, _ formatDescription: CMFormatDescription) {
         switch codec.settings.format {
         case .h264:
             guard let avcC = AVCDecoderConfigurationRecord.getData(formatDescription) else {
@@ -78,7 +75,7 @@ extension RTMPMuxer: VideoCodecDelegate {
         }
     }
 
-    func videoCodec(_ codec: VideoCodec, didOutput sampleBuffer: CMSampleBuffer) {
+    func videoCodecOutputSampleBuffer(_ codec: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
         let keyframe = !sampleBuffer.isNotSync
         let decodeTimeStamp = sampleBuffer.decodeTimeStamp.isValid ? sampleBuffer
             .decodeTimeStamp : sampleBuffer.presentationTimeStamp

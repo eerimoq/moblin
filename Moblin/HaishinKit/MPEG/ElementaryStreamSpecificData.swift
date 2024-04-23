@@ -15,7 +15,7 @@ enum ESStreamType: UInt8 {
     case h265 = 0x24
 }
 
-struct ESSpecificData {
+struct ElementaryStreamSpecificData {
     static let fixedHeaderSize: Int = 5
     var streamType: ESStreamType = .unspecific
     var elementaryPID: UInt16 = 0
