@@ -55,10 +55,6 @@ class MpegTsWriter {
     private var baseVideoTimestamp: CMTime = .invalid
     private var baseAudioTimestamp: CMTime = .invalid
     private var PCRTimestamp = CMTime.zero
-    private var canWriteFor: Bool {
-        return (expectedMedias.contains(.audio) == (audioConfig != nil))
-            && (expectedMedias.contains(.video) == (videoConfig != nil))
-    }
 
     init(segmentDuration: Double = MpegTsWriter.defaultSegmentDuration) {
         self.segmentDuration = segmentDuration
@@ -86,6 +82,11 @@ class MpegTsWriter {
         baseAudioTimestamp = .invalid
         PCRTimestamp = .invalid
         isRunning.mutate { $0 = false }
+    }
+
+    private func canWriteFor() -> Bool {
+        return (expectedMedias.contains(.audio) == (audioConfig != nil))
+            && (expectedMedias.contains(.video) == (videoConfig != nil))
     }
 
     private func encode(_ PID: UInt16,
@@ -239,7 +240,7 @@ class MpegTsWriter {
         guard !expectedMedias.isEmpty else {
             return
         }
-        guard canWriteFor else {
+        guard canWriteFor() else {
             return
         }
         writeProgram()
@@ -287,7 +288,7 @@ extension MpegTsWriter: AudioCodecDelegate {
             logger.info("ts-writer: Audio output no buffer")
             return
         }
-        guard canWriteFor else {
+        guard canWriteFor() else {
             logger.info("ts-writer: Cannot write audio buffer. Video config missing?")
             return
         }
@@ -352,7 +353,7 @@ extension MpegTsWriter: VideoCodecDelegate {
         guard let (buffer, length) = dataBuffer.getDataPointer() else {
             return
         }
-        guard canWriteFor else {
+        guard canWriteFor() else {
             logger.info("ts-writer: Cannot write video buffer. Audio config missing?")
             return
         }
