@@ -1,8 +1,8 @@
 import AVFoundation
 
 protocol AudioCodecDelegate: AnyObject {
-    func audioCodec(didOutput audioFormat: AVAudioFormat)
-    func audioCodec(didOutput audioBuffer: AVAudioBuffer, presentationTimeStamp: CMTime)
+    func audioCodecOutputFormat(_ format: AVAudioFormat)
+    func audioCodecOutputBuffer(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime)
 }
 
 class AudioCodec {
@@ -177,7 +177,7 @@ class AudioCodec {
         if let error {
             logger.info("Failed to convert \(error)")
         } else {
-            delegate?.audioCodec(didOutput: outputBuffer, presentationTimeStamp: presentationTimeStamp)
+            delegate?.audioCodecOutputBuffer(outputBuffer, presentationTimeStamp)
         }
     }
 
@@ -218,7 +218,7 @@ class AudioCodec {
             outputToInputChannelsMap: outputSettings.channelsMap
         )
         outputSettings.apply(converter, oldValue: nil)
-        delegate?.audioCodec(didOutput: outputFormat)
+        delegate?.audioCodecOutputFormat(outputFormat)
         return converter
     }
 
@@ -228,7 +228,7 @@ class AudioCodec {
                 return
             }
             if let audioConverter = self.audioConverter {
-                self.delegate?.audioCodec(didOutput: audioConverter.outputFormat)
+                self.delegate?.audioCodecOutputFormat(audioConverter.outputFormat)
             }
             self.isRunning.mutate { $0 = true }
         }

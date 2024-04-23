@@ -21,18 +21,16 @@ final class RTMPMuxer {
 }
 
 extension RTMPMuxer: AudioCodecDelegate {
-    func audioCodec(didOutput audioFormat: AVAudioFormat) {
+    func audioCodecOutputFormat(_ format: AVAudioFormat) {
         var buffer = Data([RTMPMuxer.aac, FLVAACPacketType.seq.rawValue])
-        buffer.append(contentsOf: AudioSpecificConfig(formatDescription: audioFormat.formatDescription).bytes)
+        buffer.append(contentsOf: AudioSpecificConfig(formatDescription: format.formatDescription).bytes)
         delegate?.muxer(self, didOutputAudio: buffer, withTimestamp: 0)
     }
 
-    func audioCodec(didOutput audioBuffer: AVAudioBuffer,
-                    presentationTimeStamp: CMTime)
-    {
+    func audioCodecOutputBuffer(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime) {
         let delta = (audioTimeStamp == CMTime.zero ? 0 : presentationTimeStamp.seconds - audioTimeStamp
             .seconds) * 1000
-        guard let audioBuffer = audioBuffer as? AVAudioCompressedBuffer, delta >= 0 else {
+        guard let audioBuffer = buffer as? AVAudioCompressedBuffer, delta >= 0 else {
             return
         }
         var buffer = Data([RTMPMuxer.aac, FLVAACPacketType.raw.rawValue])

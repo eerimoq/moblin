@@ -264,10 +264,10 @@ class MpegTsWriter {
 }
 
 extension MpegTsWriter: AudioCodecDelegate {
-    func audioCodec(didOutput outputFormat: AVAudioFormat) {
-        logger.info("ts-writer: Audio setup \(outputFormat)")
+    func audioCodecOutputFormat(_ format: AVAudioFormat) {
+        logger.info("ts-writer: Audio setup \(format)")
         var data = ESSpecificData()
-        switch outputFormat.formatDescription.audioStreamBasicDescription?.mFormatID {
+        switch format.formatDescription.audioStreamBasicDescription?.mFormatID {
         case kAudioFormatMPEG4AAC:
             data.streamType = .adtsAac
         case kAudioFormatOpus:
@@ -279,11 +279,11 @@ extension MpegTsWriter: AudioCodecDelegate {
         data.elementaryPID = MpegTsWriter.defaultAudioPID
         PMT.elementaryStreamSpecificData.append(data)
         audioContinuityCounter = 0
-        audioConfig = AudioSpecificConfig(formatDescription: outputFormat.formatDescription)
+        audioConfig = AudioSpecificConfig(formatDescription: format.formatDescription)
     }
 
-    func audioCodec(didOutput audioBuffer: AVAudioBuffer, presentationTimeStamp: CMTime) {
-        guard let audioBuffer = audioBuffer as? AVAudioCompressedBuffer else {
+    func audioCodecOutputBuffer(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime) {
+        guard let audioBuffer = buffer as? AVAudioCompressedBuffer else {
             logger.info("ts-writer: Audio output no buffer")
             return
         }
