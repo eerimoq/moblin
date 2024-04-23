@@ -1,7 +1,7 @@
 import Foundation
 
 struct AVCFormatStream {
-    let data: Data
+    private let data: Data
 
     init(data: Data) {
         self.data = data

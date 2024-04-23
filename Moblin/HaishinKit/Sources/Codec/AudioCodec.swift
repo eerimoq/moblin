@@ -89,13 +89,16 @@ class AudioCodec {
     private func appendSampleBufferOutputPcm(_ sampleBuffer: CMSampleBuffer,
                                              _ presentationTimeStamp: CMTime)
     {
+        guard let blockBuffer = sampleBuffer.dataBuffer else {
+            return
+        }
         var offset = 0
-        var newPresentationTimeStamp = presentationTimeStamp
+        var nextPresentationTimeStamp = presentationTimeStamp
         for i in 0 ..< sampleBuffer.numSamples {
             guard let buffer = makeInputBuffer() as? AVAudioCompressedBuffer else {
                 continue
             }
-            let sampleSize = CMSampleBufferGetSampleSize(sampleBuffer, at: i)
+            let sampleSize = sampleBuffer.getSampleSize(at: i)
             let byteCount = sampleSize - ADTSHeader.size
             buffer.packetDescriptions?.pointee = AudioStreamPacketDescription(
                 mStartOffset: 0,
@@ -104,23 +107,20 @@ class AudioCodec {
             )
             buffer.packetCount = 1
             buffer.byteLength = UInt32(byteCount)
-            if let blockBuffer = sampleBuffer.dataBuffer {
-                CMBlockBufferCopyDataBytes(
-                    blockBuffer,
-                    atOffset: offset + ADTSHeader.size,
-                    dataLength: byteCount,
-                    destination: buffer.data
+            blockBuffer.copyDataBytes(
+                fromOffset: offset + ADTSHeader.size,
+                length: byteCount,
+                to: buffer.data
+            )
+            appendAudioBuffer(buffer, presentationTimeStamp: nextPresentationTimeStamp)
+            nextPresentationTimeStamp = CMTimeAdd(
+                nextPresentationTimeStamp,
+                CMTime(
+                    value: CMTimeValue(1024),
+                    timescale: presentationTimeStamp.timescale
                 )
-                appendAudioBuffer(buffer, presentationTimeStamp: newPresentationTimeStamp)
-                newPresentationTimeStamp = CMTimeAdd(
-                    newPresentationTimeStamp,
-                    CMTime(
-                        value: CMTimeValue(1024),
-                        timescale: presentationTimeStamp.timescale
-                    )
-                )
-                offset += sampleSize
-            }
+            )
+            offset += sampleSize
         }
     }
 

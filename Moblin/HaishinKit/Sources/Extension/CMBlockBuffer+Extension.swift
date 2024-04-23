@@ -2,6 +2,13 @@ import CoreMedia
 
 extension CMBlockBuffer {
     var data: Data? {
+        guard let (buffer, length) = getDataPointer() else {
+            return nil
+        }
+        return Data(bytes: buffer, count: length)
+    }
+
+    func getDataPointer() -> (UnsafeMutablePointer<Int8>, Int)? {
         var length = 0
         var buffer: UnsafeMutablePointer<Int8>?
         guard CMBlockBufferGetDataPointer(
@@ -13,6 +20,18 @@ extension CMBlockBuffer {
         ) == noErr else {
             return nil
         }
-        return Data(bytes: buffer!, count: length)
+        guard let buffer else {
+            return nil
+        }
+        return (buffer, length)
+    }
+
+    func copyDataBytes(fromOffset: Int, length: Int, to: UnsafeMutableRawPointer) {
+        CMBlockBufferCopyDataBytes(
+            self,
+            atOffset: fromOffset,
+            dataLength: length,
+            destination: to
+        )
     }
 }

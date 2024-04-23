@@ -343,18 +343,7 @@ extension MpegTsWriter: VideoCodecDelegate {
         guard let dataBuffer = sampleBuffer.dataBuffer else {
             return
         }
-        var length = 0
-        var buffer: UnsafeMutablePointer<Int8>?
-        guard CMBlockBufferGetDataPointer(
-            dataBuffer,
-            atOffset: 0,
-            lengthAtOffsetOut: nil,
-            totalLengthOut: &length,
-            dataPointerOut: &buffer
-        ) == noErr else {
-            return
-        }
-        guard let buffer else {
+        guard let (buffer, length) = dataBuffer.getDataPointer() else {
             return
         }
         guard canWriteFor else {

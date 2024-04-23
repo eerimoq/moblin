@@ -90,4 +90,8 @@ extension CMSampleBuffer {
             Unmanaged.passUnretained(value ? kCFBooleanTrue : kCFBooleanFalse).toOpaque()
         )
     }
+
+    func getSampleSize(at: Int) -> Int {
+        return CMSampleBufferGetSampleSize(self, at: at)
+    }
 }
