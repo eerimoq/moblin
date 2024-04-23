@@ -7,7 +7,7 @@ struct MpegTsPacket {
     static let size = 188
     static let fixedHeaderSize = 4
     var payloadUnitStartIndicator = false
-    var pid: UInt16 = 0
+    var id: UInt16 = 0
     var continuityCounter: UInt8 = 0
     var adaptationField: MpegTsAdaptationField?
     var payload = Data()
@@ -17,8 +17,8 @@ struct MpegTsPacket {
         return MpegTsPacket.size - MpegTsPacket.fixedHeaderSize - adaptationFieldSize - payload.count
     }
 
-    init(pid: UInt16) {
-        self.pid = pid
+    init(id: UInt16) {
+        self.id = id
     }
 
     mutating func setPayload(_ data: Data) -> Int {
@@ -39,11 +39,11 @@ struct MpegTsPacket {
     func encodeFixedHeaderInto(pointer: UnsafeMutableRawBufferPointer) {
         pointer.storeBytes(of: 0x47, toByteOffset: 0, as: UInt8.self)
         pointer.storeBytes(
-            of: (payloadUnitStartIndicator ? 0x40 : 0) | UInt8(pid >> 8),
+            of: (payloadUnitStartIndicator ? 0x40 : 0) | UInt8(id >> 8),
             toByteOffset: 1,
             as: UInt8.self
         )
-        pointer.storeBytes(of: UInt8(pid & 0x00FF), toByteOffset: 2, as: UInt8.self)
+        pointer.storeBytes(of: UInt8(id & 0x00FF), toByteOffset: 2, as: UInt8.self)
         pointer.storeBytes(
             of: (adaptationField != nil ? 0x20 : 0) | 0x10 | continuityCounter,
             toByteOffset: 3,

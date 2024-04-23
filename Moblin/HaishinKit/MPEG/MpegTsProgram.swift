@@ -27,7 +27,7 @@ class MpegTsProgram {
     }
 
     func packet(_ PID: UInt16) -> MpegTsPacket {
-        var packet = MpegTsPacket(pid: PID)
+        var packet = MpegTsPacket(id: PID)
         packet.payloadUnitStartIndicator = true
         packet.setPayloadNoAdaptation(data)
         return packet
@@ -109,7 +109,7 @@ final class TSProgramAssociation: MpegTsProgram {
 final class TSProgramMap: MpegTsProgram {
     static let tableID: UInt8 = 2
 
-    var PCRPID: UInt16 = 0
+    var programClockReferencePacketId: UInt16 = 0
     var programInfoLength: UInt16 = 0
     var elementaryStreamSpecificData: [ElementaryStreamSpecificData] = []
 
@@ -130,13 +130,13 @@ final class TSProgramMap: MpegTsProgram {
                 lhs: ElementaryStreamSpecificData,
                 rhs: ElementaryStreamSpecificData
             ) -> Bool in
-                lhs.elementaryPID < rhs.elementaryPID
+                lhs.elementaryPacketId < rhs.elementaryPacketId
             }
             for essd in elementaryStreamSpecificData {
                 bytes.append(essd.data)
             }
             return ByteArray()
-                .writeUInt16(PCRPID | 0xE000)
+                .writeUInt16(programClockReferencePacketId | 0xE000)
                 .writeUInt16(programInfoLength | 0xF000)
                 .writeBytes(bytes)
                 .data
@@ -144,7 +144,7 @@ final class TSProgramMap: MpegTsProgram {
         set {
             let buffer = ByteArray(data: newValue)
             do {
-                PCRPID = try buffer.readUInt16() & 0x1FFF
+                programClockReferencePacketId = try buffer.readUInt16() & 0x1FFF
                 programInfoLength = try buffer.readUInt16() & 0x03FF
                 buffer.position += Int(programInfoLength)
                 var position = 0

@@ -183,20 +183,23 @@ struct MpegTsPacketizedElementaryStream {
             .data
     }
 
-    func arrayOfPackets(_ PID: UInt16, _ PCR: UInt64?) -> [MpegTsPacket] {
+    func arrayOfPackets(_ packetId: UInt16, _ programClockReference: UInt64?) -> [MpegTsPacket] {
         let payload = encode()
         var packets: [MpegTsPacket] = []
         // start
-        var packet = MpegTsPacket(pid: PID)
+        var packet = MpegTsPacket(id: packetId)
         packet.payloadUnitStartIndicator = true
         packet.adaptationField = MpegTsAdaptationField()
-        if let PCR {
-            packet.adaptationField!.pcr = TSProgramClockReference.encode(PCR, 0)
+        if let programClockReference {
+            packet.adaptationField!.programClockReference = TSProgramClockReference.encode(
+                programClockReference,
+                0
+            )
         }
         var payloadOffset = packet.setPayload(payload)
         packets.append(packet)
         // middle
-        packet = MpegTsPacket(pid: PID)
+        packet = MpegTsPacket(id: packetId)
         while payloadOffset <= payload.count - 184 {
             packet.payload = payload[payloadOffset ..< payloadOffset + 184]
             packets.append(packet)
@@ -208,17 +211,17 @@ struct MpegTsPacketizedElementaryStream {
             break
         case 183:
             let remain = payload.subdata(in: payload.endIndex - rest ..< payload.endIndex - 1)
-            var packet = MpegTsPacket(pid: PID)
+            var packet = MpegTsPacket(id: packetId)
             packet.adaptationField = MpegTsAdaptationField()
             _ = packet.setPayload(remain)
             packets.append(packet)
-            packet = MpegTsPacket(pid: PID)
+            packet = MpegTsPacket(id: packetId)
             packet.adaptationField = MpegTsAdaptationField()
             _ = packet.setPayload(Data([payload[payload.count - 1]]))
             packets.append(packet)
         default:
             let remain = payload.subdata(in: payload.count - rest ..< payload.count)
-            var packet = MpegTsPacket(pid: PID)
+            var packet = MpegTsPacket(id: packetId)
             packet.adaptationField = MpegTsAdaptationField()
             _ = packet.setPayload(remain)
             packets.append(packet)

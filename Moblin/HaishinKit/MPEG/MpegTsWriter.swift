@@ -11,10 +11,10 @@ protocol TSWriterDelegate: AnyObject {
 
 /// The MpegTsWriter class represents writes MPEG-2 transport stream data.
 class MpegTsWriter {
-    static let PATPID: UInt16 = 0
-    static let PMTPID: UInt16 = 4095
-    static let audioPID: UInt16 = 257
-    static let videoPID: UInt16 = 256
+    static let programAssociationTablePacketId: UInt16 = 0
+    static let programMappingTablePacketId: UInt16 = 4095
+    static let audioPacketId: UInt16 = 257
+    static let videoPacketId: UInt16 = 256
     private static let audioStreamId: UInt8 = 192
     private static let videoStreamId: UInt8 = 224
     private static let segmentDuration: Double = 2
@@ -23,7 +23,7 @@ class MpegTsWriter {
     var expectedMedias: Set<AVMediaType> = []
     private var audioContinuityCounter: UInt8 = 0
     private var videoContinuityCounter: UInt8 = 0
-    private let PCRPID: UInt16 = MpegTsWriter.videoPID
+    private let programClockReferencePacketId: UInt16 = MpegTsWriter.videoPacketId
     private var rotatedTimestamp = CMTime.zero
     private let outputLock: DispatchQueue = .init(
         label: "com.haishinkit.HaishinKit.MpegTsWriter",
@@ -32,13 +32,13 @@ class MpegTsWriter {
     private var videoData: [Data?] = [nil, nil]
     private var videoDataOffset: Int = 0
 
-    private var PAT: TSProgramAssociation = {
+    private var programAssociationTable: TSProgramAssociation = {
         let PAT: TSProgramAssociation = .init()
-        PAT.programs = [1: MpegTsWriter.PMTPID]
+        PAT.programs = [1: MpegTsWriter.programMappingTablePacketId]
         return PAT
     }()
 
-    private var PMT: TSProgramMap = .init()
+    private var programMappingTable: TSProgramMap = .init()
     private var audioConfig: AudioSpecificConfig? {
         didSet {
             writeProgramIfNeeded()
@@ -67,9 +67,9 @@ class MpegTsWriter {
         }
         audioContinuityCounter = 0
         videoContinuityCounter = 0
-        PAT.programs.removeAll()
-        PAT.programs = [1: MpegTsWriter.PMTPID]
-        PMT = TSProgramMap()
+        programAssociationTable.programs.removeAll()
+        programAssociationTable.programs = [1: MpegTsWriter.programMappingTablePacketId]
+        programMappingTable = TSProgramMap()
         audioConfig = nil
         videoConfig = nil
         baseAudioTimestamp = .invalid
@@ -83,14 +83,14 @@ class MpegTsWriter {
             && (expectedMedias.contains(.video) == (videoConfig != nil))
     }
 
-    private func encode(_ PID: UInt16,
+    private func encode(_ packetId: UInt16,
                         presentationTimeStamp: CMTime,
                         decodeTimeStamp: CMTime,
                         randomAccessIndicator: Bool,
                         PES: MpegTsPacketizedElementaryStream) -> Data
     {
         let timestamp = decodeTimeStamp == .invalid ? presentationTimeStamp : decodeTimeStamp
-        let packets = split(PID, PES: PES, timestamp: timestamp)
+        let packets = split(packetId, PES: PES, timestamp: timestamp)
         packets[0].adaptationField!.randomAccessIndicator = randomAccessIndicator
         rotateFileHandle(timestamp)
         let count = packets.count * 188
@@ -102,7 +102,7 @@ class MpegTsWriter {
         data.withUnsafeMutableBytes { (pointer: UnsafeMutableRawBufferPointer) in
             var pointer = pointer
             for var packet in packets {
-                packet.continuityCounter = nextContinuityCounter(PID: PID)
+                packet.continuityCounter = nextContinuityCounter(packetId: packetId)
                 packet.encodeFixedHeaderInto(pointer: pointer)
                 pointer = UnsafeMutableRawBufferPointer(rebasing: pointer[4...])
                 if let adaptationField = packet.adaptationField {
@@ -121,15 +121,15 @@ class MpegTsWriter {
         return data
     }
 
-    private func nextContinuityCounter(PID: UInt16) -> UInt8 {
-        switch PID {
-        case MpegTsWriter.audioPID:
+    private func nextContinuityCounter(packetId: UInt16) -> UInt8 {
+        switch packetId {
+        case MpegTsWriter.audioPacketId:
             defer {
                 audioContinuityCounter += 1
                 audioContinuityCounter &= 0x0F
             }
             return audioContinuityCounter
-        case MpegTsWriter.videoPID:
+        case MpegTsWriter.videoPacketId:
             defer {
                 videoContinuityCounter += 1
                 videoContinuityCounter &= 0x0F
@@ -225,9 +225,9 @@ class MpegTsWriter {
     }
 
     private func writeProgram() {
-        PMT.PCRPID = PCRPID
-        write(PAT.packet(MpegTsWriter.PATPID).encode()
-            + PMT.packet(MpegTsWriter.PMTPID).encode())
+        programMappingTable.programClockReferencePacketId = programClockReferencePacketId
+        write(programAssociationTable.packet(MpegTsWriter.programAssociationTablePacketId).encode()
+            + programMappingTable.packet(MpegTsWriter.programMappingTablePacketId).encode())
     }
 
     private func writeProgramIfNeeded() {
@@ -237,18 +237,19 @@ class MpegTsWriter {
         writeProgram()
     }
 
-    private func split(_ PID: UInt16, PES: MpegTsPacketizedElementaryStream,
+    private func split(_ packetId: UInt16, PES: MpegTsPacketizedElementaryStream,
                        timestamp: CMTime) -> [MpegTsPacket]
     {
-        var PCR: UInt64?
+        var programClockReference: UInt64?
         let timeSinceLatestPcr = timestamp.seconds - PCRTimestamp.seconds
-        if PCRPID == PID, timeSinceLatestPcr >= 0.02 {
-            let baseTimestamp = (PID == MpegTsWriter.videoPID ? baseVideoTimestamp : baseAudioTimestamp)
-            PCR =
+        if programClockReferencePacketId == packetId, timeSinceLatestPcr >= 0.02 {
+            let baseTimestamp = (packetId == MpegTsWriter
+                .videoPacketId ? baseVideoTimestamp : baseAudioTimestamp)
+            programClockReference =
                 UInt64((timestamp.seconds - baseTimestamp.seconds) * TSTimestamp.resolution)
             PCRTimestamp = timestamp
         }
-        return PES.arrayOfPackets(PID, PCR)
+        return PES.arrayOfPackets(packetId, programClockReference)
     }
 }
 
@@ -265,8 +266,8 @@ extension MpegTsWriter: AudioCodecDelegate {
             logger.info("ts-writer: Unsupported audio format.")
             return
         }
-        data.elementaryPID = MpegTsWriter.audioPID
-        PMT.elementaryStreamSpecificData.append(data)
+        data.elementaryPacketId = MpegTsWriter.audioPacketId
+        programMappingTable.elementaryStreamSpecificData.append(data)
         audioContinuityCounter = 0
         audioConfig = AudioSpecificConfig(formatDescription: format.formatDescription)
     }
@@ -281,7 +282,7 @@ extension MpegTsWriter: AudioCodecDelegate {
         }
         if baseAudioTimestamp == .invalid {
             baseAudioTimestamp = presentationTimeStamp
-            if PCRPID == MpegTsWriter.audioPID {
+            if programClockReferencePacketId == MpegTsWriter.audioPacketId {
                 PCRTimestamp = baseAudioTimestamp
             }
         }
@@ -299,7 +300,7 @@ extension MpegTsWriter: AudioCodecDelegate {
             return
         }
         writeAudio(data: encode(
-            MpegTsWriter.audioPID,
+            MpegTsWriter.audioPacketId,
             presentationTimeStamp: presentationTimeStamp,
             decodeTimeStamp: .invalid,
             randomAccessIndicator: true,
@@ -311,7 +312,7 @@ extension MpegTsWriter: AudioCodecDelegate {
 extension MpegTsWriter: VideoCodecDelegate {
     func videoCodecOutputFormat(_ codec: VideoCodec, _ formatDescription: CMFormatDescription) {
         var data = ElementaryStreamSpecificData()
-        data.elementaryPID = MpegTsWriter.videoPID
+        data.elementaryPacketId = MpegTsWriter.videoPacketId
         videoContinuityCounter = 0
         switch codec.settings.format {
         case .h264:
@@ -320,7 +321,7 @@ extension MpegTsWriter: VideoCodecDelegate {
                 return
             }
             data.streamType = .h264
-            PMT.elementaryStreamSpecificData.append(data)
+            programMappingTable.elementaryStreamSpecificData.append(data)
             videoConfig = AVCDecoderConfigurationRecord(data: avcC)
         case .hevc:
             guard let hvcC = HEVCDecoderConfigurationRecord.getData(formatDescription) else {
@@ -328,7 +329,7 @@ extension MpegTsWriter: VideoCodecDelegate {
                 return
             }
             data.streamType = .h265
-            PMT.elementaryStreamSpecificData.append(data)
+            programMappingTable.elementaryStreamSpecificData.append(data)
             videoConfig = HEVCDecoderConfigurationRecord(data: hvcC)
         }
     }
@@ -345,7 +346,7 @@ extension MpegTsWriter: VideoCodecDelegate {
         }
         if baseVideoTimestamp == .invalid {
             baseVideoTimestamp = sampleBuffer.presentationTimeStamp
-            if PCRPID == MpegTsWriter.videoPID {
+            if programClockReferencePacketId == MpegTsWriter.videoPacketId {
                 PCRTimestamp = baseVideoTimestamp
             }
         }
@@ -379,7 +380,7 @@ extension MpegTsWriter: VideoCodecDelegate {
             return
         }
         writeVideo(data: encode(
-            MpegTsWriter.videoPID,
+            MpegTsWriter.videoPacketId,
             presentationTimeStamp: sampleBuffer.presentationTimeStamp,
             decodeTimeStamp: sampleBuffer.decodeTimeStamp,
             randomAccessIndicator: randomAccessIndicator,

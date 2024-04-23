@@ -3,15 +3,15 @@ import Foundation
 class MpegTsAdaptationField {
     static let fixedSectionSize: UInt8 = 2
     var randomAccessIndicator = false
-    var pcr: Data?
+    var programClockReference: Data?
     var stuffingBytes: Data?
 
     init() {}
 
     func calcLength() -> UInt8 {
         var length = MpegTsAdaptationField.fixedSectionSize
-        if let pcr {
-            length += UInt8(truncatingIfNeeded: pcr.count)
+        if let programClockReference {
+            length += UInt8(truncatingIfNeeded: programClockReference.count)
         }
         if let stuffingBytes {
             length += UInt8(truncatingIfNeeded: stuffingBytes.count)
@@ -28,14 +28,14 @@ class MpegTsAdaptationField {
         if randomAccessIndicator {
             flags |= 0x40
         }
-        if pcr != nil {
+        if programClockReference != nil {
             flags |= 0x10
         }
         let buffer = ByteArray()
             .writeUInt8(calcLength() - 1)
             .writeUInt8(flags)
-        if let pcr {
-            buffer.writeBytes(pcr)
+        if let programClockReference {
+            buffer.writeBytes(programClockReference)
         }
         if let stuffingBytes {
             buffer.writeBytes(stuffingBytes)
