@@ -183,7 +183,7 @@ struct MpegTsPacketizedElementaryStream {
             .data
     }
 
-    func arrayOfPackets(_ PID: UInt16, PCR: UInt64?) -> [MpegTsPacket] {
+    func arrayOfPackets(_ PID: UInt16, _ PCR: UInt64?) -> [MpegTsPacket] {
         let payload = encode()
         var packets: [MpegTsPacket] = []
         // start

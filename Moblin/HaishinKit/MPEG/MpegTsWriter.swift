@@ -9,25 +9,24 @@ protocol TSWriterDelegate: AnyObject {
     func writer(_ writer: MpegTsWriter, doOutputPointer pointer: UnsafeRawBufferPointer, count: Int)
 }
 
-/// The TSWriter class represents writes MPEG-2 transport stream data.
+/// The MpegTsWriter class represents writes MPEG-2 transport stream data.
 class MpegTsWriter {
-    static let defaultPATPID: UInt16 = 0
-    static let defaultPMTPID: UInt16 = 4095
-    static let defaultVideoPID: UInt16 = 256
-    static let defaultAudioPID: UInt16 = 257
+    static let PATPID: UInt16 = 0
+    static let PMTPID: UInt16 = 4095
+    static let audioPID: UInt16 = 257
+    static let videoPID: UInt16 = 256
     private static let audioStreamId: UInt8 = 192
     private static let videoStreamId: UInt8 = 224
-    static let defaultSegmentDuration: Double = 2
+    private static let segmentDuration: Double = 2
     weak var delegate: (any TSWriterDelegate)?
     private var isRunning: Atomic<Bool> = .init(false)
     var expectedMedias: Set<AVMediaType> = []
     private var audioContinuityCounter: UInt8 = 0
     private var videoContinuityCounter: UInt8 = 0
-    private let PCRPID: UInt16 = MpegTsWriter.defaultVideoPID
+    private let PCRPID: UInt16 = MpegTsWriter.videoPID
     private var rotatedTimestamp = CMTime.zero
-    private var segmentDuration: Double = MpegTsWriter.defaultSegmentDuration
     private let outputLock: DispatchQueue = .init(
-        label: "com.haishinkit.HaishinKit.TSWriter",
+        label: "com.haishinkit.HaishinKit.MpegTsWriter",
         qos: .userInitiated
     )
     private var videoData: [Data?] = [nil, nil]
@@ -35,7 +34,7 @@ class MpegTsWriter {
 
     private var PAT: TSProgramAssociation = {
         let PAT: TSProgramAssociation = .init()
-        PAT.programs = [1: MpegTsWriter.defaultPMTPID]
+        PAT.programs = [1: MpegTsWriter.PMTPID]
         return PAT
     }()
 
@@ -56,14 +55,9 @@ class MpegTsWriter {
     private var baseAudioTimestamp: CMTime = .invalid
     private var PCRTimestamp = CMTime.zero
 
-    init(segmentDuration: Double = MpegTsWriter.defaultSegmentDuration) {
-        self.segmentDuration = segmentDuration
-    }
+    init() {}
 
     func startRunning() {
-        guard isRunning.value else {
-            return
-        }
         isRunning.mutate { $0 = true }
     }
 
@@ -74,13 +68,13 @@ class MpegTsWriter {
         audioContinuityCounter = 0
         videoContinuityCounter = 0
         PAT.programs.removeAll()
-        PAT.programs = [1: MpegTsWriter.defaultPMTPID]
+        PAT.programs = [1: MpegTsWriter.PMTPID]
         PMT = TSProgramMap()
         audioConfig = nil
         videoConfig = nil
-        baseVideoTimestamp = .invalid
         baseAudioTimestamp = .invalid
-        PCRTimestamp = .invalid
+        baseVideoTimestamp = .invalid
+        PCRTimestamp = .zero
         isRunning.mutate { $0 = false }
     }
 
@@ -129,13 +123,13 @@ class MpegTsWriter {
 
     private func nextContinuityCounter(PID: UInt16) -> UInt8 {
         switch PID {
-        case MpegTsWriter.defaultAudioPID:
+        case MpegTsWriter.audioPID:
             defer {
                 audioContinuityCounter += 1
                 audioContinuityCounter &= 0x0F
             }
             return audioContinuityCounter
-        case MpegTsWriter.defaultVideoPID:
+        case MpegTsWriter.videoPID:
             defer {
                 videoContinuityCounter += 1
                 videoContinuityCounter &= 0x0F
@@ -148,7 +142,7 @@ class MpegTsWriter {
 
     private func rotateFileHandle(_ timestamp: CMTime) {
         let duration = timestamp.seconds - rotatedTimestamp.seconds
-        if duration <= segmentDuration {
+        if duration <= MpegTsWriter.segmentDuration {
             return
         }
         writeProgram()
@@ -232,15 +226,12 @@ class MpegTsWriter {
 
     private func writeProgram() {
         PMT.PCRPID = PCRPID
-        write(PAT.packet(MpegTsWriter.defaultPATPID).encode()
-            + PMT.packet(MpegTsWriter.defaultPMTPID).encode())
+        write(PAT.packet(MpegTsWriter.PATPID).encode()
+            + PMT.packet(MpegTsWriter.PMTPID).encode())
     }
 
     private func writeProgramIfNeeded() {
-        guard !expectedMedias.isEmpty else {
-            return
-        }
-        guard canWriteFor() else {
+        guard !expectedMedias.isEmpty, canWriteFor() else {
             return
         }
         writeProgram()
@@ -252,15 +243,12 @@ class MpegTsWriter {
         var PCR: UInt64?
         let timeSinceLatestPcr = timestamp.seconds - PCRTimestamp.seconds
         if PCRPID == PID, timeSinceLatestPcr >= 0.02 {
+            let baseTimestamp = (PID == MpegTsWriter.videoPID ? baseVideoTimestamp : baseAudioTimestamp)
             PCR =
-                UInt64((timestamp
-                        .seconds -
-                        (PID == MpegTsWriter.defaultVideoPID ? baseVideoTimestamp : baseAudioTimestamp)
-                        .seconds) *
-                    TSTimestamp.resolution)
+                UInt64((timestamp.seconds - baseTimestamp.seconds) * TSTimestamp.resolution)
             PCRTimestamp = timestamp
         }
-        return PES.arrayOfPackets(PID, PCR: PCR)
+        return PES.arrayOfPackets(PID, PCR)
     }
 }
 
@@ -277,7 +265,7 @@ extension MpegTsWriter: AudioCodecDelegate {
             logger.info("ts-writer: Unsupported audio format.")
             return
         }
-        data.elementaryPID = MpegTsWriter.defaultAudioPID
+        data.elementaryPID = MpegTsWriter.audioPID
         PMT.elementaryStreamSpecificData.append(data)
         audioContinuityCounter = 0
         audioConfig = AudioSpecificConfig(formatDescription: format.formatDescription)
@@ -289,12 +277,11 @@ extension MpegTsWriter: AudioCodecDelegate {
             return
         }
         guard canWriteFor() else {
-            logger.info("ts-writer: Cannot write audio buffer. Video config missing?")
             return
         }
         if baseAudioTimestamp == .invalid {
             baseAudioTimestamp = presentationTimeStamp
-            if PCRPID == MpegTsWriter.defaultAudioPID {
+            if PCRPID == MpegTsWriter.audioPID {
                 PCRTimestamp = baseAudioTimestamp
             }
         }
@@ -312,7 +299,7 @@ extension MpegTsWriter: AudioCodecDelegate {
             return
         }
         writeAudio(data: encode(
-            MpegTsWriter.defaultAudioPID,
+            MpegTsWriter.audioPID,
             presentationTimeStamp: presentationTimeStamp,
             decodeTimeStamp: .invalid,
             randomAccessIndicator: true,
@@ -324,7 +311,7 @@ extension MpegTsWriter: AudioCodecDelegate {
 extension MpegTsWriter: VideoCodecDelegate {
     func videoCodecOutputFormat(_ codec: VideoCodec, _ formatDescription: CMFormatDescription) {
         var data = ElementaryStreamSpecificData()
-        data.elementaryPID = MpegTsWriter.defaultVideoPID
+        data.elementaryPID = MpegTsWriter.videoPID
         videoContinuityCounter = 0
         switch codec.settings.format {
         case .h264:
@@ -354,12 +341,11 @@ extension MpegTsWriter: VideoCodecDelegate {
             return
         }
         guard canWriteFor() else {
-            logger.info("ts-writer: Cannot write video buffer. Audio config missing?")
             return
         }
         if baseVideoTimestamp == .invalid {
             baseVideoTimestamp = sampleBuffer.presentationTimeStamp
-            if PCRPID == MpegTsWriter.defaultVideoPID {
+            if PCRPID == MpegTsWriter.videoPID {
                 PCRTimestamp = baseVideoTimestamp
             }
         }
@@ -393,7 +379,7 @@ extension MpegTsWriter: VideoCodecDelegate {
             return
         }
         writeVideo(data: encode(
-            MpegTsWriter.defaultVideoPID,
+            MpegTsWriter.videoPID,
             presentationTimeStamp: sampleBuffer.presentationTimeStamp,
             decodeTimeStamp: sampleBuffer.decodeTimeStamp,
             randomAccessIndicator: randomAccessIndicator,
