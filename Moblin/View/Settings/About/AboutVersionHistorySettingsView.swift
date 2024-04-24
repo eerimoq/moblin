@@ -8,6 +8,9 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.246.0", date: "2024-04-24", changes: [
+        "• No new functionality. Just refactoring.",
+    ]),
     Version(version: "0.245.0", date: "2024-04-22", changes: [
         "• Pixel format picker in Settings -> Debug -> Pixel format.",
         "  • Full range, video range and RGB.",
