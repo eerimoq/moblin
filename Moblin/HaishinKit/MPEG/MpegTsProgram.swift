@@ -5,16 +5,15 @@ import Foundation
  */
 class MpegTsProgram {
     private static let reservedBits: UInt8 = 0x03
-    private var pointerField: UInt8 = 0
-    private var pointerFillerBytes = Data()
+    private let pointerField: UInt8 = 0
+    private let pointerFillerBytes = Data()
     var tableId: UInt8 = 0
-    private var privateBit = false
-    private var sectionLength: UInt16 = 0
-    private var tableIdExtension: UInt16 = 1
-    private var versionNumber: UInt8 = 0
-    private var currentNextIndicator = true
-    private var sectionNumber: UInt8 = 0
-    private var lastSectionNumber: UInt8 = 0
+    private let privateBit = false
+    private let tableIdExtension: UInt16 = 1
+    private let versionNumber: UInt8 = 0
+    private let currentNextIndicator = true
+    private let sectionNumber: UInt8 = 0
+    private let lastSectionNumber: UInt8 = 0
 
     init() {}
 
@@ -31,9 +30,9 @@ class MpegTsProgram {
 
     private func encode() -> Data {
         let tableData = encodeTableData()
-        sectionLength = UInt16(tableData.count) + 9
+        let sectionLength = UInt16(tableData.count) + 9
         let sectionSyntaxIndicator = !tableData.isEmpty
-        let buffer = ByteArray()
+        let encoded = ByteArray()
             .writeUInt8(tableId)
             .writeUInt16(
                 (sectionSyntaxIndicator ? 0x8000 : 0) |
@@ -48,8 +47,8 @@ class MpegTsProgram {
             .writeUInt8(sectionNumber)
             .writeUInt8(lastSectionNumber)
             .writeBytes(tableData)
-        let crc32 = CRC32.mpeg2.calculate(buffer.data)
-        return Data([pointerField] + pointerFillerBytes) + buffer.writeUInt32(crc32).data
+        let crc32 = CRC32.mpeg2.calculate(encoded.data)
+        return Data([pointerField] + pointerFillerBytes) + encoded.writeUInt32(crc32).data
     }
 }
 
@@ -57,15 +56,15 @@ final class MpegTsProgramAssociation: MpegTsProgram {
     var programs: [UInt16: UInt16] = [:]
 
     override func encodeTableData() -> Data {
-        let buffer = ByteArray()
+        let encoded = ByteArray()
         for (number, programMapPID) in programs {
-            buffer.writeUInt16(number).writeUInt16(programMapPID | 0xE000)
+            encoded.writeUInt16(number).writeUInt16(programMapPID | 0xE000)
         }
-        return buffer.data
+        return encoded.data
     }
 }
 
-final class MpegTsProgramMap: MpegTsProgram {
+final class MpegTsProgramMapping: MpegTsProgram {
     var programClockReferencePacketId: UInt16 = 0
     var programInfoLength: UInt16 = 0
     var elementaryStreamSpecificDatas: [ElementaryStreamSpecificData] = []
@@ -76,7 +75,7 @@ final class MpegTsProgramMap: MpegTsProgram {
     }
 
     override func encodeTableData() -> Data {
-        var bytes = Data()
+        var encoded = Data()
         elementaryStreamSpecificDatas.sort { (
             lhs: ElementaryStreamSpecificData,
             rhs: ElementaryStreamSpecificData
@@ -84,12 +83,12 @@ final class MpegTsProgramMap: MpegTsProgram {
             lhs.elementaryPacketId < rhs.elementaryPacketId
         }
         for elementaryStreamSpecificData in elementaryStreamSpecificDatas {
-            bytes.append(elementaryStreamSpecificData.encode())
+            encoded.append(elementaryStreamSpecificData.encode())
         }
         return ByteArray()
             .writeUInt16(programClockReferencePacketId | 0xE000)
             .writeUInt16(programInfoLength | 0xF000)
-            .writeBytes(bytes)
+            .writeBytes(encoded)
             .data
     }
 }

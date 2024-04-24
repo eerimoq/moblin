@@ -38,7 +38,7 @@ class MpegTsWriter {
         return programAssociationTable
     }()
 
-    private var programMappingTable = MpegTsProgramMap()
+    private var programMappingTable = MpegTsProgramMapping()
     private var audioConfig: AudioSpecificConfig? {
         didSet {
             writeProgramIfNeeded()
@@ -69,7 +69,7 @@ class MpegTsWriter {
         videoContinuityCounter = 0
         programAssociationTable.programs.removeAll()
         programAssociationTable.programs = [1: MpegTsWriter.programMappingTablePacketId]
-        programMappingTable = MpegTsProgramMap()
+        programMappingTable = MpegTsProgramMapping()
         audioConfig = nil
         videoConfig = nil
         baseAudioTimestamp = .invalid

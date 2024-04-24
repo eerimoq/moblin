@@ -31,15 +31,15 @@ class MpegTsAdaptationField {
         if programClockReference != nil {
             flags |= 0x10
         }
-        let buffer = ByteArray()
+        let encoded = ByteArray()
             .writeUInt8(calcLength() - 1)
             .writeUInt8(flags)
         if let programClockReference {
-            buffer.writeBytes(programClockReference)
+            encoded.writeBytes(programClockReference)
         }
         if let stuffingBytes {
-            buffer.writeBytes(stuffingBytes)
+            encoded.writeBytes(stuffingBytes)
         }
-        return buffer.data
+        return encoded.data
     }
 }

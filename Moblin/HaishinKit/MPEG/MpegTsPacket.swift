@@ -65,35 +65,35 @@ enum TSTimestamp {
     static let dataSize: Int = 5
 
     static func encode(_ b: Int64, _ m: UInt8) -> Data {
-        var data = Data(count: dataSize)
-        data[0] = UInt8(truncatingIfNeeded: b >> 29) | 0x01 | m
-        data[1] = UInt8(truncatingIfNeeded: b >> 22)
-        data[2] = UInt8(truncatingIfNeeded: b >> 14) | 0x01
-        data[3] = UInt8(truncatingIfNeeded: b >> 7)
-        data[4] = UInt8(truncatingIfNeeded: b << 1) | 0x01
-        return data
+        var encoded = Data(count: dataSize)
+        encoded[0] = UInt8(truncatingIfNeeded: b >> 29) | 0x01 | m
+        encoded[1] = UInt8(truncatingIfNeeded: b >> 22)
+        encoded[2] = UInt8(truncatingIfNeeded: b >> 14) | 0x01
+        encoded[3] = UInt8(truncatingIfNeeded: b >> 7)
+        encoded[4] = UInt8(truncatingIfNeeded: b << 1) | 0x01
+        return encoded
     }
 }
 
 enum TSProgramClockReference {
     static func encode(_ b: UInt64, _ e: UInt16) -> Data {
-        var data = Data(count: 6)
-        data[0] = UInt8(truncatingIfNeeded: b >> 25)
-        data[1] = UInt8(truncatingIfNeeded: b >> 17)
-        data[2] = UInt8(truncatingIfNeeded: b >> 9)
-        data[3] = UInt8(truncatingIfNeeded: b >> 1)
-        data[4] = 0xFF
+        var encoded = Data(count: 6)
+        encoded[0] = UInt8(truncatingIfNeeded: b >> 25)
+        encoded[1] = UInt8(truncatingIfNeeded: b >> 17)
+        encoded[2] = UInt8(truncatingIfNeeded: b >> 9)
+        encoded[3] = UInt8(truncatingIfNeeded: b >> 1)
+        encoded[4] = 0xFF
         if (b & 1) == 1 {
-            data[4] |= 0x80
+            encoded[4] |= 0x80
         } else {
-            data[4] &= 0x7F
+            encoded[4] &= 0x7F
         }
-        if UInt16(data[4] & 0x01) >> 8 == 1 {
-            data[4] |= 1
+        if UInt16(encoded[4] & 0x01) >> 8 == 1 {
+            encoded[4] |= 1
         } else {
-            data[4] &= 0xFE
+            encoded[4] &= 0xFE
         }
-        data[5] = UInt8(truncatingIfNeeded: e)
-        return data
+        encoded[5] = UInt8(truncatingIfNeeded: e)
+        return encoded
     }
 }
