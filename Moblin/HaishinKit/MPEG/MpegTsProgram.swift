@@ -22,10 +22,6 @@ class MpegTsProgram {
 
     init() {}
 
-    init?(_ data: Data) {
-        self.data = data
-    }
-
     func packet(_ PID: UInt16) -> MpegTsPacket {
         var packet = MpegTsPacket(id: PID)
         packet.payloadUnitStartIndicator = true
@@ -116,11 +112,6 @@ final class TSProgramMap: MpegTsProgram {
     override init() {
         super.init()
         tableId = TSProgramMap.tableID
-    }
-
-    override init?(_ data: Data) {
-        super.init()
-        self.data = data
     }
 
     override var tableData: Data {
