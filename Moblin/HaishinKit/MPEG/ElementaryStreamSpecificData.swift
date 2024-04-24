@@ -16,37 +16,17 @@ enum ElementaryStreamType: UInt8 {
 }
 
 struct ElementaryStreamSpecificData {
-    static let fixedHeaderSize: Int = 5
     var streamType: ElementaryStreamType = .unspecific
     var elementaryPacketId: UInt16 = 0
     var esInfoLength: UInt16 = 0
     var esDescriptors = Data()
 
-    init() {}
-
-    init?(_ data: Data) {
-        self.data = data
-    }
-
-    var data: Data {
-        get {
-            ByteArray()
-                .writeUInt8(streamType.rawValue)
-                .writeUInt16(elementaryPacketId | 0xE000)
-                .writeUInt16(esInfoLength | 0xF000)
-                .writeBytes(esDescriptors)
-                .data
-        }
-        set {
-            let buffer = ByteArray(data: newValue)
-            do {
-                streamType = try ElementaryStreamType(rawValue: buffer.readUInt8()) ?? .unspecific
-                elementaryPacketId = try buffer.readUInt16() & 0x0FFF
-                esInfoLength = try buffer.readUInt16() & 0x01FF
-                esDescriptors = try buffer.readBytes(Int(esInfoLength))
-            } catch {
-                logger.error("Elementary stream data: \(buffer)")
-            }
-        }
+    func encode() -> Data {
+        return ByteArray()
+            .writeUInt8(streamType.rawValue)
+            .writeUInt16(elementaryPacketId | 0xE000)
+            .writeUInt16(esInfoLength | 0xF000)
+            .writeBytes(esDescriptors)
+            .data
     }
 }

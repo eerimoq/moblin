@@ -17,142 +17,83 @@ class MpegTsProgram {
     var currentNextIndicator = true
     var sectionNumber: UInt8 = 0
     var lastSectionNumber: UInt8 = 0
-    var tableData = Data()
     var crc32: UInt32 = 0
 
     init() {}
 
+    func encodeTableData() -> Data {
+        return Data()
+    }
+
     func packet(_ PID: UInt16) -> MpegTsPacket {
         var packet = MpegTsPacket(id: PID)
         packet.payloadUnitStartIndicator = true
-        packet.setPayloadNoAdaptation(data)
+        packet.setPayloadNoAdaptation(encode())
         return packet
     }
 
-    var data: Data {
-        get {
-            sectionLength = UInt16(tableData.count) + 9
-            sectionSyntaxIndicator = !tableData.isEmpty
-            let buffer = ByteArray()
-                .writeUInt8(tableId)
-                .writeUInt16(
-                    (sectionSyntaxIndicator ? 0x8000 : 0) |
-                        (privateBit ? 0x4000 : 0) |
-                        UInt16(MpegTsProgram.reservedBits) << 12 |
-                        sectionLength
-                )
-                .writeUInt16(tableIdExtension)
-                .writeUInt8(
-                    MpegTsProgram.reservedBits << 6 |
-                        versionNumber << 1 |
-                        (currentNextIndicator ? 1 : 0)
-                )
-                .writeUInt8(sectionNumber)
-                .writeUInt8(lastSectionNumber)
-                .writeBytes(tableData)
-            crc32 = CRC32.mpeg2.calculate(buffer.data)
-            return Data([pointerField] + pointerFillerBytes) + buffer.writeUInt32(crc32).data
-        }
-        set {
-            let buffer = ByteArray(data: newValue)
-            do {
-                pointerField = try buffer.readUInt8()
-                pointerFillerBytes = try buffer.readBytes(Int(pointerField))
-                tableId = try buffer.readUInt8()
-                let bytes: Data = try buffer.readBytes(2)
-                sectionSyntaxIndicator = (bytes[0] & 0x80) == 0x80
-                privateBit = (bytes[0] & 0x40) == 0x40
-                sectionLength = UInt16(bytes[0] & 0x03) << 8 | UInt16(bytes[1])
-                tableIdExtension = try buffer.readUInt16()
-                versionNumber = try buffer.readUInt8()
-                currentNextIndicator = (versionNumber & 0x01) == 0x01
-                versionNumber = (versionNumber & 0b0011_1110) >> 1
-                sectionNumber = try buffer.readUInt8()
-                lastSectionNumber = try buffer.readUInt8()
-                tableData = try buffer.readBytes(Int(sectionLength - 9))
-                crc32 = try buffer.readUInt32()
-            } catch {
-                logger.error("\(buffer)")
-            }
-        }
+    private func encode() -> Data {
+        let tableData = encodeTableData()
+        sectionLength = UInt16(tableData.count) + 9
+        sectionSyntaxIndicator = !tableData.isEmpty
+        let buffer = ByteArray()
+            .writeUInt8(tableId)
+            .writeUInt16(
+                (sectionSyntaxIndicator ? 0x8000 : 0) |
+                    (privateBit ? 0x4000 : 0) |
+                    UInt16(MpegTsProgram.reservedBits) << 12 |
+                    sectionLength
+            )
+            .writeUInt16(tableIdExtension)
+            .writeUInt8(
+                MpegTsProgram.reservedBits << 6 | versionNumber << 1 | (currentNextIndicator ? 1 : 0)
+            )
+            .writeUInt8(sectionNumber)
+            .writeUInt8(lastSectionNumber)
+            .writeBytes(tableData)
+        crc32 = CRC32.mpeg2.calculate(buffer.data)
+        return Data([pointerField] + pointerFillerBytes) + buffer.writeUInt32(crc32).data
     }
 }
 
-final class TSProgramAssociation: MpegTsProgram {
+final class MpegTsProgramAssociation: MpegTsProgram {
     var programs: [UInt16: UInt16] = [:]
 
-    override var tableData: Data {
-        get {
-            let buffer = ByteArray()
-            for (number, programMapPID) in programs {
-                buffer.writeUInt16(number).writeUInt16(programMapPID | 0xE000)
-            }
-            return buffer.data
+    override func encodeTableData() -> Data {
+        let buffer = ByteArray()
+        for (number, programMapPID) in programs {
+            buffer.writeUInt16(number).writeUInt16(programMapPID | 0xE000)
         }
-        set {
-            let buffer = ByteArray(data: newValue)
-            do {
-                for _ in 0 ..< newValue.count / 4 {
-                    try programs[buffer.readUInt16()] = try buffer.readUInt16() & 0x1FFF
-                }
-            } catch {
-                logger.error("\(buffer)")
-            }
-        }
+        return buffer.data
     }
 }
 
-final class TSProgramMap: MpegTsProgram {
-    static let tableID: UInt8 = 2
-
+final class MpegTsProgramMap: MpegTsProgram {
+    private static let tableID: UInt8 = 2
     var programClockReferencePacketId: UInt16 = 0
     var programInfoLength: UInt16 = 0
-    var elementaryStreamSpecificData: [ElementaryStreamSpecificData] = []
+    var elementaryStreamSpecificDatas: [ElementaryStreamSpecificData] = []
 
     override init() {
         super.init()
-        tableId = TSProgramMap.tableID
+        tableId = MpegTsProgramMap.tableID
     }
 
-    override var tableData: Data {
-        get {
-            var bytes = Data()
-            elementaryStreamSpecificData.sort { (
-                lhs: ElementaryStreamSpecificData,
-                rhs: ElementaryStreamSpecificData
-            ) -> Bool in
-                lhs.elementaryPacketId < rhs.elementaryPacketId
-            }
-            for essd in elementaryStreamSpecificData {
-                bytes.append(essd.data)
-            }
-            return ByteArray()
-                .writeUInt16(programClockReferencePacketId | 0xE000)
-                .writeUInt16(programInfoLength | 0xF000)
-                .writeBytes(bytes)
-                .data
+    override func encodeTableData() -> Data {
+        var bytes = Data()
+        elementaryStreamSpecificDatas.sort { (
+            lhs: ElementaryStreamSpecificData,
+            rhs: ElementaryStreamSpecificData
+        ) -> Bool in
+            lhs.elementaryPacketId < rhs.elementaryPacketId
         }
-        set {
-            let buffer = ByteArray(data: newValue)
-            do {
-                programClockReferencePacketId = try buffer.readUInt16() & 0x1FFF
-                programInfoLength = try buffer.readUInt16() & 0x03FF
-                buffer.position += Int(programInfoLength)
-                var position = 0
-                while buffer.bytesAvailable > 0 {
-                    position = buffer.position
-                    guard let data = try ElementaryStreamSpecificData(buffer
-                        .readBytes(buffer.bytesAvailable))
-                    else {
-                        break
-                    }
-                    buffer.position = position + ElementaryStreamSpecificData
-                        .fixedHeaderSize + Int(data.esInfoLength)
-                    elementaryStreamSpecificData.append(data)
-                }
-            } catch {
-                logger.error("\(buffer)")
-            }
+        for elementaryStreamSpecificData in elementaryStreamSpecificDatas {
+            bytes.append(elementaryStreamSpecificData.encode())
         }
+        return ByteArray()
+            .writeUInt16(programClockReferencePacketId | 0xE000)
+            .writeUInt16(programInfoLength | 0xF000)
+            .writeBytes(bytes)
+            .data
     }
 }

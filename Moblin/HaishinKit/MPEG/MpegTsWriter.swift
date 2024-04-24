@@ -32,13 +32,13 @@ class MpegTsWriter {
     private var videoData: [Data?] = [nil, nil]
     private var videoDataOffset: Int = 0
 
-    private var programAssociationTable: TSProgramAssociation = {
-        let programAssociationTable = TSProgramAssociation()
+    private var programAssociationTable: MpegTsProgramAssociation = {
+        let programAssociationTable = MpegTsProgramAssociation()
         programAssociationTable.programs = [1: MpegTsWriter.programMappingTablePacketId]
         return programAssociationTable
     }()
 
-    private var programMappingTable = TSProgramMap()
+    private var programMappingTable = MpegTsProgramMap()
     private var audioConfig: AudioSpecificConfig? {
         didSet {
             writeProgramIfNeeded()
@@ -69,7 +69,7 @@ class MpegTsWriter {
         videoContinuityCounter = 0
         programAssociationTable.programs.removeAll()
         programAssociationTable.programs = [1: MpegTsWriter.programMappingTablePacketId]
-        programMappingTable = TSProgramMap()
+        programMappingTable = MpegTsProgramMap()
         audioConfig = nil
         videoConfig = nil
         baseAudioTimestamp = .invalid
@@ -267,7 +267,7 @@ extension MpegTsWriter: AudioCodecDelegate {
             return
         }
         data.elementaryPacketId = MpegTsWriter.audioPacketId
-        programMappingTable.elementaryStreamSpecificData.append(data)
+        programMappingTable.elementaryStreamSpecificDatas.append(data)
         audioContinuityCounter = 0
         audioConfig = AudioSpecificConfig(formatDescription: format.formatDescription)
     }
@@ -321,7 +321,7 @@ extension MpegTsWriter: VideoCodecDelegate {
                 return
             }
             data.streamType = .h264
-            programMappingTable.elementaryStreamSpecificData.append(data)
+            programMappingTable.elementaryStreamSpecificDatas.append(data)
             videoConfig = AVCDecoderConfigurationRecord(data: avcC)
         case .hevc:
             guard let hvcC = HEVCDecoderConfigurationRecord.getData(formatDescription) else {
@@ -329,7 +329,7 @@ extension MpegTsWriter: VideoCodecDelegate {
                 return
             }
             data.streamType = .h265
-            programMappingTable.elementaryStreamSpecificData.append(data)
+            programMappingTable.elementaryStreamSpecificDatas.append(data)
             videoConfig = HEVCDecoderConfigurationRecord(data: hvcC)
         }
     }
