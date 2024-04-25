@@ -1020,6 +1020,7 @@ class SettingsChat: Codable {
     var textToSpeechLanguageVoices: [String: String]? = .init()
     var textToSpeechSubscribersOnly: Bool? = false
     var textToSpeechFilter: Bool? = true
+    var mirrored: Bool? = false
 }
 
 enum SettingsMic: String, Codable, CaseIterable {
@@ -2301,6 +2302,10 @@ final class Settings {
         }
         if realDatabase.debug!.pixelFormat == nil {
             realDatabase.debug!.pixelFormat = pixelFormats[1]
+            store()
+        }
+        if realDatabase.chat.mirrored == nil {
+            realDatabase.chat.mirrored = false
             store()
         }
     }

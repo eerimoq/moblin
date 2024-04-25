@@ -249,6 +249,14 @@ struct StreamOverlayChatView: View {
     @State var wholeSize: CGSize = .zero
     @State var scrollViewSize: CGSize = .zero
 
+    private func isMirrored() -> CGFloat {
+        if model.database.chat.mirrored! {
+            return 1
+        } else {
+            return -1
+        }
+    }
+
     var body: some View {
         GeometryReader { fullMetrics in
             VStack {
@@ -337,7 +345,7 @@ struct StreamOverlayChatView: View {
                             }
                         }
                         .rotationEffect(Angle(degrees: 180))
-                        .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
+                        .scaleEffect(x: isMirrored(), y: 1.0, anchor: .center)
                         .coordinateSpace(name: spaceName)
                     }
                 }

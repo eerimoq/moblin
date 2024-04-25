@@ -129,6 +129,15 @@ struct ChatSettingsView: View {
                         Text("Text to speech")
                     }
                 }
+                Toggle(isOn: Binding(get: {
+                    model.database.chat.mirrored!
+                }, set: { value in
+                    model.database.chat.mirrored = value
+                    model.store()
+                    model.objectWillChange.send()
+                })) {
+                    Text("Mirrored")
+                }
             } header: {
                 Text("General")
             } footer: {
