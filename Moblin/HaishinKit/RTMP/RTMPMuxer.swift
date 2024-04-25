@@ -23,7 +23,7 @@ final class RTMPMuxer {
 extension RTMPMuxer: AudioCodecDelegate {
     func audioCodecOutputFormat(_ format: AVAudioFormat) {
         var buffer = Data([RTMPMuxer.aac, FLVAACPacketType.seq.rawValue])
-        buffer.append(contentsOf: AudioSpecificConfig(formatDescription: format.formatDescription).bytes)
+        buffer.append(contentsOf: MpegTsAudioConfig(formatDescription: format.formatDescription).bytes)
         delegate?.muxer(self, didOutputAudio: buffer, withTimestamp: 0)
     }
 
@@ -47,7 +47,7 @@ extension RTMPMuxer: VideoCodecDelegate {
     func videoCodecOutputFormat(_ codec: VideoCodec, _ formatDescription: CMFormatDescription) {
         switch codec.settings.format {
         case .h264:
-            guard let avcC = AvcDecoderConfigurationRecord.getData(formatDescription) else {
+            guard let avcC = MpegTsVideoConfigAvc.getData(formatDescription) else {
                 return
             }
             var buffer = Data([
@@ -60,7 +60,7 @@ extension RTMPMuxer: VideoCodecDelegate {
             buffer.append(avcC)
             delegate?.muxer(self, didOutputVideo: buffer, withTimestamp: 0)
         case .hevc:
-            guard let hvcC = HevcDecoderConfigurationRecord.getData(formatDescription) else {
+            guard let hvcC = MpegTsVideoConfigHevc.getData(formatDescription) else {
                 return
             }
             var buffer = Data([

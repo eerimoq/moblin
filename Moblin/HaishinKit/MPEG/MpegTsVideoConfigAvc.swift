@@ -1,12 +1,12 @@
 import AVFoundation
 import VideoToolbox
 
-protocol DecoderConfigurationRecord {}
+protocol MpegTsVideoConfig {}
 
 /*
  - seealso: ISO/IEC 14496-15 2010
  */
-struct AvcDecoderConfigurationRecord: DecoderConfigurationRecord {
+struct MpegTsVideoConfigAvc: MpegTsVideoConfig {
     static func getData(_ formatDescription: CMFormatDescription) -> Data? {
         if let atoms = CMFormatDescriptionGetExtension(
             formatDescription,
@@ -95,7 +95,7 @@ struct AvcDecoderConfigurationRecord: DecoderConfigurationRecord {
                 lengthSizeMinusOneWithReserved = try buffer.readUInt8()
                 numOfSequenceParameterSetsWithReserved = try buffer.readUInt8()
                 let numOfSequenceParameterSets: UInt8 = numOfSequenceParameterSetsWithReserved &
-                    ~AvcDecoderConfigurationRecord.reserveNumOfSequenceParameterSets
+                    ~MpegTsVideoConfigAvc.reserveNumOfSequenceParameterSets
                 for _ in 0 ..< numOfSequenceParameterSets {
                     let length = try Int(buffer.readUInt16())
                     try sequenceParameterSets.append(buffer.readBytes(length).bytes)

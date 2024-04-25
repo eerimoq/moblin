@@ -3,12 +3,8 @@ import Foundation
 struct AvcFormatStream {
     private let data: Data
 
-    init(data: Data) {
-        self.data = data
-    }
-
-    init?(bytes: UnsafePointer<UInt8>, count: Int) {
-        self.init(data: Data(bytes: bytes, count: count))
+    init(bytes: UnsafePointer<UInt8>, count: Int) {
+        data = Data(bytes: bytes, count: count)
     }
 
     func toByteStream() -> Data {

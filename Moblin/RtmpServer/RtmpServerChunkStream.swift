@@ -338,7 +338,7 @@ class RtmpServerChunkStream {
 
     private func processMessageAudioTypeSeq(client _: RtmpServerClient, codec: FLVAudioCodec) {
         if let config =
-            AudioSpecificConfig(bytes: [UInt8](messageData[codec.headerSize ..< messageData.count]))
+            MpegTsAudioConfig(bytes: [UInt8](messageData[codec.headerSize ..< messageData.count]))
         {
             var streamDescription = config.audioStreamBasicDescription()
             logger.info("rtmp-server: client: \(streamDescription)")
@@ -453,7 +453,7 @@ class RtmpServerChunkStream {
         guard videoDecoder == nil else {
             return
         }
-        var config = AvcDecoderConfigurationRecord()
+        var config = MpegTsVideoConfigAvc()
         config.data = messageData.subdata(in: FLVTagType.video.headerSize ..< messageData.count)
         let status = config.makeFormatDescription(&formatDescription)
         if status == noErr {

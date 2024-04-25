@@ -39,13 +39,13 @@ class MpegTsWriter {
     }()
 
     private var programMappingTable = MpegTsProgramMapping()
-    private var audioConfig: AudioSpecificConfig? {
+    private var audioConfig: MpegTsAudioConfig? {
         didSet {
             writeProgramIfNeeded()
         }
     }
 
-    private var videoConfig: DecoderConfigurationRecord? {
+    private var videoConfig: MpegTsVideoConfig? {
         didSet {
             writeProgramIfNeeded()
         }
@@ -269,7 +269,7 @@ extension MpegTsWriter: AudioCodecDelegate {
         data.elementaryPacketId = MpegTsWriter.audioPacketId
         programMappingTable.elementaryStreamSpecificDatas.append(data)
         audioContinuityCounter = 0
-        audioConfig = AudioSpecificConfig(formatDescription: format.formatDescription)
+        audioConfig = MpegTsAudioConfig(formatDescription: format.formatDescription)
     }
 
     func audioCodecOutputBuffer(_ buffer: AVAudioBuffer, _ presentationTimeStamp: CMTime) {
@@ -316,21 +316,21 @@ extension MpegTsWriter: VideoCodecDelegate {
         videoContinuityCounter = 0
         switch codec.settings.format {
         case .h264:
-            guard let avcC = AvcDecoderConfigurationRecord.getData(formatDescription) else {
+            guard let avcC = MpegTsVideoConfigAvc.getData(formatDescription) else {
                 logger.info("mpeg-ts: Failed to create avcC")
                 return
             }
             data.streamType = .h264
             programMappingTable.elementaryStreamSpecificDatas.append(data)
-            videoConfig = AvcDecoderConfigurationRecord(data: avcC)
+            videoConfig = MpegTsVideoConfigAvc(data: avcC)
         case .hevc:
-            guard let hvcC = HevcDecoderConfigurationRecord.getData(formatDescription) else {
+            guard let hvcC = MpegTsVideoConfigHevc.getData(formatDescription) else {
                 logger.info("mpeg-ts: Failed to create hvcC")
                 return
             }
             data.streamType = .h265
             programMappingTable.elementaryStreamSpecificDatas.append(data)
-            videoConfig = HevcDecoderConfigurationRecord(data: hvcC)
+            videoConfig = MpegTsVideoConfigHevc(data: hvcC)
         }
     }
 
@@ -356,7 +356,7 @@ extension MpegTsWriter: VideoCodecDelegate {
         let randomAccessIndicator = !sampleBuffer.isNotSync
         let PES: MpegTsPacketizedElementaryStream
         let bytes = UnsafeRawPointer(buffer).bindMemory(to: UInt8.self, capacity: length)
-        if let videoConfig = videoConfig as? AvcDecoderConfigurationRecord {
+        if let videoConfig = videoConfig as? MpegTsVideoConfigAvc {
             PES = MpegTsPacketizedElementaryStream(
                 bytes: bytes,
                 count: length,
@@ -366,7 +366,7 @@ extension MpegTsWriter: VideoCodecDelegate {
                 config: randomAccessIndicator ? videoConfig : nil,
                 streamID: MpegTsWriter.videoStreamId
             )
-        } else if let videoConfig = videoConfig as? HevcDecoderConfigurationRecord {
+        } else if let videoConfig = videoConfig as? MpegTsVideoConfigHevc {
             PES = MpegTsPacketizedElementaryStream(
                 bytes: bytes,
                 count: length,

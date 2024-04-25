@@ -60,7 +60,7 @@ enum FLVAudioCodec: UInt8 {
     var formatFlags: AudioFormatFlags {
         switch self {
         case .aac:
-            return AudioFormatFlags(AudioSpecificConfig.AudioObjectType.aacMain.rawValue)
+            return AudioFormatFlags(MpegTsAudioConfig.AudioObjectType.aacMain.rawValue)
         default:
             return 0
         }

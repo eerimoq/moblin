@@ -493,7 +493,7 @@ final class RTMPAudioMessage: RTMPMessage {
         }
         switch payload[1] {
         case FLVAACPacketType.seq.rawValue:
-            let config = AudioSpecificConfig(bytes: [UInt8](payload[codec.headerSize ..< payload.count]))
+            let config = MpegTsAudioConfig(bytes: [UInt8](payload[codec.headerSize ..< payload.count]))
             stream.mixer.audio.codec.outputSettings.format = .pcm
             stream.mixer.audio.codec.inSourceFormat = config?.audioStreamBasicDescription()
         case FLVAACPacketType.raw.rawValue:
@@ -654,11 +654,11 @@ final class RTMPVideoMessage: RTMPMessage {
         var status = noErr
         switch format {
         case .h264:
-            var config = AvcDecoderConfigurationRecord()
+            var config = MpegTsVideoConfigAvc()
             config.data = payload.subdata(in: FLVTagType.video.headerSize ..< payload.count)
             status = config.makeFormatDescription(&stream.mixer.video.formatDescription)
         case .hevc:
-            var config = HevcDecoderConfigurationRecord()
+            var config = MpegTsVideoConfigHevc()
             config.data = payload.subdata(in: FLVTagType.video.headerSize ..< payload.count)
             status = config.makeFormatDescription(&stream.mixer.video.formatDescription)
         }

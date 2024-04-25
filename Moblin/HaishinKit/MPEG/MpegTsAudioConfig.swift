@@ -1,6 +1,6 @@
 import AVFoundation
 
-struct AudioSpecificConfig: Equatable {
+struct MpegTsAudioConfig: Equatable {
     enum AudioObjectType: UInt8 {
         case unknown = 0
         case aacMain = 1

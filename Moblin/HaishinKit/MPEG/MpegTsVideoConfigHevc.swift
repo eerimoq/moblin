@@ -2,7 +2,7 @@ import AVFoundation
 import Foundation
 
 /// ISO/IEC 14496-15 8.3.3.1.2
-struct HevcDecoderConfigurationRecord: DecoderConfigurationRecord {
+struct MpegTsVideoConfigHevc: MpegTsVideoConfig {
     static func getData(_ formatDescription: CMFormatDescription) -> Data? {
         if let atoms = CMFormatDescriptionGetExtension(
             formatDescription,
