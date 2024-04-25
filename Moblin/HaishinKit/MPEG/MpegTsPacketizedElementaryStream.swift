@@ -23,7 +23,11 @@ private struct OptionalHeader {
     var optionalFields = Data()
     var stuffingBytes = Data()
 
-    mutating func setTimestamp(_ timestamp: CMTime, _ presentationTimeStamp: CMTime, _ decodeTimeStamp: CMTime) {
+    mutating func setTimestamp(
+        _ timestamp: CMTime,
+        _ presentationTimeStamp: CMTime,
+        _ decodeTimeStamp: CMTime
+    ) {
         let base = Double(timestamp.seconds)
         if presentationTimeStamp != CMTime.invalid {
             ptsDtsIndicator |= 0x02
@@ -85,7 +89,7 @@ struct MpegTsPacketizedElementaryStream {
         data.append(contentsOf: config.makeHeader(Int(count)))
         data.append(bytes, count: Int(count))
         optionalHeader.dataAlignmentIndicator = true
-        optionalHeader.setTimestamp(            timestamp,            presentationTimeStamp,            CMTime.invalid        )
+        optionalHeader.setTimestamp(timestamp, presentationTimeStamp, CMTime.invalid)
         let length = data.count + optionalHeader.encode().count
         if length < Int(UInt16.max) {
             packetLength = UInt16(length)
@@ -117,7 +121,7 @@ struct MpegTsPacketizedElementaryStream {
         let stream = AvcFormatStream(bytes: bytes, count: count)
         data.append(stream.toByteStream())
         optionalHeader.dataAlignmentIndicator = true
-        optionalHeader.setTimestamp(            timestamp,             presentationTimeStamp,             decodeTimeStamp        )
+        optionalHeader.setTimestamp(timestamp, presentationTimeStamp, decodeTimeStamp)
         let length = data.count + optionalHeader.encode().count
         if length < Int(UInt16.max) {
             packetLength = UInt16(length)
@@ -151,7 +155,7 @@ struct MpegTsPacketizedElementaryStream {
         let stream = AvcFormatStream(bytes: bytes, count: count)
         data.append(stream.toByteStream())
         optionalHeader.dataAlignmentIndicator = true
-        optionalHeader.setTimestamp(            timestamp,             presentationTimeStamp,             decodeTimeStamp        )
+        optionalHeader.setTimestamp(timestamp, presentationTimeStamp, decodeTimeStamp)
         let length = data.count + optionalHeader.encode().count
         if length < Int(UInt16.max) {
             packetLength = UInt16(length)
