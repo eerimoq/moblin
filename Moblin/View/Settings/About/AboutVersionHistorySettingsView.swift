@@ -14,7 +14,7 @@ private let versions = [
         "• Toggle to mirror chat. 💡 Walk On Nick",
         "  • For fancy setups that uses a mirror to see the screen.",
         "  • Settings -> Chat -> Mirrored.",
-        "• Swipe left to delete/remove footer.",
+        "• Swipe left to delete/remove help message.",
       ]),
     Version(version: "0.246.0", date: "2024-04-24", changes: [
         "• No new functionality. Just refactoring.",
