@@ -6153,6 +6153,9 @@
         }
       }
     },
+    "a controller" : {
+
+    },
     "A large number. Use developer tools (F11) in your browser. Look at websocket messages." : {
       "localizations" : {
         "de" : {
@@ -6400,6 +6403,24 @@
           }
         }
       }
+    },
+    "a preset" : {
+
+    },
+    "a privacy region" : {
+
+    },
+    "a scene" : {
+
+    },
+    "a stream" : {
+
+    },
+    "a username" : {
+
+    },
+    "a widget" : {
+
     },
     "About" : {
       "localizations" : {
@@ -57001,6 +57022,12 @@
           }
         }
       }
+    },
+    "Swipe left to delete %@." : {
+
+    },
+    "Swipe left to remove %@." : {
+
     },
     "Tap screen to focus" : {
       "localizations" : {

@@ -62,7 +62,11 @@ struct LocationSettingsView: View {
             } header: {
                 Text("Privacy regions")
             } footer: {
-                Text("Your location will not be shared with any service when within any privacy region.")
+                VStack(alignment: .leading) {
+                    Text("Your location will not be shared with any service when within any privacy region.")
+                    Text("")
+                    SwipeLeftToDeleteHelpView(kind: String(localized: "a privacy region"))
+                }
             }
         }
         .navigationTitle("Location")

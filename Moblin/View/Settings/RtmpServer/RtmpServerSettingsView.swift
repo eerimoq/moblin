@@ -90,7 +90,11 @@ struct RtmpServerSettingsView: View {
             } header: {
                 Text("Streams")
             } footer: {
-                Text("Each stream can receive video from one RTMP publisher, typically a drone.")
+                VStack(alignment: .leading) {
+                    Text("Each stream can receive video from one RTMP publisher, typically a drone.")
+                    Text("")
+                    SwipeLeftToDeleteHelpView(kind: String(localized: "a stream"))
+                }
             }
         }
         .navigationTitle("RTMP server")

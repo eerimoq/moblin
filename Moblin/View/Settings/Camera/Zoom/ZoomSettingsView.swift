@@ -25,7 +25,7 @@ struct ZoomSettingsView: View {
                         .frame(width: 35)
                 }
             }
-            Section("Back camera presets") {
+            Section {
                 List {
                     ForEach(model.database.zoom.back) { preset in
                         NavigationLink(destination: ZoomPresetSettingsView(
@@ -61,8 +61,12 @@ struct ZoomSettingsView: View {
                     ))
                     model.backZoomUpdated()
                 })
+            } header: {
+                Text("Back camera presets")
+            } footer: {
+                SwipeLeftToDeleteHelpView(kind: String(localized: "a preset"))
             }
-            Section("Front camera presets") {
+            Section {
                 List {
                     ForEach(model.database.zoom.front) { preset in
                         NavigationLink(destination: ZoomPresetSettingsView(
@@ -98,6 +102,10 @@ struct ZoomSettingsView: View {
                     ))
                     model.frontZoomUpdated()
                 })
+            } header: {
+                Text("Front camera presets")
+            } footer: {
+                SwipeLeftToDeleteHelpView(kind: String(localized: "a preset"))
             }
             Section {
                 ZoomSwitchToSettingsView(

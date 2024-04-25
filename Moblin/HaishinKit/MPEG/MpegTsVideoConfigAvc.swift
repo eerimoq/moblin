@@ -1,8 +1,6 @@
 import AVFoundation
 import VideoToolbox
 
-protocol MpegTsVideoConfig {}
-
 /*
  - seealso: ISO/IEC 14496-15 2010
  */

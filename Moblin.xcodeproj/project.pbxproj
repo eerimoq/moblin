@@ -18,6 +18,8 @@
 		030947C32A9C0496003FC387 /* StreamOverlayChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030947C22A9C0496003FC387 /* StreamOverlayChatView.swift */; };
 		030A8B672BC2D38300F149AF /* WebBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030A8B662BC2D38300F149AF /* WebBrowserView.swift */; };
 		030EFE722BDA2D9E004208B6 /* MpegTsVideoConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030EFE712BDA2D9E004208B6 /* MpegTsVideoConfig.swift */; };
+		030EFE752BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030EFE742BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift */; };
+		030EFE782BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030EFE772BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift */; };
 		0315A33B2AA2FA7100295443 /* LocalListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33A2AA2FA7100295443 /* LocalListener.swift */; };
 		0315A33D2AA2FA7D00295443 /* RemoteConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */; };
 		0315A3462AA31E9000295443 /* StreamTwitchSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3452AA31E9000295443 /* StreamTwitchSettingsView.swift */; };
@@ -377,6 +379,8 @@
 		030947C22A9C0496003FC387 /* StreamOverlayChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOverlayChatView.swift; sourceTree = "<group>"; };
 		030A8B662BC2D38300F149AF /* WebBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebBrowserView.swift; sourceTree = "<group>"; };
 		030EFE712BDA2D9E004208B6 /* MpegTsVideoConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MpegTsVideoConfig.swift; sourceTree = "<group>"; };
+		030EFE742BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeLeftToDeleteHelpView.swift; sourceTree = "<group>"; };
+		030EFE772BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeLeftToRemoveHelpView.swift; sourceTree = "<group>"; };
 		0315A33A2AA2FA7100295443 /* LocalListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalListener.swift; sourceTree = "<group>"; };
 		0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteConnection.swift; sourceTree = "<group>"; };
 		0315A3452AA31E9000295443 /* StreamTwitchSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamTwitchSettingsView.swift; sourceTree = "<group>"; };
@@ -871,6 +875,8 @@
 				03D691522B36EDB600038F13 /* TextValueView.swift */,
 				03A173F02B37E5E600ACC4F8 /* FormFieldError.swift */,
 				03C2C2822B5F906E00E2F30B /* SliderView.swift */,
+				030EFE742BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift */,
+				030EFE772BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift */,
 				03D10E792B64099500B1E436 /* TextEditNavigationView.swift */,
 			);
 			path = Utils;
@@ -2246,6 +2252,7 @@
 				03D541752B32095B00B9D595 /* StreamWizardCustomSettingsView.swift in Sources */,
 				0364B6212BD36806002F828D /* StreamButton.swift in Sources */,
 				0315A3462AA31E9000295443 /* StreamTwitchSettingsView.swift in Sources */,
+				030EFE782BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift in Sources */,
 				0359F8AD2BD3DA61005BFDA8 /* AudioCodecRingBuffer.swift in Sources */,
 				03D3C0512B452D61006BAEAC /* StreamRecordingSettingsView.swift in Sources */,
 				032D47DB2BCC54AC00AB81F4 /* ImagePickerView.swift in Sources */,
@@ -2289,6 +2296,7 @@
 				038DF9F12B387AC80027363A /* StreamWizardAfreecaTvSettingsView.swift in Sources */,
 				0318514D2B5392A1006A7943 /* StreamSrtConnectionPriorityView.swift in Sources */,
 				0359F8D02BD3DA61005BFDA8 /* AudioUnit.swift in Sources */,
+				030EFE752BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift in Sources */,
 				03A3F4C72AF4C0AD00F465D1 /* AdaptiveBitrate.swift in Sources */,
 				038DF9ED2B387AAF0027363A /* StreamWizardYouTubeSettingsView.swift in Sources */,
 				0359F8C02BD3DA61005BFDA8 /* Data+Extension.swift in Sources */,

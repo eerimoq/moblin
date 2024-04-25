@@ -221,7 +221,11 @@ struct SceneSettingsView: View {
             } header: {
                 Text("Widgets")
             } footer: {
-                Text("Widgets are stacked from back to front.")
+                VStack(alignment: .leading) {
+                    SwipeLeftToRemoveHelpView(kind: String(localized: "a widget"))
+                    Text("")
+                    Text("Widgets are stacked from back to front.")
+                }
             }
         }
         .navigationTitle("Scene")

@@ -37,6 +37,8 @@ struct GameControllersSettingsView: View {
                     model.store()
                     model.objectWillChange.send()
                 }
+            } footer: {
+                SwipeLeftToDeleteHelpView(kind: String(localized: "a controller"))
             }
         }
         .navigationTitle("Game controllers")

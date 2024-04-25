@@ -56,6 +56,8 @@ struct ScenesSettingsView: View {
                     model.store()
                     model.resetSelectedScene()
                 })
+            } footer: {
+                SwipeLeftToDeleteHelpView(kind: String(localized: "a scene"))
             }
             Section {
                 NavigationLink(destination: WidgetsSettingsView()) {

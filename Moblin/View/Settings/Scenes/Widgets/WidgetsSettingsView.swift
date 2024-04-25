@@ -65,7 +65,11 @@ struct WidgetsSettingsView: View {
                     model.resetSelectedScene()
                 })
             } footer: {
-                Text("Only unused widgets can be deleted.")
+                VStack(alignment: .leading) {
+                    SwipeLeftToDeleteHelpView(kind: String(localized: "a widget"))
+                    Text("")
+                    Text("Only unused widgets can be deleted.")
+                }
             }
         }
         .navigationTitle("Widgets")

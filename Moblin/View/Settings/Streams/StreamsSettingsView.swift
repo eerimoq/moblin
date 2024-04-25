@@ -76,6 +76,8 @@ struct StreamsSettingsView: View {
                         StreamWizardSettingsView()
                     }
                 }
+            } footer: {
+                SwipeLeftToDeleteHelpView(kind: String(localized: "a stream"))
             }
         }
         .navigationTitle("Streams")

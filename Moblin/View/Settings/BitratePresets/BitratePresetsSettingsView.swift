@@ -5,37 +5,41 @@ struct BitratePresetsSettingsView: View {
 
     var body: some View {
         Form {
-            List {
-                ForEach(model.database.bitratePresets) { preset in
-                    NavigationLink(destination: BitratePresetsPresetSettingsView(
-                        preset: preset
-                    )) {
-                        HStack {
-                            DraggableItemPrefixView()
-                            TextItemView(
-                                name: formatBytesPerSecond(speed: Int64(preset.bitrate)),
-                                value: String(bitrateToMbps(bitrate: preset.bitrate))
-                            )
+            Section {
+                List {
+                    ForEach(model.database.bitratePresets) { preset in
+                        NavigationLink(destination: BitratePresetsPresetSettingsView(
+                            preset: preset
+                        )) {
+                            HStack {
+                                DraggableItemPrefixView()
+                                TextItemView(
+                                    name: formatBytesPerSecond(speed: Int64(preset.bitrate)),
+                                    value: String(bitrateToMbps(bitrate: preset.bitrate))
+                                )
+                            }
                         }
+                        .deleteDisabled(model.database.bitratePresets.count == 1)
                     }
-                    .deleteDisabled(model.database.bitratePresets.count == 1)
+                    .onMove(perform: { froms, to in
+                        model.database.bitratePresets.move(fromOffsets: froms, toOffset: to)
+                        model.store()
+                    })
+                    .onDelete(perform: { offsets in
+                        model.database.bitratePresets.remove(atOffsets: offsets)
+                        model.store()
+                    })
                 }
-                .onMove(perform: { froms, to in
-                    model.database.bitratePresets.move(fromOffsets: froms, toOffset: to)
+                CreateButtonView(action: {
+                    model.database.bitratePresets.append(SettingsBitratePreset(
+                        id: UUID(),
+                        bitrate: 1_000_000
+                    ))
                     model.store()
                 })
-                .onDelete(perform: { offsets in
-                    model.database.bitratePresets.remove(atOffsets: offsets)
-                    model.store()
-                })
+            } footer: {
+                SwipeLeftToDeleteHelpView(kind: String(localized: "a preset"))
             }
-            CreateButtonView(action: {
-                model.database.bitratePresets.append(SettingsBitratePreset(
-                    id: UUID(),
-                    bitrate: 1_000_000
-                ))
-                model.store()
-            })
         }
         .navigationTitle("Bitrate presets")
         .toolbar {
