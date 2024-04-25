@@ -99,7 +99,7 @@ class AudioCodec {
                 continue
             }
             let sampleSize = sampleBuffer.getSampleSize(at: i)
-            let byteCount = sampleSize - ADTSHeader.size
+            let byteCount = sampleSize - AdtsHeader.size
             buffer.packetDescriptions?.pointee = AudioStreamPacketDescription(
                 mStartOffset: 0,
                 mVariableFramesInPacket: 0,
@@ -108,7 +108,7 @@ class AudioCodec {
             buffer.packetCount = 1
             buffer.byteLength = UInt32(byteCount)
             blockBuffer.copyDataBytes(
-                fromOffset: offset + ADTSHeader.size,
+                fromOffset: offset + AdtsHeader.size,
                 length: byteCount,
                 to: buffer.data
             )

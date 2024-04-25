@@ -1,8 +1,7 @@
 import Foundation
 
-final class CRC32 {
-    static let mpeg2 = CRC32(polynomial: 0x04C1_1DB7)
-
+struct Crc32 {
+    static let mpeg2 = Crc32(polynomial: 0x04C1_1DB7)
     let table: [UInt32]
 
     init(polynomial: UInt32) {

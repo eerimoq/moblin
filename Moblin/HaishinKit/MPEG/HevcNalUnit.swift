@@ -1,6 +1,6 @@
 import Foundation
 
-enum HEVCNALUnitType: UInt8 {
+enum HevcNalUnitType: UInt8 {
     case unspec = 0
     case vps = 32
     case sps = 33

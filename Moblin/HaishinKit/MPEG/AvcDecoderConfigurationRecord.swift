@@ -6,7 +6,7 @@ protocol DecoderConfigurationRecord {}
 /*
  - seealso: ISO/IEC 14496-15 2010
  */
-struct AVCDecoderConfigurationRecord: DecoderConfigurationRecord {
+struct AvcDecoderConfigurationRecord: DecoderConfigurationRecord {
     static func getData(_ formatDescription: CMFormatDescription) -> Data? {
         if let atoms = CMFormatDescriptionGetExtension(
             formatDescription,
@@ -95,7 +95,7 @@ struct AVCDecoderConfigurationRecord: DecoderConfigurationRecord {
                 lengthSizeMinusOneWithReserved = try buffer.readUInt8()
                 numOfSequenceParameterSetsWithReserved = try buffer.readUInt8()
                 let numOfSequenceParameterSets: UInt8 = numOfSequenceParameterSetsWithReserved &
-                    ~AVCDecoderConfigurationRecord.reserveNumOfSequenceParameterSets
+                    ~AvcDecoderConfigurationRecord.reserveNumOfSequenceParameterSets
                 for _ in 0 ..< numOfSequenceParameterSets {
                     let length = try Int(buffer.readUInt16())
                     try sequenceParameterSets.append(buffer.readBytes(length).bytes)

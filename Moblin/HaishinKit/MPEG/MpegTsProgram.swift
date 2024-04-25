@@ -47,7 +47,7 @@ class MpegTsProgram {
             .writeUInt8(sectionNumber)
             .writeUInt8(lastSectionNumber)
             .writeBytes(tableData)
-        let crc32 = CRC32.mpeg2.calculate(encoded.data)
+        let crc32 = Crc32.mpeg2.calculate(encoded.data)
         return Data([pointerField] + pointerFillerBytes) + encoded.writeUInt32(crc32).data
     }
 }

@@ -654,11 +654,11 @@ final class RTMPVideoMessage: RTMPMessage {
         var status = noErr
         switch format {
         case .h264:
-            var config = AVCDecoderConfigurationRecord()
+            var config = AvcDecoderConfigurationRecord()
             config.data = payload.subdata(in: FLVTagType.video.headerSize ..< payload.count)
             status = config.makeFormatDescription(&stream.mixer.video.formatDescription)
         case .hevc:
-            var config = HEVCDecoderConfigurationRecord()
+            var config = HevcDecoderConfigurationRecord()
             config.data = payload.subdata(in: FLVTagType.video.headerSize ..< payload.count)
             status = config.makeFormatDescription(&stream.mixer.video.formatDescription)
         }

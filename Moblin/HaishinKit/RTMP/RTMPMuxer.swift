@@ -47,7 +47,7 @@ extension RTMPMuxer: VideoCodecDelegate {
     func videoCodecOutputFormat(_ codec: VideoCodec, _ formatDescription: CMFormatDescription) {
         switch codec.settings.format {
         case .h264:
-            guard let avcC = AVCDecoderConfigurationRecord.getData(formatDescription) else {
+            guard let avcC = AvcDecoderConfigurationRecord.getData(formatDescription) else {
                 return
             }
             var buffer = Data([
@@ -60,7 +60,7 @@ extension RTMPMuxer: VideoCodecDelegate {
             buffer.append(avcC)
             delegate?.muxer(self, didOutputVideo: buffer, withTimestamp: 0)
         case .hevc:
-            guard let hvcC = HEVCDecoderConfigurationRecord.getData(formatDescription) else {
+            guard let hvcC = HevcDecoderConfigurationRecord.getData(formatDescription) else {
                 return
             }
             var buffer = Data([

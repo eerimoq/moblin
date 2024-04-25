@@ -453,7 +453,7 @@ class RtmpServerChunkStream {
         guard videoDecoder == nil else {
             return
         }
-        var config = AVCDecoderConfigurationRecord()
+        var config = AvcDecoderConfigurationRecord()
         config.data = messageData.subdata(in: FLVTagType.video.headerSize ..< messageData.count)
         let status = config.makeFormatDescription(&formatDescription)
         if status == noErr {

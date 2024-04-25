@@ -1,6 +1,6 @@
 import Foundation
 
-struct AVCFormatStream {
+struct AvcFormatStream {
     private let data: Data
 
     init(data: Data) {

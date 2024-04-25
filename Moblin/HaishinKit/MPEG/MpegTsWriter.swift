@@ -316,21 +316,21 @@ extension MpegTsWriter: VideoCodecDelegate {
         videoContinuityCounter = 0
         switch codec.settings.format {
         case .h264:
-            guard let avcC = AVCDecoderConfigurationRecord.getData(formatDescription) else {
+            guard let avcC = AvcDecoderConfigurationRecord.getData(formatDescription) else {
                 logger.info("mpeg-ts: Failed to create avcC")
                 return
             }
             data.streamType = .h264
             programMappingTable.elementaryStreamSpecificDatas.append(data)
-            videoConfig = AVCDecoderConfigurationRecord(data: avcC)
+            videoConfig = AvcDecoderConfigurationRecord(data: avcC)
         case .hevc:
-            guard let hvcC = HEVCDecoderConfigurationRecord.getData(formatDescription) else {
+            guard let hvcC = HevcDecoderConfigurationRecord.getData(formatDescription) else {
                 logger.info("mpeg-ts: Failed to create hvcC")
                 return
             }
             data.streamType = .h265
             programMappingTable.elementaryStreamSpecificDatas.append(data)
-            videoConfig = HEVCDecoderConfigurationRecord(data: hvcC)
+            videoConfig = HevcDecoderConfigurationRecord(data: hvcC)
         }
     }
 
@@ -356,7 +356,7 @@ extension MpegTsWriter: VideoCodecDelegate {
         let randomAccessIndicator = !sampleBuffer.isNotSync
         let PES: MpegTsPacketizedElementaryStream
         let bytes = UnsafeRawPointer(buffer).bindMemory(to: UInt8.self, capacity: length)
-        if let videoConfig = videoConfig as? AVCDecoderConfigurationRecord {
+        if let videoConfig = videoConfig as? AvcDecoderConfigurationRecord {
             PES = MpegTsPacketizedElementaryStream(
                 bytes: bytes,
                 count: length,
@@ -366,7 +366,7 @@ extension MpegTsWriter: VideoCodecDelegate {
                 config: randomAccessIndicator ? videoConfig : nil,
                 streamID: MpegTsWriter.videoStreamId
             )
-        } else if let videoConfig = videoConfig as? HEVCDecoderConfigurationRecord {
+        } else if let videoConfig = videoConfig as? HevcDecoderConfigurationRecord {
             PES = MpegTsPacketizedElementaryStream(
                 bytes: bytes,
                 count: length,

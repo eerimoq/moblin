@@ -2,7 +2,7 @@ import AVFoundation
 import Foundation
 
 /// ISO/IEC 14496-15 8.3.3.1.2
-struct HEVCDecoderConfigurationRecord: DecoderConfigurationRecord {
+struct HevcDecoderConfigurationRecord: DecoderConfigurationRecord {
     static func getData(_ formatDescription: CMFormatDescription) -> Data? {
         if let atoms = CMFormatDescriptionGetExtension(
             formatDescription,
@@ -46,7 +46,7 @@ struct HEVCDecoderConfigurationRecord: DecoderConfigurationRecord {
     // periphery:ignore
     var lengthSizeMinusOne: UInt8 = 0
     var numberOfArrays: UInt8 = 0
-    var array: [HEVCNALUnitType: [Data]] = [:]
+    var array: [HevcNalUnitType: [Data]] = [:]
 
     init() {}
 
@@ -125,7 +125,7 @@ struct HEVCDecoderConfigurationRecord: DecoderConfigurationRecord {
                 numberOfArrays = try buffer.readUInt8()
                 for _ in 0 ..< numberOfArrays {
                     let a = try buffer.readUInt8()
-                    let nalUnitType = HEVCNALUnitType(rawValue: a & 0b0011_1111) ?? .unspec
+                    let nalUnitType = HevcNalUnitType(rawValue: a & 0b0011_1111) ?? .unspec
                     array[nalUnitType] = []
                     let numNalus = try buffer.readUInt16()
                     for _ in 0 ..< numNalus {

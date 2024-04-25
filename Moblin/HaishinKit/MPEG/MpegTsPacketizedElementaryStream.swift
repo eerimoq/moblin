@@ -105,7 +105,7 @@ struct MpegTsPacketizedElementaryStream {
         presentationTimeStamp: CMTime,
         decodeTimeStamp: CMTime,
         timestamp: CMTime,
-        config: AVCDecoderConfigurationRecord?,
+        config: AvcDecoderConfigurationRecord?,
         streamID: UInt8
     ) {
         if let config {
@@ -118,7 +118,7 @@ struct MpegTsPacketizedElementaryStream {
         } else {
             data.append(contentsOf: [0x00, 0x00, 0x00, 0x01, 0x09, 0x30])
         }
-        if let stream = AVCFormatStream(bytes: bytes, count: count) {
+        if let stream = AvcFormatStream(bytes: bytes, count: count) {
             data.append(stream.toByteStream())
         }
         optionalHeader.dataAlignmentIndicator = true
@@ -140,7 +140,7 @@ struct MpegTsPacketizedElementaryStream {
         presentationTimeStamp: CMTime,
         decodeTimeStamp: CMTime,
         timestamp: CMTime,
-        config: HEVCDecoderConfigurationRecord?,
+        config: HevcDecoderConfigurationRecord?,
         streamID: UInt8
     ) {
         if let config {
@@ -157,7 +157,7 @@ struct MpegTsPacketizedElementaryStream {
                 data.append(nal[0])
             }
         }
-        if let stream = AVCFormatStream(bytes: bytes, count: count) {
+        if let stream = AvcFormatStream(bytes: bytes, count: count) {
             data.append(stream.toByteStream())
         }
         optionalHeader.dataAlignmentIndicator = true
