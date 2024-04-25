@@ -11,7 +11,7 @@ struct AudioSpecificConfig: Equatable {
         case aacScalable = 6
         case twinqVQ = 7
         case celp = 8
-        case hxvc = 9
+        case hvxc = 9
 
         init(objectID: MPEG4ObjectID) {
             switch objectID {
@@ -32,7 +32,7 @@ struct AudioSpecificConfig: Equatable {
             case .CELP:
                 self = .celp
             case .HVXC:
-                self = .hxvc
+                self = .hvxc
             @unknown default:
                 self = .unknown
             }
