@@ -45,7 +45,10 @@ struct ChatUsernamesToIgnoreSettingsView: View {
             Section {
                 List {
                     ForEach(model.database.chat.usernamesToIgnore!) { username in
-                        UsernameEditView(value: username.value, onSubmit: { value in onSubmit(username, value) })
+                        UsernameEditView(
+                            value: username.value,
+                            onSubmit: { value in onSubmit(username, value) }
+                        )
                     }
                     .onMove(perform: { froms, to in
                         model.database.chat.usernamesToIgnore!.move(fromOffsets: froms, toOffset: to)
