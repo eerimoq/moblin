@@ -8,14 +8,14 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
-      Version(version: "0.247.0", date: "2024-04-25", changes: [
+    Version(version: "0.247.0", date: "2024-04-25", changes: [
         "• Do not show stream info, zoom, camera and mic in top left of UI be default.",
         "  • For less cluttering. Enable in Settings -> Display -> Local overlays.",
         "• Toggle to mirror chat. 💡 Walk On Nick",
         "  • For fancy setups that uses a mirror to see the screen.",
         "  • Settings -> Chat -> Mirrored.",
         "• Swipe left to delete/remove help message.",
-      ]),
+    ]),
     Version(version: "0.246.0", date: "2024-04-24", changes: [
         "• No new functionality. Just refactoring.",
     ]),
