@@ -878,14 +878,14 @@ class SettingsShow: Codable {
     var chat: Bool = true
     var viewers: Bool = true
     var uptime: Bool = true
-    var stream: Bool = true
+    var stream: Bool = false
     var speed: Bool = true
     var audioLevel: Bool = true
-    var zoom: Bool = true
+    var zoom: Bool = false
     var zoomPresets: Bool = true
-    var microphone: Bool = true
+    var microphone: Bool = false
     var audioBar: Bool = true
-    var cameras: Bool? = true
+    var cameras: Bool? = false
     var obsStatus: Bool? = true
     var rtmpSpeed: Bool? = true
     var gameController: Bool? = true
@@ -1889,7 +1889,7 @@ final class Settings {
             store()
         }
         if realDatabase.show.cameras == nil {
-            realDatabase.show.cameras = true
+            realDatabase.show.cameras = false
             store()
         }
         for preset in realDatabase.zoom.back where preset.x == nil {
