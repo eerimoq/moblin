@@ -34,7 +34,7 @@ struct StreamOverlayView: View {
     @EnvironmentObject var model: Model
 
     private func leadingPadding() -> CGFloat {
-        if UIDevice.current.userInterfaceIdiom == .pad {
+        if UIDevice.current.userInterfaceIdiom == .pad || model.stream.portrait! {
             return 15
         } else {
             return 0
