@@ -261,6 +261,7 @@ final class Model: NSObject, ObservableObject {
     @Published var thermalState = ProcessInfo.processInfo.thermalState
     let streamPreviewView = PreviewView(frame: .zero)
     let cameraPreviewView = CameraPreviewUiView()
+    @Published var remoteControlPreview: UIImage?
     @Published var showCameraPreview = false
     private var textEffects: [UUID: TextEffect] = [:]
     private var imageEffects: [UUID: ImageEffect] = [:]
@@ -2654,7 +2655,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func setLowFpsImage() {
-        media.setLowFpsImage(enabled: isWatchReachable())
+        media.setLowFpsImage(enabled: isWatchReachable() || isRemoteControlStreamerConnected())
     }
 
     func toggleLocalOverlays() {
@@ -3651,6 +3652,7 @@ final class Model: NSObject, ObservableObject {
         }
         DispatchQueue.main.async {
             self.sendPreviewToWatch(image: image)
+            self.sendPreviewToRemoteControlAssistant(preview: image)
         }
     }
 
@@ -4053,6 +4055,7 @@ extension Model: RemoteControlStreamerDelegate {
     func connected() {
         DispatchQueue.main.async {
             self.makeToast(title: "Remote control assistant connected")
+            self.setLowFpsImage()
             self.updateRemoteControlStatus()
             var state = RemoteControlState()
             if self.sceneIndex < self.enabledScenes.count {
@@ -4070,6 +4073,7 @@ extension Model: RemoteControlStreamerDelegate {
     func disconnected() {
         DispatchQueue.main.async {
             self.makeToast(title: "Remote control assistant disconnected")
+            self.setLowFpsImage()
             self.updateRemoteControlStatus()
         }
     }
@@ -4308,6 +4312,13 @@ extension Model: RemoteControlStreamerDelegate {
             onComplete()
         }
     }
+
+    private func sendPreviewToRemoteControlAssistant(preview: Data) {
+        guard isRemoteControlStreamerConnected() else {
+            return
+        }
+        remoteControlStreamer?.sendPreview(preview: preview)
+    }
 }
 
 extension Model {
@@ -4477,6 +4488,10 @@ extension Model: RemoteControlAssistantDelegate {
             remoteControlState.zoom = zoom
             remoteControlZoom = String(zoom)
         }
+    }
+
+    func assistantPreview(preview: Data) {
+        remoteControlPreview = UIImage(data: preview)
     }
 
     func assistantLog(entry: String) {

@@ -95,6 +95,10 @@ class RemoteControlStreamer {
         webSocket.resume()
     }
 
+    func sendPreview(preview: Data) {
+        send(message: .preview(preview: preview))
+    }
+
     private func send(message: RemoteControlMessageToAssistant) {
         do {
             let message = try message.toJson()
