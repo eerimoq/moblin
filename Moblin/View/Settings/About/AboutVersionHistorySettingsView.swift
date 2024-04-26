@@ -8,6 +8,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.248.0", date: "2024-04-26", changes: [
+        "• Improved swipe left to delete/remove help message.",
+        "• Make top left of UI look better in portrait.",
+        "  • Added leading padding.",
+        "• Hide system overlays (bottom bar) when not interacting with UI.",
+        "  • To find out if we like it.",
+    ]),
     Version(version: "0.247.0", date: "2024-04-25", changes: [
         "• Do not show stream info, zoom, camera and mic in top left of UI be default.",
         "  • For less cluttering. Enable in Settings -> Display -> Local overlays.",
