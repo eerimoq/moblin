@@ -57023,10 +57023,10 @@
         }
       }
     },
-    "Swipe left to delete %@." : {
+    "Swipe left on %@ to delete it." : {
 
     },
-    "Swipe left to remove %@." : {
+    "Swipe left on %@ to remove." : {
 
     },
     "Tap screen to focus" : {

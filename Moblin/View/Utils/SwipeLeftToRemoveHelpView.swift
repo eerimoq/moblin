@@ -4,6 +4,6 @@ struct SwipeLeftToRemoveHelpView: View {
     var kind: String
 
     var body: some View {
-        Text("Swipe left to remove \(kind).")
+        Text("Swipe left on \(kind) to remove.")
     }
 }
