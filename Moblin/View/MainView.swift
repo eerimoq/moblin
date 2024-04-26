@@ -364,7 +364,6 @@ struct MainView: View {
                     .onTapGesture(count: 2) { _ in
                         model.toggleBlackScreen()
                     }
-                    .persistentSystemOverlays(.hidden)
             }
         }
         .onAppear {
@@ -387,5 +386,6 @@ struct MainView: View {
                 "Immediately install the old version of the app to keep your old settings. This is the last warning!"
             )
         }
+        .persistentSystemOverlays(.hidden)
     }
 }
