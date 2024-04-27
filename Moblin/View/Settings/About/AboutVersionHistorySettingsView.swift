@@ -8,6 +8,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.249.0", date: "2024-04-27", changes: [
+        "• Watch companion app.",
+        "  • Show recording info in preview when recording.",
+        "• Position newly created privacy region where your latest known position is.",
+        "• Recording description text field. 💡 Tony Mah",
+        "  • Unfortunately the shared file is called something else right now.",
+    ]),
     Version(version: "0.248.0", date: "2024-04-26", changes: [
         "• Improved swipe left to delete/remove help message.",
         "• Make top left of UI look better in portrait.",
