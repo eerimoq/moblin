@@ -3162,8 +3162,10 @@ final class Model: NSObject, ObservableObject {
             let elapsed = uptimeFormatter.string(from: now.timeIntervalSince(currentRecording.startTime))!
             let size = currentRecording.url().fileSize.formatBytes()
             recordingLength = "\(elapsed) (\(size))"
+            sendRecordingLengthToWatch()
         } else if recordingLength != noValue {
             recordingLength = noValue
+            sendRecordingLengthToWatch()
         }
     }
 
@@ -4503,6 +4505,13 @@ extension Model {
             return
         }
         sendMessageToWatch(type: .speedAndTotal, data: speedAndTotal)
+    }
+
+    private func sendRecordingLengthToWatch() {
+        guard isWatchReachable() else {
+            return
+        }
+        sendMessageToWatch(type: .recordingLength, data: recordingLength)
     }
 
     private func sendAudioLevelToWatch() {

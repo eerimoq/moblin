@@ -35,6 +35,8 @@ class Model: NSObject, ObservableObject {
     @Published var chatPosts = Deque<ChatPost>()
     @Published var speedAndTotal = noValue
     private var latestSpeedAndTotalDate = Date()
+    @Published var recordingLength = noValue
+    private var latestRecordingLengthDate = Date()
     @Published var audioLevel: Float = defaultAudioLevel
     private var latestAudioLevel = Date()
     @Published var preview: UIImage?
@@ -83,17 +85,20 @@ class Model: NSObject, ObservableObject {
     }
 
     private func updatePreview() {
-        let now = Date()
-        if latestPreviewDate + previewTimeout < now, !showPreviewDisconnected {
+        let deadline = Date() - previewTimeout
+        if latestPreviewDate < deadline, !showPreviewDisconnected {
             showPreviewDisconnected = true
         }
-        if latestSpeedAndTotalDate + previewTimeout < now, speedAndTotal != noValue {
+        if latestSpeedAndTotalDate < deadline, speedAndTotal != noValue {
             speedAndTotal = noValue
         }
-        if latestAudioLevel + previewTimeout < now, audioLevel != defaultAudioLevel {
+        if latestRecordingLengthDate < deadline, recordingLength != noValue {
+            recordingLength = noValue
+        }
+        if latestAudioLevel < deadline, audioLevel != defaultAudioLevel {
             audioLevel = defaultAudioLevel
         }
-        if latestThermalState + previewTimeout < now, thermalState != ProcessInfo.ThermalState.nominal {
+        if latestThermalState < deadline, thermalState != ProcessInfo.ThermalState.nominal {
             thermalState = ProcessInfo.ThermalState.nominal
         }
     }
@@ -185,6 +190,15 @@ class Model: NSObject, ObservableObject {
         }
         self.speedAndTotal = speedAndTotal
         latestSpeedAndTotalDate = Date()
+    }
+
+    private func handleRecordingLength(_ data: Any) throws {
+        guard let recordingLength = data as? String else {
+            logger.info("Invalid recording length message")
+            return
+        }
+        self.recordingLength = recordingLength
+        latestRecordingLengthDate = Date()
     }
 
     private func handleAudioLevel(_ data: Any) throws {
@@ -289,6 +303,10 @@ class Model: NSObject, ObservableObject {
     func isShowingStatusBitrate() -> Bool {
         return settings.show!.speed && isLive
     }
+
+    func isShowingStatusRecording() -> Bool {
+        return isRecording
+    }
 }
 
 extension Model: WCSessionDelegate {
@@ -320,6 +338,8 @@ extension Model: WCSessionDelegate {
                 switch type {
                 case .speedAndTotal:
                     try self.handleSpeedAndTotal(data)
+                case .recordingLength:
+                    try self.handleRecordingLength(data)
                 case .settings:
                     try self.handleSettings(data)
                 case .chatMessage:

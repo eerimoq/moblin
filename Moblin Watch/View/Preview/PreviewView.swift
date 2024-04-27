@@ -53,6 +53,12 @@ struct PreviewView: View {
                         text: model.speedAndTotal,
                         textFirst: true
                     )
+                    StreamOverlayIconAndTextView(
+                        show: model.isShowingStatusRecording(),
+                        icon: "record.circle",
+                        text: model.recordingLength,
+                        textFirst: true
+                    )
                 }
             }
             .padding([.bottom], 4)

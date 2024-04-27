@@ -3,6 +3,7 @@ import Foundation
 enum WatchMessageToWatch: String {
     case chatMessage
     case speedAndTotal
+    case recordingLength
     case audioLevel
     case preview
     case settings
