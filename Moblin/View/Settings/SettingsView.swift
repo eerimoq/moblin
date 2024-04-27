@@ -95,7 +95,10 @@ struct SettingsView: View {
             }
             Section {
                 NavigationLink(destination: StreamsSettingsView()) {
-                    IconAndTextView(image: "dot.radiowaves.left.and.right", text: String(localized: "Streams"))
+                    IconAndTextView(
+                        image: "dot.radiowaves.left.and.right",
+                        text: String(localized: "Streams")
+                    )
                 }
                 NavigationLink(destination: ScenesSettingsView()) {
                     IconAndTextView(image: "photo.on.rectangle", text: String(localized: "Scenes"))
@@ -113,7 +116,10 @@ struct SettingsView: View {
                     IconAndTextView(image: "message", text: String(localized: "Chat"))
                 }
                 NavigationLink(destination: DisplaySettingsView()) {
-                    IconAndTextView(image: "rectangle.inset.topright.fill", text: String(localized: "Display"))
+                    IconAndTextView(
+                        image: "rectangle.inset.topright.fill",
+                        text: String(localized: "Display")
+                    )
                 }
                 NavigationLink(destination: CameraSettingsView()) {
                     IconAndTextView(image: "camera", text: String(localized: "Camera"))

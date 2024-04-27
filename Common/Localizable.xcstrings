@@ -43360,6 +43360,7 @@
       }
     },
     "OBS status" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

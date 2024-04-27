@@ -1,5 +1,27 @@
 import SwiftUI
 
+private struct InfoView: View {
+    @EnvironmentObject var model: Model
+    var icon: String
+    var text: String
+    var get: () -> Bool
+    var set: (Bool) -> Void
+
+    var body: some View {
+        HStack {
+            Image(systemName: icon)
+                .frame(width: iconWidth)
+            Toggle(text, isOn: Binding(get: {
+                get()
+            }, set: { value in
+                set(value)
+                model.store()
+                model.objectWillChange.send()
+            }))
+        }
+    }
+}
+
 struct LocalOverlaysSettingsView: View {
     @EnvironmentObject var model: Model
 
@@ -10,98 +32,83 @@ struct LocalOverlaysSettingsView: View {
     var body: some View {
         Form {
             Section("Top left") {
-                Toggle("Stream", isOn: Binding(get: {
+                InfoView(icon: "dot.radiowaves.left.and.right", text: String(localized: "Stream")) {
                     show.stream
-                }, set: { value in
+                } set: { value in
                     show.stream = value
-                    model.store()
-                }))
-                Toggle("Camera", isOn: Binding(get: {
+                }
+                InfoView(icon: "camera", text: String(localized: "Camera")) {
                     show.cameras!
-                }, set: { value in
+                } set: { value in
                     show.cameras = value
-                    model.store()
-                }))
-                Toggle("Mic", isOn: Binding(get: {
+                }
+                InfoView(icon: "music.mic", text: String(localized: "Mic")) {
                     show.microphone
-                }, set: { value in
+                } set: { value in
                     show.microphone = value
-                    model.store()
-                }))
-                Toggle("Zoom", isOn: Binding(get: {
+                }
+                InfoView(icon: "magnifyingglass", text: String(localized: "Zoom")) {
                     show.zoom
-                }, set: { value in
+                } set: { value in
                     show.zoom = value
-                    model.store()
-                }))
-                Toggle("OBS status", isOn: Binding(get: {
+                }
+                InfoView(icon: "xserve", text: String(localized: "OBS remote control")) {
                     show.obsStatus!
-                }, set: { value in
+                } set: { value in
                     show.obsStatus = value
-                    model.store()
-                }))
-                Toggle("Chat", isOn: Binding(get: {
+                }
+                InfoView(icon: "message", text: String(localized: "Chat")) {
                     show.chat
-                }, set: { value in
+                } set: { value in
                     show.chat = value
-                    model.store()
-                }))
-                Toggle("Viewers", isOn: Binding(get: {
+                }
+                InfoView(icon: "eye", text: String(localized: "Viewers")) {
                     show.viewers
-                }, set: { value in
+                } set: { value in
                     show.viewers = value
-                    model.store()
-                }))
+                }
             }
             Section("Top right") {
-                Toggle("Audio level", isOn: Binding(get: {
+                InfoView(icon: "waveform", text: String(localized: "Audio level")) {
                     show.audioLevel
-                }, set: { value in
+                } set: { value in
                     show.audioLevel = value
-                    model.store()
-                }))
-                Toggle("Location", isOn: Binding(get: {
+                }
+                InfoView(icon: "location", text: String(localized: "Location")) {
                     show.location!
-                }, set: { value in
+                } set: { value in
                     show.location = value
-                    model.store()
-                }))
-                Toggle("RTMP server", isOn: Binding(get: {
+                }
+                InfoView(icon: "server.rack", text: String(localized: "RTMP server")) {
                     show.rtmpSpeed!
-                }, set: { value in
+                } set: { value in
                     show.rtmpSpeed = value
-                    model.store()
-                }))
-                Toggle("Remote control", isOn: Binding(get: {
+                }
+                InfoView(icon: "appletvremote.gen1", text: String(localized: "Remote control")) {
                     show.remoteControl!
-                }, set: { value in
+                } set: { value in
                     show.remoteControl = value
-                    model.store()
-                }))
-                Toggle("Game controllers", isOn: Binding(get: {
+                }
+                InfoView(icon: "gamecontroller", text: String(localized: "Game controllers")) {
                     show.gameController!
-                }, set: { value in
+                } set: { value in
                     show.gameController = value
-                    model.store()
-                }))
-                Toggle("Bitrate", isOn: Binding(get: {
+                }
+                InfoView(icon: "speedometer", text: String(localized: "Bitrate")) {
                     show.speed
-                }, set: { value in
+                } set: { value in
                     show.speed = value
-                    model.store()
-                }))
-                Toggle("Uptime", isOn: Binding(get: {
+                }
+                InfoView(icon: "deskclock", text: String(localized: "Uptime")) {
                     show.uptime
-                }, set: { value in
+                } set: { value in
                     show.uptime = value
-                    model.store()
-                }))
-                Toggle("Browser widgets", isOn: Binding(get: {
+                }
+                InfoView(icon: "globe", text: String(localized: "Browser widgets")) {
                     show.browserWidgets!
-                }, set: { value in
+                } set: { value in
                     show.browserWidgets = value
-                    model.store()
-                }))
+                }
             }
             Section {
                 Toggle("Zoom presets", isOn: Binding(get: {
