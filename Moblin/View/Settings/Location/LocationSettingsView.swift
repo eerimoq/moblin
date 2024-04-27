@@ -57,6 +57,7 @@ struct LocationSettingsView: View {
                 CreateButtonView(action: {
                     model.database.location!.privacyRegions.append(SettingsPrivacyRegion())
                     model.store()
+                    model.objectWillChange.send()
                     model.reloadLocation()
                 })
             } header: {
