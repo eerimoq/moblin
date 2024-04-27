@@ -20,6 +20,7 @@ private struct UrlView: View {
             .overlay(RoundedRectangle(cornerRadius: 5)
                 .stroke(.secondary, lineWidth: 1))
             .textInputAutocapitalization(.never)
+            .autocorrectionDisabled()
             .onSubmit {
                 model.loadWebBrowserUrl()
             }
