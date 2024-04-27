@@ -551,10 +551,8 @@ final class VideoUnit: NSObject {
     }
 
     private func anyEffectNeedsFaceDetections() -> Bool {
-        for effect in effects {
-            if effect.needsFaceDetections() {
-                return true
-            }
+        for effect in effects where effect.needsFaceDetections() {
+            return true
         }
         return false
     }
