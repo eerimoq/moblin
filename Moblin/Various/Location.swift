@@ -50,4 +50,11 @@ class Location: NSObject, CLLocationManagerDelegate {
             onUpdate?(location)
         }
     }
+
+    func getLatestKnownLocation() -> (Double, Double)? {
+        guard let latestLocation else {
+            return nil
+        }
+        return (latestLocation.coordinate.latitude, latestLocation.coordinate.longitude)
+    }
 }

@@ -5179,6 +5179,10 @@ extension Model {
         return false
     }
 
+    func getLatestKnownLocation() -> (Double, Double)? {
+        return locationManager.getLatestKnownLocation()
+    }
+
     func isRealtimeIrlConfigured() -> Bool {
         return stream.realtimeIrlEnabled! && !stream.realtimeIrlPushKey!.isEmpty
     }
