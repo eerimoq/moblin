@@ -282,8 +282,6 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var afreecaTvStreamId: String? = ""
     var openStreamingPlatformEnabled: Bool? = true
     var openStreamingPlatformUrl: String? = ""
-    var openStreamingPlatformUsername: String? = ""
-    var openStreamingPlatformPassword: String? = ""
     var openStreamingPlatformChannelId: String? = ""
     var obsWebSocketEnabled: Bool? = true
     var obsWebSocketUrl: String? = ""
@@ -328,8 +326,6 @@ class SettingsStream: Codable, Identifiable, Equatable {
         new.afreecaTvStreamId = afreecaTvStreamId
         new.openStreamingPlatformEnabled = openStreamingPlatformEnabled
         new.openStreamingPlatformUrl = openStreamingPlatformUrl
-        new.openStreamingPlatformUsername = openStreamingPlatformUsername
-        new.openStreamingPlatformPassword = openStreamingPlatformPassword
         new.openStreamingPlatformChannelId = openStreamingPlatformChannelId
         new.obsWebSocketEnabled = obsWebSocketEnabled
         new.obsWebSocketUrl = obsWebSocketUrl
@@ -2227,14 +2223,6 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.openStreamingPlatformUrl == nil {
             stream.openStreamingPlatformUrl = ""
-            store()
-        }
-        for stream in realDatabase.streams where stream.openStreamingPlatformUsername == nil {
-            stream.openStreamingPlatformUsername = ""
-            store()
-        }
-        for stream in realDatabase.streams where stream.openStreamingPlatformPassword == nil {
-            stream.openStreamingPlatformPassword = ""
             store()
         }
         for stream in realDatabase.streams where stream.openStreamingPlatformChannelId == nil {

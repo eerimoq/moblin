@@ -2277,8 +2277,7 @@ final class Model: NSObject, ObservableObject {
     func isOpenStreamingPlatformChatConfigured() -> Bool {
         return database.chat.enabled! && stream.openStreamingPlatformEnabled! && stream
             .openStreamingPlatformUrl! != "" && stream
-            .openStreamingPlatformUsername! != "" && stream
-            .openStreamingPlatformPassword! != ""
+            .openStreamingPlatformChannelId! != ""
     }
 
     func isOpenStreamingPlatformChatConnected() -> Bool {
@@ -2407,8 +2406,6 @@ final class Model: NSObject, ObservableObject {
             openStreamingPlatformChat = OpenStreamingPlatformChat(
                 model: self,
                 url: stream.openStreamingPlatformUrl!,
-                username: stream.openStreamingPlatformUsername!,
-                password: stream.openStreamingPlatformPassword!,
                 channelId: stream.openStreamingPlatformChannelId!
             )
             openStreamingPlatformChat!.start()
@@ -2501,16 +2498,6 @@ final class Model: NSObject, ObservableObject {
     }
 
     func openStreamingPlatformUrlUpdated() {
-        reloadOpenStreamingPlatformChat()
-        resetChat()
-    }
-
-    func openStreamingPlatformUsernameUpdated() {
-        reloadOpenStreamingPlatformChat()
-        resetChat()
-    }
-
-    func openStreamingPlatformPasswordUpdated() {
         reloadOpenStreamingPlatformChat()
         resetChat()
     }

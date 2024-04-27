@@ -136,8 +136,12 @@ extension Data {
     }
 }
 
-func randomHumanString() -> String {
-    return Data.random(length: 10).base64EncodedString().replacingOccurrences(
+func randomString() -> String {
+    return Data.random(length: 64).base64EncodedString()
+}
+
+func randomHumanString(length: Int) -> String {
+    return Data.random(length: length).base64EncodedString().replacingOccurrences(
         of: "[+/=]",
         with: "",
         options: .regularExpression

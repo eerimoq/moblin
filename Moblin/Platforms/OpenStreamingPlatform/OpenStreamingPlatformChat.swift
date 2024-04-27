@@ -102,11 +102,11 @@ class OpenStreamingPlatformChat {
     private var authenticated = false
     private var jid: String = ""
 
-    init(model: Model, url: String, username: String, password: String, channelId: String) {
+    init(model: Model, url: String, channelId: String) {
         self.model = model
         self.url = url
-        self.username = username
-        self.password = password
+        self.username = "moblin"
+        self.password = randomString()
         self.channelId = channelId
         let url = URL(string: "ws://192.168.50.72:5443/ws")!
         webSocket = URLSession(configuration: .default).webSocketTask(with: url)
