@@ -1,5 +1,6 @@
 import AVFoundation
 import UIKit
+import Vision
 
 final class ImageEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
@@ -48,7 +49,7 @@ final class ImageEffect: VideoEffect {
         return "\(settingName) image widget"
     }
 
-    override func execute(_ image: CIImage) -> CIImage {
+    override func execute(_ image: CIImage, _: [VNFaceObservation]?) -> CIImage {
         extent = image.extent
         filter.inputImage = overlay
         filter.backgroundImage = image

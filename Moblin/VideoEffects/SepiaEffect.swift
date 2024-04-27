@@ -1,5 +1,6 @@
 import AVFoundation
 import UIKit
+import Vision
 
 final class SepiaEffect: VideoEffect {
     private let filter = CIFilter.sepiaTone()
@@ -8,7 +9,7 @@ final class SepiaEffect: VideoEffect {
         return "sepia filter"
     }
 
-    override func execute(_ image: CIImage) -> CIImage {
+    override func execute(_ image: CIImage, _: [VNFaceObservation]?) -> CIImage {
         filter.inputImage = image
         filter.intensity = 0.9
         return filter.outputImage ?? image

@@ -1,6 +1,7 @@
 import AVFoundation
 import SwiftUI
 import UIKit
+import Vision
 import WebKit
 
 private let browserQueue = DispatchQueue(label: "com.eerimoq.widget.browser")
@@ -214,7 +215,7 @@ final class BrowserEffect: VideoEffect {
         }
     }
 
-    override func execute(_ image: CIImage) -> CIImage {
+    override func execute(_ image: CIImage, _: [VNFaceObservation]?) -> CIImage {
         updateOverlay()
         filter.inputImage = overlay
         filter.backgroundImage = image

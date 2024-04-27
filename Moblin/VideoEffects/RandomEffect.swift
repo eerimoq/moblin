@@ -1,5 +1,6 @@
 import AVFoundation
 import UIKit
+import Vision
 
 let randomEffects = [
     "CIXRay",
@@ -54,7 +55,7 @@ final class RandomEffect: VideoEffect {
         }
     }
 
-    override func execute(_ image: CIImage) -> CIImage {
+    override func execute(_ image: CIImage, _: [VNFaceObservation]?) -> CIImage {
         extent = image.extent
         guard let filter else {
             return image

@@ -1,6 +1,7 @@
 import AVFoundation
 import CoreImage
 import UIKit
+import Vision
 
 var ioVideoUnitIgnoreFramesAfterAttachSeconds = 0.3
 var ioVideoUnitWatchInterval = 1.0
@@ -327,22 +328,21 @@ final class VideoUnit: NSObject {
     }
 
     private func applyEffects(_ imageBuffer: CVImageBuffer,
-                              _ sampleBuffer: CMSampleBuffer) -> (CVImageBuffer?, CMSampleBuffer?)
+                              _ sampleBuffer: CMSampleBuffer,
+                              _ faceDetections: [VNFaceObservation]?) -> (CVImageBuffer?, CMSampleBuffer?)
     {
         var image = CIImage(cvPixelBuffer: imageBuffer)
         let extent = image.extent
         var failedEffect: String?
         for effect in effects {
-            let effectOutputImage = effect.execute(image)
+            let effectOutputImage = effect.execute(image, faceDetections)
             if effectOutputImage.extent == extent {
                 image = effectOutputImage
             } else {
                 failedEffect = "\(effect.getName()) (wrong size)"
             }
         }
-        if let mixer {
-            mixer.delegate?.mixerVideo(mixer, failedEffect: failedEffect)
-        }
+        mixer?.delegate?.mixerVideo(failedEffect: failedEffect)
         guard imageBuffer.width == Int(image.extent.width) && imageBuffer.height == Int(image.extent.height)
         else {
             return (nil, nil)
@@ -478,13 +478,43 @@ final class VideoUnit: NSObject {
             )
             return false
         }
-        if let mixer {
-            mixer.delegate?.mixerVideo(
-                mixer,
-                presentationTimestamp: sampleBuffer.presentationTimeStamp.seconds
-            )
-        }
         latestSampleBufferAppendTime = sampleBuffer.presentationTimeStamp
+        mixer?.delegate?.mixerVideo(
+            presentationTimestamp: sampleBuffer.presentationTimeStamp.seconds
+        )
+        if anyEffectNeedsFaceDetections() {
+            let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: imageBuffer)
+            let faceLandmarksRequest = VNDetectFaceLandmarksRequest(completionHandler: { request, error in
+                var faceDetections: [VNFaceObservation]?
+                if let error {
+                    logger.info("Face detection error: \(error)")
+                } else if let landmarksRequest = request as? VNDetectFaceLandmarksRequest {
+                    if let results = landmarksRequest.results {
+                        faceDetections = results
+                    }
+                }
+                self.appendSampleBufferWithDetections(sampleBuffer, isFirstAfterAttach, faceDetections)
+            })
+            do {
+                try imageRequestHandler.perform([faceLandmarksRequest])
+            } catch {
+                logger.info("Perform face detection error: \(error)")
+                appendSampleBufferWithDetections(sampleBuffer, isFirstAfterAttach, [])
+            }
+        } else {
+            appendSampleBufferWithDetections(sampleBuffer, isFirstAfterAttach, [])
+        }
+        return true
+    }
+
+    private func appendSampleBufferWithDetections(
+        _ sampleBuffer: CMSampleBuffer,
+        _ isFirstAfterAttach: Bool,
+        _ faceDetections: [VNFaceObservation]?
+    ) {
+        guard let imageBuffer = sampleBuffer.imageBuffer else {
+            return
+        }
         var newImageBuffer: CVImageBuffer?
         var newSampleBuffer: CMSampleBuffer?
         if isFirstAfterAttach, let pendingAfterAttachEffects {
@@ -492,7 +522,7 @@ final class VideoUnit: NSObject {
             self.pendingAfterAttachEffects = nil
         }
         if !effects.isEmpty {
-            (newImageBuffer, newSampleBuffer) = applyEffects(imageBuffer, sampleBuffer)
+            (newImageBuffer, newSampleBuffer) = applyEffects(imageBuffer, sampleBuffer, faceDetections)
         }
         let modImageBuffer = newImageBuffer ?? imageBuffer
         let modSampleBuffer = newSampleBuffer ?? sampleBuffer
@@ -516,9 +546,17 @@ final class VideoUnit: NSObject {
             ciImage = ciImage.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
             let cgImage = context.createCGImage(ciImage, from: ciImage.extent)!
             let image = UIImage(cgImage: cgImage)
-            mixer.delegate?.mixerVideo(mixer, lowFpsImage: image.jpegData(compressionQuality: 0.3))
+            mixer.delegate?.mixerVideo(lowFpsImage: image.jpegData(compressionQuality: 0.3))
         }
-        return true
+    }
+
+    private func anyEffectNeedsFaceDetections() -> Bool {
+        for effect in effects {
+            if effect.needsFaceDetections() {
+                return true
+            }
+        }
+        return false
     }
 
     func startEncoding(_ delegate: any AudioCodecDelegate & VideoCodecDelegate) {

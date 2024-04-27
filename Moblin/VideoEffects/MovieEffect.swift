@@ -1,11 +1,12 @@
 import AVFoundation
 import UIKit
+import Vision
 
 final class MovieEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
     private var extent = CGRect.zero {
         didSet {
-            if extent == oldValue {
+            guard extent != oldValue else {
                 return
             }
             let width = extent.size.width
@@ -28,7 +29,7 @@ final class MovieEffect: VideoEffect {
         return "movie filter"
     }
 
-    override func execute(_ image: CIImage) -> CIImage {
+    override func execute(_ image: CIImage, _: [VNFaceObservation]?) -> CIImage {
         extent = image.extent
         filter.inputImage = black!
         filter.backgroundImage = image

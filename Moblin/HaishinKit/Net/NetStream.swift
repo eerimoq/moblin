@@ -190,18 +190,17 @@ open class NetStream: NSObject {
 
 extension NetStream: MixerDelegate {
     func mixer(
-        _: Mixer,
         sessionWasInterrupted session: AVCaptureSession,
         reason: AVCaptureSession.InterruptionReason?
     ) {
         delegate?.stream(self, sessionWasInterrupted: session, reason: reason)
     }
 
-    func mixer(_: Mixer, sessionInterruptionEnded session: AVCaptureSession) {
+    func mixer(sessionInterruptionEnded session: AVCaptureSession) {
         delegate?.stream(self, sessionInterruptionEnded: session)
     }
 
-    func mixer(_: Mixer, audioLevel: Float, numberOfAudioChannels: Int, presentationTimestamp: Double) {
+    func mixer(audioLevel: Float, numberOfAudioChannels: Int, presentationTimestamp: Double) {
         delegate?.stream(
             self,
             audioLevel: audioLevel,
@@ -210,19 +209,19 @@ extension NetStream: MixerDelegate {
         )
     }
 
-    func mixerVideo(_: Mixer, presentationTimestamp: Double) {
+    func mixerVideo(presentationTimestamp: Double) {
         delegate?.streamVideo(self, presentationTimestamp: presentationTimestamp)
     }
 
-    func mixerVideo(_: Mixer, failedEffect: String?) {
+    func mixerVideo(failedEffect: String?) {
         delegate?.streamVideo(self, failedEffect: failedEffect)
     }
 
-    func mixerVideo(_: Mixer, lowFpsImage: Data?) {
+    func mixerVideo(lowFpsImage: Data?) {
         delegate?.streamVideo(self, lowFpsImage: lowFpsImage)
     }
 
-    func mixer(_: Mixer, recorderFinishWriting writer: AVAssetWriter) {
+    func mixer(recorderFinishWriting writer: AVAssetWriter) {
         delegate?.stream(self, recorderFinishWriting: writer)
     }
 }

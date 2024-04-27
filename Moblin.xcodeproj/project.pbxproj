@@ -84,6 +84,7 @@
 		03507F6B2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03507F6A2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift */; };
 		035192E02B53EF2C00B09E3B /* GlobalQuickButtonsButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035192DF2B53EF2C00B09E3B /* GlobalQuickButtonsButtonSettingsView.swift */; };
 		0352679E2B99A00C00B49B72 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03F853B22B151FA700719B89 /* Localizable.xcstrings */; };
+		03559E7E2BDCEB14002D0886 /* BeautyEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03559E7D2BDCEB14002D0886 /* BeautyEffect.swift */; };
 		035735802BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0357357F2BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift */; };
 		035735822BC6303F00F4E87D /* WatchDisplaySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035735812BC6303F00F4E87D /* WatchDisplaySettingsView.swift */; };
 		0359F8AB2BD3DA61005BFDA8 /* AudioCodec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F80D2BD3DA5F005BFDA8 /* AudioCodec.swift */; };
@@ -441,6 +442,7 @@
 		034FC8512B2B6D4A00EF0C62 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		03507F6A2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllersControllerButtonSettingsView.swift; sourceTree = "<group>"; };
 		035192DF2B53EF2C00B09E3B /* GlobalQuickButtonsButtonSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalQuickButtonsButtonSettingsView.swift; sourceTree = "<group>"; };
+		03559E7D2BDCEB14002D0886 /* BeautyEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeautyEffect.swift; sourceTree = "<group>"; };
 		0357357F2BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchLocalOverlaysSettingsView.swift; sourceTree = "<group>"; };
 		035735812BC6303F00F4E87D /* WatchDisplaySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchDisplaySettingsView.swift; sourceTree = "<group>"; };
 		0359F80D2BD3DA5F005BFDA8 /* AudioCodec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioCodec.swift; sourceTree = "<group>"; };
@@ -1751,6 +1753,7 @@
 		03B374052AA0EA370028DDD5 /* VideoEffects */ = {
 			isa = PBXGroup;
 			children = (
+				03559E7D2BDCEB14002D0886 /* BeautyEffect.swift */,
 				03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */,
 				03A599192B66A94B002E7EE8 /* DrawOnStreamEffect.swift */,
 				03B374012AA0354C0028DDD5 /* GrayScaleEffect.swift */,
@@ -2374,6 +2377,7 @@
 				032A49B82AC54DD000ED3916 /* ExportSettingsView.swift in Sources */,
 				0359F8E02BD3DA61005BFDA8 /* MpegTsAdaptationField.swift in Sources */,
 				03085C0F2B487D950009DAB6 /* PixellateEffect.swift in Sources */,
+				03559E7E2BDCEB14002D0886 /* BeautyEffect.swift in Sources */,
 				03831D522AD90AB5008D26CC /* MoblinSettingsUrl.swift in Sources */,
 				032A49BA2AC54E6500ED3916 /* ImportSettingsView.swift in Sources */,
 				0359F8B32BD3DA61005BFDA8 /* AudioStreamBasicDescription+Extension.swift in Sources */,

@@ -1,5 +1,6 @@
 import AVFoundation
 import UIKit
+import Vision
 
 private let lutQueue = DispatchQueue(label: "com.eerimoq.widget.cubeLut")
 
@@ -89,7 +90,7 @@ final class LutEffect: VideoEffect {
         }
     }
 
-    override func execute(_ image: CIImage) -> CIImage {
+    override func execute(_ image: CIImage, _: [VNFaceObservation]?) -> CIImage {
         let filter = lutQueue.sync {
             self.filter
         }

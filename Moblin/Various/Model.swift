@@ -430,6 +430,7 @@ final class Model: NSObject, ObservableObject {
     private var streamTotalChatMessages: Int = 0
     var ipMonitor = IPMonitor(ipType: .ipv4)
     @Published var ipStatuses: [IPMonitor.Status] = []
+    private var beautyEffect = BeautyEffect()
     private var movieEffect = MovieEffect()
     private var grayScaleEffect = GrayScaleEffect()
     private var sepiaEffect = SepiaEffect()
@@ -1657,12 +1658,14 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func unregisterGlobalVideoEffects() {
+        media.unregisterEffect(beautyEffect)
         media.unregisterEffect(movieEffect)
         media.unregisterEffect(grayScaleEffect)
         media.unregisterEffect(sepiaEffect)
         media.unregisterEffect(randomEffect)
         media.unregisterEffect(tripleEffect)
         media.unregisterEffect(pixellateEffect)
+        beautyEffect = BeautyEffect()
         movieEffect = MovieEffect()
         grayScaleEffect = GrayScaleEffect()
         sepiaEffect = SepiaEffect()
@@ -1679,6 +1682,9 @@ final class Model: NSObject, ObservableObject {
 
     private func registerGlobalVideoEffects() -> [VideoEffect] {
         var effects: [VideoEffect] = []
+        if database.debug!.beautyFilter! {
+            effects.append(beautyEffect)
+        }
         if isGlobalButtonOn(type: .movie) {
             effects.append(movieEffect)
         }

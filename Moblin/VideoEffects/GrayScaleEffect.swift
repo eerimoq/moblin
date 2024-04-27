@@ -1,5 +1,6 @@
 import AVFoundation
 import UIKit
+import Vision
 
 final class GrayScaleEffect: VideoEffect {
     private let filter = CIFilter.colorMonochrome()
@@ -8,7 +9,7 @@ final class GrayScaleEffect: VideoEffect {
         return "gray scale filter"
     }
 
-    override func execute(_ image: CIImage) -> CIImage {
+    override func execute(_ image: CIImage, _: [VNFaceObservation]?) -> CIImage {
         filter.inputImage = image
         filter.color = CIColor(red: 0.75, green: 0.75, blue: 0.75)
         filter.intensity = 1.0

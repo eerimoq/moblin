@@ -1,5 +1,6 @@
 import AVFoundation
 import UIKit
+import Vision
 
 final class TripleEffect: VideoEffect {
     private let centerFilter = CIFilter.sourceOverCompositing()
@@ -9,7 +10,7 @@ final class TripleEffect: VideoEffect {
         return "triple filter"
     }
 
-    override func execute(_ image: CIImage) -> CIImage {
+    override func execute(_ image: CIImage, _: [VNFaceObservation]?) -> CIImage {
         let size = image.extent.size
         let width = size.width / 3
         let height = size.height

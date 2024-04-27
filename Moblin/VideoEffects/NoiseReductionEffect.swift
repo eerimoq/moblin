@@ -1,5 +1,6 @@
 import AVFoundation
 import CoreImage.CIFilterBuiltins
+import Vision
 
 final class NoiseReductionEffect: VideoEffect {
     private let filter = CIFilter.noiseReduction()
@@ -10,7 +11,7 @@ final class NoiseReductionEffect: VideoEffect {
         return "noise reduction"
     }
 
-    override func execute(_ image: CIImage) -> CIImage {
+    override func execute(_ image: CIImage, _: [VNFaceObservation]?) -> CIImage {
         filter.inputImage = image
         filter.noiseLevel = noiseLevel
         filter.sharpness = sharpness

@@ -1070,6 +1070,7 @@ class SettingsDebug: Codable {
     var bluetoothOutputOnly: Bool? = false
     var maximumLogLines: Int? = 500
     var pixelFormat: String? = pixelFormats[1]
+    var beautyFilter: Bool? = false
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -2306,6 +2307,10 @@ final class Settings {
         }
         if realDatabase.chat.mirrored == nil {
             realDatabase.chat.mirrored = false
+            store()
+        }
+        if realDatabase.debug!.beautyFilter == nil {
+            realDatabase.debug!.beautyFilter = false
             store()
         }
     }

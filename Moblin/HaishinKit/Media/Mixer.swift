@@ -13,16 +13,15 @@ private func makeCaptureSession() -> AVCaptureSession {
 
 protocol MixerDelegate: AnyObject {
     func mixer(
-        _ mixer: Mixer,
         sessionWasInterrupted session: AVCaptureSession,
         reason: AVCaptureSession.InterruptionReason?
     )
-    func mixer(_ mixer: Mixer, sessionInterruptionEnded session: AVCaptureSession)
-    func mixer(_ mixer: Mixer, audioLevel: Float, numberOfAudioChannels: Int, presentationTimestamp: Double)
-    func mixerVideo(_ mixer: Mixer, presentationTimestamp: Double)
-    func mixerVideo(_ mixer: Mixer, failedEffect: String?)
-    func mixerVideo(_ mixer: Mixer, lowFpsImage: Data?)
-    func mixer(_ mixer: Mixer, recorderFinishWriting writer: AVAssetWriter)
+    func mixer(sessionInterruptionEnded session: AVCaptureSession)
+    func mixer(audioLevel: Float, numberOfAudioChannels: Int, presentationTimestamp: Double)
+    func mixerVideo(presentationTimestamp: Double)
+    func mixerVideo(failedEffect: String?)
+    func mixerVideo(lowFpsImage: Data?)
+    func mixer(recorderFinishWriting writer: AVAssetWriter)
 }
 
 /// An object that mixies audio and video for streaming.
@@ -191,20 +190,20 @@ class Mixer {
               let reasonIntegerValue = userInfoValue.integerValue,
               let reason = AVCaptureSession.InterruptionReason(rawValue: reasonIntegerValue)
         else {
-            delegate?.mixer(self, sessionWasInterrupted: session, reason: nil)
+            delegate?.mixer(sessionWasInterrupted: session, reason: nil)
             return
         }
-        delegate?.mixer(self, sessionWasInterrupted: session, reason: reason)
+        delegate?.mixer(sessionWasInterrupted: session, reason: reason)
     }
 
     @objc
     private func sessionInterruptionEnded(_: Notification) {
-        delegate?.mixer(self, sessionInterruptionEnded: videoSession)
+        delegate?.mixer(sessionInterruptionEnded: videoSession)
     }
 }
 
 extension Mixer: IORecorderDelegate {
     func recorder(_: Recorder, finishWriting writer: AVAssetWriter) {
-        delegate?.mixer(self, recorderFinishWriting: writer)
+        delegate?.mixer(recorderFinishWriting: writer)
     }
 }

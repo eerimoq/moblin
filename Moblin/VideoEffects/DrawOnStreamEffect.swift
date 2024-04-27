@@ -1,6 +1,7 @@
 import AVFoundation
 import SwiftUI
 import UIKit
+import Vision
 
 private let drawQueue = DispatchQueue(label: "com.eerimoq.widget.text")
 
@@ -96,7 +97,7 @@ final class DrawOnStreamEffect: VideoEffect {
         }
     }
 
-    override func execute(_ image: CIImage) -> CIImage {
+    override func execute(_ image: CIImage, _: [VNFaceObservation]?) -> CIImage {
         filter.inputImage = getOverlay()
         filter.backgroundImage = image
         return filter.outputImage ?? image

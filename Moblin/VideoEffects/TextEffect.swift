@@ -1,6 +1,7 @@
 import AVFoundation
 import SwiftUI
 import UIKit
+import Vision
 
 private let textQueue = DispatchQueue(label: "com.eerimoq.widget.text")
 
@@ -74,7 +75,7 @@ final class TextEffect: VideoEffect {
         }
     }
 
-    override func execute(_ image: CIImage) -> CIImage {
+    override func execute(_ image: CIImage, _: [VNFaceObservation]?) -> CIImage {
         updateOverlay(size: image.extent.size)
         filter.inputImage = overlay
         filter.backgroundImage = image
