@@ -39,7 +39,8 @@ struct WidgetsSettingsView: View {
                             DraggableItemPrefixView()
                             IconAndTextView(
                                 image: widgetImage(widget: widget),
-                                text: widget.name
+                                text: widget.name,
+                                longDivider: true
                             )
                             Spacer()
                             if !isWidgetUsed(widget: widget) {

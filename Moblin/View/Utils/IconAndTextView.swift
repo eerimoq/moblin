@@ -3,11 +3,15 @@ import SwiftUI
 struct IconAndTextView: View {
     var image: String
     var text: String
+    var longDivider: Bool = false
 
     var body: some View {
         HStack {
-            Text("")
+            if longDivider {
+                Text("")
+            }
             Image(systemName: image)
+                .frame(width: iconWidth)
             Text(text)
         }
     }

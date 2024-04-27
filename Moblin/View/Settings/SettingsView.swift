@@ -73,19 +73,6 @@ struct SettingsToolbar: ToolbarContent {
     }
 }
 
-private struct IconAndText: View {
-    let image: String
-    let text: String
-
-    var body: some View {
-        HStack {
-            Image(systemName: image)
-                .frame(width: iconWidth)
-            Text(text)
-        }
-    }
-}
-
 struct SettingsView: View {
     @EnvironmentObject var model: Model
 
@@ -108,10 +95,10 @@ struct SettingsView: View {
             }
             Section {
                 NavigationLink(destination: StreamsSettingsView()) {
-                    IconAndText(image: "dot.radiowaves.left.and.right", text: String(localized: "Streams"))
+                    IconAndTextView(image: "dot.radiowaves.left.and.right", text: String(localized: "Streams"))
                 }
                 NavigationLink(destination: ScenesSettingsView()) {
-                    IconAndText(image: "photo.on.rectangle", text: String(localized: "Scenes"))
+                    IconAndTextView(image: "photo.on.rectangle", text: String(localized: "Scenes"))
                 }
                 NavigationLink(destination: ChatSettingsView(
                     timestampColor: chat.timestampColor.color(),
@@ -123,34 +110,34 @@ struct SettingsView: View {
                     width: chat.width!,
                     fontSize: chat.fontSize
                 )) {
-                    IconAndText(image: "message", text: String(localized: "Chat"))
+                    IconAndTextView(image: "message", text: String(localized: "Chat"))
                 }
                 NavigationLink(destination: DisplaySettingsView()) {
-                    IconAndText(image: "rectangle.inset.topright.fill", text: String(localized: "Display"))
+                    IconAndTextView(image: "rectangle.inset.topright.fill", text: String(localized: "Display"))
                 }
                 NavigationLink(destination: CameraSettingsView()) {
-                    IconAndText(image: "camera", text: String(localized: "Camera"))
+                    IconAndTextView(image: "camera", text: String(localized: "Camera"))
                 }
                 NavigationLink(destination: AudioSettingsView()) {
-                    IconAndText(image: "waveform", text: String(localized: "Audio"))
+                    IconAndTextView(image: "waveform", text: String(localized: "Audio"))
                 }
                 NavigationLink(destination: BitratePresetsSettingsView()) {
-                    IconAndText(image: "speedometer", text: String(localized: "Bitrate presets"))
+                    IconAndTextView(image: "speedometer", text: String(localized: "Bitrate presets"))
                 }
                 NavigationLink(destination: RtmpServerSettingsView()) {
-                    IconAndText(image: "server.rack", text: String(localized: "RTMP server"))
+                    IconAndTextView(image: "server.rack", text: String(localized: "RTMP server"))
                 }
                 NavigationLink(destination: GameControllersSettingsView()) {
-                    IconAndText(image: "gamecontroller", text: String(localized: "Game controllers"))
+                    IconAndTextView(image: "gamecontroller", text: String(localized: "Game controllers"))
                 }
                 NavigationLink(destination: RemoteControlSettingsView()) {
-                    IconAndText(image: "appletvremote.gen1", text: String(localized: "Remote control"))
+                    IconAndTextView(image: "appletvremote.gen1", text: String(localized: "Remote control"))
                 }
                 NavigationLink(destination: LocationSettingsView()) {
-                    IconAndText(image: "location", text: String(localized: "Location"))
+                    IconAndTextView(image: "location", text: String(localized: "Location"))
                 }
                 NavigationLink(destination: WebBrowserSettingsView()) {
-                    IconAndText(image: "globe", text: String(localized: "Web browser"))
+                    IconAndTextView(image: "globe", text: String(localized: "Web browser"))
                 }
             }
             Section {
@@ -165,34 +152,34 @@ struct SettingsView: View {
             }
             Section {
                 NavigationLink(destination: RecordingsSettingsView()) {
-                    IconAndText(image: "photo.on.rectangle.angled", text: String(localized: "Recordings"))
+                    IconAndTextView(image: "photo.on.rectangle.angled", text: String(localized: "Recordings"))
                 }
                 NavigationLink(destination: StreamingHistorySettingsView()) {
-                    IconAndText(image: "text.book.closed", text: String(localized: "Streaming history"))
+                    IconAndTextView(image: "text.book.closed", text: String(localized: "Streaming history"))
                 }
             }
             Section {
                 NavigationLink(destination: WatchSettingsView()) {
-                    IconAndText(image: "applewatch", text: String(localized: "Watch"))
+                    IconAndTextView(image: "applewatch", text: String(localized: "Watch"))
                 }
             }
             Section {
                 NavigationLink(destination: HelpAndSupportSettingsView()) {
-                    IconAndText(image: "questionmark.circle", text: String(localized: "Help and support"))
+                    IconAndTextView(image: "questionmark.circle", text: String(localized: "Help and support"))
                 }
                 NavigationLink(destination: AboutSettingsView()) {
-                    IconAndText(image: "info.circle", text: String(localized: "About"))
+                    IconAndTextView(image: "info.circle", text: String(localized: "About"))
                 }
                 NavigationLink(
                     destination: DebugSettingsView(cameraSwitchRemoveBlackish: model.database.debug!
                         .cameraSwitchRemoveBlackish!)
                 ) {
-                    IconAndText(image: "ladybug", text: String(localized: "Debug"))
+                    IconAndTextView(image: "ladybug", text: String(localized: "Debug"))
                 }
             }
             Section {
                 NavigationLink(destination: ImportExportSettingsView()) {
-                    IconAndText(image: "gearshape", text: String(localized: "Import and export settings"))
+                    IconAndTextView(image: "gearshape", text: String(localized: "Import and export settings"))
                 }
             }
             Section {

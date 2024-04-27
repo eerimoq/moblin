@@ -67,7 +67,8 @@ struct GlobalQuickButtonsSettingsView: View {
                                     DraggableItemPrefixView()
                                     IconAndTextView(
                                         image: button.systemImageNameOff,
-                                        text: button.name
+                                        text: button.name,
+                                        longDivider: true
                                     )
                                     Spacer()
                                 }

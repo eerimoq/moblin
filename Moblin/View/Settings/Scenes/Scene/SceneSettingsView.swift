@@ -203,7 +203,8 @@ struct SceneSettingsView: View {
                                         }, label: {
                                             IconAndTextView(
                                                 image: widgetImage(widget: widget),
-                                                text: widget.name
+                                                text: widget.name,
+                                                longDivider: true
                                             )
                                         })
                                     }
