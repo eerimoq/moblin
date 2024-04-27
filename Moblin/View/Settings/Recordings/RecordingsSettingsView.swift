@@ -119,7 +119,6 @@ struct RecordingsSettingsView: View {
                     }
                 }
             }
-            Spacer()
         }
         .navigationTitle("Recordings")
         .toolbar {
