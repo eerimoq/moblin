@@ -139,6 +139,21 @@ struct ControlBarRemoteControlAssistantView: View {
             } else {
                 Form {
                     Section {
+                        if let preview = model.remoteControlPreview {
+                            VStack(alignment: .leading, spacing: 3) {
+                                Image(uiImage: preview)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(maxWidth: .infinity)
+                                    .padding([.bottom], 3)
+                            }
+                        } else {
+                            Text("No preview received yet.")
+                        }
+                    } header: {
+                        Text("Preview")
+                    }
+                    Section {
                         if let status = model.remoteControlGeneral {
                             VStack(alignment: .leading, spacing: 3) {
                                 StatusItemView(icon: "battery.0", status: batteryStatus(status: status))

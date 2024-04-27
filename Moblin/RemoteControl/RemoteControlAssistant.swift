@@ -5,6 +5,7 @@ import Telegraph
 protocol RemoteControlAssistantDelegate: AnyObject {
     func assistantConnected()
     func assistantDisconnected()
+    func assistantPreview(preview: Data)
     func assistantStateChanged(state: RemoteControlState)
     func assistantLog(entry: String)
 }
@@ -212,6 +213,8 @@ class RemoteControlAssistant {
                 try handleEvent(data: data)
             case let .response(id: id, result: result, data: data):
                 try handleResponse(id: id, result: result, data: data)
+            case let .preview(preview: preview):
+                try handlePreview(preview: preview)
             }
         } catch {
             logger.debug("remote-control-assistant: Failed to process message with error \(error)")
@@ -268,6 +271,10 @@ class RemoteControlAssistant {
         case .unknownRequest:
             logger.info("remote-control-assistant: Unknown request")
         }
+    }
+
+    private func handlePreview(preview: Data) {
+        delegate?.assistantPreview(preview: preview)
     }
 
     private func handleStateEvent(state: RemoteControlState) {

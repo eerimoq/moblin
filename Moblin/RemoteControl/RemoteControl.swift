@@ -152,6 +152,7 @@ enum RemoteControlMessageToAssistant: Codable {
     case identify(authentication: String)
     case response(id: Int, result: RemoteControlResult, data: RemoteControlResponse?)
     case event(data: RemoteControlEvent)
+    case preview(preview: Data)
 
     func toJson() throws -> String {
         guard let encoded = try String(bytes: JSONEncoder().encode(self), encoding: .utf8) else {
