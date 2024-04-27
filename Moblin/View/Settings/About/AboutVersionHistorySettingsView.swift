@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.250.0", date: "2024-04-28", changes: [
+        "• Experimental not so beautiful beauty filter. It simply blurs faces.",
+        "  • Enable in Settings → Debug → Beauty filter.",
+        "• Low resolution preview in remote control assistant. 🧑‍🏭 ErAzOr",
+    ]),
     Version(version: "0.249.0", date: "2024-04-27", changes: [
         "• Watch companion app.",
         "  • Show recording info in preview when recording.",
@@ -24,17 +29,17 @@ private let versions = [
     ]),
     Version(version: "0.247.0", date: "2024-04-25", changes: [
         "• Do not show stream info, zoom, camera and mic in top left of UI be default.",
-        "  • For less cluttering. Enable in Settings -> Display -> Local overlays.",
+        "  • For less cluttering. Enable in Settings → Display → Local overlays.",
         "• Toggle to mirror chat. 💡 Walk On Nick",
         "  • For fancy setups that uses a mirror to see the screen.",
-        "  • Settings -> Chat -> Mirrored.",
+        "  • Settings → Chat → Mirrored.",
         "• Swipe left to delete/remove help message.",
     ]),
     Version(version: "0.246.0", date: "2024-04-24", changes: [
         "• No new functionality. Just refactoring.",
     ]),
     Version(version: "0.245.0", date: "2024-04-22", changes: [
-        "• Pixel format picker in Settings -> Debug -> Pixel format.",
+        "• Pixel format picker in Settings → Debug → Pixel format.",
         "  • Full range, video range and RGB.",
     ]),
     Version(version: "0.244.0", date: "2024-04-21", changes: [
