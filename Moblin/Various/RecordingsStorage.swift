@@ -9,13 +9,18 @@ class Recording: Identifiable, Codable {
     var startTime: Date = .init()
     var stopTime: Date = .init()
     var size: UInt64? = 0
+    var description: String? = ""
 
     init(settings: SettingsStream) {
         self.settings = settings
     }
 
     func subTitle() -> String {
-        return "\(settings.resolutionString()), \(settings.fps) FPS, \(size!.formatBytes())"
+        if let description, !description.isEmpty {
+            return description
+        } else {
+            return "\(settings.resolutionString()), \(settings.fps) FPS, \(size!.formatBytes())"
+        }
     }
 
     func name() -> String {
@@ -31,6 +36,10 @@ class Recording: Identifiable, Codable {
 
     func url() -> URL {
         return recordingsDirectory.appending(component: name())
+    }
+
+    func shareUrl() -> URL {
+        return url()
     }
 
     func sizeString() -> String {

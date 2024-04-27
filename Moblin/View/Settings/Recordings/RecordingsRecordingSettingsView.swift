@@ -1,14 +1,16 @@
 import SwiftUI
 
 struct RecordingsRecordingSettingsView: View {
+    @EnvironmentObject var model: Model
     var recording: Recording
     var quickDone: (() -> Void)?
+    @State var description = ""
 
     var body: some View {
         VStack {
             HStack {
                 Spacer()
-                ShareLink(item: recording.url())
+                ShareLink(item: recording.shareUrl())
             }
             Form {
                 Section {
@@ -23,6 +25,14 @@ struct RecordingsRecordingSettingsView: View {
                         }
                         Spacer()
                     }
+                }
+                Section {
+                    TextField("Description", text: $description)
+                        .autocorrectionDisabled()
+                        .onChange(of: description) { _ in
+                            recording.description = description
+                            model.recordingsStorage.store()
+                        }
                 }
                 Section {
                     TextValueView(name: "Start time", value: recording.startTime.formatted())

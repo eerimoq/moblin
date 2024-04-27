@@ -87,7 +87,8 @@ struct RecordingsSettingsView: View {
                             NavigationLink(
                                 destination: RecordingsRecordingSettingsView(
                                     recording: recording,
-                                    quickDone: quickDone
+                                    quickDone: quickDone,
+                                    description: recording.description ?? ""
                                 )
                             ) {
                                 HStack {
