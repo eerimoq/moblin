@@ -46,11 +46,25 @@ final class BeautyEffect: VideoEffect {
         let facesMaskImage = createFacesMaskImage(imageExtent: image.extent, detections: faceDetections)
         let blurredImage = image
             .clampedToExtent()
-            .applyingGaussianBlur(sigma: 30.0)
+            .applyingGaussianBlur(sigma: image.extent.width / 50.0)
             .cropped(to: image.extent)
         faceBlender.inputImage = blurredImage
         faceBlender.backgroundImage = image
         faceBlender.maskImage = facesMaskImage
-        return faceBlender.outputImage ?? image
+        let scaleDownFactor = 0.8
+        let width = image.extent.width
+        let height = image.extent.height
+        let scaleUpFactor = 1 / scaleDownFactor
+        let smallWidth = width * scaleDownFactor
+        let smallHeight = height * scaleDownFactor
+        let smallOffsetX = (width - smallWidth) / 2
+        let smallOffsetY = (height - smallHeight) / 2
+        let croppedImage = faceBlender
+            .outputImage?
+            .cropped(to: CGRect(x: smallOffsetX, y: smallOffsetY, width: smallWidth, height: smallHeight))
+            .transformed(by: CGAffineTransform(translationX: -smallOffsetX, y: -smallOffsetY))
+            .transformed(by: CGAffineTransform(scaleX: scaleUpFactor, y: scaleUpFactor))
+            .cropped(to: image.extent)
+        return croppedImage ?? image
     }
 }
