@@ -151,15 +151,14 @@ final class BeautyEffect: VideoEffect {
             for point in points {
                 minX = min(point.x, minX)
                 maxX = max(point.x, maxX)
-                minY = min(point.y, minX)
+                minY = min(point.y, minY)
                 maxY = max(point.y, maxY)
             }
             let diffX = maxX - minX
             let diffY = maxY - minY
-            if diffY < diffX {
+            if diffY <= diffX {
                 continue
             }
-            print(diffX, diffY)
             outputImage = moblinImage
                 .transformed(by: CGAffineTransform(
                     scaleX: diffX / moblinImage.extent.width,
