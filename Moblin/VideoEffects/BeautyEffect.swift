@@ -4,6 +4,7 @@ import Vision
 
 final class BeautyEffect: VideoEffect {
     var blur = true
+    var colors = true
     var contrast: Float = 1.0
     var brightness: Float = 0.0
     var saturation: Float = 1.0
@@ -113,7 +114,9 @@ final class BeautyEffect: VideoEffect {
         }
         var outputImage: CIImage? = image
         let facesMaskImage = createFacesMaskImage(imageExtent: image.extent, detections: faceDetections)
-        outputImage = adjustColors(image: outputImage, facesMaskImage: facesMaskImage)
+        if colors {
+            outputImage = adjustColors(image: outputImage, facesMaskImage: facesMaskImage)
+        }
         if blur {
             outputImage = applyBlur(image: outputImage, facesMaskImage: facesMaskImage)
         }

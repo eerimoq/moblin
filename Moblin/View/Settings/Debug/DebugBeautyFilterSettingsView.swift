@@ -21,6 +21,14 @@ struct DebugBeautyFilterSettingsView: View {
                     model.updateBeautyFilterSettings()
                 }))
             }
+            Section {
+                Toggle("Adjust colors", isOn: Binding(get: {
+                    model.beautyFilterColors
+                }, set: { value in
+                    model.beautyFilterColors = value
+                    model.updateBeautyFilterSettings()
+                }))
+            }
             Section("Brightness") {
                 Slider(
                     value: $model.beautyFilterBrightness,
