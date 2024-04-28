@@ -15,33 +15,49 @@ struct DebugBeautyFilterSettingsView: View {
             }
             Section {
                 Toggle("Blur", isOn: Binding(get: {
-                    model.beautyFilterBlur
+                    model.beautyFilterShowBlur
                 }, set: { value in
-                    model.beautyFilterBlur = value
+                    model.beautyFilterShowBlur = value
                     model.updateBeautyFilterSettings()
                 }))
             }
             Section {
                 Toggle("Moblin", isOn: Binding(get: {
-                    model.beautyFilterMoblin
+                    model.beautyFilterShowMoblin
                 }, set: { value in
-                    model.beautyFilterMoblin = value
+                    model.beautyFilterShowMoblin = value
                     model.updateBeautyFilterSettings()
                 }))
             }
             Section {
                 Toggle("Comic", isOn: Binding(get: {
-                    model.beautyFilterComic
+                    model.beautyFilterShowComic
                 }, set: { value in
-                    model.beautyFilterComic = value
+                    model.beautyFilterShowComic = value
+                    model.updateBeautyFilterSettings()
+                }))
+            }
+            Section {
+                Toggle("Face rectangle", isOn: Binding(get: {
+                    model.beautyFilterShowFaceRectangle
+                }, set: { value in
+                    model.beautyFilterShowFaceRectangle = value
+                    model.updateBeautyFilterSettings()
+                }))
+            }
+            Section {
+                Toggle("Face landmarks", isOn: Binding(get: {
+                    model.beautyFilterShowFaceLandmarks
+                }, set: { value in
+                    model.beautyFilterShowFaceLandmarks = value
                     model.updateBeautyFilterSettings()
                 }))
             }
             Section {
                 Toggle("Adjust colors", isOn: Binding(get: {
-                    model.beautyFilterColors
+                    model.beautyFilterShowColors
                 }, set: { value in
-                    model.beautyFilterColors = value
+                    model.beautyFilterShowColors = value
                     model.updateBeautyFilterSettings()
                 }))
             }

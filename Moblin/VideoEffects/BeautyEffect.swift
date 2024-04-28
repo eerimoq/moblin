@@ -3,10 +3,12 @@ import UIKit
 import Vision
 
 final class BeautyEffect: VideoEffect {
-    var blur = true
-    var colors = true
-    var moblin = true
-    var comic = true
+    var showBlur = true
+    var showColors = true
+    var showMoblin = true
+    var showComic = true
+    var showFaceRectangle = true
+    var showFaceLandmarks = true
     var contrast: Float = 1.0
     var brightness: Float = 0.0
     var saturation: Float = 1.0
@@ -153,18 +155,113 @@ final class BeautyEffect: VideoEffect {
         return outputImage.cropped(to: image.extent)
     }
 
+    private func createMesh(landmark: VNFaceLandmarkRegion2D?, image: CIImage?) -> [CIVector] {
+        guard let landmark, let image else {
+            return []
+        }
+        var mesh: [CIVector] = []
+        let points = landmark.pointsInImage(imageSize: image.extent.size)
+        switch landmark.pointsClassification {
+        case .closedPath:
+            for i in 0 ..< landmark.pointCount {
+                let j = (i + 1) % landmark.pointCount
+                mesh.append(CIVector(x: points[i].x,
+                                     y: points[i].y,
+                                     z: points[j].x,
+                                     w: points[j].y))
+            }
+        case .openPath:
+            for i in 0 ..< landmark.pointCount - 1 {
+                mesh.append(CIVector(x: points[i].x,
+                                     y: points[i].y,
+                                     z: points[i + 1].x,
+                                     w: points[i + 1].y))
+            }
+        case .disconnected:
+            for i in 0 ..< landmark.pointCount - 1 {
+                mesh.append(CIVector(x: points[i].x,
+                                     y: points[i].y,
+                                     z: points[i + 1].x,
+                                     w: points[i + 1].y))
+            }
+        }
+        return mesh
+    }
+
+    private func addMesh(image: CIImage?, detections: [VNFaceObservation]?) -> CIImage? {
+        guard let image, let detections else {
+            return image
+        }
+        var outputImage = image
+        var mesh: [CIVector] = []
+        for detection in detections {
+            if showFaceRectangle {
+                let faceBoundingBox = CGRect(x: detection.boundingBox.minX * image.extent.width,
+                                             y: detection.boundingBox.minY * image.extent.height,
+                                             width: detection.boundingBox.width * image.extent.width,
+                                             height: detection.boundingBox.height * image.extent.height)
+                mesh.append(CIVector(
+                    x: faceBoundingBox.minX,
+                    y: faceBoundingBox.minY,
+                    z: faceBoundingBox.maxX,
+                    w: faceBoundingBox.minY
+                ))
+                mesh.append(CIVector(
+                    x: faceBoundingBox.maxX,
+                    y: faceBoundingBox.minY,
+                    z: faceBoundingBox.maxX,
+                    w: faceBoundingBox.maxY
+                ))
+                mesh.append(CIVector(
+                    x: faceBoundingBox.maxX,
+                    y: faceBoundingBox.maxY,
+                    z: faceBoundingBox.minX,
+                    w: faceBoundingBox.maxY
+                ))
+                mesh.append(CIVector(
+                    x: faceBoundingBox.minX,
+                    y: faceBoundingBox.maxY,
+                    z: faceBoundingBox.minX,
+                    w: faceBoundingBox.minY
+                ))
+            }
+            guard let landmarks = detection.landmarks else {
+                continue
+            }
+            if showFaceLandmarks {
+                mesh += createMesh(landmark: landmarks.faceContour, image: image)
+                mesh += createMesh(landmark: landmarks.outerLips, image: image)
+                mesh += createMesh(landmark: landmarks.innerLips, image: image)
+                mesh += createMesh(landmark: landmarks.leftEye, image: image)
+                mesh += createMesh(landmark: landmarks.rightEye, image: image)
+                mesh += createMesh(landmark: landmarks.nose, image: image)
+                mesh += createMesh(landmark: landmarks.medianLine, image: image)
+                mesh += createMesh(landmark: landmarks.leftEyebrow, image: image)
+                mesh += createMesh(landmark: landmarks.rightEyebrow, image: image)
+            }
+        }
+        let filter = CIFilter.meshGenerator()
+        filter.color = .green
+        filter.width = 3
+        filter.mesh = mesh
+        guard let outputImage = filter.outputImage else {
+            return image
+        }
+        return outputImage.composited(over: image).cropped(to: image.extent)
+    }
+
     override func execute(_ image: CIImage, _ faceDetections: [VNFaceObservation]?) -> CIImage {
         guard let faceDetections else {
             return image
         }
         var outputImage: CIImage? = image
-        if colors {
+        if showColors {
             outputImage = adjustColors(image: outputImage)
         }
-        if comic {
+        if showComic {
             outputImage = applyComic(image: outputImage)
         }
-        if blur {
+        if showBlur {
             outputImage = applyBlur(image: outputImage)
         }
         if outputImage != image {
@@ -174,9 +271,10 @@ final class BeautyEffect: VideoEffect {
                 detections: faceDetections
             )
         }
-        if moblin {
+        if showMoblin {
             outputImage = addMoblin(image: outputImage, detections: faceDetections)
         }
+        outputImage = addMesh(image: outputImage, detections: faceDetections)
         let scaleDownFactor = 0.8
         let width = image.extent.width
         let height = image.extent.height
