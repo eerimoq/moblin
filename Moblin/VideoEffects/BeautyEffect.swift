@@ -3,7 +3,10 @@ import UIKit
 import Vision
 
 final class BeautyEffect: VideoEffect {
-    private let faceBlender = CIFilter.blendWithMask()
+    var blur = true
+    var contrast: Float = 1.0
+    var brightness: Float = 0.0
+    var saturation: Float = 1.0
 
     override func getName() -> String {
         return "beauty filter"
@@ -39,18 +42,81 @@ final class BeautyEffect: VideoEffect {
         return facesMask
     }
 
+    /* private func adjustGamma(image: CIImage?) -> CIImage? {
+         let filter = CIFilter.gammaAdjust()
+         filter.inputImage = image
+         filter.power = 1
+         return filter.outputImage
+     }
+
+     private func adjustHue(image: CIImage?) -> CIImage? {
+         let filter = CIFilter.hueAdjust()
+         filter.inputImage = image
+         filter.angle = 5
+         return filter.outputImage
+     }
+
+     private func adjustExposure(image: CIImage?) -> CIImage? {
+         let filter = CIFilter.exposureAdjust()
+         filter.inputImage = image
+         filter.ev = 2
+         return filter.outputImage
+     }
+
+     private func adjustVibrance(image: CIImage?) -> CIImage? {
+         let filter = CIFilter.vibrance()
+         filter.inputImage = image
+         filter.amount = 2
+         return filter.outputImage
+     } */
+
+    private func adjustColorControls(image: CIImage?) -> CIImage? {
+        let filter = CIFilter.colorControls()
+        filter.inputImage = image
+        filter.brightness = brightness
+        filter.contrast = contrast
+        filter.saturation = saturation
+        return filter.outputImage
+    }
+
+    private func applyBlur(image: CIImage?, facesMaskImage: CIImage?) -> CIImage? {
+        guard let image else {
+            return image
+        }
+        let maskImage = image
+            .clampedToExtent()
+            .applyingGaussianBlur(sigma: image.extent.width / 50.0)
+            .cropped(to: image.extent)
+        let faceBlender = CIFilter.blendWithMask()
+        faceBlender.inputImage = maskImage
+        faceBlender.backgroundImage = image
+        faceBlender.maskImage = facesMaskImage
+        return faceBlender.outputImage
+    }
+
+    private func adjustColors(image: CIImage?, facesMaskImage: CIImage?) -> CIImage? {
+        // outputImage = adjustHue(image: outputImage)
+        // outputImage = adjustGamma(image: outputImage)
+        // outputImage = adjustExposure(image: outputImage)
+        // outputImage = adjustVibrance(image: outputImage)
+        let colorImage = adjustColorControls(image: image)
+        let faceBlender = CIFilter.blendWithMask()
+        faceBlender.inputImage = colorImage
+        faceBlender.backgroundImage = image
+        faceBlender.maskImage = facesMaskImage
+        return faceBlender.outputImage
+    }
+
     override func execute(_ image: CIImage, _ faceDetections: [VNFaceObservation]?) -> CIImage {
         guard let faceDetections else {
             return image
         }
+        var outputImage: CIImage? = image
         let facesMaskImage = createFacesMaskImage(imageExtent: image.extent, detections: faceDetections)
-        let blurredImage = image
-            .clampedToExtent()
-            .applyingGaussianBlur(sigma: image.extent.width / 50.0)
-            .cropped(to: image.extent)
-        faceBlender.inputImage = blurredImage
-        faceBlender.backgroundImage = image
-        faceBlender.maskImage = facesMaskImage
+        outputImage = adjustColors(image: outputImage, facesMaskImage: facesMaskImage)
+        if blur {
+            outputImage = applyBlur(image: outputImage, facesMaskImage: facesMaskImage)
+        }
         let scaleDownFactor = 0.8
         let width = image.extent.width
         let height = image.extent.height
@@ -59,12 +125,11 @@ final class BeautyEffect: VideoEffect {
         let smallHeight = height * scaleDownFactor
         let smallOffsetX = (width - smallWidth) / 2
         let smallOffsetY = (height - smallHeight) / 2
-        let croppedImage = faceBlender
-            .outputImage?
+        outputImage = outputImage?
             .cropped(to: CGRect(x: smallOffsetX, y: smallOffsetY, width: smallWidth, height: smallHeight))
             .transformed(by: CGAffineTransform(translationX: -smallOffsetX, y: -smallOffsetY))
             .transformed(by: CGAffineTransform(scaleX: scaleUpFactor, y: scaleUpFactor))
             .cropped(to: image.extent)
-        return croppedImage ?? image
+        return outputImage ?? image
     }
 }

@@ -3047,6 +3047,9 @@
         }
       }
     },
+    "%f" : {
+
+    },
     "%lld %%" : {
       "localizations" : {
         "de" : {
@@ -13354,6 +13357,9 @@
         }
       }
     },
+    "Blur" : {
+
+    },
     "Bold message" : {
       "localizations" : {
         "de" : {
@@ -13973,6 +13979,9 @@
           }
         }
       }
+    },
+    "Brightness" : {
+
     },
     "Browser" : {
       "localizations" : {
@@ -17569,6 +17578,9 @@
           }
         }
       }
+    },
+    "Contrast" : {
+
     },
     "Control" : {
       "localizations" : {
@@ -50315,6 +50327,9 @@
           }
         }
       }
+    },
+    "Saturation" : {
+
     },
     "Say username" : {
       "localizations" : {

@@ -442,6 +442,10 @@ final class Model: NSObject, ObservableObject {
     private var realtimeIrl: RealtimeIrl?
     private var failedVideoEffect: String?
     var supportsAppleLog: Bool = false
+    @Published var beautyFilterBlur = true
+    @Published var beautyFilterBrightness: Float = 0.0
+    @Published var beautyFilterContrast: Float = 1.0
+    @Published var beautyFilterSaturation: Float = 1.0
 
     func updateAdaptiveBitrateSrtIfEnabled(stream: SettingsStream) {
         switch stream.srt.adaptiveBitrate!.algorithm {
@@ -832,6 +836,14 @@ final class Model: NSObject, ObservableObject {
         chatTextToSpeech.setFilter(value: database.chat.textToSpeechFilter!)
         AppDelegate.orientationLock = .landscape
         updateOrientationLock()
+        updateBeautyFilterSettings()
+    }
+
+    func updateBeautyFilterSettings() {
+        beautyEffect.blur = beautyFilterBlur
+        beautyEffect.contrast = beautyFilterContrast
+        beautyEffect.brightness = beautyFilterBrightness
+        beautyEffect.saturation = beautyFilterSaturation
     }
 
     func setPixelFormat() {
@@ -1667,6 +1679,7 @@ final class Model: NSObject, ObservableObject {
         media.unregisterEffect(tripleEffect)
         media.unregisterEffect(pixellateEffect)
         beautyEffect = BeautyEffect()
+        updateBeautyFilterSettings()
         movieEffect = MovieEffect()
         grayScaleEffect = GrayScaleEffect()
         sepiaEffect = SepiaEffect()

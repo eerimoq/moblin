@@ -106,12 +106,9 @@ struct DebugSettingsView: View {
                         value: model.database.debug!.pixelFormat!
                     )
                 }
-                Toggle("Beauty filter", isOn: Binding(get: {
-                    model.database.debug!.beautyFilter!
-                }, set: { value in
-                    model.database.debug!.beautyFilter = value
-                    model.sceneUpdated()
-                }))
+                NavigationLink(destination: DebugBeautyFilterSettingsView()) {
+                    Text("Beauty filter")
+                }
             } header: {
                 Text("Experimental")
             }

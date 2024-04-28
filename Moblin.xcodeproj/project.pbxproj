@@ -316,6 +316,7 @@
 		03EF34B42B1AFBB600A19221 /* AfreecaTvChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EF34B32B1AFBB600A19221 /* AfreecaTvChat.swift */; };
 		03EF34BA2B1B028900A19221 /* StreamAfreecaTvSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EF34B92B1B028900A19221 /* StreamAfreecaTvSettingsView.swift */; };
 		03F3BF192ADAAA94009A8D3E /* TextEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F3BF182ADAAA94009A8D3E /* TextEffect.swift */; };
+		03F3EB352BDE3AD800AB656C /* DebugBeautyFilterSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F3EB342BDE3AD800AB656C /* DebugBeautyFilterSettingsView.swift */; };
 		03F5A8DF2AD5DACB00F354D2 /* Srt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F5A8DE2AD5DACB00F354D2 /* Srt.swift */; };
 		03F5A8E52AD6FF8E00F354D2 /* StreamOverlayDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F5A8E42AD6FF8E00F354D2 /* StreamOverlayDebugView.swift */; };
 		03F853B32B151FA700719B89 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03F853B22B151FA700719B89 /* Localizable.xcstrings */; };
@@ -716,6 +717,7 @@
 		03EF34B32B1AFBB600A19221 /* AfreecaTvChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AfreecaTvChat.swift; sourceTree = "<group>"; };
 		03EF34B92B1B028900A19221 /* StreamAfreecaTvSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamAfreecaTvSettingsView.swift; sourceTree = "<group>"; };
 		03F3BF182ADAAA94009A8D3E /* TextEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEffect.swift; sourceTree = "<group>"; };
+		03F3EB342BDE3AD800AB656C /* DebugBeautyFilterSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugBeautyFilterSettingsView.swift; sourceTree = "<group>"; };
 		03F5A8DE2AD5DACB00F354D2 /* Srt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Srt.swift; sourceTree = "<group>"; };
 		03F5A8E42AD6FF8E00F354D2 /* StreamOverlayDebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamOverlayDebugView.swift; sourceTree = "<group>"; };
 		03F853B22B151FA700719B89 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
@@ -1504,9 +1506,10 @@
 		0379BB992AAD80AF00B718B6 /* Debug */ = {
 			isa = PBXGroup;
 			children = (
+				031839162AF6A03100320FB2 /* DebugAudioSettingsView.swift */,
+				03F3EB342BDE3AD800AB656C /* DebugBeautyFilterSettingsView.swift */,
 				0379BB8D2AA90D1900B718B6 /* DebugLogSettingsView.swift */,
 				0379BBAE2AAD96B200B718B6 /* DebugSettingsView.swift */,
-				031839162AF6A03100320FB2 /* DebugAudioSettingsView.swift */,
 			);
 			path = Debug;
 			sourceTree = "<group>";
@@ -2252,6 +2255,7 @@
 				03AA89952BC434640007BFE8 /* WebBrowserSettingsView.swift in Sources */,
 				0359F8F42BD3DA61005BFDA8 /* RTMPStream.swift in Sources */,
 				0359F8D52BD3DA61005BFDA8 /* VideoEffect.swift in Sources */,
+				03F3EB352BDE3AD800AB656C /* DebugBeautyFilterSettingsView.swift in Sources */,
 				03D541752B32095B00B9D595 /* StreamWizardCustomSettingsView.swift in Sources */,
 				0364B6212BD36806002F828D /* StreamButton.swift in Sources */,
 				0315A3462AA31E9000295443 /* StreamTwitchSettingsView.swift in Sources */,
