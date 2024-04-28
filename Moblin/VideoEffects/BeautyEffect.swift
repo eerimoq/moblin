@@ -15,7 +15,7 @@ final class BeautyEffect: VideoEffect {
     let moblinImage: CIImage?
 
     override init() {
-        if let image = UIImage(named: "AppIconKingNoBackground"), let image = image.cgImage {
+        if let image = UIImage(named: "AppIconNoBackground"), let image = image.cgImage {
             moblinImage = CIImage(cgImage: image)
         } else {
             moblinImage = nil
