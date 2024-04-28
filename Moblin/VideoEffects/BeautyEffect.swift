@@ -12,6 +12,10 @@ final class BeautyEffect: VideoEffect {
     var contrast: Float = 1.0
     var brightness: Float = 0.0
     var saturation: Float = 1.0
+    var showCute = true
+    var cuteRadius: Float = 200
+    var cuteScale: Float = 0.5
+    var cuteOffset: Float = 0.0
     let moblinImage: CIImage?
 
     override init() {
@@ -203,11 +207,37 @@ final class BeautyEffect: VideoEffect {
         return mesh
     }
 
+    private func addCute(image: CIImage?, detections: [VNFaceObservation]?) -> CIImage? {
+        guard let image, let detections else {
+            return image
+        }
+        var outputImage: CIImage? = image
+        for detection in detections {
+            if let medianLine = detection.landmarks?.medianLine {
+                let points = medianLine.pointsInImage(imageSize: image.extent.size)
+                guard let firstPoint = points.first else {
+                    continue
+                }
+                var centerY = firstPoint.y
+                for point in points {
+                    centerY = min(point.y, centerY)
+                }
+                let centerX = points.last!.x
+                let filter = CIFilter.bumpDistortion()
+                filter.inputImage = outputImage
+                filter.center = CGPoint(x: centerX, y: centerY + CGFloat(cuteOffset))
+                filter.radius = cuteRadius
+                filter.scale = -cuteScale
+                outputImage = filter.outputImage
+            }
+        }
+        return outputImage?.cropped(to: image.extent)
+    }
+
     private func addMesh(image: CIImage?, detections: [VNFaceObservation]?) -> CIImage? {
         guard let image, let detections else {
             return image
         }
-        var outputImage = image
         var mesh: [CIVector] = []
         for detection in detections {
             if showFaceRectangle {
@@ -288,6 +318,9 @@ final class BeautyEffect: VideoEffect {
         }
         if showMoblin {
             outputImage = addMoblin(image: outputImage, detections: faceDetections)
+        }
+        if showCute {
+            outputImage = addCute(image: outputImage, detections: faceDetections)
         }
         outputImage = addMesh(image: outputImage, detections: faceDetections)
         let scaleDownFactor = 0.8

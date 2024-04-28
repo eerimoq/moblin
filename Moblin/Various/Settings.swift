@@ -1068,6 +1068,10 @@ class SettingsDebugBeautyFilter: Codable {
     var brightness: Float = 0.0
     var contrast: Float = 1.0
     var saturation: Float = 1.0
+    var showCute: Bool? = false
+    var cuteRadius: Float? = 200.0
+    var cuteScale: Float? = 0.5
+    var cuteOffset: Float? = 0.0
 }
 
 class SettingsDebug: Codable {
@@ -2328,6 +2332,22 @@ final class Settings {
         }
         if realDatabase.debug!.beautyFilterSettings == nil {
             realDatabase.debug!.beautyFilterSettings = .init()
+            store()
+        }
+        if realDatabase.debug!.beautyFilterSettings!.showCute == nil {
+            realDatabase.debug!.beautyFilterSettings!.showCute = false
+            store()
+        }
+        if realDatabase.debug!.beautyFilterSettings!.cuteRadius == nil {
+            realDatabase.debug!.beautyFilterSettings!.cuteRadius = 200
+            store()
+        }
+        if realDatabase.debug!.beautyFilterSettings!.cuteScale == nil {
+            realDatabase.debug!.beautyFilterSettings!.cuteScale = 0.5
+            store()
+        }
+        if realDatabase.debug!.beautyFilterSettings!.cuteOffset == nil {
+            realDatabase.debug!.beautyFilterSettings!.cuteOffset = 0.0
             store()
         }
     }

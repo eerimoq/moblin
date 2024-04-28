@@ -846,6 +846,10 @@ final class Model: NSObject, ObservableObject {
         beautyEffect.contrast = settings.contrast
         beautyEffect.brightness = settings.brightness
         beautyEffect.saturation = settings.saturation
+        beautyEffect.showCute = settings.showCute!
+        beautyEffect.cuteRadius = settings.cuteRadius!
+        beautyEffect.cuteScale = settings.cuteScale!
+        beautyEffect.cuteOffset = settings.cuteOffset!
     }
 
     func setPixelFormat() {

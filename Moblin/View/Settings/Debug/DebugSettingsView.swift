@@ -106,11 +106,14 @@ struct DebugSettingsView: View {
                         value: model.database.debug!.pixelFormat!
                     )
                 }
-                NavigationLink(destination: DebugBeautyFilterSettingsView(brightness: model.database.debug!
-                        .beautyFilterSettings!.brightness, contrast: model.database.debug!
-                        .beautyFilterSettings!.contrast, saturation: model.database.debug!
-                        .beautyFilterSettings!.saturation))
-                {
+                NavigationLink(destination: DebugBeautyFilterSettingsView(
+                    brightness: model.database.debug!.beautyFilterSettings!.brightness,
+                    contrast: model.database.debug!.beautyFilterSettings!.contrast,
+                    saturation: model.database.debug!.beautyFilterSettings!.saturation,
+                    cuteRadius: model.database.debug!.beautyFilterSettings!.cuteRadius!,
+                    cuteScale: model.database.debug!.beautyFilterSettings!.cuteScale!,
+                    cuteOffset: model.database.debug!.beautyFilterSettings!.cuteOffset!
+                )) {
                     Text("Beauty filter")
                 }
             } header: {

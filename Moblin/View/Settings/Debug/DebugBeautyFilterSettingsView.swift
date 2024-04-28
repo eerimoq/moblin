@@ -5,6 +5,9 @@ struct DebugBeautyFilterSettingsView: View {
     @State var brightness: Float
     @State var contrast: Float
     @State var saturation: Float
+    @State var cuteRadius: Float
+    @State var cuteScale: Float
+    @State var cuteOffset: Float
 
     private var settings: SettingsDebugBeautyFilter {
         model.database.debug!.beautyFilterSettings!
@@ -83,7 +86,6 @@ struct DebugBeautyFilterSettingsView: View {
                         guard !begin else {
                             return
                         }
-                        print("store")
                         model.store()
                     }
                 )
@@ -128,6 +130,69 @@ struct DebugBeautyFilterSettingsView: View {
                     model.updateBeautyFilterSettings()
                 }
                 Text(String(saturation))
+            }
+            Section {
+                Toggle("Cute", isOn: Binding(get: {
+                    settings.showCute!
+                }, set: { value in
+                    settings.showCute = value
+                    model.store()
+                    model.updateBeautyFilterSettings()
+                }))
+            }
+            Section("Cute radius") {
+                Slider(
+                    value: $cuteRadius,
+                    in: 10 ... 500,
+                    step: 5,
+                    onEditingChanged: { begin in
+                        guard !begin else {
+                            return
+                        }
+                        model.store()
+                    }
+                )
+                .onChange(of: cuteRadius) { _ in
+                    settings.cuteRadius = cuteRadius
+                    model.updateBeautyFilterSettings()
+                }
+                Text(String(cuteRadius))
+            }
+            Section("Cute scale") {
+                Slider(
+                    value: $cuteScale,
+                    in: 0 ... 1,
+                    step: 0.01,
+                    onEditingChanged: { begin in
+                        guard !begin else {
+                            return
+                        }
+                        model.store()
+                    }
+                )
+                .onChange(of: cuteScale) { _ in
+                    settings.cuteScale = cuteScale
+                    model.updateBeautyFilterSettings()
+                }
+                Text(String(cuteScale))
+            }
+            Section("Cute offset") {
+                Slider(
+                    value: $cuteOffset,
+                    in: -300 ... 300,
+                    step: 5,
+                    onEditingChanged: { begin in
+                        guard !begin else {
+                            return
+                        }
+                        model.store()
+                    }
+                )
+                .onChange(of: cuteOffset) { _ in
+                    settings.cuteOffset = cuteOffset
+                    model.updateBeautyFilterSettings()
+                }
+                Text(String(cuteOffset))
             }
         }
         .navigationTitle("Beauty filter")
