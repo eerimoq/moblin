@@ -92,31 +92,40 @@ final class BeautyEffect: VideoEffect {
         return filter.outputImage
     }
 
-    private func adjustColors(image: CIImage?, facesMaskImage: CIImage?) -> CIImage? {
+    private func adjustColors(image: CIImage?) -> CIImage? {
         // outputImage = adjustHue(image: outputImage)
         // outputImage = adjustGamma(image: outputImage)
         // outputImage = adjustExposure(image: outputImage)
         // outputImage = adjustVibrance(image: outputImage)
-        let colorImage = adjustColorControls(image: image)
-        let faceBlender = CIFilter.blendWithMask()
-        faceBlender.inputImage = colorImage
-        faceBlender.backgroundImage = image
-        faceBlender.maskImage = facesMaskImage
-        return faceBlender.outputImage
+        return adjustColorControls(image: image)
     }
 
-    private func applyBlur(image: CIImage?, facesMaskImage: CIImage?) -> CIImage? {
+    private func applyBlur(image: CIImage?) -> CIImage? {
         guard let image else {
             return image
         }
-        let maskImage = image
+        return image
             .clampedToExtent()
             .applyingGaussianBlur(sigma: image.extent.width / 50.0)
             .cropped(to: image.extent)
+    }
+
+    private func applyComic(image: CIImage?) -> CIImage? {
+        let filter = CIFilter.comicEffect()
+        filter.inputImage = image
+        return filter.outputImage
+    }
+
+    private func applyFacesMask(backgroundImage: CIImage?, image: CIImage?,
+                                detections: [VNFaceObservation]?) -> CIImage?
+    {
+        guard let image, let detections else {
+            return image
+        }
         let faceBlender = CIFilter.blendWithMask()
-        faceBlender.inputImage = maskImage
-        faceBlender.backgroundImage = image
-        faceBlender.maskImage = facesMaskImage
+        faceBlender.inputImage = image
+        faceBlender.backgroundImage = backgroundImage
+        faceBlender.maskImage = createFacesMaskImage(imageExtent: image.extent, detections: detections)
         return faceBlender.outputImage
     }
 
@@ -144,30 +153,26 @@ final class BeautyEffect: VideoEffect {
         return outputImage.cropped(to: image.extent)
     }
 
-    private func applyComic(image: CIImage?, facesMaskImage: CIImage?) -> CIImage? {
-        let filter = CIFilter.comicEffect()
-        filter.inputImage = image
-        let faceBlender = CIFilter.blendWithMask()
-        faceBlender.inputImage = filter.outputImage
-        faceBlender.backgroundImage = image
-        faceBlender.maskImage = facesMaskImage
-        return faceBlender.outputImage
-    }
-
     override func execute(_ image: CIImage, _ faceDetections: [VNFaceObservation]?) -> CIImage {
         guard let faceDetections else {
             return image
         }
         var outputImage: CIImage? = image
-        let facesMaskImage = createFacesMaskImage(imageExtent: image.extent, detections: faceDetections)
         if colors {
-            outputImage = adjustColors(image: outputImage, facesMaskImage: facesMaskImage)
+            outputImage = adjustColors(image: outputImage)
         }
         if comic {
-            outputImage = applyComic(image: outputImage, facesMaskImage: facesMaskImage)
+            outputImage = applyComic(image: outputImage)
         }
         if blur {
-            outputImage = applyBlur(image: outputImage, facesMaskImage: facesMaskImage)
+            outputImage = applyBlur(image: outputImage)
+        }
+        if outputImage != image {
+            outputImage = applyFacesMask(
+                backgroundImage: image,
+                image: outputImage,
+                detections: faceDetections
+            )
         }
         if moblin {
             outputImage = addMoblin(image: outputImage, detections: faceDetections)
