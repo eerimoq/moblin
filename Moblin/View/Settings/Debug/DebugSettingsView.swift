@@ -106,7 +106,11 @@ struct DebugSettingsView: View {
                         value: model.database.debug!.pixelFormat!
                     )
                 }
-                NavigationLink(destination: DebugBeautyFilterSettingsView()) {
+                NavigationLink(destination: DebugBeautyFilterSettingsView(brightness: model.database.debug!
+                        .beautyFilterSettings!.brightness, contrast: model.database.debug!
+                        .beautyFilterSettings!.contrast, saturation: model.database.debug!
+                        .beautyFilterSettings!.saturation))
+                {
                     Text("Beauty filter")
                 }
             } header: {

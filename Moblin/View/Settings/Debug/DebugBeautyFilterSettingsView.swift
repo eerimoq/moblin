@@ -2,6 +2,13 @@ import SwiftUI
 
 struct DebugBeautyFilterSettingsView: View {
     @EnvironmentObject var model: Model
+    @State var brightness: Float
+    @State var contrast: Float
+    @State var saturation: Float
+
+    private var settings: SettingsDebugBeautyFilter {
+        model.database.debug!.beautyFilterSettings!
+    }
 
     var body: some View {
         Form {
@@ -15,84 +22,112 @@ struct DebugBeautyFilterSettingsView: View {
             }
             Section {
                 Toggle("Blur", isOn: Binding(get: {
-                    model.beautyFilterShowBlur
+                    settings.showBlur
                 }, set: { value in
-                    model.beautyFilterShowBlur = value
+                    settings.showBlur = value
+                    model.store()
                     model.updateBeautyFilterSettings()
                 }))
             }
             Section {
                 Toggle("Moblin", isOn: Binding(get: {
-                    model.beautyFilterShowMoblin
+                    settings.showMoblin
                 }, set: { value in
-                    model.beautyFilterShowMoblin = value
+                    settings.showMoblin = value
+                    model.store()
                     model.updateBeautyFilterSettings()
                 }))
             }
             Section {
                 Toggle("Comic", isOn: Binding(get: {
-                    model.beautyFilterShowComic
+                    settings.showComic
                 }, set: { value in
-                    model.beautyFilterShowComic = value
+                    settings.showComic = value
+                    model.store()
                     model.updateBeautyFilterSettings()
                 }))
             }
             Section {
                 Toggle("Face rectangle", isOn: Binding(get: {
-                    model.beautyFilterShowFaceRectangle
+                    settings.showFaceRectangle
                 }, set: { value in
-                    model.beautyFilterShowFaceRectangle = value
+                    settings.showFaceRectangle = value
+                    model.store()
                     model.updateBeautyFilterSettings()
                 }))
             }
             Section {
                 Toggle("Face landmarks", isOn: Binding(get: {
-                    model.beautyFilterShowFaceLandmarks
+                    settings.showFaceLandmarks
                 }, set: { value in
-                    model.beautyFilterShowFaceLandmarks = value
+                    settings.showFaceLandmarks = value
+                    model.store()
                     model.updateBeautyFilterSettings()
                 }))
             }
             Section {
                 Toggle("Adjust colors", isOn: Binding(get: {
-                    model.beautyFilterShowColors
+                    settings.showColors
                 }, set: { value in
-                    model.beautyFilterShowColors = value
+                    settings.showColors = value
+                    model.store()
                     model.updateBeautyFilterSettings()
                 }))
             }
             Section("Brightness") {
                 Slider(
-                    value: $model.beautyFilterBrightness,
+                    value: $brightness,
                     in: -0.5 ... 0.5,
-                    step: 0.01
+                    step: 0.01,
+                    onEditingChanged: { begin in
+                        guard !begin else {
+                            return
+                        }
+                        print("store")
+                        model.store()
+                    }
                 )
-                .onChange(of: model.beautyFilterBrightness) { _ in
+                .onChange(of: brightness) { _ in
+                    settings.brightness = brightness
                     model.updateBeautyFilterSettings()
                 }
-                Text("\(model.beautyFilterBrightness)")
+                Text(String(brightness))
             }
             Section("Contrast") {
                 Slider(
-                    value: $model.beautyFilterContrast,
+                    value: $contrast,
                     in: 0 ... 2,
-                    step: 0.01
+                    step: 0.01,
+                    onEditingChanged: { begin in
+                        guard !begin else {
+                            return
+                        }
+                        model.store()
+                    }
                 )
-                .onChange(of: model.beautyFilterContrast) { _ in
+                .onChange(of: contrast) { _ in
+                    settings.contrast = contrast
                     model.updateBeautyFilterSettings()
                 }
-                Text("\(model.beautyFilterContrast)")
+                Text(String(contrast))
             }
             Section("Saturation") {
                 Slider(
-                    value: $model.beautyFilterSaturation,
+                    value: $saturation,
                     in: 0 ... 2,
-                    step: 0.01
+                    step: 0.01,
+                    onEditingChanged: { begin in
+                        guard !begin else {
+                            return
+                        }
+                        model.store()
+                    }
                 )
-                .onChange(of: model.beautyFilterSaturation) { _ in
+                .onChange(of: saturation) { _ in
+                    settings.saturation = saturation
                     model.updateBeautyFilterSettings()
                 }
-                Text("\(model.beautyFilterSaturation)")
+                Text(String(saturation))
             }
         }
         .navigationTitle("Beauty filter")

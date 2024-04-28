@@ -442,15 +442,6 @@ final class Model: NSObject, ObservableObject {
     private var realtimeIrl: RealtimeIrl?
     private var failedVideoEffect: String?
     var supportsAppleLog: Bool = false
-    @Published var beautyFilterShowBlur = false
-    @Published var beautyFilterShowColors = false
-    @Published var beautyFilterShowMoblin = false
-    @Published var beautyFilterShowComic = false
-    @Published var beautyFilterShowFaceRectangle = false
-    @Published var beautyFilterShowFaceLandmarks = false
-    @Published var beautyFilterBrightness: Float = 0.0
-    @Published var beautyFilterContrast: Float = 1.0
-    @Published var beautyFilterSaturation: Float = 1.0
 
     func updateAdaptiveBitrateSrtIfEnabled(stream: SettingsStream) {
         switch stream.srt.adaptiveBitrate!.algorithm {
@@ -845,15 +836,16 @@ final class Model: NSObject, ObservableObject {
     }
 
     func updateBeautyFilterSettings() {
-        beautyEffect.showBlur = beautyFilterShowBlur
-        beautyEffect.showColors = beautyFilterShowColors
-        beautyEffect.showMoblin = beautyFilterShowMoblin
-        beautyEffect.showComic = beautyFilterShowComic
-        beautyEffect.showFaceRectangle = beautyFilterShowFaceRectangle
-        beautyEffect.showFaceLandmarks = beautyFilterShowFaceLandmarks
-        beautyEffect.contrast = beautyFilterContrast
-        beautyEffect.brightness = beautyFilterBrightness
-        beautyEffect.saturation = beautyFilterSaturation
+        let settings = database.debug!.beautyFilterSettings!
+        beautyEffect.showBlur = settings.showBlur
+        beautyEffect.showColors = settings.showColors
+        beautyEffect.showMoblin = settings.showMoblin
+        beautyEffect.showComic = settings.showComic
+        beautyEffect.showFaceRectangle = settings.showFaceRectangle
+        beautyEffect.showFaceLandmarks = settings.showFaceLandmarks
+        beautyEffect.contrast = settings.contrast
+        beautyEffect.brightness = settings.brightness
+        beautyEffect.saturation = settings.saturation
     }
 
     func setPixelFormat() {

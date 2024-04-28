@@ -1058,6 +1058,18 @@ let pixelFormatTypes = [
     kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
 ]
 
+class SettingsDebugBeautyFilter: Codable {
+    var showBlur = false
+    var showColors = false
+    var showMoblin = false
+    var showComic = false
+    var showFaceRectangle = false
+    var showFaceLandmarks = false
+    var brightness: Float = 0.0
+    var contrast: Float = 1.0
+    var saturation: Float = 1.0
+}
+
 class SettingsDebug: Codable {
     var logLevel: SettingsLogLevel = .error
     var srtOverlay: Bool = false
@@ -1071,6 +1083,7 @@ class SettingsDebug: Codable {
     var maximumLogLines: Int? = 500
     var pixelFormat: String? = pixelFormats[1]
     var beautyFilter: Bool? = false
+    var beautyFilterSettings: SettingsDebugBeautyFilter? = .init()
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -2311,6 +2324,10 @@ final class Settings {
         }
         if realDatabase.debug!.beautyFilter == nil {
             realDatabase.debug!.beautyFilter = false
+            store()
+        }
+        if realDatabase.debug!.beautyFilterSettings == nil {
+            realDatabase.debug!.beautyFilterSettings = .init()
             store()
         }
     }
