@@ -30,7 +30,7 @@ struct DebugBeautyFilterSettingsView: View {
                 }))
             }
             Section {
-                Toggle("Moblin", isOn: Binding(get: {
+                Toggle("Moblin in mouth", isOn: Binding(get: {
                     settings.showMoblin
                 }, set: { value in
                     settings.showMoblin = value

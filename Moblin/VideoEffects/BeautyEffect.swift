@@ -137,19 +137,35 @@ final class BeautyEffect: VideoEffect {
         }
         var outputImage = image
         for detection in detections {
-            let faceBoundingBox = CGRect(x: detection.boundingBox.minX * image.extent.width,
-                                         y: detection.boundingBox.minY * image.extent.height,
-                                         width: detection.boundingBox.width * image.extent.width,
-                                         height: detection.boundingBox.height * image.extent.height)
+            guard let innerLips = detection.landmarks?.innerLips else {
+                continue
+            }
+            let points = innerLips.pointsInImage(imageSize: image.extent.size)
+            guard let firstPoint = points.first else {
+                continue
+            }
+            var minX = firstPoint.x
+            var maxX = firstPoint.x
+            var minY = firstPoint.y
+            var maxY = firstPoint.y
+            for point in points {
+                minX = min(point.x, minX)
+                maxX = max(point.x, maxX)
+                minY = min(point.y, minX)
+                maxY = max(point.y, maxY)
+            }
+            let diffX = maxX - minX
+            let diffY = maxY - minY
+            if diffY < diffX {
+                continue
+            }
+            print(diffX, diffY)
             outputImage = moblinImage
                 .transformed(by: CGAffineTransform(
-                    scaleX: faceBoundingBox.width * 0.2 / moblinImage.extent.width,
-                    y: faceBoundingBox.width * 0.2 / moblinImage.extent.width
+                    scaleX: diffX / moblinImage.extent.width,
+                    y: diffX / moblinImage.extent.width
                 ))
-                .transformed(by: CGAffineTransform(
-                    translationX: faceBoundingBox.maxX - faceBoundingBox.width * 0.25,
-                    y: faceBoundingBox.maxY + faceBoundingBox.height * 0.1
-                ))
+                .transformed(by: CGAffineTransform(translationX: minX, y: minY))
                 .composited(over: outputImage)
         }
         return outputImage.cropped(to: image.extent)
