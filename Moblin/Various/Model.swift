@@ -443,7 +443,9 @@ final class Model: NSObject, ObservableObject {
     private var failedVideoEffect: String?
     var supportsAppleLog: Bool = false
     @Published var beautyFilterBlur = true
-    @Published var beautyFilterColors = true
+    @Published var beautyFilterColors = false
+    @Published var beautyFilterMoblin = false
+    @Published var beautyFilterComic = false
     @Published var beautyFilterBrightness: Float = 0.0
     @Published var beautyFilterContrast: Float = 1.0
     @Published var beautyFilterSaturation: Float = 1.0
@@ -843,6 +845,8 @@ final class Model: NSObject, ObservableObject {
     func updateBeautyFilterSettings() {
         beautyEffect.blur = beautyFilterBlur
         beautyEffect.colors = beautyFilterColors
+        beautyEffect.moblin = beautyFilterMoblin
+        beautyEffect.comic = beautyFilterComic
         beautyEffect.contrast = beautyFilterContrast
         beautyEffect.brightness = beautyFilterBrightness
         beautyEffect.saturation = beautyFilterSaturation

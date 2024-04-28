@@ -5,9 +5,21 @@ import Vision
 final class BeautyEffect: VideoEffect {
     var blur = true
     var colors = true
+    var moblin = true
+    var comic = true
     var contrast: Float = 1.0
     var brightness: Float = 0.0
     var saturation: Float = 1.0
+    let moblinImage: CIImage?
+
+    override init() {
+        if let image = UIImage(named: "AppIconKingNoBackground"), let image = image.cgImage {
+            moblinImage = CIImage(cgImage: image)
+        } else {
+            moblinImage = nil
+        }
+        super.init()
+    }
 
     override func getName() -> String {
         return "beauty filter"
@@ -80,6 +92,19 @@ final class BeautyEffect: VideoEffect {
         return filter.outputImage
     }
 
+    private func adjustColors(image: CIImage?, facesMaskImage: CIImage?) -> CIImage? {
+        // outputImage = adjustHue(image: outputImage)
+        // outputImage = adjustGamma(image: outputImage)
+        // outputImage = adjustExposure(image: outputImage)
+        // outputImage = adjustVibrance(image: outputImage)
+        let colorImage = adjustColorControls(image: image)
+        let faceBlender = CIFilter.blendWithMask()
+        faceBlender.inputImage = colorImage
+        faceBlender.backgroundImage = image
+        faceBlender.maskImage = facesMaskImage
+        return faceBlender.outputImage
+    }
+
     private func applyBlur(image: CIImage?, facesMaskImage: CIImage?) -> CIImage? {
         guard let image else {
             return image
@@ -95,14 +120,35 @@ final class BeautyEffect: VideoEffect {
         return faceBlender.outputImage
     }
 
-    private func adjustColors(image: CIImage?, facesMaskImage: CIImage?) -> CIImage? {
-        // outputImage = adjustHue(image: outputImage)
-        // outputImage = adjustGamma(image: outputImage)
-        // outputImage = adjustExposure(image: outputImage)
-        // outputImage = adjustVibrance(image: outputImage)
-        let colorImage = adjustColorControls(image: image)
+    private func addMoblin(image: CIImage?, detections: [VNFaceObservation]?) -> CIImage? {
+        guard let image, let detections, let moblinImage else {
+            return image
+        }
+        var outputImage = image
+        for detection in detections {
+            let faceBoundingBox = CGRect(x: detection.boundingBox.minX * image.extent.width,
+                                         y: detection.boundingBox.minY * image.extent.height,
+                                         width: detection.boundingBox.width * image.extent.width,
+                                         height: detection.boundingBox.height * image.extent.height)
+            outputImage = moblinImage
+                .transformed(by: CGAffineTransform(
+                    scaleX: faceBoundingBox.width * 0.2 / moblinImage.extent.width,
+                    y: faceBoundingBox.width * 0.2 / moblinImage.extent.width
+                ))
+                .transformed(by: CGAffineTransform(
+                    translationX: faceBoundingBox.maxX - faceBoundingBox.width * 0.25,
+                    y: faceBoundingBox.maxY + faceBoundingBox.height * 0.1
+                ))
+                .composited(over: outputImage)
+        }
+        return outputImage.cropped(to: image.extent)
+    }
+
+    private func applyComic(image: CIImage?, facesMaskImage: CIImage?) -> CIImage? {
+        let filter = CIFilter.comicEffect()
+        filter.inputImage = image
         let faceBlender = CIFilter.blendWithMask()
-        faceBlender.inputImage = colorImage
+        faceBlender.inputImage = filter.outputImage
         faceBlender.backgroundImage = image
         faceBlender.maskImage = facesMaskImage
         return faceBlender.outputImage
@@ -117,8 +163,14 @@ final class BeautyEffect: VideoEffect {
         if colors {
             outputImage = adjustColors(image: outputImage, facesMaskImage: facesMaskImage)
         }
+        if comic {
+            outputImage = applyComic(image: outputImage, facesMaskImage: facesMaskImage)
+        }
         if blur {
             outputImage = applyBlur(image: outputImage, facesMaskImage: facesMaskImage)
+        }
+        if moblin {
+            outputImage = addMoblin(image: outputImage, detections: faceDetections)
         }
         let scaleDownFactor = 0.8
         let width = image.extent.width

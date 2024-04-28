@@ -22,6 +22,22 @@ struct DebugBeautyFilterSettingsView: View {
                 }))
             }
             Section {
+                Toggle("Moblin", isOn: Binding(get: {
+                    model.beautyFilterMoblin
+                }, set: { value in
+                    model.beautyFilterMoblin = value
+                    model.updateBeautyFilterSettings()
+                }))
+            }
+            Section {
+                Toggle("Comic", isOn: Binding(get: {
+                    model.beautyFilterComic
+                }, set: { value in
+                    model.beautyFilterComic = value
+                    model.updateBeautyFilterSettings()
+                }))
+            }
+            Section {
                 Toggle("Adjust colors", isOn: Binding(get: {
                     model.beautyFilterColors
                 }, set: { value in
