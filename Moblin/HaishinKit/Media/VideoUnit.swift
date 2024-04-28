@@ -482,16 +482,36 @@ final class VideoUnit: NSObject {
         mixer?.delegate?.mixerVideo(
             presentationTimestamp: sampleBuffer.presentationTimeStamp.seconds
         )
-        var faceDetections: [VNFaceObservation]?
         if anyEffectNeedsFaceDetections() {
             let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: imageBuffer)
-            let faceLandmarksRequest = VNDetectFaceLandmarksRequest()
+            let faceLandmarksRequest = VNDetectFaceLandmarksRequest { request, error in
+                guard error == nil else {
+                    self.appendSampleBufferWithFaceDetections(sampleBuffer, isFirstAfterAttach, nil)
+                    return
+                }
+                self.appendSampleBufferWithFaceDetections(sampleBuffer,
+                                                          isFirstAfterAttach,
+                                                          (request as? VNDetectFaceLandmarksRequest)?.results)
+            }
             do {
                 try imageRequestHandler.perform([faceLandmarksRequest])
-                faceDetections = faceLandmarksRequest.results
             } catch {
                 logger.info("Perform face detection error: \(error)")
+                appendSampleBufferWithFaceDetections(sampleBuffer, isFirstAfterAttach, nil)
             }
+        } else {
+            appendSampleBufferWithFaceDetections(sampleBuffer, isFirstAfterAttach, nil)
+        }
+        return true
+    }
+
+    private func appendSampleBufferWithFaceDetections(
+        _ sampleBuffer: CMSampleBuffer,
+        _ isFirstAfterAttach: Bool,
+        _ faceDetections: [VNFaceObservation]?
+    ) {
+        guard let imageBuffer = sampleBuffer.imageBuffer else {
+            return
         }
         var newImageBuffer: CVImageBuffer?
         var newSampleBuffer: CMSampleBuffer?
@@ -526,7 +546,6 @@ final class VideoUnit: NSObject {
             let image = UIImage(cgImage: cgImage)
             mixer.delegate?.mixerVideo(lowFpsImage: image.jpegData(compressionQuality: 0.3))
         }
-        return true
     }
 
     private func anyEffectNeedsFaceDetections() -> Bool {
