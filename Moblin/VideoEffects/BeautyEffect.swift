@@ -13,40 +13,44 @@ final class BeautyEffect: VideoEffect {
         return true
     }
 
+    private func createFacesMaskImage(imageExtent: CGRect, detections: [VNFaceObservation]) -> CIImage? {
+        var facesMask = CIImage.empty().cropped(to: imageExtent)
+        for detection in detections {
+            let faceBoundingBox = CGRect(x: detection.boundingBox.minX * imageExtent.width,
+                                         y: detection.boundingBox.minY * imageExtent.height,
+                                         width: detection.boundingBox.width * imageExtent.width,
+                                         height: detection.boundingBox.height * imageExtent.height)
+            let faceCenter = CGPoint(x: faceBoundingBox.maxX - (faceBoundingBox.width / 2),
+                                     y: faceBoundingBox.maxY - (faceBoundingBox.height / 2))
+            let faceMask = CIFilter.radialGradient()
+            faceMask.center = faceCenter
+            faceMask.radius0 = Float(faceBoundingBox.height / 2)
+            faceMask.radius1 = Float(faceBoundingBox.height)
+            faceMask.color0 = CIColor.white
+            faceMask.color1 = CIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 0.0)
+            guard let faceMask = faceMask.outputImage?.cropped(to: faceBoundingBox.insetBy(
+                dx: -faceBoundingBox.width / 2,
+                dy: -faceBoundingBox.height / 2
+            )) else {
+                continue
+            }
+            facesMask = faceMask.composited(over: facesMask)
+        }
+        return facesMask
+    }
+
     override func execute(_ image: CIImage, _ faceDetections: [VNFaceObservation]?) -> CIImage {
         guard let faceDetections else {
             return image
         }
-        var faceMaskImage = CIImage.empty().cropped(to: image.extent)
-        for faceDetection in faceDetections {
-            let faceRect = CGRect(x: faceDetection.boundingBox.minX * image.extent.width,
-                                  y: faceDetection.boundingBox.minY * image.extent.height,
-                                  width: faceDetection.boundingBox.width * image.extent.width,
-                                  height: faceDetection.boundingBox.height * image.extent.height)
-            let maskCenter = CGPoint(x: faceRect.maxX - (faceRect.width / 2),
-                                     y: faceRect.maxY - (faceRect.height / 2))
-            let faceMaskFilter = CIFilter.radialGradient()
-            faceMaskFilter.center = maskCenter
-            faceMaskFilter.radius0 = Float(faceRect.height / 2)
-            faceMaskFilter.radius1 = Float(faceRect.height)
-            faceMaskFilter.color0 = CIColor.white
-            faceMaskFilter.color1 = CIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 0.0)
-            guard let gradientOutput = faceMaskFilter.outputImage?.cropped(to: faceRect.insetBy(
-                dx: -faceRect.width / 2,
-                dy: -faceRect.height / 2
-            )) else {
-                continue
-            }
-            faceMaskImage = gradientOutput.composited(over: faceMaskImage)
-        }
-        let blurRadius = 30.0
+        let facesMaskImage = createFacesMaskImage(imageExtent: image.extent, detections: faceDetections)
         let blurredImage = image
             .clampedToExtent()
-            .applyingGaussianBlur(sigma: blurRadius)
+            .applyingGaussianBlur(sigma: 30.0)
             .cropped(to: image.extent)
         faceBlender.inputImage = blurredImage
         faceBlender.backgroundImage = image
-        faceBlender.maskImage = faceMaskImage
+        faceBlender.maskImage = facesMaskImage
         return faceBlender.outputImage ?? image
     }
 }

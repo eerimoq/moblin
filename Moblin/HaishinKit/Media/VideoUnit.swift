@@ -482,38 +482,16 @@ final class VideoUnit: NSObject {
         mixer?.delegate?.mixerVideo(
             presentationTimestamp: sampleBuffer.presentationTimeStamp.seconds
         )
+        var faceDetections: [VNFaceObservation]?
         if anyEffectNeedsFaceDetections() {
             let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: imageBuffer)
-            let faceLandmarksRequest = VNDetectFaceLandmarksRequest(completionHandler: { request, error in
-                var faceDetections: [VNFaceObservation]?
-                if let error {
-                    logger.info("Face detection error: \(error)")
-                } else if let landmarksRequest = request as? VNDetectFaceLandmarksRequest {
-                    if let results = landmarksRequest.results {
-                        faceDetections = results
-                    }
-                }
-                self.appendSampleBufferWithDetections(sampleBuffer, isFirstAfterAttach, faceDetections)
-            })
+            let faceLandmarksRequest = VNDetectFaceLandmarksRequest()
             do {
                 try imageRequestHandler.perform([faceLandmarksRequest])
+                faceDetections = faceLandmarksRequest.results
             } catch {
                 logger.info("Perform face detection error: \(error)")
-                appendSampleBufferWithDetections(sampleBuffer, isFirstAfterAttach, [])
             }
-        } else {
-            appendSampleBufferWithDetections(sampleBuffer, isFirstAfterAttach, [])
-        }
-        return true
-    }
-
-    private func appendSampleBufferWithDetections(
-        _ sampleBuffer: CMSampleBuffer,
-        _ isFirstAfterAttach: Bool,
-        _ faceDetections: [VNFaceObservation]?
-    ) {
-        guard let imageBuffer = sampleBuffer.imageBuffer else {
-            return
         }
         var newImageBuffer: CVImageBuffer?
         var newSampleBuffer: CMSampleBuffer?
@@ -548,6 +526,7 @@ final class VideoUnit: NSObject {
             let image = UIImage(cgImage: cgImage)
             mixer.delegate?.mixerVideo(lowFpsImage: image.jpegData(compressionQuality: 0.3))
         }
+        return true
     }
 
     private func anyEffectNeedsFaceDetections() -> Bool {

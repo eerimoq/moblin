@@ -120,7 +120,6 @@ class VideoCodec {
                                                                presentationTimeStamp,
                                                                sampleBuffer.decodeTimeStamp)
                 else {
-                    print("xxx decode")
                     return
                 }
                 delegate?.videoCodecOutputSampleBuffer(self, sampleBuffer)
