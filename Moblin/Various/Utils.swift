@@ -136,6 +136,10 @@ extension Data {
     }
 }
 
+func randomString() -> String {
+    return Data.random(length: 64).base64EncodedString()
+}
+
 func randomHumanString() -> String {
     return Data.random(length: 10).base64EncodedString().replacingOccurrences(
         of: "[+/=]",

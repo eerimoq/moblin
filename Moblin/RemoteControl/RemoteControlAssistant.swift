@@ -15,10 +15,6 @@ private struct RemoteControlRequestResponse {
     let onError: (String) -> Void
 }
 
-private func randomString() -> String {
-    return Data.random(length: 64).base64EncodedString()
-}
-
 class RemoteControlAssistant {
     private let port: UInt16
     private let password: String
