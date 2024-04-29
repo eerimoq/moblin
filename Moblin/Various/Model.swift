@@ -382,6 +382,7 @@ final class Model: NSObject, ObservableObject {
 
     private var remoteControlStreamer: RemoteControlStreamer?
     private var remoteControlAssistant: RemoteControlAssistant?
+    @Published var remoteControlAssistantShowPreview = true
 
     var cameraDevice: AVCaptureDevice?
     var cameraZoomLevelToXScale: Float = 1.0

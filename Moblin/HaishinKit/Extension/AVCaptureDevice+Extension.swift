@@ -14,7 +14,9 @@ extension AVCaptureDevice {
             .filter { $0.formatDescription.dimensions.height == height }
             .filter { $0.supportedColorSpaces.contains(colorSpace) }
             .filter { !$0.isVideoBinned }
-            .filter { $0.formatDescription.mediaSubType.rawValue == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange }
+            .filter {
+                $0.formatDescription.mediaSubType.rawValue == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
+            }
         return formats.first
     }
 }

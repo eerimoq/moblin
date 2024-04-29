@@ -139,19 +139,37 @@ struct ControlBarRemoteControlAssistantView: View {
             } else {
                 Form {
                     Section {
-                        if let preview = model.remoteControlPreview {
-                            VStack(alignment: .leading, spacing: 3) {
-                                Image(uiImage: preview)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(maxWidth: .infinity)
-                                    .padding([.bottom], 3)
+                        if model.remoteControlAssistantShowPreview {
+                            if let preview = model.remoteControlPreview {
+                                Button {
+                                    model.remoteControlAssistantShowPreview = false
+                                } label: {
+                                    Image(uiImage: preview)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(maxWidth: .infinity)
+                                        .padding([.bottom], 3)
+                                }
+                            } else {
+                                Text("No preview received yet.")
                             }
                         } else {
-                            Text("No preview received yet.")
+                            Button {
+                                model.remoteControlAssistantShowPreview = true
+                            } label: {
+                                HStack {
+                                    Spacer()
+                                    Text("Show")
+                                    Spacer()
+                                }
+                            }
                         }
                     } header: {
                         Text("Preview")
+                    } footer: {
+                        if model.remoteControlAssistantShowPreview {
+                            Text("Tap the preview to hide it.")
+                        }
                     }
                     Section {
                         if let status = model.remoteControlGeneral {

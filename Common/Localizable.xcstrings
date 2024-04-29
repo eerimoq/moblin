@@ -52348,6 +52348,9 @@
         }
       }
     },
+    "Show" : {
+
+    },
     "Show name" : {
       "localizations" : {
         "de" : {
@@ -58423,6 +58426,9 @@
           }
         }
       }
+    },
+    "Tap the preview to hide it." : {
+
     },
     "Tap to focus not supported for this camera" : {
       "localizations" : {
