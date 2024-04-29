@@ -4,13 +4,13 @@ import Network
 import SwiftUI
 
 let iconWidth = 32.0
-let firstReconnectTime = 7.0
+let firstReconnectTime = 2.0
 let buttonSize: CGFloat = 40
 let maximumNumberOfWatchChatMessages = 20
 let personalHotspotLocalAddress = "172.20.10.1"
 
 func nextReconnectTime(_ reconnectTime: Double) -> Double {
-    return min(reconnectTime * 1.3, 60)
+    return min(reconnectTime * 1.3, 10)
 }
 
 extension String: Error {}

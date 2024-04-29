@@ -11,7 +11,7 @@ struct LeftOverlayView: View {
         return .white
     }
 
-    func messageColor() -> Color {
+    func chatColor() -> Color {
         if !model.isChatConfigured() {
             return .white
         } else if model.isChatConnected() && model.hasChatEmotes() {
@@ -63,7 +63,7 @@ struct LeftOverlayView: View {
                 show: model.isShowingStatusChat(),
                 icon: "message",
                 text: model.statusChatText(),
-                color: messageColor()
+                color: chatColor()
             )
             StreamOverlayIconAndTextView(
                 show: model.isShowingStatusViewers(),

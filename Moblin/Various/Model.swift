@@ -4098,7 +4098,7 @@ final class Model: NSObject, ObservableObject {
                 countFormatter.format(chatPostsTotal)
             )
         } else {
-            return ""
+            return String(localized: "Disconnected")
         }
     }
 
@@ -4106,7 +4106,7 @@ final class Model: NSObject, ObservableObject {
         if isViewersConfigured() {
             return numberOfViewers
         } else {
-            return ""
+            return String(localized: "Not configured")
         }
     }
 
