@@ -8,12 +8,13 @@ extension AVCaptureDevice {
         frameRate: Float64,
         colorSpace: AVCaptureColorSpace
     ) -> AVCaptureDevice.Format? {
-        return formats
+        let formats = formats
             .filter { $0.isFrameRateSupported(frameRate) }
             .filter { $0.formatDescription.dimensions.width == width }
             .filter { $0.formatDescription.dimensions.height == height }
             .filter { $0.supportedColorSpaces.contains(colorSpace) }
             .filter { !$0.isVideoBinned }
-            .last
+            .filter { $0.formatDescription.mediaSubType.rawValue == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange }
+        return formats.first
     }
 }
