@@ -205,8 +205,13 @@ final class Model: NSObject, ObservableObject {
     @Published var manualFocusPoint: CGPoint?
     @Published var manualFocus: Float = 1.0
     var editingManualFocus = false
+    private var manualExposureEnabled: [AVCaptureDevice: Bool] = [:]
+    private var manualExposures: [AVCaptureDevice: Float] = [:]
+    @Published var manualExposure: Float = 1.0
+    var editingManualExposure = false
     private var manualFocusMotionAttitude: CMAttitude?
     private var focusObservation: NSKeyValueObservation?
+    private var exposureObservation: NSKeyValueObservation?
     @Published var showingSettings = false
     @Published var showingCosmetics = false
     @Published var settingsLayout: SettingsLayout = .right
@@ -3476,9 +3481,7 @@ final class Model: NSObject, ObservableObject {
                 if let x = self.setCameraZoomX(x: self.zoomX) {
                     self.setZoomX(x: x)
                 }
-                if let device = self.cameraDevice {
-                    self.setMaxAutoExposure(device: device)
-                }
+                self.setExposureAfterCameraAttach()
                 self.updateCameraPreview()
             }
         )
@@ -3513,14 +3516,6 @@ final class Model: NSObject, ObservableObject {
             return level * cameraZoomLevelToXScale
         }
         return level
-    }
-
-    private func setMaxAutoExposure(device: AVCaptureDevice) {
-        do {
-            try device.lockForConfiguration()
-            device.activeMaxExposureDuration = device.activeFormat.maxExposureDuration
-            device.unlockForConfiguration()
-        } catch {}
     }
 
     func setExposureBias(bias: Float) {
@@ -3870,6 +3865,93 @@ final class Model: NSObject, ObservableObject {
 
     func stopObservingFocus() {
         focusObservation = nil
+    }
+
+    func getIsManualExposureEnabled() -> Bool {
+        guard let device = cameraDevice else {
+            return false
+        }
+        return manualExposureEnabled[device] ?? false
+    }
+
+    func setAutoExposure() {
+        guard
+            let device = cameraDevice, device.isExposureModeSupported(.continuousAutoExposure)
+        else {
+            makeErrorToast(title: String(localized: "Continuous auto exposure not supported for this camera"))
+            return
+        }
+        do {
+            try device.lockForConfiguration()
+            device.exposureMode = .continuousAutoExposure
+            device.unlockForConfiguration()
+        } catch let error as NSError {
+            logger.error("while locking device for focusPointOfInterest: \(error)")
+        }
+        manualExposureEnabled[device] = false
+    }
+
+    func setManualExposure(exposure: Float) {
+        guard
+            let device = cameraDevice, device.isExposureModeSupported(.custom)
+        else {
+            makeErrorToast(title: String(localized: "Manual exposure not supported for this camera"))
+            return
+        }
+        let iso = device.activeFormat
+            .minISO + (device.activeFormat.maxISO - device.activeFormat.minISO) * exposure
+        do {
+            try device.lockForConfiguration()
+            device.setExposureModeCustom(duration: AVCaptureDevice.currentExposureDuration, iso: iso) { _ in
+            }
+            device.unlockForConfiguration()
+        } catch let error as NSError {
+            logger.error("while locking device for manual exposure: \(error)")
+        }
+        manualExposureEnabled[device] = true
+        manualExposures[device] = exposure
+    }
+
+    private func setExposureAfterCameraAttach() {
+        guard let device = cameraDevice else {
+            return
+        }
+        manualExposure = manualExposures[device] ?? 1.0
+        if getIsManualExposureEnabled() {
+            setManualExposure(exposure: manualExposure)
+        }
+    }
+
+    func isCameraSupportingManualExposure() -> Bool {
+        if let device = cameraDevice, device.isExposureModeSupported(.custom) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    func startObservingExposure() {
+        guard let device = cameraDevice else {
+            return
+        }
+        exposureObservation = device.observe(\.iso) { [weak self] _, _ in
+            guard let self else {
+                return
+            }
+            DispatchQueue.main.async {
+                guard !self.editingManualExposure else {
+                    return
+                }
+                let exposure = (device.iso - device.activeFormat.minISO) /
+                    (device.activeFormat.maxISO - device.activeFormat.minISO)
+                self.manualExposures[device] = exposure
+                self.manualExposure = exposure
+            }
+        }
+    }
+
+    func stopObservingExposure() {
+        exposureObservation = nil
     }
 
     private func startMotionDetection() {

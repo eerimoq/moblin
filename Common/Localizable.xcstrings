@@ -17582,6 +17582,9 @@
         }
       }
     },
+    "Continuous auto exposure not supported for this camera" : {
+
+    },
     "Contrast" : {
 
     },
@@ -36701,6 +36704,12 @@
           }
         }
       }
+    },
+    "Manual exposure" : {
+
+    },
+    "Manual exposure not supported for this camera" : {
+
     },
     "Manual focus" : {
       "localizations" : {

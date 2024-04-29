@@ -189,6 +189,38 @@ struct CameraView: View {
                     Text("Manual focus not supported for this camera. Use a non-triple/dual camera.")
                 }
             }
+            Section {
+                Toggle(isOn: Binding(get: {
+                    model.getIsManualExposureEnabled()
+                }, set: { value in
+                    if value {
+                        model.setManualExposure(exposure: model.manualExposure)
+                    } else {
+                        model.setAutoExposure()
+                    }
+                }), label: {
+                    Slider(
+                        value: $model.manualExposure,
+                        in: 0 ... 1,
+                        step: 0.01,
+                        onEditingChanged: { begin in
+                            model.editingManualExposure = begin
+                            guard !begin else {
+                                return
+                            }
+                            model.setManualExposure(exposure: model.manualExposure)
+                        }
+                    )
+                    .onChange(of: model.manualExposure) { _ in
+                        if model.editingManualExposure {
+                            model.setManualExposure(exposure: model.manualExposure)
+                        }
+                    }
+                })
+                .disabled(!model.isCameraSupportingManualExposure())
+            } header: {
+                Text("Manual exposure")
+            }
             Section("Exposure bias") {
                 HStack {
                     Slider(
@@ -212,9 +244,11 @@ struct CameraView: View {
         }
         .onAppear {
             model.startObservingFocus()
+            model.startObservingExposure()
         }
         .onDisappear {
             model.stopObservingFocus()
+            model.stopObservingExposure()
         }
         .navigationTitle("Camera")
         .toolbar {
