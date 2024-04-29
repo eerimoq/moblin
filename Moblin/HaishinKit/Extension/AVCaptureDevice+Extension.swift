@@ -14,9 +14,13 @@ extension AVCaptureDevice {
             .filter { $0.formatDescription.dimensions.height == height }
             .filter { $0.supportedColorSpaces.contains(colorSpace) }
             .filter { !$0.isVideoBinned }
+            // 420v does not work with OA4.
             .filter {
-                $0.formatDescription.mediaSubType.rawValue == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
+                $0.formatDescription.mediaSubType.rawValue != kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
             }
+        // for format in formats {
+        //    print("xxx", format)
+        // }
         return formats.first
     }
 }
