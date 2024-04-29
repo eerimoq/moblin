@@ -9511,6 +9511,7 @@
       }
     },
     "Attempting again in %lld seconds." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -9633,6 +9634,9 @@
           }
         }
       }
+    },
+    "Attempting again in 5 seconds." : {
+
     },
     "Audio" : {
       "localizations" : {

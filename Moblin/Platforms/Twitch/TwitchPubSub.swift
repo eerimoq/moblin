@@ -58,7 +58,6 @@ final class TwitchPubSub: NSObject {
     private var channelId: String
     private var keepAliveTimer: Timer?
     private var reconnectTimer: Timer?
-    private var reconnectTime = firstReconnectTime
     private var running = true
     var numberOfViewers: Int?
 
@@ -68,7 +67,6 @@ final class TwitchPubSub: NSObject {
     }
 
     func start() {
-        reconnectTime = firstReconnectTime
         setupWebsocket()
     }
 
@@ -152,10 +150,9 @@ final class TwitchPubSub: NSObject {
         webSocket.cancel()
         reconnectTimer?.invalidate()
         reconnectTimer = Timer
-            .scheduledTimer(withTimeInterval: reconnectTime, repeats: false) { _ in
+            .scheduledTimer(withTimeInterval: 5, repeats: false) { _ in
                 logger.warning("twitch: pubsub: \(self.channelId): Reconnecting")
                 self.setupWebsocket()
-                self.reconnectTime = nextReconnectTime(self.reconnectTime)
             }
     }
 
@@ -224,7 +221,6 @@ extension TwitchPubSub: URLSessionWebSocketDelegate {
         didOpenWithProtocol _: String?
     ) {
         logger.debug("twitch: pubsub: \(channelId): Connected to \(url)")
-        reconnectTime = firstReconnectTime
         sendPing()
         sendMessage(
             message: "{\"type\":\"LISTEN\",\"data\":{\"topics\":[\"video-playback-by-id.\(channelId)\"]}}"

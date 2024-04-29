@@ -284,7 +284,6 @@ final class Model: NSObject, ObservableObject {
     var imageStorage = ImageStorage()
     @Published var buttonPairs: [ButtonPair] = []
     private var reconnectTimer: Timer?
-    private var reconnectTime = firstReconnectTime
     private var logId = 1
     @Published var showingToast = false
     @Published var toast = AlertToast(type: .regular, title: "") {
@@ -1956,7 +1955,6 @@ final class Model: NSObject, ObservableObject {
         streaming = true
         streamTotalBytes = 0
         streamTotalChatMessages = 0
-        reconnectTime = firstReconnectTime
         updateScreenAutoOff()
         startNetStream()
         streamingHistoryStream = StreamingHistoryStream(settings: stream.clone())
@@ -2003,7 +2001,7 @@ final class Model: NSObject, ObservableObject {
             media.srtStartStream(
                 isSrtla: stream.isSrtla(),
                 url: stream.url,
-                reconnectTime: reconnectTime,
+                reconnectTime: 5,
                 targetBitrate: stream.bitrate,
                 adaptiveBitrate: stream.srt.adaptiveBitrateEnabled!,
                 latency: stream.srt.latency,
@@ -3673,7 +3671,6 @@ final class Model: NSObject, ObservableObject {
 
     private func onConnected() {
         makeYouAreLiveToast()
-        reconnectTime = firstReconnectTime
         streamStartDate = Date()
         streamState = .connected
         updateUptime(now: Date())
@@ -3684,7 +3681,7 @@ final class Model: NSObject, ObservableObject {
             return
         }
         logger.info("stream: Disconnected with reason \(reason)")
-        let subTitle = String(localized: "Attempting again in \(Int(reconnectTime)) seconds.")
+        let subTitle = String(localized: "Attempting again in 5 seconds.")
         if streamState == .connected {
             streamTotalBytes += UInt64(media.streamTotal())
             streamingHistoryStream?.numberOfFffffs! += 1
@@ -3695,10 +3692,9 @@ final class Model: NSObject, ObservableObject {
         streamState = .disconnected
         stopNetStream(reconnect: true)
         reconnectTimer = Timer
-            .scheduledTimer(withTimeInterval: reconnectTime, repeats: false) { _ in
+            .scheduledTimer(withTimeInterval: 5, repeats: false) { _ in
                 logger.info("stream: Reconnecting")
                 self.startNetStream(reconnect: true)
-                self.reconnectTime = nextReconnectTime(self.reconnectTime)
             }
     }
 

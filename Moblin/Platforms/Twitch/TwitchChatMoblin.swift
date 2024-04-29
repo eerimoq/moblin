@@ -35,7 +35,6 @@ final class TwitchChatMoblin {
         )
         task = Task.init {
             do {
-                var reconnectTime = firstReconnectTime
                 logger.info("twitch: chat: \(channelName): Connecting")
                 while true {
                     twitchChat = TwitchChat(
@@ -48,7 +47,6 @@ final class TwitchChatMoblin {
                         connected = true
                         for try await message in self.twitchChat.messages {
                             let emotes = getEmotes(from: message)
-                            reconnectTime = firstReconnectTime
                             let text: String
                             let isAction = message.isAction()
                             if isAction {
@@ -83,8 +81,7 @@ final class TwitchChatMoblin {
                         return
                     }
                     connected = false
-                    try await sleep(seconds: Int(reconnectTime))
-                    reconnectTime = nextReconnectTime(reconnectTime)
+                    try await sleep(seconds: 5)
                     logger.info("twitch: chat: \(channelName): Reconnecting")
                 }
             } catch {
