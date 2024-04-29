@@ -80,14 +80,9 @@ struct AudioCodecOutputSettings: Codable {
         }
     }
 
-    var bitRate: Int
-    var channelsMap: [Int: Int]
+    var bitRate: Int = 64 * 1000
+    var channelsMap: [Int: Int] = [0: 0, 1: 1]
     var format: AudioCodecOutputSettings.Format = .aac
-
-    init() {
-        bitRate = 64 * 1000
-        channelsMap = [0: 0, 1: 1]
-    }
 
     func apply(_ converter: AVAudioConverter, oldValue: AudioCodecOutputSettings?) {
         guard bitRate != oldValue?.bitRate else {
