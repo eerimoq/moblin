@@ -72,13 +72,18 @@ struct StreamRecordingSettingsView: View {
                     )
                 }
                 .disabled(stream.enabled && model.isRecording)
-                Toggle("Auto recording when live", isOn: Binding(get: {
-                    stream.recording!.autoRecording!
+                Toggle("Start recording when live", isOn: Binding(get: {
+                    stream.recording!.autoStartRecording!
                 }, set: { value in
-                    stream.recording!.autoRecording! = value
+                    stream.recording!.autoStartRecording! = value
                     model.store()
                 }))
-            }
+                Toggle("Stop recording when offline", isOn: Binding(get: {
+                    stream.recording!.autoStopRecording!
+                }, set: { value in
+                    stream.recording!.autoStopRecording! = value
+                    model.store()
+                }))            }
             footer: {
                 Text("Resolution and FPS are same as for live stream.")
             }
