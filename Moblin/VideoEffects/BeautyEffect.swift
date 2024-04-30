@@ -13,9 +13,9 @@ final class BeautyEffect: VideoEffect {
     var brightness: Float = 0.0
     var saturation: Float = 1.0
     var showCute = true
-    var cuteRadius: Float = 200
+    var cuteRadius: Float = 0.5
     var cuteScale: Float = 0.5
-    var cuteOffset: Float = 0.0
+    var cuteOffset: Float = 0.5
     let moblinImage: CIImage?
 
     override init() {
@@ -215,19 +215,20 @@ final class BeautyEffect: VideoEffect {
         for detection in detections {
             if let medianLine = detection.landmarks?.medianLine {
                 let points = medianLine.pointsInImage(imageSize: image.extent.size)
-                guard let firstPoint = points.first else {
+                guard let firstPoint = points.first, let lastPoint = points.last else {
                     continue
                 }
-                var centerY = firstPoint.y
-                for point in points {
-                    centerY = min(point.y, centerY)
-                }
-                let centerX = points.last!.x
+                let maxY = firstPoint.y
+                let minY = lastPoint.y
+                let centerX = lastPoint.x
                 let filter = CIFilter.bumpDistortion()
                 filter.inputImage = outputImage
-                filter.center = CGPoint(x: centerX, y: centerY + CGFloat(cuteOffset))
-                filter.radius = cuteRadius
-                filter.scale = -cuteScale
+                filter.center = CGPoint(
+                    x: centerX,
+                    y: minY + CGFloat(Float(maxY - minY) * (cuteOffset * 0.4 + 0.1))
+                )
+                filter.radius = Float(maxY - minY) * (0.7 + cuteRadius * 0.4)
+                filter.scale = -(cuteScale * 0.4)
                 outputImage = filter.outputImage
             }
         }

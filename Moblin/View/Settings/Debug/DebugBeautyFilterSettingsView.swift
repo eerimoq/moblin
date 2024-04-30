@@ -24,6 +24,71 @@ struct DebugBeautyFilterSettingsView: View {
                 }))
             }
             Section {
+                Toggle("Enabled", isOn: Binding(get: {
+                    settings.showCute!
+                }, set: { value in
+                    settings.showCute = value
+                    model.store()
+                    model.updateBeautyFilterSettings()
+                }))
+                HStack {
+                    Text("Radius")
+                    Slider(
+                        value: $cuteRadius,
+                        in: 0 ... 1,
+                        step: 0.01,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            model.store()
+                        }
+                    )
+                    .onChange(of: cuteRadius) { _ in
+                        settings.cuteRadius = cuteRadius
+                        model.updateBeautyFilterSettings()
+                    }
+                }
+                HStack {
+                    Text("Scale")
+                    Slider(
+                        value: $cuteScale,
+                        in: 0 ... 1,
+                        step: 0.01,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            model.store()
+                        }
+                    )
+                    .onChange(of: cuteScale) { _ in
+                        settings.cuteScale = cuteScale
+                        model.updateBeautyFilterSettings()
+                    }
+                }
+                HStack {
+                    Text("Offset")
+                    Slider(
+                        value: $cuteOffset,
+                        in: 0 ... 1,
+                        step: 0.01,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            model.store()
+                        }
+                    )
+                    .onChange(of: cuteOffset) { _ in
+                        settings.cuteOffset = cuteOffset
+                        model.updateBeautyFilterSettings()
+                    }
+                }
+            } header: {
+                Text("Cute")
+            }
+            Section {
                 Toggle("Blur", isOn: Binding(get: {
                     settings.showBlur
                 }, set: { value in
@@ -40,6 +105,69 @@ struct DebugBeautyFilterSettingsView: View {
                     model.store()
                     model.updateBeautyFilterSettings()
                 }))
+            }
+            Section {
+                Toggle("Enabled", isOn: Binding(get: {
+                    settings.showColors
+                }, set: { value in
+                    settings.showColors = value
+                    model.store()
+                    model.updateBeautyFilterSettings()
+                }))
+                HStack {
+                    Text("Brightness")
+                    Slider(
+                        value: $brightness,
+                        in: -0.5 ... 0.5,
+                        step: 0.01,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            model.store()
+                        }
+                    )
+                    .onChange(of: brightness) { _ in
+                        settings.brightness = brightness
+                        model.updateBeautyFilterSettings()
+                    }
+                }
+                HStack {
+                    Text("Contrast")
+                    Slider(
+                        value: $contrast,
+                        in: 0 ... 2,
+                        step: 0.01,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            model.store()
+                        }
+                    )
+                    .onChange(of: contrast) { _ in
+                        settings.contrast = contrast
+                        model.updateBeautyFilterSettings()
+                    }
+                }
+                HStack {
+                    Text("Saturation")
+                    Slider(
+                        value: $saturation,
+                        in: 0 ... 2,
+                        step: 0.01,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            model.store()
+                        }
+                    )
+                    .onChange(of: saturation) { _ in
+                        settings.saturation = saturation
+                        model.updateBeautyFilterSettings()
+                    }
+                }
             }
             Section {
                 Toggle("Comic", isOn: Binding(get: {
@@ -67,132 +195,6 @@ struct DebugBeautyFilterSettingsView: View {
                     model.store()
                     model.updateBeautyFilterSettings()
                 }))
-            }
-            Section {
-                Toggle("Adjust colors", isOn: Binding(get: {
-                    settings.showColors
-                }, set: { value in
-                    settings.showColors = value
-                    model.store()
-                    model.updateBeautyFilterSettings()
-                }))
-            }
-            Section("Brightness") {
-                Slider(
-                    value: $brightness,
-                    in: -0.5 ... 0.5,
-                    step: 0.01,
-                    onEditingChanged: { begin in
-                        guard !begin else {
-                            return
-                        }
-                        model.store()
-                    }
-                )
-                .onChange(of: brightness) { _ in
-                    settings.brightness = brightness
-                    model.updateBeautyFilterSettings()
-                }
-                Text(String(brightness))
-            }
-            Section("Contrast") {
-                Slider(
-                    value: $contrast,
-                    in: 0 ... 2,
-                    step: 0.01,
-                    onEditingChanged: { begin in
-                        guard !begin else {
-                            return
-                        }
-                        model.store()
-                    }
-                )
-                .onChange(of: contrast) { _ in
-                    settings.contrast = contrast
-                    model.updateBeautyFilterSettings()
-                }
-                Text(String(contrast))
-            }
-            Section("Saturation") {
-                Slider(
-                    value: $saturation,
-                    in: 0 ... 2,
-                    step: 0.01,
-                    onEditingChanged: { begin in
-                        guard !begin else {
-                            return
-                        }
-                        model.store()
-                    }
-                )
-                .onChange(of: saturation) { _ in
-                    settings.saturation = saturation
-                    model.updateBeautyFilterSettings()
-                }
-                Text(String(saturation))
-            }
-            Section {
-                Toggle("Cute", isOn: Binding(get: {
-                    settings.showCute!
-                }, set: { value in
-                    settings.showCute = value
-                    model.store()
-                    model.updateBeautyFilterSettings()
-                }))
-            }
-            Section("Cute radius") {
-                Slider(
-                    value: $cuteRadius,
-                    in: 10 ... 500,
-                    step: 5,
-                    onEditingChanged: { begin in
-                        guard !begin else {
-                            return
-                        }
-                        model.store()
-                    }
-                )
-                .onChange(of: cuteRadius) { _ in
-                    settings.cuteRadius = cuteRadius
-                    model.updateBeautyFilterSettings()
-                }
-                Text(String(cuteRadius))
-            }
-            Section("Cute scale") {
-                Slider(
-                    value: $cuteScale,
-                    in: 0 ... 1,
-                    step: 0.01,
-                    onEditingChanged: { begin in
-                        guard !begin else {
-                            return
-                        }
-                        model.store()
-                    }
-                )
-                .onChange(of: cuteScale) { _ in
-                    settings.cuteScale = cuteScale
-                    model.updateBeautyFilterSettings()
-                }
-                Text(String(cuteScale))
-            }
-            Section("Cute offset") {
-                Slider(
-                    value: $cuteOffset,
-                    in: -300 ... 300,
-                    step: 5,
-                    onEditingChanged: { begin in
-                        guard !begin else {
-                            return
-                        }
-                        model.store()
-                    }
-                )
-                .onChange(of: cuteOffset) { _ in
-                    settings.cuteOffset = cuteOffset
-                    model.updateBeautyFilterSettings()
-                }
-                Text(String(cuteOffset))
             }
         }
         .navigationTitle("Beauty filter")

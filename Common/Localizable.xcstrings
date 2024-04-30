@@ -7765,9 +7765,6 @@
         }
       }
     },
-    "Adjust colors" : {
-
-    },
     "AfreecaTV" : {
       "localizations" : {
         "de" : {
@@ -19701,15 +19698,6 @@
       }
     },
     "Cute" : {
-
-    },
-    "Cute offset" : {
-
-    },
-    "Cute radius" : {
-
-    },
-    "Cute scale" : {
 
     },
     "Debug" : {
@@ -43669,6 +43657,9 @@
         }
       }
     },
+    "Offset" : {
+
+    },
     "Often bad stability if network connection is unstable. No server side disconnection protection possible (no NOALBS)." : {
       "localizations" : {
         "de" : {
@@ -46771,6 +46762,9 @@
           }
         }
       }
+    },
+    "Radius" : {
+
     },
     "Random" : {
       "localizations" : {
@@ -50494,6 +50488,9 @@
           }
         }
       }
+    },
+    "Scale" : {
+
     },
     "Scale to fit video width" : {
       "localizations" : {
