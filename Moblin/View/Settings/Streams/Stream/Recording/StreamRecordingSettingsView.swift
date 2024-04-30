@@ -36,9 +36,9 @@ struct StreamRecordingSettingsView: View {
                 NavigationLink(destination: InlinePickerView(title: String(localized: "Video codec"),
                                                              onChange: onVideoCodecChange,
                                                              items: InlinePickerItem
-                                                                 .fromStrings(values: codecs),
+                    .fromStrings(values: codecs),
                                                              selectedId: stream.recording!.videoCodec
-                                                                 .rawValue))
+                    .rawValue))
                 {
                     TextItemView(
                         name: String(localized: "Video codec"),
@@ -72,10 +72,16 @@ struct StreamRecordingSettingsView: View {
                     )
                 }
                 .disabled(stream.enabled && model.isRecording)
-                Toggle("Start recording when live", isOn: Binding(get: {
+                Toggle("Auto start recording when live", isOn: Binding(get: {
                     stream.recording!.autoStartRecording!
                 }, set: { value in
                     stream.recording!.autoStartRecording! = value
+                    model.store()
+                }))
+                Toggle("Auto stop recording when offline", isOn: Binding(get: {
+                    stream.recording!.autoStopRecording!
+                }, set: { value in
+                    stream.recording!.autoStopRecording! = value
                     model.store()
                 }))
                 Toggle("Stop recording when offline", isOn: Binding(get: {
