@@ -2349,5 +2349,6 @@ final class Settings {
         for stream in realDatabase.streams where stream.recording?.autoStopRecording == nil {
             stream.recording?.autoStopRecording = false
             store()
-        }    }
+        }
+    }
 }
