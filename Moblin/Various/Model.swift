@@ -1957,7 +1957,7 @@ final class Model: NSObject, ObservableObject {
         streamTotalChatMessages = 0
         updateScreenAutoOff()
         startNetStream()
-        if stream.recording!.autoStartRecording! {
+        if stream.recording!.autoRecording! {
             startRecording()
         }
         streamingHistoryStream = StreamingHistoryStream(settings: stream.clone())
@@ -1975,7 +1975,7 @@ final class Model: NSObject, ObservableObject {
         logger.info("stream: Stop")
         streamTotalBytes += UInt64(media.streamTotal())
         streaming = false
-        if stream.recording!.autoStopRecording! {
+        if stream.recording!.autoRecording! {
             stopRecording()
         }
         stopNetStream()

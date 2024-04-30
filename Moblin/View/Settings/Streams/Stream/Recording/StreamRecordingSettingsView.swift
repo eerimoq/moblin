@@ -72,16 +72,10 @@ struct StreamRecordingSettingsView: View {
                     )
                 }
                 .disabled(stream.enabled && model.isRecording)
-                Toggle("Auto start recording when stream starts", isOn: Binding(get: {
-                    stream.recording!.autoStartRecording!
+                Toggle("Auto recording while streaming", isOn: Binding(get: {
+                    stream.recording!.autoRecording!
                 }, set: { value in
-                    stream.recording!.autoStartRecording! = value
-                    model.store()
-                }))
-                Toggle("Auto stop recording when stream stops", isOn: Binding(get: {
-                    stream.recording!.autoStopRecording!
-                }, set: { value in
-                    stream.recording!.autoStopRecording! = value
+                    stream.recording!.autoRecording! = value
                     model.store()
                 }))
             }
