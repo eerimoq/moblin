@@ -72,7 +72,7 @@ struct StreamRecordingSettingsView: View {
                     )
                 }
                 .disabled(stream.enabled && model.isRecording)
-                Toggle("Auto recording while streaming", isOn: Binding(get: {
+                Toggle("Auto recording when live", isOn: Binding(get: {
                     stream.recording!.autoRecording!
                 }, set: { value in
                     stream.recording!.autoRecording! = value
