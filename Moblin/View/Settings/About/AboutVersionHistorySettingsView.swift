@@ -8,12 +8,18 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
-    Version(version: "0.251.0", date: "2024-04-28", changes: [
+    Version(version: "0.251.0", date: "2024-04-30", changes: [
         "• Make beauty filter work when face is only partially visible at image edges.",
         "  • Crops and scales the image by 80%. So image quality will be lower when the beauty filter is active.",
         "• Add various color and blur settings in Settings → Debug → Beauty filter.",
         "  • To figure out which settings are useful.",
         "  • Moblin in mouth!",
+        "• Experimental support for manual exposure. 💡 Gragg",
+        "  • Tag \"Camera\" quick button to set it.",
+        "• Hide remote control assistant preview by tapping it. :bulb: djandrea.",
+        "• Flat 5 seconds reconnect delay. 💡 JohannesLiv",
+        "• OSP chat improvements. 🧑‍🏭 ErAzOr",
+        "  • No username nor password needed.",
     ]),
     Version(version: "0.250.0", date: "2024-04-28", changes: [
         "• Experimental not so beautiful beauty filter. It simply blurs faces.",
