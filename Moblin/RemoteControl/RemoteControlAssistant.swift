@@ -269,7 +269,10 @@ class RemoteControlAssistant {
         }
     }
 
-    private func handlePreview(preview: Data) {
+    private func handlePreview(preview: Data) throws {
+        guard streamerIdentified else {
+            throw "Streamer not identified"
+        }
         delegate?.assistantPreview(preview: preview)
     }
 

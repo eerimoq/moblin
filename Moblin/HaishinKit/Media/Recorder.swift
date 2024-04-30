@@ -67,7 +67,7 @@ class Recorder {
             return
         }
         if !input.append(sampleBuffer) {
-            logger.info("Failed to append audio \(writer.error)")
+            logger.info("Failed to append audio \(writer.error?.localizedDescription ?? "")")
         }
     }
 
@@ -131,7 +131,7 @@ class Recorder {
             return
         }
         if !adaptor.append(pixelBuffer, withPresentationTime: withPresentationTime) {
-            logger.info("Failed to append video \(writer.error)")
+            logger.info("Failed to append video \(writer.error?.localizedDescription ?? "")")
         }
     }
 
@@ -309,7 +309,7 @@ class Recorder {
             return
         }
         guard writer.status == .writing else {
-            logger.info("Failed to finish writing \(writer.error)")
+            logger.info("Failed to finish writing \(writer.error?.localizedDescription ?? "")")
             reset()
             return
         }
