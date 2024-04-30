@@ -16,7 +16,7 @@ private let versions = [
         "  • Moblin in mouth!",
         "• Experimental support for manual exposure. 💡 Gragg",
         "  • Tag \"Camera\" quick button to set it.",
-        "• Hide remote control assistant preview by tapping it. :bulb: djandrea.",
+        "• Hide remote control assistant preview by tapping it. 💡 djandrea.",
         "• Flat 5 seconds reconnect delay. 💡 JohannesLiv",
         "• OSP chat improvements. 🧑‍🏭 ErAzOr",
         "  • No username nor password needed.",
