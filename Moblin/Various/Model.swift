@@ -1957,6 +1957,9 @@ final class Model: NSObject, ObservableObject {
         streamTotalChatMessages = 0
         updateScreenAutoOff()
         startNetStream()
+        if stream.recording!.autoStartRecording! {
+            startRecording()
+        }
         streamingHistoryStream = StreamingHistoryStream(settings: stream.clone())
         streamingHistoryStream!.updateHighestThermalState(thermalState: ThermalState(from: thermalState))
         streamingHistoryStream!.updateLowestBatteryLevel(level: batteryLevel)
@@ -1972,6 +1975,9 @@ final class Model: NSObject, ObservableObject {
         logger.info("stream: Stop")
         streamTotalBytes += UInt64(media.streamTotal())
         streaming = false
+        if stream.recording!.autoStopRecording! {
+            stopRecording()
+        }
         stopNetStream()
         streamState = .disconnected
         if let streamingHistoryStream {
