@@ -5445,12 +5445,12 @@ extension Model {
     }
 
     private func setWhiteBalanceAfterCameraAttach() {
-        guard let device = cameraDevice, isCameraSupportingManualWhiteBalance() else {
+        guard let device = cameraDevice else {
             return
         }
         manualWhiteBalance = manualWhiteBalances[device] ?? 0.5
         manualWhiteBalanceEnabled = manualWhiteBalancesEnabled[device] ?? false
-        if manualWhiteBalanceEnabled {
+        if manualWhiteBalanceEnabled, isCameraSupportingManualWhiteBalance() {
             setManualWhiteBalance(factor: manualWhiteBalance)
         }
         if whiteBalanceObservation != nil {
