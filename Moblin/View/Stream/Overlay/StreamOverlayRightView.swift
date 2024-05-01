@@ -239,7 +239,7 @@ private struct CameraSettingsControlView: View {
                     }
                 } label: {
                     CameraSettingButtonView(
-                        title: "EXB",
+                        title: String(localized: "EXB"),
                         value: formatExposureBias(),
                         locked: true,
                         on: model.showingCameraBias
@@ -253,7 +253,7 @@ private struct CameraSettingsControlView: View {
                     }
                 } label: {
                     CameraSettingButtonView(
-                        title: "ISO",
+                        title: String(localized: "ISO"),
                         value: formatIso(),
                         locked: model.getIsManualExposureEnabled(),
                         on: model.showingCameraExposure
@@ -267,7 +267,7 @@ private struct CameraSettingsControlView: View {
                     }
                 } label: {
                     CameraSettingButtonView(
-                        title: "FOC",
+                        title: String(localized: "FOC"),
                         value: formatFocus(),
                         locked: model.getIsManualFocusEnabled(),
                         on: model.showingCameraFocus
