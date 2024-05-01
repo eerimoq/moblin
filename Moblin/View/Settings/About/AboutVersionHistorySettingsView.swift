@@ -8,6 +8,10 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.253.0", date: "2024-05-01", changes: [
+        "• Various smaller improvements to the camera settings.",
+        "• Fix crash when pressing camera quick button when using external camera.",
+    ]),
     Version(version: "0.252.0", date: "2024-05-01", changes: [
         "• Camera quick button settings page replaced with buttons and sliders over zoom preset buttons.",
         "  • Looks a lot better and easier to use as you can see the whole camera image.",
