@@ -296,17 +296,6 @@ struct MainView: View {
                     .frame(width: settingsHalfWidth)
                 }
             }
-            if model.showingCamera {
-                HStack {
-                    Spacer()
-                    NavigationStack {
-                        CameraView {
-                            model.showingCamera = false
-                        }
-                    }
-                    .frame(width: settingsHalfWidth)
-                }
-            }
             if model.showingObs {
                 HStack {
                     Spacer()

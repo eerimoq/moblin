@@ -6,6 +6,11 @@ struct Version {
     var changes: [String]
 }
 
+//                    +1 eV
+// exposure:      EXP 123
+// iso:           ISO 55
+// white balance: WB  3243 K
+
 // swiftlint:disable line_length
 private let versions = [
     Version(version: "0.251.0", date: "2024-04-30", changes: [

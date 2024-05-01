@@ -147,116 +147,6 @@ struct StreamSwitcherView: View {
     }
 }
 
-struct CameraView: View {
-    @EnvironmentObject var model: Model
-    var done: () -> Void
-
-    var body: some View {
-        Form {
-            Section {
-                Toggle(isOn: Binding(get: {
-                    model.getIsManualFocusEnabled()
-                }, set: { value in
-                    if value {
-                        model.setManualFocus(lensPosition: model.manualFocus)
-                    } else {
-                        model.setAutoFocus()
-                    }
-                }), label: {
-                    Slider(
-                        value: $model.manualFocus,
-                        in: 0 ... 1,
-                        step: 0.01,
-                        onEditingChanged: { begin in
-                            model.editingManualFocus = begin
-                            guard !begin else {
-                                return
-                            }
-                            model.setManualFocus(lensPosition: model.manualFocus)
-                        }
-                    )
-                    .onChange(of: model.manualFocus) { _ in
-                        if model.editingManualFocus {
-                            model.setManualFocus(lensPosition: model.manualFocus)
-                        }
-                    }
-                })
-                .disabled(!model.isCameraSupportingManualFocus())
-            } header: {
-                Text("Manual focus")
-            } footer: {
-                if !model.isCameraSupportingManualFocus() {
-                    Text("Manual focus not supported for this camera. Use a non-triple/dual camera.")
-                }
-            }
-            Section {
-                Toggle(isOn: Binding(get: {
-                    model.getIsManualExposureEnabled()
-                }, set: { value in
-                    if value {
-                        model.setManualExposure(exposure: model.manualExposure)
-                    } else {
-                        model.setAutoExposure()
-                    }
-                }), label: {
-                    Slider(
-                        value: $model.manualExposure,
-                        in: 0 ... 1,
-                        step: 0.01,
-                        onEditingChanged: { begin in
-                            model.editingManualExposure = begin
-                            guard !begin else {
-                                return
-                            }
-                            model.setManualExposure(exposure: model.manualExposure)
-                        }
-                    )
-                    .onChange(of: model.manualExposure) { _ in
-                        if model.editingManualExposure {
-                            model.setManualExposure(exposure: model.manualExposure)
-                        }
-                    }
-                })
-                .disabled(!model.isCameraSupportingManualExposure())
-            } header: {
-                Text("Manual exposure")
-            }
-            Section("Exposure bias") {
-                HStack {
-                    Slider(
-                        value: $model.bias,
-                        in: -2 ... 2,
-                        step: 0.2,
-                        onEditingChanged: { begin in
-                            guard !begin else {
-                                return
-                            }
-                            model.setExposureBias(bias: model.bias)
-                        }
-                    )
-                    .onChange(of: model.bias) { _ in
-                        model.setExposureBias(bias: model.bias)
-                    }
-                    Text("\(formatOneDecimal(value: model.bias)) EV")
-                        .frame(width: 60)
-                }
-            }
-        }
-        .onAppear {
-            model.startObservingFocus()
-            model.startObservingExposure()
-        }
-        .onDisappear {
-            model.stopObservingFocus()
-            model.stopObservingExposure()
-        }
-        .navigationTitle("Camera")
-        .toolbar {
-            SettingsToolbar(quickDone: done)
-        }
-    }
-}
-
 struct ObsView: View {
     @EnvironmentObject var model: Model
     var done: () -> Void
@@ -508,6 +398,13 @@ struct ButtonsInnerView: View {
         model.updateButtonStates()
     }
 
+    private func imageAction(state: ButtonState) {
+        model.showingCamera.toggle()
+        state.button.isOn.toggle()
+        model.setGlobalButtonState(type: .image, isOn: state.button.isOn)
+        model.updateButtonStates()
+    }
+
     private func recordAction(state _: ButtonState) {
         if !model.isRecording {
             model.startRecording()
@@ -702,7 +599,7 @@ struct ButtonsInnerView: View {
                 })
             case .image:
                 Button(action: {
-                    model.showingCamera = true
+                    imageAction(state: state)
                 }, label: {
                     ButtonImage(state: state, buttonSize: size)
                 })

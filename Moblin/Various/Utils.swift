@@ -399,3 +399,7 @@ func hasAppleLog() -> Bool {
     }
     return false
 }
+
+func calcIso(device: AVCaptureDevice, factor: Float) -> Float {
+    return device.activeFormat.minISO + (device.activeFormat.maxISO - device.activeFormat.minISO) * factor
+}

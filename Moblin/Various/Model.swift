@@ -296,6 +296,9 @@ final class Model: NSObject, ObservableObject {
     @Published var showingMic = false
     @Published var showingRecordings = false
     @Published var showingCamera = false
+    @Published var showingCameraBias = false
+    @Published var showingCameraExposure = false
+    @Published var showingCameraFocus = false
     @Published var showingStreamSwitcher = false
     @Published var showingGrid = false
     @Published var showingObs = false
@@ -3819,6 +3822,10 @@ final class Model: NSObject, ObservableObject {
         if !getIsManualFocusEnabled() {
             setAutoFocus()
         }
+        if focusObservation != nil {
+            stopObservingFocus()
+            startObservingFocus()
+        }
     }
 
     func isCameraSupportingManualFocus() -> Bool {
@@ -3882,8 +3889,7 @@ final class Model: NSObject, ObservableObject {
             makeErrorToast(title: String(localized: "Manual exposure not supported for this camera"))
             return
         }
-        let iso = device.activeFormat
-            .minISO + (device.activeFormat.maxISO - device.activeFormat.minISO) * exposure
+        let iso = calcIso(device: device, factor: exposure)
         do {
             try device.lockForConfiguration()
             device.setExposureModeCustom(duration: AVCaptureDevice.currentExposureDuration, iso: iso) { _ in
@@ -3903,6 +3909,10 @@ final class Model: NSObject, ObservableObject {
         manualExposure = manualExposures[device] ?? 1.0
         if getIsManualExposureEnabled() {
             setManualExposure(exposure: manualExposure)
+        }
+        if exposureObservation != nil {
+            stopObservingExposure()
+            startObservingExposure()
         }
     }
 
