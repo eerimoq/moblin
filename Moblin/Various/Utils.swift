@@ -401,9 +401,17 @@ func hasAppleLog() -> Bool {
 }
 
 func factorToIso(device: AVCaptureDevice, factor: Float) -> Float {
-    return device.activeFormat.minISO + (device.activeFormat.maxISO - device.activeFormat.minISO) * factor
+    var iso = device.activeFormat.minISO + (device.activeFormat.maxISO - device.activeFormat.minISO) * factor
+    if !iso.isFinite {
+        iso = 0
+    }
+    return iso
 }
 
 func factorFromIso(device: AVCaptureDevice, iso: Float) -> Float {
-    return (iso - device.activeFormat.minISO) / (device.activeFormat.maxISO - device.activeFormat.minISO)
+    var factor = (iso - device.activeFormat.minISO) / (device.activeFormat.maxISO - device.activeFormat.minISO)
+    if !factor.isFinite || factor < 0 {
+        factor = 0
+    }
+    return factor
 }
