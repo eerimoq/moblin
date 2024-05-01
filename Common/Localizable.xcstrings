@@ -26619,6 +26619,9 @@
         }
       }
     },
+    "EXPOSURE BIAS" : {
+
+    },
     "Face landmarks" : {
       "localizations" : {
         "de" : {
@@ -29222,6 +29225,9 @@
           }
         }
       }
+    },
+    "FOCUS" : {
+
     },
     "Font size" : {
       "localizations" : {
@@ -34678,6 +34684,9 @@
           }
         }
       }
+    },
+    "ISO" : {
+
     },
     "jo304F4gr" : {
       "localizations" : {

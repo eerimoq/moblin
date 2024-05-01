@@ -118,6 +118,9 @@ private struct CameraSettingsControlView: View {
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
             if model.showingCameraBias {
+                Text("EXPOSURE BIAS")
+                    .font(.footnote)
+                    .foregroundColor(.white)
                 Slider(
                     value: $model.bias,
                     in: -2 ... 2,
@@ -140,6 +143,9 @@ private struct CameraSettingsControlView: View {
                 .padding([.bottom], 5)
             }
             if model.showingCameraExposure {
+                Text("ISO")
+                    .font(.footnote)
+                    .foregroundColor(.white)
                 let supported = model.isCameraSupportingManualExposure()
                 HStack {
                     Slider(
@@ -181,6 +187,9 @@ private struct CameraSettingsControlView: View {
                 .disabled(!supported)
             }
             if model.showingCameraFocus {
+                Text("FOCUS")
+                    .font(.footnote)
+                    .foregroundColor(.white)
                 let supported = model.isCameraSupportingManualFocus()
                 HStack {
                     Slider(
