@@ -92,7 +92,7 @@ private struct CameraSettingsControlView: View {
         guard let device = model.cameraDevice else {
             return ""
         }
-        return String(Int(factorToIso(device: device, factor: model.manualExposure)))
+        return String(Int(factorToIso(device: device, factor: model.manualIso)))
     }
 
     private func formatExposureBias() -> String {
@@ -142,35 +142,35 @@ private struct CameraSettingsControlView: View {
                 .cornerRadius(7)
                 .padding([.bottom], 5)
             }
-            if model.showingCameraExposure {
+            if model.showingCameraIso {
                 Text("ISO")
                     .font(.footnote)
                     .foregroundColor(.white)
-                let supported = model.isCameraSupportingManualExposure()
+                let supported = model.isCameraSupportingManualIso()
                 HStack {
                     Slider(
-                        value: $model.manualExposure,
+                        value: $model.manualIso,
                         in: 0 ... 1,
                         step: 0.01,
                         onEditingChanged: { begin in
-                            model.editingManualExposure = begin
+                            model.editingManualIso = begin
                             guard !begin else {
                                 return
                             }
-                            model.setManualExposure(exposure: model.manualExposure)
+                            model.setManualIso(factor: model.manualIso)
                         }
                     )
-                    .onChange(of: model.manualExposure) { _ in
-                        if model.editingManualExposure {
-                            model.setManualExposure(exposure: model.manualExposure)
+                    .onChange(of: model.manualIso) { _ in
+                        if model.editingManualIso {
+                            model.setManualIso(factor: model.manualIso)
                         }
                     }
-                    let enabled = model.getIsManualExposureEnabled()
+                    let enabled = model.getIsManualIsoEnabled()
                     Button {
                         if enabled {
-                            model.setAutoExposure()
+                            model.setAutoIso()
                         } else {
-                            model.setManualExposure(exposure: model.manualExposure)
+                            model.setManualIso(factor: model.manualIso)
                         }
                     } label: {
                         Image(systemName: lockImage(locked: enabled))
@@ -234,7 +234,7 @@ private struct CameraSettingsControlView: View {
                 Button {
                     model.showingCameraBias.toggle()
                     if model.showingCameraBias {
-                        model.showingCameraExposure = false
+                        model.showingCameraIso = false
                         model.showingCameraFocus = false
                     }
                 } label: {
@@ -246,8 +246,8 @@ private struct CameraSettingsControlView: View {
                     )
                 }
                 Button {
-                    model.showingCameraExposure.toggle()
-                    if model.showingCameraExposure {
+                    model.showingCameraIso.toggle()
+                    if model.showingCameraIso {
                         model.showingCameraBias = false
                         model.showingCameraFocus = false
                     }
@@ -255,15 +255,15 @@ private struct CameraSettingsControlView: View {
                     CameraSettingButtonView(
                         title: String(localized: "ISO"),
                         value: formatIso(),
-                        locked: model.getIsManualExposureEnabled(),
-                        on: model.showingCameraExposure
+                        locked: model.getIsManualIsoEnabled(),
+                        on: model.showingCameraIso
                     )
                 }
                 Button {
                     model.showingCameraFocus.toggle()
                     if model.showingCameraFocus {
                         model.showingCameraBias = false
-                        model.showingCameraExposure = false
+                        model.showingCameraIso = false
                     }
                 } label: {
                     CameraSettingButtonView(
@@ -276,11 +276,11 @@ private struct CameraSettingsControlView: View {
             }
             .onAppear {
                 model.startObservingFocus()
-                model.startObservingExposure()
+                model.startObservingIso()
             }
             .onDisappear {
                 model.stopObservingFocus()
-                model.stopObservingExposure()
+                model.stopObservingIso()
             }
             .padding([.bottom], 5)
         }

@@ -205,13 +205,13 @@ final class Model: NSObject, ObservableObject {
     @Published var manualFocusPoint: CGPoint?
     @Published var manualFocus: Float = 1.0
     var editingManualFocus = false
-    private var manualExposureEnabled: [AVCaptureDevice: Bool] = [:]
-    private var manualExposures: [AVCaptureDevice: Float] = [:]
-    @Published var manualExposure: Float = 1.0
-    var editingManualExposure = false
+    private var manualIsoEnabled: [AVCaptureDevice: Bool] = [:]
+    private var manualIsos: [AVCaptureDevice: Float] = [:]
+    @Published var manualIso: Float = 1.0
+    var editingManualIso = false
     private var manualFocusMotionAttitude: CMAttitude?
     private var focusObservation: NSKeyValueObservation?
-    private var exposureObservation: NSKeyValueObservation?
+    private var isoObservation: NSKeyValueObservation?
     @Published var showingSettings = false
     @Published var showingCosmetics = false
     @Published var settingsLayout: SettingsLayout = .right
@@ -297,7 +297,7 @@ final class Model: NSObject, ObservableObject {
     @Published var showingRecordings = false
     @Published var showingCamera = false
     @Published var showingCameraBias = false
-    @Published var showingCameraExposure = false
+    @Published var showingCameraIso = false
     @Published var showingCameraFocus = false
     @Published var showingStreamSwitcher = false
     @Published var showingGrid = false
@@ -3470,7 +3470,7 @@ final class Model: NSObject, ObservableObject {
                 if let x = self.setCameraZoomX(x: self.zoomX) {
                     self.setZoomX(x: x)
                 }
-                self.setExposureAfterCameraAttach()
+                self.setIsoAfterCameraAttach()
                 self.updateCameraPreview()
             }
         )
@@ -3859,14 +3859,14 @@ final class Model: NSObject, ObservableObject {
         focusObservation = nil
     }
 
-    func getIsManualExposureEnabled() -> Bool {
+    func getIsManualIsoEnabled() -> Bool {
         guard let device = cameraDevice else {
             return false
         }
-        return manualExposureEnabled[device] ?? false
+        return manualIsoEnabled[device] ?? false
     }
 
-    func setAutoExposure() {
+    func setAutoIso() {
         guard
             let device = cameraDevice, device.isExposureModeSupported(.continuousAutoExposure)
         else {
@@ -3880,17 +3880,17 @@ final class Model: NSObject, ObservableObject {
         } catch let error as NSError {
             logger.error("while locking device for focusPointOfInterest: \(error)")
         }
-        manualExposureEnabled[device] = false
+        manualIsoEnabled[device] = false
     }
 
-    func setManualExposure(exposure: Float) {
+    func setManualIso(factor: Float) {
         guard
             let device = cameraDevice, device.isExposureModeSupported(.custom)
         else {
             makeErrorToast(title: String(localized: "Manual exposure not supported for this camera"))
             return
         }
-        let iso = factorToIso(device: device, factor: exposure)
+        let iso = factorToIso(device: device, factor: factor)
         do {
             try device.lockForConfiguration()
             device.setExposureModeCustom(duration: AVCaptureDevice.currentExposureDuration, iso: iso) { _ in
@@ -3899,25 +3899,25 @@ final class Model: NSObject, ObservableObject {
         } catch let error as NSError {
             logger.error("while locking device for manual exposure: \(error)")
         }
-        manualExposureEnabled[device] = true
-        manualExposures[device] = exposure
+        manualIsoEnabled[device] = true
+        manualIsos[device] = iso
     }
 
-    private func setExposureAfterCameraAttach() {
+    private func setIsoAfterCameraAttach() {
         guard let device = cameraDevice else {
             return
         }
-        manualExposure = manualExposures[device] ?? factorFromIso(device: device, iso: device.iso)
-        if getIsManualExposureEnabled() {
-            setManualExposure(exposure: manualExposure)
+        manualIso = manualIsos[device] ?? factorFromIso(device: device, iso: device.iso)
+        if getIsManualIsoEnabled() {
+            setManualIso(factor: manualIso)
         }
-        if exposureObservation != nil {
-            stopObservingExposure()
-            startObservingExposure()
+        if isoObservation != nil {
+            stopObservingIso()
+            startObservingIso()
         }
     }
 
-    func isCameraSupportingManualExposure() -> Bool {
+    func isCameraSupportingManualIso() -> Bool {
         if let device = cameraDevice, device.isExposureModeSupported(.custom) {
             return true
         } else {
@@ -3925,28 +3925,28 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    func startObservingExposure() {
+    func startObservingIso() {
         guard let device = cameraDevice else {
             return
         }
-        manualExposure = factorFromIso(device: device, iso: device.iso)
-        exposureObservation = device.observe(\.iso) { [weak self] _, _ in
+        manualIso = factorFromIso(device: device, iso: device.iso)
+        isoObservation = device.observe(\.iso) { [weak self] _, _ in
             guard let self else {
                 return
             }
             DispatchQueue.main.async {
-                guard !self.editingManualExposure else {
+                guard !self.editingManualIso else {
                     return
                 }
-                let exposure = factorFromIso(device: device, iso: device.iso)
-                self.manualExposures[device] = exposure
-                self.manualExposure = exposure
+                let iso = factorFromIso(device: device, iso: device.iso)
+                self.manualIsos[device] = iso
+                self.manualIso = iso
             }
         }
     }
 
-    func stopObservingExposure() {
-        exposureObservation = nil
+    func stopObservingIso() {
+        isoObservation = nil
     }
 
     private func startMotionDetection() {
