@@ -409,7 +409,8 @@ func factorToIso(device: AVCaptureDevice, factor: Float) -> Float {
 }
 
 func factorFromIso(device: AVCaptureDevice, iso: Float) -> Float {
-    var factor = (iso - device.activeFormat.minISO) / (device.activeFormat.maxISO - device.activeFormat.minISO)
+    var factor = (iso - device.activeFormat.minISO) /
+        (device.activeFormat.maxISO - device.activeFormat.minISO)
     if !factor.isFinite || factor < 0 {
         factor = 0
     }
