@@ -18063,6 +18063,9 @@
         }
       }
     },
+    "Continuous auto white balance not supported for this camera" : {
+
+    },
     "Contrast" : {
       "localizations" : {
         "de" : {
@@ -38041,6 +38044,9 @@
           }
         }
       }
+    },
+    "Manual white balance not supported for this camera" : {
+
     },
     "Many thanks from the Moblin developers!" : {
       "localizations" : {
@@ -70158,6 +70164,9 @@
         }
       }
     },
+    "WB" : {
+
+    },
     "Web browser" : {
       "localizations" : {
         "de" : {
@@ -70405,6 +70414,9 @@
           }
         }
       }
+    },
+    "WHITE BALANCE" : {
+
     },
     "Wide" : {
       "localizations" : {

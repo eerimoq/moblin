@@ -88,19 +88,24 @@ private struct SegmentedPicker<T: Equatable, Content: View>: View {
 private struct CameraSettingsControlView: View {
     @EnvironmentObject var model: Model
 
-    private func formatIso() -> String {
-        guard let device = model.cameraDevice else {
-            return ""
-        }
-        return String(Int(factorToIso(device: device, factor: model.manualIso)))
-    }
-
     private func formatExposureBias() -> String {
         var value = formatOneDecimal(value: model.bias)
         if model.bias >= 0 {
             value = "+\(value)"
         }
         return value
+    }
+
+    private func formatWhiteBalance() -> String {
+        return String(Int(minimumWhiteBalanceTemperature +
+                (maximumWhiteBalanceTemperature - minimumWhiteBalanceTemperature) * model.manualWhiteBalance))
+    }
+
+    private func formatIso() -> String {
+        guard let device = model.cameraDevice else {
+            return ""
+        }
+        return String(Int(factorToIso(device: device, factor: model.manualIso)))
     }
 
     private func formatFocus() -> String {
@@ -141,6 +146,49 @@ private struct CameraSettingsControlView: View {
                 .background(Color(white: 0, opacity: 0.6))
                 .cornerRadius(7)
                 .padding([.bottom], 5)
+            }
+            if model.showingCameraWhiteBalance {
+                Text("WHITE BALANCE")
+                    .font(.footnote)
+                    .foregroundColor(.white)
+                let supported = model.isCameraSupportingManualWhiteBalance()
+                HStack {
+                    Slider(
+                        value: $model.manualWhiteBalance,
+                        in: 0 ... 1,
+                        step: 0.01,
+                        onEditingChanged: { begin in
+                            model.editingManualWhiteBalance = begin
+                            guard !begin else {
+                                return
+                            }
+                            model.setManualWhiteBalance(factor: model.manualWhiteBalance)
+                        }
+                    )
+                    .onChange(of: model.manualWhiteBalance) { _ in
+                        if model.editingManualWhiteBalance {
+                            model.setManualWhiteBalance(factor: model.manualWhiteBalance)
+                        }
+                    }
+                    Button {
+                        if model.manualWhiteBalanceEnabled {
+                            model.setAutoWhiteBalance()
+                        } else {
+                            model.setManualWhiteBalance(factor: model.manualWhiteBalance)
+                        }
+                    } label: {
+                        Image(systemName: lockImage(locked: model.manualWhiteBalanceEnabled))
+                            .font(.title2)
+                            .foregroundColor(supported ? .white : .gray)
+                    }
+                }
+                .padding([.top, .bottom], 5)
+                .padding([.leading, .trailing], 7)
+                .frame(width: 200)
+                .background(Color(white: 0, opacity: 0.6))
+                .cornerRadius(7)
+                .padding([.bottom], 5)
+                .disabled(!supported)
             }
             if model.showingCameraIso {
                 Text("ISO")
@@ -232,6 +280,7 @@ private struct CameraSettingsControlView: View {
                 Button {
                     model.showingCameraBias.toggle()
                     if model.showingCameraBias {
+                        model.showingCameraWhiteBalance = false
                         model.showingCameraIso = false
                         model.showingCameraFocus = false
                     }
@@ -244,9 +293,25 @@ private struct CameraSettingsControlView: View {
                     )
                 }
                 Button {
+                    model.showingCameraWhiteBalance.toggle()
+                    if model.showingCameraWhiteBalance {
+                        model.showingCameraBias = false
+                        model.showingCameraIso = false
+                        model.showingCameraFocus = false
+                    }
+                } label: {
+                    CameraSettingButtonView(
+                        title: String(localized: "WB"),
+                        value: formatWhiteBalance(),
+                        locked: model.manualWhiteBalanceEnabled,
+                        on: model.showingCameraWhiteBalance
+                    )
+                }
+                Button {
                     model.showingCameraIso.toggle()
                     if model.showingCameraIso {
                         model.showingCameraBias = false
+                        model.showingCameraWhiteBalance = false
                         model.showingCameraFocus = false
                     }
                 } label: {
@@ -261,6 +326,7 @@ private struct CameraSettingsControlView: View {
                     model.showingCameraFocus.toggle()
                     if model.showingCameraFocus {
                         model.showingCameraBias = false
+                        model.showingCameraWhiteBalance = false
                         model.showingCameraIso = false
                     }
                 } label: {
@@ -275,10 +341,12 @@ private struct CameraSettingsControlView: View {
             .onAppear {
                 model.startObservingFocus()
                 model.startObservingIso()
+                model.startObservingWhiteBalance()
             }
             .onDisappear {
                 model.stopObservingFocus()
                 model.stopObservingIso()
+                model.stopObservingWhiteBalance()
             }
             .padding([.bottom], 5)
         }

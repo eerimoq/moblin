@@ -206,6 +206,7 @@ final class Model: NSObject, ObservableObject {
     @Published var manualFocus: Float = 1.0
     @Published var manualFocusEnabled = false
     var editingManualFocus = false
+    private var focusObservation: NSKeyValueObservation?
     @Published var manualFocusPoint: CGPoint?
 
     private var manualIsosEnabled: [AVCaptureDevice: Bool] = [:]
@@ -213,10 +214,16 @@ final class Model: NSObject, ObservableObject {
     @Published var manualIso: Float = 1.0
     @Published var manualIsoEnabled = false
     var editingManualIso = false
+    private var isoObservation: NSKeyValueObservation?
+
+    private var manualWhiteBalancesEnabled: [AVCaptureDevice: Bool] = [:]
+    private var manualWhiteBalances: [AVCaptureDevice: Float] = [:]
+    @Published var manualWhiteBalance: Float = 0
+    @Published var manualWhiteBalanceEnabled = false
+    var editingManualWhiteBalance = false
+    private var whiteBalanceObservation: NSKeyValueObservation?
 
     private var manualFocusMotionAttitude: CMAttitude?
-    private var focusObservation: NSKeyValueObservation?
-    private var isoObservation: NSKeyValueObservation?
     @Published var showingSettings = false
     @Published var showingCosmetics = false
     @Published var settingsLayout: SettingsLayout = .right
@@ -302,6 +309,7 @@ final class Model: NSObject, ObservableObject {
     @Published var showingRecordings = false
     @Published var showingCamera = false
     @Published var showingCameraBias = false
+    @Published var showingCameraWhiteBalance = false
     @Published var showingCameraIso = false
     @Published var showingCameraFocus = false
     @Published var showingStreamSwitcher = false
@@ -3476,6 +3484,7 @@ final class Model: NSObject, ObservableObject {
                     self.setZoomX(x: x)
                 }
                 self.setIsoAfterCameraAttach()
+                self.setWhiteBalanceAfterCameraAttach()
                 self.updateCameraPreview()
             }
         )
@@ -3740,211 +3749,6 @@ final class Model: NSObject, ObservableObject {
             subTitle: subTitle,
             vibrate: true
         )
-    }
-
-    func setFocusPointOfInterest(focusPoint: CGPoint) {
-        guard
-            let device = cameraDevice, device.isFocusPointOfInterestSupported
-        else {
-            logger.warning("Tap to focus not supported for this camera")
-            makeErrorToast(title: String(localized: "Tap to focus not supported for this camera"))
-            return
-        }
-        var focusPointOfInterest = focusPoint
-        if stream.portrait! {
-            focusPointOfInterest.x = focusPoint.y
-            focusPointOfInterest.y = 1 - focusPoint.x
-        } else if getOrientation() == .landscapeRight {
-            focusPointOfInterest.x = 1 - focusPoint.x
-            focusPointOfInterest.y = 1 - focusPoint.y
-        }
-        do {
-            try device.lockForConfiguration()
-            device.focusPointOfInterest = focusPointOfInterest
-            device.focusMode = .autoFocus
-            device.exposurePointOfInterest = focusPointOfInterest
-            device.exposureMode = .autoExpose
-            device.unlockForConfiguration()
-            manualFocusPoint = focusPoint
-            startMotionDetection()
-        } catch let error as NSError {
-            logger.error("while locking device for focusPointOfInterest: \(error)")
-        }
-        manualFocusesEnabled[device] = false
-        manualFocusEnabled = false
-    }
-
-    func setAutoFocus() {
-        stopMotionDetection()
-        guard let device = cameraDevice, device.isFocusPointOfInterestSupported else {
-            return
-        }
-        do {
-            try device.lockForConfiguration()
-            device.focusPointOfInterest = CGPoint(x: 0.5, y: 0.5)
-            device.focusMode = .continuousAutoFocus
-            device.exposurePointOfInterest = CGPoint(x: 0.5, y: 0.5)
-            device.exposureMode = .continuousAutoExposure
-            device.unlockForConfiguration()
-            manualFocusPoint = nil
-        } catch let error as NSError {
-            logger.error("while locking device for focusPointOfInterest: \(error)")
-        }
-        manualFocusesEnabled[device] = false
-        manualFocusEnabled = false
-    }
-
-    func setManualFocus(lensPosition: Float) {
-        guard
-            let device = cameraDevice, device.isLockingFocusWithCustomLensPositionSupported
-        else {
-            makeErrorToast(title: String(localized: "Manual focus not supported for this camera"))
-            return
-        }
-        stopMotionDetection()
-        do {
-            try device.lockForConfiguration()
-            device.setFocusModeLocked(lensPosition: lensPosition)
-            device.unlockForConfiguration()
-        } catch let error as NSError {
-            logger.error("while locking device for manual focus: \(error)")
-        }
-        manualFocusPoint = nil
-        manualFocusesEnabled[device] = true
-        manualFocusEnabled = true
-        manualFocuses[device] = lensPosition
-    }
-
-    private func setFocusAfterCameraAttach() {
-        guard let device = cameraDevice else {
-            return
-        }
-        manualFocus = manualFocuses[device] ?? device.lensPosition
-        manualFocusEnabled = manualFocusesEnabled[device] ?? false
-        if !manualFocusEnabled {
-            setAutoFocus()
-        }
-        if focusObservation != nil {
-            stopObservingFocus()
-            startObservingFocus()
-        }
-    }
-
-    func isCameraSupportingManualFocus() -> Bool {
-        if let device = cameraDevice, device.isLockingFocusWithCustomLensPositionSupported {
-            return true
-        } else {
-            return false
-        }
-    }
-
-    func startObservingFocus() {
-        guard let device = cameraDevice else {
-            return
-        }
-        manualFocus = device.lensPosition
-        focusObservation = device.observe(\.lensPosition) { [weak self] _, _ in
-            guard let self else {
-                return
-            }
-            DispatchQueue.main.async {
-                guard !self.editingManualFocus else {
-                    return
-                }
-                self.manualFocuses[device] = device.lensPosition
-                self.manualFocus = device.lensPosition
-            }
-        }
-    }
-
-    func stopObservingFocus() {
-        focusObservation = nil
-    }
-
-    func setAutoIso() {
-        guard
-            let device = cameraDevice, device.isExposureModeSupported(.continuousAutoExposure)
-        else {
-            makeErrorToast(title: String(localized: "Continuous auto exposure not supported for this camera"))
-            return
-        }
-        do {
-            try device.lockForConfiguration()
-            device.exposureMode = .continuousAutoExposure
-            device.unlockForConfiguration()
-        } catch let error as NSError {
-            logger.error("while locking device for focusPointOfInterest: \(error)")
-        }
-        manualIsosEnabled[device] = false
-        manualIsoEnabled = false
-    }
-
-    func setManualIso(factor: Float) {
-        guard
-            let device = cameraDevice, device.isExposureModeSupported(.custom)
-        else {
-            makeErrorToast(title: String(localized: "Manual exposure not supported for this camera"))
-            return
-        }
-        let iso = factorToIso(device: device, factor: factor)
-        do {
-            try device.lockForConfiguration()
-            device.setExposureModeCustom(duration: AVCaptureDevice.currentExposureDuration, iso: iso) { _ in
-            }
-            device.unlockForConfiguration()
-        } catch let error as NSError {
-            logger.error("while locking device for manual exposure: \(error)")
-        }
-        manualIsosEnabled[device] = true
-        manualIsoEnabled = true
-        manualIsos[device] = iso
-    }
-
-    private func setIsoAfterCameraAttach() {
-        guard let device = cameraDevice else {
-            return
-        }
-        manualIso = manualIsos[device] ?? factorFromIso(device: device, iso: device.iso)
-        manualIsoEnabled = manualIsosEnabled[device] ?? false
-        if manualIsoEnabled {
-            setManualIso(factor: manualIso)
-        }
-        if isoObservation != nil {
-            stopObservingIso()
-            startObservingIso()
-        }
-    }
-
-    func isCameraSupportingManualIso() -> Bool {
-        if let device = cameraDevice, device.isExposureModeSupported(.custom) {
-            return true
-        } else {
-            return false
-        }
-    }
-
-    func startObservingIso() {
-        guard let device = cameraDevice else {
-            return
-        }
-        manualIso = factorFromIso(device: device, iso: device.iso)
-        isoObservation = device.observe(\.iso) { [weak self] _, _ in
-            guard let self else {
-                return
-            }
-            DispatchQueue.main.async {
-                guard !self.editingManualIso else {
-                    return
-                }
-                let iso = factorFromIso(device: device, iso: device.iso)
-                self.manualIsos[device] = iso
-                self.manualIso = iso
-            }
-        }
-    }
-
-    func stopObservingIso() {
-        isoObservation = nil
     }
 
     private func startMotionDetection() {
@@ -5388,5 +5192,302 @@ extension Model {
 extension Model: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didStartProvisionalNavigation _: WKNavigation!) {
         webBrowserUrl = webView.url?.absoluteString ?? ""
+    }
+}
+
+extension Model {
+    func setFocusPointOfInterest(focusPoint: CGPoint) {
+        guard
+            let device = cameraDevice, device.isFocusPointOfInterestSupported
+        else {
+            logger.warning("Tap to focus not supported for this camera")
+            makeErrorToast(title: String(localized: "Tap to focus not supported for this camera"))
+            return
+        }
+        var focusPointOfInterest = focusPoint
+        if stream.portrait! {
+            focusPointOfInterest.x = focusPoint.y
+            focusPointOfInterest.y = 1 - focusPoint.x
+        } else if getOrientation() == .landscapeRight {
+            focusPointOfInterest.x = 1 - focusPoint.x
+            focusPointOfInterest.y = 1 - focusPoint.y
+        }
+        do {
+            try device.lockForConfiguration()
+            device.focusPointOfInterest = focusPointOfInterest
+            device.focusMode = .autoFocus
+            device.exposurePointOfInterest = focusPointOfInterest
+            device.exposureMode = .autoExpose
+            device.unlockForConfiguration()
+            manualFocusPoint = focusPoint
+            startMotionDetection()
+        } catch let error as NSError {
+            logger.error("while locking device for focusPointOfInterest: \(error)")
+        }
+        manualFocusesEnabled[device] = false
+        manualFocusEnabled = false
+    }
+
+    func setAutoFocus() {
+        stopMotionDetection()
+        guard let device = cameraDevice, device.isFocusPointOfInterestSupported else {
+            return
+        }
+        do {
+            try device.lockForConfiguration()
+            device.focusPointOfInterest = CGPoint(x: 0.5, y: 0.5)
+            device.focusMode = .continuousAutoFocus
+            device.exposurePointOfInterest = CGPoint(x: 0.5, y: 0.5)
+            device.exposureMode = .continuousAutoExposure
+            device.unlockForConfiguration()
+            manualFocusPoint = nil
+        } catch let error as NSError {
+            logger.error("while locking device for focusPointOfInterest: \(error)")
+        }
+        manualFocusesEnabled[device] = false
+        manualFocusEnabled = false
+    }
+
+    func setManualFocus(lensPosition: Float) {
+        guard
+            let device = cameraDevice, device.isLockingFocusWithCustomLensPositionSupported
+        else {
+            makeErrorToast(title: String(localized: "Manual focus not supported for this camera"))
+            return
+        }
+        stopMotionDetection()
+        do {
+            try device.lockForConfiguration()
+            device.setFocusModeLocked(lensPosition: lensPosition)
+            device.unlockForConfiguration()
+        } catch let error as NSError {
+            logger.error("while locking device for manual focus: \(error)")
+        }
+        manualFocusPoint = nil
+        manualFocusesEnabled[device] = true
+        manualFocusEnabled = true
+        manualFocuses[device] = lensPosition
+    }
+
+    private func setFocusAfterCameraAttach() {
+        guard let device = cameraDevice else {
+            return
+        }
+        manualFocus = manualFocuses[device] ?? device.lensPosition
+        manualFocusEnabled = manualFocusesEnabled[device] ?? false
+        if !manualFocusEnabled {
+            setAutoFocus()
+        }
+        if focusObservation != nil {
+            stopObservingFocus()
+            startObservingFocus()
+        }
+    }
+
+    func isCameraSupportingManualFocus() -> Bool {
+        if let device = cameraDevice, device.isLockingFocusWithCustomLensPositionSupported {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    func startObservingFocus() {
+        guard let device = cameraDevice else {
+            return
+        }
+        manualFocus = device.lensPosition
+        focusObservation = device.observe(\.lensPosition) { [weak self] _, _ in
+            guard let self else {
+                return
+            }
+            DispatchQueue.main.async {
+                guard !self.editingManualFocus else {
+                    return
+                }
+                self.manualFocuses[device] = device.lensPosition
+                self.manualFocus = device.lensPosition
+            }
+        }
+    }
+
+    func stopObservingFocus() {
+        focusObservation = nil
+    }
+}
+
+extension Model {
+    func setAutoIso() {
+        guard
+            let device = cameraDevice, device.isExposureModeSupported(.continuousAutoExposure)
+        else {
+            makeErrorToast(title: String(localized: "Continuous auto exposure not supported for this camera"))
+            return
+        }
+        do {
+            try device.lockForConfiguration()
+            device.exposureMode = .continuousAutoExposure
+            device.unlockForConfiguration()
+        } catch let error as NSError {
+            logger.error("while locking device for continuous auto exposure: \(error)")
+        }
+        manualIsosEnabled[device] = false
+        manualIsoEnabled = false
+    }
+
+    func setManualIso(factor: Float) {
+        guard
+            let device = cameraDevice, device.isExposureModeSupported(.custom)
+        else {
+            makeErrorToast(title: String(localized: "Manual exposure not supported for this camera"))
+            return
+        }
+        let iso = factorToIso(device: device, factor: factor)
+        do {
+            try device.lockForConfiguration()
+            device.setExposureModeCustom(duration: AVCaptureDevice.currentExposureDuration, iso: iso) { _ in
+            }
+            device.unlockForConfiguration()
+        } catch let error as NSError {
+            logger.error("while locking device for manual exposure: \(error)")
+        }
+        manualIsosEnabled[device] = true
+        manualIsoEnabled = true
+        manualIsos[device] = iso
+    }
+
+    private func setIsoAfterCameraAttach() {
+        guard let device = cameraDevice else {
+            return
+        }
+        manualIso = manualIsos[device] ?? factorFromIso(device: device, iso: device.iso)
+        manualIsoEnabled = manualIsosEnabled[device] ?? false
+        if manualIsoEnabled {
+            setManualIso(factor: manualIso)
+        }
+        if isoObservation != nil {
+            stopObservingIso()
+            startObservingIso()
+        }
+    }
+
+    func isCameraSupportingManualIso() -> Bool {
+        if let device = cameraDevice, device.isExposureModeSupported(.custom) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    func startObservingIso() {
+        guard let device = cameraDevice else {
+            return
+        }
+        manualIso = factorFromIso(device: device, iso: device.iso)
+        isoObservation = device.observe(\.iso) { [weak self] _, _ in
+            guard let self else {
+                return
+            }
+            DispatchQueue.main.async {
+                guard !self.editingManualIso else {
+                    return
+                }
+                let iso = factorFromIso(device: device, iso: device.iso)
+                self.manualIsos[device] = iso
+                self.manualIso = iso
+            }
+        }
+    }
+
+    func stopObservingIso() {
+        isoObservation = nil
+    }
+}
+
+extension Model {
+    func setAutoWhiteBalance() {
+        guard
+            let device = cameraDevice, device.isWhiteBalanceModeSupported(.continuousAutoWhiteBalance)
+        else {
+            makeErrorToast(
+                title: String(localized: "Continuous auto white balance not supported for this camera")
+            )
+            return
+        }
+        do {
+            try device.lockForConfiguration()
+            device.whiteBalanceMode = .continuousAutoWhiteBalance
+            device.unlockForConfiguration()
+        } catch let error as NSError {
+            logger.error("while locking device for continuous auto white balance: \(error)")
+        }
+        manualWhiteBalancesEnabled[device] = false
+        manualWhiteBalanceEnabled = false
+    }
+
+    func setManualWhiteBalance(factor: Float) {
+        guard
+            let device = cameraDevice, device.isWhiteBalanceModeSupported(.locked)
+        else {
+            makeErrorToast(title: String(localized: "Manual white balance not supported for this camera"))
+            return
+        }
+        do {
+            try device.lockForConfiguration()
+            device.setWhiteBalanceModeLocked(with: factorToWhiteBalance(device: device, factor: factor))
+            device.unlockForConfiguration()
+        } catch let error as NSError {
+            logger.error("while locking device for manual white balance: \(error)")
+        }
+        manualWhiteBalancesEnabled[device] = true
+        manualWhiteBalanceEnabled = true
+        manualWhiteBalances[device] = factor
+    }
+
+    private func setWhiteBalanceAfterCameraAttach() {
+        guard let device = cameraDevice, isCameraSupportingManualWhiteBalance() else {
+            return
+        }
+        manualWhiteBalance = manualWhiteBalances[device] ?? 0.5
+        manualWhiteBalanceEnabled = manualWhiteBalancesEnabled[device] ?? false
+        if manualWhiteBalanceEnabled {
+            setManualWhiteBalance(factor: manualWhiteBalance)
+        }
+        if whiteBalanceObservation != nil {
+            stopObservingWhiteBalance()
+            startObservingWhiteBalance()
+        }
+    }
+
+    func isCameraSupportingManualWhiteBalance() -> Bool {
+        if let device = cameraDevice, device.isLockingWhiteBalanceWithCustomDeviceGainsSupported {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    func startObservingWhiteBalance() {
+        guard let device = cameraDevice else {
+            return
+        }
+        manualWhiteBalance = factorFromWhiteBalance(device: device, gains: device.deviceWhiteBalanceGains)
+        whiteBalanceObservation = device.observe(\.deviceWhiteBalanceGains) { [weak self] _, _ in
+            guard let self else {
+                return
+            }
+            DispatchQueue.main.async {
+                guard !self.editingManualWhiteBalance else {
+                    return
+                }
+                let factor = factorFromWhiteBalance(device: device, gains: device.deviceWhiteBalanceGains)
+                self.manualWhiteBalances[device] = factor
+                self.manualWhiteBalance = factor
+            }
+        }
+    }
+
+    func stopObservingWhiteBalance() {
+        whiteBalanceObservation = nil
     }
 }
