@@ -7,7 +7,7 @@ private let cameraButtonWidth = 70.0
 private let pickerBorderColor = Color.gray
 private var pickerBackgroundColor = Color.black.opacity(0.6)
 
-private struct CameraSettingView: View {
+private struct CameraSettingButtonView: View {
     var title: String
     var value: String
     var locked: Bool
@@ -85,6 +85,293 @@ private struct SegmentedPicker<T: Equatable, Content: View>: View {
     }
 }
 
+private struct CameraSettingsControlView: View {
+    @EnvironmentObject var model: Model
+
+    private func formatIso() -> String {
+        guard let device = model.cameraDevice else {
+            return ""
+        }
+        return String(Int(calcIso(device: device, factor: model.manualExposure)))
+    }
+
+    private func formatExposureBias() -> String {
+        var value = formatOneDecimal(value: model.bias)
+        if model.bias >= 0 {
+            value = "+\(value)"
+        }
+        return value
+    }
+
+    private func formatFocus() -> String {
+        return String(Int(model.manualFocus * 100))
+    }
+
+    private func lockImage(locked: Bool) -> String {
+        if locked {
+            return "lock"
+        } else {
+            return "lock.open"
+        }
+    }
+
+    var body: some View {
+        VStack(alignment: .trailing, spacing: 1) {
+            if model.showingCameraBias {
+                Slider(
+                    value: $model.bias,
+                    in: -2 ... 2,
+                    step: 0.1,
+                    onEditingChanged: { begin in
+                        guard !begin else {
+                            return
+                        }
+                        model.setExposureBias(bias: model.bias)
+                    }
+                )
+                .onChange(of: model.bias) { _ in
+                    model.setExposureBias(bias: model.bias)
+                }
+                .padding([.top, .bottom], 5)
+                .padding([.leading, .trailing], 7)
+                .frame(width: 200)
+                .background(Color(white: 0, opacity: 0.6))
+                .cornerRadius(7)
+                .padding([.bottom], 5)
+            }
+            if model.showingCameraExposure {
+                let supported = model.isCameraSupportingManualExposure()
+                HStack {
+                    Slider(
+                        value: $model.manualExposure,
+                        in: 0 ... 1,
+                        step: 0.01,
+                        onEditingChanged: { begin in
+                            model.editingManualExposure = begin
+                            guard !begin else {
+                                return
+                            }
+                            model.setManualExposure(exposure: model.manualExposure)
+                        }
+                    )
+                    .onChange(of: model.manualExposure) { _ in
+                        if model.editingManualExposure {
+                            model.setManualExposure(exposure: model.manualExposure)
+                        }
+                    }
+                    let enabled = model.getIsManualExposureEnabled()
+                    Button {
+                        if enabled {
+                            model.setAutoExposure()
+                        } else {
+                            model.setManualExposure(exposure: model.manualExposure)
+                        }
+                    } label: {
+                        Image(systemName: lockImage(locked: enabled))
+                            .font(.title2)
+                            .foregroundColor(supported ? .white : .gray)
+                    }
+                }
+                .padding([.top, .bottom], 5)
+                .padding([.leading, .trailing], 7)
+                .frame(width: 200)
+                .background(Color(white: 0, opacity: 0.6))
+                .cornerRadius(7)
+                .padding([.bottom], 5)
+                .disabled(!supported)
+            }
+            if model.showingCameraFocus {
+                let supported = model.isCameraSupportingManualFocus()
+                HStack {
+                    Slider(
+                        value: $model.manualFocus,
+                        in: 0 ... 1,
+                        step: 0.01,
+                        onEditingChanged: { begin in
+                            model.editingManualFocus = begin
+                            guard !begin else {
+                                return
+                            }
+                            model.setManualFocus(lensPosition: model.manualFocus)
+                        }
+                    )
+                    .onChange(of: model.manualFocus) { _ in
+                        if model.editingManualFocus {
+                            model.setManualFocus(lensPosition: model.manualFocus)
+                        }
+                    }
+                    let enabled = model.getIsManualFocusEnabled()
+                    Button {
+                        if enabled {
+                            model.setAutoFocus()
+                        } else {
+                            model.setManualFocus(lensPosition: model.manualFocus)
+                        }
+                    } label: {
+                        Image(systemName: lockImage(locked: enabled))
+                            .font(.title2)
+                            .foregroundColor(supported ? .white : .gray)
+                    }
+                }
+                .padding([.top, .bottom], 5)
+                .padding([.leading, .trailing], 7)
+                .frame(width: 200)
+                .background(Color(white: 0, opacity: 0.6))
+                .cornerRadius(7)
+                .padding([.bottom], 5)
+                .disabled(!supported)
+            }
+            HStack {
+                Button {
+                    model.showingCameraBias.toggle()
+                    if model.showingCameraBias {
+                        model.showingCameraExposure = false
+                        model.showingCameraFocus = false
+                    }
+                } label: {
+                    CameraSettingButtonView(
+                        title: "EXB",
+                        value: formatExposureBias(),
+                        locked: true,
+                        on: model.showingCameraBias
+                    )
+                }
+                Button {
+                    model.showingCameraExposure.toggle()
+                    if model.showingCameraExposure {
+                        model.showingCameraBias = false
+                        model.showingCameraFocus = false
+                    }
+                } label: {
+                    CameraSettingButtonView(
+                        title: "ISO",
+                        value: formatIso(),
+                        locked: model.getIsManualExposureEnabled(),
+                        on: model.showingCameraExposure
+                    )
+                }
+                Button {
+                    model.showingCameraFocus.toggle()
+                    if model.showingCameraFocus {
+                        model.showingCameraBias = false
+                        model.showingCameraExposure = false
+                    }
+                } label: {
+                    CameraSettingButtonView(
+                        title: "FOC",
+                        value: formatFocus(),
+                        locked: model.getIsManualFocusEnabled(),
+                        on: model.showingCameraFocus
+                    )
+                }
+            }
+            .onAppear {
+                model.startObservingFocus()
+                model.startObservingExposure()
+            }
+            .onDisappear {
+                model.stopObservingFocus()
+                model.stopObservingExposure()
+            }
+            .padding([.bottom], 5)
+        }
+    }
+}
+
+private struct ZoomPresetSelctorView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        VStack(alignment: .trailing, spacing: 1) {
+            if model.cameraPosition == .front {
+                SegmentedPicker(model.frontZoomPresets(), selectedItem: Binding(get: {
+                    model.frontZoomPresets().first { $0.id == model.frontZoomPresetId }
+                }, set: { value in
+                    if let value {
+                        model.frontZoomPresetId = value.id
+                    }
+                })) {
+                    Text($0.name)
+                        .font(.subheadline)
+                        .frame(width: zoomSegmentWidth, height: segmentHeight)
+                }
+                .onChange(of: model.frontZoomPresetId) { id in
+                    model.setCameraZoomPreset(id: id)
+                }
+                .background(pickerBackgroundColor)
+                .foregroundColor(.white)
+                .frame(width: zoomSegmentWidth * Double(model.frontZoomPresets().count))
+                .cornerRadius(7)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 7)
+                        .stroke(pickerBorderColor)
+                )
+                .padding([.bottom], 5)
+            } else {
+                SegmentedPicker(model.backZoomPresets(), selectedItem: Binding(get: {
+                    model.backZoomPresets().first { $0.id == model.backZoomPresetId }
+                }, set: { value in
+                    if let value {
+                        model.backZoomPresetId = value.id
+                    }
+                })) {
+                    Text($0.name)
+                        .font(.subheadline)
+                        .frame(width: zoomSegmentWidth, height: segmentHeight)
+                }
+                .onChange(of: model.backZoomPresetId) { id in
+                    model.setCameraZoomPreset(id: id)
+                }
+                .background(pickerBackgroundColor)
+                .foregroundColor(.white)
+                .frame(width: zoomSegmentWidth * Double(model.backZoomPresets().count))
+                .cornerRadius(7)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 7)
+                        .stroke(pickerBorderColor)
+                )
+                .padding([.bottom], 5)
+            }
+        }
+    }
+}
+
+private struct SceneSelectorView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        SegmentedPicker(model.enabledScenes, selectedItem: Binding(get: {
+            if model.sceneIndex < model.enabledScenes.count {
+                model.enabledScenes[model.sceneIndex]
+            } else {
+                nil
+            }
+        }, set: { value in
+            if let value, let index = model.enabledScenes.firstIndex(of: value) {
+                model.sceneIndex = index
+            } else {
+                model.sceneIndex = 0
+            }
+        })) {
+            Text($0.name)
+                .font(.subheadline)
+                .frame(width: sceneSegmentWidth, height: segmentHeight)
+        }
+        .onChange(of: model.sceneIndex) { tag in
+            model.setSceneId(id: model.enabledScenes[tag].id)
+            model.sceneUpdated(store: false)
+        }
+        .background(pickerBackgroundColor)
+        .foregroundColor(.white)
+        .frame(width: sceneSegmentWidth * Double(model.enabledScenes.count))
+        .cornerRadius(7)
+        .overlay(
+            RoundedRectangle(cornerRadius: 7)
+                .stroke(pickerBorderColor)
+        )
+    }
+}
+
 struct RightOverlayView: View {
     @EnvironmentObject var model: Model
 
@@ -114,33 +401,6 @@ struct RightOverlayView: View {
             return .red
         }
         return .white
-    }
-
-    private func formatIso() -> String {
-        guard let device = model.cameraDevice else {
-            return ""
-        }
-        return String(Int(calcIso(device: device, factor: model.manualExposure)))
-    }
-
-    private func formatExposureBias() -> String {
-        var value = formatOneDecimal(value: model.bias)
-        if model.bias >= 0 {
-            value = "+\(value)"
-        }
-        return value
-    }
-
-    private func formatFocus() -> String {
-        return String(Int(model.manualFocus * 100))
-    }
-
-    private func lockImage(locked: Bool) -> String {
-        if locked {
-            return "lock"
-        } else {
-            return "lock.open"
-        }
     }
 
     var body: some View {
@@ -218,244 +478,12 @@ struct RightOverlayView: View {
             Spacer()
             if !model.showDrawOnStream {
                 if model.showingCamera {
-                    if model.showingCameraBias {
-                        Slider(
-                            value: $model.bias,
-                            in: -2 ... 2,
-                            step: 0.1,
-                            onEditingChanged: { begin in
-                                guard !begin else {
-                                    return
-                                }
-                                model.setExposureBias(bias: model.bias)
-                            }
-                        )
-                        .onChange(of: model.bias) { _ in
-                            model.setExposureBias(bias: model.bias)
-                        }
-                        .padding([.top, .bottom], 5)
-                        .padding([.leading, .trailing], 7)
-                        .frame(width: 200)
-                        .background(Color(white: 0, opacity: 0.6))
-                        .cornerRadius(7)
-                        .padding([.bottom], 5)
-                    }
-                    if model.showingCameraExposure {
-                        let supported = model.isCameraSupportingManualExposure()
-                        HStack {
-                            Slider(
-                                value: $model.manualExposure,
-                                in: 0 ... 1,
-                                step: 0.01,
-                                onEditingChanged: { begin in
-                                    model.editingManualExposure = begin
-                                    guard !begin else {
-                                        return
-                                    }
-                                    model.setManualExposure(exposure: model.manualExposure)
-                                }
-                            )
-                            .onChange(of: model.manualExposure) { _ in
-                                if model.editingManualExposure {
-                                    model.setManualExposure(exposure: model.manualExposure)
-                                }
-                            }
-                            let enabled = model.getIsManualExposureEnabled()
-                            Button {
-                                if enabled {
-                                    model.setAutoExposure()
-                                } else {
-                                    model.setManualExposure(exposure: model.manualExposure)
-                                }
-                            } label: {
-                                Image(systemName: lockImage(locked: enabled))
-                                    .font(.title2)
-                                    .foregroundColor(supported ? .white : .gray)
-                            }
-                        }
-                        .padding([.top, .bottom], 5)
-                        .padding([.leading, .trailing], 7)
-                        .frame(width: 200)
-                        .background(Color(white: 0, opacity: 0.6))
-                        .cornerRadius(7)
-                        .padding([.bottom], 5)
-                        .disabled(!supported)
-                    }
-                    if model.showingCameraFocus {
-                        let supported = model.isCameraSupportingManualFocus()
-                        HStack {
-                            Slider(
-                                value: $model.manualFocus,
-                                in: 0 ... 1,
-                                step: 0.01,
-                                onEditingChanged: { begin in
-                                    model.editingManualFocus = begin
-                                    guard !begin else {
-                                        return
-                                    }
-                                    model.setManualFocus(lensPosition: model.manualFocus)
-                                }
-                            )
-                            .onChange(of: model.manualFocus) { _ in
-                                if model.editingManualFocus {
-                                    model.setManualFocus(lensPosition: model.manualFocus)
-                                }
-                            }
-                            let enabled = model.getIsManualFocusEnabled()
-                            Button {
-                                if enabled {
-                                    model.setAutoFocus()
-                                } else {
-                                    model.setManualFocus(lensPosition: model.manualFocus)
-                                }
-                            } label: {
-                                Image(systemName: lockImage(locked: enabled))
-                                    .font(.title2)
-                                    .foregroundColor(supported ? .white : .gray)
-                            }
-                        }
-                        .padding([.top, .bottom], 5)
-                        .padding([.leading, .trailing], 7)
-                        .frame(width: 200)
-                        .background(Color(white: 0, opacity: 0.6))
-                        .cornerRadius(7)
-                        .padding([.bottom], 5)
-                        .disabled(!supported)
-                    }
-                    HStack {
-                        Button {
-                            model.showingCameraBias.toggle()
-                            if model.showingCameraBias {
-                                model.showingCameraExposure = false
-                                model.showingCameraFocus = false
-                            }
-                        } label: {
-                            CameraSettingView(
-                                title: "EXB",
-                                value: formatExposureBias(),
-                                locked: true,
-                                on: model.showingCameraBias
-                            )
-                        }
-                        Button {
-                            model.showingCameraExposure.toggle()
-                            if model.showingCameraExposure {
-                                model.showingCameraBias = false
-                                model.showingCameraFocus = false
-                            }
-                        } label: {
-                            CameraSettingView(
-                                title: "ISO",
-                                value: formatIso(),
-                                locked: model.getIsManualExposureEnabled(),
-                                on: model.showingCameraExposure
-                            )
-                        }
-                        Button {
-                            model.showingCameraFocus.toggle()
-                            if model.showingCameraFocus {
-                                model.showingCameraBias = false
-                                model.showingCameraExposure = false
-                            }
-                        } label: {
-                            CameraSettingView(
-                                title: "FOC",
-                                value: formatFocus(),
-                                locked: model.getIsManualFocusEnabled(),
-                                on: model.showingCameraFocus
-                            )
-                        }
-                    }
-                    .onAppear {
-                        model.startObservingFocus()
-                        model.startObservingExposure()
-                    }
-                    .onDisappear {
-                        model.stopObservingFocus()
-                        model.stopObservingExposure()
-                    }
-                    .padding([.bottom], 5)
+                    CameraSettingsControlView()
                 }
                 if database.show.zoomPresets && model.hasZoom {
-                    if model.cameraPosition == .front {
-                        SegmentedPicker(model.frontZoomPresets(), selectedItem: Binding(get: {
-                            model.frontZoomPresets().first { $0.id == model.frontZoomPresetId }
-                        }, set: { value in
-                            if let value {
-                                model.frontZoomPresetId = value.id
-                            }
-                        })) {
-                            Text($0.name)
-                                .font(.subheadline)
-                                .frame(width: zoomSegmentWidth, height: segmentHeight)
-                        }
-                        .onChange(of: model.frontZoomPresetId) { id in
-                            model.setCameraZoomPreset(id: id)
-                        }
-                        .background(pickerBackgroundColor)
-                        .foregroundColor(.white)
-                        .frame(width: zoomSegmentWidth * Double(model.frontZoomPresets().count))
-                        .cornerRadius(7)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 7)
-                                .stroke(pickerBorderColor)
-                        )
-                        .padding([.bottom], 5)
-                    } else {
-                        SegmentedPicker(model.backZoomPresets(), selectedItem: Binding(get: {
-                            model.backZoomPresets().first { $0.id == model.backZoomPresetId }
-                        }, set: { value in
-                            if let value {
-                                model.backZoomPresetId = value.id
-                            }
-                        })) {
-                            Text($0.name)
-                                .font(.subheadline)
-                                .frame(width: zoomSegmentWidth, height: segmentHeight)
-                        }
-                        .onChange(of: model.backZoomPresetId) { id in
-                            model.setCameraZoomPreset(id: id)
-                        }
-                        .background(pickerBackgroundColor)
-                        .foregroundColor(.white)
-                        .frame(width: zoomSegmentWidth * Double(model.backZoomPresets().count))
-                        .cornerRadius(7)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 7)
-                                .stroke(pickerBorderColor)
-                        )
-                        .padding([.bottom], 5)
-                    }
+                    ZoomPresetSelctorView()
                 }
-                SegmentedPicker(model.enabledScenes, selectedItem: Binding(get: {
-                    if model.sceneIndex < model.enabledScenes.count {
-                        model.enabledScenes[model.sceneIndex]
-                    } else {
-                        nil
-                    }
-                }, set: { value in
-                    if let value, let index = model.enabledScenes.firstIndex(of: value) {
-                        model.sceneIndex = index
-                    } else {
-                        model.sceneIndex = 0
-                    }
-                })) {
-                    Text($0.name)
-                        .font(.subheadline)
-                        .frame(width: sceneSegmentWidth, height: segmentHeight)
-                }
-                .onChange(of: model.sceneIndex) { tag in
-                    model.setSceneId(id: model.enabledScenes[tag].id)
-                    model.sceneUpdated(store: false)
-                }
-                .background(pickerBackgroundColor)
-                .foregroundColor(.white)
-                .frame(width: sceneSegmentWidth * Double(model.enabledScenes.count))
-                .cornerRadius(7)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 7)
-                        .stroke(pickerBorderColor)
-                )
+                SceneSelectorView()
             }
         }
     }
