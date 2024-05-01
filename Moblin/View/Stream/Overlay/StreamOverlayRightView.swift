@@ -92,7 +92,7 @@ private struct CameraSettingsControlView: View {
         guard let device = model.cameraDevice else {
             return ""
         }
-        return String(Int(calcIso(device: device, factor: model.manualExposure)))
+        return String(Int(factorToIso(device: device, factor: model.manualExposure)))
     }
 
     private func formatExposureBias() -> String {

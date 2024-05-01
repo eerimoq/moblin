@@ -400,6 +400,10 @@ func hasAppleLog() -> Bool {
     return false
 }
 
-func calcIso(device: AVCaptureDevice, factor: Float) -> Float {
+func factorToIso(device: AVCaptureDevice, factor: Float) -> Float {
     return device.activeFormat.minISO + (device.activeFormat.maxISO - device.activeFormat.minISO) * factor
+}
+
+func factorFromIso(device: AVCaptureDevice, iso: Float) -> Float {
+    return (iso - device.activeFormat.minISO) / (device.activeFormat.maxISO - device.activeFormat.minISO)
 }

@@ -3818,7 +3818,7 @@ final class Model: NSObject, ObservableObject {
         guard let device = cameraDevice else {
             return
         }
-        manualFocus = manualFocuses[device] ?? 1.0
+        manualFocus = manualFocuses[device] ?? device.lensPosition
         if !getIsManualFocusEnabled() {
             setAutoFocus()
         }
@@ -3840,6 +3840,7 @@ final class Model: NSObject, ObservableObject {
         guard let device = cameraDevice else {
             return
         }
+        manualFocus = device.lensPosition
         focusObservation = device.observe(\.lensPosition) { [weak self] _, _ in
             guard let self else {
                 return
@@ -3889,7 +3890,7 @@ final class Model: NSObject, ObservableObject {
             makeErrorToast(title: String(localized: "Manual exposure not supported for this camera"))
             return
         }
-        let iso = calcIso(device: device, factor: exposure)
+        let iso = factorToIso(device: device, factor: exposure)
         do {
             try device.lockForConfiguration()
             device.setExposureModeCustom(duration: AVCaptureDevice.currentExposureDuration, iso: iso) { _ in
@@ -3906,7 +3907,7 @@ final class Model: NSObject, ObservableObject {
         guard let device = cameraDevice else {
             return
         }
-        manualExposure = manualExposures[device] ?? 1.0
+        manualExposure = manualExposures[device] ?? factorFromIso(device: device, iso: device.iso)
         if getIsManualExposureEnabled() {
             setManualExposure(exposure: manualExposure)
         }
@@ -3928,6 +3929,7 @@ final class Model: NSObject, ObservableObject {
         guard let device = cameraDevice else {
             return
         }
+        manualExposure = factorFromIso(device: device, iso: device.iso)
         exposureObservation = device.observe(\.iso) { [weak self] _, _ in
             guard let self else {
                 return
@@ -3936,8 +3938,7 @@ final class Model: NSObject, ObservableObject {
                 guard !self.editingManualExposure else {
                     return
                 }
-                let exposure = (device.iso - device.activeFormat.minISO) /
-                    (device.activeFormat.maxISO - device.activeFormat.minISO)
+                let exposure = factorFromIso(device: device, iso: device.iso)
                 self.manualExposures[device] = exposure
                 self.manualExposure = exposure
             }
