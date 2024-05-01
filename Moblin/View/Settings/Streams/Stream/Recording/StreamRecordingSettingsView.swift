@@ -36,9 +36,9 @@ struct StreamRecordingSettingsView: View {
                 NavigationLink(destination: InlinePickerView(title: String(localized: "Video codec"),
                                                              onChange: onVideoCodecChange,
                                                              items: InlinePickerItem
-                                                                 .fromStrings(values: codecs),
+                    .fromStrings(values: codecs),
                                                              selectedId: stream.recording!.videoCodec
-                                                                 .rawValue))
+                    .rawValue))
                 {
                     TextItemView(
                         name: String(localized: "Video codec"),
