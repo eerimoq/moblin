@@ -200,15 +200,18 @@ final class Model: NSObject, ObservableObject {
 
     @Published var scrollQuickButtons: Int = 0
     @Published var bias: Float = 0.0
+
     private var manualFocusesEnabled: [AVCaptureDevice: Bool] = [:]
     private var manualFocuses: [AVCaptureDevice: Float] = [:]
-    @Published var manualFocusPoint: CGPoint?
     @Published var manualFocus: Float = 1.0
     var editingManualFocus = false
-    private var manualIsoEnabled: [AVCaptureDevice: Bool] = [:]
+    @Published var manualFocusPoint: CGPoint?
+
+    private var manualIsosEnabled: [AVCaptureDevice: Bool] = [:]
     private var manualIsos: [AVCaptureDevice: Float] = [:]
     @Published var manualIso: Float = 1.0
     var editingManualIso = false
+
     private var manualFocusMotionAttitude: CMAttitude?
     private var focusObservation: NSKeyValueObservation?
     private var isoObservation: NSKeyValueObservation?
@@ -3863,7 +3866,7 @@ final class Model: NSObject, ObservableObject {
         guard let device = cameraDevice else {
             return false
         }
-        return manualIsoEnabled[device] ?? false
+        return manualIsosEnabled[device] ?? false
     }
 
     func setAutoIso() {
@@ -3880,7 +3883,7 @@ final class Model: NSObject, ObservableObject {
         } catch let error as NSError {
             logger.error("while locking device for focusPointOfInterest: \(error)")
         }
-        manualIsoEnabled[device] = false
+        manualIsosEnabled[device] = false
     }
 
     func setManualIso(factor: Float) {
@@ -3899,7 +3902,7 @@ final class Model: NSObject, ObservableObject {
         } catch let error as NSError {
             logger.error("while locking device for manual exposure: \(error)")
         }
-        manualIsoEnabled[device] = true
+        manualIsosEnabled[device] = true
         manualIsos[device] = iso
     }
 
