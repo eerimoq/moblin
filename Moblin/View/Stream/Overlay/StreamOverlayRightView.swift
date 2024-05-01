@@ -165,15 +165,14 @@ private struct CameraSettingsControlView: View {
                             model.setManualIso(factor: model.manualIso)
                         }
                     }
-                    let enabled = model.getIsManualIsoEnabled()
                     Button {
-                        if enabled {
+                        if model.manualIsoEnabled {
                             model.setAutoIso()
                         } else {
                             model.setManualIso(factor: model.manualIso)
                         }
                     } label: {
-                        Image(systemName: lockImage(locked: enabled))
+                        Image(systemName: lockImage(locked: model.manualIsoEnabled))
                             .font(.title2)
                             .foregroundColor(supported ? .white : .gray)
                     }
@@ -209,15 +208,14 @@ private struct CameraSettingsControlView: View {
                             model.setManualFocus(lensPosition: model.manualFocus)
                         }
                     }
-                    let enabled = model.getIsManualFocusEnabled()
                     Button {
-                        if enabled {
+                        if model.manualFocusEnabled {
                             model.setAutoFocus()
                         } else {
                             model.setManualFocus(lensPosition: model.manualFocus)
                         }
                     } label: {
-                        Image(systemName: lockImage(locked: enabled))
+                        Image(systemName: lockImage(locked: model.manualFocusEnabled))
                             .font(.title2)
                             .foregroundColor(supported ? .white : .gray)
                     }
@@ -255,7 +253,7 @@ private struct CameraSettingsControlView: View {
                     CameraSettingButtonView(
                         title: String(localized: "ISO"),
                         value: formatIso(),
-                        locked: model.getIsManualIsoEnabled(),
+                        locked: model.manualIsoEnabled,
                         on: model.showingCameraIso
                     )
                 }
@@ -269,7 +267,7 @@ private struct CameraSettingsControlView: View {
                     CameraSettingButtonView(
                         title: String(localized: "FOC"),
                         value: formatFocus(),
-                        locked: model.getIsManualFocusEnabled(),
+                        locked: model.manualFocusEnabled,
                         on: model.showingCameraFocus
                     )
                 }

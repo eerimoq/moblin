@@ -204,12 +204,14 @@ final class Model: NSObject, ObservableObject {
     private var manualFocusesEnabled: [AVCaptureDevice: Bool] = [:]
     private var manualFocuses: [AVCaptureDevice: Float] = [:]
     @Published var manualFocus: Float = 1.0
+    @Published var manualFocusEnabled = false
     var editingManualFocus = false
     @Published var manualFocusPoint: CGPoint?
 
     private var manualIsosEnabled: [AVCaptureDevice: Bool] = [:]
     private var manualIsos: [AVCaptureDevice: Float] = [:]
     @Published var manualIso: Float = 1.0
+    @Published var manualIsoEnabled = false
     var editingManualIso = false
 
     private var manualFocusMotionAttitude: CMAttitude?
@@ -3769,6 +3771,7 @@ final class Model: NSObject, ObservableObject {
             logger.error("while locking device for focusPointOfInterest: \(error)")
         }
         manualFocusesEnabled[device] = false
+        manualFocusEnabled = false
     }
 
     func setAutoFocus() {
@@ -3788,6 +3791,7 @@ final class Model: NSObject, ObservableObject {
             logger.error("while locking device for focusPointOfInterest: \(error)")
         }
         manualFocusesEnabled[device] = false
+        manualFocusEnabled = false
     }
 
     func setManualFocus(lensPosition: Float) {
@@ -3807,14 +3811,8 @@ final class Model: NSObject, ObservableObject {
         }
         manualFocusPoint = nil
         manualFocusesEnabled[device] = true
+        manualFocusEnabled = true
         manualFocuses[device] = lensPosition
-    }
-
-    func getIsManualFocusEnabled() -> Bool {
-        guard let device = cameraDevice else {
-            return false
-        }
-        return manualFocusesEnabled[device] ?? false
     }
 
     private func setFocusAfterCameraAttach() {
@@ -3822,7 +3820,8 @@ final class Model: NSObject, ObservableObject {
             return
         }
         manualFocus = manualFocuses[device] ?? device.lensPosition
-        if !getIsManualFocusEnabled() {
+        manualFocusEnabled = manualFocusesEnabled[device] ?? false
+        if !manualFocusEnabled {
             setAutoFocus()
         }
         if focusObservation != nil {
@@ -3862,13 +3861,6 @@ final class Model: NSObject, ObservableObject {
         focusObservation = nil
     }
 
-    func getIsManualIsoEnabled() -> Bool {
-        guard let device = cameraDevice else {
-            return false
-        }
-        return manualIsosEnabled[device] ?? false
-    }
-
     func setAutoIso() {
         guard
             let device = cameraDevice, device.isExposureModeSupported(.continuousAutoExposure)
@@ -3884,6 +3876,7 @@ final class Model: NSObject, ObservableObject {
             logger.error("while locking device for focusPointOfInterest: \(error)")
         }
         manualIsosEnabled[device] = false
+        manualIsoEnabled = false
     }
 
     func setManualIso(factor: Float) {
@@ -3903,6 +3896,7 @@ final class Model: NSObject, ObservableObject {
             logger.error("while locking device for manual exposure: \(error)")
         }
         manualIsosEnabled[device] = true
+        manualIsoEnabled = true
         manualIsos[device] = iso
     }
 
@@ -3911,7 +3905,8 @@ final class Model: NSObject, ObservableObject {
             return
         }
         manualIso = manualIsos[device] ?? factorFromIso(device: device, iso: device.iso)
-        if getIsManualIsoEnabled() {
+        manualIsoEnabled = manualIsosEnabled[device] ?? false
+        if manualIsoEnabled {
             setManualIso(factor: manualIso)
         }
         if isoObservation != nil {
