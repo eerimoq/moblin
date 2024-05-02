@@ -428,10 +428,19 @@ func factorToWhiteBalance(device: AVCaptureDevice, factor: Float) -> AVCaptureDe
         tint: 0
     )
     return device.deviceWhiteBalanceGains(for: temperatureAndTint)
+        .clamped(maxGain: device.maxWhiteBalanceGain)
 }
 
 func factorFromWhiteBalance(device: AVCaptureDevice, gains: AVCaptureDevice.WhiteBalanceGains) -> Float {
     let temperature = device.temperatureAndTintValues(for: gains).temperature
     return (temperature - minimumWhiteBalanceTemperature) /
         (maximumWhiteBalanceTemperature - minimumWhiteBalanceTemperature)
+}
+
+extension AVCaptureDevice.WhiteBalanceGains {
+    func clamped(maxGain: Float) -> AVCaptureDevice.WhiteBalanceGains {
+        return .init(redGain: redGain.clamped(to: 1 ... maxGain),
+                     greenGain: greenGain.clamped(to: 1 ... maxGain),
+                     blueGain: blueGain.clamped(to: 1 ... maxGain))
+    }
 }

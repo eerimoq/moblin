@@ -3489,8 +3489,10 @@ final class Model: NSObject, ObservableObject {
                 if let x = self.setCameraZoomX(x: self.zoomX) {
                     self.setZoomX(x: x)
                 }
-                self.setIsoAfterCameraAttach()
-                self.setWhiteBalanceAfterCameraAttach()
+                if let device = self.cameraDevice {
+                    self.setIsoAfterCameraAttach(device: device)
+                    self.setWhiteBalanceAfterCameraAttach(device: device)
+                }
                 self.updateCameraPreview()
             }
         )
@@ -5362,10 +5364,7 @@ extension Model {
         manualIsos[device] = iso
     }
 
-    private func setIsoAfterCameraAttach() {
-        guard let device = cameraDevice else {
-            return
-        }
+    private func setIsoAfterCameraAttach(device: AVCaptureDevice) {
         manualIso = manualIsos[device] ?? factorFromIso(device: device, iso: device.iso)
         manualIsoEnabled = manualIsosEnabled[device] ?? false
         if manualIsoEnabled {
@@ -5433,7 +5432,7 @@ extension Model {
 
     func setManualWhiteBalance(factor: Float) {
         guard
-            let device = cameraDevice, device.isWhiteBalanceModeSupported(.locked)
+            let device = cameraDevice, device.isLockingWhiteBalanceWithCustomDeviceGainsSupported
         else {
             makeErrorToast(title: String(localized: "Manual white balance not supported for this camera"))
             return
@@ -5450,13 +5449,10 @@ extension Model {
         manualWhiteBalances[device] = factor
     }
 
-    private func setWhiteBalanceAfterCameraAttach() {
-        guard let device = cameraDevice else {
-            return
-        }
+    private func setWhiteBalanceAfterCameraAttach(device: AVCaptureDevice) {
         manualWhiteBalance = manualWhiteBalances[device] ?? 0.5
         manualWhiteBalanceEnabled = manualWhiteBalancesEnabled[device] ?? false
-        if manualWhiteBalanceEnabled, isCameraSupportingManualWhiteBalance() {
+        if manualWhiteBalanceEnabled {
             setManualWhiteBalance(factor: manualWhiteBalance)
         }
         if whiteBalanceObservation != nil {
@@ -5477,7 +5473,10 @@ extension Model {
         guard let device = cameraDevice else {
             return
         }
-        manualWhiteBalance = factorFromWhiteBalance(device: device, gains: device.deviceWhiteBalanceGains)
+        manualWhiteBalance = factorFromWhiteBalance(
+            device: device,
+            gains: device.deviceWhiteBalanceGains.clamped(maxGain: device.maxWhiteBalanceGain)
+        )
         whiteBalanceObservation = device.observe(\.deviceWhiteBalanceGains) { [weak self] _, _ in
             guard let self else {
                 return
