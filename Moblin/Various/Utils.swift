@@ -417,8 +417,8 @@ func factorFromIso(device: AVCaptureDevice, iso: Float) -> Float {
     return factor
 }
 
-let minimumWhiteBalanceTemperature: Float = 3000
-let maximumWhiteBalanceTemperature: Float = 8000
+let minimumWhiteBalanceTemperature: Float = 2200
+let maximumWhiteBalanceTemperature: Float = 10000
 
 func factorToWhiteBalance(device: AVCaptureDevice, factor: Float) -> AVCaptureDevice.WhiteBalanceGains {
     let temperature = minimumWhiteBalanceTemperature +
