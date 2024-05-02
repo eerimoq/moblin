@@ -93,7 +93,7 @@ private struct NotSupportedForThisCameraView: View {
             .foregroundColor(.white)
             .padding([.top, .bottom], 5)
             .padding([.leading, .trailing], 7)
-            .frame(width: sliderWidth, height: sliderHeight)
+            .frame(height: sliderHeight)
             .background(backgroundColor)
             .cornerRadius(7)
             .padding([.bottom], 5)
