@@ -224,12 +224,16 @@ class SettingsStreamRecording: Codable {
     var videoCodec: SettingsStreamCodec = .h265hevc
     var videoBitrate: UInt32 = 0
     var maxKeyFrameInterval: Int32 = 0
+    var autoStartRecording: Bool? = false
+    var autoStopRecording: Bool? = false
 
     func clone() -> SettingsStreamRecording {
         let new = SettingsStreamRecording()
         new.videoCodec = videoCodec
         new.videoBitrate = videoBitrate
         new.maxKeyFrameInterval = maxKeyFrameInterval
+        new.autoStartRecording = autoStartRecording
+        new.autoStopRecording = autoStopRecording
         return new
     }
 
@@ -2336,6 +2340,14 @@ final class Settings {
         }
         if realDatabase.debug!.beautyFilterSettings!.cuteOffset == nil {
             realDatabase.debug!.beautyFilterSettings!.cuteOffset = 0.5
+            store()
+        }
+        for stream in realDatabase.streams where stream.recording?.autoStartRecording == nil {
+            stream.recording?.autoStartRecording = false
+            store()
+        }
+        for stream in realDatabase.streams where stream.recording?.autoStopRecording == nil {
+            stream.recording?.autoStopRecording = false
             store()
         }
     }
