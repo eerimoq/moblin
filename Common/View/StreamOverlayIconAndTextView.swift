@@ -19,7 +19,7 @@ struct StreamOverlayIconAndTextView: View {
                     .font(smallFont)
                     .padding([.leading, .trailing], 2)
                     .foregroundColor(color)
-                    .background(Color(white: 0, opacity: 0.6))
+                    .background(backgroundColor)
                     .cornerRadius(5)
                 if !textFirst {
                     StreamOverlayTextView(text: text)

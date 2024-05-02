@@ -21,7 +21,7 @@ struct PreviewView: View {
                             .font(.title)
                             .padding(5)
                             .foregroundColor(.white)
-                            .background(Color(white: 0, opacity: 0.6))
+                            .background(backgroundColor)
                             .cornerRadius(5)
                         Spacer()
                     }
@@ -41,7 +41,7 @@ struct PreviewView: View {
                             .font(smallFont)
                             .padding([.leading, .trailing], 2)
                             .foregroundColor(model.thermalState.color())
-                            .background(Color(white: 0, opacity: 0.6))
+                            .background(backgroundColor)
                             .cornerRadius(5)
                     }
                     if model.isShowingStatusAudioLevel() {

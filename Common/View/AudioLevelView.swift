@@ -100,7 +100,7 @@ struct AudioLevelView: View {
                 }
             }
             .padding([.leading, .trailing], 2)
-            .background(Color(white: 0, opacity: 0.6))
+            .background(backgroundColor)
             .cornerRadius(5)
             .font(smallFont)
             Image(systemName: "waveform")
@@ -109,7 +109,7 @@ struct AudioLevelView: View {
                 .padding([.leading, .trailing], 2)
                 .padding([.bottom], showBar ? 2 : 0)
                 .foregroundColor(.white)
-                .background(Color(white: 0, opacity: 0.6))
+                .background(backgroundColor)
                 .cornerRadius(5)
         }
         .padding(0)

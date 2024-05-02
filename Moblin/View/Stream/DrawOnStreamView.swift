@@ -103,7 +103,7 @@ struct DrawOnStreamView: View {
                             .accentColor(model.drawOnStreamSelectedColor)
                     }
                     .padding(8)
-                    .background(Color(white: 0, opacity: 0.6))
+                    .background(backgroundColor)
                     .cornerRadius(5)
                 }
                 .padding([.trailing], 15)

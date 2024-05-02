@@ -4,6 +4,8 @@ private let segmentHeight = 40.0
 private let zoomSegmentWidth = 50.0
 private let sceneSegmentWidth = 70.0
 private let cameraButtonWidth = 70.0
+private let sliderWidth = 250.0
+private let sliderHeight = 40.0
 private let pickerBorderColor = Color.gray
 private var pickerBackgroundColor = Color.black.opacity(0.6)
 
@@ -85,6 +87,19 @@ private struct SegmentedPicker<T: Equatable, Content: View>: View {
     }
 }
 
+private struct NotSupportedForThisCameraView: View {
+    var body: some View {
+        Text("Not supported for this camera")
+            .foregroundColor(.white)
+            .padding([.top, .bottom], 5)
+            .padding([.leading, .trailing], 7)
+            .frame(width: sliderWidth, height: sliderHeight)
+            .background(backgroundColor)
+            .cornerRadius(7)
+            .padding([.bottom], 5)
+    }
+}
+
 private struct CameraSettingsControlView: View {
     @EnvironmentObject var model: Model
 
@@ -142,8 +157,8 @@ private struct CameraSettingsControlView: View {
                 }
                 .padding([.top, .bottom], 5)
                 .padding([.leading, .trailing], 7)
-                .frame(width: 200)
-                .background(Color(white: 0, opacity: 0.6))
+                .frame(width: sliderWidth, height: sliderHeight)
+                .background(backgroundColor)
                 .cornerRadius(7)
                 .padding([.bottom], 5)
             }
@@ -151,130 +166,136 @@ private struct CameraSettingsControlView: View {
                 Text("WHITE BALANCE")
                     .font(.footnote)
                     .foregroundColor(.white)
-                let supported = model.isCameraSupportingManualWhiteBalance()
-                HStack {
-                    Slider(
-                        value: $model.manualWhiteBalance,
-                        in: 0 ... 1,
-                        step: 0.01,
-                        onEditingChanged: { begin in
-                            model.editingManualWhiteBalance = begin
-                            guard !begin else {
-                                return
+                if model.isCameraSupportingManualWhiteBalance() {
+                    HStack {
+                        Slider(
+                            value: $model.manualWhiteBalance,
+                            in: 0 ... 1,
+                            step: 0.01,
+                            onEditingChanged: { begin in
+                                model.editingManualWhiteBalance = begin
+                                guard !begin else {
+                                    return
+                                }
+                                model.setManualWhiteBalance(factor: model.manualWhiteBalance)
                             }
-                            model.setManualWhiteBalance(factor: model.manualWhiteBalance)
+                        )
+                        .onChange(of: model.manualWhiteBalance) { _ in
+                            if model.editingManualWhiteBalance {
+                                model.setManualWhiteBalance(factor: model.manualWhiteBalance)
+                            }
                         }
-                    )
-                    .onChange(of: model.manualWhiteBalance) { _ in
-                        if model.editingManualWhiteBalance {
-                            model.setManualWhiteBalance(factor: model.manualWhiteBalance)
+                        Button {
+                            if model.manualWhiteBalanceEnabled {
+                                model.setAutoWhiteBalance()
+                            } else {
+                                model.setManualWhiteBalance(factor: model.manualWhiteBalance)
+                            }
+                        } label: {
+                            Image(systemName: lockImage(locked: model.manualWhiteBalanceEnabled))
+                                .font(.title2)
+                                .foregroundColor(.white)
                         }
                     }
-                    Button {
-                        if model.manualWhiteBalanceEnabled {
-                            model.setAutoWhiteBalance()
-                        } else {
-                            model.setManualWhiteBalance(factor: model.manualWhiteBalance)
-                        }
-                    } label: {
-                        Image(systemName: lockImage(locked: model.manualWhiteBalanceEnabled))
-                            .font(.title2)
-                            .foregroundColor(supported ? .white : .gray)
-                    }
+                    .padding([.top, .bottom], 5)
+                    .padding([.leading, .trailing], 7)
+                    .frame(width: sliderWidth, height: sliderHeight)
+                    .background(backgroundColor)
+                    .cornerRadius(7)
+                    .padding([.bottom], 5)
+                } else {
+                    NotSupportedForThisCameraView()
                 }
-                .padding([.top, .bottom], 5)
-                .padding([.leading, .trailing], 7)
-                .frame(width: 200)
-                .background(Color(white: 0, opacity: 0.6))
-                .cornerRadius(7)
-                .padding([.bottom], 5)
-                .disabled(!supported)
             }
             if model.showingCameraIso {
                 Text("ISO")
                     .font(.footnote)
                     .foregroundColor(.white)
-                let supported = model.isCameraSupportingManualIso()
-                HStack {
-                    Slider(
-                        value: $model.manualIso,
-                        in: 0 ... 1,
-                        step: 0.01,
-                        onEditingChanged: { begin in
-                            model.editingManualIso = begin
-                            guard !begin else {
-                                return
+                if model.isCameraSupportingManualIso() {
+                    HStack {
+                        Slider(
+                            value: $model.manualIso,
+                            in: 0 ... 1,
+                            step: 0.01,
+                            onEditingChanged: { begin in
+                                model.editingManualIso = begin
+                                guard !begin else {
+                                    return
+                                }
+                                model.setManualIso(factor: model.manualIso)
                             }
-                            model.setManualIso(factor: model.manualIso)
+                        )
+                        .onChange(of: model.manualIso) { _ in
+                            if model.editingManualIso {
+                                model.setManualIso(factor: model.manualIso)
+                            }
                         }
-                    )
-                    .onChange(of: model.manualIso) { _ in
-                        if model.editingManualIso {
-                            model.setManualIso(factor: model.manualIso)
+                        Button {
+                            if model.manualIsoEnabled {
+                                model.setAutoIso()
+                            } else {
+                                model.setManualIso(factor: model.manualIso)
+                            }
+                        } label: {
+                            Image(systemName: lockImage(locked: model.manualIsoEnabled))
+                                .font(.title2)
+                                .foregroundColor(.white)
                         }
                     }
-                    Button {
-                        if model.manualIsoEnabled {
-                            model.setAutoIso()
-                        } else {
-                            model.setManualIso(factor: model.manualIso)
-                        }
-                    } label: {
-                        Image(systemName: lockImage(locked: model.manualIsoEnabled))
-                            .font(.title2)
-                            .foregroundColor(supported ? .white : .gray)
-                    }
+                    .padding([.top, .bottom], 5)
+                    .padding([.leading, .trailing], 7)
+                    .frame(width: sliderWidth, height: sliderHeight)
+                    .background(backgroundColor)
+                    .cornerRadius(7)
+                    .padding([.bottom], 5)
+                } else {
+                    NotSupportedForThisCameraView()
                 }
-                .padding([.top, .bottom], 5)
-                .padding([.leading, .trailing], 7)
-                .frame(width: 200)
-                .background(Color(white: 0, opacity: 0.6))
-                .cornerRadius(7)
-                .padding([.bottom], 5)
-                .disabled(!supported)
             }
             if model.showingCameraFocus {
                 Text("FOCUS")
                     .font(.footnote)
                     .foregroundColor(.white)
-                let supported = model.isCameraSupportingManualFocus()
-                HStack {
-                    Slider(
-                        value: $model.manualFocus,
-                        in: 0 ... 1,
-                        step: 0.01,
-                        onEditingChanged: { begin in
-                            model.editingManualFocus = begin
-                            guard !begin else {
-                                return
+                if model.isCameraSupportingManualFocus() {
+                    HStack {
+                        Slider(
+                            value: $model.manualFocus,
+                            in: 0 ... 1,
+                            step: 0.01,
+                            onEditingChanged: { begin in
+                                model.editingManualFocus = begin
+                                guard !begin else {
+                                    return
+                                }
+                                model.setManualFocus(lensPosition: model.manualFocus)
                             }
-                            model.setManualFocus(lensPosition: model.manualFocus)
+                        )
+                        .onChange(of: model.manualFocus) { _ in
+                            if model.editingManualFocus {
+                                model.setManualFocus(lensPosition: model.manualFocus)
+                            }
                         }
-                    )
-                    .onChange(of: model.manualFocus) { _ in
-                        if model.editingManualFocus {
-                            model.setManualFocus(lensPosition: model.manualFocus)
+                        Button {
+                            if model.manualFocusEnabled {
+                                model.setAutoFocus()
+                            } else {
+                                model.setManualFocus(lensPosition: model.manualFocus)
+                            }
+                        } label: {
+                            Image(systemName: lockImage(locked: model.manualFocusEnabled))
+                                .font(.title2)
+                                .foregroundColor(.white)
                         }
                     }
-                    Button {
-                        if model.manualFocusEnabled {
-                            model.setAutoFocus()
-                        } else {
-                            model.setManualFocus(lensPosition: model.manualFocus)
-                        }
-                    } label: {
-                        Image(systemName: lockImage(locked: model.manualFocusEnabled))
-                            .font(.title2)
-                            .foregroundColor(supported ? .white : .gray)
-                    }
+                    .padding([.top, .bottom], 5)
+                    .padding([.leading, .trailing], 7)
+                    .frame(width: sliderWidth, height: sliderHeight)
+                    .background(backgroundColor)
+                    .cornerRadius(7)
+                    .padding([.bottom], 5)
+                } else {
+                    NotSupportedForThisCameraView()
                 }
-                .padding([.top, .bottom], 5)
-                .padding([.leading, .trailing], 7)
-                .frame(width: 200)
-                .background(Color(white: 0, opacity: 0.6))
-                .cornerRadius(7)
-                .padding([.bottom], 5)
-                .disabled(!supported)
             }
             HStack {
                 Button {

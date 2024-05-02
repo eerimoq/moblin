@@ -45095,6 +45095,9 @@
         }
       }
     },
+    "Not supported for this camera" : {
+
+    },
     "Notification on message" : {
       "localizations" : {
         "de" : {
