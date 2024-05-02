@@ -2342,12 +2342,12 @@ final class Settings {
             realDatabase.debug!.beautyFilterSettings!.cuteOffset = 0.5
             store()
         }
-        for stream in realDatabase.streams where stream.recording?.autoStartRecording == nil {
-            stream.recording?.autoStartRecording = false
+        for stream in realDatabase.streams where stream.recording!.autoStartRecording == nil {
+            stream.recording!.autoStartRecording = false
             store()
         }
-        for stream in realDatabase.streams where stream.recording?.autoStopRecording == nil {
-            stream.recording?.autoStopRecording = false
+        for stream in realDatabase.streams where stream.recording!.autoStopRecording == nil {
+            stream.recording!.autoStopRecording = false
             store()
         }
     }

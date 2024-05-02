@@ -10251,6 +10251,12 @@
         }
       }
     },
+    "Auto start recording when going live" : {
+
+    },
+    "Auto stop recording when ending stream" : {
+
+    },
     "Automatically goes live when switching stream." : {
       "localizations" : {
         "de" : {
