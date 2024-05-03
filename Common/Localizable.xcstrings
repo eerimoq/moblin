@@ -11615,6 +11615,9 @@
         }
       }
     },
+    "Beauty" : {
+
+    },
     "Beauty filter" : {
       "localizations" : {
         "de" : {
@@ -41250,6 +41253,9 @@
           }
         }
       }
+    },
+    "Mouth" : {
+
     },
     "Movie" : {
       "localizations" : {

@@ -572,7 +572,7 @@ struct RightOverlayView: View {
                 color: .white
             )
             Spacer()
-            if !model.showDrawOnStream {
+            if !(model.showDrawOnStream || model.showBeautyFilter) {
                 if model.showingCamera {
                     CameraSettingsControlView()
                 }

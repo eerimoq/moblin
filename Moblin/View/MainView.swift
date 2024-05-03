@@ -130,6 +130,9 @@ struct MainView: View {
                         if model.showBrowser {
                             webBrowserView
                         }
+                        if model.showBeautyFilter {
+                            BeautyFilterView()
+                        }
                     }
                     .gesture(
                         MagnificationGesture()
@@ -216,6 +219,9 @@ struct MainView: View {
                         }
                         if model.showBrowser {
                             webBrowserView
+                        }
+                        if model.showBeautyFilter {
+                            BeautyFilterView()
                         }
                     }
                     .gesture(

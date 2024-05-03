@@ -87,6 +87,7 @@
 		03559E7E2BDCEB14002D0886 /* BeautyEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03559E7D2BDCEB14002D0886 /* BeautyEffect.swift */; };
 		035735802BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0357357F2BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift */; };
 		035735822BC6303F00F4E87D /* WatchDisplaySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035735812BC6303F00F4E87D /* WatchDisplaySettingsView.swift */; };
+		03584BED2BE49B1B007E61F6 /* BeautyFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03584BEC2BE49B1B007E61F6 /* BeautyFilterView.swift */; };
 		0359F8AB2BD3DA61005BFDA8 /* AudioCodec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F80D2BD3DA5F005BFDA8 /* AudioCodec.swift */; };
 		0359F8AC2BD3DA61005BFDA8 /* AudioCodecOutputSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F80E2BD3DA5F005BFDA8 /* AudioCodecOutputSettings.swift */; };
 		0359F8AD2BD3DA61005BFDA8 /* AudioCodecRingBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F80F2BD3DA5F005BFDA8 /* AudioCodecRingBuffer.swift */; };
@@ -446,6 +447,7 @@
 		03559E7D2BDCEB14002D0886 /* BeautyEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeautyEffect.swift; sourceTree = "<group>"; };
 		0357357F2BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchLocalOverlaysSettingsView.swift; sourceTree = "<group>"; };
 		035735812BC6303F00F4E87D /* WatchDisplaySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchDisplaySettingsView.swift; sourceTree = "<group>"; };
+		03584BEC2BE49B1B007E61F6 /* BeautyFilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeautyFilterView.swift; sourceTree = "<group>"; };
 		0359F80D2BD3DA5F005BFDA8 /* AudioCodec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioCodec.swift; sourceTree = "<group>"; };
 		0359F80E2BD3DA5F005BFDA8 /* AudioCodecOutputSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioCodecOutputSettings.swift; sourceTree = "<group>"; };
 		0359F80F2BD3DA5F005BFDA8 /* AudioCodecRingBuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioCodecRingBuffer.swift; sourceTree = "<group>"; };
@@ -1745,10 +1747,11 @@
 			isa = PBXGroup;
 			children = (
 				0379BB9A2AAD811100B718B6 /* Overlay */,
+				03584BEC2BE49B1B007E61F6 /* BeautyFilterView.swift */,
+				037EBE762B666F66004D5774 /* DrawOnStreamView.swift */,
 				03A9835F2A9A05D7008FF0DB /* StreamOverlayView.swift */,
 				03A983582A9A05D7008FF0DB /* StreamView.swift */,
 				03CB8BCC2B5090C700B96530 /* StreamGridView.swift */,
-				037EBE762B666F66004D5774 /* DrawOnStreamView.swift */,
 			);
 			path = Stream;
 			sourceTree = "<group>";
@@ -2396,6 +2399,7 @@
 				032815DF2AC9885C001F8A85 /* TripleEffect.swift in Sources */,
 				0359F8B82BD3DA61005BFDA8 /* AVCaptureSession.Preset+Extension.swift in Sources */,
 				0359F8B02BD3DA61005BFDA8 /* VideoSize.swift in Sources */,
+				03584BED2BE49B1B007E61F6 /* BeautyFilterView.swift in Sources */,
 				0359F8C72BD3DA61005BFDA8 /* FLVAVCPacketType.swift in Sources */,
 				03B374022AA0354C0028DDD5 /* GrayScaleEffect.swift in Sources */,
 				03E877F72B2DB27800086355 /* GlobalQuickButtonsSettingsView.swift in Sources */,
