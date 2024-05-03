@@ -11,15 +11,15 @@ private struct BeautyButtonView: View {
 
     var body: some View {
         Text(title)
-            .font(.subheadline)
-            .frame(width: cameraButtonWidth, height: segmentHeight)
-            .background(pickerBackgroundColor)
-            .foregroundColor(.white)
-            .cornerRadius(7)
-            .overlay(
-                RoundedRectangle(cornerRadius: 7)
-                    .stroke(on ? .white : pickerBorderColor)
-            )
+        .font(.subheadline)
+        .frame(width: cameraButtonWidth, height: segmentHeight)
+        .background(pickerBackgroundColor)
+        .foregroundColor(.white)
+        .cornerRadius(7)
+        .overlay(
+            RoundedRectangle(cornerRadius: 7)
+                .stroke(on ? .white : pickerBorderColor)
+        )
     }
 }
 

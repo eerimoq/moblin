@@ -25,14 +25,6 @@ class Browser: Identifiable {
     }
 }
 
-enum ShowCameraSetting {
-    case none
-    case exposureBias
-    case whiteBalance
-    case iso
-    case focus
-}
-
 private let maximumNumberOfChatMessages = 50
 private let secondsSuffix = String(localized: "/sec")
 private let fallbackStream = SettingsStream(name: "Fallback")
@@ -316,7 +308,10 @@ final class Model: NSObject, ObservableObject {
     @Published var showingMic = false
     @Published var showingRecordings = false
     @Published var showingCamera = false
-    @Published var showingCameraSetting: ShowCameraSetting = .none
+    @Published var showingCameraBias = false
+    @Published var showingCameraWhiteBalance = false
+    @Published var showingCameraIso = false
+    @Published var showingCameraFocus = false
     @Published var showingStreamSwitcher = false
     @Published var showingGrid = false
     @Published var showingObs = false
