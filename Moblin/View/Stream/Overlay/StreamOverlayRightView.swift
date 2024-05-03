@@ -137,7 +137,7 @@ private struct CameraSettingsControlView: View {
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
-            if model.showingCameraBias {
+            if model.showingCameraSetting == .exposureBias {
                 Text("EXPOSURE BIAS")
                     .font(.footnote)
                     .foregroundColor(.white)
@@ -161,8 +161,7 @@ private struct CameraSettingsControlView: View {
                 .background(backgroundColor)
                 .cornerRadius(7)
                 .padding([.bottom], 5)
-            }
-            if model.showingCameraWhiteBalance {
+            } else if model.showingCameraSetting == .whiteBalance {
                 Text("WHITE BALANCE")
                     .font(.footnote)
                     .foregroundColor(.white)
@@ -206,8 +205,7 @@ private struct CameraSettingsControlView: View {
                 } else {
                     NotSupportedForThisCameraView()
                 }
-            }
-            if model.showingCameraIso {
+            } else if model.showingCameraSetting == .iso {
                 Text("ISO")
                     .font(.footnote)
                     .foregroundColor(.white)
@@ -251,8 +249,7 @@ private struct CameraSettingsControlView: View {
                 } else {
                     NotSupportedForThisCameraView()
                 }
-            }
-            if model.showingCameraFocus {
+            } else if model.showingCameraSetting == .focus {
                 Text("FOCUS")
                     .font(.footnote)
                     .foregroundColor(.white)
@@ -299,63 +296,59 @@ private struct CameraSettingsControlView: View {
             }
             HStack {
                 Button {
-                    model.showingCameraBias.toggle()
-                    if model.showingCameraBias {
-                        model.showingCameraWhiteBalance = false
-                        model.showingCameraIso = false
-                        model.showingCameraFocus = false
+                    if model.showingCameraSetting == .exposureBias {
+                        model.showingCameraSetting = .none
+                    } else {
+                        model.showingCameraSetting = .exposureBias
                     }
                 } label: {
                     CameraSettingButtonView(
                         title: String(localized: "EXB"),
                         value: formatExposureBias(),
                         locked: true,
-                        on: model.showingCameraBias
+                        on: model.showingCameraSetting == .exposureBias
                     )
                 }
                 Button {
-                    model.showingCameraWhiteBalance.toggle()
-                    if model.showingCameraWhiteBalance {
-                        model.showingCameraBias = false
-                        model.showingCameraIso = false
-                        model.showingCameraFocus = false
+                    if model.showingCameraSetting == .whiteBalance {
+                        model.showingCameraSetting = .none
+                    } else {
+                        model.showingCameraSetting = .whiteBalance
                     }
                 } label: {
                     CameraSettingButtonView(
                         title: String(localized: "WB"),
                         value: formatWhiteBalance(),
                         locked: model.manualWhiteBalanceEnabled,
-                        on: model.showingCameraWhiteBalance
+                        on: model.showingCameraSetting == .whiteBalance
                     )
                 }
                 Button {
-                    model.showingCameraIso.toggle()
-                    if model.showingCameraIso {
-                        model.showingCameraBias = false
-                        model.showingCameraWhiteBalance = false
-                        model.showingCameraFocus = false
+                    if model.showingCameraSetting == .iso {
+                        model.showingCameraSetting = .none
+                    } else {
+                        model.showingCameraSetting = .iso
                     }
                 } label: {
                     CameraSettingButtonView(
                         title: String(localized: "ISO"),
                         value: formatIso(),
                         locked: model.manualIsoEnabled,
-                        on: model.showingCameraIso
+                        on: model.showingCameraSetting == .iso
                     )
                 }
                 Button {
-                    model.showingCameraFocus.toggle()
-                    if model.showingCameraFocus {
-                        model.showingCameraBias = false
-                        model.showingCameraWhiteBalance = false
-                        model.showingCameraIso = false
+                    if model.showingCameraSetting == .focus {
+                        model.showingCameraSetting = .none
+                    } else {
+                        model.showingCameraSetting = .focus
                     }
                 } label: {
                     CameraSettingButtonView(
                         title: String(localized: "FOC"),
                         value: formatFocus(),
                         locked: model.manualFocusEnabled,
-                        on: model.showingCameraFocus
+                        on: model.showingCameraSetting == .focus
                     )
                 }
             }

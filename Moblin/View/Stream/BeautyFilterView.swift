@@ -15,15 +15,15 @@ private struct BeautyButtonView: View {
 
     var body: some View {
         Text(title)
-        .font(.subheadline)
-        .frame(width: cameraButtonWidth, height: segmentHeight)
-        .background(pickerBackgroundColor)
-        .foregroundColor(.white)
-        .cornerRadius(7)
-        .overlay(
-            RoundedRectangle(cornerRadius: 7)
-                .stroke(on ? .white : pickerBorderColor)
-        )
+            .font(.subheadline)
+            .frame(width: cameraButtonWidth, height: segmentHeight)
+            .background(pickerBackgroundColor)
+            .foregroundColor(.white)
+            .cornerRadius(7)
+            .overlay(
+                RoundedRectangle(cornerRadius: 7)
+                    .stroke(on ? .white : pickerBorderColor)
+            )
     }
 }
 
@@ -36,29 +36,25 @@ struct BeautyFilterView: View {
             VStack(alignment: .trailing, spacing: 1) {
                 Spacer()
                 HStack {
-                    Button {
-                    } label: {
+                    Button {} label: {
                         BeautyButtonView(
                             title: String(localized: "Mouth"),
                             on: false
                         )
                     }
-                    Button {
-                    } label: {
+                    Button {} label: {
                         BeautyButtonView(
                             title: String(localized: "Blur"),
                             on: false
                         )
                     }
-                    Button {
-                    } label: {
+                    Button {} label: {
                         BeautyButtonView(
                             title: String(localized: "Beauty"),
                             on: false
                         )
                     }
-                    Button {
-                    } label: {
+                    Button {} label: {
                         BeautyButtonView(
                             title: String(localized: "Enabled"),
                             on: false
