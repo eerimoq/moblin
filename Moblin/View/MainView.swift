@@ -130,12 +130,6 @@ struct MainView: View {
                         if model.showBrowser {
                             webBrowserView
                         }
-                        if model.showBeautyFilter {
-                            BeautyFilterView(enabled: model.database.debug!.beautyFilter!,
-                                             beauty: model.database.debug!.beautyFilterSettings!.showCute!,
-                                             blur: model.database.debug!.beautyFilterSettings!.showBlur,
-                                             mouth: model.database.debug!.beautyFilterSettings!.showMoblin)
-                        }
                     }
                     .gesture(
                         MagnificationGesture()
@@ -222,12 +216,6 @@ struct MainView: View {
                         }
                         if model.showBrowser {
                             webBrowserView
-                        }
-                        if model.showBeautyFilter {
-                            BeautyFilterView(enabled: model.database.debug!.beautyFilter!,
-                                             beauty: model.database.debug!.beautyFilterSettings!.showCute!,
-                                             blur: model.database.debug!.beautyFilterSettings!.showBlur,
-                                             mouth: model.database.debug!.beautyFilterSettings!.showMoblin)
                         }
                     }
                     .gesture(

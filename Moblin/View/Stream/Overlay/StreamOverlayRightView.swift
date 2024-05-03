@@ -572,7 +572,16 @@ struct RightOverlayView: View {
                 color: .white
             )
             Spacer()
-            if !(model.showDrawOnStream || model.showBeautyFilter) {
+            if !model.showDrawOnStream {
+                if model.showBeautyFilter {
+                    BeautyFilterView(enabled: model.database.debug!.beautyFilter!,
+                                     cute: model.database.debug!.beautyFilterSettings!.showCute!,
+                                     blur: model.database.debug!.beautyFilterSettings!.showBlur,
+                                     mouth: model.database.debug!.beautyFilterSettings!.showMoblin,
+                                     cuteRadius: model.database.debug!.beautyFilterSettings!.cuteRadius!,
+                                     cuteScale: model.database.debug!.beautyFilterSettings!.cuteScale!,
+                                     cuteOffset: model.database.debug!.beautyFilterSettings!.cuteOffset!)
+                }
                 if model.showingCamera {
                     CameraSettingsControlView()
                 }
