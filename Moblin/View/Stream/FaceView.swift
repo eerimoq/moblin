@@ -7,7 +7,7 @@ private let cameraButtonWidth = 70.0
 private let pickerBorderColor = Color.gray
 private var pickerBackgroundColor = Color.black.opacity(0.6)
 
-private struct BeautyButtonView: View {
+private struct FaceButtonView: View {
     var title: String
     var on: Bool
 
@@ -25,7 +25,7 @@ private struct BeautyButtonView: View {
     }
 }
 
-struct BeautyFilterView: View {
+struct FaceView: View {
     @EnvironmentObject var model: Model
     @State var enabled: Bool
     @State var cute: Bool
@@ -48,7 +48,6 @@ struct BeautyFilterView: View {
                     HStack {
                         Text("Radius")
                             .foregroundStyle(.white)
-                            .background(backgroundColor)
                         Slider(
                             value: $cuteRadius,
                             in: 0 ... 1,
@@ -74,7 +73,6 @@ struct BeautyFilterView: View {
                     HStack {
                         Text("Scale")
                             .foregroundStyle(.white)
-                            .background(backgroundColor)
                         Slider(
                             value: $cuteScale,
                             in: 0 ... 1,
@@ -100,7 +98,6 @@ struct BeautyFilterView: View {
                     HStack {
                         Text("Offset")
                             .foregroundStyle(.white)
-                            .background(backgroundColor)
                         Slider(
                             value: $cuteOffset,
                             in: 0 ... 1,
@@ -129,7 +126,7 @@ struct BeautyFilterView: View {
                         model.updateBeautyFilterSettings()
                         cute = settings.showCute!
                     } label: {
-                        BeautyButtonView(
+                        FaceButtonView(
                             title: String(localized: "Enabled"),
                             on: cute
                         )
@@ -143,7 +140,7 @@ struct BeautyFilterView: View {
                         model.updateBeautyFilterSettings()
                         mouth = settings.showMoblin
                     } label: {
-                        BeautyButtonView(
+                        FaceButtonView(
                             title: String(localized: "Mouth"),
                             on: mouth
                         )
@@ -154,7 +151,7 @@ struct BeautyFilterView: View {
                         model.updateBeautyFilterSettings()
                         blur = settings.showBlur
                     } label: {
-                        BeautyButtonView(
+                        FaceButtonView(
                             title: String(localized: "Blur"),
                             on: blur
                         )
@@ -162,7 +159,7 @@ struct BeautyFilterView: View {
                     Button {
                         model.showBeautyFilterCute.toggle()
                     } label: {
-                        BeautyButtonView(
+                        FaceButtonView(
                             title: String(localized: "Cute"),
                             on: model.showBeautyFilterCute
                         )
@@ -172,14 +169,14 @@ struct BeautyFilterView: View {
                         model.sceneUpdated()
                         enabled = model.database.debug!.beautyFilter!
                     } label: {
-                        BeautyButtonView(
+                        FaceButtonView(
                             title: String(localized: "Enabled"),
                             on: enabled
                         )
                     }
                 }
             }
-            .padding([.bottom], 5)
+            .padding([.trailing], 16)
         }
     }
 }

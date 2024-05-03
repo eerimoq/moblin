@@ -27240,6 +27240,9 @@
         }
       }
     },
+    "Face" : {
+
+    },
     "Face landmarks" : {
       "localizations" : {
         "de" : {

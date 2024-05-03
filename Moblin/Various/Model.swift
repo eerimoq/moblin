@@ -345,7 +345,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     @Published var showDrawOnStream: Bool = false
-    @Published var showBeautyFilter: Bool = false
+    @Published var showFace = false
     @Published var showBeautyFilterCute: Bool = false
     @Published var showLocalOverlays: Bool = true
     @Published var showBrowser: Bool = false

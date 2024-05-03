@@ -523,6 +523,12 @@ struct ButtonsInnerView: View {
         model.showCameraPreview.toggle()
     }
 
+    private func faceAction(state _: ButtonState) {
+        state.button.isOn.toggle()
+        model.updateButtonStates()
+        model.showFace.toggle()
+    }
+
     var body: some View {
         VStack {
             switch state.button.type {
@@ -690,6 +696,12 @@ struct ButtonsInnerView: View {
             case .cameraPreview:
                 Button(action: {
                     cameraPreviewAction(state: state)
+                }, label: {
+                    ButtonImage(state: state, buttonSize: size)
+                })
+            case .face:
+                Button(action: {
+                    faceAction(state: state)
                 }, label: {
                     ButtonImage(state: state, buttonSize: size)
                 })

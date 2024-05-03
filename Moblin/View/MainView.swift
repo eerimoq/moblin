@@ -127,6 +127,18 @@ struct MainView: View {
                         .edgesIgnoringSafeArea(.all)
                         StreamOverlayView()
                             .opacity(model.showLocalOverlays ? 1 : 0)
+                        if model.showFace {
+                            FaceView(enabled: model.database.debug!.beautyFilter!,
+                                     cute: model.database.debug!.beautyFilterSettings!.showCute!,
+                                     blur: model.database.debug!.beautyFilterSettings!.showBlur,
+                                     mouth: model.database.debug!.beautyFilterSettings!.showMoblin,
+                                     cuteRadius: model.database.debug!.beautyFilterSettings!
+                                         .cuteRadius!,
+                                     cuteScale: model.database.debug!.beautyFilterSettings!
+                                         .cuteScale!,
+                                     cuteOffset: model.database.debug!.beautyFilterSettings!
+                                         .cuteOffset!)
+                        }
                         if model.showBrowser {
                             webBrowserView
                         }
@@ -213,6 +225,18 @@ struct MainView: View {
                             .opacity(model.showLocalOverlays ? 1 : 0)
                         if model.showDrawOnStream {
                             DrawOnStreamView()
+                        }
+                        if model.showFace {
+                            FaceView(enabled: model.database.debug!.beautyFilter!,
+                                     cute: model.database.debug!.beautyFilterSettings!.showCute!,
+                                     blur: model.database.debug!.beautyFilterSettings!.showBlur,
+                                     mouth: model.database.debug!.beautyFilterSettings!.showMoblin,
+                                     cuteRadius: model.database.debug!.beautyFilterSettings!
+                                         .cuteRadius!,
+                                     cuteScale: model.database.debug!.beautyFilterSettings!
+                                         .cuteScale!,
+                                     cuteOffset: model.database.debug!.beautyFilterSettings!
+                                         .cuteOffset!)
                         }
                         if model.showBrowser {
                             webBrowserView
