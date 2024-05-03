@@ -6,8 +6,6 @@ final class BeautyEffect: VideoEffect {
     var showBlur = true
     var showColors = true
     var showMoblin = true
-    var showComic = true
-    var showFaceRectangle = true
     var showFaceLandmarks = true
     var contrast: Float = 1.0
     var brightness: Float = 0.0
@@ -114,12 +112,6 @@ final class BeautyEffect: VideoEffect {
             .clampedToExtent()
             .applyingGaussianBlur(sigma: image.extent.width / 50.0)
             .cropped(to: image.extent)
-    }
-
-    private func applyComic(image: CIImage?) -> CIImage? {
-        let filter = CIFilter.comicEffect()
-        filter.inputImage = image
-        return filter.outputImage
     }
 
     private func applyFacesMask(backgroundImage: CIImage?, image: CIImage?,
@@ -241,36 +233,6 @@ final class BeautyEffect: VideoEffect {
         }
         var mesh: [CIVector] = []
         for detection in detections {
-            if showFaceRectangle {
-                let faceBoundingBox = CGRect(x: detection.boundingBox.minX * image.extent.width,
-                                             y: detection.boundingBox.minY * image.extent.height,
-                                             width: detection.boundingBox.width * image.extent.width,
-                                             height: detection.boundingBox.height * image.extent.height)
-                mesh.append(CIVector(
-                    x: faceBoundingBox.minX,
-                    y: faceBoundingBox.minY,
-                    z: faceBoundingBox.maxX,
-                    w: faceBoundingBox.minY
-                ))
-                mesh.append(CIVector(
-                    x: faceBoundingBox.maxX,
-                    y: faceBoundingBox.minY,
-                    z: faceBoundingBox.maxX,
-                    w: faceBoundingBox.maxY
-                ))
-                mesh.append(CIVector(
-                    x: faceBoundingBox.maxX,
-                    y: faceBoundingBox.maxY,
-                    z: faceBoundingBox.minX,
-                    w: faceBoundingBox.maxY
-                ))
-                mesh.append(CIVector(
-                    x: faceBoundingBox.minX,
-                    y: faceBoundingBox.maxY,
-                    z: faceBoundingBox.minX,
-                    w: faceBoundingBox.minY
-                ))
-            }
             guard let landmarks = detection.landmarks else {
                 continue
             }
@@ -303,9 +265,6 @@ final class BeautyEffect: VideoEffect {
         var outputImage: CIImage? = image
         if showColors {
             outputImage = adjustColors(image: outputImage)
-        }
-        if showComic {
-            outputImage = applyComic(image: outputImage)
         }
         if showBlur {
             outputImage = applyBlur(image: outputImage)

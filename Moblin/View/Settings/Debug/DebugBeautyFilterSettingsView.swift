@@ -170,24 +170,6 @@ struct DebugBeautyFilterSettingsView: View {
                 }
             }
             Section {
-                Toggle("Comic", isOn: Binding(get: {
-                    settings.showComic
-                }, set: { value in
-                    settings.showComic = value
-                    model.store()
-                    model.updateBeautyFilterSettings()
-                }))
-            }
-            Section {
-                Toggle("Face rectangle", isOn: Binding(get: {
-                    settings.showFaceRectangle
-                }, set: { value in
-                    settings.showFaceRectangle = value
-                    model.store()
-                    model.updateBeautyFilterSettings()
-                }))
-            }
-            Section {
                 Toggle("Face landmarks", isOn: Binding(get: {
                     settings.showFaceLandmarks
                 }, set: { value in

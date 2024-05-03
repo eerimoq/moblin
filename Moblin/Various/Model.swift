@@ -862,8 +862,6 @@ final class Model: NSObject, ObservableObject {
         beautyEffect.showBlur = settings.showBlur
         beautyEffect.showColors = settings.showColors
         beautyEffect.showMoblin = settings.showMoblin
-        beautyEffect.showComic = settings.showComic
-        beautyEffect.showFaceRectangle = settings.showFaceRectangle
         beautyEffect.showFaceLandmarks = settings.showFaceLandmarks
         beautyEffect.contrast = settings.contrast
         beautyEffect.brightness = settings.brightness

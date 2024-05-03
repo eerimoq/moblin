@@ -1062,7 +1062,9 @@ class SettingsDebugBeautyFilter: Codable {
     var showBlur = false
     var showColors = false
     var showMoblin = false
+    // periphery:ignore
     var showComic = false
+    // periphery:ignore
     var showFaceRectangle = false
     var showFaceLandmarks = false
     var brightness: Float = 0.0

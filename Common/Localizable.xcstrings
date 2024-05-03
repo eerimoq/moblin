@@ -17199,6 +17199,7 @@
       }
     },
     "Comic" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -27367,6 +27368,7 @@
       }
     },
     "Face rectangle" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
