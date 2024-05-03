@@ -44,7 +44,7 @@ struct BeautyFilterView: View {
             Spacer()
             VStack(alignment: .trailing, spacing: 1) {
                 Spacer()
-                if cute {
+                if model.showBeautyFilterCute {
                     HStack {
                         Text("Radius")
                             .foregroundStyle(.white)
@@ -123,6 +123,18 @@ struct BeautyFilterView: View {
                     .background(backgroundColor)
                     .cornerRadius(7)
                     .padding([.bottom], 5)
+                    Button {
+                        settings.showCute!.toggle()
+                        model.store()
+                        model.updateBeautyFilterSettings()
+                        cute = settings.showCute!
+                    } label: {
+                        BeautyButtonView(
+                            title: String(localized: "Enabled"),
+                            on: cute
+                        )
+                    }
+                    .padding([.bottom], 5)
                 }
                 HStack {
                     Button {
@@ -148,14 +160,11 @@ struct BeautyFilterView: View {
                         )
                     }
                     Button {
-                        settings.showCute!.toggle()
-                        model.store()
-                        model.updateBeautyFilterSettings()
-                        cute = settings.showCute!
+                        model.showBeautyFilterCute.toggle()
                     } label: {
                         BeautyButtonView(
                             title: String(localized: "Cute"),
-                            on: cute
+                            on: model.showBeautyFilterCute
                         )
                     }
                     Button {
