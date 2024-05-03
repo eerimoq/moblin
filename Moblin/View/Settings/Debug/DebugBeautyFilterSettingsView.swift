@@ -5,9 +5,6 @@ struct DebugBeautyFilterSettingsView: View {
     @State var brightness: Float
     @State var contrast: Float
     @State var saturation: Float
-    @State var cuteRadius: Float
-    @State var cuteScale: Float
-    @State var cuteOffset: Float
 
     private var settings: SettingsDebugBeautyFilter {
         model.database.debug!.beautyFilterSettings!
@@ -15,97 +12,6 @@ struct DebugBeautyFilterSettingsView: View {
 
     var body: some View {
         Form {
-            Section {
-                Toggle("Enabled", isOn: Binding(get: {
-                    model.database.debug!.beautyFilter!
-                }, set: { value in
-                    model.database.debug!.beautyFilter = value
-                    model.sceneUpdated()
-                }))
-            }
-            Section {
-                Toggle("Enabled", isOn: Binding(get: {
-                    settings.showCute!
-                }, set: { value in
-                    settings.showCute = value
-                    model.store()
-                    model.updateBeautyFilterSettings()
-                }))
-                HStack {
-                    Text("Radius")
-                    Slider(
-                        value: $cuteRadius,
-                        in: 0 ... 1,
-                        step: 0.01,
-                        onEditingChanged: { begin in
-                            guard !begin else {
-                                return
-                            }
-                            model.store()
-                        }
-                    )
-                    .onChange(of: cuteRadius) { _ in
-                        settings.cuteRadius = cuteRadius
-                        model.updateBeautyFilterSettings()
-                    }
-                }
-                HStack {
-                    Text("Scale")
-                    Slider(
-                        value: $cuteScale,
-                        in: 0 ... 1,
-                        step: 0.01,
-                        onEditingChanged: { begin in
-                            guard !begin else {
-                                return
-                            }
-                            model.store()
-                        }
-                    )
-                    .onChange(of: cuteScale) { _ in
-                        settings.cuteScale = cuteScale
-                        model.updateBeautyFilterSettings()
-                    }
-                }
-                HStack {
-                    Text("Offset")
-                    Slider(
-                        value: $cuteOffset,
-                        in: 0 ... 1,
-                        step: 0.01,
-                        onEditingChanged: { begin in
-                            guard !begin else {
-                                return
-                            }
-                            model.store()
-                        }
-                    )
-                    .onChange(of: cuteOffset) { _ in
-                        settings.cuteOffset = cuteOffset
-                        model.updateBeautyFilterSettings()
-                    }
-                }
-            } header: {
-                Text("Cute")
-            }
-            Section {
-                Toggle("Blur", isOn: Binding(get: {
-                    settings.showBlur
-                }, set: { value in
-                    settings.showBlur = value
-                    model.store()
-                    model.updateBeautyFilterSettings()
-                }))
-            }
-            Section {
-                Toggle("Moblin in mouth", isOn: Binding(get: {
-                    settings.showMoblin
-                }, set: { value in
-                    settings.showMoblin = value
-                    model.store()
-                    model.updateBeautyFilterSettings()
-                }))
-            }
             Section {
                 Toggle("Enabled", isOn: Binding(get: {
                     settings.showColors

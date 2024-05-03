@@ -40885,6 +40885,7 @@
       }
     },
     "Moblin in mouth" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
