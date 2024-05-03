@@ -8,11 +8,15 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.255.0", date: "2024-05-03", changes: [
+        "• Show \"Not supported for this camera\" instead of slider and lock in camera image settings. 💡 axm_ and JohannesLiv",
+        "• Remove comic filter and face rectangle from beauty filter.",
+    ]),
     Version(version: "0.254.0", date: "2024-05-02", changes: [
         "• Basic white balance settings.",
         "  • 3000-8000K.",
         "  • No tint. Only temperature.",
-        "• Settings to automatically start and stop recordings when going live and ending stream. :factory_worker: ErAzOr",
+        "• Settings to automatically start and stop recordings when going live and ending stream. 🧑‍🏭 ErAzOr",
     ]),
     Version(version: "0.253.0", date: "2024-05-01", changes: [
         "• Various smaller improvements to the camera settings.",
