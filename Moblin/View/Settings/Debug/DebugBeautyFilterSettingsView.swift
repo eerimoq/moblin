@@ -17,7 +17,7 @@ struct DebugBeautyFilterSettingsView: View {
                     settings.showColors
                 }, set: { value in
                     settings.showColors = value
-                    model.store()
+                    model.sceneUpdated()
                     model.updateFaceFilterSettings()
                 }))
                 HStack {
@@ -80,7 +80,7 @@ struct DebugBeautyFilterSettingsView: View {
                     settings.showFaceLandmarks
                 }, set: { value in
                     settings.showFaceLandmarks = value
-                    model.store()
+                    model.sceneUpdated()
                     model.updateFaceFilterSettings()
                 }))
             }
