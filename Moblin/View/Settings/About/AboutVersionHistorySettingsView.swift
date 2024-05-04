@@ -8,6 +8,9 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.258.0", date: "2024-05-04", changes: [
+        "• Fix crash when showing camera image settings in some light conditions.",
+    ]),
     Version(version: "0.257.0", date: "2024-05-04", changes: [
         "• Show streamer's WiFi SSID in remote control assistant.",
         "  • The streamer must have allowed Moblin access to location data for it to work.",
