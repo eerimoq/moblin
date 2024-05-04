@@ -8,6 +8,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.257.0", date: "2024-05-04", changes: [
+        "• Show streamer's WiFi SSID in remote control assistant.",
+        "  • The streamer must have allowed Moblin access to location data for it to work.",
+        "    • Toggle Settings → Location → Enabled on and allow.",
+        "• Debug toggle to allow video range (and often prefer it).",
+        "  • Possibly to debug screen black flashing.",
+    ]),
     Version(version: "0.256.0", date: "2024-05-04", changes: [
         "• \"Face\" quick button to hide/show face filters.",
         "  • Moblin in mouth.",
