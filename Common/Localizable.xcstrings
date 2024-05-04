@@ -11616,7 +11616,128 @@
       }
     },
     "Beauty" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Schönheit"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ομορφιά"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Belleza"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Beauté"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "सुंदरता"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Kecantikan"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bellezza"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "美しさ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "아름다움"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Schoonheid"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Uroda"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Beleza"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Beleza"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Красота"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skönhet"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Güzellik"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Краса"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Sắc đẹp"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "美丽"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "美麗"
+          }
+        }
+      }
     },
     "Beauty filter" : {
       "localizations" : {
@@ -17198,131 +17319,6 @@
         }
       }
     },
-    "Comic" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Comic"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Κόμικς"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Cómic"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bande dessinée"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "हास्य"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Komik"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Comico"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "漫画"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "만화"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Grappig"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Komiczny"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Quadrinho"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Quadrinho"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Комикс"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Serietidning"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "komik"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Комікс"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Hài hước"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "漫画"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "漫畫"
-          }
-        }
-      }
-    },
     "Configure it in Settings → Remote control" : {
       "localizations" : {
         "de" : {
@@ -20264,7 +20260,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Beskära"
+            "value" : "Beskär"
           }
         },
         "tr" : {
@@ -27244,7 +27240,128 @@
       }
     },
     "Face" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Gesicht"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Πρόσωπο"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Rostro"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Affronter"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "चेहरा"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Menghadapi"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Viso"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "顔"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "얼굴"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Gezicht"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Twarz"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Face"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Face"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Лицо"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ansikte"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Yüz"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Обличчя"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Khuôn mặt"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "脸"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "臉"
+          }
+        }
+      }
     },
     "Face landmarks" : {
       "localizations" : {
@@ -27366,131 +27483,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "臉部地標"
-          }
-        }
-      }
-    },
-    "Face rectangle" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Gesichtsrechteck"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ορθογώνιο προσώπου"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Rectángulo de cara"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Rectangle du visage"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "चेहरा आयताकार"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Wajah persegi panjang"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Rettangolo del viso"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "面の長方形"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "얼굴 직사각형"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Gezicht rechthoek"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Prostokąt twarzy"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Retângulo de rosto"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Retângulo de rosto"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Прямоугольник лица"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ansiktsrektangel"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Yüz dikdörtgeni"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Обличчя прямокутника"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Mặt hình chữ nhật"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "脸部矩形"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "臉部矩形"
           }
         }
       }
@@ -40887,131 +40879,6 @@
         }
       }
     },
-    "Moblin in mouth" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Moblin im Mund"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Moblin στο στόμα"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Moblin en la boca"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Moblin en bouche"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "मुँह में मोबलिन"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Moblin di mulut"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Moblin in bocca"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "口の中のモブリン"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "입 속의 모블린"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Moblin in de mond"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Moblin w ustach"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Moblin na boca"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Moblin na boca"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Моблин во рту"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Moblin i munnen"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Moblin ağzında"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Моблін в роті"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Moblin trong miệng"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "莫布林在嘴里"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "莫布林在嘴裡"
-          }
-        }
-      }
-    },
     "moblin:// deep links can be used to import some settings, often using QR codes or a browser. See https://github.com/eerimoq/moblin for details." : {
       "localizations" : {
         "de" : {
@@ -41261,7 +41128,128 @@
       }
     },
     "Mouth" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mund"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Στόμα"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Boca"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bouche"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "मुँह"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mulut"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bocca"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "口"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "입"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mond"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Usta"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Boca"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Boca"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Рот"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mun"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ağız"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Рот"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Miệng"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "嘴"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "嘴"
+          }
+        }
+      }
     },
     "Movie" : {
       "localizations" : {
