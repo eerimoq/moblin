@@ -8,6 +8,12 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.256.0", date: "2024-05-04", changes: [
+        "• \"Face\" quick button to hide/show face filters.",
+        "  • Mobllin in mouth.",
+        "  • Blur.",
+        "  • (Not so) cute? ...with too many parameters.",
+    ]),
     Version(version: "0.255.0", date: "2024-05-03", changes: [
         "• Show \"Not supported for this camera\" instead of slider and lock in camera image settings. 💡 axm_ and JohannesLiv",
         "• Remove comic filter and face rectangle from beauty filter.",
