@@ -10,7 +10,7 @@ struct Version {
 private let versions = [
     Version(version: "0.256.0", date: "2024-05-04", changes: [
         "• \"Face\" quick button to hide/show face filters.",
-        "  • Mobllin in mouth.",
+        "  • Moblin in mouth.",
         "  • Blur.",
         "  • (Not so) cute? ...with too many parameters.",
     ]),
