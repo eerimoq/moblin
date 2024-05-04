@@ -124,12 +124,14 @@ final class FaceEffect: VideoEffect {
             if diffY <= diffX {
                 continue
             }
-            outputImage = moblinImage
+            let moblinImage = moblinImage
                 .transformed(by: CGAffineTransform(
                     scaleX: diffX / moblinImage.extent.width,
                     y: diffX / moblinImage.extent.width
                 ))
-                .transformed(by: CGAffineTransform(translationX: minX, y: minY))
+            let offsetY = minY + (diffY - moblinImage.extent.height) / 2
+            outputImage = moblinImage
+                .transformed(by: CGAffineTransform(translationX: minX, y: offsetY))
                 .composited(over: outputImage)
         }
         return outputImage.cropped(to: image.extent)
