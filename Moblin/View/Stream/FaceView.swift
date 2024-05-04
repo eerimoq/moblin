@@ -44,7 +44,7 @@ struct FaceView: View {
             Spacer()
             VStack(alignment: .trailing, spacing: 1) {
                 Spacer()
-                if model.showBeautyFilterCute {
+                if model.showFaceBeauty {
                     HStack {
                         Text("Radius")
                             .foregroundStyle(.white)
@@ -61,7 +61,7 @@ struct FaceView: View {
                         )
                         .onChange(of: cuteRadius) { _ in
                             settings.cuteRadius = cuteRadius
-                            model.updateBeautyFilterSettings()
+                            model.updateFaceFilterSettings()
                         }
                     }
                     .padding([.top, .bottom], 5)
@@ -86,7 +86,7 @@ struct FaceView: View {
                         )
                         .onChange(of: cuteScale) { _ in
                             settings.cuteScale = cuteScale
-                            model.updateBeautyFilterSettings()
+                            model.updateFaceFilterSettings()
                         }
                     }
                     .padding([.top, .bottom], 5)
@@ -111,7 +111,7 @@ struct FaceView: View {
                         )
                         .onChange(of: cuteOffset) { _ in
                             settings.cuteOffset = cuteOffset
-                            model.updateBeautyFilterSettings()
+                            model.updateFaceFilterSettings()
                         }
                     }
                     .padding([.top, .bottom], 5)
@@ -123,7 +123,7 @@ struct FaceView: View {
                     Button {
                         settings.showCute!.toggle()
                         model.sceneUpdated()
-                        model.updateBeautyFilterSettings()
+                        model.updateFaceFilterSettings()
                         cute = settings.showCute!
                     } label: {
                         FaceButtonView(
@@ -137,7 +137,7 @@ struct FaceView: View {
                     Button {
                         model.database.debug!.beautyFilter!.toggle()
                         model.sceneUpdated()
-                        model.updateBeautyFilterSettings()
+                        model.updateFaceFilterSettings()
                         crop = model.database.debug!.beautyFilter!
                     } label: {
                         FaceButtonView(
@@ -148,7 +148,7 @@ struct FaceView: View {
                     Button {
                         settings.showMoblin.toggle()
                         model.sceneUpdated()
-                        model.updateBeautyFilterSettings()
+                        model.updateFaceFilterSettings()
                         mouth = settings.showMoblin
                     } label: {
                         FaceButtonView(
@@ -159,7 +159,7 @@ struct FaceView: View {
                     Button {
                         settings.showBlur.toggle()
                         model.sceneUpdated()
-                        model.updateBeautyFilterSettings()
+                        model.updateFaceFilterSettings()
                         blur = settings.showBlur
                     } label: {
                         FaceButtonView(
@@ -168,11 +168,11 @@ struct FaceView: View {
                         )
                     }
                     Button {
-                        model.showBeautyFilterCute.toggle()
+                        model.showFaceBeauty.toggle()
                     } label: {
                         FaceButtonView(
                             title: String(localized: "Beauty"),
-                            on: model.showBeautyFilterCute || cute
+                            on: model.showFaceBeauty || cute
                         )
                     }
                 }

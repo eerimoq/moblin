@@ -334,7 +334,7 @@ final class Model: NSObject, ObservableObject {
     @Published var backZoomPresetId = UUID()
     @Published var frontZoomPresetId = UUID()
     @Published var zoomX: Float = 1.0
-    @Published var hasZoom: Bool = true
+    @Published var hasZoom = true
     private var zoomXPinch: Float = 1.0
     private var backZoomX: Float = 0.5
     private var frontZoomX: Float = 1.0
@@ -344,11 +344,11 @@ final class Model: NSObject, ObservableObject {
         settings.database
     }
 
-    @Published var showDrawOnStream: Bool = false
+    @Published var showDrawOnStream = false
     @Published var showFace = false
-    @Published var showBeautyFilterCute: Bool = false
-    @Published var showLocalOverlays: Bool = true
-    @Published var showBrowser: Bool = false
+    @Published var showFaceBeauty = false
+    @Published var showLocalOverlays = true
+    @Published var showBrowser = false
     @Published var drawOnStreamLines: [DrawOnStreamLine] = []
     @Published var drawOnStreamSelectedColor: Color = .pink
     @Published var drawOnStreamSelectedWidth: CGFloat = 4
@@ -356,8 +356,8 @@ final class Model: NSObject, ObservableObject {
     @Published var webBrowserUrl: String = ""
     private var webBrowser: WKWebView?
 
-    @Published var isPresentingWizard: Bool = false
-    @Published var isPresentingSetupWizard: Bool = false
+    @Published var isPresentingWizard = false
+    @Published var isPresentingSetupWizard = false
     var wizardPlatform: WizardPlatform = .custom
     var wizardNetworkSetup: WizardNetworkSetup = .none
     var wizardCustomProtocol: WizardCustomProtocol = .none
@@ -855,10 +855,10 @@ final class Model: NSObject, ObservableObject {
         chatTextToSpeech.setFilter(value: database.chat.textToSpeechFilter!)
         AppDelegate.orientationLock = .landscape
         updateOrientationLock()
-        updateBeautyFilterSettings()
+        updateFaceFilterSettings()
     }
 
-    func updateBeautyFilterSettings() {
+    func updateFaceFilterSettings() {
         let settings = database.debug!.beautyFilterSettings!
         faceEffect.crop = database.debug!.beautyFilter!
         faceEffect.showBlur = settings.showBlur
@@ -1707,7 +1707,7 @@ final class Model: NSObject, ObservableObject {
         media.unregisterEffect(tripleEffect)
         media.unregisterEffect(pixellateEffect)
         faceEffect = FaceEffect()
-        updateBeautyFilterSettings()
+        updateFaceFilterSettings()
         movieEffect = MovieEffect()
         grayScaleEffect = GrayScaleEffect()
         sepiaEffect = SepiaEffect()
@@ -1724,9 +1724,10 @@ final class Model: NSObject, ObservableObject {
 
     private func isFaceEnabled() -> Bool {
         let settings = database.debug!.beautyFilterSettings!
-        return database.debug!.beautyFilter! || settings.showBlur || settings.showMoblin || settings.showColors || settings.showFaceLandmarks || settings.showCute!
+        return database.debug!.beautyFilter! || settings.showBlur || settings.showMoblin || settings
+            .showColors || settings.showFaceLandmarks || settings.showCute!
     }
-    
+
     private func registerGlobalVideoEffects() -> [VideoEffect] {
         var effects: [VideoEffect] = []
         if isFaceEnabled() {

@@ -18,7 +18,7 @@ struct DebugBeautyFilterSettingsView: View {
                 }, set: { value in
                     settings.showColors = value
                     model.store()
-                    model.updateBeautyFilterSettings()
+                    model.updateFaceFilterSettings()
                 }))
                 HStack {
                     Text("Brightness")
@@ -35,7 +35,7 @@ struct DebugBeautyFilterSettingsView: View {
                     )
                     .onChange(of: brightness) { _ in
                         settings.brightness = brightness
-                        model.updateBeautyFilterSettings()
+                        model.updateFaceFilterSettings()
                     }
                 }
                 HStack {
@@ -53,7 +53,7 @@ struct DebugBeautyFilterSettingsView: View {
                     )
                     .onChange(of: contrast) { _ in
                         settings.contrast = contrast
-                        model.updateBeautyFilterSettings()
+                        model.updateFaceFilterSettings()
                     }
                 }
                 HStack {
@@ -71,7 +71,7 @@ struct DebugBeautyFilterSettingsView: View {
                     )
                     .onChange(of: saturation) { _ in
                         settings.saturation = saturation
-                        model.updateBeautyFilterSettings()
+                        model.updateFaceFilterSettings()
                     }
                 }
             }
@@ -81,7 +81,7 @@ struct DebugBeautyFilterSettingsView: View {
                 }, set: { value in
                     settings.showFaceLandmarks = value
                     model.store()
-                    model.updateBeautyFilterSettings()
+                    model.updateFaceFilterSettings()
                 }))
             }
         }
