@@ -21,14 +21,6 @@ struct DebugSettingsView: View {
         model.store()
     }
 
-    private func onPixelFormatChange(format: String) {
-        model.database.debug!.pixelFormat = format
-        model.setPixelFormat()
-        model.store()
-        model.reloadStream()
-        model.sceneUpdated()
-    }
-
     var body: some View {
         Form {
             Section {
@@ -95,17 +87,6 @@ struct DebugSettingsView: View {
                 }, set: { value in
                     model.setGlobalToneMapping(on: value)
                 }))
-                NavigationLink(destination: InlinePickerView(
-                    title: String(localized: "Pixel format"),
-                    onChange: onPixelFormatChange,
-                    items: InlinePickerItem.fromStrings(values: pixelFormats),
-                    selectedId: model.database.debug!.pixelFormat!
-                )) {
-                    TextItemView(
-                        name: String(localized: "Pixel format"),
-                        value: model.database.debug!.pixelFormat!
-                    )
-                }
                 NavigationLink(destination: DebugBeautyFilterSettingsView(
                     brightness: model.database.debug!.beautyFilterSettings!.brightness,
                     contrast: model.database.debug!.beautyFilterSettings!.contrast,

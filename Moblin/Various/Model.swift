@@ -6,6 +6,7 @@ import GameController
 import MapKit
 import NaturalLanguage
 import Network
+import NetworkExtension
 import PhotosUI
 import SDWebImageSwiftUI
 import SDWebImageWebPCoder
@@ -401,6 +402,8 @@ final class Model: NSObject, ObservableObject {
     private var remoteControlAssistant: RemoteControlAssistant?
     @Published var remoteControlAssistantShowPreview = true
 
+    private var currentWiFiSsid: String?
+
     var cameraDevice: AVCaptureDevice?
     var cameraZoomLevelToXScale: Float = 1.0
     var cameraZoomXMinimum: Float = 1.0
@@ -600,6 +603,10 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
+    func setAllowVideoRangePixelFormat() {
+        allowVideoRangePixelFormat = database.debug!.allowVideoRangePixelFormat!
+    }
+
     func makeToast(title: String, subTitle: String? = nil) {
         toast = AlertToast(type: .regular, title: title, subTitle: subTitle)
         showingToast = true
@@ -731,6 +738,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func setup() {
+        setAllowVideoRangePixelFormat()
         supportsAppleLog = hasAppleLog()
         ioVideoUnitIgnoreFramesAfterAttachSeconds = Double(database.debug!.cameraSwitchRemoveBlackish!)
         let WebPCoder = SDImageWebPCoder.shared
@@ -1376,6 +1384,7 @@ final class Model: NSObject, ObservableObject {
             }
             self.media.logTiming()
             self.updateViewers()
+            self.updateCurrentSsid()
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
             self.updateAdaptiveBitrate()
@@ -1384,6 +1393,12 @@ final class Model: NSObject, ObservableObject {
             }
             self.updateChat()
             self.trySendNextChatPostToWatch()
+        })
+    }
+
+    private func updateCurrentSsid() {
+        NEHotspotNetwork.fetchCurrent(completionHandler: { network in
+            self.currentWiFiSsid = network?.ssid
         })
     }
 
@@ -4012,6 +4027,7 @@ extension Model: RemoteControlStreamerDelegate {
             @unknown default:
                 general.flame = .red
             }
+            general.wiFiSsid = self.currentWiFiSsid
             var topLeft = RemoteControlStatusTopLeft()
             if self.isShowingStatusStream() {
                 topLeft.stream = RemoteControlStatusItem(message: self.statusStreamText())

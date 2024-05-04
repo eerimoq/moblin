@@ -1,6 +1,8 @@
 import AVFoundation
 import Foundation
 
+var allowVideoRangePixelFormat = false
+
 extension AVCaptureDevice {
     func findVideoFormat(
         width: Int32,
@@ -16,7 +18,8 @@ extension AVCaptureDevice {
             .filter { !$0.isVideoBinned }
             // 420v does not work with OA4.
             .filter {
-                $0.formatDescription.mediaSubType.rawValue != kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
+                $0.formatDescription.mediaSubType
+                    .rawValue != kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange || allowVideoRangePixelFormat
             }
         // for format in formats {
         //    print("xxx", format)

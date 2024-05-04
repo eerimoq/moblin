@@ -48,6 +48,7 @@ struct RemoteControlStatusGeneral: Codable {
     var batteryCharging: Bool?
     var batteryLevel: Int?
     var flame: RemoteControlStatusGeneralFlame?
+    var wiFiSsid: String?
 }
 
 struct RemoteControlStatusTopLeft: Codable {

@@ -130,6 +130,13 @@ struct ControlBarRemoteControlAssistantView: View {
         return RemoteControlStatusItem(message: flame.rawValue)
     }
 
+    private func ssidStatus(status: RemoteControlStatusGeneral) -> RemoteControlStatusItem? {
+        guard let wiFiSsid = status.wiFiSsid else {
+            return nil
+        }
+        return RemoteControlStatusItem(message: wiFiSsid)
+    }
+
     var body: some View {
         HStack(spacing: 0) {
             if !model.isRemoteControlAssistantConnected() {
@@ -176,6 +183,7 @@ struct ControlBarRemoteControlAssistantView: View {
                             VStack(alignment: .leading, spacing: 3) {
                                 StatusItemView(icon: "battery.0", status: batteryStatus(status: status))
                                 StatusItemView(icon: "flame", status: flameStatus(status: status))
+                                StatusItemView(icon: "wifi", status: ssidStatus(status: status))
                             }
                         } else {
                             Text("No status received yet.")

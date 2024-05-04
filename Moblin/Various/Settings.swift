@@ -1091,6 +1091,7 @@ class SettingsDebug: Codable {
     var pixelFormat: String? = pixelFormats[1]
     var beautyFilter: Bool? = false
     var beautyFilterSettings: SettingsDebugBeautyFilter? = .init()
+    var allowVideoRangePixelFormat: Bool? = false
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -2359,6 +2360,10 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.recording!.autoStopRecording == nil {
             stream.recording!.autoStopRecording = false
+            store()
+        }
+        if realDatabase.debug!.allowVideoRangePixelFormat == nil {
+            realDatabase.debug!.allowVideoRangePixelFormat = false
             store()
         }
     }

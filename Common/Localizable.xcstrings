@@ -7889,6 +7889,9 @@
         }
       }
     },
+    "Allow video range pixel format" : {
+
+    },
     "Allowed range is %@ - %@." : {
       "localizations" : {
         "de" : {
@@ -15458,6 +15461,9 @@
           }
         }
       }
+    },
+    "Change camera and restart stream for these to work properly." : {
+
     },
     "Change settings in Moblin in iPhone/iPad." : {
       "localizations" : {
