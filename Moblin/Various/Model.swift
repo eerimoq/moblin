@@ -5508,7 +5508,10 @@ extension Model {
                 guard !self.editingManualWhiteBalance else {
                     return
                 }
-                let factor = factorFromWhiteBalance(device: device, gains: device.deviceWhiteBalanceGains)
+                let factor = factorFromWhiteBalance(
+                    device: device,
+                    gains: device.deviceWhiteBalanceGains.clamped(maxGain: device.maxWhiteBalanceGain)
+                )
                 self.manualWhiteBalances[device] = factor
                 self.manualWhiteBalance = factor
             }
