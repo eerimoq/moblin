@@ -128,7 +128,7 @@ struct MainView: View {
                         StreamOverlayView()
                             .opacity(model.showLocalOverlays ? 1 : 0)
                         if model.showFace {
-                            FaceView(enabled: model.database.debug!.beautyFilter!,
+                            FaceView(crop: model.database.debug!.beautyFilter!,
                                      cute: model.database.debug!.beautyFilterSettings!.showCute!,
                                      blur: model.database.debug!.beautyFilterSettings!.showBlur,
                                      mouth: model.database.debug!.beautyFilterSettings!.showMoblin,
@@ -227,7 +227,7 @@ struct MainView: View {
                             DrawOnStreamView()
                         }
                         if model.showFace {
-                            FaceView(enabled: model.database.debug!.beautyFilter!,
+                            FaceView(crop: model.database.debug!.beautyFilter!,
                                      cute: model.database.debug!.beautyFilterSettings!.showCute!,
                                      blur: model.database.debug!.beautyFilterSettings!.showBlur,
                                      mouth: model.database.debug!.beautyFilterSettings!.showMoblin,

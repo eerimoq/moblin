@@ -27,7 +27,7 @@ private struct FaceButtonView: View {
 
 struct FaceView: View {
     @EnvironmentObject var model: Model
-    @State var enabled: Bool
+    @State var crop: Bool
     @State var cute: Bool
     @State var blur: Bool
     @State var mouth: Bool
@@ -122,12 +122,12 @@ struct FaceView: View {
                     .padding([.bottom], 5)
                     Button {
                         settings.showCute!.toggle()
-                        model.store()
+                        model.sceneUpdated()
                         model.updateBeautyFilterSettings()
                         cute = settings.showCute!
                     } label: {
                         FaceButtonView(
-                            title: String(localized: "Enabled"),
+                            title: String(localized: "Cute"),
                             on: cute
                         )
                     }
@@ -135,8 +135,19 @@ struct FaceView: View {
                 }
                 HStack {
                     Button {
+                        model.database.debug!.beautyFilter!.toggle()
+                        model.sceneUpdated()
+                        model.updateBeautyFilterSettings()
+                        crop = model.database.debug!.beautyFilter!
+                    } label: {
+                        FaceButtonView(
+                            title: String(localized: "Crop"),
+                            on: crop
+                        )
+                    }
+                    Button {
                         settings.showMoblin.toggle()
-                        model.store()
+                        model.sceneUpdated()
                         model.updateBeautyFilterSettings()
                         mouth = settings.showMoblin
                     } label: {
@@ -147,7 +158,7 @@ struct FaceView: View {
                     }
                     Button {
                         settings.showBlur.toggle()
-                        model.store()
+                        model.sceneUpdated()
                         model.updateBeautyFilterSettings()
                         blur = settings.showBlur
                     } label: {
@@ -160,18 +171,8 @@ struct FaceView: View {
                         model.showBeautyFilterCute.toggle()
                     } label: {
                         FaceButtonView(
-                            title: String(localized: "Cute"),
-                            on: model.showBeautyFilterCute
-                        )
-                    }
-                    Button {
-                        model.database.debug!.beautyFilter!.toggle()
-                        model.sceneUpdated()
-                        enabled = model.database.debug!.beautyFilter!
-                    } label: {
-                        FaceButtonView(
-                            title: String(localized: "Enabled"),
-                            on: enabled
+                            title: String(localized: "Beauty"),
+                            on: model.showBeautyFilterCute || cute
                         )
                     }
                 }

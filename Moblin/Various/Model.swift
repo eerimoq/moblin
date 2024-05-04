@@ -454,7 +454,7 @@ final class Model: NSObject, ObservableObject {
     private var streamTotalChatMessages: Int = 0
     var ipMonitor = IPMonitor(ipType: .ipv4)
     @Published var ipStatuses: [IPMonitor.Status] = []
-    private var beautyEffect = BeautyEffect()
+    private var faceEffect = FaceEffect()
     private var movieEffect = MovieEffect()
     private var grayScaleEffect = GrayScaleEffect()
     private var sepiaEffect = SepiaEffect()
@@ -860,17 +860,18 @@ final class Model: NSObject, ObservableObject {
 
     func updateBeautyFilterSettings() {
         let settings = database.debug!.beautyFilterSettings!
-        beautyEffect.showBlur = settings.showBlur
-        beautyEffect.showColors = settings.showColors
-        beautyEffect.showMoblin = settings.showMoblin
-        beautyEffect.showFaceLandmarks = settings.showFaceLandmarks
-        beautyEffect.contrast = settings.contrast
-        beautyEffect.brightness = settings.brightness
-        beautyEffect.saturation = settings.saturation
-        beautyEffect.showCute = settings.showCute!
-        beautyEffect.cuteRadius = settings.cuteRadius!
-        beautyEffect.cuteScale = settings.cuteScale!
-        beautyEffect.cuteOffset = settings.cuteOffset!
+        faceEffect.crop = database.debug!.beautyFilter!
+        faceEffect.showBlur = settings.showBlur
+        faceEffect.showColors = settings.showColors
+        faceEffect.showMoblin = settings.showMoblin
+        faceEffect.showFaceLandmarks = settings.showFaceLandmarks
+        faceEffect.contrast = settings.contrast
+        faceEffect.brightness = settings.brightness
+        faceEffect.saturation = settings.saturation
+        faceEffect.showCute = settings.showCute!
+        faceEffect.cuteRadius = settings.cuteRadius!
+        faceEffect.cuteScale = settings.cuteScale!
+        faceEffect.cuteOffset = settings.cuteOffset!
     }
 
     func setPixelFormat() {
@@ -1698,14 +1699,14 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func unregisterGlobalVideoEffects() {
-        media.unregisterEffect(beautyEffect)
+        media.unregisterEffect(faceEffect)
         media.unregisterEffect(movieEffect)
         media.unregisterEffect(grayScaleEffect)
         media.unregisterEffect(sepiaEffect)
         media.unregisterEffect(randomEffect)
         media.unregisterEffect(tripleEffect)
         media.unregisterEffect(pixellateEffect)
-        beautyEffect = BeautyEffect()
+        faceEffect = FaceEffect()
         updateBeautyFilterSettings()
         movieEffect = MovieEffect()
         grayScaleEffect = GrayScaleEffect()
@@ -1721,10 +1722,15 @@ final class Model: NSObject, ObservableObject {
         })?.isOn ?? false
     }
 
+    private func isFaceEnabled() -> Bool {
+        let settings = database.debug!.beautyFilterSettings!
+        return database.debug!.beautyFilter! || settings.showBlur || settings.showMoblin || settings.showColors || settings.showFaceLandmarks || settings.showCute!
+    }
+    
     private func registerGlobalVideoEffects() -> [VideoEffect] {
         var effects: [VideoEffect] = []
-        if database.debug!.beautyFilter! {
-            effects.append(beautyEffect)
+        if isFaceEnabled() {
+            effects.append(faceEffect)
         }
         if isGlobalButtonOn(type: .movie) {
             effects.append(movieEffect)

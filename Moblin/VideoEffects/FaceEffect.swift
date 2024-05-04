@@ -2,7 +2,8 @@ import AVFoundation
 import UIKit
 import Vision
 
-final class BeautyEffect: VideoEffect {
+final class FaceEffect: VideoEffect {
+    var crop = true
     var showBlur = true
     var showColors = true
     var showMoblin = true
@@ -26,7 +27,7 @@ final class BeautyEffect: VideoEffect {
     }
 
     override func getName() -> String {
-        return "beauty filter"
+        return "face filter"
     }
 
     override func needsFaceDetections() -> Bool {
@@ -59,34 +60,6 @@ final class BeautyEffect: VideoEffect {
         return facesMask
     }
 
-    /* private func adjustGamma(image: CIImage?) -> CIImage? {
-         let filter = CIFilter.gammaAdjust()
-         filter.inputImage = image
-         filter.power = 1
-         return filter.outputImage
-     }
-
-     private func adjustHue(image: CIImage?) -> CIImage? {
-         let filter = CIFilter.hueAdjust()
-         filter.inputImage = image
-         filter.angle = 5
-         return filter.outputImage
-     }
-
-     private func adjustExposure(image: CIImage?) -> CIImage? {
-         let filter = CIFilter.exposureAdjust()
-         filter.inputImage = image
-         filter.ev = 2
-         return filter.outputImage
-     }
-
-     private func adjustVibrance(image: CIImage?) -> CIImage? {
-         let filter = CIFilter.vibrance()
-         filter.inputImage = image
-         filter.amount = 2
-         return filter.outputImage
-     } */
-
     private func adjustColorControls(image: CIImage?) -> CIImage? {
         let filter = CIFilter.colorControls()
         filter.inputImage = image
@@ -97,10 +70,6 @@ final class BeautyEffect: VideoEffect {
     }
 
     private func adjustColors(image: CIImage?) -> CIImage? {
-        // outputImage = adjustHue(image: outputImage)
-        // outputImage = adjustGamma(image: outputImage)
-        // outputImage = adjustExposure(image: outputImage)
-        // outputImage = adjustVibrance(image: outputImage)
         return adjustColorControls(image: image)
     }
 
@@ -283,19 +252,21 @@ final class BeautyEffect: VideoEffect {
             outputImage = addCute(image: outputImage, detections: faceDetections)
         }
         outputImage = addMesh(image: outputImage, detections: faceDetections)
-        let scaleDownFactor = 0.8
-        let width = image.extent.width
-        let height = image.extent.height
-        let scaleUpFactor = 1 / scaleDownFactor
-        let smallWidth = width * scaleDownFactor
-        let smallHeight = height * scaleDownFactor
-        let smallOffsetX = (width - smallWidth) / 2
-        let smallOffsetY = (height - smallHeight) / 2
-        outputImage = outputImage?
-            .cropped(to: CGRect(x: smallOffsetX, y: smallOffsetY, width: smallWidth, height: smallHeight))
-            .transformed(by: CGAffineTransform(translationX: -smallOffsetX, y: -smallOffsetY))
-            .transformed(by: CGAffineTransform(scaleX: scaleUpFactor, y: scaleUpFactor))
-            .cropped(to: image.extent)
+        if crop {
+            let scaleDownFactor = 0.8
+            let width = image.extent.width
+            let height = image.extent.height
+            let scaleUpFactor = 1 / scaleDownFactor
+            let smallWidth = width * scaleDownFactor
+            let smallHeight = height * scaleDownFactor
+            let smallOffsetX = (width - smallWidth) / 2
+            let smallOffsetY = (height - smallHeight) / 2
+            outputImage = outputImage?
+                .cropped(to: CGRect(x: smallOffsetX, y: smallOffsetY, width: smallWidth, height: smallHeight))
+                .transformed(by: CGAffineTransform(translationX: -smallOffsetX, y: -smallOffsetY))
+                .transformed(by: CGAffineTransform(scaleX: scaleUpFactor, y: scaleUpFactor))
+                .cropped(to: image.extent)
+        }
         return outputImage ?? image
     }
 }
