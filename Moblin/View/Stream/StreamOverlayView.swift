@@ -54,7 +54,7 @@ private struct ChatOverlayView: View {
                     }
                 }
                 .opacity(model.database.chat.enabled! ? 1 : 0)
-                .allowsHitTesting(model.interactiveChat)
+                .allowsHitTesting(model.interactiveChat && model.showChatMessages)
                 Rectangle()
                     .foregroundColor(.clear)
                     .frame(height: 85)
@@ -81,7 +81,7 @@ private struct ChatOverlayView: View {
                 }
             }
             .opacity(model.database.chat.enabled! ? 1 : 0)
-            .allowsHitTesting(model.interactiveChat)
+            .allowsHitTesting(model.interactiveChat && model.showChatMessages)
         }
     }
 }
@@ -99,6 +99,7 @@ struct StreamOverlayView: View {
 
     var body: some View {
         ZStack {
+            ChatOverlayView()
             HStack {
                 LeftOverlayView()
                     .padding([.leading], leadingPadding())
@@ -115,7 +116,6 @@ struct StreamOverlayView: View {
                 Spacer()
             }
             .allowsHitTesting(false)
-            ChatOverlayView()
         }
         .padding([.trailing, .top])
     }
