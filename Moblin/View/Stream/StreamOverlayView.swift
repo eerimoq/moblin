@@ -30,51 +30,15 @@ struct ChatInfo: View {
     }
 }
 
-struct StreamOverlayView: View {
+private struct ChatOverlayView: View {
     @EnvironmentObject var model: Model
 
-    private func leadingPadding() -> CGFloat {
-        if UIDevice.current.userInterfaceIdiom == .pad || model.stream.portrait! {
-            return 15
-        } else {
-            return 0
-        }
-    }
-
     var body: some View {
-        ZStack {
-            if model.stream.portrait! {
-                VStack {
-                    ZStack {
-                        StreamOverlayChatView()
-                            .opacity(model.showChatMessages ? 1 : 0)
-                        if !model.showChatMessages {
-                            ChatInfo(
-                                message: String(localized: "Chat is hidden"),
-                                icon: "exclamationmark.triangle.fill",
-                                iconColor: .yellow
-                            )
-                        } else if model.chatPaused {
-                            ChatInfo(
-                                message: String(
-                                    localized: "Chat paused: \(model.pausedChatPostsCount) new messages"
-                                )
-                            )
-                        }
-                    }
-                    .opacity(model.database.chat.enabled! ? 1 : 0)
-                    .allowsHitTesting(model.interactiveChat)
-                    Rectangle()
-                        .foregroundColor(.clear)
-                        .frame(height: 85)
-                }
-            } else {
+        if model.stream.portrait! {
+            VStack {
                 ZStack {
-                    GeometryReader { metrics in
-                        StreamOverlayChatView()
-                            .frame(width: metrics.size.width * 0.95)
-                    }
-                    .opacity(model.showChatMessages ? 1 : 0)
+                    StreamOverlayChatView()
+                        .opacity(model.showChatMessages ? 1 : 0)
                     if !model.showChatMessages {
                         ChatInfo(
                             message: String(localized: "Chat is hidden"),
@@ -91,7 +55,50 @@ struct StreamOverlayView: View {
                 }
                 .opacity(model.database.chat.enabled! ? 1 : 0)
                 .allowsHitTesting(model.interactiveChat)
+                Rectangle()
+                    .foregroundColor(.clear)
+                    .frame(height: 85)
             }
+        } else {
+            ZStack {
+                GeometryReader { metrics in
+                    StreamOverlayChatView()
+                        .frame(width: metrics.size.width * 0.95)
+                }
+                .opacity(model.showChatMessages ? 1 : 0)
+                if !model.showChatMessages {
+                    ChatInfo(
+                        message: String(localized: "Chat is hidden"),
+                        icon: "exclamationmark.triangle.fill",
+                        iconColor: .yellow
+                    )
+                } else if model.chatPaused {
+                    ChatInfo(
+                        message: String(
+                            localized: "Chat paused: \(model.pausedChatPostsCount) new messages"
+                        )
+                    )
+                }
+            }
+            .opacity(model.database.chat.enabled! ? 1 : 0)
+            .allowsHitTesting(model.interactiveChat)
+        }
+    }
+}
+
+struct StreamOverlayView: View {
+    @EnvironmentObject var model: Model
+
+    private func leadingPadding() -> CGFloat {
+        if UIDevice.current.userInterfaceIdiom == .pad || model.stream.portrait! {
+            return 15
+        } else {
+            return 0
+        }
+    }
+
+    var body: some View {
+        ZStack {
             HStack {
                 LeftOverlayView()
                     .padding([.leading], leadingPadding())
@@ -108,6 +115,7 @@ struct StreamOverlayView: View {
                 Spacer()
             }
             .allowsHitTesting(false)
+            ChatOverlayView()
         }
         .padding([.trailing, .top])
     }
