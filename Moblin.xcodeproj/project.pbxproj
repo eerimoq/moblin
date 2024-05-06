@@ -1354,7 +1354,6 @@
 		035E9E352A9A02D6009D4F5A /* Moblin */ = {
 			isa = PBXGroup;
 			children = (
-				0358DDD82BE6A7370080133B /* Moblin.entitlements */,
 				03BC115B2AE4BD6200C38FC4 /* Emotes */,
 				0359F80C2BD3DA4B005BFDA8 /* HaishinKit */,
 				03BDE2202B24364700DF193A /* OBS */,
@@ -1367,6 +1366,7 @@
 				03B374052AA0EA370028DDD5 /* VideoEffects */,
 				03A983542A9A0582008FF0DB /* View */,
 				035E9E362A9A02D6009D4F5A /* MoblinApp.swift */,
+				0358DDD82BE6A7370080133B /* Moblin.entitlements */,
 				035E9E3A2A9A02D7009D4F5A /* Assets.xcassets */,
 				03F9775E2BA5A8E8000F5739 /* PrivacyInfo.xcprivacy */,
 				03A173F92B38312E00ACC4F8 /* Snow.sks */,
