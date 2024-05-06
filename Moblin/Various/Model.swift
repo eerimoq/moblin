@@ -1385,6 +1385,9 @@ final class Model: NSObject, ObservableObject {
             self.media.logTiming()
             self.updateViewers()
             self.updateCurrentSsid()
+            let (detections, filter) = self.media.getNetStream().getHistograms()
+            detections.log()
+            filter.log()
         })
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true, block: { _ in
             self.updateAdaptiveBitrate()

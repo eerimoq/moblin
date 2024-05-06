@@ -85,13 +85,17 @@ private class ReplaceVideo {
 }
 
 final class VideoUnit: NSObject {
-    let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.VideoIOComponent.lock")
+    let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.VideoIOComponent")
+    let detectionsQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.Detections")
+    let lowFpsImageQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.VideoIOComponent.small")
     private(set) var device: AVCaptureDevice?
     private var input: AVCaptureInput?
     private var output: AVCaptureVideoDataOutput?
     private var connection: AVCaptureConnection?
     private let context = CIContext()
     weak var drawable: PreviewView?
+    var detectionsHistogram = Histogram(name: "Detections", barWidth: 5)
+    var filterHistogram = Histogram(name: "Filter", barWidth: 5)
 
     var formatDescription: CMVideoFormatDescription? {
         didSet {
@@ -483,21 +487,32 @@ final class VideoUnit: NSObject {
             presentationTimestamp: sampleBuffer.presentationTimeStamp.seconds
         )
         if anyEffectNeedsFaceDetections() {
-            let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: imageBuffer)
-            let faceLandmarksRequest = VNDetectFaceLandmarksRequest { request, error in
-                guard error == nil else {
-                    self.appendSampleBufferWithFaceDetections(sampleBuffer, isFirstAfterAttach, nil)
-                    return
+            detectionsQueue.async {
+                let startDate = Date()
+                let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: imageBuffer)
+                let faceLandmarksRequest = VNDetectFaceLandmarksRequest { request, error in
+                    self.lockQueue.async {
+                        guard error == nil else {
+                            self.appendSampleBufferWithFaceDetections(sampleBuffer, isFirstAfterAttach, nil)
+                            return
+                        }
+                        self.appendSampleBufferWithFaceDetections(sampleBuffer,
+                                                                  isFirstAfterAttach,
+                                                                  (request as? VNDetectFaceLandmarksRequest)?
+                                                                      .results)
+                    }
                 }
-                self.appendSampleBufferWithFaceDetections(sampleBuffer,
-                                                          isFirstAfterAttach,
-                                                          (request as? VNDetectFaceLandmarksRequest)?.results)
-            }
-            do {
-                try imageRequestHandler.perform([faceLandmarksRequest])
-            } catch {
-                logger.info("Perform face detection error: \(error)")
-                appendSampleBufferWithFaceDetections(sampleBuffer, isFirstAfterAttach, nil)
+                do {
+                    try imageRequestHandler.perform([faceLandmarksRequest])
+                } catch {
+                    self.lockQueue.async {
+                        self.appendSampleBufferWithFaceDetections(sampleBuffer, isFirstAfterAttach, nil)
+                    }
+                }
+                let elapsed = Int(-startDate.timeIntervalSinceNow * 1000)
+                self.lockQueue.async {
+                    self.detectionsHistogram.add(value: elapsed)
+                }
             }
         } else {
             appendSampleBufferWithFaceDetections(sampleBuffer, isFirstAfterAttach, nil)
@@ -510,6 +525,7 @@ final class VideoUnit: NSObject {
         _ isFirstAfterAttach: Bool,
         _ faceDetections: [VNFaceObservation]?
     ) {
+        let startDate = Date()
         guard let imageBuffer = sampleBuffer.imageBuffer else {
             return
         }
@@ -535,17 +551,24 @@ final class VideoUnit: NSObject {
             modImageBuffer,
             withPresentationTime: modSampleBuffer.presentationTimeStamp
         )
-        if lowFpsImageEnabled, let mixer,
+        if lowFpsImageEnabled,
            lowFpsImageLatest + ioVideoUnitWatchInterval < modSampleBuffer.presentationTimeStamp.seconds
         {
             lowFpsImageLatest = modSampleBuffer.presentationTimeStamp.seconds
-            var ciImage = CIImage(cvPixelBuffer: modImageBuffer)
-            let scale = 400.0 / Double(modImageBuffer.width)
-            ciImage = ciImage.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
-            let cgImage = context.createCGImage(ciImage, from: ciImage.extent)!
-            let image = UIImage(cgImage: cgImage)
-            mixer.delegate?.mixerVideo(lowFpsImage: image.jpegData(compressionQuality: 0.3))
+            lowFpsImageQueue.async {
+                self.createLowFpsImage(imageBuffer: modImageBuffer)
+            }
         }
+        filterHistogram.add(value: Int(-startDate.timeIntervalSinceNow * 1000))
+    }
+
+    private func createLowFpsImage(imageBuffer: CVImageBuffer) {
+        var ciImage = CIImage(cvPixelBuffer: imageBuffer)
+        let scale = 400.0 / Double(imageBuffer.width)
+        ciImage = ciImage.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+        let cgImage = context.createCGImage(ciImage, from: ciImage.extent)!
+        let image = UIImage(cgImage: cgImage)
+        mixer?.delegate?.mixerVideo(lowFpsImage: image.jpegData(compressionQuality: 0.3))
     }
 
     private func anyEffectNeedsFaceDetections() -> Bool {

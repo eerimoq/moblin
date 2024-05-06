@@ -317,6 +317,7 @@
 		03ECDF602B8E738A00BD920E /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECDF5F2B8E738A00BD920E /* Model.swift */; };
 		03EF34B42B1AFBB600A19221 /* AfreecaTvChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EF34B32B1AFBB600A19221 /* AfreecaTvChat.swift */; };
 		03EF34BA2B1B028900A19221 /* StreamAfreecaTvSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EF34B92B1B028900A19221 /* StreamAfreecaTvSettingsView.swift */; };
+		03EF41AE2BE8A58200C72415 /* Histogram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03EF41AD2BE8A58200C72415 /* Histogram.swift */; };
 		03F3BF192ADAAA94009A8D3E /* TextEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F3BF182ADAAA94009A8D3E /* TextEffect.swift */; };
 		03F3EB352BDE3AD800AB656C /* DebugBeautyFilterSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F3EB342BDE3AD800AB656C /* DebugBeautyFilterSettingsView.swift */; };
 		03F5A8DF2AD5DACB00F354D2 /* Srt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F5A8DE2AD5DACB00F354D2 /* Srt.swift */; };
@@ -721,6 +722,7 @@
 		03ECDF5F2B8E738A00BD920E /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		03EF34B32B1AFBB600A19221 /* AfreecaTvChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AfreecaTvChat.swift; sourceTree = "<group>"; };
 		03EF34B92B1B028900A19221 /* StreamAfreecaTvSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamAfreecaTvSettingsView.swift; sourceTree = "<group>"; };
+		03EF41AD2BE8A58200C72415 /* Histogram.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Histogram.swift; sourceTree = "<group>"; };
 		03F3BF182ADAAA94009A8D3E /* TextEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEffect.swift; sourceTree = "<group>"; };
 		03F3EB342BDE3AD800AB656C /* DebugBeautyFilterSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugBeautyFilterSettingsView.swift; sourceTree = "<group>"; };
 		03F5A8DE2AD5DACB00F354D2 /* Srt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Srt.swift; sourceTree = "<group>"; };
@@ -1873,6 +1875,7 @@
 			children = (
 				03D445E12AE5966B00A0F6E9 /* CacheAsyncImage.swift */,
 				03C380DB2BC24F7800394625 /* ChatTextToSpeech.swift */,
+				03EF41AD2BE8A58200C72415 /* Histogram.swift */,
 				036333272AAE2E5100FF1231 /* ImageStorage.swift */,
 				03BE50492B3EB59A004720AF /* IpMonitor.swift */,
 				03279CE62B4CD245006CEA5A /* Location.swift */,
@@ -2442,6 +2445,7 @@
 				036333282AAE2E5100FF1231 /* ImageStorage.swift in Sources */,
 				03487F242B334AD0003D9ED9 /* StreamingHistorySettingsView.swift in Sources */,
 				03BC115D2AE4BD7B00C38FC4 /* Bttv.swift in Sources */,
+				03EF41AE2BE8A58200C72415 /* Histogram.swift in Sources */,
 				0359F8D12BD3DA61005BFDA8 /* Mixer.swift in Sources */,
 				037CE22D2BC17EBD004E9B18 /* AudioSettingsView.swift in Sources */,
 				0315A3702AA3771F00295443 /* SceneWidgetSettingsView.swift in Sources */,

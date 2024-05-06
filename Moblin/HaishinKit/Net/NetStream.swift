@@ -66,6 +66,12 @@ open class NetStream: NSObject {
         mixer.audio.muted = !value
     }
 
+    func getHistograms() -> (Histogram, Histogram) {
+        return mixer.video.lockQueue.sync {
+            (mixer.video.detectionsHistogram, mixer.video.filterHistogram)
+        }
+    }
+
     var audioSettings: AudioCodecOutputSettings {
         get {
             mixer.audio.codec.outputSettings
