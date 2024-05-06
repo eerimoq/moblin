@@ -3,7 +3,7 @@ import Foundation
 /// Atomic<T> class
 /// - seealso: https://www.objc.io/blog/2018/12/18/atomic-variables/
 struct Atomic<A> {
-    private let queue = DispatchQueue(label: "com.haishinkit.HaishinKit.Atomic", attributes: .concurrent)
+    private let queue = DispatchQueue(label: "com.haishinkit.HaishinKit.Atomic")
     private var _value: A
 
     var value: A {
@@ -15,7 +15,7 @@ struct Atomic<A> {
     }
 
     mutating func mutate(_ transform: (inout A) -> Void) {
-        queue.sync(flags: .barrier) {
+        queue.sync {
             transform(&self._value)
         }
     }
