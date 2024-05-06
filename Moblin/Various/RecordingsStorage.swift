@@ -135,7 +135,7 @@ final class RecordingsStorage {
 
     func append(recording: Recording) {
         while database.recordings.count > 100 {
-            database.recordings.remove(at: 0)
+            _ = database.recordings.popLast()
         }
         recording.size = recording.url().fileSize
         recording.stopTime = Date()
