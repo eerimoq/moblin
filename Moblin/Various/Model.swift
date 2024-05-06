@@ -999,9 +999,15 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func updateCameraLists() {
-        externalCameras = listExternalCameras()
-        backCameras = listCameras(position: .back)
-        frontCameras = listCameras(position: .front)
+        if ProcessInfo().isiOSAppOnMac {
+            externalCameras = []
+            backCameras = listCameras(position: .back)
+            frontCameras = listCameras(position: .front)
+        } else {
+            externalCameras = listExternalCameras()
+            backCameras = listCameras(position: .back)
+            frontCameras = listCameras(position: .front)
+        }
     }
 
     @objc func handleCaptureDeviceWasConnected(_: Notification) {
