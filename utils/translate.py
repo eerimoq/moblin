@@ -7,6 +7,7 @@ LANGUAGES = [
     ("sv", "sv"),
     ("es", "es"),
     ("de", "de"),
+    ("fi", "fi"),
     ("fr", "fr"),
     ("pl", "pl"),
     ("vi", "vi"),
