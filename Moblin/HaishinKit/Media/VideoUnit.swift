@@ -99,7 +99,7 @@ final class VideoUnit: NSObject {
         }
     }
 
-    lazy var codec: VideoCodec = .init(lockQueue: lockQueue)
+    lazy var codec = VideoCodec(lockQueue: lockQueue)
     weak var mixer: Mixer?
     private var effects: [VideoEffect] = []
     private var pendingAfterAttachEffects: [VideoEffect]?
