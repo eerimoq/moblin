@@ -8,6 +8,10 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.261.0", date: "2024-05-07", changes: [
+        "• Finnish translation updated. ✍️ mikeful",
+        "• German translation updated. ✍️ MaurisonX",
+    ]),
     Version(version: "0.260.0", date: "2024-05-07", changes: [
         "• Show \"Too many recordings. Deleting oldest recording.\" in \"Start recording\" toast when deleting oldest recording.",
         "• Increase maximum number of recordings from 100 to 500.",
