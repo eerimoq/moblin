@@ -8,6 +8,10 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.260.0", date: "2024-05-07", changes: [
+        "• Show \"Too many recordings. Deleting oldest recording.\" in \"Start recording\" toast when deleting oldest recording.",
+        "• Increase maximum number of recordings from 100 to 500.",
+    ]),
     Version(version: "0.259.0", date: "2024-05-06", changes: [
         "• Only list back and front cameras on MacOS. All cameras (external as well) should show up anyway.",
         "  • For fewer duplicates.",
