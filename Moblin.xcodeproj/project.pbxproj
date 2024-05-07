@@ -255,6 +255,7 @@
 		03AA89952BC434640007BFE8 /* WebBrowserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AA89942BC434640007BFE8 /* WebBrowserSettingsView.swift */; };
 		03ACC7C72B7C94AA003B6CD6 /* LocationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ACC7C62B7C94AA003B6CD6 /* LocationSettingsView.swift */; };
 		03AD440A2B78A8A700B1B9B9 /* StreamButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AD44092B78A8A700B1B9B9 /* StreamButtonsSettingsView.swift */; };
+		03AE56142BEA74D500FE8427 /* Rist in Frameworks */ = {isa = PBXBuildFile; productRef = 03AE56132BEA74D500FE8427 /* Rist */; };
 		03B16A242B35612000E5AB07 /* RecordingsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B16A232B35612000E5AB07 /* RecordingsSettingsView.swift */; };
 		03B16A282B35614100E5AB07 /* RecordingsRecordingSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B16A272B35614100E5AB07 /* RecordingsRecordingSettingsView.swift */; };
 		03B16A2D2B35D72F00E5AB07 /* CameraSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B16A2C2B35D72F00E5AB07 /* CameraSettingsView.swift */; };
@@ -746,6 +747,7 @@
 				03A983422A9A03D3008FF0DB /* TwitchChat in Frameworks */,
 				0320D8762AED36860030418F /* WrappingHStack in Frameworks */,
 				032815D52AC855A5001F8A85 /* LicenseList in Frameworks */,
+				03AE56142BEA74D500FE8427 /* Rist in Frameworks */,
 				0359F9092BD3DA61005BFDA8 /* libsrt.xcframework in Frameworks */,
 				0307EBCA2B59B239006F7B2A /* Telegraph in Frameworks */,
 				03A974282AC137A000610E21 /* Collections in Frameworks */,
@@ -2036,6 +2038,7 @@
 				0320D8752AED36860030418F /* WrappingHStack */,
 				0307EBC92B59B239006F7B2A /* Telegraph */,
 				03B7DAB42BA640C100CEFC1B /* XMLCoder */,
+				03AE56132BEA74D500FE8427 /* Rist */,
 			);
 			productName = Mobs;
 			productReference = 035E9E332A9A02D6009D4F5A /* Moblin.app */;
@@ -2143,6 +2146,7 @@
 				0320D8742AED36860030418F /* XCRemoteSwiftPackageReference "WrappingHStack" */,
 				0307EBC82B59B239006F7B2A /* XCRemoteSwiftPackageReference "Telegraph" */,
 				03B7DAB32BA6409800CEFC1B /* XCRemoteSwiftPackageReference "XMLCoder" */,
+				03AE56122BEA74D500FE8427 /* XCRemoteSwiftPackageReference "Rist" */,
 			);
 			productRefGroup = 035E9E342A9A02D6009D4F5A /* Products */;
 			projectDirPath = "";
@@ -3012,6 +3016,14 @@
 				kind = branch;
 			};
 		};
+		03AE56122BEA74D500FE8427 /* XCRemoteSwiftPackageReference "Rist" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/eerimoq/Rist";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		03B7DAB32BA6409800CEFC1B /* XCRemoteSwiftPackageReference "XMLCoder" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/CoreOffice/XMLCoder";
@@ -3078,6 +3090,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 03A983402A9A03D3008FF0DB /* XCRemoteSwiftPackageReference "twitch-chat" */;
 			productName = TwitchChat;
+		};
+		03AE56132BEA74D500FE8427 /* Rist */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03AE56122BEA74D500FE8427 /* XCRemoteSwiftPackageReference "Rist" */;
+			productName = Rist;
 		};
 		03B7DAB42BA640C100CEFC1B /* XMLCoder */ = {
 			isa = XCSwiftPackageProductDependency;

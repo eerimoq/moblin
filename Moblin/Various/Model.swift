@@ -16,6 +16,7 @@ import TwitchChat
 import VideoToolbox
 import WatchConnectivity
 import WebKit
+import Rist
 
 class Browser: Identifiable {
     var id: UUID = .init()
@@ -864,6 +865,7 @@ final class Model: NSObject, ObservableObject {
         AppDelegate.orientationLock = .landscape
         updateOrientationLock()
         updateFaceFilterSettings()
+        logger.debug("librist version: \(ristVersion())")
     }
 
     func updateFaceFilterSettings() {

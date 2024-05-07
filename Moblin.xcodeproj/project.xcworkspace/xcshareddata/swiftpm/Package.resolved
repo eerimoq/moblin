@@ -46,6 +46,15 @@
       }
     },
     {
+      "identity" : "rist",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/eerimoq/Rist",
+      "state" : {
+        "branch" : "main",
+        "revision" : "27c64418fdc114ae38c49dfdd8d681a68309eb1c"
+      }
+    },
+    {
       "identity" : "sdwebimage",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SDWebImage/SDWebImage.git",
