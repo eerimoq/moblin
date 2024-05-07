@@ -14,6 +14,15 @@ enum SettingsStreamCodec: String, Codable, CaseIterable {
         self = try SettingsStreamCodec(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
             .h264avc
     }
+
+    func shortString() -> String {
+        switch self {
+        case .h265hevc:
+            return "H.265"
+        case .h264avc:
+            return "H.264"
+        }
+    }
 }
 
 let codecs = SettingsStreamCodec.allCases.map { $0.rawValue }
@@ -29,6 +38,23 @@ enum SettingsStreamResolution: String, Codable, CaseIterable {
     public init(from decoder: Decoder) throws {
         self = try SettingsStreamResolution(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
             .r1920x1080
+    }
+
+    func shortString() -> String {
+        switch self {
+        case .r3840x2160:
+            return "4K"
+        case .r1920x1080:
+            return "1080p"
+        case .r1280x720:
+            return "720p"
+        case .r854x480:
+            return "480p"
+        case .r640x360:
+            return "360p"
+        case .r426x240:
+            return "240p"
+        }
     }
 }
 
@@ -393,29 +419,11 @@ class SettingsStream: Codable, Identifiable, Equatable {
     }
 
     func resolutionString() -> String {
-        switch resolution {
-        case .r3840x2160:
-            return "4K"
-        case .r1920x1080:
-            return "1080p"
-        case .r1280x720:
-            return "720p"
-        case .r854x480:
-            return "480p"
-        case .r640x360:
-            return "360p"
-        case .r426x240:
-            return "240p"
-        }
+        return resolution.shortString()
     }
 
     func codecString() -> String {
-        switch codec {
-        case .h265hevc:
-            return "H.265"
-        case .h264avc:
-            return "H.264"
-        }
+        return codec.shortString()
     }
 
     func bitrateString() -> String {
@@ -433,7 +441,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     }
 
     func audioCodecString() -> String {
-        return "AAC"
+        return makeAudioCodecString()
     }
 }
 

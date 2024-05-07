@@ -1889,7 +1889,11 @@ final class Model: NSObject, ObservableObject {
     func startRecording() {
         setIsRecording(value: true)
         resumeRecording()
-        makeToast(title: "Recording started")
+        var subTitle: String?
+        if recordingsStorage.isFull() {
+            subTitle = String(localized: "Too many recordings. Deleting oldest recording.")
+        }
+        makeToast(title: String(localized: "Recording started"), subTitle: subTitle)
     }
 
     func stopRecording() {
@@ -1897,7 +1901,7 @@ final class Model: NSObject, ObservableObject {
             return
         }
         setIsRecording(value: false)
-        makeToast(title: "Recording stopped")
+        makeToast(title: String(localized: "Recording stopped"))
         suspendRecording()
     }
 

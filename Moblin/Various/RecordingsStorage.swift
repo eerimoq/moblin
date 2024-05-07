@@ -3,16 +3,62 @@ import SwiftUI
 
 private let recordingsDirectory = URL.documentsDirectory.appending(component: "Recordings")
 
+class RecordingSettings: Codable {
+    var resolution: SettingsStreamResolution
+    var fps: Int
+    var codec: SettingsStreamCodec
+    var recording: SettingsStreamRecording?
+
+    // Fields to be removed at some point. Backwards compatibility.
+    // periphery:ignore
+    var name: String? = ""
+    // periphery:ignore
+    var id: UUID? = .init()
+    // periphery:ignore
+    var enabled: Bool? = false
+    // periphery:ignore
+    var url: String? = defaultStreamUrl
+    // periphery:ignore
+    var twitchChannelName: String? = ""
+    // periphery:ignore
+    var twitchChannelId: String? = ""
+    // periphery:ignore
+    var kickChatroomId: String? = ""
+    // periphery:ignore
+    var bitrate: UInt32? = 5_000_000
+    // periphery:ignore
+    var srt: SettingsStreamSrt? = .init()
+
+    init(settings: SettingsStream) {
+        fps = settings.fps
+        resolution = settings.resolution
+        codec = settings.codec
+        recording = settings.recording!.clone()
+    }
+
+    func resolutionString() -> String {
+        return resolution.shortString()
+    }
+
+    func codecString() -> String {
+        return codec.shortString()
+    }
+
+    func audioCodecString() -> String {
+        return makeAudioCodecString()
+    }
+}
+
 class Recording: Identifiable, Codable {
     var id: UUID = .init()
-    var settings: SettingsStream
+    var settings: RecordingSettings
     var startTime: Date = .init()
     var stopTime: Date = .init()
     var size: UInt64? = 0
     var description: String? = ""
 
     init(settings: SettingsStream) {
-        self.settings = settings
+        self.settings = RecordingSettings(settings: settings)
     }
 
     func subTitle() -> String {
@@ -104,7 +150,7 @@ final class RecordingsStorage {
                 fileUrl.resolvingSymlinksInPath() == recording.url().resolvingSymlinksInPath()
             })
         {
-            logger.info("recordings: Removing unused file \(fileUrl)")
+            logger.debug("recordings: Removing unused file \(fileUrl)")
             fileUrl.remove()
         }
     }
@@ -134,8 +180,8 @@ final class RecordingsStorage {
     }
 
     func append(recording: Recording) {
-        while database.recordings.count > 100 {
-            _ = database.recordings.popLast()
+        while isFull() {
+            database.recordings.popLast()?.url().remove()
         }
         recording.size = recording.url().fileSize
         recording.stopTime = Date()
@@ -150,5 +196,9 @@ final class RecordingsStorage {
         return database.recordings.reduce(0) { total, recording in
             total + recording.size!
         }.formatBytes()
+    }
+
+    func isFull() -> Bool {
+        return database.recordings.count > 499
     }
 }

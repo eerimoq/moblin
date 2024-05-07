@@ -52727,6 +52727,12 @@
         }
       }
     },
+    "Recording started" : {
+
+    },
+    "Recording stopped" : {
+
+    },
     "Recordings" : {
       "localizations" : {
         "de" : {
@@ -68586,6 +68592,9 @@
           }
         }
       }
+    },
+    "Too many recordings. Deleting oldest recording." : {
+
     },
     "Top left" : {
       "localizations" : {

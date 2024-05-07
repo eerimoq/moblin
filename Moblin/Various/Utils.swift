@@ -444,3 +444,7 @@ extension AVCaptureDevice.WhiteBalanceGains {
                      blueGain: blueGain.clamped(to: 1 ... maxGain))
     }
 }
+
+func makeAudioCodecString() -> String {
+    return "AAC"
+}
