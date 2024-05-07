@@ -1644,9 +1644,9 @@ final class Model: NSObject, ObservableObject {
         guard database.chat.maximumAgeEnabled! else {
             return
         }
-        while let post = chatPosts.first {
+        while let post = chatPosts.last {
             if now > post.timestampDate + Double(database.chat.maximumAge!) {
-                _ = chatPosts.popFirst()
+                chatPosts.removeLast()
             } else {
                 break
             }
