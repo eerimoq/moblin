@@ -8,6 +8,7 @@ import NaturalLanguage
 import Network
 import NetworkExtension
 import PhotosUI
+import Rist
 import SDWebImageSwiftUI
 import SDWebImageWebPCoder
 import StoreKit
@@ -16,7 +17,6 @@ import TwitchChat
 import VideoToolbox
 import WatchConnectivity
 import WebKit
-import Rist
 
 class Browser: Identifiable {
     var id: UUID = .init()
