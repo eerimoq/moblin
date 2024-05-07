@@ -6327,8 +6327,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ein Controller"
+            "state" : "translated",
+            "value" : "ein Controller "
           }
         },
         "el" : {
@@ -6717,7 +6717,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "eine Voreinstellung"
           }
         },
@@ -6847,8 +6847,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ein Datenschutzbereich"
+            "state" : "translated",
+            "value" : "ein Privatsphärebereich"
           }
         },
         "el" : {
@@ -6977,7 +6977,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "eine Szene"
           }
         },
@@ -7107,8 +7107,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ein Strom"
+            "state" : "translated",
+            "value" : "ein Stream"
           }
         },
         "el" : {
@@ -7237,7 +7237,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ein Benutzername"
           }
         },
@@ -7367,7 +7367,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ein Widget"
           }
         },
@@ -7887,8 +7887,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Fügen Sie Ihre eigenen LUTs hinzu."
+            "state" : "translated",
+            "value" : "Füge deine eigenen LUTs hinzu."
           }
         },
         "el" : {
@@ -8277,7 +8277,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Pixelformat des Videobereichs zulassen"
           }
         },
@@ -8367,8 +8367,8 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tillåt pixelformat för videointervall"
+            "state" : "translated",
+            "value" : "Tillåt video range pixelformat"
           }
         },
         "tr" : {
@@ -9323,7 +9323,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Apple Log LUT"
           }
         },
@@ -9973,7 +9973,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "In 5 Sekunden erneuter Versuch."
           }
         },
@@ -10883,8 +10883,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Automatischer Start der Aufzeichnung beim Live-Gehen"
+            "state" : "translated",
+            "value" : "Automatischer Start der Aufzeichnung beim Live gehen"
           }
         },
         "el" : {
@@ -11013,7 +11013,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Stoppt die Aufnahme automatisch, wenn der Stream beendet wird"
           }
         },
@@ -12313,8 +12313,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Schönheit"
+            "state" : "translated",
+            "value" : "Beauty"
           }
         },
         "el" : {
@@ -12443,7 +12443,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Beauty-Filter"
           }
         },
@@ -13093,8 +13093,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bestmögliche Stabilität. Kann Kleben verwenden. Flexibelster Aufbau."
+            "state" : "translated",
+            "value" : "Bestmögliche Stabilität. Kann Bonding verwenden. Flexibelster Aufbau."
           }
         },
         "el" : {
@@ -14523,8 +14523,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Verwischen"
+            "state" : "translated",
+            "value" : "Unschärfe"
           }
         },
         "el" : {
@@ -15303,7 +15303,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Helligkeit"
           }
         },
@@ -15823,7 +15823,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Gebündelt"
           }
         },
@@ -16343,8 +16343,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Wechseln Sie die Kamera und starten Sie den Stream neu, damit diese ordnungsgemäß funktionieren."
+            "state" : "translated",
+            "value" : "Wechsel die Kamera und starte den Stream neu, damit diese ordnungsgemäß funktionieren."
           }
         },
         "el" : {
@@ -16433,7 +16433,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Byt kamera och starta om streamen för att dessa ska fungera korrekt."
           }
         },
@@ -19333,7 +19333,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kontinuierliche automatische Belichtung wird für diese Kamera nicht unterstützt"
           }
         },
@@ -19463,7 +19463,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Der kontinuierliche automatische Weißabgleich wird für diese Kamera nicht unterstützt"
           }
         },
@@ -19593,7 +19593,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kontrast"
           }
         },
@@ -21933,7 +21933,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Niedlich"
           }
         },
@@ -22713,7 +22713,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Beschreibung"
           }
         },
@@ -23623,7 +23623,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Getrennt"
           }
         },
@@ -28303,7 +28303,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "EXB"
           }
         },
@@ -28693,7 +28693,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Belichtungsfehler"
           }
         },
@@ -28823,7 +28823,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Gesicht"
           }
         },
@@ -28953,8 +28953,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Stellen Sie sich Sehenswürdigkeiten"
+            "state" : "translated",
+            "value" : "Gesichtsmerkmale"
           }
         },
         "el" : {
@@ -30904,7 +30904,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Suche deinen Kanalnamen (myChannelName) und deine Video-ID (myVideoId) in der URL Ihres Streams."
+            "value" : "Suche deinen Kanalnamen (myChannelName) und deine Video-ID (myVideoId) in der URL deines Streams."
           }
         },
         "el" : {
@@ -31553,7 +31553,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "FOC"
           }
         },
@@ -31683,7 +31683,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "FOKUS"
           }
         },
@@ -35713,7 +35713,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Symbol"
           }
         },
@@ -36103,7 +36103,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Wenn diese Option aktiviert ist, wird die ausgewählte LUT angewendet, wenn der Apple Log-Farbraum verwendet wird."
           }
         },
@@ -36364,7 +36364,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Installiere sofort die alte Version der App, um Ihre alten Einstellungen beizubehalten."
+            "value" : "Installiere sofort die alte Version der App, um deine alten Einstellungen beizubehalten."
           }
         },
         "el" : {
@@ -37533,7 +37533,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ISO"
           }
         },
@@ -40003,7 +40003,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "LUTs"
           }
         },
@@ -40133,7 +40133,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "LUTs verändern die Bildfarben, wenn sie angewendet werden."
           }
         },
@@ -40913,7 +40913,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Manuelle Belichtung wird für diese Kamera nicht unterstützt"
           }
         },
@@ -41173,7 +41173,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Der manuelle Weißabgleich wird für diese Kamera nicht unterstützt"
           }
         },
@@ -42863,7 +42863,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Gespiegelt"
           }
         },
@@ -43383,7 +43383,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mund"
           }
         },
@@ -44293,8 +44293,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Meine LUT"
+            "state" : "translated",
+            "value" : "Mein LUT "
           }
         },
         "el" : {
@@ -44553,8 +44553,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Meine(n) Server"
+            "state" : "translated",
+            "value" : "Mein(e) Server"
           }
         },
         "el" : {
@@ -46503,7 +46503,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Noch keine Vorschau erhalten."
           }
         },
@@ -47543,7 +47543,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Wird von dieser Kamera nicht unterstützt"
           }
         },
@@ -48453,7 +48453,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Versatz"
           }
         },
@@ -50013,7 +50013,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Pixelformat"
           }
         },
@@ -51053,7 +51053,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Vorschau"
           }
         },
@@ -51963,7 +51963,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Radius"
           }
         },
@@ -55883,7 +55883,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Sättigung"
           }
         },
@@ -56143,7 +56143,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Skala"
           }
         },
@@ -56924,7 +56924,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Suchen Sie mit Google oder geben Sie die Adresse ein"
+            "value" : "Suche mit Google oder gebe die Adresse ein"
           }
         },
         "el" : {
@@ -58223,7 +58223,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Zeigen"
           }
         },
@@ -64333,8 +64333,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Wischen Sie auf %@ nach links, um es zu löschen."
+            "state" : "translated",
+            "value" : "Wische auf %@ nach links, um es zu löschen."
           }
         },
         "el" : {
@@ -64463,8 +64463,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Wischen Sie auf %@ nach links, um es zu entfernen."
+            "state" : "translated",
+            "value" : "Wische auf %@ nach links, um es zu entfernen."
           }
         },
         "el" : {
@@ -64723,8 +64723,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tippen Sie auf die Vorschau, um sie auszublenden."
+            "state" : "translated",
+            "value" : "Tippe auf die Vorschau, um sie auszublenden."
           }
         },
         "el" : {
@@ -66153,7 +66153,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Die Apple Log LUT wird nur angewendet, wenn der Apple Log-Farbraum ausgewählt ist."
           }
         },
@@ -67844,7 +67844,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Die Video-ID ist der letzte Teil Ihrer Livestream-URL."
+            "value" : "Die Video-ID ist der letzte Teil deiner Livestream-URL."
           }
         },
         "el" : {
@@ -68103,7 +68103,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Thermischer Zustand"
           }
         },
@@ -75133,7 +75133,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "WB"
           }
         },
@@ -75523,7 +75523,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "WEISSABGLEICH"
           }
         },
