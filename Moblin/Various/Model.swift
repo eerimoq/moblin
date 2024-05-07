@@ -8,7 +8,6 @@ import NaturalLanguage
 import Network
 import NetworkExtension
 import PhotosUI
-import Rist
 import SDWebImageSwiftUI
 import SDWebImageWebPCoder
 import StoreKit
@@ -470,6 +469,8 @@ final class Model: NSObject, ObservableObject {
     private var failedVideoEffect: String?
     var supportsAppleLog: Bool = false
 
+    private var ristTestSender: RistTestSender?
+
     func updateAdaptiveBitrateSrtIfEnabled(stream: SettingsStream) {
         switch stream.srt.adaptiveBitrate!.algorithm {
         case .fastIrl:
@@ -865,7 +866,7 @@ final class Model: NSObject, ObservableObject {
         AppDelegate.orientationLock = .landscape
         updateOrientationLock()
         updateFaceFilterSettings()
-        logger.debug("librist version: \(ristVersion())")
+        // ristTestSender = RistTestSender()
     }
 
     func updateFaceFilterSettings() {
