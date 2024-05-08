@@ -37,7 +37,6 @@ class RistStream: NetStream {
             logger.info("rist: Failed to start")
             return
         }
-        logger.info("rist: Successfully created sender")
         send()
     }
 
