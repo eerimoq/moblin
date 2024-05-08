@@ -469,7 +469,7 @@ final class Model: NSObject, ObservableObject {
     private var failedVideoEffect: String?
     var supportsAppleLog: Bool = false
 
-    private var ristTestSender: RistTestSender?
+    // private var ristTestSender = RistTestSender()
 
     func updateAdaptiveBitrateSrtIfEnabled(stream: SettingsStream) {
         switch stream.srt.adaptiveBitrate!.algorithm {
@@ -866,7 +866,6 @@ final class Model: NSObject, ObservableObject {
         AppDelegate.orientationLock = .landscape
         updateOrientationLock()
         updateFaceFilterSettings()
-        // ristTestSender = RistTestSender()
     }
 
     func updateFaceFilterSettings() {

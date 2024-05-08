@@ -1,6 +1,7 @@
 import Foundation
 import Rist
 
+// periphery:ignore
 class RistTestSender {
     let context: RistContext
     let peer: RistPeer
@@ -12,7 +13,8 @@ class RistTestSender {
             return nil
         }
         self.context = context
-        guard let peer = self.context.addPeer(url: "rist://192.168.50.181:7890") else {
+        guard let peer = self.context.addPeer(url: "rist://192.168.50.181:2030?aes-type=128&secret=xyz")
+        else {
             logger.info("rist: Failed to add peer")
             return nil
         }
