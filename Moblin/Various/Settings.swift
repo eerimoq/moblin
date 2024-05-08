@@ -65,6 +65,7 @@ let fpss = ["60", "50", "30", "25", "15"]
 enum SettingsStreamProtocol: String, Codable {
     case rtmp = "RTMP"
     case srt = "SRT"
+    case rist = "RIST"
 
     public init(from decoder: Decoder) throws {
         self = try SettingsStreamProtocol(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
@@ -395,6 +396,8 @@ class SettingsStream: Codable, Identifiable, Equatable {
             return .srt
         case "srtla":
             return .srt
+        case "rist":
+            return .rist
         default:
             return .rtmp
         }

@@ -469,8 +469,6 @@ final class Model: NSObject, ObservableObject {
     private var failedVideoEffect: String?
     var supportsAppleLog: Bool = false
 
-    // private var ristTestSender = RistTestSender()
-
     func updateAdaptiveBitrateSrtIfEnabled(stream: SettingsStream) {
         switch stream.srt.adaptiveBitrate!.algorithm {
         case .fastIrl:
@@ -2071,6 +2069,8 @@ final class Model: NSObject, ObservableObject {
                 connectionPriorities: stream.srt.connectionPriorities!
             )
             updateAdaptiveBitrateSrtIfEnabled(stream: stream)
+        case .rist:
+            media.ristStartStream(url: stream.url)
         }
         updateSpeed(now: Date())
     }
@@ -2079,6 +2079,7 @@ final class Model: NSObject, ObservableObject {
         reconnectTimer?.invalidate()
         media.rtmpStopStream()
         media.srtStopStream()
+        media.ristStopStream()
         streamStartDate = nil
         updateUptime(now: Date())
         updateSpeed(now: Date())

@@ -18,8 +18,10 @@ private func becameUnmuted(old: Float, new: Float) -> Bool {
 final class Media: NSObject {
     private var rtmpConnection = RTMPConnection()
     private var srtConnection = SRTConnection()
+    private var ristConnection = RistConnection()
     private var rtmpStream: RTMPStream?
     private var srtStream: SRTStream?
+    private var ristStream: RistStream?
     private var srtla: Srtla?
     private var netStream: NetStream!
     private var srtTotalByteCount: Int64 = 0
@@ -64,16 +66,24 @@ final class Media: NSObject {
     func setNetStream(proto: SettingsStreamProtocol) {
         srtStopStream()
         rtmpStopStream()
+        ristStopStream()
         rtmpConnection = RTMPConnection()
         switch proto {
         case .rtmp:
             rtmpStream = RTMPStream(connection: rtmpConnection)
             srtStream = nil
+            ristStream = nil
             netStream = rtmpStream
         case .srt:
             srtStream = SRTStream(srtConnection)
             rtmpStream = nil
+            ristStream = nil
             netStream = srtStream
+        case .rist:
+            ristStream = RistStream(ristConnection)
+            srtStream = nil
+            rtmpStream = nil
+            netStream = ristStream
         }
         netStream.delegate = self
         netStream.setVideoOrientation(value: .landscapeRight)
@@ -368,6 +378,14 @@ final class Media: NSObject {
                 break
             }
         }
+    }
+
+    func ristStartStream(url: String) {
+        ristConnection.start(url: url)
+    }
+
+    func ristStopStream() {
+        ristConnection.stop()
     }
 
     func setTorch(on: Bool) {

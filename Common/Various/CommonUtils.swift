@@ -67,6 +67,16 @@ func isValidSrtUrl(url: String) -> String? {
     return nil
 }
 
+func isValidRistUrl(url: String) -> String? {
+    guard let url = URL(string: url) else {
+        return String(localized: "Malformed RIST URL")
+    }
+    if url.port == nil {
+        return String(localized: "RIST port number missing")
+    }
+    return nil
+}
+
 func cleanUrl(url value: String) -> String {
     let stripped = value.replacingOccurrences(of: " ", with: "")
     guard var components = URLComponents(string: stripped) else {
@@ -108,6 +118,10 @@ func isValidUrl(url value: String, allowedSchemes: [String]? = nil,
         }
     case "srtla":
         if let message = isValidSrtUrl(url: value) {
+            return message
+        }
+    case "rist":
+        if let message = isValidRistUrl(url: value) {
             return message
         }
     case nil:

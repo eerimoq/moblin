@@ -40389,6 +40389,9 @@
         }
       }
     },
+    "Malformed RIST URL" : {
+
+    },
     "Malformed RTMP URL" : {
       "localizations" : {
         "de" : {
@@ -54838,6 +54841,9 @@
           }
         }
       }
+    },
+    "RIST port number missing" : {
+
     },
     "RTMP" : {
       "localizations" : {
