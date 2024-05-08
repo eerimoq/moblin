@@ -4,7 +4,7 @@ import Foundation
 
 var payloadSize: Int = 1316
 
-protocol TSWriterDelegate: AnyObject {
+protocol MpegTsWriterDelegate: AnyObject {
     func writer(_ writer: MpegTsWriter, doOutput data: Data)
     func writer(_ writer: MpegTsWriter, doOutputPointer pointer: UnsafeRawBufferPointer, count: Int)
 }
@@ -18,7 +18,7 @@ class MpegTsWriter {
     private static let audioStreamId: UInt8 = 192
     private static let videoStreamId: UInt8 = 224
     private static let segmentDuration: Double = 2
-    weak var delegate: (any TSWriterDelegate)?
+    weak var delegate: (any MpegTsWriterDelegate)?
     private var isRunning: Atomic<Bool> = .init(false)
     var expectedMedias: Set<AVMediaType> = []
     private var audioContinuityCounter: UInt8 = 0

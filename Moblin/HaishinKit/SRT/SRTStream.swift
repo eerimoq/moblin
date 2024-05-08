@@ -138,7 +138,7 @@ public class SRTStream: NetStream {
     }
 }
 
-extension SRTStream: TSWriterDelegate {
+extension SRTStream: MpegTsWriterDelegate {
     func writer(_: MpegTsWriter, doOutput data: Data) {
         guard readyState == .publishing else {
             return
