@@ -37,34 +37,32 @@ class RistStream: NetStream {
             logger.info("rist: Failed to start")
             return
         }
-        send()
+        writer.expectedMedias.insert(.video)
+        writer.expectedMedias.insert(.audio)
+        mixer.startEncoding(writer)
+        mixer.startRunning()
+        writer.startRunning()
     }
 
     func stop() {
         logger.info("rist: Should stop stream")
     }
 
-    func send() {
-        ristQueue.asyncAfter(deadline: .now() + 1) { [weak self] in
-            guard let self else {
-                logger.info("rist: Stop sending")
-                return
-            }
-            logger.info("rist: Sending data")
-            if self.context?.send(data: Data(randomNumberOfBytes: 128)) != true {
-                logger.info("rist: Failed to send")
-            }
-            self.send()
+    func send(data: Data) {
+        if context?.send(data: data) != true {
+            logger.info("rist: Failed to send")
         }
     }
 }
 
 extension RistStream: MpegTsWriterDelegate {
-    func writer(_: MpegTsWriter, doOutput _: Data) {
-        logger.info("rist: Got mpegts data")
+    func writer(_: MpegTsWriter, doOutput data: Data) {
+        // logger.info("rist: Got mpegts data")
+        send(data: data)
     }
 
-    func writer(_: MpegTsWriter, doOutputPointer _: UnsafeRawBufferPointer, count _: Int) {
-        logger.info("rist: Got mpegts data pointer")
+    func writer(_: MpegTsWriter, doOutputPointer dataPointer: UnsafeRawBufferPointer, count: Int) {
+        // logger.info("rist: Got mpegts data pointer")
+        send(data: Data(bytes: dataPointer.baseAddress!, count: count))
     }
 }
