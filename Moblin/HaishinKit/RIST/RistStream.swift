@@ -1,8 +1,6 @@
 import Foundation
 import Rist
 
-private let ristQueue = DispatchQueue(label: "com.eerimoq.Moblin.rist")
-
 class RistStream: NetStream {
     weak var connection: RistConnection?
     private var context: RistContext?
@@ -20,8 +18,7 @@ class RistStream: NetStream {
         self.connection?.stream = self
     }
 
-    func start(url: String) {
-        logger.info("rist: Should start stream with URL \(url)")
+    func start(url _: String) {
         guard let context = RistContext() else {
             logger.info("rist: Failed to create context")
             return
@@ -45,7 +42,8 @@ class RistStream: NetStream {
     }
 
     func stop() {
-        logger.info("rist: Should stop stream")
+        writer.stopRunning()
+        mixer.stopEncoding()
     }
 
     func send(data: Data) {
@@ -57,12 +55,10 @@ class RistStream: NetStream {
 
 extension RistStream: MpegTsWriterDelegate {
     func writer(_: MpegTsWriter, doOutput data: Data) {
-        // logger.info("rist: Got mpegts data")
         send(data: data)
     }
 
     func writer(_: MpegTsWriter, doOutputPointer dataPointer: UnsafeRawBufferPointer, count: Int) {
-        // logger.info("rist: Got mpegts data pointer")
         send(data: Data(bytes: dataPointer.baseAddress!, count: count))
     }
 }
