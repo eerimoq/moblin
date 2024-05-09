@@ -59,6 +59,10 @@ struct RecordingsRecordingSettingsView: View {
                         )
                     }
                     TextValueView(name: "Audio codec", value: recording.settings.audioCodecString())
+                    TextValueView(
+                        name: "Audio bitrate",
+                        value: recording.settings.recording!.audioBitrateString()
+                    )
                 } header: {
                     Text("Settings")
                 }

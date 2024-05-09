@@ -302,6 +302,14 @@ class SettingsStreamRecording: Codable {
             return "Auto"
         }
     }
+
+    func audioBitrateString() -> String {
+        if let audioBitrate, audioBitrate != 0 {
+            return formatBytesPerSecond(speed: Int64(audioBitrate))
+        } else {
+            return "Auto"
+        }
+    }
 }
 
 class SettingsStream: Codable, Identifiable, Equatable {
