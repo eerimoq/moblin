@@ -1,11 +1,15 @@
 import Foundation
+import Network
 import Rist
 
 class RistStream: NetStream {
     weak var connection: RistConnection?
     private var context: RistContext?
-    private var peers: [RistPeer] = []
+    private var peers: [String: RistPeer] = [:]
     private let writer = MpegTsWriter()
+    private var networkPathMonitor: NWPathMonitor?
+    private var bonding: Bool = false
+    private var url: String = ""
 
     init(_ connection: RistConnection) {
         super.init()
@@ -25,7 +29,15 @@ class RistStream: NetStream {
         }
     }
 
-    func startInner(url: String, bonding: Bool) {
+    func stop() {
+        lockQueue.async {
+            self.stopInner()
+        }
+    }
+
+    private func startInner(url: String, bonding: Bool) {
+        self.url = url
+        self.bonding = bonding
         guard let context = RistContext() else {
             logger.info("rist: Failed to create context")
             return
@@ -33,15 +45,11 @@ class RistStream: NetStream {
         context.onStats = handleStats
         self.context = context
         if bonding {
-            // To Do: Monitor available network inferfaces
-            addPeer(url: makeBondingUrl(url: url, interfaceName: "en0", weight: "5"))
-            addPeer(url: makeBondingUrl(url: url, interfaceName: "en3", weight: "10"))
-            addPeer(url: makeBondingUrl(url: url, interfaceName: "pdp_ip0", weight: "1"))
+            networkPathMonitor = .init()
+            networkPathMonitor?.pathUpdateHandler = handleNetworkPathUpdate(path:)
+            networkPathMonitor?.start(queue: lockQueue)
         } else {
-            addPeer(url: url)
-        }
-        guard !peers.isEmpty else {
-            return
+            addPeer(url, "")
         }
         if !context.start() {
             logger.info("rist: Failed to start")
@@ -54,20 +62,40 @@ class RistStream: NetStream {
         writer.startRunning()
     }
 
-    func stop() {
-        lockQueue.async {
-            self.stopInner()
-        }
-    }
-
-    func stopInner() {
+    private func stopInner() {
+        networkPathMonitor?.cancel()
+        networkPathMonitor = nil
         writer.stopRunning()
         mixer.stopEncoding()
         peers.removeAll()
         context = nil
     }
 
-    func makeBondingUrl(url: String, interfaceName: String, weight: String) -> String? {
+    private func handleNetworkPathUpdate(path: NWPath) {
+        guard bonding else {
+            return
+        }
+        let interfaceNames = path.availableInterfaces.map { $0.name }
+        var removedInterfaceNames: [String] = []
+        for interfaceName in peers.keys {
+            if interfaceNames.contains(interfaceName) {
+                continue
+            }
+            removedInterfaceNames.append(interfaceName)
+        }
+        for interfaceName in removedInterfaceNames {
+            logger.info("rist: Removing peer for interface \(interfaceName)")
+            peers.removeValue(forKey: interfaceName)
+        }
+        for interfaceName in interfaceNames {
+            if peers.keys.contains(interfaceName) {
+                continue
+            }
+            addPeer(makeBondingUrl(url, interfaceName, "1"), interfaceName)
+        }
+    }
+
+    private func makeBondingUrl(_ url: String, _ interfaceName: String, _ weight: String) -> String? {
         guard let url = URL(string: url) else {
             return nil
         }
@@ -82,7 +110,7 @@ class RistStream: NetStream {
         return urlComponents.url?.absoluteString
     }
 
-    func handleStats(stats: RistStats) {
+    private func handleStats(stats: RistStats) {
         logger.info("""
         rist: stats: peer \(stats.sender.peerId), rtt \(stats.sender.rtt), quality \(stats.sender.quality), \
         sent \(stats.sender.sentPackets), received \(stats.sender.receivedPackets), \
@@ -91,21 +119,22 @@ class RistStream: NetStream {
         """)
     }
 
-    func addPeer(url: String?) {
+    private func addPeer(_ url: String?, _ interfaceName: String) {
+        logger.info("rist: Adding peer for interface \(interfaceName)")
         guard let url, let peer = context?.addPeer(url: url) else {
             logger.info("rist: Failed to add peer")
             return
         }
-        peers.append(peer)
+        peers[interfaceName] = peer
     }
 
-    func send(data: Data) {
+    private func send(data: Data) {
         if context?.send(data: data) != true {
             logger.info("rist: Failed to send")
         }
     }
 
-    func send(dataPointer: UnsafeRawBufferPointer, count: Int) {
+    private func send(dataPointer: UnsafeRawBufferPointer, count: Int) {
         if context?.send(dataPointer: dataPointer, count: count) != true {
             logger.info("rist: Failed to send")
         }
