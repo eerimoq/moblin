@@ -5,17 +5,18 @@ class RistStream: NetStream {
     weak var connection: RistConnection?
     private var context: RistContext?
     private var peer: RistPeer?
-
-    private lazy var writer: MpegTsWriter = {
-        var writer = MpegTsWriter()
-        writer.delegate = self
-        return writer
-    }()
+    private let writer = MpegTsWriter()
 
     init(_ connection: RistConnection) {
         super.init()
         self.connection = connection
         self.connection?.stream = self
+        writer.delegate = self
+    }
+
+    deinit {
+        self.connection?.stream = nil
+        self.connection = nil
     }
 
     func start(url _: String) {
@@ -44,6 +45,8 @@ class RistStream: NetStream {
     func stop() {
         writer.stopRunning()
         mixer.stopEncoding()
+        peer = nil
+        context = nil
     }
 
     func send(data: Data) {

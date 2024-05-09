@@ -13,6 +13,5 @@ class RistConnection {
 
     func stop() {
         stream?.stop()
-        stream = nil
     }
 }

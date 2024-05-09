@@ -68,6 +68,7 @@ final class Media: NSObject {
         rtmpStopStream()
         ristStopStream()
         rtmpConnection = RTMPConnection()
+        ristConnection = RistConnection()
         switch proto {
         case .rtmp:
             rtmpStream = RTMPStream(connection: rtmpConnection)

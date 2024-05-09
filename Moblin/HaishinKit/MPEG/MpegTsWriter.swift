@@ -25,7 +25,7 @@ class MpegTsWriter {
     private var videoContinuityCounter: UInt8 = 0
     private let programClockReferencePacketId: UInt16 = MpegTsWriter.videoPacketId
     private var rotatedTimestamp = CMTime.zero
-    private let outputLock: DispatchQueue = .init(
+    private let outputLock = DispatchQueue(
         label: "com.haishinkit.HaishinKit.MpegTsWriter",
         qos: .userInitiated
     )
