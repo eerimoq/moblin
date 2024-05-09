@@ -91,11 +91,11 @@ class RistStream: NetStream {
             if peers.keys.contains(interfaceName) {
                 continue
             }
-            addPeer(makeBondingUrl(url, interfaceName, "1"), interfaceName)
+            addPeer(makeBondingUrl(url, interfaceName), interfaceName)
         }
     }
 
-    private func makeBondingUrl(_ url: String, _ interfaceName: String, _ weight: String) -> String? {
+    private func makeBondingUrl(_ url: String, _ interfaceName: String) -> String? {
         guard let url = URL(string: url) else {
             return nil
         }
@@ -105,7 +105,7 @@ class RistStream: NetStream {
         urlComponents.query = url.query
         var queryItems: [URLQueryItem] = urlComponents.queryItems ?? []
         queryItems.append(URLQueryItem(name: "miface", value: interfaceName))
-        queryItems.append(URLQueryItem(name: "weight", value: weight))
+        queryItems.append(URLQueryItem(name: "weight", value: "1"))
         urlComponents.queryItems = queryItems
         return urlComponents.url?.absoluteString
     }
