@@ -1909,11 +1909,13 @@ final class Model: NSObject, ObservableObject {
         currentRecording = recordingsStorage.createRecording(settings: stream.clone())
         let bitrate = Int(stream.recording!.videoBitrate)
         let keyFrameInterval = Int(stream.recording!.maxKeyFrameInterval)
+        let audioBitrate = Int(stream.recording!.audioBitrate!)
         media.startRecording(
             url: currentRecording!.url(),
             videoCodec: stream.recording!.videoCodec,
             videoBitrate: bitrate != 0 ? bitrate : nil,
-            keyFrameInterval: keyFrameInterval != 0 ? keyFrameInterval : nil
+            keyFrameInterval: keyFrameInterval != 0 ? keyFrameInterval : nil,
+            audioBitrate: audioBitrate != 0 ? audioBitrate : nil
         )
     }
 
@@ -2070,7 +2072,7 @@ final class Model: NSObject, ObservableObject {
             )
             updateAdaptiveBitrateSrtIfEnabled(stream: stream)
         case .rist:
-            media.ristStartStream(url: stream.url)
+            media.ristStartStream(url: stream.url, bonding: stream.rist!.bonding)
         }
         updateSpeed(now: Date())
     }

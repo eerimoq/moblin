@@ -4,8 +4,12 @@ struct StreamRecordingSettingsView: View {
     @EnvironmentObject var model: Model
     var stream: SettingsStream
 
+    private var recording: SettingsStreamRecording {
+        return stream.recording!
+    }
+
     private func onVideoCodecChange(codec: String) {
-        stream.recording!.videoCodec = SettingsStreamCodec(rawValue: codec)!
+        recording.videoCodec = SettingsStreamCodec(rawValue: codec)!
         model.store()
     }
 
@@ -15,7 +19,7 @@ struct StreamRecordingSettingsView: View {
         }
         bitrate = max(bitrate, 0)
         bitrate = min(bitrate, 50)
-        stream.recording!.videoBitrate = bitrateFromMbps(bitrate: bitrate)
+        recording.videoBitrate = bitrateFromMbps(bitrate: bitrate)
         model.store()
     }
 
@@ -26,62 +30,72 @@ struct StreamRecordingSettingsView: View {
         guard interval >= 0 && interval <= 10 else {
             return
         }
-        stream.recording!.maxKeyFrameInterval = interval
+        recording.maxKeyFrameInterval = interval
         model.store()
     }
 
     var body: some View {
         Form {
             Section {
-                NavigationLink(destination: InlinePickerView(title: String(localized: "Video codec"),
-                                                             onChange: onVideoCodecChange,
-                                                             items: InlinePickerItem
-                                                                 .fromStrings(values: codecs),
-                                                             selectedId: stream.recording!.videoCodec
-                                                                 .rawValue))
-                {
+                NavigationLink(destination: InlinePickerView(
+                    title: String(localized: "Video codec"),
+                    onChange: onVideoCodecChange,
+                    items: InlinePickerItem
+                        .fromStrings(values: codecs),
+                    selectedId: recording.videoCodec.rawValue
+                )) {
                     TextItemView(
                         name: String(localized: "Video codec"),
-                        value: stream.recording!.videoCodec.rawValue
+                        value: recording.videoCodec.rawValue
                     )
                 }
                 .disabled(stream.enabled && model.isRecording)
                 NavigationLink(destination: TextEditView(
                     title: String(localized: "Video bitrate"),
-                    value: String(bitrateToMbps(bitrate: stream.recording!.videoBitrate)),
+                    value: String(bitrateToMbps(bitrate: recording.videoBitrate)),
                     onSubmit: submitVideoBitrateChange,
                     footer: Text("Up to 50 Mbps. Set to 0 for automatic."),
                     keyboardType: .numbersAndPunctuation
                 )) {
                     TextItemView(
                         name: String(localized: "Video bitrate"),
-                        value: formatBytesPerSecond(speed: Int64(stream.recording!.videoBitrate))
+                        value: formatBytesPerSecond(speed: Int64(recording.videoBitrate))
                     )
                 }
                 .disabled(stream.enabled && model.isRecording)
                 NavigationLink(destination: TextEditView(
                     title: String(localized: "Key frame interval"),
-                    value: String(stream.recording!.maxKeyFrameInterval),
+                    value: String(recording.maxKeyFrameInterval),
                     onSubmit: submitMaxKeyFrameInterval,
                     footer: Text("Maximum key frame interval in seconds. Set to 0 for automatic."),
                     keyboardType: .numbersAndPunctuation
                 )) {
                     TextItemView(
                         name: String(localized: "Key frame interval"),
-                        value: "\(stream.recording!.maxKeyFrameInterval) s"
+                        value: "\(recording.maxKeyFrameInterval) s"
+                    )
+                }
+                .disabled(stream.enabled && model.isRecording)
+                NavigationLink(destination: StreamRecordingAudioSettingsView(
+                    stream: stream,
+                    bitrate: Float(recording.audioBitrate! / 1000)
+                )) {
+                    TextItemView(
+                        name: String(localized: "Audio bitrate"),
+                        value: formatBytesPerSecond(speed: Int64(recording.audioBitrate!))
                     )
                 }
                 .disabled(stream.enabled && model.isRecording)
                 Toggle("Auto start recording when going live", isOn: Binding(get: {
-                    stream.recording!.autoStartRecording!
+                    recording.autoStartRecording!
                 }, set: { value in
-                    stream.recording!.autoStartRecording = value
+                    recording.autoStartRecording = value
                     model.store()
                 }))
                 Toggle("Auto stop recording when ending stream", isOn: Binding(get: {
-                    stream.recording!.autoStopRecording!
+                    recording.autoStopRecording!
                 }, set: { value in
-                    stream.recording!.autoStopRecording = value
+                    recording.autoStopRecording = value
                     model.store()
                 }))
             }

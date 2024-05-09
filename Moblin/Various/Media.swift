@@ -381,8 +381,8 @@ final class Media: NSObject {
         }
     }
 
-    func ristStartStream(url: String) {
-        ristConnection.start(url: url, useBonding: false)
+    func ristStartStream(url: String, bonding: Bool) {
+        ristConnection.start(url: url, bonding: bonding)
     }
 
     func ristStopStream() {
@@ -567,8 +567,9 @@ final class Media: NSObject {
     func startRecording(
         url: URL,
         videoCodec: SettingsStreamCodec,
-        videoBitrate: Int? = nil,
-        keyFrameInterval: Int? = nil
+        videoBitrate: Int?,
+        keyFrameInterval: Int?,
+        audioBitrate: Int?
     ) {
         var codec: AVVideoCodecType
         switch videoCodec {
@@ -577,7 +578,7 @@ final class Media: NSObject {
         case .h265hevc:
             codec = AVVideoCodecType.hevc
         }
-        var videoProperties: [String: Any] = [
+        var videoSettings: [String: Any] = [
             AVVideoCodecKey: codec,
             AVVideoHeightKey: 0,
             AVVideoWidthKey: 0,
@@ -590,15 +591,19 @@ final class Media: NSObject {
             compressionProperties[AVVideoMaxKeyFrameIntervalDurationKey] = keyFrameInterval
         }
         if !compressionProperties.isEmpty {
-            videoProperties[AVVideoCompressionPropertiesKey] = compressionProperties
+            videoSettings[AVVideoCompressionPropertiesKey] = compressionProperties
+        }
+        var audioSettings = [
+            AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+            AVSampleRateKey: 0,
+            AVNumberOfChannelsKey: 0,
+        ]
+        if let audioBitrate {
+            audioSettings[AVEncoderBitRateKey] = audioBitrate
         }
         netStream.startRecording(url: url,
-                                 audioSettings: [
-                                     AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-                                     AVSampleRateKey: 0,
-                                     AVNumberOfChannelsKey: 0,
-                                 ],
-                                 videoSettings: videoProperties)
+                                 audioSettings: audioSettings,
+                                 videoSettings: videoSettings)
     }
 
     func stopRecording() {

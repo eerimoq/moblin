@@ -5673,6 +5673,9 @@
         }
       }
     },
+    "128 Kpbs or higher is recommended. Set to 0 for automatic." : {
+
+    },
     "200 by default." : {
       "localizations" : {
         "de" : {
@@ -14908,6 +14911,9 @@
           }
         }
       }
+    },
+    "Bonding" : {
+
     },
     "Border" : {
       "localizations" : {
@@ -54841,6 +54847,9 @@
           }
         }
       }
+    },
+    "RIST" : {
+
     },
     "RIST port number missing" : {
 

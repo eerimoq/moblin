@@ -19,17 +19,18 @@ class RistStream: NetStream {
         self.connection = nil
     }
 
-    func start(url: String, useBonding: Bool) {
+    func start(url: String, bonding: Bool) {
         guard let context = RistContext() else {
             logger.info("rist: Failed to create context")
             return
         }
         self.context = context
-        if useBonding {
+        if bonding {
             // To Do: Monitor available network inferfaces
-            for interfaceName in ["en0", "pdp_ip0"] {
-                addPeer(url: "\(url)&miface=\(interfaceName)")
-            }
+            // addPeer(url: "\(url)&miface=en0")
+            // addPeer(url: "\(url)&miface=pdp_ip0")
+            addPeer(url: "\(url)&miface=en0&weight=1")
+            addPeer(url: "\(url)&miface=pdp_ip0&weight=1")
         } else {
             addPeer(url: url)
         }

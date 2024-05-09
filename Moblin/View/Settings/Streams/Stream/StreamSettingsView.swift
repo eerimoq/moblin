@@ -138,6 +138,11 @@ struct StreamSettingsView: View {
                         Text("RTMP")
                     }
                 }
+                if stream.getProtocol() == .rist {
+                    NavigationLink(destination: StreamRistSettingsView(stream: stream)) {
+                        Text("RIST")
+                    }
+                }
             } footer: {
                 Text("""
                 The streamed (and recorded) video is always in landscape, even if the portrait toggle \

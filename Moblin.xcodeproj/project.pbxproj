@@ -231,6 +231,8 @@
 		03A14BE32ACC903E00D180FF /* ZoomSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A14BE22ACC903E00D180FF /* ZoomSettingsView.swift */; };
 		03A173F12B37E5E600ACC4F8 /* FormFieldError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A173F02B37E5E600ACC4F8 /* FormFieldError.swift */; };
 		03A173FA2B38312E00ACC4F8 /* Snow.sks in Resources */ = {isa = PBXBuildFile; fileRef = 03A173F92B38312E00ACC4F8 /* Snow.sks */; };
+		03A29A272BECAA0900DAA1B1 /* StreamRistSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A29A262BECAA0900DAA1B1 /* StreamRistSettingsView.swift */; };
+		03A29A2C2BECD0C800DAA1B1 /* StreamRecordingAudioSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A29A2B2BECD0C800DAA1B1 /* StreamRecordingAudioSettingsView.swift */; };
 		03A3F4C72AF4C0AD00F465D1 /* AdaptiveBitrate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A3F4C62AF4C0AD00F465D1 /* AdaptiveBitrate.swift */; };
 		03A5991A2B66A94B002E7EE8 /* DrawOnStreamEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A599192B66A94B002E7EE8 /* DrawOnStreamEffect.swift */; };
 		03A707B12B8EBE4D003BB7BE /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 03A707B02B8EBE4D003BB7BE /* Collections */; };
@@ -646,6 +648,8 @@
 		03A14BE22ACC903E00D180FF /* ZoomSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomSettingsView.swift; sourceTree = "<group>"; };
 		03A173F02B37E5E600ACC4F8 /* FormFieldError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormFieldError.swift; sourceTree = "<group>"; };
 		03A173F92B38312E00ACC4F8 /* Snow.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Snow.sks; sourceTree = "<group>"; };
+		03A29A262BECAA0900DAA1B1 /* StreamRistSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamRistSettingsView.swift; sourceTree = "<group>"; };
+		03A29A2B2BECD0C800DAA1B1 /* StreamRecordingAudioSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamRecordingAudioSettingsView.swift; sourceTree = "<group>"; };
 		03A3F4C62AF4C0AD00F465D1 /* AdaptiveBitrate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveBitrate.swift; sourceTree = "<group>"; };
 		03A599192B66A94B002E7EE8 /* DrawOnStreamEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawOnStreamEffect.swift; sourceTree = "<group>"; };
 		03A707B72B8ED466003BB7BE /* WatchProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchProtocol.swift; sourceTree = "<group>"; };
@@ -844,6 +848,7 @@
 				03BDE2242B24654E00DF193A /* OBS */,
 				034CE2EA2B4D2E5A00E2C1BD /* RealtimeIrl */,
 				03D3C04F2B452D14006BAEAC /* Recording */,
+				03A29A242BECA9F300DAA1B1 /* Rist */,
 				03708D132B83C321009C88AA /* Rtmp */,
 				032469A72AE1B2D80097B18B /* Srt */,
 				0315A3472AA31EC800295443 /* Twitch */,
@@ -1645,6 +1650,14 @@
 			path = Zoom;
 			sourceTree = "<group>";
 		};
+		03A29A242BECA9F300DAA1B1 /* Rist */ = {
+			isa = PBXGroup;
+			children = (
+				03A29A262BECAA0900DAA1B1 /* StreamRistSettingsView.swift */,
+			);
+			path = Rist;
+			sourceTree = "<group>";
+		};
 		03A707B62B8ED43D003BB7BE /* Common */ = {
 			isa = PBXGroup;
 			children = (
@@ -1911,6 +1924,7 @@
 			isa = PBXGroup;
 			children = (
 				03D3C0502B452D61006BAEAC /* StreamRecordingSettingsView.swift */,
+				03A29A2B2BECD0C800DAA1B1 /* StreamRecordingAudioSettingsView.swift */,
 			);
 			path = Recording;
 			sourceTree = "<group>";
@@ -2333,6 +2347,7 @@
 				03DBD1072B300D91004B0BE6 /* StreamWizardNetworkSetupObsSettingsView.swift in Sources */,
 				038DF9F12B387AC80027363A /* StreamWizardAfreecaTvSettingsView.swift in Sources */,
 				0318514D2B5392A1006A7943 /* StreamSrtConnectionPriorityView.swift in Sources */,
+				03A29A272BECAA0900DAA1B1 /* StreamRistSettingsView.swift in Sources */,
 				0359F8D02BD3DA61005BFDA8 /* AudioUnit.swift in Sources */,
 				030EFE752BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift in Sources */,
 				03A3F4C72AF4C0AD00F465D1 /* AdaptiveBitrate.swift in Sources */,
@@ -2395,6 +2410,7 @@
 				0359F8B62BD3DA61005BFDA8 /* AVCaptureDevice.Format+Extension.swift in Sources */,
 				03BC11602AE4BD9200C38FC4 /* Ffz.swift in Sources */,
 				039A9E282BAEC5A100A23F97 /* WidgetCropSettingsView.swift in Sources */,
+				03A29A2C2BECD0C800DAA1B1 /* StreamRecordingAudioSettingsView.swift in Sources */,
 				0315A37E2AA43DCC00295443 /* TextEditView.swift in Sources */,
 				035E9E372A9A02D6009D4F5A /* MoblinApp.swift in Sources */,
 				03279CF22B4D2AEC006CEA5A /* RealtimeIrl.swift in Sources */,

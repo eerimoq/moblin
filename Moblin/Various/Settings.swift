@@ -215,6 +215,18 @@ class SettingsStreamRtmp: Codable {
     }
 }
 
+class SettingsStreamRist: Codable {
+    var adaptiveBitrateEnabled: Bool = false
+    var bonding: Bool = false
+
+    func clone() -> SettingsStreamRist {
+        let new = SettingsStreamRist()
+        new.adaptiveBitrateEnabled = adaptiveBitrateEnabled
+        new.bonding = bonding
+        return new
+    }
+}
+
 enum SettingsCaptureSessionPreset: String, Codable, CaseIterable {
     case high
     case medium
@@ -251,6 +263,7 @@ class SettingsStreamRecording: Codable {
     var videoCodec: SettingsStreamCodec = .h265hevc
     var videoBitrate: UInt32 = 0
     var maxKeyFrameInterval: Int32 = 0
+    var audioBitrate: UInt32? = 128_000
     var autoStartRecording: Bool? = false
     var autoStopRecording: Bool? = false
 
@@ -259,6 +272,7 @@ class SettingsStreamRecording: Codable {
         new.videoCodec = videoCodec
         new.videoBitrate = videoBitrate
         new.maxKeyFrameInterval = maxKeyFrameInterval
+        new.audioBitrate = audioBitrate
         new.autoStartRecording = autoStartRecording
         new.autoStopRecording = autoStopRecording
         return new
@@ -326,6 +340,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
     var adaptiveBitrate: Bool? = true
     var srt: SettingsStreamSrt = .init()
     var rtmp: SettingsStreamRtmp? = .init()
+    var rist: SettingsStreamRist? = .init()
     var captureSessionPresetEnabled: Bool? = false
     var captureSessionPreset: SettingsCaptureSessionPreset? = .medium
     var maxKeyFrameInterval: Int32? = 2
@@ -370,6 +385,7 @@ class SettingsStream: Codable, Identifiable, Equatable {
         new.adaptiveBitrate = adaptiveBitrate
         new.srt = srt.clone()
         new.rtmp = rtmp!.clone()
+        new.rist = rist!.clone()
         new.captureSessionPresetEnabled = captureSessionPresetEnabled
         new.captureSessionPreset = captureSessionPreset
         new.maxKeyFrameInterval = maxKeyFrameInterval
@@ -2375,6 +2391,14 @@ final class Settings {
         }
         if realDatabase.debug!.allowVideoRangePixelFormat == nil {
             realDatabase.debug!.allowVideoRangePixelFormat = false
+            store()
+        }
+        for stream in realDatabase.streams where stream.rist == nil {
+            stream.rist = .init()
+            store()
+        }
+        for stream in realDatabase.streams where stream.recording!.audioBitrate == nil {
+            stream.recording!.audioBitrate = 128_000
             store()
         }
     }
