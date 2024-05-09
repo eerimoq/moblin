@@ -83,10 +83,11 @@ class RistStream: NetStream {
     }
 
     func handleStats(stats: RistStats) {
-        print("""
-        rist: peer \(stats.sender.peerId), rtt \(stats.sender.rtt), quality \(stats.sender.quality), \
+        logger.info("""
+        rist: stats: peer \(stats.sender.peerId), rtt \(stats.sender.rtt), quality \(stats.sender.quality), \
         sent \(stats.sender.sentPackets), received \(stats.sender.receivedPackets), \
-        bandwidth \(stats.sender.bandwidth), retry bandwidth \(stats.sender.retryBandwidth)
+        bandwidth \(formatBytesPerSecond(speed: Int64(stats.sender.bandwidth))), \
+        retry bandwidth \(formatBytesPerSecond(speed: Int64(stats.sender.retryBandwidth)))
         """)
     }
 
