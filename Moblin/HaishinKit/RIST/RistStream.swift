@@ -4,7 +4,7 @@ import Rist
 class RistStream: NetStream {
     weak var connection: RistConnection?
     private var context: RistContext?
-    private var peer: RistPeer?
+    private var peers: [RistPeer] = []
     private let writer = MpegTsWriter()
 
     init(_ connection: RistConnection) {
@@ -19,18 +19,23 @@ class RistStream: NetStream {
         self.connection = nil
     }
 
-    func start(url _: String) {
+    func start(url: String, useBonding: Bool) {
         guard let context = RistContext() else {
             logger.info("rist: Failed to create context")
             return
         }
         self.context = context
-        guard let peer = context.addPeer(url: "rist://192.168.50.181:2030?aes-type=128&secret=xyz")
-        else {
-            logger.info("rist: Failed to add peer")
+        if useBonding {
+            // To Do: Monitor available network inferfaces
+            for interfaceName in ["en0", "pdp_ip0"] {
+                addPeer(url: "\(url)&miface=\(interfaceName)")
+            }
+        } else {
+            addPeer(url: url)
+        }
+        guard !peers.isEmpty else {
             return
         }
-        self.peer = peer
         if !context.start() {
             logger.info("rist: Failed to start")
             return
@@ -42,10 +47,18 @@ class RistStream: NetStream {
         writer.startRunning()
     }
 
+    func addPeer(url: String) {
+        guard let peer = context?.addPeer(url: url) else {
+            logger.info("rist: Failed to add peer")
+            return
+        }
+        peers.append(peer)
+    }
+
     func stop() {
         writer.stopRunning()
         mixer.stopEncoding()
-        peer = nil
+        peers.removeAll()
         context = nil
     }
 

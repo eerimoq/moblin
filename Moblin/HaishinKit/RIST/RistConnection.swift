@@ -7,8 +7,8 @@ class RistConnection {
         stream = nil
     }
 
-    func start(url: String) {
-        stream?.start(url: url)
+    func start(url: String, useBonding: Bool) {
+        stream?.start(url: url, useBonding: useBonding)
     }
 
     func stop() {

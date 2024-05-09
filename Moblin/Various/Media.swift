@@ -382,7 +382,7 @@ final class Media: NSObject {
     }
 
     func ristStartStream(url: String) {
-        ristConnection.start(url: url)
+        ristConnection.start(url: url, useBonding: false)
     }
 
     func ristStopStream() {
