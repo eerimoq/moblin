@@ -8,6 +8,16 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.263.0", date: "2024-05-09", changes: [
+        "• Initial incomplete support for the RIST streaming protocol.",
+        "  • Enter an URL on the format `rist://192.168.50.181:2030?encryption=128&secret=xyz`",
+        "  • Stopping stream does not work.",
+        "  • No adaptive bitrate.",
+        "  • No bonding.",
+        "• Allow configuring audio bitrate in recordings. Seems to be 64 Kbps by default. 🐛/💡 Walk On Nick",
+        "  • Configure in Settings → Streams → My stream → Recording.",
+        "  • Default will be 128 Kbps instead of automatic (which was 64 Kbps).",
+    ]),
     Version(version: "0.262.0", date: "2024-05-08", changes: [
         "• Fix removing old chat messages one by one. 🐛 Walk On Nick",
     ]),
