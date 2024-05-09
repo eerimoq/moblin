@@ -20,6 +20,12 @@ class RistStream: NetStream {
     }
 
     func start(url: String, bonding: Bool) {
+        lockQueue.async {
+            self.startInner(url: url, bonding: bonding)
+        }
+    }
+
+    func startInner(url: String, bonding: Bool) {
         guard let context = RistContext() else {
             logger.info("rist: Failed to create context")
             return
@@ -29,7 +35,7 @@ class RistStream: NetStream {
         if bonding {
             // To Do: Monitor available network inferfaces
             addPeer(url: makeBondingUrl(url: url, interfaceName: "en0", weight: "5"))
-            // addPeer(url: makeBondingUrl(url: url, interfaceName: "en3", weight: "10"))
+            addPeer(url: makeBondingUrl(url: url, interfaceName: "en3", weight: "10"))
             addPeer(url: makeBondingUrl(url: url, interfaceName: "pdp_ip0", weight: "1"))
         } else {
             addPeer(url: url)
@@ -46,6 +52,19 @@ class RistStream: NetStream {
         mixer.startEncoding(writer)
         mixer.startRunning()
         writer.startRunning()
+    }
+
+    func stop() {
+        lockQueue.async {
+            self.stopInner()
+        }
+    }
+
+    func stopInner() {
+        writer.stopRunning()
+        mixer.stopEncoding()
+        peers.removeAll()
+        context = nil
     }
 
     func makeBondingUrl(url: String, interfaceName: String, weight: String) -> String? {
@@ -79,15 +98,14 @@ class RistStream: NetStream {
         peers.append(peer)
     }
 
-    func stop() {
-        writer.stopRunning()
-        mixer.stopEncoding()
-        peers.removeAll()
-        context = nil
-    }
-
     func send(data: Data) {
         if context?.send(data: data) != true {
+            logger.info("rist: Failed to send")
+        }
+    }
+
+    func send(dataPointer: UnsafeRawBufferPointer, count: Int) {
+        if context?.send(dataPointer: dataPointer, count: count) != true {
             logger.info("rist: Failed to send")
         }
     }
@@ -99,6 +117,6 @@ extension RistStream: MpegTsWriterDelegate {
     }
 
     func writer(_: MpegTsWriter, doOutputPointer dataPointer: UnsafeRawBufferPointer, count: Int) {
-        send(data: Data(bytes: dataPointer.baseAddress!, count: count))
+        send(dataPointer: dataPointer, count: count)
     }
 }
