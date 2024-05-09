@@ -8,6 +8,10 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.264.0", date: "2024-05-09", changes: [
+        "• Make RIST use all available network interfaces when bonding.",
+        "  • And stop using if unplugged.",
+    ]),
     Version(version: "0.263.0", date: "2024-05-09", changes: [
         "• Initial incomplete support for the RIST streaming protocol.",
         "  • Enter an URL on the format `rist://192.168.50.181:2030?encryption=128&secret=xyz`",
