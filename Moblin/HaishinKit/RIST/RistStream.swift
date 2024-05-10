@@ -82,6 +82,54 @@ class RistStream: NetStream {
         context = nil
     }
 
+    func getSpeed() -> UInt64 {
+        var totalBandwidth: UInt64 = 0
+        lockQueue.sync {
+            for peer in peers {
+                if let stats = peer.stats {
+                    totalBandwidth += stats.bandwidth + stats.retryBandwidth
+                }
+            }
+        }
+        return totalBandwidth
+    }
+
+    func connectionStatistics() -> String? {
+        struct PeerStats {
+            var name: String
+            var bandwidth: UInt64
+        }
+        var peersStats: [PeerStats] = []
+        var totalBandwidth: UInt64 = 0
+        lockQueue.sync {
+            for peer in peers {
+                var peerStats = PeerStats(name: peer.interfaceName, bandwidth: 0)
+                if let stats = peer.stats {
+                    peerStats.bandwidth = stats.bandwidth + stats.retryBandwidth
+                }
+                totalBandwidth += peerStats.bandwidth
+                peersStats.append(peerStats)
+            }
+        }
+        if peersStats.isEmpty {
+            return nil
+        }
+        if totalBandwidth == 0 {
+            totalBandwidth = 1
+        }
+        var percentges = peersStats.map { peerStats in
+            PeerStats(name: peerStats.name, bandwidth: 100 * peerStats.bandwidth / totalBandwidth)
+        }
+        percentges[percentges.count - 1].bandwidth = 100 - percentges
+            .prefix(upTo: percentges.count - 1)
+            .reduce(0) { total, percentage in
+                total + percentage.bandwidth
+            }
+        return percentges.map { percentage in
+            "\(percentage.bandwidth)% \(percentage.name)"
+        }.joined(separator: ", ")
+    }
+
     private func handleNetworkPathUpdate(path: NWPath) {
         guard bonding else {
             return
@@ -144,7 +192,7 @@ class RistStream: NetStream {
             totalBandwidth += stats.bandwidth
             totalBandwidth += stats.retryBandwidth
         }
-        logger.info("rist: Total bandwidth \(formatBytesPerSecond(speed: Int64(totalBandwidth)))")
+        // logger.info("rist: Total bandwidth \(formatBytesPerSecond(speed: Int64(totalBandwidth)))")
     }
 
     private func addPeer(_ url: String?, _ interfaceName: String) {

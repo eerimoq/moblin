@@ -445,6 +445,16 @@ class SettingsStream: Codable, Identifiable, Equatable {
         return getScheme() == "srtla"
     }
 
+    func isBonding() -> Bool {
+        if isSrtla() {
+            return true
+        }
+        if getProtocol() == .rist && rist!.bonding {
+            return true
+        }
+        return false
+    }
+
     func resolutionString() -> String {
         return resolution.shortString()
     }

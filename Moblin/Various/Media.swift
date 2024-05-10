@@ -55,6 +55,10 @@ final class Media: NSObject {
         return srtla?.connectionStatistics()
     }
 
+    func ristBondingStatistics() -> String? {
+        return ristStream?.connectionStatistics()
+    }
+
     func setConnectionPriorities(connectionPriorities: SettingsStreamSrtConnectionPriorities) {
         srtla?.setConnectionPriorities(connectionPriorities: connectionPriorities)
     }
@@ -256,16 +260,24 @@ final class Media: NSObject {
     func streamSpeed() -> Int64 {
         if netStream === rtmpStream {
             return Int64(8 * (rtmpStream?.info.currentBytesPerSecond ?? 0))
-        } else {
+        } else if netStream === srtStream {
             return 8 * srtSpeed
+        } else if netStream === ristStream {
+            return Int64(ristStream?.getSpeed() ?? 0)
+        } else {
+            return 0
         }
     }
 
     func streamTotal() -> Int64 {
         if netStream === rtmpStream {
             return rtmpStream?.info.byteCount.value ?? 0
-        } else {
+        } else if netStream === srtStream {
             return srtTotalByteCount
+        } else if netStream === ristStream {
+            return 0
+        } else {
+            return 0
         }
     }
 

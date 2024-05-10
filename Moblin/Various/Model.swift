@@ -1370,7 +1370,7 @@ final class Model: NSObject, ObservableObject {
             if !self.database.show.audioBar {
                 self.updateAudioLevel()
             }
-            self.updateSrtlaConnectionStatistics()
+            self.updateBondingStatistics()
             self.removeOldChatMessages(now: now)
             self.updateLocation()
             self.updateObsSourceScreenshot()
@@ -1584,10 +1584,18 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    private func updateSrtlaConnectionStatistics() {
-        if isStreamConnected(), let statistics = media.srtlaConnectionStatistics() {
-            bondingStatistics = statistics
-        } else if bondingStatistics != noValue {
+    private func updateBondingStatistics() {
+        if isStreamConnected() {
+            if let statistics = media.srtlaConnectionStatistics() {
+                bondingStatistics = statistics
+                return
+            }
+            if let statistics = media.ristBondingStatistics() {
+                bondingStatistics = statistics
+                return
+            }
+        }
+        if bondingStatistics != noValue {
             bondingStatistics = noValue
         }
     }
@@ -2073,6 +2081,8 @@ final class Model: NSObject, ObservableObject {
             updateAdaptiveBitrateSrtIfEnabled(stream: stream)
         case .rist:
             media.ristStartStream(url: stream.url, bonding: stream.rist!.bonding)
+            // To Do: Call when really connected.
+            onConnected()
         }
         updateSpeed(now: Date())
     }
@@ -3984,7 +3994,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func isShowingStatusBonding() -> Bool {
-        return stream.isSrtla() && isLive
+        return stream.isBonding() && isLive
     }
 
     func isShowingStatusRecording() -> Bool {
