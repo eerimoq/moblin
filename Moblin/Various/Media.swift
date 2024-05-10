@@ -52,7 +52,7 @@ final class Media: NSObject {
     }
 
     func srtlaConnectionStatistics() -> String? {
-        return srtla?.connectionStatistics() ?? nil
+        return srtla?.connectionStatistics()
     }
 
     func setConnectionPriorities(connectionPriorities: SettingsStreamSrtConnectionPriorities) {

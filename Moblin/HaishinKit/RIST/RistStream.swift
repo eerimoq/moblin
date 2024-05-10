@@ -2,10 +2,21 @@ import Foundation
 import Network
 import Rist
 
+class RistRemotePeer {
+    let interfaceName: String
+    let peer: RistPeer
+    var stats: RistSenderStats?
+
+    init(interfaceName: String, peer: RistPeer) {
+        self.interfaceName = interfaceName
+        self.peer = peer
+    }
+}
+
 class RistStream: NetStream {
     weak var connection: RistConnection?
     private var context: RistContext?
-    private var peers: [String: RistPeer] = [:]
+    private var peers: [RistRemotePeer] = []
     private let writer = MpegTsWriter()
     private var networkPathMonitor: NWPathMonitor?
     private var bonding: Bool = false
@@ -26,12 +37,6 @@ class RistStream: NetStream {
     func start(url: String, bonding: Bool) {
         lockQueue.async {
             self.startInner(url: url, bonding: bonding)
-        }
-    }
-
-    func stop() {
-        lockQueue.async {
-            self.stopInner()
         }
     }
 
@@ -62,6 +67,12 @@ class RistStream: NetStream {
         writer.startRunning()
     }
 
+    func stop() {
+        lockQueue.async {
+            self.stopInner()
+        }
+    }
+
     private func stopInner() {
         networkPathMonitor?.cancel()
         networkPathMonitor = nil
@@ -77,18 +88,18 @@ class RistStream: NetStream {
         }
         let interfaceNames = path.availableInterfaces.map { $0.name }
         var removedInterfaceNames: [String] = []
-        for interfaceName in peers.keys {
-            if interfaceNames.contains(interfaceName) {
+        for peer in peers {
+            if interfaceNames.contains(peer.interfaceName) {
                 continue
             }
-            removedInterfaceNames.append(interfaceName)
+            removedInterfaceNames.append(peer.interfaceName)
         }
         for interfaceName in removedInterfaceNames {
             logger.info("rist: Removing peer for interface \(interfaceName)")
-            peers.removeValue(forKey: interfaceName)
+            peers.removeAll(where: { $0.interfaceName == interfaceName })
         }
         for interfaceName in interfaceNames {
-            if peers.keys.contains(interfaceName) {
+            if peers.contains(where: { $0.interfaceName == interfaceName }) {
                 continue
             }
             addPeer(makeBondingUrl(url, interfaceName), interfaceName)
@@ -111,12 +122,29 @@ class RistStream: NetStream {
     }
 
     private func handleStats(stats: RistStats) {
+        lockQueue.async {
+            self.handleStatsInner(stats: stats)
+        }
+    }
+
+    private func handleStatsInner(stats: RistStats) {
         logger.info("""
-        rist: stats: peer \(stats.sender.peerId), rtt \(stats.sender.rtt), quality \(stats.sender.quality), \
+        rist: peer \(stats.sender.peerId), rtt \(stats.sender.rtt), \
         sent \(stats.sender.sentPackets), received \(stats.sender.receivedPackets), \
+        retransmitted \(stats.sender.retransmittedPackets), quality \(stats.sender.quality), \
         bandwidth \(formatBytesPerSecond(speed: Int64(stats.sender.bandwidth))), \
         retry bandwidth \(formatBytesPerSecond(speed: Int64(stats.sender.retryBandwidth)))
         """)
+        peers.first(where: { $0.peer.getId() == stats.sender.peerId })?.stats = stats.sender
+        var totalBandwidth: UInt64 = 0
+        for peer in peers {
+            guard let stats = peer.stats else {
+                continue
+            }
+            totalBandwidth += stats.bandwidth
+            totalBandwidth += stats.retryBandwidth
+        }
+        logger.info("rist: Total bandwidth \(formatBytesPerSecond(speed: Int64(totalBandwidth)))")
     }
 
     private func addPeer(_ url: String?, _ interfaceName: String) {
@@ -125,7 +153,7 @@ class RistStream: NetStream {
             logger.info("rist: Failed to add peer")
             return
         }
-        peers[interfaceName] = peer
+        peers.append(RistRemotePeer(interfaceName: interfaceName, peer: peer))
     }
 
     private func send(data: Data) {

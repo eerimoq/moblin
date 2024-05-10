@@ -1585,7 +1585,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func updateSrtlaConnectionStatistics() {
-        if isStreamConnceted(), let statistics = media.srtlaConnectionStatistics() {
+        if isStreamConnected(), let statistics = media.srtlaConnectionStatistics() {
             srtlaConnectionStatistics = statistics
         } else if srtlaConnectionStatistics != noValue {
             srtlaConnectionStatistics = noValue
@@ -2397,7 +2397,7 @@ final class Model: NSObject, ObservableObject {
             hasYouTubeLiveChatEmotes() || hasAfreecaTvChatEmotes() || hasOpenStreamingPlatformChatEmotes()
     }
 
-    func isStreamConnceted() -> Bool {
+    func isStreamConnected() -> Bool {
         return streamState == .connected
     }
 
@@ -3228,7 +3228,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func updateUptime(now: Date) {
-        if streamStartDate != nil && isStreamConnceted() {
+        if streamStartDate != nil && isStreamConnected() {
             let elapsed = now.timeIntervalSince(streamStartDate!)
             uptime = uptimeFormatter.string(from: elapsed)!
         } else if uptime != noValue {
