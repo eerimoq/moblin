@@ -103,6 +103,12 @@ final class AudioUnit: NSObject {
     
     private var replaceAudios: [UUID: ReplaceAudio] = [:]
 
+    func addReplaceAudioPCMBuffer(id: UUID, _ audioBuffer: AVAudioPCMBuffer) {
+        guard let replaceAudio = replaceAudios[id] else {
+            return
+        }
+    }
+
     func addReplaceAudio(cameraId: UUID) {
         let replaceAudio = ReplaceAudio()
         replaceAudios[cameraId] = replaceAudio
