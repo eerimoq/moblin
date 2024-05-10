@@ -19,11 +19,67 @@ func makeChannelMap(
 
 private class ReplaceAudio {
     var audioBuffers: [AVAudioPCMBuffer] = []
+    var currentAudioPCMBuffer: AVAudioPCMBuffer?
 
     init() {
     }
 
+    func updateSampleBuffer(_ realPresentationTimeStamp: Double) {
+        var audioPCMBuffer = currentAudioPCMBuffer
+        while !audioBuffers.isEmpty {
+            let replaceAudioPCMBuffer = audioBuffers.first!
+            // Get first frame quickly
+            if currentAudioPCMBuffer == nil {
+                audioPCMBuffer = replaceAudioPCMBuffer
+            }
+            // Just for sanity. Should depend on FPS and latency.
+            if audioBuffers.count > 200 {
+                // logger.info("Over 200 frames buffered. Dropping oldest frame.")
+                audioPCMBuffer = replaceAudioPCMBuffer
+                audioBuffers.remove(at: 0)
+                continue
+            }
+       //         let presentationTimeStamp = replaceAudioPCMBuffer.presentationTimeStamp.seconds
+       //     if firstPresentationTimeStamp.isNaN {
+       //         firstPresentationTimeStamp = realPresentationTimeStamp - presentationTimeStamp
+       //     }
+       //     if firstPresentationTimeStamp + presentationTimeStamp + latency > realPresentationTimeStamp {
+       //         break
+       //     }
+            audioPCMBuffer = replaceAudioPCMBuffer
+            audioBuffers.remove(at: 0)
+        }
+        currentAudioPCMBuffer = audioPCMBuffer
+    }
 
+    func getSampleBuffer(_ realSampleBuffer: CMSampleBuffer) -> CMSampleBuffer? {
+        if let currentAudioPCMBuffer {
+            return makeSampleBuffer(
+                realSampleBuffer: realSampleBuffer,
+                replaceAudioPCMBuffer: currentAudioPCMBuffer
+            )
+        } else {
+            return nil
+        }
+    }
+
+    private func makeSampleBuffer(realSampleBuffer: CMSampleBuffer,
+                                  replaceAudioPCMBuffer: AVAudioPCMBuffer) -> CMSampleBuffer?
+    {
+        let sampleBuffer = replaceAudioPCMBuffer.makeSampleBuffer(presentationTimeStamp: realSampleBuffer.presentationTimeStamp)
+        
+      //  guard let sampleBuffer = CMSampleBuffer.create(
+      //      replaceSampleBuffer!.imageBuffer!,
+      //      replaceSampleBuffer!.formatDescription!,
+      //      realSampleBuffer.duration,
+      //      realSampleBuffer.presentationTimeStamp,
+      //      realSampleBuffer.decodeTimeStamp)
+      //  else {
+      //      return nil
+      //  }
+      //  sampleBuffer!.isNotSync = replaceSampleBuffer!.isNotSync
+            return sampleBuffer
+    }
 }
 
 final class AudioUnit: NSObject {
@@ -140,6 +196,21 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
         guard let mixer else {
             return
         }
+
+
+
+        for replaceAudio in replaceAudios.values {
+            replaceAudio.updateSampleBuffer(sampleBuffer.presentationTimeStamp.seconds)
+        }
+        var sampleBuffer = sampleBuffer
+        if let selectedReplaceAudioId {
+            sampleBuffer = (replaceAudios[selectedReplaceAudioId]?
+                .getSampleBuffer(sampleBuffer))!
+        }
+
+        
+
+
         // Workaround for audio drift on iPhone 15 Pro Max running iOS 17. Probably issue on more models.
         let presentationTimeStamp = syncTimeToVideo(mixer: mixer, sampleBuffer: sampleBuffer)
         guard mixer.useSampleBuffer(presentationTimeStamp, mediaType: AVMediaType.audio) else {
