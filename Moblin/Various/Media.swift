@@ -269,11 +269,24 @@ final class Media: NSObject {
             })
             rtt /= Double(stats.count)
         }
-        adaptiveBitrate?.update(stats: StreamStats(rttMs: rtt, packetsInFlight: 20))
+        adaptiveBitrate?.update(stats: StreamStats(rttMs: rtt, packetsInFlight: 10))
         guard overlay else {
             return nil
         }
-        return []
+        if let adaptiveBitrate {
+            return [
+                "rttMs: \(rtt)",
+                """
+                \(adaptiveBitrate.getFastPif)   \
+                \(adaptiveBitrate.getSmoothPif)
+                """,
+                "B: \(adaptiveBitrate.getCurrentBitrate()) /  \(adaptiveBitrate.getCurrentMaximumBitrate())",
+            ] + adaptiveBitrate.getAdaptiveActions
+        } else {
+            return [
+                "rttMs: \(rtt)",
+            ]
+        }
     }
 
     func updateSrtSpeed() {
@@ -425,7 +438,6 @@ final class Media: NSObject {
         targetBitrate: UInt32,
         adaptiveBitrate adaptiveBitrateEnabled: Bool
     ) {
-        ristConnection.start(url: url, bonding: bonding)
         if adaptiveBitrateEnabled {
             adaptiveBitrate = AdaptiveBitrate(
                 targetBitrate: targetBitrate,
@@ -434,6 +446,7 @@ final class Media: NSObject {
         } else {
             adaptiveBitrate = nil
         }
+        ristConnection.start(url: url, bonding: bonding)
     }
 
     func ristStopStream() {

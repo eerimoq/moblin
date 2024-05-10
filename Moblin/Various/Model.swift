@@ -2085,7 +2085,8 @@ final class Model: NSObject, ObservableObject {
             )
             updateAdaptiveBitrateSrtIfEnabled(stream: stream)
         case .rist:
-            media.ristStartStream(url: stream.url, bonding: stream.rist!.bonding,
+            media.ristStartStream(url: stream.url,
+                                  bonding: stream.rist!.bonding,
                                   targetBitrate: stream.bitrate,
                                   adaptiveBitrate: stream.rist!.adaptiveBitrateEnabled)
             updateAdaptiveBitrateRistIfEnabled()
