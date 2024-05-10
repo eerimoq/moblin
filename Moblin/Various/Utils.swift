@@ -448,3 +448,31 @@ extension AVCaptureDevice.WhiteBalanceGains {
 func makeAudioCodecString() -> String {
     return "AAC"
 }
+
+struct BondingConnection {
+    let name: String
+    var usage: UInt64
+}
+
+func bondingStatistics(connections: [BondingConnection]) -> String? {
+    guard !connections.isEmpty else {
+        return nil
+    }
+    var totalUsage = connections.reduce(0) { partialResult, connection in
+        partialResult + connection.usage
+    }
+    if totalUsage == 0 {
+        totalUsage = 1
+    }
+    var percentges = connections.map { connection in
+        BondingConnection(name: connection.name, usage: 100 * connection.usage / totalUsage)
+    }
+    percentges[percentges.count - 1].usage = 100 - percentges
+        .prefix(upTo: percentges.count - 1)
+        .reduce(0) { total, percentage in
+            total + percentage.usage
+        }
+    return percentges.map { percentage in
+        "\(percentage.usage)% \(percentage.name)"
+    }.joined(separator: ", ")
+}

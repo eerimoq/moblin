@@ -95,39 +95,17 @@ class RistStream: NetStream {
     }
 
     func connectionStatistics() -> String? {
-        struct PeerStats {
-            var name: String
-            var bandwidth: UInt64
-        }
-        var peersStats: [PeerStats] = []
-        var totalBandwidth: UInt64 = 0
+        var connections: [BondingConnection] = []
         lockQueue.sync {
             for peer in peers {
-                var peerStats = PeerStats(name: peer.interfaceName, bandwidth: 0)
+                var connection = BondingConnection(name: peer.interfaceName, usage: 0)
                 if let stats = peer.stats {
-                    peerStats.bandwidth = stats.bandwidth + stats.retryBandwidth
+                    connection.usage = stats.bandwidth + stats.retryBandwidth
                 }
-                totalBandwidth += peerStats.bandwidth
-                peersStats.append(peerStats)
+                connections.append(connection)
             }
         }
-        if peersStats.isEmpty {
-            return nil
-        }
-        if totalBandwidth == 0 {
-            totalBandwidth = 1
-        }
-        var percentges = peersStats.map { peerStats in
-            PeerStats(name: peerStats.name, bandwidth: 100 * peerStats.bandwidth / totalBandwidth)
-        }
-        percentges[percentges.count - 1].bandwidth = 100 - percentges
-            .prefix(upTo: percentges.count - 1)
-            .reduce(0) { total, percentage in
-                total + percentage.bandwidth
-            }
-        return percentges.map { percentage in
-            "\(percentage.bandwidth)% \(percentage.name)"
-        }.joined(separator: ", ")
+        return bondingStatistics(connections: connections)
     }
 
     private func handleNetworkPathUpdate(path: NWPath) {
