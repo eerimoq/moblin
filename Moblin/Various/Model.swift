@@ -3550,6 +3550,7 @@ final class Model: NSObject, ObservableObject {
         )
         zoomXPinch = zoomX
         hasZoom = true
+        media.attachAudio(device: AVCaptureDevice.default(for: .audio))
     }
 
     private func attachRtmpCamera(cameraId: UUID) {
@@ -3559,6 +3560,7 @@ final class Model: NSObject, ObservableObject {
         streamPreviewView.isMirrored = false
         hasZoom = false
         media.attachRtmpCamera(cameraId: cameraId, device: preferredCamera(position: .front))
+        media.attachRtmpAudio(cameraId: cameraId, device: AVCaptureDevice.default(for: .audio))
     }
 
     private func attachExternalCamera(cameraId _: String) {

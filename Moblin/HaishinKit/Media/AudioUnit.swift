@@ -18,6 +18,11 @@ func makeChannelMap(
 }
 
 private class ReplaceAudio {
+    var audioBuffers: [AVAudioPCMBuffer] = []
+
+    init() {
+    }
+
 
 }
 
@@ -39,7 +44,12 @@ final class AudioUnit: NSObject {
         }
     }
 
-    func attach(_ device: AVCaptureDevice?) throws {
+    func attach(_ device: AVCaptureDevice?, _ replaceAudio: UUID?) throws {
+        let isOtherReplaceAudio = lockQueue.sync {
+            let oldReplaceAudio = self.selectedReplaceAudioId
+            self.selectedReplaceAudioId = replaceAudio
+            return replaceAudio != oldReplaceAudio
+        }
         guard let mixer else {
             return
         }
@@ -100,13 +110,15 @@ final class AudioUnit: NSObject {
             output = nil
         }
     }
-    
+
+    private var selectedReplaceAudioId: UUID?
     private var replaceAudios: [UUID: ReplaceAudio] = [:]
 
     func addReplaceAudioPCMBuffer(id: UUID, _ audioBuffer: AVAudioPCMBuffer) {
         guard let replaceAudio = replaceAudios[id] else {
             return
         }
+        replaceAudio.audioBuffers.append(audioBuffer)
     }
 
     func addReplaceAudio(cameraId: UUID) {

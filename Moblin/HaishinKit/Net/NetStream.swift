@@ -108,11 +108,12 @@ open class NetStream: NSObject {
 
     func attachAudio(
         _ device: AVCaptureDevice?,
-        onError: ((_ error: Error) -> Void)? = nil
+        onError: ((_ error: Error) -> Void)? = nil,
+        replaceAudioId: UUID? = nil
     ) {
         lockQueue.sync {
             do {
-                try self.mixer.attachAudio(device)
+                try self.mixer.attachAudio(device, replaceAudioId)
             } catch {
                 onError?(error)
             }

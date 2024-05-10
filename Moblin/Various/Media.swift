@@ -92,7 +92,6 @@ final class Media: NSObject {
         }
         netStream.delegate = self
         netStream.setVideoOrientation(value: .landscapeRight)
-        attachAudio(device: AVCaptureDevice.default(for: .audio))
     }
 
     func getAudioLevel() -> Float {
@@ -547,6 +546,10 @@ final class Media: NSObject {
 
     func attachRtmpCamera(cameraId: UUID, device: AVCaptureDevice?) {
         netStream.attachCamera(device, replaceVideoCameraId: cameraId)
+    }
+
+    func attachRtmpAudio(cameraId: UUID, device: AVCaptureDevice?) {
+        netStream.attachAudio(device, replaceAudioId: cameraId)
     }
 
     func addRtmpSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {

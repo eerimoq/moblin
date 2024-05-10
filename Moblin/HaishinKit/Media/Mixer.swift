@@ -74,8 +74,8 @@ class Mixer {
         try video.attach(device, replaceVideo)
     }
 
-    func attachAudio(_ device: AVCaptureDevice?) throws {
-        try audio.attach(device)
+    func attachAudio(_ device: AVCaptureDevice?, _ replaceAudio: UUID?) throws {
+        try audio.attach(device, replaceAudio)
     }
 
     func useSampleBuffer(_ presentationTimeStamp: CMTime, mediaType: AVMediaType) -> Bool {
