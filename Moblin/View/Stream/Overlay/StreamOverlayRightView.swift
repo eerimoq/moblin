@@ -551,9 +551,9 @@ struct RightOverlayView: View {
                 color: .white
             )
             StreamOverlayIconAndTextView(
-                show: model.isShowingStatusSrtla(),
+                show: model.isShowingStatusBonding(),
                 icon: "phone.connection",
-                text: model.srtlaConnectionStatistics,
+                text: model.bondingStatistics,
                 textFirst: true,
                 color: netStreamColor()
             )

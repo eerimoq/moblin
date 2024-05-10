@@ -244,7 +244,7 @@ final class Model: NSObject, ObservableObject {
     private var browserWidgetsStatusChanged = false
     private var subscriptions = Set<AnyCancellable>()
     @Published var uptime = noValue
-    @Published var srtlaConnectionStatistics = noValue
+    @Published var bondingStatistics = noValue
     @Published var audioLevel: Float = defaultAudioLevel
     @Published var numberOfAudioChannels: Int = 0
     var settings = Settings()
@@ -1586,9 +1586,9 @@ final class Model: NSObject, ObservableObject {
 
     private func updateSrtlaConnectionStatistics() {
         if isStreamConnected(), let statistics = media.srtlaConnectionStatistics() {
-            srtlaConnectionStatistics = statistics
-        } else if srtlaConnectionStatistics != noValue {
-            srtlaConnectionStatistics = noValue
+            bondingStatistics = statistics
+        } else if bondingStatistics != noValue {
+            bondingStatistics = noValue
         }
     }
 
@@ -2086,7 +2086,7 @@ final class Model: NSObject, ObservableObject {
         updateUptime(now: Date())
         updateSpeed(now: Date())
         updateAudioLevel()
-        srtlaConnectionStatistics = noValue
+        bondingStatistics = noValue
         if !reconnect {
             makeStreamEndedToast()
         }
@@ -3983,7 +3983,7 @@ final class Model: NSObject, ObservableObject {
         return database.show.location! && isLocationEnabled()
     }
 
-    func isShowingStatusSrtla() -> Bool {
+    func isShowingStatusBonding() -> Bool {
         return stream.isSrtla() && isLive
     }
 
@@ -4092,8 +4092,8 @@ extension Model: RemoteControlStreamerDelegate {
             if self.isShowingStatusLocation() {
                 topRight.location = RemoteControlStatusItem(message: self.location)
             }
-            if self.isShowingStatusSrtla() {
-                topRight.srtla = RemoteControlStatusItem(message: self.srtlaConnectionStatistics)
+            if self.isShowingStatusBonding() {
+                topRight.srtla = RemoteControlStatusItem(message: self.bondingStatistics)
             }
             if self.isShowingStatusRecording() {
                 topRight.recording = RemoteControlStatusItem(message: self.recordingLength)
