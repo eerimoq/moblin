@@ -108,6 +108,12 @@ class RistStream: NetStream {
         return bondingStatistics(connections: connections)
     }
 
+    func getStats() -> [RistSenderStats] {
+        return lockQueue.sync {
+            peers.filter { $0.stats != nil }.map { $0.stats! }
+        }
+    }
+
     private func handleNetworkPathUpdate(path: NWPath) {
         guard bonding else {
             return

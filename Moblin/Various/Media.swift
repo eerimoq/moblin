@@ -189,65 +189,91 @@ final class Media: NSObject {
 
     func updateAdaptiveBitrate(overlay: Bool) -> [String]? {
         if srtStream != nil {
-            let stats = srtConnection.performanceData
-            adaptiveBitrate?.update(stats: StreamStats(
-                rttMs: stats.msRTT,
-                packetsInFlight: Double(stats.pktFlightSize)
-            ))
-            guard overlay else {
-                return nil
-            }
-            if let adaptiveBitrate {
-                return [
-                    """
-                    R: \(stats.pktRetransTotal) N: \(stats.pktRecvNAKTotal) \
-                    D: \(stats.pktSndDropTotal) E: \(numberOfFailedEncodings)
-                    """,
-                    "msRTT: \(stats.msRTT)",
-                    """
-                    pktFlightSize: \(stats.pktFlightSize)   \
-                    \(adaptiveBitrate.getFastPif)   \
-                    \(adaptiveBitrate.getSmoothPif)
-                    """,
-                    "B: \(adaptiveBitrate.getCurrentBitrate()) /  \(adaptiveBitrate.getCurrentMaximumBitrate())",
-                ] + adaptiveBitrate.getAdaptiveActions
-            } else {
-                return [
-                    "pktRetransTotal: \(stats.pktRetransTotal)",
-                    "pktRecvNAKTotal: \(stats.pktRecvNAKTotal)",
-                    "pktSndDropTotal: \(stats.pktSndDropTotal)",
-                    "msRTT: \(stats.msRTT)",
-                    "pktFlightSize: \(stats.pktFlightSize)",
-                    "pktSndBuf: \(stats.pktSndBuf)",
-                ]
-            }
+            return updateAdaptiveBitrateSrt(overlay: overlay)
         } else if let rtmpStream {
-            let stats = rtmpStream.info.stats.value
-            adaptiveBitrate?.update(stats: StreamStats(
-                rttMs: stats.rttMs,
-                packetsInFlight: Double(stats.packetsInFlight)
-            ))
-            guard overlay else {
-                return nil
-            }
-            if let adaptiveBitrate {
-                return [
-                    "rttMs: \(stats.rttMs)",
-                    """
-                    packetsInFlight: \(stats.packetsInFlight)   \
-                    \(adaptiveBitrate.getFastPif)   \
-                    \(adaptiveBitrate.getSmoothPif)
-                    """,
-                    "B: \(adaptiveBitrate.getCurrentBitrate()) /  \(adaptiveBitrate.getCurrentMaximumBitrate())",
-                ] + adaptiveBitrate.getAdaptiveActions
-            } else {
-                return [
-                    "rttMs: \(stats.rttMs)",
-                    "packetsInFlight: \(stats.packetsInFlight)",
-                ]
-            }
+            return updateAdaptiveBitrateRtmp(overlay: overlay, rtmpStream: rtmpStream)
+        } else if let ristStream {
+            return updateAdaptiveBitrateRist(overlay: overlay, ristStream: ristStream)
         }
         return nil
+    }
+
+    private func updateAdaptiveBitrateSrt(overlay: Bool) -> [String]? {
+        let stats = srtConnection.performanceData
+        adaptiveBitrate?.update(stats: StreamStats(
+            rttMs: stats.msRTT,
+            packetsInFlight: Double(stats.pktFlightSize)
+        ))
+        guard overlay else {
+            return nil
+        }
+        if let adaptiveBitrate {
+            return [
+                """
+                R: \(stats.pktRetransTotal) N: \(stats.pktRecvNAKTotal) \
+                D: \(stats.pktSndDropTotal) E: \(numberOfFailedEncodings)
+                """,
+                "msRTT: \(stats.msRTT)",
+                """
+                pktFlightSize: \(stats.pktFlightSize)   \
+                \(adaptiveBitrate.getFastPif)   \
+                \(adaptiveBitrate.getSmoothPif)
+                """,
+                "B: \(adaptiveBitrate.getCurrentBitrate()) /  \(adaptiveBitrate.getCurrentMaximumBitrate())",
+            ] + adaptiveBitrate.getAdaptiveActions
+        } else {
+            return [
+                "pktRetransTotal: \(stats.pktRetransTotal)",
+                "pktRecvNAKTotal: \(stats.pktRecvNAKTotal)",
+                "pktSndDropTotal: \(stats.pktSndDropTotal)",
+                "msRTT: \(stats.msRTT)",
+                "pktFlightSize: \(stats.pktFlightSize)",
+                "pktSndBuf: \(stats.pktSndBuf)",
+            ]
+        }
+    }
+
+    private func updateAdaptiveBitrateRtmp(overlay: Bool, rtmpStream: RTMPStream) -> [String]? {
+        let stats = rtmpStream.info.stats.value
+        adaptiveBitrate?.update(stats: StreamStats(
+            rttMs: stats.rttMs,
+            packetsInFlight: Double(stats.packetsInFlight)
+        ))
+        guard overlay else {
+            return nil
+        }
+        if let adaptiveBitrate {
+            return [
+                "rttMs: \(stats.rttMs)",
+                """
+                packetsInFlight: \(stats.packetsInFlight)   \
+                \(adaptiveBitrate.getFastPif)   \
+                \(adaptiveBitrate.getSmoothPif)
+                """,
+                "B: \(adaptiveBitrate.getCurrentBitrate()) /  \(adaptiveBitrate.getCurrentMaximumBitrate())",
+            ] + adaptiveBitrate.getAdaptiveActions
+        } else {
+            return [
+                "rttMs: \(stats.rttMs)",
+                "packetsInFlight: \(stats.packetsInFlight)",
+            ]
+        }
+    }
+
+    private func updateAdaptiveBitrateRist(overlay: Bool, ristStream: RistStream) -> [String]? {
+        let stats = ristStream.getStats()
+        var rtt = 1.0
+        if !stats.isEmpty {
+            rtt = Double(stats.reduce(0) { _, stat in
+                stat.rtt
+            })
+            rtt /= Double(stats.count)
+        }
+        adaptiveBitrate?.update(stats: StreamStats(rttMs: rtt, packetsInFlight: 20))
+        guard overlay else {
+            return nil
+        }
+        return []
     }
 
     func updateSrtSpeed() {
@@ -393,8 +419,21 @@ final class Media: NSObject {
         }
     }
 
-    func ristStartStream(url: String, bonding: Bool) {
+    func ristStartStream(
+        url: String,
+        bonding: Bool,
+        targetBitrate: UInt32,
+        adaptiveBitrate adaptiveBitrateEnabled: Bool
+    ) {
         ristConnection.start(url: url, bonding: bonding)
+        if adaptiveBitrateEnabled {
+            adaptiveBitrate = AdaptiveBitrate(
+                targetBitrate: targetBitrate,
+                delegate: self
+            )
+        } else {
+            adaptiveBitrate = nil
+        }
     }
 
     func ristStopStream() {
