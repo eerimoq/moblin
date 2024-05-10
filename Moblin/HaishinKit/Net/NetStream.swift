@@ -131,9 +131,21 @@ open class NetStream: NSObject {
         }
     }
 
+    func addReplaceAudio(cameraId: UUID) {
+        mixer.audio.lockQueue.async {
+            self.mixer.audio.addReplaceAudio(cameraId: cameraId)
+        }
+    }
+
     func removeReplaceVideo(cameraId: UUID) {
         mixer.video.lockQueue.async {
             self.mixer.video.removeReplaceVideo(cameraId: cameraId)
+        }
+    }
+
+    func removeReplaceAudio(cameraId: UUID) {
+        mixer.audio.lockQueue.async {
+            self.mixer.audio.removeReplaceAudio(cameraId: cameraId)
         }
     }
 

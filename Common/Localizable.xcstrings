@@ -6342,7 +6342,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "un controlador"
           }
         },
@@ -6732,8 +6732,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "un preajuste"
+            "state" : "translated",
+            "value" : "un preset"
           }
         },
         "fi" : {
@@ -6862,7 +6862,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "una región de privacidad"
           }
         },
@@ -6992,7 +6992,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "una escena"
           }
         },
@@ -7122,8 +7122,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "una corriente"
+            "state" : "translated",
+            "value" : "una transmisión"
           }
         },
         "fi" : {
@@ -7252,7 +7252,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "un nombre de usuario"
           }
         },
@@ -7382,7 +7382,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "un widget"
           }
         },
@@ -7902,7 +7902,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Añade tus propios LUT."
           }
         },
@@ -8292,8 +8292,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Permitir formato de píxeles de rango de vídeo"
+            "state" : "translated",
+            "value" : "Permitir el formato de píxeles de la gama de vídeo"
           }
         },
         "fi" : {
@@ -9338,8 +9338,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "LUT de registro de Apple"
+            "state" : "translated",
+            "value" : "LUT de Apple Log"
           }
         },
         "fi" : {
@@ -9988,7 +9988,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Intentando de nuevo en 5 segundos."
           }
         },
@@ -10898,8 +10898,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Inicio automático de grabación al transmitir en vivo"
+            "state" : "translated",
+            "value" : "Iniciar automáticamente la grabación al iniciar la transmisión"
           }
         },
         "fi" : {
@@ -11028,7 +11028,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Detener automáticamente la grabación al finalizar la transmisión"
           }
         },
@@ -12328,7 +12328,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Belleza"
           }
         },
@@ -12458,8 +12458,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "filtro de belleza"
+            "state" : "translated",
+            "value" : "Filtro de belleza"
           }
         },
         "fi" : {
@@ -13108,8 +13108,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "La mejor estabilidad posible. Puede utilizar vinculación. Configuración más flexible."
+            "state" : "translated",
+            "value" : "La mejor estabilidad posible. Puede utilizar bonding. Configuración más flexible."
           }
         },
         "fi" : {
@@ -14538,7 +14538,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Difuminar"
           }
         },
@@ -15321,7 +15321,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Brillo"
           }
         },
@@ -15841,8 +15841,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "incluido"
+            "state" : "translated",
+            "value" : "Incluido"
           }
         },
         "fi" : {
@@ -16361,8 +16361,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Cambie la cámara y reinicie la transmisión para que funcionen correctamente."
+            "state" : "translated",
+            "value" : "Cambia la cámara y reinicia la transmisión para que funcione correctamente."
           }
         },
         "fi" : {
@@ -19351,7 +19351,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "La exposición automática continua no es compatible con esta cámara"
           }
         },
@@ -19481,7 +19481,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "El balance de blancos automático continuo no es compatible con esta cámara"
           }
         },
@@ -19611,7 +19611,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Contraste"
           }
         },
@@ -21951,7 +21951,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Lindo"
           }
         },
@@ -22731,7 +22731,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Descripción"
           }
         },
@@ -23641,7 +23641,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Desconectado"
           }
         },
@@ -28321,8 +28321,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "EXB"
+            "state" : "translated",
+            "value" : "EXP"
           }
         },
         "fi" : {
@@ -28711,8 +28711,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SESGO DE EXPOSICIÓN"
+            "state" : "translated",
+            "value" : "EXPOSICIÓN"
           }
         },
         "fi" : {
@@ -28841,8 +28841,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Rostro"
+            "state" : "translated",
+            "value" : "Cara"
           }
         },
         "fi" : {
@@ -28971,7 +28971,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Puntos de referencia de la cara"
           }
         },
@@ -31571,8 +31571,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "FOC"
+            "state" : "translated",
+            "value" : "ENF"
           }
         },
         "fi" : {
@@ -31701,8 +31701,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ENFOCAR"
+            "state" : "translated",
+            "value" : "ENFOQUE"
           }
         },
         "fi" : {
@@ -35731,7 +35731,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Icono"
           }
         },
@@ -36121,8 +36121,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Si está habilitado, la LUT seleccionada se aplica cuando se utiliza el espacio de color Apple Log."
+            "state" : "translated",
+            "value" : "Si está habilitado, el LUT seleccionado se aplica cuando se utiliza el espacio de color Apple Log."
           }
         },
         "fi" : {
@@ -37551,8 +37551,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "YO ASI"
+            "state" : "translated",
+            "value" : "ISO"
           }
         },
         "fi" : {
@@ -40021,8 +40021,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "LUT"
+            "state" : "translated",
+            "value" : "LUTs"
           }
         },
         "fi" : {
@@ -40151,8 +40151,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "LUTS modifica los colores de la imagen cuando se aplica."
+            "state" : "translated",
+            "value" : "Los LUTs modifican los colores de la imagen cuando se aplican."
           }
         },
         "fi" : {
@@ -40934,7 +40934,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "La exposición manual no es compatible con esta cámara"
           }
         },
@@ -41194,7 +41194,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "El balance de blancos manual no es compatible con esta cámara"
           }
         },
@@ -42884,8 +42884,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "reflejado"
+            "state" : "translated",
+            "value" : "En espejo"
           }
         },
         "fi" : {
@@ -43404,7 +43404,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Boca"
           }
         },
@@ -44314,8 +44314,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "mi lut"
+            "state" : "translated",
+            "value" : "Mi LUT"
           }
         },
         "fi" : {
@@ -44574,7 +44574,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mi(s) servidor(es)"
           }
         },
@@ -46524,7 +46524,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Aún no se ha recibido ninguna vista previa."
           }
         },
@@ -47564,7 +47564,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "No compatible con esta cámara"
           }
         },
@@ -48474,8 +48474,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Compensar"
+            "state" : "translated",
+            "value" : "Desplazamiento"
           }
         },
         "fi" : {
@@ -50034,7 +50034,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Formato de píxeles"
           }
         },
@@ -51074,8 +51074,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Avance"
+            "state" : "translated",
+            "value" : "Vista previa"
           }
         },
         "fi" : {
@@ -51984,7 +51984,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Radio"
           }
         },
@@ -55910,7 +55910,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Saturación"
           }
         },
@@ -56170,7 +56170,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Escala"
           }
         },
@@ -58250,8 +58250,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Espectáculo"
+            "state" : "translated",
+            "value" : "Mostrar"
           }
         },
         "fi" : {
@@ -64360,7 +64360,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Desliza hacia la izquierda en %@ para eliminarlo."
           }
         },
@@ -64490,7 +64490,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Desliza %@ hacia la izquierda para eliminarlo."
           }
         },
@@ -64750,7 +64750,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Toca la vista previa para ocultarla."
           }
         },
@@ -66180,8 +66180,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "La LUT de Apple Log solo se aplica cuando se selecciona el espacio de color Apple Log."
+            "state" : "translated",
+            "value" : "El LUT de Apple Log solo se aplica cuando se selecciona el espacio de color Apple Log."
           }
         },
         "fi" : {
@@ -68130,7 +68130,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Estado térmico"
           }
         },
@@ -75160,8 +75160,8 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "BM"
+            "state" : "translated",
+            "value" : "WB"
           }
         },
         "fi" : {
@@ -75550,7 +75550,7 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "BALANCE DE BLANCOS"
           }
         },

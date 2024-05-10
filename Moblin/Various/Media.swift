@@ -562,8 +562,16 @@ final class Media: NSObject {
         netStream.addReplaceVideo(cameraId: cameraId, latency: latency)
     }
 
+    func addRtmpAudio(cameraId: UUID) {
+        netStream.addReplaceAudio(cameraId: cameraId)
+    }
+
     func removeRtmpCamera(cameraId: UUID) {
         netStream.removeReplaceVideo(cameraId: cameraId)
+    }
+
+    func removeRtmpAudio(cameraId: UUID) {
+        netStream.removeReplaceAudio(cameraId: cameraId)
     }
 
     func attachAudio(device: AVCaptureDevice?) {

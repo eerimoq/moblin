@@ -17,12 +17,16 @@ func makeChannelMap(
     return result.map { NSNumber(value: $0) }
 }
 
+private class ReplaceAudio {
+
+}
+
 final class AudioUnit: NSObject {
     lazy var codec: AudioCodec = .init(lockQueue: lockQueue)
     private(set) var device: AVCaptureDevice?
     private var input: AVCaptureInput?
     private var output: AVCaptureAudioDataOutput?
-    private let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.AudioIOUnit.lock")
+    let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.AudioIOUnit.lock")
     var muted = false
     weak var mixer: Mixer?
 
@@ -95,6 +99,17 @@ final class AudioUnit: NSObject {
             input = nil
             output = nil
         }
+    }
+    
+    private var replaceAudios: [UUID: ReplaceAudio] = [:]
+
+    func addReplaceAudio(cameraId: UUID) {
+        let replaceAudio = ReplaceAudio()
+        replaceAudios[cameraId] = replaceAudio
+    }
+
+    func removeReplaceAudio(cameraId: UUID) {
+        replaceAudios.removeValue(forKey: cameraId)
     }
 }
 

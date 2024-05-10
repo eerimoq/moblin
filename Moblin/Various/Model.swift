@@ -1157,6 +1157,7 @@ final class Model: NSObject, ObservableObject {
                 return
             }
             self.media.addRtmpCamera(cameraId: stream.id, latency: Double(stream.latency! / 1000))
+            self.media.addRtmpAudio(cameraId: stream.id)
         }
     }
 
@@ -1168,6 +1169,7 @@ final class Model: NSObject, ObservableObject {
                 return
             }
             self.media.removeRtmpCamera(cameraId: cameraId)
+            self.media.removeRtmpAudio(cameraId: cameraId)
         }
     }
 
