@@ -1162,7 +1162,9 @@ final class Model: NSObject, ObservableObject {
                 return
             }
             self.media.addRtmpCamera(cameraId: stream.id, latency: Double(stream.latency! / 1000))
-            self.media.addRtmpAudio(cameraId: stream.id)
+            if self.database.debug!.enableRtmpAudio! {
+                self.media.addRtmpAudio(cameraId: stream.id)
+            }
         }
     }
 
@@ -1174,7 +1176,9 @@ final class Model: NSObject, ObservableObject {
                 return
             }
             self.media.removeRtmpCamera(cameraId: cameraId)
-            self.media.removeRtmpAudio(cameraId: cameraId)
+            if self.database.debug!.enableRtmpAudio! {
+                self.media.removeRtmpAudio(cameraId: cameraId)
+            }
         }
     }
 
@@ -1189,7 +1193,9 @@ final class Model: NSObject, ObservableObject {
         guard let cameraId = getRtmpStream(streamKey: streamKey)?.id else {
             return
         }
-        media.addRtmpAudioBuffer(cameraId: cameraId, audioBuffer: audioBuffer)
+        if database.debug!.enableRtmpAudio! {
+            media.addRtmpAudioBuffer(cameraId: cameraId, audioBuffer: audioBuffer)
+        }
     }
 
     private func listCameras(position: AVCaptureDevice.Position) -> [Camera] {
@@ -2184,7 +2190,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func setNetStream() {
-        media.setNetStream(proto: stream.getProtocol())
+        media.setNetStream(proto: stream.getProtocol(), enableRtmpAudio: database.debug!.enableRtmpAudio!)
         updateTorch()
         updateMute()
         streamPreviewView.attachStream(media.getNetStream())
@@ -3559,7 +3565,9 @@ final class Model: NSObject, ObservableObject {
         )
         zoomXPinch = zoomX
         hasZoom = true
-        media.attachAudio(device: AVCaptureDevice.default(for: .audio))
+        if database.debug!.enableRtmpAudio! {
+            media.attachAudio(device: AVCaptureDevice.default(for: .audio))
+        }
     }
 
     private func attachRtmpCamera(cameraId: UUID) {
@@ -3569,7 +3577,9 @@ final class Model: NSObject, ObservableObject {
         streamPreviewView.isMirrored = false
         hasZoom = false
         media.attachRtmpCamera(cameraId: cameraId, device: preferredCamera(position: .front))
-        media.attachRtmpAudio(cameraId: cameraId, device: AVCaptureDevice.default(for: .audio))
+        if database.debug!.enableRtmpAudio! {
+            media.attachRtmpAudio(cameraId: cameraId, device: AVCaptureDevice.default(for: .audio))
+        }
     }
 
     private func attachExternalCamera(cameraId _: String) {

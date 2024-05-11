@@ -67,7 +67,7 @@ final class Media: NSObject {
         adaptiveBitrate?.setSettings(settings: settings)
     }
 
-    func setNetStream(proto: SettingsStreamProtocol) {
+    func setNetStream(proto: SettingsStreamProtocol, enableRtmpAudio: Bool) {
         srtStopStream()
         rtmpStopStream()
         ristStopStream()
@@ -92,6 +92,9 @@ final class Media: NSObject {
         }
         netStream.delegate = self
         netStream.setVideoOrientation(value: .landscapeRight)
+        if !enableRtmpAudio {
+            attachAudio(device: AVCaptureDevice.default(for: .audio))
+        }
     }
 
     func getAudioLevel() -> Float {

@@ -1131,6 +1131,7 @@ class SettingsDebug: Codable {
     var cameraSwitchRemoveBlackish: Float? = 0.3
     var maximumBandwidthFollowInput: Bool? = true
     var audioOutputToInputChannelsMap: SettingsDebugAudioOutputToInputChannelsMap? = .init()
+    var enableRtmpAudio: Bool? = false
     var bluetoothOutputOnly: Bool? = false
     var maximumLogLines: Int? = 500
     var pixelFormat: String? = pixelFormats[1]
@@ -2221,6 +2222,10 @@ final class Settings {
         }
         if realDatabase.show.browserWidgets == nil {
             realDatabase.show.browserWidgets = true
+            store()
+        }
+        if realDatabase.debug!.enableRtmpAudio == nil {
+            realDatabase.debug!.enableRtmpAudio = false
             store()
         }
         if realDatabase.debug!.bluetoothOutputOnly == nil {
