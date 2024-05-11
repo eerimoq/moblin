@@ -18,56 +18,59 @@ func makeChannelMap(
 }
 
 private class ReplaceAudio {
-    var audioPCMBuffers: [AVAudioPCMBuffer] = []
+    var sampleBuffers: [CMSampleBuffer] = []
+    var firstPresentationTimeStamp: Double = .nan
     var nextPresentationTimeStamp: CMTime = CMTime.zero
-    var currentAudioPCMBuffer: AVAudioPCMBuffer?
+    var currentSampleBuffer: CMSampleBuffer?
 
-    init() {
-    }
-
-    func updateSampleBuffer() {
-        var audioPCMBuffer = currentAudioPCMBuffer
-        while !audioPCMBuffers.isEmpty {
-            let replaceAudioPCMBuffer = audioPCMBuffers.first!
-            // Get first frame quickly
-            if currentAudioPCMBuffer == nil {
-                audioPCMBuffer = replaceAudioPCMBuffer
-            }
-            // Just for sanity. Should depend on FPS and latency.
-            if audioPCMBuffers.count > 200 {
-                // logger.info("Over 200 frames buffered. Dropping oldest frame.")
-                audioPCMBuffer = replaceAudioPCMBuffer
-                audioPCMBuffers.remove(at: 0)
-                continue
-            }
-            audioPCMBuffer = replaceAudioPCMBuffer
-            audioPCMBuffers.remove(at: 0)
-        }
-        currentAudioPCMBuffer = audioPCMBuffer
-    }
-
-    func getSampleBuffer() -> CMSampleBuffer? {
-        if let currentAudioPCMBuffer {
-            return makeSampleBuffer(replaceAudioPCMBuffer: currentAudioPCMBuffer)
-        } else {
-            return nil
-        }
-    }
-
-    private func makeSampleBuffer(replaceAudioPCMBuffer: AVAudioPCMBuffer) -> CMSampleBuffer?
-    {
+    func AddAudioPCMBuffer(audioPCMBuffer: AVAudioPCMBuffer) -> CMSampleBuffer? {
         if nextPresentationTimeStamp == CMTime.zero {
             nextPresentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
         }
-        let sampleBuffer = replaceAudioPCMBuffer.makeSampleBuffer(presentationTimeStamp: nextPresentationTimeStamp)
+        guard let sampleBuffer = audioPCMBuffer.makeSampleBuffer(presentationTimeStamp: nextPresentationTimeStamp) else {
+            return nil
+        }
+       // sampleBuffers.append(sampleBuffer)
         nextPresentationTimeStamp = CMTimeAdd(
                         nextPresentationTimeStamp,
                         CMTime(
-                            value: CMTimeValue(Double(replaceAudioPCMBuffer.frameLength)),
-                            timescale: CMTimeScale(replaceAudioPCMBuffer.format.sampleRate)
+                            value: CMTimeValue(Double(audioPCMBuffer.frameLength)),
+                            timescale: CMTimeScale(audioPCMBuffer.format.sampleRate)
                         )
         )
         return sampleBuffer
+    }
+
+    func updateSampleBuffer(_ realPresentationTimeStamp: Double) {
+        var sampleBuffer = currentSampleBuffer
+        while !sampleBuffers.isEmpty {
+            let replaceSampleBuffer = sampleBuffers.first!
+            // Get first frame quickly
+            if currentSampleBuffer == nil {
+                sampleBuffer = replaceSampleBuffer
+            }
+            // Just for sanity. Should depend on FPS and latency.
+            if sampleBuffers.count > 200 {
+                // logger.info("Over 200 frames buffered. Dropping oldest frame.")
+                sampleBuffer = replaceSampleBuffer
+                sampleBuffers.remove(at: 0)
+                continue
+            }
+            let presentationTimeStamp = replaceSampleBuffer.presentationTimeStamp.seconds
+            if firstPresentationTimeStamp.isNaN {
+                firstPresentationTimeStamp = realPresentationTimeStamp - presentationTimeStamp
+            }
+            if firstPresentationTimeStamp + presentationTimeStamp > realPresentationTimeStamp {
+                break
+            }
+            sampleBuffer = replaceSampleBuffer
+            sampleBuffers.remove(at: 0)
+        }
+        currentSampleBuffer = sampleBuffer
+    }
+
+    func getSampleBuffer(_ realSampleBuffer: CMSampleBuffer) -> CMSampleBuffer? {
+        return currentSampleBuffer
     }
 }
 
@@ -90,10 +93,8 @@ final class AudioUnit: NSObject {
     }
 
     func attach(_ device: AVCaptureDevice?, _ replaceAudio: UUID?) throws {
-        let isOtherReplaceAudio = lockQueue.sync {
-            let oldReplaceAudio = self.selectedReplaceAudioId
+        lockQueue.sync {
             self.selectedReplaceAudioId = replaceAudio
-            return replaceAudio != oldReplaceAudio
         }
         guard let mixer else {
             return
@@ -114,23 +115,6 @@ final class AudioUnit: NSObject {
         guard let sampleBuffer = sampleBuffer.muted(muted) else {
             return
         }
-
-
-
-        if sampleBuffer.presentationTimeStamp < latestSampleBufferAppendTime {
-            logger.info(
-                """
-                Discarding frame: \(sampleBuffer.presentationTimeStamp.seconds) \
-                \(latestSampleBufferAppendTime.seconds)
-                """
-            )
-            return
-        }
-        latestSampleBufferAppendTime = sampleBuffer.presentationTimeStamp
-
-
-
-
         inputSourceFormat = sampleBuffer.formatDescription?.streamBasicDescription?.pointee
         codec.appendSampleBuffer(sampleBuffer, presentationTimeStamp)
         mixer?.recorder.appendAudio(sampleBuffer)
@@ -175,13 +159,44 @@ final class AudioUnit: NSObject {
 
     private var selectedReplaceAudioId: UUID?
     private var replaceAudios: [UUID: ReplaceAudio] = [:]
-    private var latestSampleBufferAppendTime = CMTime.zero
+    private var connection123: AVCaptureConnection?
 
     func addReplaceAudioPCMBuffer(id: UUID, _ audioBuffer: AVAudioPCMBuffer) {
+        guard let mixer else {
+            return
+        }
         guard let replaceAudio = replaceAudios[id] else {
             return
         }
-        replaceAudio.audioPCMBuffers.append(audioBuffer)
+        
+        let sampleBuffer = replaceAudio.AddAudioPCMBuffer(audioPCMBuffer: audioBuffer)
+
+        guard let sampleBuffer else {
+            return
+        }
+
+        guard let selectedReplaceAudioId else {
+            return
+        }
+        
+        let presentationTimeStamp = syncTimeToVideo(mixer: mixer, sampleBuffer: sampleBuffer)
+        guard mixer.useSampleBuffer(presentationTimeStamp, mediaType: AVMediaType.audio) else {
+            return
+        }
+        var audioLevel: Float
+        if muted {
+            audioLevel = .nan
+        } else if let channel = connection123!.audioChannels.first {
+            audioLevel = channel.averagePowerLevel
+        } else {
+            audioLevel = 0.0
+        }
+        mixer.delegate?.mixer(
+            audioLevel: audioLevel,
+            numberOfAudioChannels: connection123!.audioChannels.count,
+            presentationTimestamp: presentationTimeStamp.seconds
+        )
+        appendSampleBuffer(sampleBuffer, presentationTimeStamp, isFirstAfterAttach: false)
     }
 
     func addReplaceAudio(cameraId: UUID) {
@@ -200,27 +215,18 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
         didOutput sampleBuffer: CMSampleBuffer,
         from connection: AVCaptureConnection
     ) {
+        connection123 = connection
+
         guard let mixer else {
             return
         }
-
-        for replaceAudio in replaceAudios.values {
-            replaceAudio.updateSampleBuffer()
-        }
-        
-        var sampleBuffer = sampleBuffer
-        var presentationTimeStamp = CMTime.zero
         
         if let selectedReplaceAudioId {
-            sampleBuffer = (replaceAudios[selectedReplaceAudioId]?
-                .getSampleBuffer())!
-            presentationTimeStamp = sampleBuffer.presentationTimeStamp
+            return
         }
 
         // Workaround for audio drift on iPhone 15 Pro Max running iOS 17. Probably issue on more models.
-        if presentationTimeStamp == CMTime.zero {
-            presentationTimeStamp = syncTimeToVideo(mixer: mixer, sampleBuffer: sampleBuffer)
-        }
+        let presentationTimeStamp = syncTimeToVideo(mixer: mixer, sampleBuffer: sampleBuffer)
         guard mixer.useSampleBuffer(presentationTimeStamp, mediaType: AVMediaType.audio) else {
             return
         }
