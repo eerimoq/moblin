@@ -2,15 +2,25 @@ import Foundation
 import Network
 import Rist
 
-class RistRemotePeer {
+private let ristQueue = DispatchQueue(label: "com.eerimoq.Moblin.rist")
+private let weigthTargetBitrate: UInt32 = 10_000_000
+
+class RistRemotePeer: AdaptiveBitrateDelegate {
     let interfaceName: String
     let peer: RistPeer
     var stats: RistSenderStats?
+    var adaptiveWeight: AdaptiveBitrate?
 
     init(interfaceName: String, peer: RistPeer) {
         self.interfaceName = interfaceName
         self.peer = peer
+        adaptiveWeight = nil
+        adaptiveWeight = AdaptiveBitrate(targetBitrate: weigthTargetBitrate, delegate: self)
     }
+}
+
+extension RistRemotePeer {
+    func adaptiveBitrateSetVideoStreamBitrate(bitrate _: UInt32) {}
 }
 
 class RistStream: NetStream {
@@ -35,7 +45,7 @@ class RistStream: NetStream {
     }
 
     func start(url: String, bonding: Bool) {
-        lockQueue.async {
+        ristQueue.async {
             self.startInner(url: url, bonding: bonding)
         }
     }
@@ -52,7 +62,7 @@ class RistStream: NetStream {
         if bonding {
             networkPathMonitor = .init()
             networkPathMonitor?.pathUpdateHandler = handleNetworkPathUpdate(path:)
-            networkPathMonitor?.start(queue: lockQueue)
+            networkPathMonitor?.start(queue: ristQueue)
         } else {
             addPeer(url, "")
         }
@@ -60,15 +70,17 @@ class RistStream: NetStream {
             logger.info("rist: Failed to start")
             return
         }
-        writer.expectedMedias.insert(.video)
-        writer.expectedMedias.insert(.audio)
-        mixer.startEncoding(writer)
-        mixer.startRunning()
-        writer.startRunning()
+        lockQueue.async {
+            self.writer.expectedMedias.insert(.video)
+            self.writer.expectedMedias.insert(.audio)
+            self.mixer.startEncoding(self.writer)
+            self.mixer.startRunning()
+            self.writer.startRunning()
+        }
     }
 
     func stop() {
-        lockQueue.async {
+        ristQueue.async {
             self.stopInner()
         }
     }
@@ -76,15 +88,17 @@ class RistStream: NetStream {
     private func stopInner() {
         networkPathMonitor?.cancel()
         networkPathMonitor = nil
-        writer.stopRunning()
-        mixer.stopEncoding()
+        lockQueue.async {
+            self.writer.stopRunning()
+            self.mixer.stopEncoding()
+        }
         peers.removeAll()
         context = nil
     }
 
     func getSpeed() -> UInt64 {
         var totalBandwidth: UInt64 = 0
-        lockQueue.sync {
+        ristQueue.sync {
             for peer in peers {
                 if let stats = peer.stats {
                     totalBandwidth += stats.bandwidth + stats.retryBandwidth
@@ -96,7 +110,7 @@ class RistStream: NetStream {
 
     func connectionStatistics() -> String? {
         var connections: [BondingConnection] = []
-        lockQueue.sync {
+        ristQueue.sync {
             for peer in peers {
                 var connection = BondingConnection(name: peer.interfaceName, usage: 0)
                 if let stats = peer.stats {
@@ -106,6 +120,30 @@ class RistStream: NetStream {
             }
         }
         return bondingStatistics(connections: connections)
+    }
+
+    func getStats() -> [RistSenderStats] {
+        return ristQueue.sync {
+            peers.filter { $0.stats != nil }.map { $0.stats! }
+        }
+    }
+
+    func updateConnectionsWeights() {
+        ristQueue.async {
+            self.updateConnectionsWeightsInner()
+        }
+    }
+
+    private func updateConnectionsWeightsInner() {
+        for peer in peers {
+            guard let stats = peer.stats, let adaptiveWeight = peer.adaptiveWeight else {
+                continue
+            }
+            adaptiveWeight.update(stats: StreamStats(rttMs: Double(stats.rtt), packetsInFlight: 10))
+            let weight = max(adaptiveWeight.getCurrentBitrate() / (weigthTargetBitrate / 25), 1)
+            logger.debug("rist: peer \(stats.peerId): weight \(weight)")
+            peer.peer.setWeight(weight: weight)
+        }
     }
 
     private func handleNetworkPathUpdate(path: NWPath) {
@@ -148,13 +186,13 @@ class RistStream: NetStream {
     }
 
     private func handleStats(stats: RistStats) {
-        lockQueue.async {
+        ristQueue.async {
             self.handleStatsInner(stats: stats)
         }
     }
 
     private func handleStatsInner(stats: RistStats) {
-        logger.info("""
+        logger.debug("""
         rist: peer \(stats.sender.peerId), rtt \(stats.sender.rtt), \
         sent \(stats.sender.sentPackets), received \(stats.sender.receivedPackets), \
         retransmitted \(stats.sender.retransmittedPackets), quality \(stats.sender.quality), \
@@ -162,15 +200,6 @@ class RistStream: NetStream {
         retry bandwidth \(formatBytesPerSecond(speed: Int64(stats.sender.retryBandwidth)))
         """)
         peers.first(where: { $0.peer.getId() == stats.sender.peerId })?.stats = stats.sender
-        var totalBandwidth: UInt64 = 0
-        for peer in peers {
-            guard let stats = peer.stats else {
-                continue
-            }
-            totalBandwidth += stats.bandwidth
-            totalBandwidth += stats.retryBandwidth
-        }
-        // logger.info("rist: Total bandwidth \(formatBytesPerSecond(speed: Int64(totalBandwidth)))")
     }
 
     private func addPeer(_ url: String?, _ interfaceName: String) {

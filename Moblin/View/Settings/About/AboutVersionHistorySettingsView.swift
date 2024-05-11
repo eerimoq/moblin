@@ -8,6 +8,14 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.265.0", date: "2024-05-11", changes: [
+        "• Spanish translation updated. :writing_hand: adriportela95",
+        "• Show RIST connection information in top right of UI.",
+        "  • Total bytes sent is not yet implemented and will always be zero.",
+        "• Fix plug/unplug connections bug in RIST.",
+        "• Initial support for adaptive bitrate for RIST.",
+        "• Initial support for connection selection based on RTT for RIST.",
+    ]),
     Version(version: "0.264.0", date: "2024-05-09", changes: [
         "• Make RIST use all available network interfaces when bonding.",
         "  • And stop using if unplugged.",

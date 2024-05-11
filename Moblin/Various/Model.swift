@@ -490,9 +490,14 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    func updateAdaptiveBitrateRtmpIfEnabled(stream _: SettingsStream) {
+    func updateAdaptiveBitrateRtmpIfEnabled() {
         var settings = adaptiveBitrateFastSettings
         settings.rttDiffHighAllowedSpike = 500
+        media.setAdaptiveBitrateAlgorithm(settings: settings)
+    }
+
+    func updateAdaptiveBitrateRistIfEnabled() {
+        let settings = adaptiveBitrateFastSettings
         media.setAdaptiveBitrateAlgorithm(settings: settings)
     }
 
@@ -2064,7 +2069,7 @@ final class Model: NSObject, ObservableObject {
             media.rtmpStartStream(url: stream.url,
                                   targetBitrate: stream.bitrate,
                                   adaptiveBitrate: stream.rtmp!.adaptiveBitrateEnabled)
-            updateAdaptiveBitrateRtmpIfEnabled(stream: stream)
+            updateAdaptiveBitrateRtmpIfEnabled()
         case .srt:
             payloadSize = stream.srt.mpegtsPacketsPerPacket * 188
             media.srtStartStream(
@@ -2082,7 +2087,11 @@ final class Model: NSObject, ObservableObject {
             )
             updateAdaptiveBitrateSrtIfEnabled(stream: stream)
         case .rist:
-            media.ristStartStream(url: stream.url, bonding: stream.rist!.bonding)
+            media.ristStartStream(url: stream.url,
+                                  bonding: stream.rist!.bonding,
+                                  targetBitrate: stream.bitrate,
+                                  adaptiveBitrate: stream.rist!.adaptiveBitrateEnabled)
+            updateAdaptiveBitrateRistIfEnabled()
             // To Do: Call when really connected.
             onConnected()
         }
