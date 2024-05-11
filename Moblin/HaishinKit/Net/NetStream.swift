@@ -126,7 +126,7 @@ open class NetStream: NSObject {
         }
     }
 
-    func addReplaceAudioPCMBuffer(id: UUID, _ audioBuffer: AVAudioPCMBuffer) {
+    func addAudioPCMBuffer(id: UUID, _ audioBuffer: AVAudioPCMBuffer) {
         mixer.audio.lockQueue.async {
             self.mixer.audio.addReplaceAudioPCMBuffer(id: id, audioBuffer)
         }

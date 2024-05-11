@@ -18,19 +18,15 @@ func makeChannelMap(
 }
 
 private class ReplaceAudio {
-    var sampleBuffers: [CMSampleBuffer] = []
-    var firstPresentationTimeStamp: Double = .nan
     var nextPresentationTimeStamp: CMTime = CMTime.zero
-    var currentSampleBuffer: CMSampleBuffer?
 
-    func AddAudioPCMBuffer(audioPCMBuffer: AVAudioPCMBuffer) -> CMSampleBuffer? {
+    func CreateSampleBuffer(audioPCMBuffer: AVAudioPCMBuffer) -> CMSampleBuffer? {
         if nextPresentationTimeStamp == CMTime.zero {
             nextPresentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
         }
         guard let sampleBuffer = audioPCMBuffer.makeSampleBuffer(presentationTimeStamp: nextPresentationTimeStamp) else {
             return nil
         }
-       // sampleBuffers.append(sampleBuffer)
         nextPresentationTimeStamp = CMTimeAdd(
                         nextPresentationTimeStamp,
                         CMTime(
@@ -39,38 +35,6 @@ private class ReplaceAudio {
                         )
         )
         return sampleBuffer
-    }
-
-    func updateSampleBuffer(_ realPresentationTimeStamp: Double) {
-        var sampleBuffer = currentSampleBuffer
-        while !sampleBuffers.isEmpty {
-            let replaceSampleBuffer = sampleBuffers.first!
-            // Get first frame quickly
-            if currentSampleBuffer == nil {
-                sampleBuffer = replaceSampleBuffer
-            }
-            // Just for sanity. Should depend on FPS and latency.
-            if sampleBuffers.count > 200 {
-                // logger.info("Over 200 frames buffered. Dropping oldest frame.")
-                sampleBuffer = replaceSampleBuffer
-                sampleBuffers.remove(at: 0)
-                continue
-            }
-            let presentationTimeStamp = replaceSampleBuffer.presentationTimeStamp.seconds
-            if firstPresentationTimeStamp.isNaN {
-                firstPresentationTimeStamp = realPresentationTimeStamp - presentationTimeStamp
-            }
-            if firstPresentationTimeStamp + presentationTimeStamp > realPresentationTimeStamp {
-                break
-            }
-            sampleBuffer = replaceSampleBuffer
-            sampleBuffers.remove(at: 0)
-        }
-        currentSampleBuffer = sampleBuffer
-    }
-
-    func getSampleBuffer(_ realSampleBuffer: CMSampleBuffer) -> CMSampleBuffer? {
-        return currentSampleBuffer
     }
 }
 
@@ -159,7 +123,7 @@ final class AudioUnit: NSObject {
 
     private var selectedReplaceAudioId: UUID?
     private var replaceAudios: [UUID: ReplaceAudio] = [:]
-    private var connection123: AVCaptureConnection?
+    private var connection: AVCaptureConnection?
 
     func addReplaceAudioPCMBuffer(id: UUID, _ audioBuffer: AVAudioPCMBuffer) {
         guard let mixer else {
@@ -169,7 +133,7 @@ final class AudioUnit: NSObject {
             return
         }
         
-        let sampleBuffer = replaceAudio.AddAudioPCMBuffer(audioPCMBuffer: audioBuffer)
+        let sampleBuffer = replaceAudio.CreateSampleBuffer(audioPCMBuffer: audioBuffer)
 
         guard let sampleBuffer else {
             return
@@ -186,14 +150,14 @@ final class AudioUnit: NSObject {
         var audioLevel: Float
         if muted {
             audioLevel = .nan
-        } else if let channel = connection123!.audioChannels.first {
+        } else if let channel = connection!.audioChannels.first {
             audioLevel = channel.averagePowerLevel
         } else {
             audioLevel = 0.0
         }
         mixer.delegate?.mixer(
             audioLevel: audioLevel,
-            numberOfAudioChannels: connection123!.audioChannels.count,
+            numberOfAudioChannels: connection!.audioChannels.count,
             presentationTimestamp: presentationTimeStamp.seconds
         )
         appendSampleBuffer(sampleBuffer, presentationTimeStamp, isFirstAfterAttach: false)
@@ -215,7 +179,7 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
         didOutput sampleBuffer: CMSampleBuffer,
         from connection: AVCaptureConnection
     ) {
-        connection123 = connection
+        self.connection = connection
 
         guard let mixer else {
             return
