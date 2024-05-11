@@ -198,7 +198,7 @@ final class FaceEffect: VideoEffect {
         return outputImage?.cropped(to: image.extent)
     }
 
-    private func addMesh(image: CIImage?, detections: [VNFaceObservation]?) -> CIImage? {
+    private func addFaceLandmarks(image: CIImage?, detections: [VNFaceObservation]?) -> CIImage? {
         guard let image, let detections else {
             return image
         }
@@ -207,17 +207,15 @@ final class FaceEffect: VideoEffect {
             guard let landmarks = detection.landmarks else {
                 continue
             }
-            if showFaceLandmarks {
-                mesh += createMesh(landmark: landmarks.faceContour, image: image)
-                mesh += createMesh(landmark: landmarks.outerLips, image: image)
-                mesh += createMesh(landmark: landmarks.innerLips, image: image)
-                mesh += createMesh(landmark: landmarks.leftEye, image: image)
-                mesh += createMesh(landmark: landmarks.rightEye, image: image)
-                mesh += createMesh(landmark: landmarks.nose, image: image)
-                mesh += createMesh(landmark: landmarks.medianLine, image: image)
-                mesh += createMesh(landmark: landmarks.leftEyebrow, image: image)
-                mesh += createMesh(landmark: landmarks.rightEyebrow, image: image)
-            }
+            mesh += createMesh(landmark: landmarks.faceContour, image: image)
+            mesh += createMesh(landmark: landmarks.outerLips, image: image)
+            mesh += createMesh(landmark: landmarks.innerLips, image: image)
+            mesh += createMesh(landmark: landmarks.leftEye, image: image)
+            mesh += createMesh(landmark: landmarks.rightEye, image: image)
+            mesh += createMesh(landmark: landmarks.nose, image: image)
+            mesh += createMesh(landmark: landmarks.medianLine, image: image)
+            mesh += createMesh(landmark: landmarks.leftEyebrow, image: image)
+            mesh += createMesh(landmark: landmarks.rightEyebrow, image: image)
         }
         let filter = CIFilter.meshGenerator()
         filter.color = .green
@@ -253,7 +251,9 @@ final class FaceEffect: VideoEffect {
         if showCute {
             outputImage = addCute(image: outputImage, detections: faceDetections)
         }
-        outputImage = addMesh(image: outputImage, detections: faceDetections)
+        if showFaceLandmarks {
+            outputImage = addFaceLandmarks(image: outputImage, detections: faceDetections)
+        }
         if crop {
             let scaleDownFactor = 0.8
             let width = image.extent.width
