@@ -17,12 +17,35 @@ func makeChannelMap(
     return result.map { NSNumber(value: $0) }
 }
 
+private class ReplaceAudio {
+    var nextPresentationTimeStamp: CMTime = .zero
+
+    func CreateSampleBuffer(audioPCMBuffer: AVAudioPCMBuffer) -> CMSampleBuffer? {
+        if nextPresentationTimeStamp == CMTime.zero {
+            nextPresentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
+        }
+        guard let sampleBuffer = audioPCMBuffer
+            .makeSampleBuffer(presentationTimeStamp: nextPresentationTimeStamp)
+        else {
+            return nil
+        }
+        nextPresentationTimeStamp = CMTimeAdd(
+            nextPresentationTimeStamp,
+            CMTime(
+                value: CMTimeValue(Double(audioPCMBuffer.frameLength)),
+                timescale: CMTimeScale(audioPCMBuffer.format.sampleRate)
+            )
+        )
+        return sampleBuffer
+    }
+}
+
 final class AudioUnit: NSObject {
     lazy var codec: AudioCodec = .init(lockQueue: lockQueue)
     private(set) var device: AVCaptureDevice?
     private var input: AVCaptureInput?
     private var output: AVCaptureAudioDataOutput?
-    private let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.AudioIOUnit.lock")
+    let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.AudioIOUnit.lock")
     var muted = false
     weak var mixer: Mixer?
 
@@ -35,7 +58,10 @@ final class AudioUnit: NSObject {
         }
     }
 
-    func attach(_ device: AVCaptureDevice?) throws {
+    func attach(_ device: AVCaptureDevice?, _ replaceAudio: UUID?) throws {
+        lockQueue.sync {
+            self.selectedReplaceAudioId = replaceAudio
+        }
         guard let mixer else {
             return
         }
@@ -96,6 +122,57 @@ final class AudioUnit: NSObject {
             output = nil
         }
     }
+
+    private var selectedReplaceAudioId: UUID?
+    private var replaceAudios: [UUID: ReplaceAudio] = [:]
+    private var connection: AVCaptureConnection?
+
+    func addReplaceAudioPCMBuffer(id: UUID, _ audioBuffer: AVAudioPCMBuffer) {
+        guard let mixer else {
+            return
+        }
+        guard let replaceAudio = replaceAudios[id] else {
+            return
+        }
+
+        let sampleBuffer = replaceAudio.CreateSampleBuffer(audioPCMBuffer: audioBuffer)
+
+        guard let sampleBuffer else {
+            return
+        }
+
+        guard let selectedReplaceAudioId else {
+            return
+        }
+
+        let presentationTimeStamp = syncTimeToVideo(mixer: mixer, sampleBuffer: sampleBuffer)
+        guard mixer.useSampleBuffer(presentationTimeStamp, mediaType: AVMediaType.audio) else {
+            return
+        }
+        var audioLevel: Float
+        if muted {
+            audioLevel = .nan
+        } else if let channel = connection!.audioChannels.first {
+            audioLevel = channel.averagePowerLevel
+        } else {
+            audioLevel = 0.0
+        }
+        mixer.delegate?.mixer(
+            audioLevel: audioLevel,
+            numberOfAudioChannels: connection!.audioChannels.count,
+            presentationTimestamp: presentationTimeStamp.seconds
+        )
+        appendSampleBuffer(sampleBuffer, presentationTimeStamp, isFirstAfterAttach: false)
+    }
+
+    func addReplaceAudio(cameraId: UUID) {
+        let replaceAudio = ReplaceAudio()
+        replaceAudios[cameraId] = replaceAudio
+    }
+
+    func removeReplaceAudio(cameraId: UUID) {
+        replaceAudios.removeValue(forKey: cameraId)
+    }
 }
 
 extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
@@ -104,9 +181,16 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
         didOutput sampleBuffer: CMSampleBuffer,
         from connection: AVCaptureConnection
     ) {
+        self.connection = connection
+
         guard let mixer else {
             return
         }
+
+        if let selectedReplaceAudioId {
+            return
+        }
+
         // Workaround for audio drift on iPhone 15 Pro Max running iOS 17. Probably issue on more models.
         let presentationTimeStamp = syncTimeToVideo(mixer: mixer, sampleBuffer: sampleBuffer)
         guard mixer.useSampleBuffer(presentationTimeStamp, mediaType: AVMediaType.audio) else {

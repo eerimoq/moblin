@@ -98,7 +98,11 @@ public class SRTStream: NetStream {
         )
     }
 
-    override public func attachAudio(_ audio: AVCaptureDevice?, onError: ((Error) -> Void)? = nil) {
+    override public func attachAudio(
+        _ audio: AVCaptureDevice?,
+        onError: ((Error) -> Void)? = nil,
+        replaceAudioId _: UUID? = nil
+    ) {
         if audio == nil {
             writer.expectedMedias.remove(.audio)
         } else {

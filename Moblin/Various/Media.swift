@@ -69,7 +69,7 @@ final class Media: NSObject {
         adaptiveBitrate?.setSettings(settings: settings)
     }
 
-    func setNetStream(proto: SettingsStreamProtocol) {
+    func setNetStream(proto: SettingsStreamProtocol, enableRtmpAudio: Bool) {
         srtStopStream()
         rtmpStopStream()
         ristStopStream()
@@ -96,7 +96,9 @@ final class Media: NSObject {
         }
         netStream.delegate = self
         netStream.setVideoOrientation(value: .landscapeRight)
-        attachAudio(device: AVCaptureDevice.default(for: .audio))
+        if !enableRtmpAudio {
+            attachAudio(device: AVCaptureDevice.default(for: .audio))
+        }
     }
 
     func getAudioLevel() -> Float {
@@ -612,21 +614,32 @@ final class Media: NSObject {
         netStream.attachCamera(device, replaceVideoCameraId: cameraId)
     }
 
+    func attachRtmpAudio(cameraId: UUID, device: AVCaptureDevice?) {
+        netStream.attachAudio(device, replaceAudioId: cameraId)
+    }
+
     func addRtmpSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
         netStream.addReplaceVideoSampleBuffer(id: cameraId, sampleBuffer)
     }
 
-    func addRtmpAudioBuffer(cameraId _: UUID, audioBuffer _: AVAudioPCMBuffer) {
-        // logger.info("RTMP audio buffer \(audioBuffer)")
-        // netStream.addReplaceVideoSampleBuffer(id: cameraId, sampleBuffer)
+    func addRtmpAudioBuffer(cameraId: UUID, audioBuffer: AVAudioPCMBuffer) {
+        netStream.addAudioPCMBuffer(id: cameraId, audioBuffer)
     }
 
     func addRtmpCamera(cameraId: UUID, latency: Double) {
         netStream.addReplaceVideo(cameraId: cameraId, latency: latency)
     }
 
+    func addRtmpAudio(cameraId: UUID) {
+        netStream.addReplaceAudio(cameraId: cameraId)
+    }
+
     func removeRtmpCamera(cameraId: UUID) {
         netStream.removeReplaceVideo(cameraId: cameraId)
+    }
+
+    func removeRtmpAudio(cameraId: UUID) {
+        netStream.removeReplaceAudio(cameraId: cameraId)
     }
 
     func attachAudio(device: AVCaptureDevice?) {

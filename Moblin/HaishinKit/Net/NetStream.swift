@@ -108,11 +108,12 @@ open class NetStream: NSObject {
 
     func attachAudio(
         _ device: AVCaptureDevice?,
-        onError: ((_ error: Error) -> Void)? = nil
+        onError: ((_ error: Error) -> Void)? = nil,
+        replaceAudioId: UUID? = nil
     ) {
         lockQueue.sync {
             do {
-                try self.mixer.attachAudio(device)
+                try self.mixer.attachAudio(device, replaceAudioId)
             } catch {
                 onError?(error)
             }
@@ -125,15 +126,33 @@ open class NetStream: NSObject {
         }
     }
 
+    func addAudioPCMBuffer(id: UUID, _ audioBuffer: AVAudioPCMBuffer) {
+        mixer.audio.lockQueue.async {
+            self.mixer.audio.addReplaceAudioPCMBuffer(id: id, audioBuffer)
+        }
+    }
+
     func addReplaceVideo(cameraId: UUID, latency: Double) {
         mixer.video.lockQueue.async {
             self.mixer.video.addReplaceVideo(cameraId: cameraId, latency: latency)
         }
     }
 
+    func addReplaceAudio(cameraId: UUID) {
+        mixer.audio.lockQueue.async {
+            self.mixer.audio.addReplaceAudio(cameraId: cameraId)
+        }
+    }
+
     func removeReplaceVideo(cameraId: UUID) {
         mixer.video.lockQueue.async {
             self.mixer.video.removeReplaceVideo(cameraId: cameraId)
+        }
+    }
+
+    func removeReplaceAudio(cameraId: UUID) {
+        mixer.audio.lockQueue.async {
+            self.mixer.audio.removeReplaceAudio(cameraId: cameraId)
         }
     }
 
