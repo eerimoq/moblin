@@ -18,21 +18,23 @@ func makeChannelMap(
 }
 
 private class ReplaceAudio {
-    var nextPresentationTimeStamp: CMTime = CMTime.zero
+    var nextPresentationTimeStamp: CMTime = .zero
 
     func CreateSampleBuffer(audioPCMBuffer: AVAudioPCMBuffer) -> CMSampleBuffer? {
         if nextPresentationTimeStamp == CMTime.zero {
             nextPresentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
         }
-        guard let sampleBuffer = audioPCMBuffer.makeSampleBuffer(presentationTimeStamp: nextPresentationTimeStamp) else {
+        guard let sampleBuffer = audioPCMBuffer
+            .makeSampleBuffer(presentationTimeStamp: nextPresentationTimeStamp)
+        else {
             return nil
         }
         nextPresentationTimeStamp = CMTimeAdd(
-                        nextPresentationTimeStamp,
-                        CMTime(
-                            value: CMTimeValue(Double(audioPCMBuffer.frameLength)),
-                            timescale: CMTimeScale(audioPCMBuffer.format.sampleRate)
-                        )
+            nextPresentationTimeStamp,
+            CMTime(
+                value: CMTimeValue(Double(audioPCMBuffer.frameLength)),
+                timescale: CMTimeScale(audioPCMBuffer.format.sampleRate)
+            )
         )
         return sampleBuffer
     }
@@ -132,7 +134,7 @@ final class AudioUnit: NSObject {
         guard let replaceAudio = replaceAudios[id] else {
             return
         }
-        
+
         let sampleBuffer = replaceAudio.CreateSampleBuffer(audioPCMBuffer: audioBuffer)
 
         guard let sampleBuffer else {
@@ -142,7 +144,7 @@ final class AudioUnit: NSObject {
         guard let selectedReplaceAudioId else {
             return
         }
-        
+
         let presentationTimeStamp = syncTimeToVideo(mixer: mixer, sampleBuffer: sampleBuffer)
         guard mixer.useSampleBuffer(presentationTimeStamp, mediaType: AVMediaType.audio) else {
             return
@@ -184,7 +186,7 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
         guard let mixer else {
             return
         }
-        
+
         if let selectedReplaceAudioId {
             return
         }
