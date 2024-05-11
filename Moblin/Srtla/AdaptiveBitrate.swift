@@ -195,11 +195,15 @@ class AdaptiveBitrate {
         }
     }
 
-    func getCurrentBitrate() -> Int64 {
+    func getCurrentBitrate() -> UInt32 {
+        return UInt32(currentBitrate)
+    }
+
+    func getCurrentBitrateInKbps() -> Int64 {
         return currentBitrate / 1000
     }
 
-    func getCurrentMaximumBitrate() -> Int64 {
+    func getCurrentMaximumBitrateInKbps() -> Int64 {
         return currentMaximumBitrate / 1000
     }
 

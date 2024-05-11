@@ -219,7 +219,10 @@ final class Media: NSObject {
                 \(adaptiveBitrate.getFastPif)   \
                 \(adaptiveBitrate.getSmoothPif)
                 """,
-                "B: \(adaptiveBitrate.getCurrentBitrate()) /  \(adaptiveBitrate.getCurrentMaximumBitrate())",
+                """
+                B: \(adaptiveBitrate.getCurrentBitrateInKbps()) /  \
+                \(adaptiveBitrate.getCurrentMaximumBitrateInKbps())
+                """,
             ] + adaptiveBitrate.getAdaptiveActions
         } else {
             return [
@@ -250,7 +253,10 @@ final class Media: NSObject {
                 \(adaptiveBitrate.getFastPif)   \
                 \(adaptiveBitrate.getSmoothPif)
                 """,
-                "B: \(adaptiveBitrate.getCurrentBitrate()) /  \(adaptiveBitrate.getCurrentMaximumBitrate())",
+                """
+                B: \(adaptiveBitrate.getCurrentBitrateInKbps()) /  \
+                \(adaptiveBitrate.getCurrentMaximumBitrateInKbps())
+                """,
             ] + adaptiveBitrate.getAdaptiveActions
         } else {
             return [
@@ -267,6 +273,7 @@ final class Media: NSObject {
             rtt = min(rtt, Double(stat.rtt))
         }
         adaptiveBitrate?.update(stats: StreamStats(rttMs: rtt, packetsInFlight: 10))
+        ristStream.updateConnectionsWeights()
         guard overlay else {
             return nil
         }
@@ -277,7 +284,10 @@ final class Media: NSObject {
                 \(adaptiveBitrate.getFastPif)   \
                 \(adaptiveBitrate.getSmoothPif)
                 """,
-                "B: \(adaptiveBitrate.getCurrentBitrate()) /  \(adaptiveBitrate.getCurrentMaximumBitrate())",
+                """
+                B: \(adaptiveBitrate.getCurrentBitrateInKbps()) /  \
+                \(adaptiveBitrate.getCurrentMaximumBitrateInKbps())
+                """,
             ] + adaptiveBitrate.getAdaptiveActions
         } else {
             return [
@@ -505,7 +515,7 @@ final class Media: NSObject {
         multiplier ^= 1
         var bitRate: UInt32
         if let adaptiveBitrate {
-            bitRate = UInt32(1000 * adaptiveBitrate.getCurrentBitrate())
+            bitRate = adaptiveBitrate.getCurrentBitrate()
         } else {
             bitRate = bitrate
         }

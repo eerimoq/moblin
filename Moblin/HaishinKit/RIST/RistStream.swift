@@ -3,16 +3,24 @@ import Network
 import Rist
 
 private let ristQueue = DispatchQueue(label: "com.eerimoq.Moblin.rist")
+private let weigthTargetBitrate: UInt32 = 10_000_000
 
-class RistRemotePeer {
+class RistRemotePeer: AdaptiveBitrateDelegate {
     let interfaceName: String
     let peer: RistPeer
     var stats: RistSenderStats?
+    var adaptiveWeight: AdaptiveBitrate?
 
     init(interfaceName: String, peer: RistPeer) {
         self.interfaceName = interfaceName
         self.peer = peer
+        adaptiveWeight = nil
+        adaptiveWeight = AdaptiveBitrate(targetBitrate: weigthTargetBitrate, delegate: self)
     }
+}
+
+extension RistRemotePeer {
+    func adaptiveBitrateSetVideoStreamBitrate(bitrate _: UInt32) {}
 }
 
 class RistStream: NetStream {
@@ -120,6 +128,24 @@ class RistStream: NetStream {
         }
     }
 
+    func updateConnectionsWeights() {
+        ristQueue.async {
+            self.updateConnectionsWeightsInner()
+        }
+    }
+
+    private func updateConnectionsWeightsInner() {
+        for peer in peers {
+            guard let stats = peer.stats, let adaptiveWeight = peer.adaptiveWeight else {
+                continue
+            }
+            adaptiveWeight.update(stats: StreamStats(rttMs: Double(stats.rtt), packetsInFlight: 10))
+            let weight = max(adaptiveWeight.getCurrentBitrate() / (weigthTargetBitrate / 25), 1)
+            logger.debug("rist: peer \(stats.peerId): weight \(weight)")
+            peer.peer.setWeight(weight: weight)
+        }
+    }
+
     private func handleNetworkPathUpdate(path: NWPath) {
         guard bonding else {
             return
@@ -174,15 +200,6 @@ class RistStream: NetStream {
         retry bandwidth \(formatBytesPerSecond(speed: Int64(stats.sender.retryBandwidth)))
         """)
         peers.first(where: { $0.peer.getId() == stats.sender.peerId })?.stats = stats.sender
-        var totalBandwidth: UInt64 = 0
-        for peer in peers {
-            guard let stats = peer.stats else {
-                continue
-            }
-            totalBandwidth += stats.bandwidth
-            totalBandwidth += stats.retryBandwidth
-        }
-        // logger.info("rist: Total bandwidth \(formatBytesPerSecond(speed: Int64(totalBandwidth)))")
     }
 
     private func addPeer(_ url: String?, _ interfaceName: String) {
