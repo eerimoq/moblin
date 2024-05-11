@@ -262,12 +262,9 @@ final class Media: NSObject {
 
     private func updateAdaptiveBitrateRist(overlay: Bool, ristStream: RistStream) -> [String]? {
         let stats = ristStream.getStats()
-        var rtt = 1.0
-        if !stats.isEmpty {
-            rtt = Double(stats.reduce(0) { _, stat in
-                stat.rtt
-            })
-            rtt /= Double(stats.count)
+        var rtt = 1000.0
+        for stat in stats {
+            rtt = min(rtt, Double(stat.rtt))
         }
         adaptiveBitrate?.update(stats: StreamStats(rttMs: rtt, packetsInFlight: 10))
         guard overlay else {
