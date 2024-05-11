@@ -5,22 +5,75 @@ import Rist
 private let ristQueue = DispatchQueue(label: "com.eerimoq.Moblin.rist")
 private let weigthTargetBitrate: UInt32 = 10_000_000
 
-class RistRemotePeer: AdaptiveBitrateDelegate {
+private enum RistPeerState {
+    case connecting
+    case connected
+    case disconnected
+}
+
+private class RistRemotePeer: AdaptiveBitrateDelegate {
     let interfaceName: String
     let peer: RistPeer
     var stats: RistSenderStats?
     var adaptiveWeight: AdaptiveBitrate?
+    private var state: RistPeerState = .connecting
+    private var connectingTimer: DispatchSourceTimer?
+    weak var stream: RistStream?
 
-    init(interfaceName: String, peer: RistPeer) {
+    init(interfaceName: String, peer: RistPeer, stream: RistStream) {
         self.interfaceName = interfaceName
         self.peer = peer
+        self.stream = stream
         adaptiveWeight = nil
         adaptiveWeight = AdaptiveBitrate(targetBitrate: weigthTargetBitrate, delegate: self)
+        connectingTimer = DispatchSource.makeTimerSource(queue: ristQueue)
+        connectingTimer!.schedule(deadline: .now() + 5)
+        connectingTimer!.setEventHandler { [weak self] in
+            guard let self else {
+                return
+            }
+            logger.info("rist: Failed to connect to server")
+            self.state = .disconnected
+            self.stream?.checkDisconnected()
+        }
+        connectingTimer!.activate()
+    }
+
+    func setConnected() {
+        state = .connected
+        stopConnectingTimer()
+    }
+
+    func setDisconnected() {
+        state = .disconnected
+    }
+
+    func isConnected() -> Bool {
+        return state == .connected
+    }
+
+    func isDisconnected() -> Bool {
+        return state == .disconnected
+    }
+
+    private func stopConnectingTimer() {
+        connectingTimer?.cancel()
+        connectingTimer = nil
+    }
+
+    deinit {
+        stopConnectingTimer()
     }
 }
 
 extension RistRemotePeer {
     func adaptiveBitrateSetVideoStreamBitrate(bitrate _: UInt32) {}
+}
+
+private enum RistStreamState {
+    case connecting
+    case connected
+    case disconnected
 }
 
 class RistStream: NetStream {
@@ -31,6 +84,9 @@ class RistStream: NetStream {
     private var networkPathMonitor: NWPathMonitor?
     private var bonding: Bool = false
     private var url: String = ""
+    var onConnected: (() -> Void)?
+    var onDisconnected: (() -> Void)?
+    private var state: RistStreamState = .connecting
 
     init(_ connection: RistConnection) {
         super.init()
@@ -51,13 +107,16 @@ class RistStream: NetStream {
     }
 
     private func startInner(url: String, bonding: Bool) {
+        state = .connecting
         self.url = url
         self.bonding = bonding
         guard let context = RistContext() else {
             logger.info("rist: Failed to create context")
             return
         }
-        context.onStats = handleStats
+        context.onStats = handleStats(stats:)
+        context.onPeerConnected = handlePeerConnected(peerId:)
+        context.onPeerDisconnected = handlePeerDisonnected(peerId:)
         self.context = context
         if bonding {
             networkPathMonitor = .init()
@@ -86,6 +145,7 @@ class RistStream: NetStream {
     }
 
     private func stopInner() {
+        state = .disconnected
         networkPathMonitor?.cancel()
         networkPathMonitor = nil
         lockQueue.async {
@@ -191,6 +251,30 @@ class RistStream: NetStream {
         }
     }
 
+    private func handlePeerConnected(peerId: UInt32) {
+        ristQueue.async {
+            self.handlePeerConnectedInner(peerId: peerId)
+        }
+    }
+
+    private func handlePeerConnectedInner(peerId: UInt32) {
+        logger.info("rist: Peer \(peerId) connected")
+        getPeerById(peerId: peerId)?.setConnected()
+        checkConnected()
+    }
+
+    private func handlePeerDisonnected(peerId: UInt32) {
+        ristQueue.async {
+            self.handlePeerDisconnectedInner(peerId: peerId)
+        }
+    }
+
+    private func handlePeerDisconnectedInner(peerId: UInt32) {
+        logger.info("rist: Peer \(peerId) disconnected")
+        getPeerById(peerId: peerId)?.setDisconnected()
+        checkDisconnected()
+    }
+
     private func handleStatsInner(stats: RistStats) {
         logger.debug("""
         rist: peer \(stats.sender.peerId), rtt \(stats.sender.rtt), \
@@ -199,7 +283,7 @@ class RistStream: NetStream {
         bandwidth \(formatBytesPerSecond(speed: Int64(stats.sender.bandwidth))), \
         retry bandwidth \(formatBytesPerSecond(speed: Int64(stats.sender.retryBandwidth)))
         """)
-        peers.first(where: { $0.peer.getId() == stats.sender.peerId })?.stats = stats.sender
+        getPeerById(peerId: stats.sender.peerId)?.stats = stats.sender
     }
 
     private func addPeer(_ url: String?, _ interfaceName: String) {
@@ -208,7 +292,31 @@ class RistStream: NetStream {
             logger.info("rist: Failed to add peer")
             return
         }
-        peers.append(RistRemotePeer(interfaceName: interfaceName, peer: peer))
+        peers.append(RistRemotePeer(interfaceName: interfaceName, peer: peer, stream: self))
+    }
+
+    private func getPeerById(peerId: UInt32) -> RistRemotePeer? {
+        return peers.first(where: { $0.peer.getId() == peerId })
+    }
+
+    func checkConnected() {
+        guard state == .connecting else {
+            return
+        }
+        for peer in peers where peer.isConnected() {
+            state = .connected
+            onConnected?()
+            break
+        }
+    }
+
+    func checkDisconnected() {
+        for peer in peers where !peer.isDisconnected() {
+            return
+        }
+        logger.info("rist: All peers disconnected")
+        state = .disconnected
+        onDisconnected?()
     }
 
     private func send(data: Data) {

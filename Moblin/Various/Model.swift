@@ -757,6 +757,8 @@ final class Model: NSObject, ObservableObject {
         media.onSrtDisconnected = handleSrtDisconnected
         media.onRtmpConnected = handleRtmpConnected
         media.onRtmpDisconnected = handleRtmpDisconnected
+        media.onRistConnected = handleRistConnected
+        media.onRistDisconnected = handleRistDisconnected
         media.onAudioMuteChange = updateAudioLevel
         media.onVideoDeviceInUseByAnotherClient = handleVideoDeviceInUseByAnotherClient
         media.onLowFpsImage = handleLowFpsImage
@@ -2090,8 +2092,6 @@ final class Model: NSObject, ObservableObject {
                                   targetBitrate: stream.bitrate,
                                   adaptiveBitrate: stream.rist!.adaptiveBitrateEnabled)
             updateAdaptiveBitrateRistIfEnabled()
-            // To Do: Call when really connected.
-            onConnected()
         }
         updateSpeed(now: Date())
     }
@@ -3722,6 +3722,18 @@ final class Model: NSObject, ObservableObject {
 
     private func handleRtmpDisconnected(message: String) {
         onDisconnected(reason: "RTMP disconnected with message \(message)")
+    }
+
+    private func handleRistConnected() {
+        DispatchQueue.main.async {
+            self.onConnected()
+        }
+    }
+
+    private func handleRistDisconnected() {
+        DispatchQueue.main.async {
+            self.onDisconnected(reason: "RIST disconnected")
+        }
     }
 
     private func handleVideoDeviceInUseByAnotherClient() {

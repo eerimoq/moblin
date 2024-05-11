@@ -41,6 +41,8 @@ final class Media: NSObject {
     var onSrtDisconnected: ((_ reason: String) -> Void)!
     var onRtmpConnected: (() -> Void)!
     var onRtmpDisconnected: ((_ message: String) -> Void)!
+    var onRistConnected: (() -> Void)!
+    var onRistDisconnected: (() -> Void)!
     var onAudioMuteChange: (() -> Void)!
     var onVideoDeviceInUseByAnotherClient: (() -> Void)!
     var onLowFpsImage: ((Data?) -> Void)!
@@ -86,6 +88,8 @@ final class Media: NSObject {
             netStream = srtStream
         case .rist:
             ristStream = RistStream(ristConnection)
+            ristStream?.onConnected = onRistConnected
+            ristStream?.onDisconnected = onRistDisconnected
             srtStream = nil
             rtmpStream = nil
             netStream = ristStream
