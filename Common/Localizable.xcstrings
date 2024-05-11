@@ -2209,7 +2209,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%1$@ %2$@"
           }
         },
@@ -2345,7 +2345,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%1$@ %2$@: %3$@"
           }
         },
@@ -5734,7 +5734,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "기본적으로 200입니다."
           }
         },
@@ -6384,7 +6384,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "컨트롤러"
           }
         },
@@ -6774,7 +6774,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "사전 설정"
           }
         },
@@ -6904,7 +6904,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "프라이버시 영역"
           }
         },
@@ -7034,7 +7034,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "장면"
           }
         },
@@ -7164,7 +7164,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "시내"
           }
         },
@@ -7294,7 +7294,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "사용자 이름"
           }
         },
@@ -7424,7 +7424,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "위젯"
           }
         },
@@ -7944,7 +7944,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "나만의 LUT를 추가하세요."
           }
         },
@@ -8334,7 +8334,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "비디오 범위 픽셀 형식 허용"
           }
         },
@@ -9380,7 +9380,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "애플 로그 LUT"
           }
         },
@@ -10030,7 +10030,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "5초 후에 다시 시도합니다."
           }
         },
@@ -10551,7 +10551,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "오디오 레벨 표시 방법"
+            "value" : "오디오 레벨"
           }
         },
         "nl" : {
@@ -10940,7 +10940,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "실시간 스트리밍 시 자동 녹화 시작"
           }
         },
@@ -11070,7 +11070,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "스트림 종료 시 녹화 자동 중지"
           }
         },
@@ -12370,7 +12370,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "아름다움"
           }
         },
@@ -12500,7 +12500,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "뷰티필터"
           }
         },
@@ -13150,7 +13150,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "최고의 안정성. 본딩을 사용할 수 있습니다. 가장 유연한 설정."
           }
         },
@@ -13280,8 +13280,8 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "최고의 안정성. 본딩을 사용합니다. 유료 제3자 서비스."
+            "state" : "translated",
+            "value" : "최고의 안정성. 본딩을 사용합니다. 유료 서드파티 서비스."
           }
         },
         "nl" : {
@@ -14580,7 +14580,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "흐림"
           }
         },
@@ -14711,7 +14711,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "굵은메시지"
+            "value" : "메시지 굵게표시"
           }
         },
         "nl" : {
@@ -15363,7 +15363,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "명도"
           }
         },
@@ -15883,7 +15883,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "번들로 제공"
           }
         },
@@ -16014,7 +16014,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "노출보정"
+            "value" : "카메라 조정"
           }
         },
         "nl" : {
@@ -16403,7 +16403,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "카메라가 제대로 작동하려면 카메라를 변경하고 스트림을 다시 시작하세요."
           }
         },
@@ -16533,7 +16533,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "iPhone/iPad에서 Moblin의 설정을 변경합니다."
           }
         },
@@ -17053,7 +17053,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "채팅이 비어 있습니다."
           }
         },
@@ -17443,7 +17443,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "채팅이 일시 중지되었습니다. 새 메시지 %lld개"
           }
         },
@@ -19393,7 +19393,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "이 카메라에서는 연속 자동 노출이 지원되지 않습니다."
           }
         },
@@ -19523,7 +19523,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "이 카메라에서는 연속 자동 화이트 밸런스가 지원되지 않습니다."
           }
         },
@@ -19653,8 +19653,8 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "차이"
+            "state" : "translated",
+            "value" : "대비"
           }
         },
         "nl" : {
@@ -19913,7 +19913,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "다른 장치에서 Moblin을 제어하고 모니터링하세요."
           }
         },
@@ -21473,8 +21473,8 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "수확고"
+            "state" : "translated",
+            "value" : "자르기"
           }
         },
         "nl" : {
@@ -21993,7 +21993,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "귀여운"
           }
         },
@@ -22253,7 +22253,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "디버그 오버레이"
           }
         },
@@ -22773,7 +22773,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "설명"
           }
         },
@@ -22903,7 +22903,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "메시지별 언어 감지"
           }
         },
@@ -23683,7 +23683,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "연결이 끊김"
           }
         },
@@ -24203,7 +24203,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "스팸이나 봇 명령일 가능성이 있는 메시지는 말하지 마세요."
           }
         },
@@ -25766,7 +25766,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "URL을 보려면 RTMP 서버를 활성화하세요."
           }
         },
@@ -26546,7 +26546,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "보조자의 주소와 포트를 입력하세요. 예를 들어 ws://132.23.43.43:2345입니다."
           }
         },
@@ -26676,7 +26676,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "이 장치에 연결하려면 스트리머 장치에 URL 중 하나를 \"보조 URL\"로 입력하세요."
           }
         },
@@ -26806,7 +26806,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "이 스트림으로 비디오를 보내려면 RTMP 게시자 장치에 URL 중 하나를 입력하세요. 일반적으로 WiFi 또는 개인 핫스팟 URL을 입력합니다."
           }
         },
@@ -28366,7 +28366,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "EXB"
           }
         },
@@ -28756,7 +28756,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "노출 편향"
           }
         },
@@ -28886,7 +28886,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "얼굴"
           }
         },
@@ -29016,7 +29016,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "얼굴 랜드마크"
           }
         },
@@ -30836,7 +30836,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "필터"
           }
         },
@@ -31356,7 +31356,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@ 소스 수정"
           }
         },
@@ -31486,7 +31486,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "고정..."
           }
         },
@@ -31616,7 +31616,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "FOC"
           }
         },
@@ -31746,8 +31746,8 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "집중하다"
+            "state" : "translated",
+            "value" : "포커스"
           }
         },
         "nl" : {
@@ -32916,7 +32916,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "가득한"
           }
         },
@@ -34996,7 +34996,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "도움말 및 지원"
           }
         },
@@ -35516,8 +35516,8 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "집"
+            "state" : "translated",
+            "value" : "Home"
           }
         },
         "nl" : {
@@ -35776,7 +35776,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "상"
           }
         },
@@ -36166,7 +36166,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "활성화하면 Apple Log 색 공간을 사용할 때 선택한 LUT가 적용됩니다."
           }
         },
@@ -36297,7 +36297,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "카메라이미지"
+            "value" : "저장된 사진"
           }
         },
         "nl" : {
@@ -37206,7 +37206,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "입력-출력 채널 매핑"
           }
         },
@@ -37336,7 +37336,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "대화형 채팅"
           }
         },
@@ -37596,7 +37596,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ISO"
           }
         },
@@ -38636,7 +38636,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "살다"
           }
         },
@@ -40066,7 +40066,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "LUT"
           }
         },
@@ -40196,7 +40196,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "LUT는 적용 시 이미지 색상을 수정합니다."
           }
         },
@@ -40979,7 +40979,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "이 카메라에서는 수동 노출이 지원되지 않습니다."
           }
         },
@@ -41109,7 +41109,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "이 카메라에서는 수동 초점이 지원되지 않습니다."
           }
         },
@@ -41239,7 +41239,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "이 카메라에서는 수동 화이트 밸런스가 지원되지 않습니다."
           }
         },
@@ -41630,7 +41630,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "최대 표시 시간"
+            "value" : "메시지 표시 유지 시간"
           }
         },
         "nl" : {
@@ -42279,7 +42279,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "메시지"
           }
         },
@@ -42929,7 +42929,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "미러링됨"
           }
         },
@@ -43319,7 +43319,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "모노 오디오는 출력 채널 1만 사용합니다. 스테레오 오디오는 두 출력 채널을 모두 사용합니다."
           }
         },
@@ -43449,7 +43449,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "입"
           }
         },
@@ -44359,7 +44359,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "내 LUT"
           }
         },
@@ -44619,7 +44619,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "내 서버"
           }
         },
@@ -45399,7 +45399,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "세로 모드에서는 이름이 표시되지 않습니다."
           }
         },
@@ -46569,7 +46569,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "아직 미리보기가 수신되지 않았습니다."
           }
         },
@@ -47089,7 +47089,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "위젯을 찾을 수 없습니다. 설정 → 장면 → 위젯에서 위젯을 생성하세요."
           }
         },
@@ -47609,7 +47609,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "이 카메라에서는 지원되지 않습니다."
           }
         },
@@ -47739,7 +47739,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "메시지 알림"
           }
         },
@@ -48519,7 +48519,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "오프셋"
           }
         },
@@ -48909,7 +48909,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "채팅에만 필요합니다."
           }
         },
@@ -49169,7 +49169,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "오픈 스트리밍 플랫폼"
           }
         },
@@ -49299,7 +49299,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "출력 채널 1"
           }
         },
@@ -49429,7 +49429,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "출력 채널 2"
           }
         },
@@ -50079,7 +50079,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "픽셀 형식"
           }
         },
@@ -50859,7 +50859,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "초상화"
           }
         },
@@ -51119,7 +51119,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "시사"
           }
         },
@@ -51379,7 +51379,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "개인 정보 보호 지역"
           }
         },
@@ -52029,7 +52029,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "반지름"
           }
         },
@@ -54389,7 +54389,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "오디오 및 비디오 문제를 해결하기 위해 %@ 소스를 다시 시작합니다."
           }
         },
@@ -54520,7 +54520,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "구매를 복원"
+            "value" : "구매 복원"
           }
         },
         "nl" : {
@@ -55955,8 +55955,8 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "포화"
+            "state" : "translated",
+            "value" : "채도"
           }
         },
         "nl" : {
@@ -56085,7 +56085,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "사용자 이름을 말해주세요"
           }
         },
@@ -56215,7 +56215,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "규모"
           }
         },
@@ -56995,7 +56995,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Google로 검색하거나 주소를 입력하세요."
           }
         },
@@ -58295,7 +58295,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "보여주다"
           }
         },
@@ -58556,7 +58556,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "민감한 URL이 보입니다."
+            "value" : "민감한 URL을 표시합니다."
           }
         },
         "nl" : {
@@ -58945,7 +58945,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "현재 TTS 건너뛰기"
           }
         },
@@ -59595,7 +59595,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "소스 위젯"
           }
         },
@@ -60115,7 +60115,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "SRT 연결 우선순위"
           }
         },
@@ -62455,7 +62455,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "스트림 버튼"
           }
         },
@@ -63885,7 +63885,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "구독자 전용"
           }
         },
@@ -64015,7 +64015,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "일부 플랫폼에서는 구독자 전용 기능을 사용할 수 없습니다."
           }
         },
@@ -64405,7 +64405,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "삭제하려면 %@을(를) 왼쪽으로 스와이프하세요."
           }
         },
@@ -64535,7 +64535,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@을(를) 왼쪽으로 스와이프하여 제거하세요."
           }
         },
@@ -64795,7 +64795,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "숨기려면 미리보기를 탭하세요."
           }
         },
@@ -65965,7 +65965,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "텍스트 음성 변환"
           }
         },
@@ -66225,7 +66225,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Apple Log LUT는 Apple Log 색 공간을 선택한 경우에만 적용됩니다."
           }
         },
@@ -67525,7 +67525,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "세로 토글이 활성화된 경우에도 스트리밍 및 녹화된 비디오는 항상 가로 방향입니다. OBS에서 세로 방향으로 회전하세요. 앞으로는 개선될 예정입니다."
           }
         },
@@ -67915,7 +67915,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "동영상 ID는 실시간 스트림 URL의 마지막 부분입니다."
           }
         },
@@ -68175,8 +68175,8 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "열 상태"
+            "state" : "translated",
+            "value" : "발열 상태"
           }
         },
         "nl" : {
@@ -68436,7 +68436,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "시간 기록"
+            "value" : "시간 표시"
           }
         },
         "nl" : {
@@ -70785,7 +70785,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "알려지지 않은"
           }
         },
@@ -72215,7 +72215,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "게임 컨트롤러를 사용하여 멀리서 확대/축소, 장면 설정 등을 수행할 수 있습니다."
           }
         },
@@ -72995,7 +72995,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "무시할 사용자 이름"
           }
         },
@@ -74815,7 +74815,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "목소리"
           }
         },
@@ -75075,8 +75075,8 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "보다"
+            "state" : "translated",
+            "value" : "애플워치"
           }
         },
         "nl" : {
@@ -75205,7 +75205,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "WB"
           }
         },
@@ -75335,7 +75335,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "웹 브라우저"
           }
         },
@@ -75595,7 +75595,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "화이트 밸런스"
           }
         },
@@ -76505,7 +76505,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "세로 토글이 활성화되면 위젯이 잘못 회전됩니다."
           }
         },
@@ -76895,7 +76895,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "엑스"
           }
         },
@@ -77291,7 +77291,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "와이"
           }
         },
@@ -77551,7 +77551,7 @@
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "개인 정보 보호 지역 내에서는 귀하의 위치가 어떤 서비스와도 공유되지 않습니다."
           }
         },
