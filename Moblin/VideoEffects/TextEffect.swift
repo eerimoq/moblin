@@ -63,16 +63,12 @@ final class TextEffect: VideoEffect {
         }
         let x = (size.width * self.x) / 100
         let y = (size.height * self.y) / 100
-        overlay = CIImage(image: newImage)
-        if overlay != nil {
-            overlay = overlay!.transformed(by: CGAffineTransform(
+        overlay = CIImage(image: newImage)?
+            .transformed(by: CGAffineTransform(
                 translationX: x,
                 y: size.height - newImage.size.height - y
             ))
-            if overlay != nil {
-                overlay = overlay!.cropped(to: CGRect(x: 0, y: 0, width: size.width, height: size.height))
-            }
-        }
+            .cropped(to: CGRect(x: 0, y: 0, width: size.width, height: size.height))
     }
 
     override func execute(_ image: CIImage, _: [VNFaceObservation]?) -> CIImage {
