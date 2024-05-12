@@ -5126,16 +5126,14 @@ extension Model {
     }
 
     private func selectMic(mic: Mic) {
-        switch mic.builtInOrientation {
-        case .rtmp:
+        if mic.builtInOrientation == .rtmp {
             self.mic = mic
             var cameraId = getRtmpStream(camera: mic.id)?.id ?? .init()
             if database.debug!.enableRtmpAudio! {
                 media.attachRtmpAudio(cameraId: cameraId, device: AVCaptureDevice.default(for: .audio))
             }
             remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
-            return
-        default:
+        } else {
             let session = AVAudioSession.sharedInstance()
             do {
                 for inputPort in session.availableInputs ?? [] {
