@@ -241,6 +241,8 @@ the JSON blob format. Class members are JSON object keys. Members with
 
 # Development setup
 
+Roughly the steps to setup Moblin's developement environment.
+
 1. Install Xcode with iOS and MacOS simulators on your Mac.
 
 2. Open a terminal.
@@ -257,4 +259,20 @@ the JSON blob format. Class members are JSON object keys. Members with
 
    `open Moblin.xcodeproj`
 
-6. Press `Cmd+B` to build Moblin.
+6. Press `Command + B` to build Moblin.
+
+7. Fix code signing error by...
+
+8. Change the bundle identifier to anything you want (i.e. com.whoami.Moblin).
+
+9. Remove `In-App Purchase` and Access `Wi-Fi Information` by clicking their trashcans.
+
+10. Build again.
+
+11. Enable developer mode in your iPhone/iPad.
+
+12. Select you iPhone/iPad as build target in Xcode.
+
+13. Build and run by pressing `Command + R`.
+
+14. Done!
