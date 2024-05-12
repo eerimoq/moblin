@@ -85,6 +85,13 @@ struct DebugSettingsView: View {
                     Text("\(formatOneDecimal(value: cameraSwitchRemoveBlackish)) s")
                         .frame(width: 40)
                 }
+                Toggle("Blur scene switch", isOn: Binding(get: {
+                    model.database.debug!.blurSceneSwitch!
+                }, set: { value in
+                    model.database.debug!.blurSceneSwitch = value
+                    model.setBlurSceneSwitch()
+                    model.store()
+                }))
                 Toggle("Global tone mapping", isOn: Binding(get: {
                     model.getGlobalToneMappingOn()
                 }, set: { value in

@@ -612,6 +612,10 @@ final class Model: NSObject, ObservableObject {
         allowVideoRangePixelFormat = database.debug!.allowVideoRangePixelFormat!
     }
 
+    func setBlurSceneSwitch() {
+        ioVideoBlurSceneSwitch = database.debug!.blurSceneSwitch!
+    }
+
     func makeToast(title: String, subTitle: String? = nil) {
         toast = AlertToast(type: .regular, title: title, subTitle: subTitle)
         showingToast = true
@@ -744,6 +748,7 @@ final class Model: NSObject, ObservableObject {
 
     func setup() {
         setAllowVideoRangePixelFormat()
+        setBlurSceneSwitch()
         supportsAppleLog = hasAppleLog()
         ioVideoUnitIgnoreFramesAfterAttachSeconds = Double(database.debug!.cameraSwitchRemoveBlackish!)
         let WebPCoder = SDImageWebPCoder.shared

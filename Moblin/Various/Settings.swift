@@ -1140,6 +1140,7 @@ class SettingsDebug: Codable {
     var beautyFilter: Bool? = false
     var beautyFilterSettings: SettingsDebugBeautyFilter? = .init()
     var allowVideoRangePixelFormat: Bool? = false
+    var blurSceneSwitch: Bool? = true
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -2428,6 +2429,10 @@ final class Settings {
         }
         if realDatabase.show.bonding == nil {
             realDatabase.show.bonding = true
+            store()
+        }
+        if realDatabase.debug!.blurSceneSwitch == nil {
+            realDatabase.debug!.blurSceneSwitch = true
             store()
         }
     }

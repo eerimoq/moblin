@@ -3,6 +3,7 @@ import CoreImage
 import UIKit
 import Vision
 
+var ioVideoBlurSceneSwitch = true
 var ioVideoUnitIgnoreFramesAfterAttachSeconds = 0.3
 var ioVideoUnitWatchInterval = 1.0
 var pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
@@ -217,7 +218,7 @@ final class VideoUnit: NSObject {
         else {
             return
         }
-        _ = appendSampleBuffer(sampleBuffer, isFirstAfterAttach: false, applyBlur: true)
+        _ = appendSampleBuffer(sampleBuffer, isFirstAfterAttach: false, applyBlur: ioVideoBlurSceneSwitch)
     }
 
     func attach(_ device: AVCaptureDevice?, _ replaceVideo: UUID?) throws {
