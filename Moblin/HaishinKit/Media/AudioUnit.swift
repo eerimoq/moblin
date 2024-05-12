@@ -50,7 +50,6 @@ final class AudioUnit: NSObject {
     weak var mixer: Mixer?
     private var selectedReplaceAudioId: UUID?
     private var replaceAudios: [UUID: ReplaceAudio] = [:]
-    private var connection: AVCaptureConnection?
 
     private var inputSourceFormat: AudioStreamBasicDescription? {
         didSet {
@@ -147,17 +146,9 @@ final class AudioUnit: NSObject {
         guard mixer.useSampleBuffer(presentationTimeStamp, mediaType: AVMediaType.audio) else {
             return
         }
-        var audioLevel: Float
-        if muted {
-            audioLevel = .nan
-        } else if let channel = connection!.audioChannels.first {
-            audioLevel = channel.averagePowerLevel
-        } else {
-            audioLevel = 0.0
-        }
         mixer.delegate?.mixer(
-            audioLevel: audioLevel,
-            numberOfAudioChannels: connection!.audioChannels.count,
+            audioLevel: .infinity,
+            numberOfAudioChannels: sampleBuffer.formatDescription?.audioChannelLayout?.numberOfChannels ?? 0,
             presentationTimestamp: presentationTimeStamp.seconds
         )
         appendSampleBuffer(sampleBuffer, presentationTimeStamp, isFirstAfterAttach: false)
@@ -191,7 +182,6 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
         didOutput sampleBuffer: CMSampleBuffer,
         from connection: AVCaptureConnection
     ) {
-        self.connection = connection
         guard let mixer, selectedReplaceAudioId == nil else {
             return
         }
