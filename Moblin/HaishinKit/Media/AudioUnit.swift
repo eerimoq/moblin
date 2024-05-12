@@ -1,5 +1,7 @@
 import AVFoundation
 
+private let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.AudioIOUnit.lock")
+
 func makeChannelMap(
     numberOfInputChannels: Int,
     numberOfOutputChannels: Int,
@@ -45,7 +47,6 @@ final class AudioUnit: NSObject {
     private(set) var device: AVCaptureDevice?
     private var input: AVCaptureInput?
     private var output: AVCaptureAudioDataOutput?
-    let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.AudioIOUnit.lock")
     var muted = false
     weak var mixer: Mixer?
     private var selectedReplaceAudioId: UUID?

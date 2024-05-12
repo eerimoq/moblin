@@ -6,6 +6,9 @@ import Vision
 var ioVideoUnitIgnoreFramesAfterAttachSeconds = 0.3
 var ioVideoUnitWatchInterval = 1.0
 var pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
+private let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.VideoIOComponent")
+private let detectionsQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.Detections")
+private let lowFpsImageQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.VideoIOComponent.small")
 
 private func setOrientation(
     device: AVCaptureDevice?,
@@ -85,9 +88,6 @@ private class ReplaceVideo {
 }
 
 final class VideoUnit: NSObject {
-    let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.VideoIOComponent")
-    let detectionsQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.Detections")
-    let lowFpsImageQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.VideoIOComponent.small")
     private(set) var device: AVCaptureDevice?
     private var input: AVCaptureInput?
     private var output: AVCaptureVideoDataOutput?
@@ -558,7 +558,7 @@ final class VideoUnit: NSObject {
                 let startDate = Date()
                 let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: imageBuffer)
                 let faceLandmarksRequest = VNDetectFaceLandmarksRequest { request, error in
-                    self.lockQueue.async {
+                    lockQueue.async {
                         guard error == nil else {
                             self.appendSampleBufferWithFaceDetections(
                                 sampleBuffer,
@@ -578,7 +578,7 @@ final class VideoUnit: NSObject {
                 do {
                     try imageRequestHandler.perform([faceLandmarksRequest])
                 } catch {
-                    self.lockQueue.async {
+                    lockQueue.async {
                         self.appendSampleBufferWithFaceDetections(
                             sampleBuffer,
                             isFirstAfterAttach,
@@ -588,7 +588,7 @@ final class VideoUnit: NSObject {
                     }
                 }
                 let elapsed = Int(-startDate.timeIntervalSinceNow * 1000)
-                self.lockQueue.async {
+                lockQueue.async {
                     self.detectionsHistogram.add(value: elapsed)
                 }
             }
