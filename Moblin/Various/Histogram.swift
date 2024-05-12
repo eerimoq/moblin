@@ -1,8 +1,8 @@
 import Foundation
 
 struct Histogram {
-    let name: String
-    let barWidth: Int
+    private let name: String
+    private let barWidth: Int
     private(set) var barCounts: [Int] = []
 
     init(name: String, barWidth: Int) {
