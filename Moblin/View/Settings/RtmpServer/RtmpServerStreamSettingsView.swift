@@ -1,6 +1,10 @@
 import Network
 import SwiftUI
 
+private func rtmpStreamUrl(address: String, port: UInt16, streamKey: String) -> String {
+    return "rtmp://\(address):\(port)\(rtmpServerApp)/\(streamKey)"
+}
+
 private struct InterfaceView: View {
     @EnvironmentObject var model: Model
     var port: UInt16

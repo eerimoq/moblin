@@ -5128,7 +5128,7 @@ extension Model {
     private func selectMic(mic: Mic) {
         if mic.builtInOrientation == .rtmp {
             self.mic = mic
-            var cameraId = getRtmpStream(camera: mic.id)?.id ?? .init()
+            let cameraId = getRtmpStream(camera: mic.id)?.id ?? .init()
             if database.debug!.enableRtmpAudio! {
                 media.attachRtmpAudio(cameraId: cameraId, device: AVCaptureDevice.default(for: .audio))
             }

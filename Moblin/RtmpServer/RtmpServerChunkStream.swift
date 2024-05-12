@@ -157,7 +157,7 @@ class RtmpServerChunkStream {
             client.stopInternal(reason: "Invalid stream URL")
             return
         }
-        guard url.path() == rtmpApp else {
+        guard url.path() == rtmpServerApp else {
             client.stopInternal(reason: "Not a camera path")
             return
         }
