@@ -273,8 +273,8 @@ Roughly the steps to setup Moblin's developement environment.
 
 11. Enable developer mode in your iPhone/iPad.
 
-12. Select you iPhone/iPad as `Run Destination in Xcode (at the top in
-    the middle).
+12. Select you iPhone/iPad as `Run Destination` in Xcode (at the top
+    in the middle).
 
 13. Build and run by pressing `Command + R`.
 
