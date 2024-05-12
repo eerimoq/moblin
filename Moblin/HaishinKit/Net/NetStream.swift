@@ -67,9 +67,7 @@ open class NetStream: NSObject {
     }
 
     func getHistograms() -> (Histogram, Histogram) {
-        return mixer.video.lockQueue.sync {
-            (mixer.video.detectionsHistogram, mixer.video.filterHistogram)
-        }
+        return mixer.video.getHistograms()
     }
 
     var audioSettings: AudioCodecOutputSettings {
@@ -111,7 +109,7 @@ open class NetStream: NSObject {
         onError: ((_ error: Error) -> Void)? = nil,
         replaceAudioId: UUID? = nil
     ) {
-        lockQueue.sync {
+        lockQueue.async {
             do {
                 try self.mixer.attachAudio(device, replaceAudioId)
             } catch {
@@ -121,75 +119,51 @@ open class NetStream: NSObject {
     }
 
     func addReplaceVideoSampleBuffer(id: UUID, _ sampleBuffer: CMSampleBuffer) {
-        mixer.video.lockQueue.async {
-            self.mixer.video.addReplaceVideoSampleBuffer(id: id, sampleBuffer)
-        }
+        mixer.video.addReplaceVideoSampleBuffer(id: id, sampleBuffer)
     }
 
     func addAudioPCMBuffer(id: UUID, _ audioBuffer: AVAudioPCMBuffer) {
-        mixer.audio.lockQueue.async {
-            self.mixer.audio.addReplaceAudioPCMBuffer(id: id, audioBuffer)
-        }
+        mixer.audio.addReplaceAudioPCMBuffer(id: id, audioBuffer)
     }
 
     func addReplaceVideo(cameraId: UUID, latency: Double) {
-        mixer.video.lockQueue.async {
-            self.mixer.video.addReplaceVideo(cameraId: cameraId, latency: latency)
-        }
+        mixer.video.addReplaceVideo(cameraId: cameraId, latency: latency)
     }
 
     func addReplaceAudio(cameraId: UUID) {
-        mixer.audio.lockQueue.async {
-            self.mixer.audio.addReplaceAudio(cameraId: cameraId)
-        }
+        mixer.audio.addReplaceAudio(cameraId: cameraId)
     }
 
     func removeReplaceVideo(cameraId: UUID) {
-        mixer.video.lockQueue.async {
-            self.mixer.video.removeReplaceVideo(cameraId: cameraId)
-        }
+        mixer.video.removeReplaceVideo(cameraId: cameraId)
     }
 
     func removeReplaceAudio(cameraId: UUID) {
-        mixer.audio.lockQueue.async {
-            self.mixer.audio.removeReplaceAudio(cameraId: cameraId)
-        }
+        mixer.audio.removeReplaceAudio(cameraId: cameraId)
     }
 
     func videoCapture() -> VideoUnit? {
-        return mixer.video.lockQueue.sync {
-            self.mixer.video
-        }
+        return mixer.video
     }
 
     func registerVideoEffect(_ effect: VideoEffect) {
-        mixer.video.lockQueue.sync {
-            self.mixer.video.registerEffect(effect)
-        }
+        mixer.video.registerEffect(effect)
     }
 
     func unregisterVideoEffect(_ effect: VideoEffect) {
-        mixer.video.lockQueue.sync {
-            self.mixer.video.unregisterEffect(effect)
-        }
+        mixer.video.unregisterEffect(effect)
     }
 
     func setPendingAfterAttachEffects(effects: [VideoEffect]) {
-        mixer.video.lockQueue.sync {
-            self.mixer.video.setPendingAfterAttachEffects(effects: effects)
-        }
+        mixer.video.setPendingAfterAttachEffects(effects: effects)
     }
 
     func usePendingAfterAttachEffects() {
-        mixer.video.lockQueue.sync {
-            self.mixer.video.usePendingAfterAttachEffects()
-        }
+        mixer.video.usePendingAfterAttachEffects()
     }
 
     func setLowFpsImage(enabled: Bool) {
-        mixer.video.lockQueue.sync {
-            self.mixer.video.setLowFpsImage(enabled: enabled)
-        }
+        mixer.video.setLowFpsImage(enabled: enabled)
     }
 
     func setAudioChannelsMap(map: [Int: Int]) {

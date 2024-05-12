@@ -171,6 +171,12 @@ final class VideoUnit: NSObject {
         stopGapFillerTimer()
     }
 
+    func getHistograms() -> (Histogram, Histogram) {
+        return lockQueue.sync {
+            (detectionsHistogram, filterHistogram)
+        }
+    }
+
     private func startGapFillerTimer() {
         gapFillerTimer = DispatchSource.makeTimerSource(queue: lockQueue)
         let frameInterval = 1 / frameRate
@@ -381,22 +387,46 @@ final class VideoUnit: NSObject {
     }
 
     func registerEffect(_ effect: VideoEffect) {
+        lockQueue.sync {
+            self.registerEffectInner(effect)
+        }
+    }
+
+    private func registerEffectInner(_ effect: VideoEffect) {
         if !effects.contains(effect) {
             effects.append(effect)
         }
     }
 
     func unregisterEffect(_ effect: VideoEffect) {
+        lockQueue.sync {
+            self.unregisterEffectInner(effect)
+        }
+    }
+
+    private func unregisterEffectInner(_ effect: VideoEffect) {
         if let index = effects.firstIndex(of: effect) {
             effects.remove(at: index)
         }
     }
 
     func setPendingAfterAttachEffects(effects: [VideoEffect]) {
+        lockQueue.sync {
+            self.setPendingAfterAttachEffectsInner(effects: effects)
+        }
+    }
+
+    private func setPendingAfterAttachEffectsInner(effects: [VideoEffect]) {
         pendingAfterAttachEffects = effects
     }
 
     func usePendingAfterAttachEffects() {
+        lockQueue.sync {
+            self.usePendingAfterAttachEffectsInner()
+        }
+    }
+
+    private func usePendingAfterAttachEffectsInner() {
         if let pendingAfterAttachEffects {
             effects = pendingAfterAttachEffects
             self.pendingAfterAttachEffects = nil
@@ -404,11 +434,23 @@ final class VideoUnit: NSObject {
     }
 
     func setLowFpsImage(enabled: Bool) {
+        lockQueue.sync {
+            self.setLowFpsImageInner(enabled: enabled)
+        }
+    }
+
+    private func setLowFpsImageInner(enabled: Bool) {
         lowFpsImageEnabled = enabled
         lowFpsImageLatest = 0.0
     }
 
     func addReplaceVideoSampleBuffer(id: UUID, _ sampleBuffer: CMSampleBuffer) {
+        lockQueue.async {
+            self.addReplaceVideoSampleBufferInner(id: id, sampleBuffer)
+        }
+    }
+
+    private func addReplaceVideoSampleBufferInner(id: UUID, _ sampleBuffer: CMSampleBuffer) {
         guard let replaceVideo = replaceVideos[id] else {
             return
         }
@@ -419,11 +461,23 @@ final class VideoUnit: NSObject {
     }
 
     func addReplaceVideo(cameraId: UUID, latency: Double) {
+        lockQueue.async {
+            self.addReplaceVideoInner(cameraId: cameraId, latency: latency)
+        }
+    }
+
+    private func addReplaceVideoInner(cameraId: UUID, latency: Double) {
         let replaceVideo = ReplaceVideo(latency: latency)
         replaceVideos[cameraId] = replaceVideo
     }
 
     func removeReplaceVideo(cameraId: UUID) {
+        lockQueue.async {
+            self.removeReplaceVideoInner(cameraId: cameraId)
+        }
+    }
+
+    private func removeReplaceVideoInner(cameraId: UUID) {
         replaceVideos.removeValue(forKey: cameraId)
     }
 

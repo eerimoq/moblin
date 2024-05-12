@@ -128,6 +128,12 @@ final class AudioUnit: NSObject {
     private var connection: AVCaptureConnection?
 
     func addReplaceAudioPCMBuffer(id: UUID, _ audioBuffer: AVAudioPCMBuffer) {
+        lockQueue.async {
+            self.addReplaceAudioPCMBufferInner(id: id, audioBuffer)
+        }
+    }
+
+    func addReplaceAudioPCMBufferInner(id: UUID, _ audioBuffer: AVAudioPCMBuffer) {
         guard let mixer else {
             return
         }
@@ -141,7 +147,7 @@ final class AudioUnit: NSObject {
             return
         }
 
-        guard let selectedReplaceAudioId else {
+        guard selectedReplaceAudioId != nil else {
             return
         }
 
@@ -166,11 +172,23 @@ final class AudioUnit: NSObject {
     }
 
     func addReplaceAudio(cameraId: UUID) {
+        lockQueue.async {
+            self.addReplaceAudioInner(cameraId: cameraId)
+        }
+    }
+
+    func addReplaceAudioInner(cameraId: UUID) {
         let replaceAudio = ReplaceAudio()
         replaceAudios[cameraId] = replaceAudio
     }
 
     func removeReplaceAudio(cameraId: UUID) {
+        lockQueue.async {
+            self.removeReplaceAudioInner(cameraId: cameraId)
+        }
+    }
+
+    func removeReplaceAudioInner(cameraId: UUID) {
         replaceAudios.removeValue(forKey: cameraId)
     }
 }
@@ -187,7 +205,7 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
             return
         }
 
-        if let selectedReplaceAudioId {
+        if selectedReplaceAudioId == nil {
             return
         }
 
