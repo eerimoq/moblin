@@ -22,7 +22,7 @@ func makeChannelMap(
 private class ReplaceAudio {
     var nextPresentationTimeStamp: CMTime = .zero
 
-    func CreateSampleBuffer(audioPCMBuffer: AVAudioPCMBuffer) -> CMSampleBuffer? {
+    func createSampleBuffer(audioPCMBuffer: AVAudioPCMBuffer) -> CMSampleBuffer? {
         if nextPresentationTimeStamp == CMTime.zero {
             nextPresentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
         }
@@ -139,7 +139,7 @@ final class AudioUnit: NSObject {
         guard let replaceAudio = replaceAudios[id] else {
             return
         }
-        let sampleBuffer = replaceAudio.CreateSampleBuffer(audioPCMBuffer: audioBuffer)
+        let sampleBuffer = replaceAudio.createSampleBuffer(audioPCMBuffer: audioBuffer)
         guard let sampleBuffer, selectedReplaceAudioId != nil else {
             return
         }

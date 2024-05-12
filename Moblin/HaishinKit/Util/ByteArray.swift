@@ -2,54 +2,40 @@ import Foundation
 
 open class ByteArray {
     static let fillZero: [UInt8] = [0x00]
+    static let sizeOfInt8 = 1
+    static let sizeOfInt16 = 2
+    static let sizeOfInt24 = 3
+    static let sizeOfInt32 = 4
+    static let sizeOfDouble = 8
 
-    static let sizeOfInt8: Int = 1
-    static let sizeOfInt16: Int = 2
-    static let sizeOfInt24: Int = 3
-    static let sizeOfInt32: Int = 4
-    static let sizeOfDouble: Int = 8
-
-    /**
-     * The ByteArray error domain codes.
-     */
     enum Error: Swift.Error {
-        /// Error cause end of data.
         case eof
-        /// Failed to parse
         case parse
     }
 
-    /// Creates an empty ByteArray.
     init() {}
 
-    /// Creates a ByteArray with data.
     init(data: Data) {
         self.data = data
     }
 
     private(set) var data = Data()
 
-    /// Specifies the length of buffer.
     var length: Int {
         get {
             data.count
         }
         set {
-            switch true {
-            case data.count < newValue:
+            if newValue > data.count {
                 data.append(Data(count: newValue - data.count))
-            case newValue < data.count:
+            } else if newValue < data.count {
                 data = data.subdata(in: 0 ..< newValue)
-            default:
-                break
             }
         }
     }
 
-    /// Specifies the position of buffer.
-    var position: Int = 0
+    var position = 0
 
-    /// The bytesAvalibale or not.
     var bytesAvailable: Int {
         data.count - position
     }
@@ -63,7 +49,6 @@ open class ByteArray {
         }
     }
 
-    /// Reading an UInt8 value.
     func readUInt8() throws -> UInt8 {
         guard ByteArray.sizeOfInt8 <= bytesAvailable else {
             throw ByteArray.Error.eof
@@ -74,13 +59,11 @@ open class ByteArray {
         return data[position]
     }
 
-    /// Writing an UInt8 value.
     @discardableResult
     func writeUInt8(_ value: UInt8) -> Self {
         writeBytes(value.data)
     }
 
-    /// Readning an UInt16 value.
     func readUInt16() throws -> UInt16 {
         guard ByteArray.sizeOfInt16 <= bytesAvailable else {
             throw ByteArray.Error.eof
@@ -89,13 +72,11 @@ open class ByteArray {
         return UInt16(data: data[position - ByteArray.sizeOfInt16 ..< position]).bigEndian
     }
 
-    /// Writing an UInt16 value.
     @discardableResult
     func writeUInt16(_ value: UInt16) -> Self {
         writeBytes(value.bigEndian.data)
     }
 
-    /// Reading an UInt24 value.
     func readUInt24() throws -> UInt32 {
         guard ByteArray.sizeOfInt24 <= bytesAvailable else {
             throw ByteArray.Error.eof
@@ -105,7 +86,6 @@ open class ByteArray {
             .bigEndian
     }
 
-    /// Reading an UInt32 value.
     func readUInt32() throws -> UInt32 {
         guard ByteArray.sizeOfInt32 <= bytesAvailable else {
             throw ByteArray.Error.eof
@@ -114,13 +94,11 @@ open class ByteArray {
         return UInt32(data: data[position - ByteArray.sizeOfInt32 ..< position]).bigEndian
     }
 
-    /// Writing an UInt32 value.
     @discardableResult
     func writeUInt32(_ value: UInt32) -> Self {
         writeBytes(value.bigEndian.data)
     }
 
-    /// Writing an Int32 value.
     @discardableResult
     func writeInt32(_ value: Int32) -> Self {
         writeBytes(value.bigEndian.data)
