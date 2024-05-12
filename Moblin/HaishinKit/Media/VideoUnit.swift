@@ -393,7 +393,7 @@ final class VideoUnit: NSObject {
     private func blurImage(_ image: CIImage) -> CIImage {
         let filter = CIFilter.gaussianBlur()
         filter.inputImage = image
-        filter.radius = 50
+        filter.radius = Float(25 * (image.extent.height / 1080))
         return filter.outputImage?.cropped(to: image.extent) ?? image
     }
 
