@@ -30,6 +30,7 @@ struct DebugVideoSettingsView: View {
                 }, set: { value in
                     model.database.debug!.allowVideoRangePixelFormat = value
                     model.setAllowVideoRangePixelFormat()
+                    model.store()
                 }))
             } footer: {
                 Text("Change camera and restart stream for these to work properly.")
