@@ -48,6 +48,9 @@ final class AudioUnit: NSObject {
     let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.AudioIOUnit.lock")
     var muted = false
     weak var mixer: Mixer?
+    private var selectedReplaceAudioId: UUID?
+    private var replaceAudios: [UUID: ReplaceAudio] = [:]
+    private var connection: AVCaptureConnection?
 
     private var inputSourceFormat: AudioStreamBasicDescription? {
         didSet {
@@ -123,10 +126,6 @@ final class AudioUnit: NSObject {
         }
     }
 
-    private var selectedReplaceAudioId: UUID?
-    private var replaceAudios: [UUID: ReplaceAudio] = [:]
-    private var connection: AVCaptureConnection?
-
     func addReplaceAudioPCMBuffer(id: UUID, _ audioBuffer: AVAudioPCMBuffer) {
         lockQueue.async {
             self.addReplaceAudioPCMBufferInner(id: id, audioBuffer)
@@ -140,17 +139,13 @@ final class AudioUnit: NSObject {
         guard let replaceAudio = replaceAudios[id] else {
             return
         }
-
         let sampleBuffer = replaceAudio.CreateSampleBuffer(audioPCMBuffer: audioBuffer)
-
         guard let sampleBuffer else {
             return
         }
-
         guard selectedReplaceAudioId != nil else {
             return
         }
-
         let presentationTimeStamp = syncTimeToVideo(mixer: mixer, sampleBuffer: sampleBuffer)
         guard mixer.useSampleBuffer(presentationTimeStamp, mediaType: AVMediaType.audio) else {
             return
@@ -200,15 +195,12 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
         from connection: AVCaptureConnection
     ) {
         self.connection = connection
-
         guard let mixer else {
             return
         }
-
         if selectedReplaceAudioId == nil {
             return
         }
-
         // Workaround for audio drift on iPhone 15 Pro Max running iOS 17. Probably issue on more models.
         let presentationTimeStamp = syncTimeToVideo(mixer: mixer, sampleBuffer: sampleBuffer)
         guard mixer.useSampleBuffer(presentationTimeStamp, mediaType: AVMediaType.audio) else {
