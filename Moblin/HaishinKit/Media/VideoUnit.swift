@@ -217,7 +217,7 @@ final class VideoUnit: NSObject {
         else {
             return
         }
-        _ = appendSampleBuffer(sampleBuffer, isFirstAfterAttach: false)
+        _ = appendSampleBuffer(sampleBuffer, isFirstAfterAttach: false, applyBlur: true)
     }
 
     func attach(_ device: AVCaptureDevice?, _ replaceVideo: UUID?) throws {
@@ -339,7 +339,8 @@ final class VideoUnit: NSObject {
 
     private func applyEffects(_ imageBuffer: CVImageBuffer,
                               _ sampleBuffer: CMSampleBuffer,
-                              _ faceDetections: [VNFaceObservation]?) -> (CVImageBuffer?, CMSampleBuffer?)
+                              _ faceDetections: [VNFaceObservation]?,
+                              _ applyBlur: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
     {
         var image = CIImage(cvPixelBuffer: imageBuffer)
         let extent = image.extent
@@ -353,6 +354,9 @@ final class VideoUnit: NSObject {
             }
         }
         mixer?.delegate?.mixerVideo(failedEffect: failedEffect)
+        if applyBlur {
+            image = blurImage(image)
+        }
         guard imageBuffer.width == Int(image.extent.width) && imageBuffer.height == Int(image.extent.height)
         else {
             return (nil, nil)
@@ -384,6 +388,13 @@ final class VideoUnit: NSObject {
             return (nil, nil)
         }
         return (outputImageBuffer, outputSampleBuffer)
+    }
+
+    private func blurImage(_ image: CIImage) -> CIImage {
+        let filter = CIFilter.gaussianBlur()
+        filter.inputImage = image
+        filter.radius = 50
+        return filter.outputImage?.cropped(to: image.extent) ?? image
     }
 
     func registerEffect(_ effect: VideoEffect) {
@@ -523,7 +534,9 @@ final class VideoUnit: NSObject {
         return sampleBuffer
     }
 
-    private func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer, isFirstAfterAttach: Bool) -> Bool {
+    private func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer, isFirstAfterAttach: Bool,
+                                    applyBlur: Bool) -> Bool
+    {
         guard let imageBuffer = sampleBuffer.imageBuffer else {
             return false
         }
@@ -547,11 +560,17 @@ final class VideoUnit: NSObject {
                 let faceLandmarksRequest = VNDetectFaceLandmarksRequest { request, error in
                     self.lockQueue.async {
                         guard error == nil else {
-                            self.appendSampleBufferWithFaceDetections(sampleBuffer, isFirstAfterAttach, nil)
+                            self.appendSampleBufferWithFaceDetections(
+                                sampleBuffer,
+                                isFirstAfterAttach,
+                                applyBlur,
+                                nil
+                            )
                             return
                         }
                         self.appendSampleBufferWithFaceDetections(sampleBuffer,
                                                                   isFirstAfterAttach,
+                                                                  applyBlur,
                                                                   (request as? VNDetectFaceLandmarksRequest)?
                                                                       .results)
                     }
@@ -560,7 +579,12 @@ final class VideoUnit: NSObject {
                     try imageRequestHandler.perform([faceLandmarksRequest])
                 } catch {
                     self.lockQueue.async {
-                        self.appendSampleBufferWithFaceDetections(sampleBuffer, isFirstAfterAttach, nil)
+                        self.appendSampleBufferWithFaceDetections(
+                            sampleBuffer,
+                            isFirstAfterAttach,
+                            applyBlur,
+                            nil
+                        )
                     }
                 }
                 let elapsed = Int(-startDate.timeIntervalSinceNow * 1000)
@@ -569,7 +593,7 @@ final class VideoUnit: NSObject {
                 }
             }
         } else {
-            appendSampleBufferWithFaceDetections(sampleBuffer, isFirstAfterAttach, nil)
+            appendSampleBufferWithFaceDetections(sampleBuffer, isFirstAfterAttach, applyBlur, nil)
         }
         return true
     }
@@ -577,6 +601,7 @@ final class VideoUnit: NSObject {
     private func appendSampleBufferWithFaceDetections(
         _ sampleBuffer: CMSampleBuffer,
         _ isFirstAfterAttach: Bool,
+        _ applyBlur: Bool,
         _ faceDetections: [VNFaceObservation]?
     ) {
         let startDate = Date()
@@ -589,8 +614,13 @@ final class VideoUnit: NSObject {
             effects = pendingAfterAttachEffects
             self.pendingAfterAttachEffects = nil
         }
-        if !effects.isEmpty {
-            (newImageBuffer, newSampleBuffer) = applyEffects(imageBuffer, sampleBuffer, faceDetections)
+        if !effects.isEmpty || applyBlur {
+            (newImageBuffer, newSampleBuffer) = applyEffects(
+                imageBuffer,
+                sampleBuffer,
+                faceDetections,
+                applyBlur
+            )
         }
         let modImageBuffer = newImageBuffer ?? imageBuffer
         let modSampleBuffer = newSampleBuffer ?? sampleBuffer
@@ -776,7 +806,7 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
         else {
             return
         }
-        if appendSampleBuffer(sampleBuffer, isFirstAfterAttach: isFirstAfterAttach) {
+        if appendSampleBuffer(sampleBuffer, isFirstAfterAttach: isFirstAfterAttach, applyBlur: false) {
             isFirstAfterAttach = false
         }
         stopGapFillerTimer()
