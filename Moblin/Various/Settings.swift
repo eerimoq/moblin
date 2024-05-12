@@ -938,6 +938,7 @@ class SettingsShow: Codable {
     var location: Bool? = true
     var remoteControl: Bool? = true
     var browserWidgets: Bool? = true
+    var bonding: Bool? = true
 }
 
 class SettingsZoomPreset: Codable, Identifiable, Equatable {
@@ -2423,6 +2424,10 @@ final class Settings {
         }
         for stream in realDatabase.streams where stream.recording!.audioBitrate == nil {
             stream.recording!.audioBitrate = 128_000
+            store()
+        }
+        if realDatabase.show.bonding == nil {
+            realDatabase.show.bonding = true
             store()
         }
     }

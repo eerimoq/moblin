@@ -109,6 +109,11 @@ struct LocalOverlaysSettingsView: View {
                 } set: { value in
                     show.browserWidgets = value
                 }
+                InfoView(icon: "phone.connection", text: String(localized: "Bonding")) {
+                    show.bonding!
+                } set: { value in
+                    show.bonding = value
+                }
             }
             Section {
                 Toggle("Zoom presets", isOn: Binding(get: {

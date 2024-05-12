@@ -4023,7 +4023,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func isShowingStatusBonding() -> Bool {
-        return stream.isBonding() && isLive
+        return database.show.bonding! && stream.isBonding() && isLive
     }
 
     func isShowingStatusRecording() -> Bool {
