@@ -1,11 +1,8 @@
 import Foundation
 import libsrt
 
-/// The type of SRTHaishinKit supports srt modes.
 enum SRTMode {
-    /// The caller mode.
     case caller
-    /// The listener mode.
     case listener
 
     func host(_ host: String) -> String {

@@ -832,7 +832,6 @@
 				03B374122AA277570028DDD5 /* Srtla.swift */,
 				0315A33A2AA2FA7100295443 /* LocalListener.swift */,
 				0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */,
-				03A3F4C62AF4C0AD00F465D1 /* AdaptiveBitrate.swift */,
 			);
 			path = Srtla;
 			sourceTree = "<group>";
@@ -1377,6 +1376,7 @@
 		035E9E352A9A02D6009D4F5A /* Moblin */ = {
 			isa = PBXGroup;
 			children = (
+				03F8EC3C2BF14E3D00412BF6 /* AdaptiveBitrate */,
 				03BC115B2AE4BD6200C38FC4 /* Emotes */,
 				0359F80C2BD3DA4B005BFDA8 /* HaishinKit */,
 				03BDE2202B24364700DF193A /* OBS */,
@@ -2026,6 +2026,14 @@
 				03EF34B92B1B028900A19221 /* StreamAfreecaTvSettingsView.swift */,
 			);
 			path = AfreecaTv;
+			sourceTree = "<group>";
+		};
+		03F8EC3C2BF14E3D00412BF6 /* AdaptiveBitrate */ = {
+			isa = PBXGroup;
+			children = (
+				03A3F4C62AF4C0AD00F465D1 /* AdaptiveBitrate.swift */,
+			);
+			path = AdaptiveBitrate;
 			sourceTree = "<group>";
 		};
 		03FB4B2C2AD8CF6B005AA183 /* BitratePresets */ = {

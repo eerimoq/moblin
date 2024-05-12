@@ -59,7 +59,7 @@ class AdaptiveBitrate {
     }
 
     func setSettings(settings: AdaptiveBitrateSettings) {
-        logger.info("srtla: adaptive-bitrate: Using settings \(settings)")
+        logger.info("adaptive-bitrate: Using settings \(settings)")
         self.settings = settings
     }
 
@@ -161,7 +161,7 @@ class AdaptiveBitrate {
     }
 
     private func logAdaptiveAcion(actionTaken: String) {
-        logger.debug("srtla: adaptive-bitrate: \(actionTaken)")
+        logger.debug("adaptive-bitrate: \(actionTaken)")
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "HH:mm:ss.SSS"
         let dateString = dateFormatter.string(from: Date())
