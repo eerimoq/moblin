@@ -8,8 +8,18 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.266.0", date: "2024-05-12", changes: [
+        "• Japanese translation updated. ✍️ yurina_jpg",
+        "• Improved RIST connect/disconnect handling.",
+        "• Experimental support for RTMP audio. 🧑‍🏭 ErAzOr",
+        "  • RTMP audio and video in sync.",
+        "  • RTMP audio and non-RTMP video not in sync.",
+        "  • non-RTMP audio and RTMP video not in sync.",
+        "• Attach audio a tad later. Breaks something? Let's find out.",
+        "• Toggle to hide/show bonding info in UI.",
+    ]),
     Version(version: "0.265.0", date: "2024-05-11", changes: [
-        "• Spanish translation updated. :writing_hand: adriportela95",
+        "• Spanish translation updated. ✍️ adriportela95",
         "• Show RIST connection information in top right of UI.",
         "  • Total bytes sent is not yet implemented and will always be zero.",
         "• Fix plug/unplug connections bug in RIST.",
