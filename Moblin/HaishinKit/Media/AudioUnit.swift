@@ -140,10 +140,7 @@ final class AudioUnit: NSObject {
             return
         }
         let sampleBuffer = replaceAudio.CreateSampleBuffer(audioPCMBuffer: audioBuffer)
-        guard let sampleBuffer else {
-            return
-        }
-        guard selectedReplaceAudioId != nil else {
+        guard let sampleBuffer, selectedReplaceAudioId != nil else {
             return
         }
         let presentationTimeStamp = syncTimeToVideo(mixer: mixer, sampleBuffer: sampleBuffer)
@@ -195,10 +192,7 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
         from connection: AVCaptureConnection
     ) {
         self.connection = connection
-        guard let mixer else {
-            return
-        }
-        if selectedReplaceAudioId == nil {
+        guard let mixer, selectedReplaceAudioId == nil else {
             return
         }
         // Workaround for audio drift on iPhone 15 Pro Max running iOS 17. Probably issue on more models.
