@@ -764,7 +764,6 @@ final class Model: NSObject, ObservableObject {
         media.onLowFpsImage = handleLowFpsImage
         setPixelFormat()
         setupAudioSession()
-        setMic()
         if let cameraDevice = preferredCamera(position: .back) {
             (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice
                 .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera())
@@ -782,6 +781,7 @@ final class Model: NSObject, ObservableObject {
         twitchChat = TwitchChatMoblin(model: self)
         reloadStream()
         resetSelectedScene()
+        setMic()
         setupPeriodicTimers()
         setupThermalState()
         updateButtonStates()
@@ -3565,9 +3565,6 @@ final class Model: NSObject, ObservableObject {
         )
         zoomXPinch = zoomX
         hasZoom = true
-        if database.debug!.enableRtmpAudio! {
-            media.attachAudio(device: AVCaptureDevice.default(for: .audio))
-        }
     }
 
     private func attachRtmpCamera(cameraId: UUID) {
@@ -3577,9 +3574,6 @@ final class Model: NSObject, ObservableObject {
         streamPreviewView.isMirrored = false
         hasZoom = false
         media.attachRtmpCamera(cameraId: cameraId, device: preferredCamera(position: .front))
-        if database.debug!.enableRtmpAudio! {
-            media.attachRtmpAudio(cameraId: cameraId, device: AVCaptureDevice.default(for: .audio))
-        }
     }
 
     private func attachExternalCamera(cameraId _: String) {
@@ -5067,6 +5061,11 @@ extension Model {
                 mics.append(Mic(name: inputPort.portName, inputUid: inputPort.uid))
             }
         }
+        if database.debug!.enableRtmpAudio! {
+            for rtmpCamera in rtmpCameras() {
+                mics.append(Mic(name: rtmpCamera, inputUid: rtmpCamera, builtInOrientation: .rtmp))
+            }
+        }
         return mics
     }
 
@@ -5081,6 +5080,8 @@ extension Model {
             wantedOrientation = .back
         case .top:
             wantedOrientation = .top
+        case .rtmp:
+            wantedOrientation = .bottom
         }
         let session = AVAudioSession.sharedInstance()
         for inputPort in session.availableInputs ?? [] {
@@ -5098,6 +5099,9 @@ extension Model {
                 }
             }
         }
+        if database.debug!.enableRtmpAudio! {
+            media.attachAudio(device: AVCaptureDevice.default(for: .audio))
+        }
     }
 
     func selectMicById(id: String) {
@@ -5109,7 +5113,12 @@ extension Model {
             )
             return
         }
-        if let builtInOrientation = mic.builtInOrientation {
+        if var builtInOrientation = mic.builtInOrientation {
+            if database.debug!.enableRtmpAudio! {
+                if builtInOrientation == .rtmp {
+                    builtInOrientation = .bottom
+                }
+            }
             database.mic = builtInOrientation
             store()
         }
@@ -5117,31 +5126,45 @@ extension Model {
     }
 
     private func selectMic(mic: Mic) {
-        let session = AVAudioSession.sharedInstance()
-        do {
-            for inputPort in session.availableInputs ?? [] {
-                if mic.inputUid != inputPort.uid {
-                    continue
-                }
-                try session.setPreferredInput(inputPort)
-                if let dataSourceID = mic.dataSourceID {
-                    for dataSource in inputPort.dataSources ?? [] {
-                        if dataSourceID != dataSource.dataSourceID {
-                            continue
+        switch mic.builtInOrientation {
+        case .rtmp:
+            self.mic = mic
+            var cameraId = getRtmpStream(camera: mic.id)?.id ?? .init()
+            if database.debug!.enableRtmpAudio! {
+                media.attachRtmpAudio(cameraId: cameraId, device: AVCaptureDevice.default(for: .audio))
+            }
+            remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
+            return
+        default:
+            let session = AVAudioSession.sharedInstance()
+            do {
+                for inputPort in session.availableInputs ?? [] {
+                    if mic.inputUid != inputPort.uid {
+                        continue
+                    }
+                    try session.setPreferredInput(inputPort)
+                    if let dataSourceID = mic.dataSourceID {
+                        for dataSource in inputPort.dataSources ?? [] {
+                            if dataSourceID != dataSource.dataSourceID {
+                                continue
+                            }
+                            try setBuiltInMicAudioMode(dataSource: dataSource)
+                            try session.setInputDataSource(dataSource)
                         }
-                        try setBuiltInMicAudioMode(dataSource: dataSource)
-                        try session.setInputDataSource(dataSource)
                     }
                 }
+                self.mic = mic
+                if database.debug!.enableRtmpAudio! {
+                    media.attachAudio(device: AVCaptureDevice.default(for: .audio))
+                }
+                remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
+            } catch {
+                logger.error("Failed to select mic: \(error)")
+                makeErrorToast(
+                    title: String(localized: "Failed to select mic"),
+                    subTitle: error.localizedDescription
+                )
             }
-            self.mic = mic
-            remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
-        } catch {
-            logger.error("Failed to select mic: \(error)")
-            makeErrorToast(
-                title: String(localized: "Failed to select mic"),
-                subTitle: error.localizedDescription
-            )
         }
     }
 
