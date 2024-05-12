@@ -241,18 +241,20 @@ the JSON blob format. Class members are JSON object keys. Members with
 
 # Development setup
 
-1. Install Xcode with iOS and MacOS simulators.
+1. Install Xcode with iOS and MacOS simulators on your Mac.
 
-2. Clone Moblin.
+2. Open a terminal.
+
+3. Clone Moblin.
 
    `git clone https://github.com/eerimoq/moblin.git`
 
-3. Enter Moblins repository.
+4. Enter Moblins repository.
 
    `cd moblin`
 
-4. Open the Moblin project in Xcode.
+5. Open the Moblin project in Xcode.
 
    `open Moblin.xcodeproj`
 
-5. Press `Cmd+B` to build Moblin.
+6. Press `Cmd+B` to build Moblin.
