@@ -239,7 +239,7 @@ the JSON blob format. Class members are JSON object keys. Members with
 - Twitch app.
 - https://softvelum.com/larix/ios/
 
-# Development setup
+# Development environment setup
 
 Roughly the steps to setup Moblin's developement environment.
 
