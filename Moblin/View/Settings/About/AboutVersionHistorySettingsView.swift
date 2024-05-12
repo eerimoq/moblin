@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.267.0", date: "2024-05-12", changes: [
+        "• Blur freeze frame when changing camera.",
+        "  • Look better imo.",
+        "  • Disable in Settings → Debug → Blur scene switch.",
+    ]),
     Version(version: "0.266.0", date: "2024-05-12", changes: [
         "• Japanese translation updated. ✍️ yurina_jpg",
         "• Improved RIST connect/disconnect handling.",
