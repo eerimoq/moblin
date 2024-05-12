@@ -14,7 +14,7 @@ private let versions = [
         "• Experimental support for RTMP audio. 🧑‍🏭 ErAzOr",
         "  • RTMP audio and video in sync.",
         "  • RTMP audio and non-RTMP video not in sync.",
-        "  • non-RTMP audio and RTMP video not in sync.",
+        "  • Non-RTMP audio and RTMP video not in sync.",
         "• Attach audio a tad later. Breaks something? Let's find out.",
         "• Toggle to hide/show bonding info in UI.",
     ]),
