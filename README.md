@@ -238,3 +238,21 @@ the JSON blob format. Class members are JSON object keys. Members with
 - https://irlpro.app/
 - Twitch app.
 - https://softvelum.com/larix/ios/
+
+# Development setup
+
+#. Install Xcode with iOS and MacOS simulators.
+
+#. Clone Moblin.
+
+   `git clone https://github.com/eerimoq/moblin.git`
+
+#. Enter Moblins repository.
+
+   `cd moblin`
+
+#. Open the Moblin project in Xcode.
+
+   `open Moblin.xcodeproj`
+
+#. Press `Cmd+B` to build Moblin.
