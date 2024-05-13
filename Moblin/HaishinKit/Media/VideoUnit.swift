@@ -176,15 +176,13 @@ final class VideoUnit: NSObject {
     }
 
     private func startGapFillerTimer() {
-        lockQueue.sync {
-            gapFillerTimer = DispatchSource.makeTimerSource(queue: lockQueue)
-            let frameInterval = 1 / frameRate
-            gapFillerTimer!.schedule(deadline: .now() + frameInterval, repeating: frameInterval)
-            gapFillerTimer!.setEventHandler { [weak self] in
-                self?.handleGapFillerTimer()
-            }
-            gapFillerTimer!.activate()
+        gapFillerTimer = DispatchSource.makeTimerSource(queue: lockQueue)
+        let frameInterval = 1 / frameRate
+        gapFillerTimer!.schedule(deadline: .now() + frameInterval, repeating: frameInterval)
+        gapFillerTimer!.setEventHandler { [weak self] in
+            self?.handleGapFillerTimer()
         }
+        gapFillerTimer!.activate()
     }
 
     private func stopGapFillerTimer() {
@@ -231,15 +229,13 @@ final class VideoUnit: NSObject {
         }
         if self.device == device {
             if isOtherReplaceVideo {
-                lockQueue.sync {
-                    firstFrameDate = nil
-                    isFirstAfterAttach = true
+                lockQueue.async {
+                    self.prepareFirstFrame()
                 }
             }
             return
         }
         output?.setSampleBufferDelegate(nil, queue: lockQueue)
-        startGapFillerTimer()
         let captureSession = mixer.videoSession
         captureSession.beginConfiguration()
         defer {
@@ -252,12 +248,13 @@ final class VideoUnit: NSObject {
         }
         try attachDevice(device, captureSession)
         if device != nil {
-            lockQueue.sync {
-                firstFrameDate = nil
-                isFirstAfterAttach = true
+            lockQueue.async {
+                self.prepareFirstFrame()
             }
         } else {
-            stopGapFillerTimer()
+            lockQueue.async {
+                self.stopGapFillerTimer()
+            }
         }
         self.device = device
         for connection in output?.connections ?? [] {
@@ -273,6 +270,12 @@ final class VideoUnit: NSObject {
         }
         setDeviceFormat(frameRate: frameRate, colorSpace: colorSpace)
         output?.setSampleBufferDelegate(self, queue: lockQueue)
+    }
+
+    private func prepareFirstFrame() {
+        firstFrameDate = nil
+        isFirstAfterAttach = true
+        startGapFillerTimer()
     }
 
     private func getBufferPool(formatDescription: CMFormatDescription) -> CVPixelBufferPool? {
