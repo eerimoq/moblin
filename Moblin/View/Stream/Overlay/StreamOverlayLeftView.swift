@@ -46,7 +46,7 @@ struct LeftOverlayView: View {
             StreamOverlayIconAndTextView(
                 show: model.isShowingStatusMic(),
                 icon: "music.mic",
-                text: model.mic.name
+                text: model.selectedMic.name
             )
             StreamOverlayIconAndTextView(
                 show: model.isShowingStatusZoom(),

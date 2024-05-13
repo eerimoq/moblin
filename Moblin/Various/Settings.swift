@@ -1448,7 +1448,7 @@ class Database: Codable {
     var videoStabilizationMode: SettingsVideoStabilizationMode = .off
     var chat: SettingsChat = .init()
     var batteryPercentage: Bool? = true
-    var mic: SettingsMic? = getDefaultMic()
+    var mic: String? = ""
     var debug: SettingsDebug? = .init()
     var quickButtons: SettingsQuickButtons? = .init()
     var globalButtons: [SettingsButton]? = []
@@ -1832,28 +1832,6 @@ private func addScenesToGameController(database: Database) {
     button.sceneId = database.scenes[1].id
 }
 
-private func getDefaultMic() -> SettingsMic {
-    if ProcessInfo().isiOSAppOnMac {
-        return .bottom
-    }
-    let session = AVAudioSession.sharedInstance()
-    for inputPort in session.availableInputs ?? [] {
-        if inputPort.portType != .builtInMic {
-            continue
-        }
-        if let dataSources = inputPort.dataSources, !dataSources.isEmpty {
-            for dataSource in dataSources {
-                if dataSource.orientation == .bottom {
-                    return .bottom
-                } else if dataSource.orientation == .top {
-                    return .top
-                }
-            }
-        }
-    }
-    return .bottom
-}
-
 private func createDefault() -> Database {
     let database = Database()
     addDefaultScenes(database: database)
@@ -1945,7 +1923,7 @@ final class Settings {
             store()
         }
         if realDatabase.mic == nil {
-            realDatabase.mic = getDefaultMic()
+            realDatabase.mic = ""
             store()
         }
         if realDatabase.debug == nil {
