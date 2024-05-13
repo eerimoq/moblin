@@ -45,12 +45,13 @@ extension RTMPMuxer: AudioCodecDelegate {
 
 extension RTMPMuxer: VideoCodecDelegate {
     func videoCodecOutputFormat(_ codec: VideoCodec, _ formatDescription: CMFormatDescription) {
+        var buffer: Data
         switch codec.settings.format {
         case .h264:
             guard let avcC = MpegTsVideoConfigAvc.getData(formatDescription) else {
                 return
             }
-            var buffer = Data([
+            buffer = Data([
                 FLVFrameType.key.rawValue << 4 | FLVVideoCodec.avc.rawValue,
                 FLVAVCPacketType.seq.rawValue,
                 0,
@@ -58,12 +59,11 @@ extension RTMPMuxer: VideoCodecDelegate {
                 0,
             ])
             buffer.append(avcC)
-            delegate?.muxer(self, didOutputVideo: buffer, withTimestamp: 0)
         case .hevc:
             guard let hvcC = MpegTsVideoConfigHevc.getData(formatDescription) else {
                 return
             }
-            var buffer = Data([
+            buffer = Data([
                 0b1000_0000 | FLVFrameType.key.rawValue << 4 | FLVVideoPacketType.sequenceStart.rawValue,
                 0x68,
                 0x76,
@@ -71,12 +71,11 @@ extension RTMPMuxer: VideoCodecDelegate {
                 0x31,
             ])
             buffer.append(hvcC)
-            delegate?.muxer(self, didOutputVideo: buffer, withTimestamp: 0)
         }
+        delegate?.muxer(self, didOutputVideo: buffer, withTimestamp: 0)
     }
 
     func videoCodecOutputSampleBuffer(_ codec: VideoCodec, _ sampleBuffer: CMSampleBuffer) {
-        let keyframe = !sampleBuffer.isNotSync
         let decodeTimeStamp = sampleBuffer.decodeTimeStamp.isValid ? sampleBuffer
             .decodeTimeStamp : sampleBuffer.presentationTimeStamp
         let compositionTime = getCompositionTime(sampleBuffer)
@@ -84,29 +83,26 @@ extension RTMPMuxer: VideoCodecDelegate {
         guard let data = sampleBuffer.dataBuffer?.data, delta >= 0 else {
             return
         }
+        var buffer: Data
+        let frameType = sampleBuffer.isKeyFrame ? FLVFrameType.key.rawValue : FLVFrameType.inter.rawValue
         switch codec.settings.format {
         case .h264:
-            var buffer = Data([
-                ((keyframe ? FLVFrameType.key.rawValue : FLVFrameType.inter.rawValue) << 4) | FLVVideoCodec
-                    .avc.rawValue,
+            buffer = Data([
+                (frameType << 4) | FLVVideoCodec.avc.rawValue,
                 FLVAVCPacketType.nal.rawValue,
             ])
-            buffer.append(contentsOf: compositionTime.bigEndian.data[1 ..< 4])
-            buffer.append(data)
-            delegate?.muxer(self, didOutputVideo: buffer, withTimestamp: delta)
         case .hevc:
-            var buffer = Data([
-                0b1000_0000 | ((keyframe ? FLVFrameType.key.rawValue : FLVFrameType.inter.rawValue) << 4) |
-                    FLVVideoPacketType.codedFrames.rawValue,
+            buffer = Data([
+                0b1000_0000 | (frameType << 4) | FLVVideoPacketType.codedFrames.rawValue,
                 0x68,
                 0x76,
                 0x63,
                 0x31,
             ])
-            buffer.append(contentsOf: compositionTime.bigEndian.data[1 ..< 4])
-            buffer.append(data)
-            delegate?.muxer(self, didOutputVideo: buffer, withTimestamp: delta)
         }
+        buffer.append(contentsOf: compositionTime.bigEndian.data[1 ..< 4])
+        buffer.append(data)
+        delegate?.muxer(self, didOutputVideo: buffer, withTimestamp: delta)
         videoTimeStamp = decodeTimeStamp
     }
 

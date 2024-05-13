@@ -100,7 +100,7 @@ class VideoCodec {
             session = makeVideoDecompressionSession(self)
             needsSync.mutate { $0 = true }
         }
-        if !sampleBuffer.isNotSync {
+        if sampleBuffer.isKeyFrame {
             needsSync.mutate { $0 = false }
         }
         _ = session?

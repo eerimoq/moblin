@@ -83,7 +83,7 @@ private class ReplaceVideo {
         else {
             return nil
         }
-        sampleBuffer.isNotSync = replaceSampleBuffer.isNotSync
+        sampleBuffer.isKeyFrame = replaceSampleBuffer.isKeyFrame
         return sampleBuffer
     }
 }

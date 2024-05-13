@@ -532,7 +532,7 @@ class RtmpServerChunkStream {
         ) == noErr else {
             return nil
         }
-        sampleBuffer?.isNotSync = !(messageData[0] >> 4 & 0b0111 == FLVFrameType.key.rawValue)
+        sampleBuffer?.isKeyFrame = messageData[0] >> 4 & 0b0111 == FLVFrameType.key.rawValue
         return sampleBuffer
     }
 }
