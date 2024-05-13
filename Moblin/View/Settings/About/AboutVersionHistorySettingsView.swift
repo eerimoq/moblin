@@ -8,6 +8,12 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.268.0", date: "2024-05-13", changes: [
+        "• Store \"Allow video range pixel format\" settings to disk.",
+        "• Fix blur sometimes not working.",
+        "• Make audio less likely to break when switching camera.",
+        "  • Was a bug. A timer was sometimes stopped too early.",
+    ]),
     Version(version: "0.267.0", date: "2024-05-12", changes: [
         "• Blur freeze frame when changing camera.",
         "  • Looks better imo.",
