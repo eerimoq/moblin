@@ -131,11 +131,9 @@ final class VideoUnit: NSObject {
                     self.setTorchMode(device, .on)
                 }
             }
-            output?.connections
-                .filter { $0.isVideoOrientationSupported }
-                .forEach {
-                    setOrientation(device: device, connection: $0, orientation: videoOrientation)
-                }
+            for connection in output?.connections.filter({ $0.isVideoOrientationSupported }) ?? [] {
+                setOrientation(device: device, connection: connection, orientation: videoOrientation)
+            }
         }
     }
 
@@ -261,15 +259,15 @@ final class VideoUnit: NSObject {
             stopGapFillerTimer()
         }
         self.device = device
-        output?.connections.forEach {
-            if $0.isVideoMirroringSupported {
-                $0.isVideoMirrored = isVideoMirrored
+        for connection in output?.connections ?? [] {
+            if connection.isVideoMirroringSupported {
+                connection.isVideoMirrored = isVideoMirrored
             }
-            if $0.isVideoOrientationSupported {
-                setOrientation(device: device, connection: $0, orientation: videoOrientation)
+            if connection.isVideoOrientationSupported {
+                setOrientation(device: device, connection: connection, orientation: videoOrientation)
             }
-            if $0.isVideoStabilizationSupported {
-                $0.preferredVideoStabilizationMode = preferredVideoStabilizationMode
+            if connection.isVideoStabilizationSupported {
+                connection.preferredVideoStabilizationMode = preferredVideoStabilizationMode
             }
         }
         setDeviceFormat(frameRate: frameRate, colorSpace: colorSpace)
@@ -672,16 +670,16 @@ final class VideoUnit: NSObject {
 
     var isVideoMirrored = false {
         didSet {
-            output?.connections.filter { $0.isVideoMirroringSupported }.forEach {
-                $0.isVideoMirrored = isVideoMirrored
+            for connection in output?.connections.filter({ $0.isVideoMirroringSupported }) ?? [] {
+                connection.isVideoMirrored = isVideoMirrored
             }
         }
     }
 
     var preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode = .off {
         didSet {
-            output?.connections.filter { $0.isVideoStabilizationSupported }.forEach {
-                $0.preferredVideoStabilizationMode = preferredVideoStabilizationMode
+            for connection in output?.connections.filter({ $0.isVideoStabilizationSupported }) ?? [] {
+                connection.preferredVideoStabilizationMode = preferredVideoStabilizationMode
             }
         }
     }
