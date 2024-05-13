@@ -43,23 +43,15 @@ class Mixer {
     weak var delegate: (any MixerDelegate)?
     private var videoTimeStamp = CMTime.zero
 
-    lazy var audio: AudioUnit = {
-        var audio = AudioUnit()
+    let audio = AudioUnit()
+    let video = VideoUnit()
+    let recorder = Recorder()
+
+    init() {
         audio.mixer = self
-        return audio
-    }()
-
-    lazy var video: VideoUnit = {
-        var video = VideoUnit()
         video.mixer = self
-        return video
-    }()
-
-    lazy var recorder: Recorder = {
-        var recorder = Recorder()
         recorder.delegate = self
-        return recorder
-    }()
+    }
 
     deinit {
         if videoSession.isRunning {
