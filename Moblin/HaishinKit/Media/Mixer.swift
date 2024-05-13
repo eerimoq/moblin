@@ -28,18 +28,12 @@ protocol MixerDelegate: AnyObject {
 class Mixer {
     static let defaultFrameRate: Float64 = 30
 
-    enum MediaSync {
-        case video
-        case passthrough
-    }
-
     var sessionPreset: AVCaptureSession.Preset = .hd1280x720
     let videoSession = makeCaptureSession()
     let audioSession = makeCaptureSession()
     private(set) var isRunning: Atomic<Bool> = .init(false)
     private var isEncoding = false
 
-    var mediaSync = MediaSync.passthrough
     weak var delegate: (any MixerDelegate)?
     private var videoTimeStamp = CMTime.zero
 
@@ -71,19 +65,14 @@ class Mixer {
     }
 
     func useSampleBuffer(_ presentationTimeStamp: CMTime, mediaType: AVMediaType) -> Bool {
-        switch mediaSync {
-        case .video:
-            if mediaType == .audio {
-                return !videoTimeStamp.seconds.isZero && videoTimeStamp.seconds <= presentationTimeStamp
-                    .seconds
-            }
-            if videoTimeStamp == CMTime.zero {
-                videoTimeStamp = presentationTimeStamp
-            }
-            return true
-        default:
-            return true
+        if mediaType == .audio {
+            return !videoTimeStamp.seconds.isZero && videoTimeStamp.seconds <= presentationTimeStamp
+                .seconds
         }
+        if videoTimeStamp == CMTime.zero {
+            videoTimeStamp = presentationTimeStamp
+        }
+        return true
     }
 
     func startEncoding(_ delegate: any AudioCodecDelegate & VideoCodecDelegate) {

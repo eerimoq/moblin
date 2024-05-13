@@ -251,16 +251,13 @@ final class VideoUnit: NSObject {
                 }
             }
         }
-        if let device {
-            mixer.mediaSync = .video
-            try attachDevice(device, captureSession)
+        try attachDevice(device, captureSession)
+        if device != nil {
             lockQueue.sync {
                 firstFrameDate = nil
                 isFirstAfterAttach = true
             }
         } else {
-            mixer.mediaSync = .passthrough
-            try attachDevice(nil, captureSession)
             stopGapFillerTimer()
         }
         self.device = device
