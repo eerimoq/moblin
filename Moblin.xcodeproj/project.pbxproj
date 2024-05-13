@@ -158,8 +158,6 @@
 		0359F8F42BD3DA61005BFDA8 /* RTMPStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F85C2BD3DA5F005BFDA8 /* RTMPStream.swift */; };
 		0359F8F52BD3DA61005BFDA8 /* RTMPStreamInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F85D2BD3DA5F005BFDA8 /* RTMPStreamInfo.swift */; };
 		0359F8F72BD3DA61005BFDA8 /* SRTConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8602BD3DA5F005BFDA8 /* SRTConnection.swift */; };
-		0359F8F82BD3DA61005BFDA8 /* SRTError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8612BD3DA5F005BFDA8 /* SRTError.swift */; };
-		0359F8FA2BD3DA61005BFDA8 /* SRTMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8632BD3DA5F005BFDA8 /* SRTMode.swift */; };
 		0359F8FB2BD3DA61005BFDA8 /* SRTPerformanceData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8642BD3DA5F005BFDA8 /* SRTPerformanceData.swift */; };
 		0359F8FC2BD3DA61005BFDA8 /* SRTSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8652BD3DA5F005BFDA8 /* SRTSocket.swift */; };
 		0359F8FD2BD3DA61005BFDA8 /* SRTSocketOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0359F8662BD3DA5F005BFDA8 /* SRTSocketOption.swift */; };
@@ -526,8 +524,6 @@
 		0359F85C2BD3DA5F005BFDA8 /* RTMPStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RTMPStream.swift; sourceTree = "<group>"; };
 		0359F85D2BD3DA5F005BFDA8 /* RTMPStreamInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RTMPStreamInfo.swift; sourceTree = "<group>"; };
 		0359F8602BD3DA5F005BFDA8 /* SRTConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SRTConnection.swift; sourceTree = "<group>"; };
-		0359F8612BD3DA5F005BFDA8 /* SRTError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SRTError.swift; sourceTree = "<group>"; };
-		0359F8632BD3DA5F005BFDA8 /* SRTMode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SRTMode.swift; sourceTree = "<group>"; };
 		0359F8642BD3DA5F005BFDA8 /* SRTPerformanceData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SRTPerformanceData.swift; sourceTree = "<group>"; };
 		0359F8652BD3DA5F005BFDA8 /* SRTSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SRTSocket.swift; sourceTree = "<group>"; };
 		0359F8662BD3DA5F005BFDA8 /* SRTSocketOption.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SRTSocketOption.swift; sourceTree = "<group>"; };
@@ -1248,8 +1244,6 @@
 			isa = PBXGroup;
 			children = (
 				0359F8602BD3DA5F005BFDA8 /* SRTConnection.swift */,
-				0359F8612BD3DA5F005BFDA8 /* SRTError.swift */,
-				0359F8632BD3DA5F005BFDA8 /* SRTMode.swift */,
 				0359F8642BD3DA5F005BFDA8 /* SRTPerformanceData.swift */,
 				0359F8652BD3DA5F005BFDA8 /* SRTSocket.swift */,
 				0359F8662BD3DA5F005BFDA8 /* SRTSocketOption.swift */,
@@ -2259,7 +2253,6 @@
 				035735802BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift in Sources */,
 				03D445E22AE5966B00A0F6E9 /* CacheAsyncImage.swift in Sources */,
 				03F3BF192ADAAA94009A8D3E /* TextEffect.swift in Sources */,
-				0359F8F82BD3DA61005BFDA8 /* SRTError.swift in Sources */,
 				038ED3DB2B403664005DEC08 /* LocalOverlaysNetworkInterfaceNamesSettingsView.swift in Sources */,
 				03A983712A9A0659008FF0DB /* TwitchPubSub.swift in Sources */,
 				034D26FF2B3A03620097C619 /* RtmpServer.swift in Sources */,
@@ -2289,7 +2282,6 @@
 				0359F8FD2BD3DA61005BFDA8 /* SRTSocketOption.swift in Sources */,
 				03DBD0FB2B30078B004B0BE6 /* StreamWizardKickSettingsView.swift in Sources */,
 				0346B5F42B9AF4EE00999109 /* ControlBarRemoteControlAssistantView.swift in Sources */,
-				0359F8FA2BD3DA61005BFDA8 /* SRTMode.swift in Sources */,
 				03B16A312B35D74800E5AB07 /* DisplaySettingsView.swift in Sources */,
 				03A983622A9A05D7008FF0DB /* MainView.swift in Sources */,
 				03B374042AA036D10028DDD5 /* ButtonsView.swift in Sources */,

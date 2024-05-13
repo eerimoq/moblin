@@ -11,7 +11,6 @@ public class SRTConnection: NSObject {
     }
 
     private var stream: SRTStream?
-    var clients: [SRTSocket] = []
     private var sendHook: ((Data) -> Bool)?
 
     var performanceData: SRTPerformanceData {
@@ -32,28 +31,19 @@ public class SRTConnection: NSObject {
         srt_cleanup()
     }
 
-    func open(_ uri: URL?, sendHook: @escaping (Data) -> Bool, mode: SRTMode = .caller) throws {
-        guard let uri = uri, let scheme = uri.scheme, let host = uri.host, let port = uri.port,
-              scheme == "srt"
-        else {
+    func open(_ uri: URL?, sendHook: @escaping (Data) -> Bool) throws {
+        guard let uri, uri.scheme == "srt", let host = uri.host, let port = uri.port else {
             return
         }
         self.sendHook = sendHook
-        let options = SRTSocketOption.from(uri: uri)
-        let addr = sockaddr_in(mode.host(host), port: UInt16(port))
         socket = .init()
-        try socket?.open(addr, mode: mode, options: options)
+        try socket?.open(sockaddrIn(host, port: UInt16(port)), SRTSocketOption.from(uri: uri))
     }
 
-    /// Closes the connection from the server.
     func close() {
-        for client in clients {
-            client.close()
-        }
         removeStream()
         socket?.close()
         socket = nil
-        clients.removeAll()
         connected = false
     }
 
@@ -66,10 +56,10 @@ public class SRTConnection: NSObject {
         self.stream = stream
     }
 
-    private func sockaddr_in(_ host: String, port: UInt16) -> sockaddr_in {
-        var addr: sockaddr_in = .init()
+    private func sockaddrIn(_ host: String, port: UInt16) -> sockaddr_in {
+        var addr = sockaddr_in()
         addr.sin_family = sa_family_t(AF_INET)
-        addr.sin_port = CFSwapInt16BigToHost(UInt16(port))
+        addr.sin_port = CFSwapInt16BigToHost(port)
         if inet_pton(AF_INET, host, &addr.sin_addr) == 1 {
             return addr
         }
@@ -85,10 +75,6 @@ public class SRTConnection: NSObject {
 extension SRTConnection: SRTSocketDelegate {
     func socket(_ socket: SRTSocket, status _: SRT_SOCKSTATUS) {
         connected = socket.status == SRTS_CONNECTED
-    }
-
-    func socket(_: SRTSocket, didAcceptSocket client: SRTSocket) {
-        clients.append(client)
     }
 
     func socket(_: SRTSocket, sendHook data: Data) -> Bool {
