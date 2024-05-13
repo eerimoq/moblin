@@ -164,7 +164,6 @@ final class VideoUnit: NSObject {
     private var poolHeight: Int32 = 0
     private var poolColorSpace: CGColorSpace?
     private var poolFormatDescriptionExtension: CFDictionary?
-    private var firstFrame = true
 
     deinit {
         stopGapFillerTimer()
@@ -177,13 +176,15 @@ final class VideoUnit: NSObject {
     }
 
     private func startGapFillerTimer() {
-        gapFillerTimer = DispatchSource.makeTimerSource(queue: lockQueue)
-        let frameInterval = 1 / frameRate
-        gapFillerTimer!.schedule(deadline: .now() + frameInterval, repeating: frameInterval)
-        gapFillerTimer!.setEventHandler { [weak self] in
-            self?.handleGapFillerTimer()
+        lockQueue.sync {
+            gapFillerTimer = DispatchSource.makeTimerSource(queue: lockQueue)
+            let frameInterval = 1 / frameRate
+            gapFillerTimer!.schedule(deadline: .now() + frameInterval, repeating: frameInterval)
+            gapFillerTimer!.setEventHandler { [weak self] in
+                self?.handleGapFillerTimer()
+            }
+            gapFillerTimer!.activate()
         }
-        gapFillerTimer!.activate()
     }
 
     private func stopGapFillerTimer() {
@@ -220,7 +221,6 @@ final class VideoUnit: NSObject {
     }
 
     func attach(_ device: AVCaptureDevice?, _ replaceVideo: UUID?) throws {
-        startGapFillerTimer()
         let isOtherReplaceVideo = lockQueue.sync {
             let oldReplaceVideo = self.selectedReplaceVideoCameraId
             self.selectedReplaceVideoCameraId = replaceVideo
@@ -239,6 +239,7 @@ final class VideoUnit: NSObject {
             return
         }
         output?.setSampleBufferDelegate(nil, queue: lockQueue)
+        startGapFillerTimer()
         let captureSession = mixer.videoSession
         captureSession.beginConfiguration()
         defer {
@@ -776,10 +777,6 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
         didOutput sampleBuffer: CMSampleBuffer,
         from _: AVCaptureConnection
     ) {
-        if firstFrame {
-            firstFrame = false
-            logger.info("First video frame: \(sampleBuffer.imageBuffer.debugDescription)")
-        }
         for replaceVideo in replaceVideos.values {
             replaceVideo.updateSampleBuffer(sampleBuffer.presentationTimeStamp.seconds)
         }
