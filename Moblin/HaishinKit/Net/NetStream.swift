@@ -63,7 +63,9 @@ open class NetStream: NSObject {
     }
 
     func setHasAudio(value: Bool) {
-        mixer.audio.muted = !value
+        lockQueue.async {
+            self.mixer.audio.muted = !value
+        }
     }
 
     func getHistograms() -> (Histogram, Histogram) {
