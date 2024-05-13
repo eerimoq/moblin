@@ -97,7 +97,7 @@ final class Media: NSObject {
         netStream.delegate = self
         netStream.setVideoOrientation(value: .landscapeRight)
         if !enableRtmpAudio {
-            attachAudio(device: AVCaptureDevice.default(for: .audio))
+            attachAudio(device: InternAudioCaptureDevice(device: AVCaptureDevice.default(for: .audio)!))
         }
     }
 
@@ -614,7 +614,7 @@ final class Media: NSObject {
         netStream.attachCamera(device, replaceVideoCameraId: cameraId)
     }
 
-    func attachRtmpAudio(cameraId: UUID, device: AVCaptureDevice?) {
+    func attachRtmpAudio(cameraId: UUID, device: MoblinCaptureDevice?) {
         netStream.attachAudio(device, replaceAudioId: cameraId)
     }
 
@@ -642,7 +642,7 @@ final class Media: NSObject {
         netStream.removeReplaceAudio(cameraId: cameraId)
     }
 
-    func attachAudio(device: AVCaptureDevice?) {
+    func attachAudio(device: MoblinCaptureDevice?) {
         netStream?.attachAudio(device) { error in
             logger.error("stream: Attach audio error: \(error)")
         }

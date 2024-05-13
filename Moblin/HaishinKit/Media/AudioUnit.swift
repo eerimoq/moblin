@@ -61,7 +61,7 @@ final class AudioUnit: NSObject {
         }
     }
 
-    func attach(_ device: AVCaptureDevice?, _ replaceAudio: UUID?) throws {
+    func attach(_ device: MoblinCaptureDevice?, _ replaceAudio: UUID?) throws {
         lockQueue.sync {
             self.selectedReplaceAudioId = replaceAudio
         }
@@ -69,10 +69,12 @@ final class AudioUnit: NSObject {
             return
         }
         let captureSession = mixer.audioSession
-        output?.setSampleBufferDelegate(nil, queue: lockQueue)
-        try attachDevice(device, captureSession)
-        self.device = device
-        output?.setSampleBufferDelegate(self, queue: lockQueue)
+       // output?.setSampleBufferDelegate(nil, queue: lockQueue)
+        device?.delegate = nil
+        try attachDevice(device?.getDevice(), captureSession)
+        self.device = device?.getDevice()
+        device?.delegate = self
+       // output?.setSampleBufferDelegate(self, queue: lockQueue)
         captureSession.automaticallyConfiguresApplicationAudioSession = false
     }
 
@@ -177,36 +179,13 @@ final class AudioUnit: NSObject {
     }
 }
 
-extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
-    func captureOutput(
-        _: AVCaptureOutput,
-        didOutput sampleBuffer: CMSampleBuffer,
-        from connection: AVCaptureConnection
-    ) {
-        guard let mixer, selectedReplaceAudioId == nil else {
-            return
-        }
-        // Workaround for audio drift on iPhone 15 Pro Max running iOS 17. Probably issue on more models.
-        let presentationTimeStamp = syncTimeToVideo(mixer: mixer, sampleBuffer: sampleBuffer)
-        guard mixer.useSampleBuffer(presentationTimeStamp, mediaType: AVMediaType.audio) else {
-            return
-        }
-        var audioLevel: Float
-        if muted {
-            audioLevel = .nan
-        } else if let channel = connection.audioChannels.first {
-            audioLevel = channel.averagePowerLevel
-        } else {
-            audioLevel = 0.0
-        }
-        mixer.delegate?.mixer(
-            audioLevel: audioLevel,
-            numberOfAudioChannels: connection.audioChannels.count,
-            presentationTimestamp: presentationTimeStamp.seconds
-        )
-        appendSampleBuffer(sampleBuffer, presentationTimeStamp, isFirstAfterAttach: false)
+extension AudioUnit: sampleBufferOutputDelegate {
+    func sampleBufferOutput(_ sampleBuffer: CMSampleBuffer) {
+        var fff = sampleBuffer
+        var dsf = "fired"
     }
 }
+
 
 private func syncTimeToVideo(mixer: Mixer, sampleBuffer: CMSampleBuffer) -> CMTime {
     var presentationTimeStamp = sampleBuffer.presentationTimeStamp

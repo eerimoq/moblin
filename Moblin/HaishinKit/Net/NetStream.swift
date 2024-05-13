@@ -107,7 +107,7 @@ open class NetStream: NSObject {
     }
 
     func attachAudio(
-        _ device: AVCaptureDevice?,
+        _ device: MoblinCaptureDevice?,
         onError: ((_ error: Error) -> Void)? = nil,
         replaceAudioId: UUID? = nil
     ) {

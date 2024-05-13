@@ -60,7 +60,7 @@ class Mixer {
         try video.attach(device, replaceVideo)
     }
 
-    func attachAudio(_ device: AVCaptureDevice?, _ replaceAudio: UUID?) throws {
+    func attachAudio(_ device: MoblinCaptureDevice?, _ replaceAudio: UUID?) throws {
         try audio.attach(device, replaceAudio)
     }
 
