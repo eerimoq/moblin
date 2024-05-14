@@ -62,7 +62,7 @@ class MpegTsWriter {
     }
 
     func stopRunning() {
-        guard !isRunning.value else {
+        guard isRunning.value else {
             return
         }
         audioContinuityCounter = 0
