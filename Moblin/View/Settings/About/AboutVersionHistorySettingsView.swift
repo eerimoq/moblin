@@ -9,7 +9,9 @@ struct Version {
 // swiftlint:disable line_length
 private let versions = [
     Version(version: "0.269.0", date: "2024-05-14", changes: [
-        "ToDo!",
+        "• Show RIST in setup stream wizard Custom section.",
+        "• Send correct information to server when restarting SRT and RIST streams. 🐛 mikeful",
+        "  • Seems to have worked without the fix, but it was not according to spec.",
     ]),
     Version(version: "0.268.0", date: "2024-05-13", changes: [
         "• Store \"Allow video range pixel format\" settings to disk.",
