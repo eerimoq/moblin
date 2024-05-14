@@ -13,11 +13,7 @@ struct StreamWizardCustomRistSettingsView: View {
         if url.isEmpty {
             urlError = ""
         } else {
-            urlError = isValidUrl(
-                url: url,
-                allowedSchemes: ["rist"],
-                rtmpStreamKeyRequired: false
-            ) ?? ""
+            urlError = isValidUrl(url: url, allowedSchemes: ["rist"]) ?? ""
         }
     }
 
