@@ -26,8 +26,6 @@ class Browser: Identifiable {
     }
 }
 
-var rtmpdevices = [RtmpAudioCaptureDevice]()
-
 private let maximumNumberOfChatMessages = 50
 private let secondsSuffix = String(localized: "/sec")
 private let fallbackStream = SettingsStream(name: "Fallback")
@@ -1203,7 +1201,6 @@ final class Model: NSObject, ObservableObject {
             return
         }
         if database.debug!.enableRtmpAudio! {
-            rtmpdevices.first?.addAudioPCMBuffer(audioPCMBuffer: audioBuffer)
             media.addRtmpAudioBuffer(cameraId: cameraId, audioBuffer: audioBuffer)
         }
     }
@@ -5137,23 +5134,13 @@ extension Model {
         attachMic(selectedMic: selectedMic)
     }
 
-    
-
-    
     func attachMic(selectedMic: Mic) {
         if database.debug!.enableRtmpAudio! {
             if selectedMic.builtInOrientation == .rtmp {
                 let cameraId = getRtmpStream(camera: selectedMic.id)?.id ?? .init()
-                let device = AVCaptureDevice.default(for: .audio)
-                
-                var rtmpdevice = RtmpAudioCaptureDevice(device: device!, cameraId: cameraId)
-                rtmpdevices.append(rtmpdevice)
-                
-                media.attachAudio(device: rtmpdevices.first)
+                media.attachRtmpAudio(cameraId: cameraId, device: AVCaptureDevice.default(for: .audio))
             } else {
-                let device = AVCaptureDevice.default(for: .audio)
-                
-                media.attachAudio(device: InternAudioCaptureDevice(device: device!))
+                media.attachAudio(device: AVCaptureDevice.default(for: .audio))
             }
             remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: selectedMic.id))
         }
