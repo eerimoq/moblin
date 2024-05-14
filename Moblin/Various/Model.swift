@@ -189,6 +189,20 @@ enum WizardCustomProtocol {
     case none
     case srt
     case rtmp
+    case rist
+
+    func toDefaultCodec() -> SettingsStreamCodec {
+        switch self {
+        case .none:
+            return .h264avc
+        case .srt:
+            return .h265hevc
+        case .rtmp:
+            return .h264avc
+        case .rist:
+            return .h265hevc
+        }
+    }
 }
 
 final class Model: NSObject, ObservableObject {
@@ -385,6 +399,7 @@ final class Model: NSObject, ObservableObject {
     @Published var wizardCustomSrtStreamId = ""
     @Published var wizardCustomRtmpUrl = ""
     @Published var wizardCustomRtmpStreamKey = ""
+    @Published var wizardCustomRistUrl = ""
 
     let chatTextToSpeech = ChatTextToSpeech()
 
@@ -4815,6 +4830,8 @@ extension Model {
                 .trim()
                 .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
             return "\(rtmpUrl)/\(wizardCustomRtmpStreamKey.trim())"
+        case .rist:
+            return wizardCustomRistUrl.trim()
         }
         return nil
     }
@@ -4894,14 +4911,7 @@ extension Model {
         stream.url = createStreamFromWizardUrl()
         switch wizardNetworkSetup {
         case .none:
-            switch wizardCustomProtocol {
-            case .none:
-                stream.codec = .h264avc
-            case .srt:
-                stream.codec = .h265hevc
-            case .rtmp:
-                stream.codec = .h264avc
-            }
+            stream.codec = wizardCustomProtocol.toDefaultCodec()
         case .obs:
             stream.codec = .h265hevc
         case .belaboxCloudObs:
@@ -4909,14 +4919,7 @@ extension Model {
         case .direct:
             stream.codec = .h264avc
         case .myServers:
-            switch wizardCustomProtocol {
-            case .none:
-                stream.codec = .h264avc
-            case .srt:
-                stream.codec = .h265hevc
-            case .rtmp:
-                stream.codec = .h264avc
-            }
+            stream.codec = wizardCustomProtocol.toDefaultCodec()
         }
         stream.audioBitrate = 128_000
         database.streams.append(stream)

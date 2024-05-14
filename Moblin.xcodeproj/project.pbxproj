@@ -28,6 +28,7 @@
 		0315A37A2AA39DA800295443 /* TextItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3792AA39DA800295443 /* TextItemView.swift */; };
 		0315A37C2AA439B500295443 /* NameEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A37B2AA439B500295443 /* NameEditView.swift */; };
 		0315A37E2AA43DCC00295443 /* TextEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A37D2AA43DCC00295443 /* TextEditView.swift */; };
+		03161FE22BF308C000E750D6 /* StreamWizardCustomRistSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03161FE12BF308C000E750D6 /* StreamWizardCustomRistSettingsView.swift */; };
 		031839172AF6A03100320FB2 /* DebugAudioSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031839162AF6A03100320FB2 /* DebugAudioSettingsView.swift */; };
 		0318391B2AF79DDF00320FB2 /* StreamSrtAdaptiveBitrateSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0318391A2AF79DDF00320FB2 /* StreamSrtAdaptiveBitrateSettingsView.swift */; };
 		0318514D2B5392A1006A7943 /* StreamSrtConnectionPriorityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0318514C2B5392A1006A7943 /* StreamSrtConnectionPriorityView.swift */; };
@@ -182,7 +183,7 @@
 		036333282AAE2E5100FF1231 /* ImageStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036333272AAE2E5100FF1231 /* ImageStorage.swift */; };
 		0364304F2B2FF9F400B7C448 /* StreamWizardTwitchSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0364304E2B2FF9F400B7C448 /* StreamWizardTwitchSettingsView.swift */; };
 		0364662C2B456B25005AB9FA /* StreamWizardCustomSrtSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0364662B2B456B25005AB9FA /* StreamWizardCustomSrtSettingsView.swift */; };
-		0364662E2B456B3B005AB9FA /* StreamWizardCustonRtmpSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0364662D2B456B3B005AB9FA /* StreamWizardCustonRtmpSettingsView.swift */; };
+		0364662E2B456B3B005AB9FA /* StreamWizardCustomRtmpSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0364662D2B456B3B005AB9FA /* StreamWizardCustomRtmpSettingsView.swift */; };
 		0364B6212BD36806002F828D /* StreamButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0364B6202BD36806002F828D /* StreamButton.swift */; };
 		0364B6232BD3683F002F828D /* ControlBarPortraitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0364B6222BD3683F002F828D /* ControlBarPortraitView.swift */; };
 		036BE2CC2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036BE2CB2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift */; };
@@ -397,6 +398,7 @@
 		0315A3792AA39DA800295443 /* TextItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextItemView.swift; sourceTree = "<group>"; };
 		0315A37B2AA439B500295443 /* NameEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameEditView.swift; sourceTree = "<group>"; };
 		0315A37D2AA43DCC00295443 /* TextEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditView.swift; sourceTree = "<group>"; };
+		03161FE12BF308C000E750D6 /* StreamWizardCustomRistSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardCustomRistSettingsView.swift; sourceTree = "<group>"; };
 		031839162AF6A03100320FB2 /* DebugAudioSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugAudioSettingsView.swift; sourceTree = "<group>"; };
 		0318391A2AF79DDF00320FB2 /* StreamSrtAdaptiveBitrateSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamSrtAdaptiveBitrateSettingsView.swift; sourceTree = "<group>"; };
 		0318514C2B5392A1006A7943 /* StreamSrtConnectionPriorityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamSrtConnectionPriorityView.swift; sourceTree = "<group>"; };
@@ -596,7 +598,7 @@
 		036333272AAE2E5100FF1231 /* ImageStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStorage.swift; sourceTree = "<group>"; };
 		0364304E2B2FF9F400B7C448 /* StreamWizardTwitchSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardTwitchSettingsView.swift; sourceTree = "<group>"; };
 		0364662B2B456B25005AB9FA /* StreamWizardCustomSrtSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardCustomSrtSettingsView.swift; sourceTree = "<group>"; };
-		0364662D2B456B3B005AB9FA /* StreamWizardCustonRtmpSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardCustonRtmpSettingsView.swift; sourceTree = "<group>"; };
+		0364662D2B456B3B005AB9FA /* StreamWizardCustomRtmpSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardCustomRtmpSettingsView.swift; sourceTree = "<group>"; };
 		0364B6202BD36806002F828D /* StreamButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamButton.swift; sourceTree = "<group>"; };
 		0364B6222BD3683F002F828D /* ControlBarPortraitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlBarPortraitView.swift; sourceTree = "<group>"; };
 		036BE2CB2ABBF0BA0048F9C5 /* StreamUrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamUrlSettingsView.swift; sourceTree = "<group>"; };
@@ -1430,7 +1432,8 @@
 			children = (
 				03D541742B32095B00B9D595 /* StreamWizardCustomSettingsView.swift */,
 				0364662B2B456B25005AB9FA /* StreamWizardCustomSrtSettingsView.swift */,
-				0364662D2B456B3B005AB9FA /* StreamWizardCustonRtmpSettingsView.swift */,
+				03161FE12BF308C000E750D6 /* StreamWizardCustomRistSettingsView.swift */,
+				0364662D2B456B3B005AB9FA /* StreamWizardCustomRtmpSettingsView.swift */,
 			);
 			path = Custom;
 			sourceTree = "<group>";
@@ -2287,6 +2290,7 @@
 				03B374042AA036D10028DDD5 /* ButtonsView.swift in Sources */,
 				0359F8EF2BD3DA61005BFDA8 /* RTMPMuxer.swift in Sources */,
 				0359F8FB2BD3DA61005BFDA8 /* SRTPerformanceData.swift in Sources */,
+				03161FE22BF308C000E750D6 /* StreamWizardCustomRistSettingsView.swift in Sources */,
 				0359F8ED2BD3DA61005BFDA8 /* RTMPHandshake.swift in Sources */,
 				0391BB3D2B36CAC5004852EA /* AboutVersionHistorySettingsView.swift in Sources */,
 				0324CD072BEBFBBA004AA063 /* RistStream.swift in Sources */,
@@ -2329,7 +2333,7 @@
 				0359F8C42BD3DA61005BFDA8 /* VTDecompressionSession+Extension.swift in Sources */,
 				03D691532B36EDB600038F13 /* TextValueView.swift in Sources */,
 				0359F8D22BD3DA61005BFDA8 /* Recorder.swift in Sources */,
-				0364662E2B456B3B005AB9FA /* StreamWizardCustonRtmpSettingsView.swift in Sources */,
+				0364662E2B456B3B005AB9FA /* StreamWizardCustomRtmpSettingsView.swift in Sources */,
 				0379BBA02AAD823900B718B6 /* StreamOverlayTextView.swift in Sources */,
 				03B374072AA0EA650028DDD5 /* MovieEffect.swift in Sources */,
 				0359F9072BD3DA61005BFDA8 /* MD5.swift in Sources */,

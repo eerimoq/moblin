@@ -9,8 +9,11 @@ struct StreamWizardCustomSettingsView: View {
                 NavigationLink(destination: StreamWizardCustomSrtSettingsView()) {
                     Text("SRT(LA)")
                 }
-                NavigationLink(destination: StreamWizardCustonRtmpSettingsView()) {
+                NavigationLink(destination: StreamWizardCustomRtmpSettingsView()) {
                     Text("RTMP(S)")
+                }
+                NavigationLink(destination: StreamWizardCustomRistSettingsView()) {
+                    Text("RIST")
                 }
             } header: {
                 Text("Protocol")

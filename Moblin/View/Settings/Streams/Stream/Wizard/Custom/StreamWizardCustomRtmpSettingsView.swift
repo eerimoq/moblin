@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct StreamWizardCustonRtmpSettingsView: View {
+struct StreamWizardCustomRtmpSettingsView: View {
     @EnvironmentObject private var model: Model
     @State var urlError = ""
 

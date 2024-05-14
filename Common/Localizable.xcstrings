@@ -54860,6 +54860,9 @@
     "RIST port number missing" : {
 
     },
+    "rist://120.35.234.2:2030" : {
+
+    },
     "RTMP" : {
       "localizations" : {
         "de" : {
