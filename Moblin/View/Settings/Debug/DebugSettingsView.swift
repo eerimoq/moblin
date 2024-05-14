@@ -104,6 +104,12 @@ struct DebugSettingsView: View {
                 )) {
                     Text("Beauty filter")
                 }
+                Toggle("MetalPetal filters", isOn: Binding(get: {
+                    model.database.debug!.metalPetalFilters!
+                }, set: { value in
+                    model.database.debug!.metalPetalFilters = value
+                    model.setMetalPetalFilters()
+                }))
             } header: {
                 Text("Experimental")
             }

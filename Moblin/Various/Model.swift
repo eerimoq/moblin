@@ -783,6 +783,7 @@ final class Model: NSObject, ObservableObject {
         media.onVideoDeviceInUseByAnotherClient = handleVideoDeviceInUseByAnotherClient
         media.onLowFpsImage = handleLowFpsImage
         setPixelFormat()
+        setMetalPetalFilters()
         setupAudioSession()
         if let cameraDevice = preferredCamera(position: .back) {
             (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice
@@ -916,6 +917,10 @@ final class Model: NSObject, ObservableObject {
             logger.info("Setting pixel format \(format)")
             pixelFormatType = type
         }
+    }
+
+    func setMetalPetalFilters() {
+        ioVideoUnitMetalPetal = database.debug!.metalPetalFilters!
     }
 
     private func handleIpStatusUpdate(statuses: [IPMonitor.Status]) {

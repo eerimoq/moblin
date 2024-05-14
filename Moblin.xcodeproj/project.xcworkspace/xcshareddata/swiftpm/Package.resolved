@@ -46,6 +46,15 @@
       }
     },
     {
+      "identity" : "metalpetal",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/MetalPetal/MetalPetal",
+      "state" : {
+        "revision" : "f9b78897bd4214bb097f352a1bde0a4f4a1e2ddb",
+        "version" : "1.25.2"
+      }
+    },
+    {
       "identity" : "rist",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/eerimoq/Rist",

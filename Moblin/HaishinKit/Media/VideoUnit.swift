@@ -1,5 +1,6 @@
 import AVFoundation
 import CoreImage
+import MetalPetal
 import UIKit
 import Vision
 
@@ -7,6 +8,7 @@ var ioVideoBlurSceneSwitch = true
 var ioVideoUnitIgnoreFramesAfterAttachSeconds = 0.3
 var ioVideoUnitWatchInterval = 1.0
 var pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
+var ioVideoUnitMetalPetal = false
 private let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.VideoIOComponent")
 private let detectionsQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.Detections")
 private let lowFpsImageQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.VideoIOComponent.small")
@@ -94,6 +96,7 @@ final class VideoUnit: NSObject {
     private var output: AVCaptureVideoDataOutput?
     private var connection: AVCaptureConnection?
     private let context = CIContext()
+    private let metalPetalContext: MTIContext?
     weak var drawable: PreviewView?
     var detectionsHistogram = Histogram(name: "Detections", barWidth: 5)
     var filterHistogram = Histogram(name: "Filter", barWidth: 5)
@@ -164,6 +167,15 @@ final class VideoUnit: NSObject {
     private var poolHeight: Int32 = 0
     private var poolColorSpace: CGColorSpace?
     private var poolFormatDescriptionExtension: CFDictionary?
+
+    override init() {
+        if let metalDevice = MTLCreateSystemDefaultDevice() {
+            metalPetalContext = try? MTIContext(device: metalDevice)
+        } else {
+            metalPetalContext = nil
+        }
+        super.init()
+    }
 
     deinit {
         stopGapFillerTimer()
@@ -337,10 +349,33 @@ final class VideoUnit: NSObject {
         return pool
     }
 
+    private func createPixelBuffer(sampleBuffer: CMSampleBuffer) -> CVPixelBuffer? {
+        guard let pool = getBufferPool(formatDescription: sampleBuffer.formatDescription!) else {
+            return nil
+        }
+        var outputImageBuffer: CVPixelBuffer?
+        guard CVPixelBufferPoolCreatePixelBuffer(nil, pool, &outputImageBuffer) == kCVReturnSuccess else {
+            return nil
+        }
+        return outputImageBuffer
+    }
+
     private func applyEffects(_ imageBuffer: CVImageBuffer,
                               _ sampleBuffer: CMSampleBuffer,
                               _ faceDetections: [VNFaceObservation]?,
                               _ applyBlur: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
+    {
+        if !ioVideoUnitMetalPetal {
+            return applyEffectsCoreImage(imageBuffer, sampleBuffer, faceDetections, applyBlur)
+        } else {
+            return applyEffectsMetalPetal(imageBuffer, sampleBuffer, faceDetections, applyBlur)
+        }
+    }
+
+    private func applyEffectsCoreImage(_ imageBuffer: CVImageBuffer,
+                                       _ sampleBuffer: CMSampleBuffer,
+                                       _ faceDetections: [VNFaceObservation]?,
+                                       _ applyBlur: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
     {
         var image = CIImage(cvPixelBuffer: imageBuffer)
         let extent = image.extent
@@ -357,18 +392,12 @@ final class VideoUnit: NSObject {
         if applyBlur {
             image = blurImage(image)
         }
-        guard imageBuffer.width == Int(image.extent.width) && imageBuffer.height == Int(image.extent.height)
+        guard imageBuffer.width == Int(image.extent.width) && imageBuffer
+            .height == Int(image.extent.height)
         else {
             return (nil, nil)
         }
-        guard let pool = getBufferPool(formatDescription: sampleBuffer.formatDescription!) else {
-            return (nil, nil)
-        }
-        var outputImageBuffer: CVPixelBuffer?
-        guard CVPixelBufferPoolCreatePixelBuffer(nil, pool, &outputImageBuffer) == kCVReturnSuccess else {
-            return (nil, nil)
-        }
-        guard let outputImageBuffer else {
+        guard let outputImageBuffer = createPixelBuffer(sampleBuffer: sampleBuffer) else {
             return (nil, nil)
         }
         if let poolColorSpace {
@@ -376,7 +405,45 @@ final class VideoUnit: NSObject {
         } else {
             context.render(image, to: outputImageBuffer)
         }
-        guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: outputImageBuffer) else {
+        guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: outputImageBuffer)
+        else {
+            return (nil, nil)
+        }
+        guard let outputSampleBuffer = CMSampleBuffer.create(outputImageBuffer,
+                                                             formatDescription,
+                                                             sampleBuffer.duration,
+                                                             sampleBuffer.presentationTimeStamp,
+                                                             sampleBuffer.decodeTimeStamp)
+        else {
+            return (nil, nil)
+        }
+        return (outputImageBuffer, outputSampleBuffer)
+    }
+
+    private func applyEffectsMetalPetal(_ imageBuffer: CVImageBuffer,
+                                        _ sampleBuffer: CMSampleBuffer,
+                                        _: [VNFaceObservation]?,
+                                        _: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
+    {
+        let image = MTIImage(cvPixelBuffer: imageBuffer, alphaType: .alphaIsOne)
+        // let filter = MTIBrightnessFilter()
+        // filter.inputImage = image
+        // filter.brightness = 0.0
+        let filter = MTIHighPassSkinSmoothingFilter()
+        filter.inputImage = image
+        guard let outputImage = filter.outputImage else {
+            return (nil, nil)
+        }
+        guard let outputImageBuffer = createPixelBuffer(sampleBuffer: sampleBuffer) else {
+            return (nil, nil)
+        }
+        do {
+            try metalPetalContext?.render(outputImage, to: outputImageBuffer)
+        } catch {
+            logger.info("Metal petal error: \(error)")
+        }
+        guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: outputImageBuffer)
+        else {
             return (nil, nil)
         }
         guard let outputSampleBuffer = CMSampleBuffer.create(outputImageBuffer,

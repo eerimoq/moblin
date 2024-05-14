@@ -71,6 +71,7 @@
 		0332EF5E2B3CAEE400BC3C16 /* RtmpServerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0332EF5D2B3CAEE400BC3C16 /* RtmpServerSettingsView.swift */; };
 		0332EF612B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0332EF602B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift */; };
 		03403DF62AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */; };
+		03412AB42BF32D1C005C1838 /* MetalPetal in Frameworks */ = {isa = PBXBuildFile; productRef = 03412AB32BF32D1C005C1838 /* MetalPetal */; };
 		0346B5EC2B9AD1BF00999109 /* MoblinWatch-InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0346B5EB2B9AD1BF00999109 /* MoblinWatch-InfoPlist.xcstrings */; };
 		0346B5EE2B9AD1BF00999109 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0346B5ED2B9AD1BF00999109 /* InfoPlist.xcstrings */; };
 		0346B5F02B9AD1BF00999109 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0346B5EF2B9AD1BF00999109 /* Localizable.xcstrings */; };
@@ -756,6 +757,7 @@
 				03AE56142BEA74D500FE8427 /* Rist in Frameworks */,
 				0359F9092BD3DA61005BFDA8 /* libsrt.xcframework in Frameworks */,
 				0307EBCA2B59B239006F7B2A /* Telegraph in Frameworks */,
+				03412AB42BF32D1C005C1838 /* MetalPetal in Frameworks */,
 				03A974282AC137A000610E21 /* Collections in Frameworks */,
 				03A08B7C2AC295620018BA95 /* AlertToast in Frameworks */,
 				03BC116B2AE56C2200C38FC4 /* SDWebImageWebPCoder in Frameworks */,
@@ -2072,6 +2074,7 @@
 				0307EBC92B59B239006F7B2A /* Telegraph */,
 				03B7DAB42BA640C100CEFC1B /* XMLCoder */,
 				03AE56132BEA74D500FE8427 /* Rist */,
+				03412AB32BF32D1C005C1838 /* MetalPetal */,
 			);
 			productName = Mobs;
 			productReference = 035E9E332A9A02D6009D4F5A /* Moblin.app */;
@@ -2180,6 +2183,7 @@
 				0307EBC82B59B239006F7B2A /* XCRemoteSwiftPackageReference "Telegraph" */,
 				03B7DAB32BA6409800CEFC1B /* XCRemoteSwiftPackageReference "XMLCoder" */,
 				03AE56122BEA74D500FE8427 /* XCRemoteSwiftPackageReference "Rist" */,
+				03412AB22BF32D1C005C1838 /* XCRemoteSwiftPackageReference "MetalPetal" */,
 			);
 			productRefGroup = 035E9E342A9A02D6009D4F5A /* Products */;
 			projectDirPath = "";
@@ -2747,7 +2751,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.268.0;
+				MARKETING_VERSION = 0.269.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -2797,7 +2801,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.268.0;
+				MARKETING_VERSION = 0.269.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -3028,6 +3032,14 @@
 				minimumVersion = 0.3.2;
 			};
 		};
+		03412AB22BF32D1C005C1838 /* XCRemoteSwiftPackageReference "MetalPetal" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/MetalPetal/MetalPetal";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.25.2;
+			};
+		};
 		03A08B7A2AC295620018BA95 /* XCRemoteSwiftPackageReference "AlertToast" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/elai950/AlertToast.git";
@@ -3106,6 +3118,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 032815D32AC855A5001F8A85 /* XCRemoteSwiftPackageReference "LicenseList" */;
 			productName = "plugin:PrepareLicenseList";
+		};
+		03412AB32BF32D1C005C1838 /* MetalPetal */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03412AB22BF32D1C005C1838 /* XCRemoteSwiftPackageReference "MetalPetal" */;
+			productName = MetalPetal;
 		};
 		03A08B7B2AC295620018BA95 /* AlertToast */ = {
 			isa = XCSwiftPackageProductDependency;
