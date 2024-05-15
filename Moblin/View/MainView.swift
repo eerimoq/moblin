@@ -136,12 +136,7 @@ struct MainView: View {
                                 crop: debug.beautyFilter!,
                                 beauty: debug.beautyFilterSettings!.showBeauty!,
                                 blur: debug.beautyFilterSettings!.showBlur,
-                                mouth: debug.beautyFilterSettings!.showMoblin,
-                                shapeRadius: debug.beautyFilterSettings!.shapeRadius!,
-                                shapeScale: debug.beautyFilterSettings!.shapeScale!,
-                                shapeOffset: debug.beautyFilterSettings!.shapeOffset!,
-                                smoothAmount: debug.beautyFilterSettings!.smoothAmount!,
-                                smoothRadius: debug.beautyFilterSettings!.smoothRadius!
+                                mouth: debug.beautyFilterSettings!.showMoblin
                             )
                         }
                         if model.showBrowser {
@@ -236,12 +231,7 @@ struct MainView: View {
                                 crop: debug.beautyFilter!,
                                 beauty: debug.beautyFilterSettings!.showBeauty!,
                                 blur: debug.beautyFilterSettings!.showBlur,
-                                mouth: debug.beautyFilterSettings!.showMoblin,
-                                shapeRadius: debug.beautyFilterSettings!.shapeRadius!,
-                                shapeScale: debug.beautyFilterSettings!.shapeScale!,
-                                shapeOffset: debug.beautyFilterSettings!.shapeOffset!,
-                                smoothAmount: debug.beautyFilterSettings!.smoothAmount!,
-                                smoothRadius: debug.beautyFilterSettings!.smoothRadius!
+                                mouth: debug.beautyFilterSettings!.showMoblin
                             )
                         }
                         if model.showBrowser {
