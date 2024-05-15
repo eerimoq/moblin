@@ -476,7 +476,6 @@ final class Model: NSObject, ObservableObject {
     private var movieEffect = MovieEffect()
     private var grayScaleEffect = GrayScaleEffect()
     private var sepiaEffect = SepiaEffect()
-    private var randomEffect = RandomEffect()
     private var tripleEffect = TripleEffect()
     private var pixellateEffect = PixellateEffect()
     private var locationManager = Location()
@@ -1775,7 +1774,6 @@ final class Model: NSObject, ObservableObject {
         media.unregisterEffect(movieEffect)
         media.unregisterEffect(grayScaleEffect)
         media.unregisterEffect(sepiaEffect)
-        media.unregisterEffect(randomEffect)
         media.unregisterEffect(tripleEffect)
         media.unregisterEffect(pixellateEffect)
         faceEffect = FaceEffect()
@@ -1783,7 +1781,6 @@ final class Model: NSObject, ObservableObject {
         movieEffect = MovieEffect()
         grayScaleEffect = GrayScaleEffect()
         sepiaEffect = SepiaEffect()
-        randomEffect = RandomEffect()
         tripleEffect = TripleEffect()
         pixellateEffect = PixellateEffect()
     }
@@ -1813,9 +1810,6 @@ final class Model: NSObject, ObservableObject {
         }
         if isGlobalButtonOn(type: .sepia) {
             effects.append(sepiaEffect)
-        }
-        if isGlobalButtonOn(type: .random) {
-            effects.append(randomEffect)
         }
         if isGlobalButtonOn(type: .triple) {
             effects.append(tripleEffect)

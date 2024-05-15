@@ -57,7 +57,6 @@
 		03279CE72B4CD245006CEA5A /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03279CE62B4CD245006CEA5A /* Location.swift */; };
 		03279CF22B4D2AEC006CEA5A /* RealtimeIrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03279CF12B4D2AEC006CEA5A /* RealtimeIrl.swift */; };
 		032815D52AC855A5001F8A85 /* LicenseList in Frameworks */ = {isa = PBXBuildFile; productRef = 032815D42AC855A5001F8A85 /* LicenseList */; };
-		032815DC2AC915AE001F8A85 /* RandomEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032815DB2AC915AE001F8A85 /* RandomEffect.swift */; };
 		032815DF2AC9885C001F8A85 /* TripleEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032815DE2AC9885C001F8A85 /* TripleEffect.swift */; };
 		032A49B82AC54DD000ED3916 /* ExportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A49B72AC54DD000ED3916 /* ExportSettingsView.swift */; };
 		032A49BA2AC54E6500ED3916 /* ImportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A49B92AC54E6500ED3916 /* ImportSettingsView.swift */; };
@@ -423,7 +422,6 @@
 		032756A22BD81921002DC17F /* Bool+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bool+Extension.swift"; sourceTree = "<group>"; };
 		03279CE62B4CD245006CEA5A /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 		03279CF12B4D2AEC006CEA5A /* RealtimeIrl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeIrl.swift; sourceTree = "<group>"; };
-		032815DB2AC915AE001F8A85 /* RandomEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomEffect.swift; sourceTree = "<group>"; };
 		032815DE2AC9885C001F8A85 /* TripleEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripleEffect.swift; sourceTree = "<group>"; };
 		032A49B72AC54DD000ED3916 /* ExportSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportSettingsView.swift; sourceTree = "<group>"; };
 		032A49B92AC54E6500ED3916 /* ImportSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportSettingsView.swift; sourceTree = "<group>"; };
@@ -1803,7 +1801,6 @@
 				03B374062AA0EA650028DDD5 /* MovieEffect.swift */,
 				031CCE2C2ACA76CF00CB5D46 /* NoiseReductionEffect.swift */,
 				03085C0E2B487D950009DAB6 /* PixellateEffect.swift */,
-				032815DB2AC915AE001F8A85 /* RandomEffect.swift */,
 				0379BB932AACF16600B718B6 /* SepiaEffect.swift */,
 				03F3BF182ADAAA94009A8D3E /* TextEffect.swift */,
 				032815DE2AC9885C001F8A85 /* TripleEffect.swift */,
@@ -2302,7 +2299,6 @@
 				0359F8CD2BD3DA61005BFDA8 /* FLVVideoCodec.swift in Sources */,
 				03B16A282B35614100E5AB07 /* RecordingsRecordingSettingsView.swift in Sources */,
 				030EFE722BDA2D9E004208B6 /* MpegTsVideoConfig.swift in Sources */,
-				032815DC2AC915AE001F8A85 /* RandomEffect.swift in Sources */,
 				03BC90A92BD4F6B000529987 /* CMVideoFormatDescription+Extension.swift in Sources */,
 				031C15B92B93339C00BA967D /* WatchSettingsView.swift in Sources */,
 				03AA89952BC434640007BFE8 /* WebBrowserSettingsView.swift in Sources */,

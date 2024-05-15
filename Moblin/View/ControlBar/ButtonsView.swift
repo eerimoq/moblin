@@ -433,10 +433,6 @@ struct ButtonsInnerView: View {
         videoEffectAction(state: state, type: .sepia)
     }
 
-    private func randomAction(state: ButtonState) {
-        videoEffectAction(state: state, type: .random)
-    }
-
     private func tripleAction(state: ButtonState) {
         videoEffectAction(state: state, type: .triple)
     }
@@ -624,12 +620,6 @@ struct ButtonsInnerView: View {
             case .sepia:
                 Button(action: {
                     sepiaAction(state: state)
-                }, label: {
-                    ButtonImage(state: state, buttonSize: size)
-                })
-            case .random:
-                Button(action: {
-                    randomAction(state: state)
                 }, label: {
                     ButtonImage(state: state, buttonSize: size)
                 })
