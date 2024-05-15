@@ -2390,19 +2390,23 @@ final class Settings {
             store()
         }
         if realDatabase.debug!.beautyFilterSettings!.showBeauty == nil {
-            realDatabase.debug!.beautyFilterSettings!.showBeauty = realDatabase.debug!.beautyFilterSettings!.showCute ?? false
+            realDatabase.debug!.beautyFilterSettings!.showBeauty = realDatabase.debug!.beautyFilterSettings!
+                .showCute ?? false
             store()
         }
         if realDatabase.debug!.beautyFilterSettings!.shapeRadius == nil {
-            realDatabase.debug!.beautyFilterSettings!.shapeRadius = realDatabase.debug!.beautyFilterSettings!.cuteRadius ?? 0.5
+            realDatabase.debug!.beautyFilterSettings!.shapeRadius = realDatabase.debug!.beautyFilterSettings!
+                .cuteRadius ?? 0.5
             store()
         }
         if realDatabase.debug!.beautyFilterSettings!.shapeScale == nil {
-            realDatabase.debug!.beautyFilterSettings!.shapeScale = realDatabase.debug!.beautyFilterSettings!.cuteScale ?? 0.0
+            realDatabase.debug!.beautyFilterSettings!.shapeScale = realDatabase.debug!.beautyFilterSettings!
+                .cuteScale ?? 0.0
             store()
         }
         if realDatabase.debug!.beautyFilterSettings!.shapeOffset == nil {
-            realDatabase.debug!.beautyFilterSettings!.shapeOffset = realDatabase.debug!.beautyFilterSettings!.cuteOffset ?? 0.5
+            realDatabase.debug!.beautyFilterSettings!.shapeOffset = realDatabase.debug!.beautyFilterSettings!
+                .cuteOffset ?? 0.5
             store()
         }
         for stream in realDatabase.streams where stream.recording!.autoStartRecording == nil {
