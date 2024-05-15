@@ -1,6 +1,8 @@
 import Foundation
 import Network
 
+var rtmpSocketWaitingClose = true
+
 enum RTMPSocketReadyState: UInt8 {
     case uninitialized = 0
     case versionSent = 1
@@ -192,7 +194,9 @@ final class RTMPSocket {
             connected = true
         case let .waiting(error):
             logger.info("Connection waiting: \(error)")
-            close(isDisconnected: true)
+            if rtmpSocketWaitingClose {
+                close(isDisconnected: true)
+            }
         case .setup:
             logger.debug("Connection is setting up.")
         case .preparing:

@@ -1147,6 +1147,7 @@ class SettingsDebug: Codable {
     var allowVideoRangePixelFormat: Bool? = false
     var blurSceneSwitch: Bool? = true
     var metalPetalFilters: Bool? = false
+    var rtmpWaitingClose: Bool? = true
 }
 
 class SettingsRtmpServerStream: Codable, Identifiable {
@@ -2447,6 +2448,10 @@ final class Settings {
         }
         if realDatabase.debug!.beautyFilterSettings!.smoothRadius == nil {
             realDatabase.debug!.beautyFilterSettings!.smoothRadius = 20.0
+            store()
+        }
+        if realDatabase.debug!.rtmpWaitingClose == nil {
+            realDatabase.debug!.rtmpWaitingClose = true
             store()
         }
     }

@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.270.0", date: "2024-05-15", changes: [
+        "• Remove random filter quick button.",
+        "• Debug of RTMP connect network is down error.",
+        "  • Disable Settings → Debug → RTMP waiting close to test the fix.",
+    ]),
     Version(version: "0.269.0", date: "2024-05-14", changes: [
         "• Show RIST in setup stream wizard Custom section.",
         "• Send correct information to server when restarting SRT and RIST streams. 🐛 mikeful",
