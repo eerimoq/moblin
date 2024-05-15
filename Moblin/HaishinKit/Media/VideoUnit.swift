@@ -466,10 +466,11 @@ final class VideoUnit: NSObject {
 
     // periphery:ignore
     private func blendWithMask(image: MTIImage?) -> MTIImage? {
-        let filter = MTIBlendWithMaskFilter() // Not tested.
+        // Not tested.
+        let filter = MTIBlendWithMaskFilter()
         filter.inputImage = image
         filter.inputBackgroundImage = nil
-        filter.inputMask = nil
+        // filter.inputMask = MTIMask(content: RadialGradientImage.makeImage(size: image?.size))
         filter.inputImage = image
         return filter.outputImage
     }
@@ -517,6 +518,24 @@ final class VideoUnit: NSObject {
         return filter.outputImage
     }
 
+    // periphery:ignore
+    private func grayScale(image: MTIImage?) -> MTIImage? {
+        let filter = MTISaturationFilter()
+        filter.saturation = 0
+        filter.inputImage = image
+        return filter.outputImage
+    }
+
+    // periphery:ignore
+    private func sepia(image: MTIImage?) -> MTIImage? {
+        return image
+    }
+
+    // periphery:ignore
+    private func cube(image: MTIImage?) -> MTIImage? {
+        return image
+    }
+
     private func applyEffectsMetalPetal(_ imageBuffer: CVImageBuffer,
                                         _ sampleBuffer: CMSampleBuffer,
                                         _: [VNFaceObservation]?,
@@ -524,12 +543,15 @@ final class VideoUnit: NSObject {
     {
         var image: MTIImage? = MTIImage(cvPixelBuffer: imageBuffer, alphaType: .alphaIsOne)
         // image = brightness(image: image)
-        // image = blur(image: image)
+        image = blur(image: image)
         image = skinSmoothing(image: image)
-        // image = pixellate(image: image)
-        // image = bump(image: image)
+        image = pixellate(image: image)
+        image = bump(image: image)
         // image = blendWithMask(image: image)
-        // image = triple(image: image)
+        image = triple(image: image)
+        image = grayScale(image: image)
+        // image = sepia(image: image)
+        // image = cube(image: image)
         guard let image else {
             return (nil, nil)
         }
