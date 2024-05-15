@@ -189,23 +189,15 @@ struct FaceViewBeautyButtons: View {
                 model.showFaceBeautyShape.toggle()
                 model.showFaceBeautySmooth = false
             } label: {
-                FaceButtonView(
-                    title: String(localized: "Shape"),
-                    on: model.showFaceBeautyShape
-                )
+                FaceButtonView(title: String(localized: "Shape"), on: model.showFaceBeautyShape)
             }
-            .padding([.bottom], 5)
             if model.database.debug!.metalPetalFilters! {
                 Button {
                     model.showFaceBeautyShape = false
                     model.showFaceBeautySmooth.toggle()
                 } label: {
-                    FaceButtonView(
-                        title: String(localized: "Smooth"),
-                        on: model.showFaceBeautySmooth
-                    )
+                    FaceButtonView(title: String(localized: "Smooth"), on: model.showFaceBeautySmooth)
                 }
-                .padding([.bottom], 5)
             }
             Button {
                 model.database.debug!.beautyFilterSettings!.showBeauty!.toggle()
@@ -213,13 +205,10 @@ struct FaceViewBeautyButtons: View {
                 model.updateFaceFilterSettings()
                 beauty = model.database.debug!.beautyFilterSettings!.showBeauty!
             } label: {
-                FaceButtonView(
-                    title: String(localized: "Enabled"),
-                    on: beauty
-                )
+                FaceButtonView(title: String(localized: "Enabled"), on: beauty)
             }
-            .padding([.bottom], 5)
         }
+        .padding([.bottom], 5)
     }
 }
 
