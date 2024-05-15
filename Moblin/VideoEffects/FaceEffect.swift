@@ -11,10 +11,12 @@ final class FaceEffect: VideoEffect {
     var contrast: Float = 1.0
     var brightness: Float = 0.0
     var saturation: Float = 1.0
-    var showCute = true
-    var cuteRadius: Float = 0.5
-    var cuteScale: Float = 0.5
-    var cuteOffset: Float = 0.5
+    var showBeauty = true
+    var shapeRadius: Float = 0.5
+    var shapeScale: Float = 0.5
+    var shapeOffset: Float = 0.5
+    var smoothAmount: Float = 0.65
+    var smoothRadius: Float = 20.0
     let moblinImage: CIImage?
 
     override init() {
@@ -170,7 +172,7 @@ final class FaceEffect: VideoEffect {
         return mesh
     }
 
-    private func addCute(image: CIImage?, detections: [VNFaceObservation]?) -> CIImage? {
+    private func addBeauty(image: CIImage?, detections: [VNFaceObservation]?) -> CIImage? {
         guard let image, let detections else {
             return image
         }
@@ -188,10 +190,10 @@ final class FaceEffect: VideoEffect {
                 filter.inputImage = outputImage
                 filter.center = CGPoint(
                     x: centerX,
-                    y: minY + CGFloat(Float(maxY - minY) * (cuteOffset * 0.4 + 0.1))
+                    y: minY + CGFloat(Float(maxY - minY) * (shapeOffset * 0.4 + 0.1))
                 )
-                filter.radius = Float(maxY - minY) * (0.7 + cuteRadius * 0.4)
-                filter.scale = -(cuteScale * 0.4)
+                filter.radius = Float(maxY - minY) * (0.7 + shapeRadius * 0.4)
+                filter.scale = -(shapeScale * 0.4)
                 outputImage = filter.outputImage
             }
         }
@@ -248,8 +250,8 @@ final class FaceEffect: VideoEffect {
         if showMoblin {
             outputImage = addMoblin(image: outputImage, detections: faceDetections)
         }
-        if showCute {
-            outputImage = addCute(image: outputImage, detections: faceDetections)
+        if showBeauty {
+            outputImage = addBeauty(image: outputImage, detections: faceDetections)
         }
         if showFaceLandmarks {
             outputImage = addFaceLandmarks(image: outputImage, detections: faceDetections)

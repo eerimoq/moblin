@@ -70,6 +70,10 @@ struct MainView: View {
         )
     }
 
+    private var debug: SettingsDebug {
+        model.database.debug!
+    }
+
     var body: some View {
         ZStack {
             if model.stream.portrait! {
@@ -128,16 +132,17 @@ struct MainView: View {
                         StreamOverlayView()
                             .opacity(model.showLocalOverlays ? 1 : 0)
                         if model.showFace {
-                            FaceView(crop: model.database.debug!.beautyFilter!,
-                                     cute: model.database.debug!.beautyFilterSettings!.showCute!,
-                                     blur: model.database.debug!.beautyFilterSettings!.showBlur,
-                                     mouth: model.database.debug!.beautyFilterSettings!.showMoblin,
-                                     cuteRadius: model.database.debug!.beautyFilterSettings!
-                                         .cuteRadius!,
-                                     cuteScale: model.database.debug!.beautyFilterSettings!
-                                         .cuteScale!,
-                                     cuteOffset: model.database.debug!.beautyFilterSettings!
-                                         .cuteOffset!)
+                            FaceView(
+                                crop: debug.beautyFilter!,
+                                beauty: debug.beautyFilterSettings!.showBeauty!,
+                                blur: debug.beautyFilterSettings!.showBlur,
+                                mouth: debug.beautyFilterSettings!.showMoblin,
+                                shapeRadius: debug.beautyFilterSettings!.shapeRadius!,
+                                shapeScale: debug.beautyFilterSettings!.shapeScale!,
+                                shapeOffset: debug.beautyFilterSettings!.shapeOffset!,
+                                smoothAmount: debug.beautyFilterSettings!.smoothAmount!,
+                                smoothRadius: debug.beautyFilterSettings!.smoothRadius!
+                            )
                         }
                         if model.showBrowser {
                             webBrowserView
@@ -227,16 +232,17 @@ struct MainView: View {
                             DrawOnStreamView()
                         }
                         if model.showFace {
-                            FaceView(crop: model.database.debug!.beautyFilter!,
-                                     cute: model.database.debug!.beautyFilterSettings!.showCute!,
-                                     blur: model.database.debug!.beautyFilterSettings!.showBlur,
-                                     mouth: model.database.debug!.beautyFilterSettings!.showMoblin,
-                                     cuteRadius: model.database.debug!.beautyFilterSettings!
-                                         .cuteRadius!,
-                                     cuteScale: model.database.debug!.beautyFilterSettings!
-                                         .cuteScale!,
-                                     cuteOffset: model.database.debug!.beautyFilterSettings!
-                                         .cuteOffset!)
+                            FaceView(
+                                crop: debug.beautyFilter!,
+                                beauty: debug.beautyFilterSettings!.showBeauty!,
+                                blur: debug.beautyFilterSettings!.showBlur,
+                                mouth: debug.beautyFilterSettings!.showMoblin,
+                                shapeRadius: debug.beautyFilterSettings!.shapeRadius!,
+                                shapeScale: debug.beautyFilterSettings!.shapeScale!,
+                                shapeOffset: debug.beautyFilterSettings!.shapeOffset!,
+                                smoothAmount: debug.beautyFilterSettings!.smoothAmount!,
+                                smoothRadius: debug.beautyFilterSettings!.smoothRadius!
+                            )
                         }
                         if model.showBrowser {
                             webBrowserView
@@ -364,7 +370,7 @@ struct MainView: View {
                     .frame(width: settingsHalfWidth)
                 }
             }
-            if model.database.debug!.letItSnow! {
+            if debug.letItSnow! {
                 SpriteView(scene: scene, options: [.allowsTransparency])
                     .ignoresSafeArea()
                     .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)

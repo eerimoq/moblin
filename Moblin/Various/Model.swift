@@ -362,6 +362,8 @@ final class Model: NSObject, ObservableObject {
     @Published var showDrawOnStream = false
     @Published var showFace = false
     @Published var showFaceBeauty = false
+    @Published var showFaceBeautyShape = false
+    @Published var showFaceBeautySmooth = false
     @Published var showLocalOverlays = true
     @Published var showBrowser = false
     @Published var drawOnStreamLines: [DrawOnStreamLine] = []
@@ -903,10 +905,12 @@ final class Model: NSObject, ObservableObject {
         faceEffect.contrast = settings.contrast
         faceEffect.brightness = settings.brightness
         faceEffect.saturation = settings.saturation
-        faceEffect.showCute = settings.showCute!
-        faceEffect.cuteRadius = settings.cuteRadius!
-        faceEffect.cuteScale = settings.cuteScale!
-        faceEffect.cuteOffset = settings.cuteOffset!
+        faceEffect.showBeauty = settings.showBeauty!
+        faceEffect.shapeRadius = settings.shapeRadius!
+        faceEffect.shapeScale = settings.shapeScale!
+        faceEffect.shapeOffset = settings.shapeOffset!
+        faceEffect.smoothAmount = settings.smoothAmount!
+        faceEffect.smoothRadius = settings.smoothRadius!
     }
 
     func setPixelFormat() {
@@ -1794,7 +1798,7 @@ final class Model: NSObject, ObservableObject {
     private func isFaceEnabled() -> Bool {
         let settings = database.debug!.beautyFilterSettings!
         return database.debug!.beautyFilter! || settings.showBlur || settings.showMoblin || settings
-            .showColors || settings.showFaceLandmarks || settings.showCute!
+            .showColors || settings.showFaceLandmarks || settings.showBeauty!
     }
 
     private func registerGlobalVideoEffects() -> [VideoEffect] {

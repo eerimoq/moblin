@@ -1121,6 +1121,12 @@ class SettingsDebugBeautyFilter: Codable {
     var cuteRadius: Float? = 0.5
     var cuteScale: Float? = 0.0
     var cuteOffset: Float? = 0.5
+    var showBeauty: Bool? = false
+    var shapeRadius: Float? = 0.5
+    var shapeScale: Float? = 0.0
+    var shapeOffset: Float? = 0.5
+    var smoothAmount: Float? = 0.65
+    var smoothRadius: Float? = 20.0
 }
 
 class SettingsDebug: Codable {
@@ -2383,20 +2389,20 @@ final class Settings {
             realDatabase.debug!.beautyFilterSettings = .init()
             store()
         }
-        if realDatabase.debug!.beautyFilterSettings!.showCute == nil {
-            realDatabase.debug!.beautyFilterSettings!.showCute = false
+        if realDatabase.debug!.beautyFilterSettings!.showBeauty == nil {
+            realDatabase.debug!.beautyFilterSettings!.showBeauty = realDatabase.debug!.beautyFilterSettings!.showCute ?? false
             store()
         }
-        if realDatabase.debug!.beautyFilterSettings!.cuteRadius == nil {
-            realDatabase.debug!.beautyFilterSettings!.cuteRadius = 0.5
+        if realDatabase.debug!.beautyFilterSettings!.shapeRadius == nil {
+            realDatabase.debug!.beautyFilterSettings!.shapeRadius = realDatabase.debug!.beautyFilterSettings!.cuteRadius ?? 0.5
             store()
         }
-        if realDatabase.debug!.beautyFilterSettings!.cuteScale == nil {
-            realDatabase.debug!.beautyFilterSettings!.cuteScale = 0.0
+        if realDatabase.debug!.beautyFilterSettings!.shapeScale == nil {
+            realDatabase.debug!.beautyFilterSettings!.shapeScale = realDatabase.debug!.beautyFilterSettings!.cuteScale ?? 0.0
             store()
         }
-        if realDatabase.debug!.beautyFilterSettings!.cuteOffset == nil {
-            realDatabase.debug!.beautyFilterSettings!.cuteOffset = 0.5
+        if realDatabase.debug!.beautyFilterSettings!.shapeOffset == nil {
+            realDatabase.debug!.beautyFilterSettings!.shapeOffset = realDatabase.debug!.beautyFilterSettings!.cuteOffset ?? 0.5
             store()
         }
         for stream in realDatabase.streams where stream.recording!.autoStartRecording == nil {
@@ -2429,6 +2435,14 @@ final class Settings {
         }
         if realDatabase.debug!.metalPetalFilters == nil {
             realDatabase.debug!.metalPetalFilters = false
+            store()
+        }
+        if realDatabase.debug!.beautyFilterSettings!.smoothAmount == nil {
+            realDatabase.debug!.beautyFilterSettings!.smoothAmount = 0.65
+            store()
+        }
+        if realDatabase.debug!.beautyFilterSettings!.smoothRadius == nil {
+            realDatabase.debug!.beautyFilterSettings!.smoothRadius = 20.0
             store()
         }
     }

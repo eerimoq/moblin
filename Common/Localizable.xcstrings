@@ -8672,6 +8672,9 @@
         }
       }
     },
+    "Amount" : {
+
+    },
     "Animated emotes" : {
       "localizations" : {
         "de" : {
@@ -21939,6 +21942,7 @@
       }
     },
     "Cute" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -58116,6 +58120,9 @@
         }
       }
     },
+    "Shape" : {
+
+    },
     "Sharpness" : {
       "localizations" : {
         "de" : {
@@ -59155,6 +59162,9 @@
           }
         }
       }
+    },
+    "Smooth" : {
+
     },
     "Source %@ not found" : {
       "localizations" : {

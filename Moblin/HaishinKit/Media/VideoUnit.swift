@@ -9,6 +9,8 @@ var ioVideoUnitIgnoreFramesAfterAttachSeconds = 0.3
 var ioVideoUnitWatchInterval = 1.0
 var pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
 var ioVideoUnitMetalPetal = false
+var ioVideoSmoothAmount: Float = 0.65
+var ioVideoSmoothRadius: Float = 20
 private let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.VideoIOComponent")
 private let detectionsQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.Detections")
 private let lowFpsImageQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.VideoIOComponent.small")
@@ -439,6 +441,8 @@ final class VideoUnit: NSObject {
     // periphery:ignore
     private func skinSmoothing(image: MTIImage?) -> MTIImage? {
         let filter = MTIHighPassSkinSmoothingFilter()
+        filter.amount = ioVideoSmoothAmount
+        filter.radius = ioVideoSmoothRadius
         filter.inputImage = image
         return filter.outputImage
     }
@@ -543,13 +547,13 @@ final class VideoUnit: NSObject {
     {
         var image: MTIImage? = MTIImage(cvPixelBuffer: imageBuffer, alphaType: .alphaIsOne)
         // image = brightness(image: image)
-        image = blur(image: image)
+        // image = blur(image: image)
         image = skinSmoothing(image: image)
-        image = pixellate(image: image)
-        image = bump(image: image)
+        // image = pixellate(image: image)
+        // image = bump(image: image)
         // image = blendWithMask(image: image)
-        image = triple(image: image)
-        image = grayScale(image: image)
+        // image = triple(image: image)
+        // image = grayScale(image: image)
         // image = sepia(image: image)
         // image = cube(image: image)
         guard let image else {
