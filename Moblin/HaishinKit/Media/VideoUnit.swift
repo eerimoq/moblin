@@ -420,25 +420,124 @@ final class VideoUnit: NSObject {
         return (outputImageBuffer, outputSampleBuffer)
     }
 
+    // periphery:ignore
+    private func brightness(image: MTIImage?) -> MTIImage? {
+        let filter = MTIBrightnessFilter()
+        filter.inputImage = image
+        filter.brightness = 0.0
+        return filter.outputImage
+    }
+
+    // periphery:ignore
+    private func blur(image: MTIImage?) -> MTIImage? {
+        let filter = MTIMPSGaussianBlurFilter()
+        filter.inputImage = image
+        filter.radius = 25
+        return filter.outputImage
+    }
+
+    // periphery:ignore
+    private func skinSmoothing(image: MTIImage?) -> MTIImage? {
+        let filter = MTIHighPassSkinSmoothingFilter()
+        filter.inputImage = image
+        return filter.outputImage
+    }
+
+    // periphery:ignore
+    private func pixellate(image: MTIImage?) -> MTIImage? {
+        let filter = MTIPixellateFilter()
+        filter.inputImage = image
+        filter.scale = .init(width: 20, height: 20)
+        return filter.outputImage
+    }
+
+    // periphery:ignore
+    private func bump(image: MTIImage?) -> MTIImage? {
+        guard let image else {
+            return image
+        }
+        let filter = MTIBulgeDistortionFilter()
+        filter.inputImage = image
+        filter.center = .init(x: Float(image.size.width) / 2, y: Float(image.size.height) / 2)
+        filter.radius = 250
+        filter.scale = -0.1
+        return filter.outputImage
+    }
+
+    // periphery:ignore
+    private func blendWithMask(image: MTIImage?) -> MTIImage? {
+        let filter = MTIBlendWithMaskFilter() // Not tested.
+        filter.inputImage = image
+        filter.inputBackgroundImage = nil
+        filter.inputMask = nil
+        filter.inputImage = image
+        return filter.outputImage
+    }
+
+    // periphery:ignore
+    private func triple(image: MTIImage?) -> MTIImage? {
+        guard let image else {
+            return image
+        }
+        let filter = MTIMultilayerCompositingFilter()
+        let width = image.size.width
+        let height = image.size.height
+        let segmentWidth = width / 3
+        let leadingPosition = segmentWidth / 2
+        let bottomPosition = height / 2
+        guard let centerImage = image.cropped(to: .pixel(.init(
+            x: segmentWidth,
+            y: 0,
+            width: segmentWidth,
+            height: height
+        ))) else {
+            return image
+        }
+        filter.inputBackgroundImage = image
+        filter.layers = [
+            .init(
+                content: centerImage,
+                layoutUnit: .pixel,
+                position: .init(x: leadingPosition, y: bottomPosition),
+                size: .init(width: segmentWidth, height: height),
+                rotation: 0,
+                opacity: 1,
+                blendMode: .normal
+            ),
+            .init(
+                content: centerImage,
+                layoutUnit: .pixel,
+                position: .init(x: leadingPosition + 2 * segmentWidth, y: bottomPosition),
+                size: .init(width: segmentWidth, height: height),
+                rotation: 0,
+                opacity: 1,
+                blendMode: .normal
+            ),
+        ]
+        return filter.outputImage
+    }
+
     private func applyEffectsMetalPetal(_ imageBuffer: CVImageBuffer,
                                         _ sampleBuffer: CMSampleBuffer,
                                         _: [VNFaceObservation]?,
                                         _: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
     {
-        let image = MTIImage(cvPixelBuffer: imageBuffer, alphaType: .alphaIsOne)
-        // let filter = MTIBrightnessFilter()
-        // filter.inputImage = image
-        // filter.brightness = 0.0
-        let filter = MTIHighPassSkinSmoothingFilter()
-        filter.inputImage = image
-        guard let outputImage = filter.outputImage else {
+        var image: MTIImage? = MTIImage(cvPixelBuffer: imageBuffer, alphaType: .alphaIsOne)
+        // image = brightness(image: image)
+        // image = blur(image: image)
+        image = skinSmoothing(image: image)
+        // image = pixellate(image: image)
+        // image = bump(image: image)
+        // image = blendWithMask(image: image)
+        // image = triple(image: image)
+        guard let image else {
             return (nil, nil)
         }
         guard let outputImageBuffer = createPixelBuffer(sampleBuffer: sampleBuffer) else {
             return (nil, nil)
         }
         do {
-            try metalPetalContext?.render(outputImage, to: outputImageBuffer)
+            try metalPetalContext?.render(image, to: outputImageBuffer)
         } catch {
             logger.info("Metal petal error: \(error)")
         }
