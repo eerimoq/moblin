@@ -12,7 +12,10 @@ var ioVideoUnitMetalPetal = false
 var ioVideoSmoothAmount: Float = 0.65
 var ioVideoSmoothRadius: Float = 20
 private let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.VideoIOComponent")
-private let detectionsQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.Detections")
+private let detectionsQueue = DispatchQueue(
+    label: "com.haishinkit.HaishinKit.Detections",
+    attributes: .concurrent
+)
 private let lowFpsImageQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.VideoIOComponent.small")
 
 private func setOrientation(
@@ -25,6 +28,14 @@ private func setOrientation(
     } else {
         connection.videoOrientation = orientation
     }
+}
+
+private struct FaceDetectionsCompletion {
+    let sequenceNumber: UInt64
+    let sampleBuffer: CMSampleBuffer
+    let isFirstAfterAttach: Bool
+    let applyBlur: Bool
+    var faceDetections: [VNFaceObservation]?
 }
 
 private class ReplaceVideo {
@@ -102,6 +113,9 @@ final class VideoUnit: NSObject {
     weak var drawable: PreviewView?
     var detectionsHistogram = Histogram(name: "Detections", barWidth: 5)
     var filterHistogram = Histogram(name: "Filter", barWidth: 5)
+    private var nextFaceDetectionsSequenceNumber: UInt64 = 0
+    private var nextCompletedFaceDetectionsSequenceNumber: UInt64 = 0
+    private var completedFaceDetections: [UInt64: FaceDetectionsCompletion] = [:]
 
     var formatDescription: CMVideoFormatDescription? {
         didSet {
@@ -745,6 +759,13 @@ final class VideoUnit: NSObject {
         mixer?.delegate?.mixerVideo(
             presentationTimestamp: sampleBuffer.presentationTimeStamp.seconds
         )
+        var completion = FaceDetectionsCompletion(
+            sequenceNumber: nextFaceDetectionsSequenceNumber,
+            sampleBuffer: sampleBuffer,
+            isFirstAfterAttach: isFirstAfterAttach,
+            applyBlur: applyBlur
+        )
+        nextFaceDetectionsSequenceNumber += 1
         if anyEffectNeedsFaceDetections() {
             detectionsQueue.async {
                 let startDate = Date()
@@ -752,31 +773,18 @@ final class VideoUnit: NSObject {
                 let faceLandmarksRequest = VNDetectFaceLandmarksRequest { request, error in
                     lockQueue.async {
                         guard error == nil else {
-                            self.appendSampleBufferWithFaceDetections(
-                                sampleBuffer,
-                                isFirstAfterAttach,
-                                applyBlur,
-                                nil
-                            )
+                            self.faceDetectionsComplete(completion)
                             return
                         }
-                        self.appendSampleBufferWithFaceDetections(sampleBuffer,
-                                                                  isFirstAfterAttach,
-                                                                  applyBlur,
-                                                                  (request as? VNDetectFaceLandmarksRequest)?
-                                                                      .results)
+                        completion.faceDetections = (request as? VNDetectFaceLandmarksRequest)?.results
+                        self.faceDetectionsComplete(completion)
                     }
                 }
                 do {
                     try imageRequestHandler.perform([faceLandmarksRequest])
                 } catch {
                     lockQueue.async {
-                        self.appendSampleBufferWithFaceDetections(
-                            sampleBuffer,
-                            isFirstAfterAttach,
-                            applyBlur,
-                            nil
-                        )
+                        self.faceDetectionsComplete(completion)
                     }
                 }
                 let elapsed = Int(-startDate.timeIntervalSinceNow * 1000)
@@ -785,9 +793,27 @@ final class VideoUnit: NSObject {
                 }
             }
         } else {
-            appendSampleBufferWithFaceDetections(sampleBuffer, isFirstAfterAttach, applyBlur, nil)
+            faceDetectionsComplete(completion)
         }
         return true
+    }
+
+    private func faceDetectionsComplete(_ completion: FaceDetectionsCompletion) {
+        completedFaceDetections[completion.sequenceNumber] = completion
+        while true {
+            guard let completion = completedFaceDetections
+                .removeValue(forKey: nextCompletedFaceDetectionsSequenceNumber)
+            else {
+                break
+            }
+            appendSampleBufferWithFaceDetections(
+                completion.sampleBuffer,
+                completion.isFirstAfterAttach,
+                completion.applyBlur,
+                completion.faceDetections
+            )
+            nextCompletedFaceDetectionsSequenceNumber += 1
+        }
     }
 
     private func appendSampleBufferWithFaceDetections(

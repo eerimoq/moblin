@@ -8672,7 +8672,7 @@
         }
       }
     },
-    "Amount" : {
+    "AMOUNT" : {
 
     },
     "Animated emotes" : {
@@ -48472,6 +48472,7 @@
       }
     },
     "Offset" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -48600,6 +48601,9 @@
           }
         }
       }
+    },
+    "OFFSET" : {
+
     },
     "Often bad stability if network connection is unstable. No server side disconnection protection possible (no NOALBS)." : {
       "localizations" : {
@@ -51982,6 +51986,7 @@
       }
     },
     "Radius" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -52110,6 +52115,9 @@
           }
         }
       }
+    },
+    "RADIUS" : {
+
     },
     "Random" : {
       "localizations" : {
@@ -56174,6 +56182,7 @@
       }
     },
     "Scale" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -56302,6 +56311,9 @@
           }
         }
       }
+    },
+    "SCALE" : {
+
     },
     "Scale to fit video width" : {
       "localizations" : {

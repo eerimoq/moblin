@@ -1,7 +1,7 @@
 import SwiftUI
 
 private let segmentHeight = 40.0
-private let sliderWidth = 300.0
+private let sliderWidth = 200.0
 private let sliderHeight = 40.0
 private let cameraButtonWidth = 70.0
 private let pickerBorderColor = Color.gray
@@ -25,24 +25,23 @@ private struct FaceButtonView: View {
     }
 }
 
-struct FaceViewBeautyShape: View {
+private struct FaceViewSlider: View {
     @EnvironmentObject var model: Model
-    @State var radius: Float
-    @State var scale: Float
-    @State var offset: Float
-
-    private var settings: SettingsDebugBeautyFilter {
-        return model.database.debug!.beautyFilterSettings!
-    }
+    var name: String
+    @State var value: Float
+    var range: ClosedRange<Float>
+    var step: Float
+    var onChange: (Float) -> Void
 
     var body: some View {
-        HStack {
-            Text("Radius")
+        VStack(alignment: .trailing, spacing: 1) {
+            Text(name)
+                .font(.footnote)
                 .foregroundStyle(.white)
             Slider(
-                value: $radius,
-                in: 0 ... 1,
-                step: 0.01,
+                value: $value,
+                in: range,
+                step: step,
                 onEditingChanged: { begin in
                     guard !begin else {
                         return
@@ -50,136 +49,94 @@ struct FaceViewBeautyShape: View {
                     model.store()
                 }
             )
-            .onChange(of: radius) { _ in
-                settings.shapeRadius = radius
-                model.updateFaceFilterSettings()
+            .onChange(of: value) { _ in
+                onChange(value)
             }
+            .padding([.top, .bottom], 5)
+            .padding([.leading, .trailing], 7)
+            .frame(width: sliderWidth, height: sliderHeight)
+            .background(backgroundColor)
+            .cornerRadius(7)
         }
-        .padding([.top, .bottom], 5)
-        .padding([.leading, .trailing], 7)
-        .frame(width: sliderWidth, height: sliderHeight)
-        .background(backgroundColor)
-        .cornerRadius(7)
-        .padding([.bottom], 5)
-        HStack {
-            Text("Scale")
-                .foregroundStyle(.white)
-            Slider(
-                value: $scale,
-                in: 0 ... 1,
-                step: 0.01,
-                onEditingChanged: { begin in
-                    guard !begin else {
-                        return
-                    }
-                    model.store()
-                }
-            )
-            .onChange(of: scale) { _ in
-                settings.shapeScale = scale
-                model.updateFaceFilterSettings()
-            }
-        }
-        .padding([.top, .bottom], 5)
-        .padding([.leading, .trailing], 7)
-        .frame(width: sliderWidth, height: sliderHeight)
-        .background(backgroundColor)
-        .cornerRadius(7)
-        .padding([.bottom], 5)
-        HStack {
-            Text("Offset")
-                .foregroundStyle(.white)
-            Slider(
-                value: $offset,
-                in: 0 ... 1,
-                step: 0.01,
-                onEditingChanged: { begin in
-                    guard !begin else {
-                        return
-                    }
-                    model.store()
-                }
-            )
-            .onChange(of: offset) { _ in
-                settings.shapeOffset = offset
-                model.updateFaceFilterSettings()
-            }
-        }
-        .padding([.top, .bottom], 5)
-        .padding([.leading, .trailing], 7)
-        .frame(width: sliderWidth, height: sliderHeight)
-        .background(backgroundColor)
-        .cornerRadius(7)
         .padding([.bottom], 5)
     }
 }
 
-struct FaceViewBeautySmooth: View {
+private struct FaceViewBeautyShape: View {
     @EnvironmentObject var model: Model
-    @State var amount: Float
-    @State var radius: Float
 
     private var settings: SettingsDebugBeautyFilter {
         return model.database.debug!.beautyFilterSettings!
     }
 
     var body: some View {
-        HStack {
-            Text("Amount")
-                .foregroundStyle(.white)
-            Slider(
-                value: $amount,
-                in: 0 ... 1,
-                step: 0.01,
-                onEditingChanged: { begin in
-                    guard !begin else {
-                        return
-                    }
-                    model.store()
-                }
-            )
-            .onChange(of: amount) { _ in
+        FaceViewSlider(
+            name: String(localized: "RADIUS"),
+            value: settings.shapeRadius!,
+            range: 0 ... 1,
+            step: 0.01,
+            onChange: { radius in
+                settings.shapeRadius = radius
+                model.updateFaceFilterSettings()
+            }
+        )
+        FaceViewSlider(
+            name: String(localized: "SCALE"),
+            value: settings.shapeScale!,
+            range: 0 ... 1,
+            step: 0.01,
+            onChange: { scale in
+                settings.shapeScale = scale
+                model.updateFaceFilterSettings()
+            }
+        )
+        FaceViewSlider(
+            name: String(localized: "OFFSET"),
+            value: settings.shapeOffset!,
+            range: 0 ... 1,
+            step: 0.01,
+            onChange: { offset in
+                settings.shapeOffset = offset
+                model.updateFaceFilterSettings()
+            }
+        )
+    }
+}
+
+private struct FaceViewBeautySmooth: View {
+    @EnvironmentObject var model: Model
+
+    private var settings: SettingsDebugBeautyFilter {
+        return model.database.debug!.beautyFilterSettings!
+    }
+
+    var body: some View {
+        FaceViewSlider(
+            name: String(localized: "AMOUNT"),
+            value: settings.smoothAmount!,
+            range: 0 ... 1,
+            step: 0.01,
+            onChange: { amount in
                 settings.smoothAmount = amount
                 ioVideoSmoothAmount = amount
                 model.updateFaceFilterSettings()
             }
-        }
-        .padding([.top, .bottom], 5)
-        .padding([.leading, .trailing], 7)
-        .frame(width: sliderWidth, height: sliderHeight)
-        .background(backgroundColor)
-        .cornerRadius(7)
-        .padding([.bottom], 5)
-        HStack {
-            Text("Radius")
-                .foregroundStyle(.white)
-            Slider(
-                value: $radius,
-                in: 5 ... 15,
-                step: 0.5,
-                onEditingChanged: { begin in
-                    guard !begin else {
-                        return
-                    }
-                    model.store()
-                }
-            )
-            .onChange(of: radius) { _ in
+        )
+        FaceViewSlider(
+            name: String(localized: "RADIUS"),
+            value: settings.smoothRadius!,
+            range: 5 ... 15,
+            step: 0.5,
+            onChange: { radius in
                 settings.smoothRadius = radius
                 ioVideoSmoothRadius = radius
                 model.updateFaceFilterSettings()
             }
-        }
-        .padding([.top, .bottom], 5)
-        .padding([.leading, .trailing], 7)
-        .frame(width: sliderWidth, height: sliderHeight)
-        .background(backgroundColor)
-        .cornerRadius(7)
-        .padding([.bottom], 5)
+        )
     }
 }
 
-struct FaceViewBeautyButtons: View {
+private struct FaceViewBeautyButtons: View {
     @EnvironmentObject var model: Model
     @Binding var beauty: Bool
 
@@ -230,13 +187,9 @@ struct FaceView: View {
                 Spacer()
                 if model.showFaceBeauty {
                     if model.showFaceBeautyShape {
-                        FaceViewBeautyShape(
-                            radius: settings.shapeRadius!,
-                            scale: settings.shapeScale!,
-                            offset: settings.shapeOffset!
-                        )
+                        FaceViewBeautyShape()
                     } else if model.showFaceBeautySmooth && model.database.debug!.metalPetalFilters! {
-                        FaceViewBeautySmooth(amount: settings.smoothAmount!, radius: settings.smoothRadius!)
+                        FaceViewBeautySmooth()
                     }
                     FaceViewBeautyButtons(beauty: $beauty)
                 }
