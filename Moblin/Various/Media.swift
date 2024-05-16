@@ -18,7 +18,6 @@ private func becameUnmuted(old: Float, new: Float) -> Bool {
 final class Media: NSObject {
     private var rtmpConnection = RTMPConnection()
     private var srtConnection = SRTConnection()
-    private var ristConnection = RistConnection()
     private var rtmpStream: RTMPStream?
     private var srtStream: SRTStream?
     private var ristStream: RistStream?
@@ -74,7 +73,6 @@ final class Media: NSObject {
         rtmpStopStream()
         ristStopStream()
         rtmpConnection = RTMPConnection()
-        ristConnection = RistConnection()
         switch proto {
         case .rtmp:
             rtmpStream = RTMPStream(connection: rtmpConnection)
@@ -87,7 +85,7 @@ final class Media: NSObject {
             ristStream = nil
             netStream = srtStream
         case .rist:
-            ristStream = RistStream(ristConnection)
+            ristStream = RistStream()
             ristStream?.onConnected = onRistConnected
             ristStream?.onDisconnected = onRistDisconnected
             srtStream = nil
@@ -459,11 +457,11 @@ final class Media: NSObject {
         } else {
             adaptiveBitrate = nil
         }
-        ristConnection.start(url: url, bonding: bonding)
+        ristStream?.start(url: url, bonding: bonding)
     }
 
     func ristStopStream() {
-        ristConnection.stop()
+        ristStream?.stop()
     }
 
     func setTorch(on: Bool) {

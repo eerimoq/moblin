@@ -77,7 +77,6 @@ private enum RistStreamState {
 }
 
 class RistStream: NetStream {
-    weak var connection: RistConnection?
     private var context: RistContext?
     private var peers: [RistRemotePeer] = []
     private let writer = MpegTsWriter()
@@ -88,16 +87,9 @@ class RistStream: NetStream {
     var onDisconnected: (() -> Void)?
     private var state: RistStreamState = .connecting
 
-    init(_ connection: RistConnection) {
+    override init() {
         super.init()
-        self.connection = connection
-        self.connection?.stream = self
         writer.delegate = self
-    }
-
-    deinit {
-        self.connection?.stream = nil
-        self.connection = nil
     }
 
     func start(url: String, bonding: Bool) {
@@ -320,15 +312,11 @@ class RistStream: NetStream {
     }
 
     private func send(data: Data) {
-        if context?.send(data: data) != true {
-            logger.info("rist: Failed to send")
-        }
+        _ = context?.send(data: data)
     }
 
     private func send(dataPointer: UnsafeRawBufferPointer, count: Int) {
-        if context?.send(dataPointer: dataPointer, count: count) != true {
-            logger.info("rist: Failed to send")
-        }
+        _ = context?.send(dataPointer: dataPointer, count: count)
     }
 }
 
