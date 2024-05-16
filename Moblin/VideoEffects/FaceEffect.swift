@@ -190,10 +190,10 @@ final class FaceEffect: VideoEffect {
                 filter.inputImage = outputImage
                 filter.center = CGPoint(
                     x: centerX,
-                    y: minY + CGFloat(Float(maxY - minY) * (shapeOffset * 0.4 + 0.1))
+                    y: minY + CGFloat(Float(maxY - minY) * (shapeOffset * 0.15 + 0.35))
                 )
-                filter.radius = Float(maxY - minY) * (0.7 + shapeRadius * 0.4)
-                filter.scale = -(shapeScale * 0.4)
+                filter.radius = Float(maxY - minY) * (0.75 + shapeRadius * 0.15)
+                filter.scale = -(shapeScale * 0.15)
                 outputImage = filter.outputImage
             }
         }

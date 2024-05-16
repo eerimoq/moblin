@@ -81,22 +81,22 @@ private struct FaceViewBeautyShape: View {
             }
         )
         FaceViewSlider(
-            name: String(localized: "SCALE"),
-            value: settings.shapeScale!,
-            range: 0 ... 1,
-            step: 0.01,
-            onChange: { scale in
-                settings.shapeScale = scale
-                model.updateFaceFilterSettings()
-            }
-        )
-        FaceViewSlider(
             name: String(localized: "OFFSET"),
             value: settings.shapeOffset!,
             range: 0 ... 1,
             step: 0.01,
             onChange: { offset in
                 settings.shapeOffset = offset
+                model.updateFaceFilterSettings()
+            }
+        )
+        FaceViewSlider(
+            name: String(localized: "SCALE"),
+            value: settings.shapeScale!,
+            range: 0 ... 1,
+            step: 0.01,
+            onChange: { scale in
+                settings.shapeScale = scale
                 model.updateFaceFilterSettings()
             }
         )
