@@ -1,8 +1,6 @@
 import Foundation
 import Network
 
-var rtmpSocketWaitingClose = true
-
 enum RTMPSocketReadyState: UInt8 {
     case uninitialized = 0
     case versionSent = 1
@@ -25,7 +23,7 @@ final class RTMPSocket {
     var chunkSizeC: Int = RTMPChunk.defaultSize
     var chunkSizeS: Int = RTMPChunk.defaultSize
     var windowSizeC = RTMPSocket.defaultWindowSizeC
-    var timeout: Int = 15
+    var timeout: Int = 10
     var readyState: RTMPSocketReadyState = .uninitialized {
         didSet {
             delegate?.socket(self, readyState: readyState)
@@ -180,7 +178,7 @@ final class RTMPSocket {
     }
 
     private func viabilityDidChange(to viability: Bool) {
-        logger.info("Connection viability changed to \(viability)")
+        logger.info("rtmp: Connection viability changed to \(viability)")
         if viability == false {
             close(isDisconnected: true)
         }
@@ -189,26 +187,23 @@ final class RTMPSocket {
     private func stateDidChange(to state: NWConnection.State) {
         switch state {
         case .ready:
-            logger.info("Connection is ready.")
+            logger.info("rtmp: Connection is ready.")
             timeoutHandler?.cancel()
             connected = true
         case let .waiting(error):
-            logger.info("Connection waiting: \(error)")
-            if rtmpSocketWaitingClose {
-                close(isDisconnected: true)
-            }
+            logger.info("rtmp: Connection waiting: \(error)")
         case .setup:
-            logger.debug("Connection is setting up.")
+            logger.debug("rtmp: Connection is setting up.")
         case .preparing:
-            logger.debug("Connection is preparing.")
+            logger.debug("rtmp: Connection is preparing.")
         case let .failed(error):
-            logger.info("Connection failed: \(error)")
+            logger.info("rtmp: Connection failed: \(error)")
             close(isDisconnected: true)
         case .cancelled:
-            logger.info("Connection cancelled.")
+            logger.info("rtmp: Connection cancelled.")
             close(isDisconnected: true)
         @unknown default:
-            logger.error("Unknown connection state.")
+            logger.error("rtmp: Unknown connection state.")
         }
     }
 
@@ -256,8 +251,7 @@ final class RTMPSocket {
     }
 
     private func didTimeout() {
-        close(isDisconnected: false)
-        delegate?.dispatch(.ioError, data: nil)
-        logger.info("connection timedout")
+        logger.info("rtmp: Connect timeout")
+        close(isDisconnected: true)
     }
 }

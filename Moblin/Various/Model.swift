@@ -785,7 +785,6 @@ final class Model: NSObject, ObservableObject {
         media.onLowFpsImage = handleLowFpsImage
         setPixelFormat()
         setMetalPetalFilters()
-        setRtmpWaitingClose()
         setupAudioSession()
         if let cameraDevice = preferredCamera(position: .back) {
             (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice
@@ -925,10 +924,6 @@ final class Model: NSObject, ObservableObject {
 
     func setMetalPetalFilters() {
         ioVideoUnitMetalPetal = database.debug!.metalPetalFilters!
-    }
-
-    func setRtmpWaitingClose() {
-        rtmpSocketWaitingClose = database.debug!.rtmpWaitingClose!
     }
 
     private func handleIpStatusUpdate(statuses: [IPMonitor.Status]) {

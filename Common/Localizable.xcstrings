@@ -55268,9 +55268,6 @@
         }
       }
     },
-    "RTMP waiting close" : {
-
-    },
     "rtmp://a.rtmp.youtube.com/live2" : {
       "localizations" : {
         "de" : {

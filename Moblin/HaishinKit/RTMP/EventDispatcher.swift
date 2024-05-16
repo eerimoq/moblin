@@ -15,7 +15,6 @@ open class Event {
         public typealias StringLiteralType = String
 
         public static let event: Name = "event"
-        public static let ioError: Name = "ioError"
         public static let rtmpStatus: Name = "rtmpStatus"
 
         public let rawValue: String

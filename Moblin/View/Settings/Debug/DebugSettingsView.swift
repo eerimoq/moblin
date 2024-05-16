@@ -111,13 +111,6 @@ struct DebugSettingsView: View {
                     model.setMetalPetalFilters()
                     model.store()
                 }))
-                Toggle("RTMP waiting close", isOn: Binding(get: {
-                    model.database.debug!.rtmpWaitingClose!
-                }, set: { value in
-                    model.database.debug!.rtmpWaitingClose = value
-                    model.setRtmpWaitingClose()
-                    model.store()
-                }))
             } header: {
                 Text("Experimental")
             }
