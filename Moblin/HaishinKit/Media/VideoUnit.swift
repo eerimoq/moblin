@@ -445,28 +445,12 @@ final class VideoUnit: NSObject {
     }
 
     // periphery:ignore
-    private func blur(image: MTIImage?) -> MTIImage? {
-        let filter = MTIMPSGaussianBlurFilter()
-        filter.inputImage = image
-        filter.radius = 25
-        return filter.outputImage
-    }
-
-    // periphery:ignore
-    private func skinSmoothing(image: MTIImage?) -> MTIImage? {
+    private func skinSmoothing(image: MTIImage) -> MTIImage {
         let filter = MTIHighPassSkinSmoothingFilter()
         filter.amount = ioVideoSmoothAmount
         filter.radius = ioVideoSmoothRadius
         filter.inputImage = image
-        return filter.outputImage
-    }
-
-    // periphery:ignore
-    private func pixellate(image: MTIImage?) -> MTIImage? {
-        let filter = MTIPixellateFilter()
-        filter.inputImage = image
-        filter.scale = .init(width: 20, height: 20)
-        return filter.outputImage
+        return filter.outputImage ?? image
     }
 
     // periphery:ignore
@@ -493,83 +477,39 @@ final class VideoUnit: NSObject {
         return filter.outputImage
     }
 
-    // periphery:ignore
-    private func triple(image: MTIImage?) -> MTIImage? {
+    private func blurImageMetalPetal(_ image: MTIImage?) -> MTIImage? {
         guard let image else {
-            return image
+            return nil
         }
-        let filter = MTIMultilayerCompositingFilter()
-        let width = image.size.width
-        let height = image.size.height
-        let segmentWidth = width / 3
-        let leadingPosition = segmentWidth / 2
-        let bottomPosition = height / 2
-        guard let centerImage = image.cropped(to: .pixel(.init(
-            x: segmentWidth,
-            y: 0,
-            width: segmentWidth,
-            height: height
-        ))) else {
-            return image
-        }
-        filter.inputBackgroundImage = image
-        filter.layers = [
-            .init(
-                content: centerImage,
-                layoutUnit: .pixel,
-                position: .init(x: leadingPosition, y: bottomPosition),
-                size: .init(width: segmentWidth, height: height),
-                rotation: 0,
-                opacity: 1,
-                blendMode: .normal
-            ),
-            .init(
-                content: centerImage,
-                layoutUnit: .pixel,
-                position: .init(x: leadingPosition + 2 * segmentWidth, y: bottomPosition),
-                size: .init(width: segmentWidth, height: height),
-                rotation: 0,
-                opacity: 1,
-                blendMode: .normal
-            ),
-        ]
-        return filter.outputImage
-    }
-
-    // periphery:ignore
-    private func grayScale(image: MTIImage?) -> MTIImage? {
-        let filter = MTISaturationFilter()
-        filter.saturation = 0
+        let filter = MTIMPSGaussianBlurFilter()
         filter.inputImage = image
+        filter.radius = Float(25 * (image.extent.height / 1080))
         return filter.outputImage
-    }
-
-    // periphery:ignore
-    private func sepia(image: MTIImage?) -> MTIImage? {
-        return image
-    }
-
-    // periphery:ignore
-    private func cube(image: MTIImage?) -> MTIImage? {
-        return image
     }
 
     private func applyEffectsMetalPetal(_ imageBuffer: CVImageBuffer,
                                         _ sampleBuffer: CMSampleBuffer,
-                                        _: [VNFaceObservation]?,
-                                        _: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
+                                        _ faceDetections: [VNFaceObservation]?,
+                                        _ applyBlur: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
     {
+        let metalPetalEffects = effects.filter { $0.supportsMetalPetal() }
+        guard !metalPetalEffects.isEmpty || applyBlur else {
+            return (nil, nil)
+        }
         var image: MTIImage? = MTIImage(cvPixelBuffer: imageBuffer, alphaType: .alphaIsOne)
-        // image = brightness(image: image)
-        // image = blur(image: image)
-        image = skinSmoothing(image: image)
-        // image = pixellate(image: image)
-        // image = bump(image: image)
-        // image = blendWithMask(image: image)
-        // image = triple(image: image)
-        // image = grayScale(image: image)
-        // image = sepia(image: image)
-        // image = cube(image: image)
+        var failedEffect: String?
+        for effect in metalPetalEffects {
+            let effectOutputImage = effect.executeMetalPetal(image, faceDetections)
+            if effectOutputImage != nil {
+                image = effectOutputImage
+            } else {
+                failedEffect = "\(effect.getName()) (wrong size)"
+            }
+        }
+        mixer?.delegate?.mixerVideo(failedEffect: failedEffect)
+        if applyBlur {
+            image = blurImageMetalPetal(image)
+        }
         guard let image else {
             return (nil, nil)
         }

@@ -1,4 +1,5 @@
 import AVFoundation
+import MetalPetal
 import UIKit
 import Vision
 
@@ -14,5 +15,16 @@ final class PixellateEffect: VideoEffect {
         filter.center = .init(x: 0, y: 0)
         filter.scale = 10 * (Float(image.extent.width) / 1920)
         return filter.outputImage?.cropped(to: image.extent) ?? image
+    }
+
+    override func executeMetalPetal(_ image: MTIImage?, _: [VNFaceObservation]?) -> MTIImage? {
+        let filter = MTIPixellateFilter()
+        filter.inputImage = image
+        filter.scale = .init(width: 20, height: 20)
+        return filter.outputImage
+    }
+
+    override func supportsMetalPetal() -> Bool {
+        return true
     }
 }

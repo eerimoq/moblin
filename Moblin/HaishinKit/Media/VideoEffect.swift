@@ -1,5 +1,6 @@
 import AVFoundation
 import CoreImage
+import MetalPetal
 import Vision
 
 open class VideoEffect: NSObject {
@@ -12,6 +13,14 @@ open class VideoEffect: NSObject {
     }
 
     open func execute(_ image: CIImage, _: [VNFaceObservation]?) -> CIImage {
-        image
+        return image
+    }
+
+    open func executeMetalPetal(_: MTIImage?, _: [VNFaceObservation]?) -> MTIImage? {
+        return nil
+    }
+
+    open func supportsMetalPetal() -> Bool {
+        return false
     }
 }
