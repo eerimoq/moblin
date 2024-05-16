@@ -118,18 +118,16 @@ private struct FaceViewBeautySmooth: View {
             step: 0.01,
             onChange: { amount in
                 settings.smoothAmount = amount
-                ioVideoSmoothAmount = amount
                 model.updateFaceFilterSettings()
             }
         )
         FaceViewSlider(
             name: String(localized: "RADIUS"),
             value: settings.smoothRadius!,
-            range: 5 ... 15,
+            range: 5 ... 20,
             step: 0.5,
             onChange: { radius in
                 settings.smoothRadius = radius
-                ioVideoSmoothRadius = radius
                 model.updateFaceFilterSettings()
             }
         )

@@ -1,4 +1,5 @@
 import AVFoundation
+import MetalPetal
 import UIKit
 import Vision
 
@@ -272,5 +273,37 @@ final class FaceEffect: VideoEffect {
                 .cropped(to: image.extent)
         }
         return outputImage ?? image
+    }
+
+    private func addBeautyMetalPetal(_ image: MTIImage?) -> MTIImage? {
+        let filter = MTIHighPassSkinSmoothingFilter()
+        filter.amount = smoothAmount
+        filter.radius = smoothRadius
+        filter.inputImage = image
+        return filter.outputImage
+    }
+
+    // periphery:ignore
+    private func bump(image: MTIImage?) -> MTIImage? {
+        guard let image else {
+            return image
+        }
+        let filter = MTIBulgeDistortionFilter()
+        filter.inputImage = image
+        filter.center = .init(x: Float(image.size.width) / 2, y: Float(image.size.height) / 2)
+        filter.radius = 250
+        filter.scale = -0.1
+        return filter.outputImage
+    }
+
+    override func executeMetalPetal(_ image: MTIImage?, _: [VNFaceObservation]?) -> MTIImage? {
+        if showBeauty {
+            return addBeautyMetalPetal(image)
+        }
+        return nil
+    }
+
+    override func supportsMetalPetal() -> Bool {
+        return showBeauty
     }
 }

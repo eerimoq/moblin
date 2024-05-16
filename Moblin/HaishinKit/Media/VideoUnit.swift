@@ -9,8 +9,6 @@ var ioVideoUnitIgnoreFramesAfterAttachSeconds = 0.3
 var ioVideoUnitWatchInterval = 1.0
 var pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
 var ioVideoUnitMetalPetal = false
-var ioVideoSmoothAmount: Float = 0.65
-var ioVideoSmoothRadius: Float = 20
 private let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.VideoIOComponent")
 private let detectionsQueue = DispatchQueue(
     label: "com.haishinkit.HaishinKit.Detections",
@@ -441,28 +439,6 @@ final class VideoUnit: NSObject {
         let filter = MTIBrightnessFilter()
         filter.inputImage = image
         filter.brightness = 0.0
-        return filter.outputImage
-    }
-
-    // periphery:ignore
-    private func skinSmoothing(image: MTIImage) -> MTIImage {
-        let filter = MTIHighPassSkinSmoothingFilter()
-        filter.amount = ioVideoSmoothAmount
-        filter.radius = ioVideoSmoothRadius
-        filter.inputImage = image
-        return filter.outputImage ?? image
-    }
-
-    // periphery:ignore
-    private func bump(image: MTIImage?) -> MTIImage? {
-        guard let image else {
-            return image
-        }
-        let filter = MTIBulgeDistortionFilter()
-        filter.inputImage = image
-        filter.center = .init(x: Float(image.size.width) / 2, y: Float(image.size.height) / 2)
-        filter.radius = 250
-        filter.scale = -0.1
         return filter.outputImage
     }
 
