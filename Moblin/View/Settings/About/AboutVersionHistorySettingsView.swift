@@ -8,6 +8,10 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.272.0", date: "2024-05-16", changes: [
+        "• Smaller face shape slider ranges.",
+        "• Bigger pixels in pixellate filter.",
+    ]),
     Version(version: "0.271.0", date: "2024-05-16", changes: [
         "• Fix RTMP fails to connect in some networks. 🐛 Terrible Gamer",
         "• Face filter continued.",
