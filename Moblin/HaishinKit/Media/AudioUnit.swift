@@ -140,11 +140,10 @@ final class AudioUnit: NSObject {
         guard let sampleBuffer, selectedReplaceAudioId != nil else {
             return
         }
-        var audioLevel: Float = .infinity
         var numberOfAudioChannels = sampleBuffer.formatDescription?.audioChannelLayout?.numberOfChannels ?? 0
         prepareSampleBuffer(
             sampleBuffer: sampleBuffer,
-            audioLevel: audioLevel,
+            audioLevel: .infinity,
             numberOfAudioChannels: numberOfAudioChannels
         )
     }
@@ -174,9 +173,9 @@ final class AudioUnit: NSObject {
         guard let mixer else {
             return
         }
-
         // Workaround for audio drift on iPhone 15 Pro Max running iOS 17. Probably issue on more models.
-        let presentationTimeStamp = syncTimeToVideo(mixer: mixer, sampleBuffer: sampleBuffer)
+        let presentationTimeStamp = sampleBuffer.presentationTimeStamp
+       // let presentationTimeStamp = syncTimeToVideo(mixer: mixer, sampleBuffer: sampleBuffer)
         guard mixer.useSampleBuffer(presentationTimeStamp, mediaType: AVMediaType.audio) else {
             return
         }
@@ -186,21 +185,6 @@ final class AudioUnit: NSObject {
             presentationTimestamp: presentationTimeStamp.seconds
         )
         appendSampleBuffer(sampleBuffer, presentationTimeStamp, isFirstAfterAttach: false)
-    }
-
-    private func syncTimeToVideo(mixer: Mixer, sampleBuffer: CMSampleBuffer) -> CMTime {
-        var presentationTimeStamp = sampleBuffer.presentationTimeStamp
-        if #available(iOS 16.0, *) {
-            if let audioClock = mixer.audioSession.synchronizationClock,
-               let videoClock = mixer.videoSession.synchronizationClock
-            {
-                let audioTimescale = sampleBuffer.presentationTimeStamp.timescale
-                let seconds = audioClock.convertTime(presentationTimeStamp, to: videoClock).seconds
-                let value = CMTimeValue(seconds * Double(audioTimescale))
-                presentationTimeStamp = CMTime(value: value, timescale: audioTimescale)
-            }
-        }
-        return presentationTimeStamp
     }
 }
 
@@ -227,5 +211,20 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
             audioLevel: audioLevel,
             numberOfAudioChannels: numberOfAudioChannels
         )
+    }
+    
+    private func syncTimeToVideo(mixer: Mixer, sampleBuffer: CMSampleBuffer) -> CMTime {
+        var presentationTimeStamp = sampleBuffer.presentationTimeStamp
+        if #available(iOS 16.0, *) {
+            if let audioClock = mixer.audioSession.synchronizationClock,
+               let videoClock = mixer.videoSession.synchronizationClock
+            {
+                let audioTimescale = sampleBuffer.presentationTimeStamp.timescale
+                let seconds = audioClock.convertTime(presentationTimeStamp, to: videoClock).seconds
+                let value = CMTimeValue(seconds * Double(audioTimescale))
+                presentationTimeStamp = CMTime(value: value, timescale: audioTimescale)
+            }
+        }
+        return presentationTimeStamp
     }
 }
