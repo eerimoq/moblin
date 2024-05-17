@@ -8,8 +8,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.274.0", date: "2024-05-17", changes: [
+        "• New filter framework:",
+        "  • Movie filter.",
+        "  • Crop.",
+    ]),
     Version(version: "0.273.0", date: "2024-05-17", changes: [
-        "• Stop showing location in RealtimeIRL in more cases. :bug: evitichi and juaoose",
+        "• Stop showing location in RealtimeIRL in more cases. 🐛 evitichi and juaoose",
         "  • When disabling Settings → Location → Enabled.",
         "  • When disabling Settings → Streams → My stream → RealtimeIRL",
         "  • When modifying privacy regions.",
@@ -823,7 +828,7 @@ private let versions = [
         "• Default location (GPS) settings.",
         "  • High precision.",
         "• Disable auto capitalization in many input fields.",
-        "• Change OBS start/stop stream quick button icon to router(?) :slight_smile:",
+        "• Change OBS start/stop stream quick button icon to router(?)",
         "  • The old icon will be used for a new stream switcher quick button.",
         "• Correctly duplicate various stream settings toggles.",
         "• Switch stream quick button.",
@@ -963,7 +968,7 @@ private let versions = [
     Version(version: "0.123.0", date: "2023-12-30", changes: [
         "• Show RTMP server icon in top right when enabled.",
         "  • RTMP server bitrate next to it when at least one client is connected.",
-        "• Not forcing clock to 24h (as Americans insist on using 12h). :slight_smile:",
+        "• Not forcing clock to 24h (as Americans insist on using 12h).",
         "• RTMP server stability and major refactoring.",
     ]),
     Version(version: "0.122.0", date: "2023-12-29", changes: [
