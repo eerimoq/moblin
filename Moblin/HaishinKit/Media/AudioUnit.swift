@@ -174,7 +174,7 @@ final class AudioUnit: NSObject {
         guard let mixer else {
             return
         }
-        
+
         // Workaround for audio drift on iPhone 15 Pro Max running iOS 17. Probably issue on more models.
         let presentationTimeStamp = syncTimeToVideo(mixer: mixer, sampleBuffer: sampleBuffer)
         guard mixer.useSampleBuffer(presentationTimeStamp, mediaType: AVMediaType.audio) else {
