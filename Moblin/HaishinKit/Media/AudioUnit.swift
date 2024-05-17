@@ -171,12 +171,16 @@ final class AudioUnit: NSObject {
     }
 
     func prepareSampleBuffer(sampleBuffer: CMSampleBuffer, audioLevel: Float, numberOfAudioChannels: Int) {
-        // Workaround for audio drift on iPhone 15 Pro Max running iOS 17. Probably issue on more models.
-        let presentationTimeStamp = syncTimeToVideo(mixer: mixer!, sampleBuffer: sampleBuffer)
-        guard mixer!.useSampleBuffer(presentationTimeStamp, mediaType: AVMediaType.audio) else {
+        guard let mixer else {
             return
         }
-        mixer!.delegate?.mixer(
+        
+        // Workaround for audio drift on iPhone 15 Pro Max running iOS 17. Probably issue on more models.
+        let presentationTimeStamp = syncTimeToVideo(mixer: mixer, sampleBuffer: sampleBuffer)
+        guard mixer.useSampleBuffer(presentationTimeStamp, mediaType: AVMediaType.audio) else {
+            return
+        }
+        mixer.delegate?.mixer(
             audioLevel: audioLevel,
             numberOfAudioChannels: numberOfAudioChannels,
             presentationTimestamp: presentationTimeStamp.seconds
