@@ -40,7 +40,6 @@ final class TripleEffect: VideoEffect {
         guard let image else {
             return image
         }
-        let filter = MTIMultilayerCompositingFilter()
         let width = image.size.width
         let height = image.size.height
         let segmentWidth = width / 3
@@ -54,6 +53,7 @@ final class TripleEffect: VideoEffect {
         ))) else {
             return image
         }
+        let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.layers = [
             .init(
