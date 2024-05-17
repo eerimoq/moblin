@@ -20,6 +20,8 @@ struct FaceEffectSettings {
     var smoothRadius: Float = 20.0
 }
 
+private let cropScaleDownFactor = 0.8
+
 final class FaceEffect: VideoEffect {
     var safeSettings = Atomic<FaceEffectSettings>(.init())
     private var settings = FaceEffectSettings()
@@ -268,12 +270,11 @@ final class FaceEffect: VideoEffect {
             outputImage = addFaceLandmarks(image: outputImage, detections: faceDetections)
         }
         if settings.crop {
-            let scaleDownFactor = 0.8
             let width = image.extent.width
             let height = image.extent.height
-            let scaleUpFactor = 1 / scaleDownFactor
-            let smallWidth = width * scaleDownFactor
-            let smallHeight = height * scaleDownFactor
+            let scaleUpFactor = 1 / cropScaleDownFactor
+            let smallWidth = width * cropScaleDownFactor
+            let smallHeight = height * cropScaleDownFactor
             let smallOffsetX = (width - smallWidth) / 2
             let smallOffsetY = (height - smallHeight) / 2
             outputImage = outputImage?
@@ -334,10 +335,30 @@ final class FaceEffect: VideoEffect {
     }
 
     override func executeMetalPetal(_ image: MTIImage?, _ detections: [VNFaceObservation]?) -> MTIImage? {
-        if settings.showBeauty {
-            return addBeautyMetalPetal(image, detections)
+        var outputImage = image
+        guard let image else {
+            return nil
         }
-        return nil
+        if settings.showBeauty {
+            outputImage = addBeautyMetalPetal(outputImage, detections)
+        }
+        if settings.crop {
+            let width = image.extent.width
+            let height = image.extent.height
+            let smallWidth = width * cropScaleDownFactor
+            let smallHeight = height * cropScaleDownFactor
+            let smallOffsetX = (width - smallWidth) / 2
+            let smallOffsetY = (height - smallHeight) / 2
+            outputImage = outputImage?
+                .cropped(to: CGRect(
+                    x: smallOffsetX,
+                    y: smallOffsetY,
+                    width: smallWidth,
+                    height: smallHeight
+                ))?
+                .resized(to: image.size)
+        }
+        return outputImage
     }
 
     private func isBeautyEnabled() -> Bool {
