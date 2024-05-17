@@ -5233,6 +5233,7 @@ extension Model {
     }
 
     func reloadRealtimeIrl() {
+        realtimeIrl?.stop()
         realtimeIrl = nil
         if isRealtimeIrlConfigured() {
             realtimeIrl = RealtimeIrl(pushKey: stream.realtimeIrlPushKey!)
