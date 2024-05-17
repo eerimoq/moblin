@@ -8,6 +8,12 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.273.0", date: "2024-05-17", changes: [
+        "• Stop showing location in RealtimeIRL in more cases. :bug: evitichi and juaoose",
+        "  • When disabling Settings → Location → Enabled.",
+        "  • When disabling Settings → Streams → My stream → RealtimeIRL",
+        "  • When modifying privacy regions.",
+    ]),
     Version(version: "0.272.0", date: "2024-05-16", changes: [
         "• Smaller face shape slider ranges.",
         "• Bigger pixels in pixellate filter.",
