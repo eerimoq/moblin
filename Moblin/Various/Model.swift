@@ -897,20 +897,22 @@ final class Model: NSObject, ObservableObject {
 
     func updateFaceFilterSettings() {
         let settings = database.debug!.beautyFilterSettings!
-        faceEffect.crop = database.debug!.beautyFilter!
-        faceEffect.showBlur = settings.showBlur
-        faceEffect.showColors = settings.showColors
-        faceEffect.showMoblin = settings.showMoblin
-        faceEffect.showFaceLandmarks = settings.showFaceLandmarks
-        faceEffect.contrast = settings.contrast
-        faceEffect.brightness = settings.brightness
-        faceEffect.saturation = settings.saturation
-        faceEffect.showBeauty = settings.showBeauty!
-        faceEffect.shapeRadius = settings.shapeRadius!
-        faceEffect.shapeScale = settings.shapeScale!
-        faceEffect.shapeOffset = settings.shapeOffset!
-        faceEffect.smoothAmount = settings.smoothAmount!
-        faceEffect.smoothRadius = settings.smoothRadius!
+        faceEffect.safeSettings.mutate { $0 = FaceEffectSettings(
+            crop: database.debug!.beautyFilter!,
+            showBlur: settings.showBlur,
+            showColors: settings.showColors,
+            showMoblin: settings.showMoblin,
+            showFaceLandmarks: settings.showFaceLandmarks,
+            contrast: settings.contrast,
+            brightness: settings.brightness,
+            saturation: settings.saturation,
+            showBeauty: settings.showBeauty!,
+            shapeRadius: settings.shapeRadius!,
+            shapeScale: settings.shapeScale!,
+            shapeOffset: settings.shapeOffset!,
+            smoothAmount: settings.smoothAmount!,
+            smoothRadius: settings.smoothRadius!
+        ) }
     }
 
     func setPixelFormat() {

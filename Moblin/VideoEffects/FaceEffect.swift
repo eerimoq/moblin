@@ -3,7 +3,7 @@ import MetalPetal
 import UIKit
 import Vision
 
-final class FaceEffect: VideoEffect {
+struct FaceEffectSettings {
     var crop = true
     var showBlur = true
     var showColors = true
@@ -18,6 +18,11 @@ final class FaceEffect: VideoEffect {
     var shapeOffset: Float = 0.5
     var smoothAmount: Float = 0.65
     var smoothRadius: Float = 20.0
+}
+
+final class FaceEffect: VideoEffect {
+    var safeSettings = Atomic<FaceEffectSettings>(.init())
+    private var settings = FaceEffectSettings()
     let moblinImage: CIImage?
 
     override init() {
@@ -66,9 +71,9 @@ final class FaceEffect: VideoEffect {
     private func adjustColorControls(image: CIImage?) -> CIImage? {
         let filter = CIFilter.colorControls()
         filter.inputImage = image
-        filter.brightness = brightness
-        filter.contrast = contrast
-        filter.saturation = saturation
+        filter.brightness = settings.brightness
+        filter.contrast = settings.contrast
+        filter.saturation = settings.saturation
         return filter.outputImage
     }
 
@@ -191,10 +196,10 @@ final class FaceEffect: VideoEffect {
                 filter.inputImage = outputImage
                 filter.center = CGPoint(
                     x: centerX,
-                    y: minY + CGFloat(Float(maxY - minY) * (shapeOffset * 0.15 + 0.35))
+                    y: minY + CGFloat(Float(maxY - minY) * (settings.shapeOffset * 0.15 + 0.35))
                 )
-                filter.radius = Float(maxY - minY) * (0.75 + shapeRadius * 0.15)
-                filter.scale = -(shapeScale * 0.15)
+                filter.radius = Float(maxY - minY) * (0.75 + settings.shapeRadius * 0.15)
+                filter.scale = -(settings.shapeScale * 0.15)
                 outputImage = filter.outputImage
             }
         }
@@ -230,15 +235,20 @@ final class FaceEffect: VideoEffect {
         return outputImage.composited(over: image).cropped(to: image.extent)
     }
 
+    private func loadSettings() {
+        settings = safeSettings.value
+    }
+
     override func execute(_ image: CIImage, _ faceDetections: [VNFaceObservation]?) -> CIImage {
+        loadSettings()
         guard let faceDetections else {
             return image
         }
         var outputImage: CIImage? = image
-        if showColors {
+        if settings.showColors {
             outputImage = adjustColors(image: outputImage)
         }
-        if showBlur {
+        if settings.showBlur {
             outputImage = applyBlur(image: outputImage)
         }
         if outputImage != image {
@@ -248,16 +258,16 @@ final class FaceEffect: VideoEffect {
                 detections: faceDetections
             )
         }
-        if showMoblin {
+        if settings.showMoblin {
             outputImage = addMoblin(image: outputImage, detections: faceDetections)
         }
-        if showBeauty {
+        if settings.showBeauty {
             outputImage = addBeauty(image: outputImage, detections: faceDetections)
         }
-        if showFaceLandmarks {
+        if settings.showFaceLandmarks {
             outputImage = addFaceLandmarks(image: outputImage, detections: faceDetections)
         }
-        if crop {
+        if settings.crop {
             let scaleDownFactor = 0.8
             let width = image.extent.width
             let height = image.extent.height
@@ -277,10 +287,10 @@ final class FaceEffect: VideoEffect {
 
     private func addBeautyMetalPetal(_ image: MTIImage?, _ detections: [VNFaceObservation]?) -> MTIImage? {
         var image = image
-        if smoothAmount > 0 {
+        if settings.smoothAmount > 0 {
             image = addBeautySmoothMetalPetal(image)
         }
-        if shapeScale > 0 {
+        if settings.shapeScale > 0 {
             image = addBeautyShapeMetalPetal(image, detections)
         }
         return image
@@ -288,8 +298,8 @@ final class FaceEffect: VideoEffect {
 
     private func addBeautySmoothMetalPetal(_ image: MTIImage?) -> MTIImage? {
         let filter = MTIHighPassSkinSmoothingFilter()
-        filter.amount = smoothAmount
-        filter.radius = smoothRadius
+        filter.amount = settings.smoothAmount
+        filter.radius = settings.smoothRadius
         filter.inputImage = image
         return filter.outputImage
     }
@@ -311,11 +321,12 @@ final class FaceEffect: VideoEffect {
                 let minY = Float(lastPoint.y)
                 let centerX = Float(lastPoint.x)
                 let filter = MTIBulgeDistortionFilter()
-                let y = Float(image.size.height) - (minY + (maxY - minY) * (shapeOffset * 0.15 + 0.35))
+                let y = Float(image.size.height) -
+                    (minY + (maxY - minY) * (settings.shapeOffset * 0.15 + 0.35))
                 filter.inputImage = outputImage
                 filter.center = .init(x: centerX, y: y)
-                filter.radius = (maxY - minY) * (0.6 + shapeRadius * 0.15)
-                filter.scale = -(shapeScale * 0.075)
+                filter.radius = (maxY - minY) * (0.6 + settings.shapeRadius * 0.15)
+                filter.scale = -(settings.shapeScale * 0.075)
                 outputImage = filter.outputImage
             }
         }
@@ -323,17 +334,20 @@ final class FaceEffect: VideoEffect {
     }
 
     override func executeMetalPetal(_ image: MTIImage?, _ detections: [VNFaceObservation]?) -> MTIImage? {
-        if showBeauty {
+        if settings.showBeauty {
             return addBeautyMetalPetal(image, detections)
         }
         return nil
     }
 
     private func isBeautyEnabled() -> Bool {
-        return showBeauty && (shapeScale > 0 || smoothAmount > 0)
+        return settings.showBeauty && (settings.shapeScale > 0 || settings.smoothAmount > 0)
     }
 
     override func supportsMetalPetal() -> Bool {
+        // Do not load again for this frame as settings may not change from calling this function to
+        // executing.
+        loadSettings()
         return isBeautyEnabled()
     }
 }
