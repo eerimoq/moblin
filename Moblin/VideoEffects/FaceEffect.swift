@@ -275,7 +275,18 @@ final class FaceEffect: VideoEffect {
         return outputImage ?? image
     }
 
-    private func addBeautyMetalPetal(_ image: MTIImage?) -> MTIImage? {
+    private func addBeautyMetalPetal(_ image: MTIImage?, _ detections: [VNFaceObservation]?) -> MTIImage? {
+        var image = image
+        if smoothAmount > 0 {
+            image = addBeautySmoothMetalPetal(image)
+        }
+        if shapeScale > 0 {
+            image = addBeautyShapeMetalPetal(image, detections)
+        }
+        return image
+    }
+
+    private func addBeautySmoothMetalPetal(_ image: MTIImage?) -> MTIImage? {
         let filter = MTIHighPassSkinSmoothingFilter()
         filter.amount = smoothAmount
         filter.radius = smoothRadius
@@ -283,27 +294,46 @@ final class FaceEffect: VideoEffect {
         return filter.outputImage
     }
 
-    // periphery:ignore
-    private func bump(image: MTIImage?) -> MTIImage? {
-        guard let image else {
-            return image
+    private func addBeautyShapeMetalPetal(_ image: MTIImage?,
+                                          _ detections: [VNFaceObservation]?) -> MTIImage?
+    {
+        guard let image, let detections else {
+            return nil
         }
-        let filter = MTIBulgeDistortionFilter()
-        filter.inputImage = image
-        filter.center = .init(x: Float(image.size.width) / 2, y: Float(image.size.height) / 2)
-        filter.radius = 250
-        filter.scale = -0.1
-        return filter.outputImage
+        var outputImage: MTIImage? = image
+        for detection in detections {
+            if let medianLine = detection.landmarks?.medianLine {
+                let points = medianLine.pointsInImage(imageSize: image.extent.size)
+                guard let firstPoint = points.first, let lastPoint = points.last else {
+                    continue
+                }
+                let maxY = Float(firstPoint.y)
+                let minY = Float(lastPoint.y)
+                let centerX = Float(lastPoint.x)
+                let filter = MTIBulgeDistortionFilter()
+                let y = Float(image.size.height) - (minY + (maxY - minY) * (shapeOffset * 0.15 + 0.35))
+                filter.inputImage = outputImage
+                filter.center = .init(x: centerX, y: y)
+                filter.radius = (maxY - minY) * (0.6 + shapeRadius * 0.15)
+                filter.scale = -(shapeScale * 0.075)
+                outputImage = filter.outputImage
+            }
+        }
+        return outputImage
     }
 
-    override func executeMetalPetal(_ image: MTIImage?, _: [VNFaceObservation]?) -> MTIImage? {
+    override func executeMetalPetal(_ image: MTIImage?, _ detections: [VNFaceObservation]?) -> MTIImage? {
         if showBeauty {
-            return addBeautyMetalPetal(image)
+            return addBeautyMetalPetal(image, detections)
         }
         return nil
     }
 
+    private func isBeautyEnabled() -> Bool {
+        return showBeauty && (shapeScale > 0 || smoothAmount > 0)
+    }
+
     override func supportsMetalPetal() -> Bool {
-        return showBeauty
+        return isBeautyEnabled()
     }
 }
