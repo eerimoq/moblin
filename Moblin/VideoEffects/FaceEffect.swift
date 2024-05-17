@@ -369,6 +369,6 @@ final class FaceEffect: VideoEffect {
         // Do not load again for this frame as settings may not change from calling this function to
         // executing.
         loadSettings()
-        return isBeautyEnabled()
+        return isBeautyEnabled() || settings.crop
     }
 }
