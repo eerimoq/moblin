@@ -221,8 +221,11 @@ final class FaceEffect: VideoEffect {
     }
 
     private func addBeauty(image: CIImage?, detections: [VNFaceObservation]?) -> CIImage? {
-        guard let image, let detections else {
+        guard let image, var detections else {
             return image
+        }
+        if detections.isEmpty {
+            detections = lastFaceDetections
         }
         var outputImage: CIImage? = image
         for detection in detections {
@@ -241,11 +244,15 @@ final class FaceEffect: VideoEffect {
                     y: minY + CGFloat(Float(maxY - minY) * (settings.shapeOffset * 0.15 + 0.35))
                 )
                 filter.radius = Float(maxY - minY) * (0.75 + settings.shapeRadius * 0.15)
-                filter.scale = -(settings.shapeScale * 0.15)
+                filter.scale = shapeScale()
                 outputImage = filter.outputImage
             }
         }
         return outputImage?.cropped(to: image.extent)
+    }
+
+    private func shapeScale() -> Float {
+        return -(settings.shapeScale * 0.15) * shapeScaleFactor
     }
 
     private func addFaceLandmarks(image: CIImage?, detections: [VNFaceObservation]?) -> CIImage? {
@@ -325,7 +332,7 @@ final class FaceEffect: VideoEffect {
                 .transformed(by: CGAffineTransform(scaleX: scaleUpFactor, y: scaleUpFactor))
                 .cropped(to: image.extent)
         }
-        lastFaceDetections = faceDetections
+        updateLastFaceDetections(faceDetections)
         return outputImage ?? image
     }
 
@@ -373,29 +380,23 @@ final class FaceEffect: VideoEffect {
                 filter.inputImage = outputImage
                 filter.center = .init(x: centerX, y: y)
                 filter.radius = (maxY - minY) * (0.6 + settings.shapeRadius * 0.15)
-                filter.scale = shapeScale()
+                filter.scale = shapeScaleMetalPetal()
                 outputImage = filter.outputImage
             }
         }
         return outputImage
     }
 
-    private func shapeScale() -> Float {
+    private func shapeScaleMetalPetal() -> Float {
         return -(settings.shapeScale * 0.075) * shapeScaleFactor
     }
 
     private func increaseShapeScaleFactor() {
         shapeScaleFactor = min(shapeScaleFactor + (1.0 / framesPerFade), 1)
-        if shapeScaleFactor != 1 {
-            logger.info("\(shapeScaleFactor)")
-        }
     }
 
     private func decreaseShapeScaleFactor() {
         shapeScaleFactor = max(shapeScaleFactor - (1.0 / framesPerFade), 0)
-        if shapeScaleFactor != 0 {
-            logger.info("\(shapeScaleFactor)")
-        }
     }
 
     private func updateScaleFactors(_ detections: [VNFaceObservation]?) {
@@ -403,6 +404,12 @@ final class FaceEffect: VideoEffect {
             decreaseShapeScaleFactor()
         } else {
             increaseShapeScaleFactor()
+        }
+    }
+
+    private func updateLastFaceDetections(_ faceDetections: [VNFaceObservation]?) {
+        if let faceDetections, !faceDetections.isEmpty {
+            lastFaceDetections = faceDetections
         }
     }
 
@@ -432,9 +439,7 @@ final class FaceEffect: VideoEffect {
                 ))?
                 .resized(to: image.size)
         }
-        if let faceDetections, !faceDetections.isEmpty {
-            lastFaceDetections = faceDetections
-        }
+        updateLastFaceDetections(faceDetections)
         return outputImage
     }
 
