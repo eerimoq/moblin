@@ -8,6 +8,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.275.0", date: "2024-05-18", changes: [
+        "• New filter framework.",
+        "  • LUT filters.",
+        "  • Apple Log does not work (shows green or black image).",
+        "• Show \"Find a face\" message when using face shape filter, but no face is found.",
+        "  • Similar to Prism.",
+    ]),
     Version(version: "0.274.0", date: "2024-05-17", changes: [
         "• New filter framework:",
         "  • Movie filter.",

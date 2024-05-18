@@ -27,7 +27,7 @@ final class FaceEffect: VideoEffect {
     private var settings = FaceEffectSettings()
     let moblinImage: CIImage?
     private var findFace = false
-    private var onFindFaceChanged: ((Bool) -> Void)? = nil
+    private var onFindFaceChanged: ((Bool) -> Void)?
 
     override init() {
         if let image = UIImage(named: "AppIconNoBackground"), let image = image.cgImage {
