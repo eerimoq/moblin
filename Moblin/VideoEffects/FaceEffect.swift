@@ -7,7 +7,7 @@ struct FaceEffectSettings {
     var crop = true
     var showBlur = true
     var showColors = true
-    var showMoblin = true
+    var showMouth = true
     var showFaceLandmarks = true
     var contrast: Float = 1.0
     var brightness: Float = 0.0
@@ -26,6 +26,7 @@ final class FaceEffect: VideoEffect {
     var safeSettings = Atomic<FaceEffectSettings>(.init())
     private var settings = FaceEffectSettings()
     let moblinImage: CIImage?
+    let moblinImageMetalPetal: MTIImage?
     private var findFace = false
     private var onFindFaceChanged: ((Bool) -> Void)?
     private var shapeScaleFactor: Float = 0.0
@@ -36,8 +37,10 @@ final class FaceEffect: VideoEffect {
         framesPerFade = 15 * (fps / 30)
         if let image = UIImage(named: "AppIconNoBackground"), let image = image.cgImage {
             moblinImage = CIImage(cgImage: image)
+            moblinImageMetalPetal = MTIImage(cgImage: image, isOpaque: true)
         } else {
             moblinImage = nil
+            moblinImageMetalPetal = nil
         }
         super.init()
     }
@@ -146,7 +149,7 @@ final class FaceEffect: VideoEffect {
         return faceBlender.outputImage
     }
 
-    private func addMoblin(image: CIImage?, detections: [VNFaceObservation]?) -> CIImage? {
+    private func addMouth(image: CIImage?, detections: [VNFaceObservation]?) -> CIImage? {
         guard let image, let detections, let moblinImage else {
             return image
         }
@@ -241,9 +244,9 @@ final class FaceEffect: VideoEffect {
                 filter.inputImage = outputImage
                 filter.center = CGPoint(
                     x: centerX,
-                    y: minY + CGFloat(Float(maxY - minY) * (settings.shapeOffset * 0.15 + 0.35))
+                    y: minY + CGFloat(Float(maxY - minY) * (settings.shapeOffset * 0.25 + 0.15))
                 )
-                filter.radius = Float(maxY - minY) * (0.75 + settings.shapeRadius * 0.15)
+                filter.radius = Float(maxY - minY) * (0.75 + settings.shapeRadius * 0.2)
                 filter.scale = shapeScale()
                 outputImage = filter.outputImage
             }
@@ -309,11 +312,11 @@ final class FaceEffect: VideoEffect {
                 detections: faceDetections
             )
         }
-        if settings.showMoblin {
-            outputImage = addMoblin(image: outputImage, detections: faceDetections)
-        }
         if settings.showBeauty {
             outputImage = addBeauty(image: outputImage, detections: faceDetections)
+        }
+        if settings.showMouth {
+            outputImage = addMouth(image: outputImage, detections: faceDetections)
         }
         if settings.showFaceLandmarks {
             outputImage = addFaceLandmarks(image: outputImage, detections: faceDetections)
@@ -334,6 +337,93 @@ final class FaceEffect: VideoEffect {
         }
         updateLastFaceDetections(faceDetections)
         return outputImage ?? image
+    }
+
+    private func isMouthEnabled(_ detections: [VNFaceObservation]?) -> Bool {
+        guard settings.showMouth, let detections else {
+            return false
+        }
+        for detection in detections {
+            guard let innerLips = detection.landmarks?.innerLips else {
+                continue
+            }
+            let points = innerLips.pointsInImage(imageSize: .init(width: 1920, height: 1080))
+            guard let firstPoint = points.first else {
+                continue
+            }
+            var minX = firstPoint.x
+            var maxX = firstPoint.x
+            var minY = firstPoint.y
+            var maxY = firstPoint.y
+            for point in points {
+                minX = min(point.x, minX)
+                maxX = max(point.x, maxX)
+                minY = min(point.y, minY)
+                maxY = max(point.y, maxY)
+            }
+            let diffX = maxX - minX
+            let diffY = maxY - minY
+            if diffY > diffX {
+                return true
+            }
+        }
+        return false
+    }
+
+    private func addMouthMetalPetal(image: MTIImage?, detections: [VNFaceObservation]?) -> MTIImage? {
+        guard let image, let detections, let moblinImageMetalPetal else {
+            return nil
+        }
+        var outputImage = image
+        for detection in detections {
+            guard let innerLips = detection.landmarks?.innerLips else {
+                continue
+            }
+            let points = innerLips.pointsInImage(imageSize: image.extent.size)
+            guard let firstPoint = points.first else {
+                continue
+            }
+            var minX = firstPoint.x
+            var maxX = firstPoint.x
+            var minY = firstPoint.y
+            var maxY = firstPoint.y
+            for point in points {
+                minX = min(point.x, minX)
+                maxX = max(point.x, maxX)
+                minY = min(point.y, minY)
+                maxY = max(point.y, maxY)
+            }
+            let diffX = maxX - minX
+            let diffY = maxY - minY
+            if diffY <= diffX {
+                continue
+            }
+            let scale = diffX / moblinImageMetalPetal.extent.width
+            let moblinImageMetalPetal = moblinImageMetalPetal.resized(to: .init(
+                width: scale * moblinImageMetalPetal.size.width,
+                height: scale * moblinImageMetalPetal.size.height
+            ))
+            guard let moblinImageMetalPetal else {
+                continue
+            }
+            let offsetX = minX + moblinImageMetalPetal.size.width / 2
+            let offsetY = image.size.height - minY - diffY + moblinImageMetalPetal.size.height / 2
+            let filter = MTIMultilayerCompositingFilter()
+            filter.inputBackgroundImage = outputImage
+            filter.layers = [
+                .init(
+                    content: moblinImageMetalPetal,
+                    layoutUnit: .pixel,
+                    position: .init(x: offsetX, y: offsetY),
+                    size: moblinImageMetalPetal.size,
+                    rotation: 0,
+                    opacity: 1,
+                    blendMode: .normal
+                ),
+            ]
+            outputImage = filter.outputImage ?? outputImage
+        }
+        return outputImage
     }
 
     private func addBeautyMetalPetal(_ image: MTIImage?, _ detections: [VNFaceObservation]?) -> MTIImage? {
@@ -376,10 +466,10 @@ final class FaceEffect: VideoEffect {
                 let centerX = Float(lastPoint.x)
                 let filter = MTIBulgeDistortionFilter()
                 let y = Float(image.size.height) -
-                    (minY + (maxY - minY) * (settings.shapeOffset * 0.15 + 0.35))
+                    (minY + (maxY - minY) * (settings.shapeOffset * 0.25 + 0.15))
                 filter.inputImage = outputImage
                 filter.center = .init(x: centerX, y: y)
-                filter.radius = (maxY - minY) * (0.6 + settings.shapeRadius * 0.15)
+                filter.radius = (maxY - minY) * (0.6 + settings.shapeRadius * 0.2)
                 filter.scale = shapeScaleMetalPetal()
                 outputImage = filter.outputImage
             }
@@ -423,6 +513,9 @@ final class FaceEffect: VideoEffect {
         if settings.showBeauty {
             outputImage = addBeautyMetalPetal(outputImage, faceDetections)
         }
+        if settings.showMouth {
+            outputImage = addMouthMetalPetal(image: outputImage, detections: faceDetections)
+        }
         if settings.crop {
             let width = image.extent.width
             let height = image.extent.height
@@ -443,11 +536,11 @@ final class FaceEffect: VideoEffect {
         return outputImage
     }
 
-    override func supportsMetalPetal() -> Bool {
+    override func supportsMetalPetal(_ faceDetections: [VNFaceObservation]?) -> Bool {
         // Do not load again for this frame as settings may not change from calling this function to
         // executing.
         loadSettings()
-        return isBeautyEnabled() || settings.crop
+        return isBeautyEnabled() || settings.crop || (settings.showMouth && isMouthEnabled(faceDetections))
     }
 
     override func removed() {

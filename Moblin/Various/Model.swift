@@ -903,7 +903,7 @@ final class Model: NSObject, ObservableObject {
             crop: database.debug!.beautyFilter!,
             showBlur: settings.showBlur,
             showColors: settings.showColors,
-            showMoblin: settings.showMoblin,
+            showMouth: settings.showMoblin,
             showFaceLandmarks: settings.showFaceLandmarks,
             contrast: settings.contrast,
             brightness: settings.brightness,

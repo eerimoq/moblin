@@ -112,7 +112,7 @@ final class LutEffect: VideoEffect {
         return filter.outputImage
     }
 
-    override func supportsMetalPetal() -> Bool {
+    override func supportsMetalPetal(_: [VNFaceObservation]?) -> Bool {
         return true
     }
 }

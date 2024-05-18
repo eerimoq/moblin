@@ -468,7 +468,7 @@ final class VideoUnit: NSObject {
                                         _ faceDetections: [VNFaceObservation]?,
                                         _ applyBlur: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
     {
-        let metalPetalEffects = effects.filter { $0.supportsMetalPetal() }
+        let metalPetalEffects = effects.filter { $0.supportsMetalPetal(faceDetections) }
         guard !metalPetalEffects.isEmpty || applyBlur else {
             return (nil, nil)
         }

@@ -20,7 +20,7 @@ open class VideoEffect: NSObject {
         return nil
     }
 
-    open func supportsMetalPetal() -> Bool {
+    open func supportsMetalPetal(_: [VNFaceObservation]?) -> Bool {
         return false
     }
 
