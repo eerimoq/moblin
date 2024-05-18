@@ -83,17 +83,13 @@ struct MicButtonView: View {
         Form {
             Section {
                 Picker("", selection: Binding(get: {
-                    model.mic
+                    model.selectedMic
                 }, set: { mic, _ in
-                    selectedMic = mic
+                    model.selectMicById(id: mic.id)
                 })) {
                     ForEach(model.listMics()) { mic in
                         Text(mic.name).tag(mic)
                     }
-                }
-                .onChange(of: selectedMic) { mic in
-                    model.selectMicById(id: mic.id)
-                    done()
                 }
                 .pickerStyle(.inline)
                 .labelsHidden()

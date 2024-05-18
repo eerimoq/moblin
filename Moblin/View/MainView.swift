@@ -298,7 +298,7 @@ struct MainView: View {
                 HStack {
                     Spacer()
                     NavigationStack {
-                        MicButtonView(selectedMic: model.mic) {
+                        MicButtonView(selectedMic: model.selectedMic) {
                             model.showingMic = false
                         }
                     }

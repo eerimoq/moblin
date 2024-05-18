@@ -247,7 +247,7 @@ final class Model: NSObject, ObservableObject {
     @Published var interactiveChat = false
     @Published var blackScreen = false
     private var streaming = false
-    @Published var mic = noMic
+    @Published var selectedMic: Mic = noMic
     private var micChange = noMic
     private var streamStartDate: Date?
     @Published var isLive = false
@@ -803,7 +803,7 @@ final class Model: NSObject, ObservableObject {
         twitchChat = TwitchChatMoblin(model: self)
         reloadStream()
         resetSelectedScene()
-        setMic()
+        setupMics()
         setupPeriodicTimers()
         setupThermalState()
         updateButtonStates()
@@ -4071,7 +4071,7 @@ extension Model: RemoteControlStreamerDelegate {
             if self.sceneIndex < self.enabledScenes.count {
                 state.scene = self.enabledScenes[self.sceneIndex].id
             }
-            state.mic = self.mic.id
+            state.mic = self.selectedMic.id
             if let preset = self.getBitratePresetByBitrate(bitrate: self.stream.bitrate) {
                 state.bitrate = preset.id
             }
@@ -4118,7 +4118,7 @@ extension Model: RemoteControlStreamerDelegate {
                 topLeft.camera = RemoteControlStatusItem(message: self.statusCameraText())
             }
             if self.isShowingStatusMic() {
-                topLeft.mic = RemoteControlStatusItem(message: self.mic.name)
+                topLeft.mic = RemoteControlStatusItem(message: self.selectedMic.name)
             }
             if self.isShowingStatusZoom() {
                 topLeft.zoom = RemoteControlStatusItem(message: self.statusZoomText())
@@ -5003,13 +5003,14 @@ extension Model {
         }
         var newMic: Mic
         if let dataSource = inputPort.preferredDataSource {
-            var name: String
-            var builtInMicOrientation: SettingsMic?
+            let name: String
+            let builtInMicOrientation: SettingsMic?
             if inputPort.portType == .builtInMic {
                 name = dataSource.dataSourceName
-                builtInMicOrientation = getBuiltInMicOrientation(orientation: dataSource.orientation)
+                builtInMicOrientation = dataSource.orientation!.toSettingsMic()
             } else {
                 name = "\(inputPort.portName): \(dataSource.dataSourceName)"
+                builtInMicOrientation = nil
             }
             newMic = Mic(
                 name: name,
@@ -5022,31 +5023,18 @@ extension Model {
         } else {
             return
         }
-        if newMic == micChange {
-            return
+        if newMic != micChange {
+            if micChange != noMic {
+                makeToast(title: newMic.name)
+            }
+            logger.info("Mic: \(newMic.name)")
+            selectedMic = newMic
+            micChange = newMic
         }
-        if micChange != noMic {
-            makeToast(title: newMic.name)
-        }
-        logger.info("Mic: \(newMic.name)")
-        mic = newMic
-        micChange = newMic
     }
 
-    private func getBuiltInMicOrientation(orientation: AVAudioSession.Orientation?) -> SettingsMic? {
-        guard let orientation else {
-            return nil
-        }
-        switch orientation {
-        case .bottom:
-            return .bottom
-        case .front:
-            return .front
-        case .back:
-            return .back
-        default:
-            return nil
-        }
+    func setupMics() {
+        selectMicById(id: database.mic!)
     }
 
     func listMics() -> [Mic] {
@@ -5055,13 +5043,14 @@ extension Model {
         for inputPort in session.availableInputs ?? [] {
             if let dataSources = inputPort.dataSources, !dataSources.isEmpty {
                 for dataSource in dataSources {
-                    var name: String
-                    var builtInOrientation: SettingsMic?
+                    let name: String
+                    let builtInOrientation: SettingsMic?
                     if inputPort.portType == .builtInMic {
                         name = dataSource.dataSourceName
-                        builtInOrientation = getBuiltInMicOrientation(orientation: dataSource.orientation)
+                        builtInOrientation = dataSource.orientation!.toSettingsMic()
                     } else {
                         name = "\(inputPort.portName): \(dataSource.dataSourceName)"
+                        builtInOrientation = nil
                     }
                     mics.append(Mic(
                         name: name,
@@ -5082,71 +5071,36 @@ extension Model {
         return mics
     }
 
-    private func setMic() {
-        var wantedOrientation: AVAudioSession.Orientation
-        switch database.mic! {
-        case .bottom:
-            wantedOrientation = .bottom
-        case .front:
-            wantedOrientation = .front
-        case .back:
-            wantedOrientation = .back
-        case .top:
-            wantedOrientation = .top
-        case .rtmp:
-            wantedOrientation = .bottom
-        }
-        let session = AVAudioSession.sharedInstance()
-        for inputPort in session.availableInputs ?? [] {
-            if inputPort.portType != .builtInMic {
-                continue
-            }
-            if let dataSources = inputPort.dataSources, !dataSources.isEmpty {
-                for dataSource in dataSources where dataSource.orientation == wantedOrientation {
-                    do {
-                        try setBuiltInMicAudioMode(dataSource: dataSource)
-                        try inputPort.setPreferredDataSource(dataSource)
-                    } catch {
-                        logger.error("Failed to set mic as preferred with error \(error)")
-                    }
-                }
-            }
-        }
-        if database.debug!.enableRtmpAudio! {
-            media.attachAudio(device: AVCaptureDevice.default(for: .audio))
-        }
-    }
-
     func selectMicById(id: String) {
-        guard let mic = listMics().first(where: { mic in mic.id == id }) else {
-            logger.info("Mic with id \(id) not found")
+        var selectedMic: Mic?
+
+        if let mic = listMics().first(where: { mic in mic.id == id }) {
+            selectedMic = mic
+        } else if let mic = listMics().first {
+            if id.isEmpty {
+                logger.info("Select default mic")
+                selectedMic = mic
+            } else {
+                logger.info("Mic with id \(id) not found")
+                makeErrorToast(
+                    title: String(localized: "Mic not found"),
+                    subTitle: String(localized: "Mic id \(id)")
+                )
+                return
+            }
+        } else {
+            logger.info("No mic found")
             makeErrorToast(
-                title: String(localized: "Mic not found"),
-                subTitle: String(localized: "Mic id \(id)")
+                title: String(localized: "No mic found")
             )
             return
         }
-        if var builtInOrientation = mic.builtInOrientation {
-            if database.debug!.enableRtmpAudio! {
-                if builtInOrientation == .rtmp {
-                    builtInOrientation = .bottom
-                }
-            }
-            database.mic = builtInOrientation
-            store()
-        }
-        selectMic(mic: mic)
+
+        selectMic(mic: selectedMic!)
     }
 
     private func selectMic(mic: Mic) {
-        if mic.builtInOrientation == .rtmp {
-            self.mic = mic
-            let cameraId = getRtmpStream(camera: mic.id)?.id ?? .init()
-            if database.debug!.enableRtmpAudio! {
-                media.attachRtmpAudio(cameraId: cameraId, device: AVCaptureDevice.default(for: .audio))
-            }
-            remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
-        } else {
+        if mic.builtInOrientation != .rtmp {
             let session = AVAudioSession.sharedInstance()
             do {
                 for inputPort in session.availableInputs ?? [] {
@@ -5164,11 +5118,6 @@ extension Model {
                         }
                     }
                 }
-                self.mic = mic
-                if database.debug!.enableRtmpAudio! {
-                    media.attachAudio(device: AVCaptureDevice.default(for: .audio))
-                }
-                remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
             } catch {
                 logger.error("Failed to select mic: \(error)")
                 makeErrorToast(
@@ -5177,10 +5126,51 @@ extension Model {
                 )
             }
         }
+        if var builtInOrientation = mic.builtInOrientation {
+            if database.debug!.enableRtmpAudio! {
+                if builtInOrientation == .rtmp {
+                    builtInOrientation = .bottom
+                }
+            }
+
+            if mic.id != database.mic {
+                database.mic = mic.id
+                store()
+            }
+        }
+        selectedMic = mic
+        attachMic(selectedMic: selectedMic)
+    }
+
+    func attachMic(selectedMic: Mic) {
+        if database.debug!.enableRtmpAudio! {
+            if selectedMic.builtInOrientation == .rtmp {
+                let cameraId = getRtmpStream(camera: selectedMic.id)?.id ?? .init()
+                media.attachRtmpAudio(cameraId: cameraId, device: AVCaptureDevice.default(for: .audio))
+            } else {
+                media.attachAudio(device: AVCaptureDevice.default(for: .audio))
+            }
+            remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: selectedMic.id))
+        }
     }
 
     private func setBuiltInMicAudioMode(dataSource: AVAudioSessionDataSourceDescription) throws {
         try dataSource.setPreferredPolarPattern(.none)
+    }
+}
+
+extension AVAudioSession.Orientation {
+    func toSettingsMic() -> SettingsMic? {
+        switch self {
+        case .bottom:
+            return .bottom
+        case .front:
+            return .front
+        case .back:
+            return .back
+        default:
+            return nil
+        }
     }
 }
 
