@@ -44,7 +44,7 @@ private struct FindFaceView: View {
                 Spacer()
                 VStack {
                     Image(systemName: "face.smiling")
-                        .font(.system(size: 35))
+                        .font(.system(size: 30))
                     Text("Find a face")
                 }
                 .foregroundColor(.white)
