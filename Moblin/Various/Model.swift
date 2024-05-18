@@ -246,6 +246,7 @@ final class Model: NSObject, ObservableObject {
     @Published var chatPaused = false
     @Published var interactiveChat = false
     @Published var blackScreen = false
+    @Published var findFace = false
     private var streaming = false
     @Published var mic = noMic
     private var micChange = noMic

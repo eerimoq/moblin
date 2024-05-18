@@ -36,6 +36,28 @@ class SnowScene: SKScene {
     }
 }
 
+private struct FindFaceView: View {
+    var body: some View {
+        HStack {
+            Spacer()
+            VStack {
+                Spacer()
+                VStack {
+                    Image(systemName: "face.smiling")
+                        .font(.system(size: 35))
+                    Text("Find a face")
+                }
+                .foregroundColor(.white)
+                .padding(5)
+                .background(backgroundColor)
+                .cornerRadius(5)
+                Spacer()
+            }
+            Spacer()
+        }
+    }
+}
+
 struct MainView: View {
     @EnvironmentObject var model: Model
     var streamView: StreamView
@@ -373,6 +395,9 @@ struct MainView: View {
                     .onTapGesture(count: 2) { _ in
                         model.toggleBlackScreen()
                     }
+            }
+            if model.findFace {
+                FindFaceView()
             }
         }
         .onAppear {
