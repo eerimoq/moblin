@@ -204,26 +204,25 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
         } else {
             audioLevel = 0.0
         }
-        var numberOfAudioChannels = connection.audioChannels.count
         prepareSampleBuffer(
             sampleBuffer: sampleBuffer,
             audioLevel: audioLevel,
-            numberOfAudioChannels: numberOfAudioChannels
+            numberOfAudioChannels: connection.audioChannels.count
         )
     }
+}
 
-    private func syncTimeToVideo(mixer: Mixer, sampleBuffer: CMSampleBuffer) -> CMTime {
-        var presentationTimeStamp = sampleBuffer.presentationTimeStamp
-        if #available(iOS 16.0, *) {
-            if let audioClock = mixer.audioSession.synchronizationClock,
-               let videoClock = mixer.videoSession.synchronizationClock
-            {
-                let audioTimescale = sampleBuffer.presentationTimeStamp.timescale
-                let seconds = audioClock.convertTime(presentationTimeStamp, to: videoClock).seconds
-                let value = CMTimeValue(seconds * Double(audioTimescale))
-                presentationTimeStamp = CMTime(value: value, timescale: audioTimescale)
-            }
+private func syncTimeToVideo(mixer: Mixer, sampleBuffer: CMSampleBuffer) -> CMTime {
+    var presentationTimeStamp = sampleBuffer.presentationTimeStamp
+    if #available(iOS 16.0, *) {
+        if let audioClock = mixer.audioSession.synchronizationClock,
+           let videoClock = mixer.videoSession.synchronizationClock
+        {
+            let audioTimescale = sampleBuffer.presentationTimeStamp.timescale
+            let seconds = audioClock.convertTime(presentationTimeStamp, to: videoClock).seconds
+            let value = CMTimeValue(seconds * Double(audioTimescale))
+            presentationTimeStamp = CMTime(value: value, timescale: audioTimescale)
         }
-        return presentationTimeStamp
     }
+    return presentationTimeStamp
 }
