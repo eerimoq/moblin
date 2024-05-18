@@ -248,7 +248,6 @@ final class Model: NSObject, ObservableObject {
     @Published var blackScreen = false
     private var streaming = false
     @Published var currentMic = noMic
-    private var previousMic = noMic
     private var micChange = noMic
     private var streamStartDate: Date?
     @Published var isLive = false
@@ -1212,7 +1211,7 @@ final class Model: NSObject, ObservableObject {
             if self.database.debug!.enableRtmpAudio! {
                 self.media.removeRtmpAudio(cameraId: stream.id)
             }
-            self.selectMic(mic: self.previousMic)
+            self.setMicFromSettings()
         }
     }
 
@@ -5122,6 +5121,33 @@ extension Model {
         }
     }
 
+    func setMicFromSettings() {
+        selectMicByOrientation(orientation: database.mic!)
+    }
+
+    func selectMicByOrientation(orientation: SettingsMic) {
+        guard let mic = listMics().first(where: { mic in mic.builtInOrientation == orientation }) else {
+            logger.info("Mic with orientation \(orientation) not found")
+            makeErrorToast(
+                title: String(localized: "Mic not found"),
+                subTitle: String(localized: "Mic orientation \(orientation.rawValue)")
+            )
+            return
+        }
+        if var builtInOrientation = mic.builtInOrientation {
+            if database.debug!.enableRtmpAudio! {
+                if builtInOrientation == .rtmp {
+                    builtInOrientation = .bottom
+                }
+            }
+            if database.mic != builtInOrientation {
+                database.mic = builtInOrientation
+                store()
+            }
+        }
+        selectMic(mic: mic)
+    }
+
     func selectMicById(id: String) {
         guard let mic = listMics().first(where: { mic in mic.id == id }) else {
             logger.info("Mic with id \(id) not found")
@@ -5145,7 +5171,6 @@ extension Model {
 
     private func selectMic(mic: Mic) {
         if mic.builtInOrientation == .rtmp {
-            previousMic = currentMic
             currentMic = mic
             let cameraId = getRtmpStream(camera: mic.id)?.id ?? .init()
             if database.debug!.enableRtmpAudio! {
@@ -5170,7 +5195,6 @@ extension Model {
                         }
                     }
                 }
-                previousMic = currentMic
                 currentMic = mic
                 if database.debug!.enableRtmpAudio! {
                     media.attachAudio(device: AVCaptureDevice.default(for: .audio))
