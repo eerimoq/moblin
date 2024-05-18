@@ -19,7 +19,7 @@ final class PixellateEffect: VideoEffect {
 
     override func executeMetalPetal(_ image: MTIImage?, _: [VNFaceObservation]?) -> MTIImage? {
         guard let image else {
-            return nil
+            return image
         }
         let filter = MTIPixellateFilter()
         filter.inputImage = image

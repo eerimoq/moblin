@@ -473,6 +473,7 @@ final class VideoUnit: NSObject {
             return (nil, nil)
         }
         var image: MTIImage? = MTIImage(cvPixelBuffer: imageBuffer, alphaType: .alphaIsOne)
+        let originalImage = image
         var failedEffect: String?
         for effect in metalPetalEffects {
             let effectOutputImage = effect.executeMetalPetal(image, faceDetections)
@@ -486,7 +487,7 @@ final class VideoUnit: NSObject {
         if applyBlur {
             image = blurImageMetalPetal(image)
         }
-        guard let image else {
+        guard originalImage != image, let image else {
             return (nil, nil)
         }
         guard let outputImageBuffer = createPixelBuffer(sampleBuffer: sampleBuffer) else {

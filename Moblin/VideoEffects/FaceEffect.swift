@@ -58,10 +58,6 @@ final class FaceEffect: VideoEffect {
         return true
     }
 
-    private func isBeautyEnabled() -> Bool {
-        return settings.showBeauty && (settings.shapeScale > 0 || settings.smoothAmount > 0)
-    }
-
     private func findFaceNeeded() -> Bool {
         return settings.showBeauty && settings.shapeScale > 0
     }
@@ -244,9 +240,9 @@ final class FaceEffect: VideoEffect {
                 filter.inputImage = outputImage
                 filter.center = CGPoint(
                     x: centerX,
-                    y: minY + CGFloat(Float(maxY - minY) * (settings.shapeOffset * 0.25 + 0.15))
+                    y: minY + CGFloat(Float(maxY - minY) * ((settings.shapeOffset - 0.5) * 0.5))
                 )
-                filter.radius = Float(maxY - minY) * (0.75 + settings.shapeRadius * 0.2)
+                filter.radius = Float(maxY - minY) * (0.85 + settings.shapeRadius * 0.3)
                 filter.scale = shapeScale()
                 outputImage = filter.outputImage
             }
@@ -339,40 +335,9 @@ final class FaceEffect: VideoEffect {
         return outputImage ?? image
     }
 
-    private func isMouthEnabled(_ detections: [VNFaceObservation]?) -> Bool {
-        guard settings.showMouth, let detections else {
-            return false
-        }
-        for detection in detections {
-            guard let innerLips = detection.landmarks?.innerLips else {
-                continue
-            }
-            let points = innerLips.pointsInImage(imageSize: .init(width: 1920, height: 1080))
-            guard let firstPoint = points.first else {
-                continue
-            }
-            var minX = firstPoint.x
-            var maxX = firstPoint.x
-            var minY = firstPoint.y
-            var maxY = firstPoint.y
-            for point in points {
-                minX = min(point.x, minX)
-                maxX = max(point.x, maxX)
-                minY = min(point.y, minY)
-                maxY = max(point.y, maxY)
-            }
-            let diffX = maxX - minX
-            let diffY = maxY - minY
-            if diffY > diffX {
-                return true
-            }
-        }
-        return false
-    }
-
     private func addMouthMetalPetal(image: MTIImage?, detections: [VNFaceObservation]?) -> MTIImage? {
         guard let image, let detections, let moblinImageMetalPetal else {
-            return nil
+            return image
         }
         var outputImage = image
         for detection in detections {
@@ -449,7 +414,7 @@ final class FaceEffect: VideoEffect {
                                           _ detections: [VNFaceObservation]?) -> MTIImage?
     {
         guard let image, var detections else {
-            return nil
+            return image
         }
         if detections.isEmpty {
             detections = lastFaceDetections
@@ -466,10 +431,10 @@ final class FaceEffect: VideoEffect {
                 let centerX = Float(lastPoint.x)
                 let filter = MTIBulgeDistortionFilter()
                 let y = Float(image.size.height) -
-                    (minY + (maxY - minY) * (settings.shapeOffset * 0.25 + 0.15))
+                    (minY + (maxY - minY) * ((settings.shapeOffset - 0.5) * 0.5))
                 filter.inputImage = outputImage
                 filter.center = .init(x: centerX, y: y)
-                filter.radius = (maxY - minY) * (0.6 + settings.shapeRadius * 0.2)
+                filter.radius = (maxY - minY) * (0.7 + settings.shapeRadius * 0.3)
                 filter.scale = shapeScaleMetalPetal()
                 outputImage = filter.outputImage
             }
@@ -504,11 +469,12 @@ final class FaceEffect: VideoEffect {
     }
 
     override func executeMetalPetal(_ image: MTIImage?, _ faceDetections: [VNFaceObservation]?) -> MTIImage? {
+        loadSettings()
         updateFindFace(faceDetections)
         updateScaleFactors(faceDetections)
         var outputImage = image
         guard let image else {
-            return nil
+            return image
         }
         if settings.showBeauty {
             outputImage = addBeautyMetalPetal(outputImage, faceDetections)
@@ -536,11 +502,8 @@ final class FaceEffect: VideoEffect {
         return outputImage
     }
 
-    override func supportsMetalPetal(_ faceDetections: [VNFaceObservation]?) -> Bool {
-        // Do not load again for this frame as settings may not change from calling this function to
-        // executing.
-        loadSettings()
-        return isBeautyEnabled() || settings.crop || (settings.showMouth && isMouthEnabled(faceDetections))
+    override func supportsMetalPetal(_: [VNFaceObservation]?) -> Bool {
+        return true
     }
 
     override func removed() {

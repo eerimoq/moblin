@@ -39,7 +39,7 @@ final class MovieEffect: VideoEffect {
 
     override func executeMetalPetal(_ image: MTIImage?, _: [VNFaceObservation]?) -> MTIImage? {
         guard let image else {
-            return nil
+            return image
         }
         let blackWidth = image.size.width
         let blackHeight = image.size.height / 6
