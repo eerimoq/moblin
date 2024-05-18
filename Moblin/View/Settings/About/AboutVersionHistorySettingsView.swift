@@ -8,6 +8,10 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.276.0", date: "2024-05-18", changes: [
+        "• Fade face shape filter in and out for smoother transitions. 🐛 fonz",
+        "  • Over half a second. Maybe long or shorter makes it even better.",
+    ]),
     Version(version: "0.275.0", date: "2024-05-18", changes: [
         "• New filter framework.",
         "  • LUT filters.",
