@@ -13,6 +13,7 @@ struct StreamVideoSettingsView: View {
     private func onFpsChange(fps: String) {
         stream.fps = Int(fps)!
         model.storeAndReloadStreamIfEnabled(stream: stream)
+        model.resetSelectedScene(changeScene: false)
     }
 
     private func onCodecChange(codec: String) {

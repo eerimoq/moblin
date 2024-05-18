@@ -28,8 +28,12 @@ final class FaceEffect: VideoEffect {
     let moblinImage: CIImage?
     private var findFace = false
     private var onFindFaceChanged: ((Bool) -> Void)?
+    private var shapeScaleFactor: Float = 0.0
+    private var lastFaceDetections: [VNFaceObservation] = []
+    private var framesPerFade: Float = 30
 
-    override init() {
+    init(fps: Float) {
+        framesPerFade = 15 * (fps / 30)
         if let image = UIImage(named: "AppIconNoBackground"), let image = image.cgImage {
             moblinImage = CIImage(cgImage: image)
         } else {
@@ -38,8 +42,8 @@ final class FaceEffect: VideoEffect {
         super.init()
     }
 
-    convenience init(onFindFaceChanged: @escaping (Bool) -> Void) {
-        self.init()
+    convenience init(fps: Float, onFindFaceChanged: @escaping (Bool) -> Void) {
+        self.init(fps: fps)
         self.onFindFaceChanged = onFindFaceChanged
     }
 
@@ -59,10 +63,10 @@ final class FaceEffect: VideoEffect {
         return settings.showBeauty && settings.shapeScale > 0
     }
 
-    private func updateFindFace(_ detections: [VNFaceObservation]?) {
+    private func updateFindFace(_ faceDetections: [VNFaceObservation]?) {
         if findFace {
             if findFaceNeeded() {
-                if let detections, !detections.isEmpty {
+                if let faceDetections, !faceDetections.isEmpty {
                     findFace = false
                     onFindFaceChanged?(findFace)
                 }
@@ -72,7 +76,7 @@ final class FaceEffect: VideoEffect {
             }
         } else {
             if findFaceNeeded() {
-                if let detections, detections.isEmpty {
+                if let faceDetections, faceDetections.isEmpty {
                     findFace = true
                     onFindFaceChanged?(findFace)
                 }
@@ -280,6 +284,7 @@ final class FaceEffect: VideoEffect {
     override func execute(_ image: CIImage, _ faceDetections: [VNFaceObservation]?) -> CIImage {
         loadSettings()
         updateFindFace(faceDetections)
+        updateScaleFactors(faceDetections)
         guard let faceDetections else {
             return image
         }
@@ -320,6 +325,7 @@ final class FaceEffect: VideoEffect {
                 .transformed(by: CGAffineTransform(scaleX: scaleUpFactor, y: scaleUpFactor))
                 .cropped(to: image.extent)
         }
+        lastFaceDetections = faceDetections
         return outputImage ?? image
     }
 
@@ -345,8 +351,11 @@ final class FaceEffect: VideoEffect {
     private func addBeautyShapeMetalPetal(_ image: MTIImage?,
                                           _ detections: [VNFaceObservation]?) -> MTIImage?
     {
-        guard let image, let detections else {
+        guard let image, var detections else {
             return nil
+        }
+        if detections.isEmpty {
+            detections = lastFaceDetections
         }
         var outputImage: MTIImage? = image
         for detection in detections {
@@ -364,21 +373,48 @@ final class FaceEffect: VideoEffect {
                 filter.inputImage = outputImage
                 filter.center = .init(x: centerX, y: y)
                 filter.radius = (maxY - minY) * (0.6 + settings.shapeRadius * 0.15)
-                filter.scale = -(settings.shapeScale * 0.075)
+                filter.scale = shapeScale()
                 outputImage = filter.outputImage
             }
         }
         return outputImage
     }
 
-    override func executeMetalPetal(_ image: MTIImage?, _ detections: [VNFaceObservation]?) -> MTIImage? {
-        updateFindFace(detections)
+    private func shapeScale() -> Float {
+        return -(settings.shapeScale * 0.075) * shapeScaleFactor
+    }
+
+    private func increaseShapeScaleFactor() {
+        shapeScaleFactor = min(shapeScaleFactor + (1.0 / framesPerFade), 1)
+        if shapeScaleFactor != 1 {
+            logger.info("\(shapeScaleFactor)")
+        }
+    }
+
+    private func decreaseShapeScaleFactor() {
+        shapeScaleFactor = max(shapeScaleFactor - (1.0 / framesPerFade), 0)
+        if shapeScaleFactor != 0 {
+            logger.info("\(shapeScaleFactor)")
+        }
+    }
+
+    private func updateScaleFactors(_ detections: [VNFaceObservation]?) {
+        if detections?.isEmpty ?? true {
+            decreaseShapeScaleFactor()
+        } else {
+            increaseShapeScaleFactor()
+        }
+    }
+
+    override func executeMetalPetal(_ image: MTIImage?, _ faceDetections: [VNFaceObservation]?) -> MTIImage? {
+        updateFindFace(faceDetections)
+        updateScaleFactors(faceDetections)
         var outputImage = image
         guard let image else {
             return nil
         }
         if settings.showBeauty {
-            outputImage = addBeautyMetalPetal(outputImage, detections)
+            outputImage = addBeautyMetalPetal(outputImage, faceDetections)
         }
         if settings.crop {
             let width = image.extent.width
@@ -395,6 +431,9 @@ final class FaceEffect: VideoEffect {
                     height: smallHeight
                 ))?
                 .resized(to: image.size)
+        }
+        if let faceDetections, !faceDetections.isEmpty {
+            lastFaceDetections = faceDetections
         }
         return outputImage
     }

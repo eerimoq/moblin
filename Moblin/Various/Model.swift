@@ -476,7 +476,7 @@ final class Model: NSObject, ObservableObject {
     private var streamTotalChatMessages: Int = 0
     var ipMonitor = IPMonitor(ipType: .ipv4)
     @Published var ipStatuses: [IPMonitor.Status] = []
-    private var faceEffect = FaceEffect()
+    private var faceEffect = FaceEffect(fps: 30)
     private var movieEffect = MovieEffect()
     private var grayScaleEffect = GrayScaleEffect()
     private var sepiaEffect = SepiaEffect()
@@ -1795,7 +1795,7 @@ final class Model: NSObject, ObservableObject {
         media.unregisterEffect(sepiaEffect)
         media.unregisterEffect(tripleEffect)
         media.unregisterEffect(pixellateEffect)
-        faceEffect = FaceEffect(onFindFaceChanged: handleFindFaceChanged(value:))
+        faceEffect = FaceEffect(fps: Float(stream.fps), onFindFaceChanged: handleFindFaceChanged(value:))
         updateFaceFilterSettings()
         movieEffect = MovieEffect()
         grayScaleEffect = GrayScaleEffect()
