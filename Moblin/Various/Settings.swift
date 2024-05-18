@@ -1155,11 +1155,6 @@ class SettingsRtmpServerStream: Codable, Identifiable {
     var streamKey: String = ""
     var latency: Int32? = 2000
     var fps: Double? = 0
-    var isConnected: Bool = false
-
-    enum CodingKeys: String, CodingKey {
-        case id, name, streamKey, latency, fps
-    }
 
     func camera() -> String {
         return rtmpCamera(name: name)
@@ -1171,7 +1166,6 @@ class SettingsRtmpServerStream: Codable, Identifiable {
         new.streamKey = streamKey
         new.latency = latency
         new.fps = fps
-        new.isConnected = isConnected
         return new
     }
 }
