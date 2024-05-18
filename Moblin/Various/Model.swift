@@ -1194,7 +1194,6 @@ final class Model: NSObject, ObservableObject {
             if self.database.debug!.enableRtmpAudio! {
                 self.media.addRtmpAudio(cameraId: stream.id)
             }
-            stream.isConnected = true
         }
     }
 
@@ -1209,7 +1208,6 @@ final class Model: NSObject, ObservableObject {
             if self.database.debug!.enableRtmpAudio! {
                 self.media.removeRtmpAudio(cameraId: stream.id)
             }
-            stream.isConnected = false
             self.selectMic(mic: self.previousMic)
         }
     }
@@ -5061,7 +5059,7 @@ extension Model {
         if database.debug!.enableRtmpAudio! {
             for rtmpCamera in rtmpCameras() {
                 let stream = getRtmpStream(camera: rtmpCamera)
-                if stream!.isConnected {
+                if isRtmpStreamConnected(streamKey: stream!.streamKey) {
                     mics.append(Mic(name: rtmpCamera, inputUid: rtmpCamera, builtInOrientation: .rtmp))
                 }
             }
