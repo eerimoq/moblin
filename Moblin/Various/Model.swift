@@ -247,7 +247,8 @@ final class Model: NSObject, ObservableObject {
     @Published var interactiveChat = false
     @Published var blackScreen = false
     private var streaming = false
-    @Published var mic = noMic
+    @Published var currentMic = noMic
+    private var previousMic = noMic
     private var micChange = noMic
     private var streamStartDate: Date?
     @Published var isLive = false
@@ -1197,6 +1198,7 @@ final class Model: NSObject, ObservableObject {
             if self.database.debug!.enableRtmpAudio! {
                 self.media.addRtmpAudio(cameraId: stream.id)
             }
+            stream.isConnected = true
         }
     }
 
@@ -1204,13 +1206,15 @@ final class Model: NSObject, ObservableObject {
         DispatchQueue.main.async {
             let camera = self.getRtmpStream(streamKey: streamKey)?.camera() ?? rtmpCamera(name: "Unknown")
             self.makeToast(title: "\(camera) disconnected")
-            guard let cameraId = self.getRtmpStream(streamKey: streamKey)?.id else {
+            guard let stream = self.getRtmpStream(streamKey: streamKey) else {
                 return
             }
-            self.media.removeRtmpCamera(cameraId: cameraId)
+            self.media.removeRtmpCamera(cameraId: stream.id)
             if self.database.debug!.enableRtmpAudio! {
-                self.media.removeRtmpAudio(cameraId: cameraId)
+                self.media.removeRtmpAudio(cameraId: stream.id)
             }
+            stream.isConnected = false
+            self.selectMic(mic: self.previousMic)
         }
     }
 
@@ -4071,7 +4075,7 @@ extension Model: RemoteControlStreamerDelegate {
             if self.sceneIndex < self.enabledScenes.count {
                 state.scene = self.enabledScenes[self.sceneIndex].id
             }
-            state.mic = self.mic.id
+            state.mic = self.currentMic.id
             if let preset = self.getBitratePresetByBitrate(bitrate: self.stream.bitrate) {
                 state.bitrate = preset.id
             }
@@ -4118,7 +4122,7 @@ extension Model: RemoteControlStreamerDelegate {
                 topLeft.camera = RemoteControlStatusItem(message: self.statusCameraText())
             }
             if self.isShowingStatusMic() {
-                topLeft.mic = RemoteControlStatusItem(message: self.mic.name)
+                topLeft.mic = RemoteControlStatusItem(message: self.currentMic.name)
             }
             if self.isShowingStatusZoom() {
                 topLeft.zoom = RemoteControlStatusItem(message: self.statusZoomText())
@@ -5029,7 +5033,7 @@ extension Model {
             makeToast(title: newMic.name)
         }
         logger.info("Mic: \(newMic.name)")
-        mic = newMic
+        currentMic = newMic
         micChange = newMic
     }
 
@@ -5076,7 +5080,10 @@ extension Model {
         }
         if database.debug!.enableRtmpAudio! {
             for rtmpCamera in rtmpCameras() {
-                mics.append(Mic(name: rtmpCamera, inputUid: rtmpCamera, builtInOrientation: .rtmp))
+                let stream = getRtmpStream(camera: rtmpCamera)
+                if stream!.isConnected {
+                    mics.append(Mic(name: rtmpCamera, inputUid: rtmpCamera, builtInOrientation: .rtmp))
+                }
             }
         }
         return mics
@@ -5140,7 +5147,8 @@ extension Model {
 
     private func selectMic(mic: Mic) {
         if mic.builtInOrientation == .rtmp {
-            self.mic = mic
+            previousMic = currentMic
+            currentMic = mic
             let cameraId = getRtmpStream(camera: mic.id)?.id ?? .init()
             if database.debug!.enableRtmpAudio! {
                 media.attachRtmpAudio(cameraId: cameraId, device: AVCaptureDevice.default(for: .audio))
@@ -5164,7 +5172,8 @@ extension Model {
                         }
                     }
                 }
-                self.mic = mic
+                previousMic = currentMic
+                currentMic = mic
                 if database.debug!.enableRtmpAudio! {
                     media.attachAudio(device: AVCaptureDevice.default(for: .audio))
                 }

@@ -83,7 +83,7 @@ struct MicButtonView: View {
         Form {
             Section {
                 Picker("", selection: Binding(get: {
-                    model.mic
+                    model.currentMic
                 }, set: { mic, _ in
                     selectedMic = mic
                 })) {
