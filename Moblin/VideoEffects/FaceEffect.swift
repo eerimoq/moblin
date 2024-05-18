@@ -26,6 +26,8 @@ final class FaceEffect: VideoEffect {
     var safeSettings = Atomic<FaceEffectSettings>(.init())
     private var settings = FaceEffectSettings()
     let moblinImage: CIImage?
+    private var findFace = false
+    private var onFindFaceChanged: ((Bool) -> Void)? = nil
 
     override init() {
         if let image = UIImage(named: "AppIconNoBackground"), let image = image.cgImage {
@@ -36,12 +38,46 @@ final class FaceEffect: VideoEffect {
         super.init()
     }
 
+    convenience init(onFindFaceChanged: @escaping (Bool) -> Void) {
+        self.init()
+        self.onFindFaceChanged = onFindFaceChanged
+    }
+
     override func getName() -> String {
         return "face filter"
     }
 
     override func needsFaceDetections() -> Bool {
         return true
+    }
+
+    private func isBeautyEnabled() -> Bool {
+        return settings.showBeauty && (settings.shapeScale > 0 || settings.smoothAmount > 0)
+    }
+
+    private func findFaceNeeded() -> Bool {
+        return settings.showBeauty && settings.shapeScale > 0
+    }
+
+    private func updateFindFace(_ detections: [VNFaceObservation]?) {
+        if findFace {
+            if findFaceNeeded() {
+                if let detections, !detections.isEmpty {
+                    findFace = false
+                    onFindFaceChanged?(findFace)
+                }
+            } else {
+                findFace = false
+                onFindFaceChanged?(findFace)
+            }
+        } else {
+            if findFaceNeeded() {
+                if let detections, detections.isEmpty {
+                    findFace = true
+                    onFindFaceChanged?(findFace)
+                }
+            }
+        }
     }
 
     private func createFacesMaskImage(imageExtent: CGRect, detections: [VNFaceObservation]) -> CIImage? {
@@ -243,6 +279,7 @@ final class FaceEffect: VideoEffect {
 
     override func execute(_ image: CIImage, _ faceDetections: [VNFaceObservation]?) -> CIImage {
         loadSettings()
+        updateFindFace(faceDetections)
         guard let faceDetections else {
             return image
         }
@@ -335,6 +372,7 @@ final class FaceEffect: VideoEffect {
     }
 
     override func executeMetalPetal(_ image: MTIImage?, _ detections: [VNFaceObservation]?) -> MTIImage? {
+        updateFindFace(detections)
         var outputImage = image
         guard let image else {
             return nil
@@ -361,14 +399,15 @@ final class FaceEffect: VideoEffect {
         return outputImage
     }
 
-    private func isBeautyEnabled() -> Bool {
-        return settings.showBeauty && (settings.shapeScale > 0 || settings.smoothAmount > 0)
-    }
-
     override func supportsMetalPetal() -> Bool {
         // Do not load again for this frame as settings may not change from calling this function to
         // executing.
         loadSettings()
         return isBeautyEnabled() || settings.crop
+    }
+
+    override func removed() {
+        findFace = false
+        onFindFaceChanged?(findFace)
     }
 }

@@ -538,6 +538,7 @@ final class VideoUnit: NSObject {
     }
 
     private func unregisterEffectInner(_ effect: VideoEffect) {
+        effect.removed()
         if let index = effects.firstIndex(of: effect) {
             effects.remove(at: index)
         }
@@ -561,6 +562,9 @@ final class VideoUnit: NSObject {
 
     private func usePendingAfterAttachEffectsInner() {
         if let pendingAfterAttachEffects {
+            for effect in effects where !pendingAfterAttachEffects.contains(effect) {
+                effect.removed()
+            }
             effects = pendingAfterAttachEffects
             self.pendingAfterAttachEffects = nil
         }
@@ -744,9 +748,8 @@ final class VideoUnit: NSObject {
         }
         var newImageBuffer: CVImageBuffer?
         var newSampleBuffer: CMSampleBuffer?
-        if isFirstAfterAttach, let pendingAfterAttachEffects {
-            effects = pendingAfterAttachEffects
-            self.pendingAfterAttachEffects = nil
+        if isFirstAfterAttach {
+            usePendingAfterAttachEffectsInner()
         }
         if !effects.isEmpty || applyBlur {
             (newImageBuffer, newSampleBuffer) = applyEffects(

@@ -23,4 +23,6 @@ open class VideoEffect: NSObject {
     open func supportsMetalPetal() -> Bool {
         return false
     }
+
+    open func removed() {}
 }

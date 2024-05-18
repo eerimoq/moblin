@@ -247,6 +247,7 @@ final class Model: NSObject, ObservableObject {
     @Published var interactiveChat = false
     @Published var blackScreen = false
     @Published var findFace = false
+    private var findFaceTimer: Timer?
     private var streaming = false
     @Published var mic = noMic
     private var micChange = noMic
@@ -1776,6 +1777,17 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
+    private func handleFindFaceChanged(value: Bool) {
+        DispatchQueue.main.async {
+            self.findFace = value
+            self.findFaceTimer?.invalidate()
+            self.findFaceTimer = Timer
+                .scheduledTimer(withTimeInterval: 5, repeats: false) { _ in
+                    self.findFace = false
+                }
+        }
+    }
+
     private func unregisterGlobalVideoEffects() {
         media.unregisterEffect(faceEffect)
         media.unregisterEffect(movieEffect)
@@ -1783,7 +1795,7 @@ final class Model: NSObject, ObservableObject {
         media.unregisterEffect(sepiaEffect)
         media.unregisterEffect(tripleEffect)
         media.unregisterEffect(pixellateEffect)
-        faceEffect = FaceEffect()
+        faceEffect = FaceEffect(onFindFaceChanged: handleFindFaceChanged(value:))
         updateFaceFilterSettings()
         movieEffect = MovieEffect()
         grayScaleEffect = GrayScaleEffect()
