@@ -71,16 +71,6 @@ private struct FaceViewBeautyShape: View {
 
     var body: some View {
         FaceViewSlider(
-            name: String(localized: "RADIUS"),
-            value: settings.shapeRadius!,
-            range: 0 ... 1,
-            step: 0.01,
-            onChange: { radius in
-                settings.shapeRadius = radius
-                model.updateFaceFilterSettings()
-            }
-        )
-        FaceViewSlider(
             name: String(localized: "OFFSET"),
             value: settings.shapeOffset!,
             range: 0 ... 1,
@@ -91,7 +81,17 @@ private struct FaceViewBeautyShape: View {
             }
         )
         FaceViewSlider(
-            name: String(localized: "SCALE"),
+            name: String(localized: "RADIUS"),
+            value: settings.shapeRadius!,
+            range: 0 ... 1,
+            step: 0.01,
+            onChange: { radius in
+                settings.shapeRadius = radius
+                model.updateFaceFilterSettings()
+            }
+        )
+        FaceViewSlider(
+            name: String(localized: "AMOUNT"),
             value: settings.shapeScale!,
             range: 0 ... 1,
             step: 0.01,
@@ -112,22 +112,22 @@ private struct FaceViewBeautySmooth: View {
 
     var body: some View {
         FaceViewSlider(
-            name: String(localized: "AMOUNT"),
-            value: settings.smoothAmount!,
-            range: 0 ... 1,
-            step: 0.01,
-            onChange: { amount in
-                settings.smoothAmount = amount
-                model.updateFaceFilterSettings()
-            }
-        )
-        FaceViewSlider(
             name: String(localized: "RADIUS"),
             value: settings.smoothRadius!,
             range: 5 ... 20,
             step: 0.5,
             onChange: { radius in
                 settings.smoothRadius = radius
+                model.updateFaceFilterSettings()
+            }
+        )
+        FaceViewSlider(
+            name: String(localized: "AMOUNT"),
+            value: settings.smoothAmount!,
+            range: 0 ... 1,
+            step: 0.01,
+            onChange: { amount in
+                settings.smoothAmount = amount
                 model.updateFaceFilterSettings()
             }
         )

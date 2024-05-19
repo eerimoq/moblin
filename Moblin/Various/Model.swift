@@ -904,7 +904,7 @@ final class Model: NSObject, ObservableObject {
             showMouth: settings.showMoblin,
             showBeauty: settings.showBeauty!,
             shapeRadius: settings.shapeRadius!,
-            shapeScale: settings.shapeScale!,
+            shapeAmount: settings.shapeScale!,
             shapeOffset: settings.shapeOffset!,
             smoothAmount: settings.smoothAmount!,
             smoothRadius: settings.smoothRadius!

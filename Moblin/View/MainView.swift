@@ -153,7 +153,7 @@ struct MainView: View {
                         .edgesIgnoringSafeArea(.all)
                         StreamOverlayView()
                             .opacity(model.showLocalOverlays ? 1 : 0)
-                        if model.showFace {
+                        if model.showFace && !model.showDrawOnStream {
                             FaceView(
                                 crop: debug.beautyFilter!,
                                 beauty: debug.beautyFilterSettings!.showBeauty!,
@@ -248,7 +248,7 @@ struct MainView: View {
                         if model.showDrawOnStream {
                             DrawOnStreamView()
                         }
-                        if model.showFace {
+                        if model.showFace && !model.showDrawOnStream {
                             FaceView(
                                 crop: debug.beautyFilter!,
                                 beauty: debug.beautyFilterSettings!.showBeauty!,

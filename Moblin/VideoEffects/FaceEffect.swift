@@ -9,7 +9,7 @@ struct FaceEffectSettings {
     var showMouth = true
     var showBeauty = true
     var shapeRadius: Float = 0.5
-    var shapeScale: Float = 0.5
+    var shapeAmount: Float = 0.5
     var shapeOffset: Float = 0.5
     var smoothAmount: Float = 0.65
     var smoothRadius: Float = 20.0
@@ -54,7 +54,7 @@ final class FaceEffect: VideoEffect {
     }
 
     private func findFaceNeeded() -> Bool {
-        return settings.showBeauty && settings.shapeScale > 0
+        return settings.showBeauty && settings.shapeAmount > 0
     }
 
     private func updateFindFace(_ faceDetections: [VNFaceObservation]?) {
@@ -200,7 +200,7 @@ final class FaceEffect: VideoEffect {
     }
 
     private func shapeScale() -> Float {
-        return -(settings.shapeScale * 0.15) * shapeScaleFactor
+        return -(settings.shapeAmount * 0.15) * shapeScaleFactor
     }
 
     private func loadSettings() {
@@ -302,7 +302,7 @@ final class FaceEffect: VideoEffect {
         if settings.smoothAmount > 0 {
             image = addBeautySmoothMetalPetal(image)
         }
-        if settings.shapeScale > 0 {
+        if settings.shapeAmount > 0 {
             image = addBeautyShapeMetalPetal(image, detections)
         }
         return image
@@ -349,7 +349,7 @@ final class FaceEffect: VideoEffect {
     }
 
     private func shapeScaleMetalPetal() -> Float {
-        return -(settings.shapeScale * 0.075) * shapeScaleFactor
+        return -(settings.shapeAmount * 0.075) * shapeScaleFactor
     }
 
     private func increaseShapeScaleFactor() {
