@@ -305,6 +305,7 @@
 		03DBD1032B300D55004B0BE6 /* StreamWizardNetworkSetupBelaboxSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DBD1022B300D55004B0BE6 /* StreamWizardNetworkSetupBelaboxSettingsView.swift */; };
 		03DBD1072B300D91004B0BE6 /* StreamWizardNetworkSetupObsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DBD1062B300D91004B0BE6 /* StreamWizardNetworkSetupObsSettingsView.swift */; };
 		03DBD10A2B300DA8004B0BE6 /* StreamWizardNetworkSetupDirectSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DBD1092B300DA8004B0BE6 /* StreamWizardNetworkSetupDirectSettingsView.swift */; };
+		03DEA1F92BFA66DC00154631 /* MetalPetal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DEA1F82BFA66DC00154631 /* MetalPetal.swift */; };
 		03E877F72B2DB27800086355 /* GlobalQuickButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E877F62B2DB27800086355 /* GlobalQuickButtonsSettingsView.swift */; };
 		03E95AC62ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */; };
 		03E95AE42ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E95AE32ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift */; };
@@ -708,6 +709,7 @@
 		03DBD1022B300D55004B0BE6 /* StreamWizardNetworkSetupBelaboxSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardNetworkSetupBelaboxSettingsView.swift; sourceTree = "<group>"; };
 		03DBD1062B300D91004B0BE6 /* StreamWizardNetworkSetupObsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardNetworkSetupObsSettingsView.swift; sourceTree = "<group>"; };
 		03DBD1092B300DA8004B0BE6 /* StreamWizardNetworkSetupDirectSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamWizardNetworkSetupDirectSettingsView.swift; sourceTree = "<group>"; };
+		03DEA1F82BFA66DC00154631 /* MetalPetal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalPetal.swift; sourceTree = "<group>"; };
 		03E877F62B2DB27800086355 /* GlobalQuickButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalQuickButtonsSettingsView.swift; sourceTree = "<group>"; };
 		03E92AD42B248D3C00EBAC77 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		03E95AC52ADAF58900DAE2DF /* ZoomSwitchToSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomSwitchToSettingsView.swift; sourceTree = "<group>"; };
@@ -1892,6 +1894,7 @@
 				0382933A2A9A73ED008963AA /* Settings.swift */,
 				03487F252B334B63003D9ED9 /* StreamingHistory.swift */,
 				03A707BF2B8F0FAE003BB7BE /* Utils.swift */,
+				03DEA1F82BFA66DC00154631 /* MetalPetal.swift */,
 			);
 			path = Various;
 			sourceTree = "<group>";
@@ -2401,6 +2404,7 @@
 				0359F8CE2BD3DA61005BFDA8 /* FLVVideoFourCC.swift in Sources */,
 				0359F8C82BD3DA61005BFDA8 /* FLVFrameType.swift in Sources */,
 				03C2C2832B5F906E00E2F30B /* SliderView.swift in Sources */,
+				03DEA1F92BFA66DC00154631 /* MetalPetal.swift in Sources */,
 				0359F8DB2BD3DA61005BFDA8 /* Crc32.swift in Sources */,
 				0359F8FE2BD3DA61005BFDA8 /* SRTStream.swift in Sources */,
 				0315A33D2AA2FA7D00295443 /* RemoteConnection.swift in Sources */,
