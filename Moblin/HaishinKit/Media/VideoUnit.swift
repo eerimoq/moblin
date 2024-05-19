@@ -508,6 +508,7 @@ final class VideoUnit: NSObject {
             try metalPetalContext?.render(image, to: outputImageBuffer)
         } catch {
             logger.info("Metal petal error: \(error)")
+            return (nil, nil)
         }
         guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: outputImageBuffer)
         else {
