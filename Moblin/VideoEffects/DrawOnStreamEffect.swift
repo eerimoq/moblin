@@ -123,15 +123,7 @@ final class DrawOnStreamEffect: VideoEffect {
         let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.layers = [
-            .init(
-                content: overlay,
-                layoutUnit: .pixel,
-                position: .init(x: overlay.size.width / 2, y: overlay.size.height / 2),
-                size: overlay.size,
-                rotation: 0,
-                opacity: 1,
-                blendMode: .normal
-            ),
+            .init(content: overlay, position: .init(x: overlay.size.width / 2, y: overlay.size.height / 2)),
         ]
         return filter.outputImage ?? image
     }

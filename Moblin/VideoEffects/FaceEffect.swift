@@ -376,15 +376,7 @@ final class FaceEffect: VideoEffect {
             let filter = MTIMultilayerCompositingFilter()
             filter.inputBackgroundImage = outputImage
             filter.layers = [
-                .init(
-                    content: moblinImageMetalPetal,
-                    layoutUnit: .pixel,
-                    position: .init(x: offsetX, y: offsetY),
-                    size: moblinImageMetalPetal.size,
-                    rotation: 0,
-                    opacity: 1,
-                    blendMode: .normal
-                ),
+                .init(content: moblinImageMetalPetal, position: .init(x: offsetX, y: offsetY)),
             ]
             outputImage = filter.outputImage ?? outputImage
         }

@@ -51,23 +51,10 @@ final class MovieEffect: VideoEffect {
         let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.layers = [
+            .init(content: blackImage, position: .init(x: Int(blackWidth / 2), y: Int(blackHeight / 2))),
             .init(
                 content: blackImage,
-                layoutUnit: .pixel,
-                position: .init(x: Int(blackWidth / 2), y: Int(blackHeight / 2)),
-                size: blackImage.size,
-                rotation: 0,
-                opacity: 1,
-                blendMode: .normal
-            ),
-            .init(
-                content: blackImage,
-                layoutUnit: .pixel,
-                position: .init(x: Int(blackWidth / 2), y: Int(image.size.height - blackHeight / 2)),
-                size: blackImage.size,
-                rotation: 0,
-                opacity: 1,
-                blendMode: .normal
+                position: .init(x: Int(blackWidth / 2), y: Int(image.size.height - blackHeight / 2))
             ),
         ]
         return filter.outputImage

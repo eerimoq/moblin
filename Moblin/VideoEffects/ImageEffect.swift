@@ -58,15 +58,7 @@ final class ImageEffect: VideoEffect {
         let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.layers = [
-            .init(
-                content: overlayMetalPetal,
-                layoutUnit: .pixel,
-                position: .init(x: x, y: y),
-                size: overlayMetalPetal.size,
-                rotation: 0,
-                opacity: 1,
-                blendMode: .normal
-            ),
+            .init(content: overlayMetalPetal, position: .init(x: x, y: y)),
         ]
         return filter.outputImage ?? image
     }

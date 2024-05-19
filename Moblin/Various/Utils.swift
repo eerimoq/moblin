@@ -1,5 +1,6 @@
 import AVKit
 import MapKit
+import MetalPetal
 import SwiftUI
 
 extension UIImage {
@@ -475,4 +476,18 @@ func bondingStatistics(connections: [BondingConnection]) -> String? {
     return percentges.map { percentage in
         "\(percentage.usage)% \(percentage.name)"
     }.joined(separator: ", ")
+}
+
+extension MTILayer {
+    convenience init(content: MTIImage, position: CGPoint) {
+        self.init(
+            content: content,
+            layoutUnit: .pixel,
+            position: position,
+            size: content.size,
+            rotation: 0,
+            opacity: 1,
+            blendMode: .normal
+        )
+    }
 }
