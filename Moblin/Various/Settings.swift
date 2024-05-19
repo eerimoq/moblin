@@ -668,7 +668,7 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     }
 }
 
-let widgetTypes = SettingsWidgetType.allCases.map { $0.toString() }
+let widgetTypes = SettingsWidgetType.allCases.filter { $0 != .videoEffect }.map { $0.toString() }
 
 class SettingsWidget: Codable, Identifiable, Equatable {
     var name: String
