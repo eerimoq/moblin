@@ -42859,6 +42859,9 @@
         }
       }
     },
+    "Mic orientation %@" : {
+
+    },
     "Minimum bitrate decrease speed" : {
       "localizations" : {
         "de" : {
