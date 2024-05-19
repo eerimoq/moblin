@@ -56,23 +56,10 @@ final class TripleEffect: VideoEffect {
         let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.layers = [
+            .init(content: centerImage, position: .init(x: leadingPosition, y: bottomPosition)),
             .init(
                 content: centerImage,
-                layoutUnit: .pixel,
-                position: .init(x: leadingPosition, y: bottomPosition),
-                size: .init(width: segmentWidth, height: height),
-                rotation: 0,
-                opacity: 1,
-                blendMode: .normal
-            ),
-            .init(
-                content: centerImage,
-                layoutUnit: .pixel,
-                position: .init(x: leadingPosition + 2 * segmentWidth, y: bottomPosition),
-                size: .init(width: segmentWidth, height: height),
-                rotation: 0,
-                opacity: 1,
-                blendMode: .normal
+                position: .init(x: leadingPosition + 2 * segmentWidth, y: bottomPosition)
             ),
         ]
         return filter.outputImage
