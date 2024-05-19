@@ -5063,7 +5063,11 @@ extension Model {
                     continue
                 }
                 if isRtmpStreamConnected(streamKey: stream.streamKey) {
-                    mics.append(Mic(name: rtmpCamera, inputUid: stream.id.uuidString, builtInOrientation: .rtmp))
+                    mics.append(Mic(
+                        name: rtmpCamera,
+                        inputUid: stream.id.uuidString,
+                        builtInOrientation: .rtmp
+                    ))
                 }
             }
         }
