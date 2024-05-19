@@ -14266,6 +14266,7 @@
       }
     },
     "Bloom" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -47175,6 +47176,7 @@
       }
     },
     "Noise level" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -47305,6 +47307,7 @@
       }
     },
     "Noise reduction" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -49779,6 +49782,7 @@
       }
     },
     "Parameters" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -52123,6 +52127,7 @@
 
     },
     "Random" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -58139,6 +58144,7 @@
 
     },
     "Sharpness" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

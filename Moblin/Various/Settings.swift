@@ -614,56 +614,9 @@ enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
         self = try SettingsWidgetVideoEffectType(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .movie
     }
-
-    static func fromString(value: String) -> SettingsWidgetVideoEffectType {
-        switch value {
-        case String(localized: "Movie"):
-            return .movie
-        case String(localized: "Gray scale"):
-            return .grayScale
-        case String(localized: "Sepia"):
-            return .sepia
-        case String(localized: "Bloom"):
-            return .bloom
-        case String(localized: "Random"):
-            return .random
-        case String(localized: "Triple"):
-            return .triple
-        case String(localized: "Noise reduction"):
-            return .noiseReduction
-        case String(localized: "Pixellate"):
-            return .pixellate
-        default:
-            return .movie
-        }
-    }
-
-    func toString() -> String {
-        switch self {
-        case .movie:
-            return String(localized: "Movie")
-        case .grayScale:
-            return String(localized: "Gray scale")
-        case .sepia:
-            return String(localized: "Sepia")
-        case .bloom:
-            return String(localized: "Bloom")
-        case .random:
-            return String(localized: "Random")
-        case .triple:
-            return String(localized: "Triple")
-        case .noiseReduction:
-            return String(localized: "Noise reduction")
-        case .pixellate:
-            return String(localized: "Pixellate")
-        }
-    }
 }
 
-let videoEffects = SettingsWidgetVideoEffectType.allCases.filter { effect in
-    effect == .noiseReduction
-}.map { $0.toString() }
-
+// periphery:ignore
 class SettingsWidgetVideoEffect: Codable {
     var type: SettingsWidgetVideoEffectType = .noiseReduction
     var noiseReductionNoiseLevel: Float = 0.01
@@ -731,7 +684,8 @@ class SettingsWidget: Codable, Identifiable, Equatable {
     // periphery:ignore
     var recording: SettingsWidgetRecording? = .init()
     var browser: SettingsWidgetBrowser = .init()
-    var videoEffect: SettingsWidgetVideoEffect = .init()
+    // periphery:ignore
+    var videoEffect: SettingsWidgetVideoEffect? = .init()
     var crop: SettingsWidgetCrop? = .init()
 
     init(name: String) {
@@ -1994,25 +1948,6 @@ final class Settings {
             stream.afreecaTvStreamId = ""
             store()
         }
-        var bloomWidgets: [SettingsWidget] = []
-        for widget in realDatabase.widgets where widget.type == .videoEffect {
-            if widget.videoEffect.type == .bloom {
-                bloomWidgets.append(widget)
-            }
-        }
-        if !bloomWidgets.isEmpty {
-            realDatabase.widgets = realDatabase.widgets.filter { widget in
-                !bloomWidgets.contains(widget)
-            }
-            for scene in realDatabase.scenes {
-                scene.widgets = scene.widgets.filter { widget in
-                    !bloomWidgets.contains { bloomWidget in
-                        bloomWidget.id == widget.widgetId
-                    }
-                }
-            }
-            store()
-        }
         for stream in realDatabase.streams where stream.obsWebSocketUrl == nil {
             stream.obsWebSocketUrl = ""
             store()
@@ -2447,6 +2382,23 @@ final class Settings {
         }
         if realDatabase.debug!.beautyFilterSettings!.smoothRadius == nil {
             realDatabase.debug!.beautyFilterSettings!.smoothRadius = 20.0
+            store()
+        }
+        var videoEffectWidgets: [SettingsWidget] = []
+        for widget in realDatabase.widgets where widget.type == .videoEffect {
+            videoEffectWidgets.append(widget)
+        }
+        if !videoEffectWidgets.isEmpty {
+            realDatabase.widgets = realDatabase.widgets.filter { widget in
+                !videoEffectWidgets.contains(widget)
+            }
+            for scene in realDatabase.scenes {
+                scene.widgets = scene.widgets.filter { widget in
+                    !videoEffectWidgets.contains { videoEffectWidget in
+                        videoEffectWidget.id == widget.widgetId
+                    }
+                }
+            }
             store()
         }
     }

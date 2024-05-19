@@ -299,7 +299,6 @@ final class Model: NSObject, ObservableObject {
     @Published var showCameraPreview = false
     private var textEffects: [UUID: TextEffect] = [:]
     private var imageEffects: [UUID: ImageEffect] = [:]
-    private var videoEffects: [UUID: VideoEffect] = [:]
     private var browserEffects: [UUID: BrowserEffect] = [:]
     private var lutEffects: [UUID: LutEffect] = [:]
     private var drawOnStreamEffect = DrawOnStreamEffect()
@@ -1768,15 +1767,6 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    private func addVideoEffect(widget: SettingsWidget) {
-        switch widget.videoEffect.type {
-        case .noiseReduction:
-            videoEffects[widget.id] = NoiseReductionEffect()
-        default:
-            break
-        }
-    }
-
     private func handleFindFaceChanged(value: Bool) {
         DispatchQueue.main.async {
             self.findFace = value
@@ -1845,13 +1835,6 @@ final class Model: NSObject, ObservableObject {
             sceneIndex = 0
         }
         unregisterGlobalVideoEffects()
-        for videoEffect in videoEffects.values {
-            media.unregisterEffect(videoEffect)
-        }
-        videoEffects.removeAll()
-        for widget in database.widgets where widget.type == .videoEffect {
-            addVideoEffect(widget: widget)
-        }
         for textEffect in textEffects.values {
             media.unregisterEffect(textEffect)
         }
@@ -2995,9 +2978,6 @@ final class Model: NSObject, ObservableObject {
 
     private func sceneUpdatedOff() {
         unregisterGlobalVideoEffects()
-        for videoEffect in videoEffects.values {
-            media.unregisterEffect(videoEffect)
-        }
         for imageEffect in imageEffects.values {
             media.unregisterEffect(imageEffect)
         }
@@ -3192,15 +3172,7 @@ final class Model: NSObject, ObservableObject {
                     effects.append(textEffect)
                 }
             case .videoEffect:
-                if let videoEffect = videoEffects[widget.id] {
-                    if let noiseReductionEffect = videoEffect as? NoiseReductionEffect {
-                        noiseReductionEffect.noiseLevel = widget.videoEffect
-                            .noiseReductionNoiseLevel
-                        noiseReductionEffect.sharpness = widget.videoEffect
-                            .noiseReductionSharpness
-                    }
-                    effects.append(videoEffect)
-                }
+                break
             case .browser:
                 if let browserEffect = browserEffects[widget.id],
                    !usedBrowserEffects.contains(browserEffect)

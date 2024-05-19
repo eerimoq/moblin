@@ -38,12 +38,7 @@ struct WidgetSettingsView: View {
             case .image:
                 WidgetImageSettingsView(widget: widget)
             case .videoEffect:
-                WidgetVideoEffectSettingsView(widget: widget,
-                                              selection: widget.videoEffect.type.toString(),
-                                              noiseLevel: widget.videoEffect
-                                                  .noiseReductionNoiseLevel * 10,
-                                              sharpness: widget.videoEffect
-                                                  .noiseReductionSharpness / 10)
+                EmptyView()
             case .browser:
                 WidgetBrowserSettingsView(widget: widget)
             case .time:
