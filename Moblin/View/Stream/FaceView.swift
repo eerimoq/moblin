@@ -71,7 +71,7 @@ private struct FaceViewBeautyShape: View {
 
     var body: some View {
         FaceViewSlider(
-            name: String(localized: "OFFSET"),
+            name: String(localized: "POSITION"),
             value: settings.shapeOffset!,
             range: 0 ... 1,
             step: 0.01,
@@ -91,7 +91,7 @@ private struct FaceViewBeautyShape: View {
             }
         )
         FaceViewSlider(
-            name: String(localized: "AMOUNT"),
+            name: String(localized: "STRENGTH"),
             value: settings.shapeScale!,
             range: 0 ... 1,
             step: 0.01,
@@ -122,7 +122,7 @@ private struct FaceViewBeautySmooth: View {
             }
         )
         FaceViewSlider(
-            name: String(localized: "AMOUNT"),
+            name: String(localized: "STRENGTH"),
             value: settings.smoothAmount!,
             range: 0 ... 1,
             step: 0.01,
