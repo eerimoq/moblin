@@ -899,14 +899,9 @@ final class Model: NSObject, ObservableObject {
     func updateFaceFilterSettings() {
         let settings = database.debug!.beautyFilterSettings!
         faceEffect.safeSettings.mutate { $0 = FaceEffectSettings(
-            crop: database.debug!.beautyFilter!,
+            showCrop: database.debug!.beautyFilter!,
             showBlur: settings.showBlur,
-            showColors: settings.showColors,
             showMouth: settings.showMoblin,
-            showFaceLandmarks: settings.showFaceLandmarks,
-            contrast: settings.contrast,
-            brightness: settings.brightness,
-            saturation: settings.saturation,
             showBeauty: settings.showBeauty!,
             shapeRadius: settings.shapeRadius!,
             shapeScale: settings.shapeScale!,
@@ -1803,7 +1798,7 @@ final class Model: NSObject, ObservableObject {
     private func isFaceEnabled() -> Bool {
         let settings = database.debug!.beautyFilterSettings!
         return database.debug!.beautyFilter! || settings.showBlur || settings.showMoblin || settings
-            .showColors || settings.showFaceLandmarks || settings.showBeauty!
+            .showBeauty!
     }
 
     private func registerGlobalVideoEffects() -> [VideoEffect] {

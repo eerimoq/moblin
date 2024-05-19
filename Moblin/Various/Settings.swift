@@ -1061,16 +1061,21 @@ let pixelFormatTypes = [
 
 class SettingsDebugBeautyFilter: Codable {
     var showBlur = false
-    var showColors = false
+    // periphery:ignore
+    var showColors: Bool? = false
     var showMoblin = false
     // periphery:ignore
     var showComic = false
     // periphery:ignore
-    var showFaceRectangle = false
-    var showFaceLandmarks = false
-    var brightness: Float = 0.0
-    var contrast: Float = 1.0
-    var saturation: Float = 1.0
+    var showFaceRectangle: Bool? = false
+    // periphery:ignore
+    var showFaceLandmarks: Bool? = false
+    // periphery:ignore
+    var brightness: Float? = 0.0
+    // periphery:ignore
+    var contrast: Float? = 1.0
+    // periphery:ignore
+    var saturation: Float? = 1.0
     var showCute: Bool? = false
     var cuteRadius: Float? = 0.5
     var cuteScale: Float? = 0.0

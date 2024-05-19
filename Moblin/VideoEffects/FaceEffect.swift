@@ -4,14 +4,9 @@ import UIKit
 import Vision
 
 struct FaceEffectSettings {
-    var crop = true
+    var showCrop = true
     var showBlur = true
-    var showColors = true
     var showMouth = true
-    var showFaceLandmarks = true
-    var contrast: Float = 1.0
-    var brightness: Float = 0.0
-    var saturation: Float = 1.0
     var showBeauty = true
     var shapeRadius: Float = 0.5
     var shapeScale: Float = 0.5
@@ -109,19 +104,6 @@ final class FaceEffect: VideoEffect {
         return facesMask
     }
 
-    private func adjustColorControls(image: CIImage?) -> CIImage? {
-        let filter = CIFilter.colorControls()
-        filter.inputImage = image
-        filter.brightness = settings.brightness
-        filter.contrast = settings.contrast
-        filter.saturation = settings.saturation
-        return filter.outputImage
-    }
-
-    private func adjustColors(image: CIImage?) -> CIImage? {
-        return adjustColorControls(image: image)
-    }
-
     private func applyBlur(image: CIImage?) -> CIImage? {
         guard let image else {
             return image
@@ -186,39 +168,6 @@ final class FaceEffect: VideoEffect {
         return outputImage.cropped(to: image.extent)
     }
 
-    private func createMesh(landmark: VNFaceLandmarkRegion2D?, image: CIImage?) -> [CIVector] {
-        guard let landmark, let image else {
-            return []
-        }
-        var mesh: [CIVector] = []
-        let points = landmark.pointsInImage(imageSize: image.extent.size)
-        switch landmark.pointsClassification {
-        case .closedPath:
-            for i in 0 ..< landmark.pointCount {
-                let j = (i + 1) % landmark.pointCount
-                mesh.append(CIVector(x: points[i].x,
-                                     y: points[i].y,
-                                     z: points[j].x,
-                                     w: points[j].y))
-            }
-        case .openPath:
-            for i in 0 ..< landmark.pointCount - 1 {
-                mesh.append(CIVector(x: points[i].x,
-                                     y: points[i].y,
-                                     z: points[i + 1].x,
-                                     w: points[i + 1].y))
-            }
-        case .disconnected:
-            for i in 0 ..< landmark.pointCount - 1 {
-                mesh.append(CIVector(x: points[i].x,
-                                     y: points[i].y,
-                                     z: points[i + 1].x,
-                                     w: points[i + 1].y))
-            }
-        }
-        return mesh
-    }
-
     private func addBeauty(image: CIImage?, detections: [VNFaceObservation]?) -> CIImage? {
         guard let image, var detections else {
             return image
@@ -254,35 +203,6 @@ final class FaceEffect: VideoEffect {
         return -(settings.shapeScale * 0.15) * shapeScaleFactor
     }
 
-    private func addFaceLandmarks(image: CIImage?, detections: [VNFaceObservation]?) -> CIImage? {
-        guard let image, let detections else {
-            return image
-        }
-        var mesh: [CIVector] = []
-        for detection in detections {
-            guard let landmarks = detection.landmarks else {
-                continue
-            }
-            mesh += createMesh(landmark: landmarks.faceContour, image: image)
-            mesh += createMesh(landmark: landmarks.outerLips, image: image)
-            mesh += createMesh(landmark: landmarks.innerLips, image: image)
-            mesh += createMesh(landmark: landmarks.leftEye, image: image)
-            mesh += createMesh(landmark: landmarks.rightEye, image: image)
-            mesh += createMesh(landmark: landmarks.nose, image: image)
-            mesh += createMesh(landmark: landmarks.medianLine, image: image)
-            mesh += createMesh(landmark: landmarks.leftEyebrow, image: image)
-            mesh += createMesh(landmark: landmarks.rightEyebrow, image: image)
-        }
-        let filter = CIFilter.meshGenerator()
-        filter.color = .green
-        filter.width = 3
-        filter.mesh = mesh
-        guard let outputImage = filter.outputImage else {
-            return image
-        }
-        return outputImage.composited(over: image).cropped(to: image.extent)
-    }
-
     private func loadSettings() {
         settings = safeSettings.value
     }
@@ -295,9 +215,6 @@ final class FaceEffect: VideoEffect {
             return image
         }
         var outputImage: CIImage? = image
-        if settings.showColors {
-            outputImage = adjustColors(image: outputImage)
-        }
         if settings.showBlur {
             outputImage = applyBlur(image: outputImage)
         }
@@ -314,10 +231,7 @@ final class FaceEffect: VideoEffect {
         if settings.showMouth {
             outputImage = addMouth(image: outputImage, detections: faceDetections)
         }
-        if settings.showFaceLandmarks {
-            outputImage = addFaceLandmarks(image: outputImage, detections: faceDetections)
-        }
-        if settings.crop {
+        if settings.showCrop {
             let width = image.extent.width
             let height = image.extent.height
             let scaleUpFactor = 1 / cropScaleDownFactor
@@ -474,7 +388,7 @@ final class FaceEffect: VideoEffect {
         if settings.showMouth {
             outputImage = addMouthMetalPetal(image: outputImage, detections: faceDetections)
         }
-        if settings.crop {
+        if settings.showCrop {
             let width = image.extent.width
             let height = image.extent.height
             let smallWidth = width * cropScaleDownFactor

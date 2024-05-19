@@ -97,13 +97,6 @@ struct DebugSettingsView: View {
                 }, set: { value in
                     model.setGlobalToneMapping(on: value)
                 }))
-                NavigationLink(destination: DebugBeautyFilterSettingsView(
-                    brightness: model.database.debug!.beautyFilterSettings!.brightness,
-                    contrast: model.database.debug!.beautyFilterSettings!.contrast,
-                    saturation: model.database.debug!.beautyFilterSettings!.saturation
-                )) {
-                    Text("Beauty filter")
-                }
                 Toggle("MetalPetal filters", isOn: Binding(get: {
                     model.database.debug!.metalPetalFilters!
                 }, set: { value in
