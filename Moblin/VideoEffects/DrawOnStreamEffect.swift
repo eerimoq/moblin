@@ -1,4 +1,5 @@
 import AVFoundation
+import MetalPetal
 import SwiftUI
 import UIKit
 import Vision
@@ -33,6 +34,7 @@ private func transformPoint(point: CGPoint, scale: Double, offsetX: Double, offs
 final class DrawOnStreamEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
     private var overlay: CIImage?
+    private var overlayMetalPetal: MTIImage?
 
     override func getName() -> String {
         return "draw on stream"
@@ -85,8 +87,13 @@ final class DrawOnStreamEffect: VideoEffect {
                 return
             }
             let image = CIImage(image: uiImage)
+            guard let cgImage = uiImage.cgImage else {
+                return
+            }
+            let imageMetalPetal = MTIImage(cgImage: cgImage, isOpaque: true)
             drawQueue.sync {
                 self.overlay = image
+                self.overlayMetalPetal = imageMetalPetal
             }
         }
     }
@@ -100,6 +107,32 @@ final class DrawOnStreamEffect: VideoEffect {
     override func execute(_ image: CIImage, _: [VNFaceObservation]?) -> CIImage {
         filter.inputImage = getOverlay()
         filter.backgroundImage = image
+        return filter.outputImage ?? image
+    }
+
+    private func getOverlayMetalPetal() -> MTIImage? {
+        drawQueue.sync {
+            overlayMetalPetal
+        }
+    }
+
+    override func executeMetalPetal(_ image: MTIImage?, _: [VNFaceObservation]?) -> MTIImage? {
+        guard let overlay = getOverlayMetalPetal() else {
+            return image
+        }
+        let filter = MTIMultilayerCompositingFilter()
+        filter.inputBackgroundImage = image
+        filter.layers = [
+            .init(
+                content: overlay,
+                layoutUnit: .pixel,
+                position: .init(x: overlay.size.width / 2, y: overlay.size.height / 2),
+                size: overlay.size,
+                rotation: 0,
+                opacity: 1,
+                blendMode: .normal
+            ),
+        ]
         return filter.outputImage ?? image
     }
 }
