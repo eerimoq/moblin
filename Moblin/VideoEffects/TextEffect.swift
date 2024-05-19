@@ -85,14 +85,14 @@ final class TextEffect: VideoEffect {
         overlayMetalPetal = MTIImage(cgImage: image, isOpaque: true)
     }
 
-    override func execute(_ image: CIImage, _: [VNFaceObservation]?) -> CIImage {
+    override func execute(_ image: CIImage, _: [VNFaceObservation]?, _: Bool) -> CIImage {
         updateOverlay(size: image.extent.size)
         filter.inputImage = overlay
         filter.backgroundImage = image
         return filter.outputImage ?? image
     }
 
-    override func executeMetalPetal(_ image: MTIImage?, _: [VNFaceObservation]?) -> MTIImage? {
+    override func executeMetalPetal(_ image: MTIImage?, _: [VNFaceObservation]?, _: Bool) -> MTIImage? {
         guard let image else {
             return image
         }

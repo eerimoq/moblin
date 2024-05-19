@@ -9,7 +9,7 @@ final class SepiaEffect: VideoEffect {
         return "sepia filter"
     }
 
-    override func execute(_ image: CIImage, _: [VNFaceObservation]?) -> CIImage {
+    override func execute(_ image: CIImage, _: [VNFaceObservation]?, _: Bool) -> CIImage {
         filter.inputImage = image
         filter.intensity = 0.9
         return filter.outputImage ?? image

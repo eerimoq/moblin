@@ -168,7 +168,7 @@ final class FaceEffect: VideoEffect {
         return outputImage.cropped(to: image.extent)
     }
 
-    private func addBeauty(image: CIImage?, detections: [VNFaceObservation]?) -> CIImage? {
+    private func addBeauty(_ image: CIImage?, _ detections: [VNFaceObservation]?) -> CIImage? {
         guard let image, var detections else {
             return image
         }
@@ -207,10 +207,14 @@ final class FaceEffect: VideoEffect {
         settings = safeSettings.value
     }
 
-    override func execute(_ image: CIImage, _ faceDetections: [VNFaceObservation]?) -> CIImage {
+    override func execute(_ image: CIImage,
+                          _ faceDetections: [VNFaceObservation]?,
+                          _ isFirstAfterAttach: Bool) -> CIImage
+    {
         loadSettings()
         updateFindFace(faceDetections)
-        updateScaleFactors(faceDetections)
+        updateLastFaceDetectionsBefore(isFirstAfterAttach)
+        updateScaleFactors(faceDetections, isFirstAfterAttach)
         guard let faceDetections else {
             return image
         }
@@ -226,7 +230,7 @@ final class FaceEffect: VideoEffect {
             )
         }
         if settings.showBeauty {
-            outputImage = addBeauty(image: outputImage, detections: faceDetections)
+            outputImage = addBeauty(outputImage, faceDetections)
         }
         if settings.showMouth {
             outputImage = addMouth(image: outputImage, detections: faceDetections)
@@ -245,7 +249,7 @@ final class FaceEffect: VideoEffect {
                 .transformed(by: CGAffineTransform(scaleX: scaleUpFactor, y: scaleUpFactor))
                 .cropped(to: image.extent)
         }
-        updateLastFaceDetections(faceDetections)
+        updateLastFaceDetectionsAfter(faceDetections)
         return outputImage ?? image
     }
 
@@ -316,8 +320,7 @@ final class FaceEffect: VideoEffect {
         return filter.outputImage
     }
 
-    private func addBeautyShapeMetalPetal(_ image: MTIImage?,
-                                          _ detections: [VNFaceObservation]?) -> MTIImage?
+    private func addBeautyShapeMetalPetal(_ image: MTIImage?, _ detections: [VNFaceObservation]?) -> MTIImage?
     {
         guard let image, var detections else {
             return image
@@ -360,24 +363,38 @@ final class FaceEffect: VideoEffect {
         shapeScaleFactor = max(shapeScaleFactor - (1.0 / framesPerFade), 0)
     }
 
-    private func updateScaleFactors(_ detections: [VNFaceObservation]?) {
-        if detections?.isEmpty ?? true {
-            decreaseShapeScaleFactor()
+    private func updateScaleFactors(_ detections: [VNFaceObservation]?, _ isFirstAfterAttach: Bool) {
+        if isFirstAfterAttach {
+            shapeScaleFactor = 1
         } else {
-            increaseShapeScaleFactor()
+            if detections?.isEmpty ?? true {
+                decreaseShapeScaleFactor()
+            } else {
+                increaseShapeScaleFactor()
+            }
         }
     }
 
-    private func updateLastFaceDetections(_ faceDetections: [VNFaceObservation]?) {
+    private func updateLastFaceDetectionsBefore(_ isFirstAfterAttach: Bool) {
+        if isFirstAfterAttach {
+            lastFaceDetections = .init()
+        }
+    }
+
+    private func updateLastFaceDetectionsAfter(_ faceDetections: [VNFaceObservation]?) {
         if let faceDetections, !faceDetections.isEmpty {
             lastFaceDetections = faceDetections
         }
     }
 
-    override func executeMetalPetal(_ image: MTIImage?, _ faceDetections: [VNFaceObservation]?) -> MTIImage? {
+    override func executeMetalPetal(_ image: MTIImage?,
+                                    _ faceDetections: [VNFaceObservation]?,
+                                    _ isFirstAfterAttach: Bool) -> MTIImage?
+    {
         loadSettings()
         updateFindFace(faceDetections)
-        updateScaleFactors(faceDetections)
+        updateLastFaceDetectionsBefore(isFirstAfterAttach)
+        updateScaleFactors(faceDetections, isFirstAfterAttach)
         var outputImage = image
         guard let image else {
             return image
@@ -404,7 +421,7 @@ final class FaceEffect: VideoEffect {
                 ))?
                 .resized(to: image.size)
         }
-        updateLastFaceDetections(faceDetections)
+        updateLastFaceDetectionsAfter(faceDetections)
         return outputImage
     }
 

@@ -30,14 +30,14 @@ final class MovieEffect: VideoEffect {
         return "movie filter"
     }
 
-    override func execute(_ image: CIImage, _: [VNFaceObservation]?) -> CIImage {
+    override func execute(_ image: CIImage, _: [VNFaceObservation]?, _: Bool) -> CIImage {
         extent = image.extent
         filter.inputImage = black!
         filter.backgroundImage = image
         return filter.outputImage ?? image
     }
 
-    override func executeMetalPetal(_ image: MTIImage?, _: [VNFaceObservation]?) -> MTIImage? {
+    override func executeMetalPetal(_ image: MTIImage?, _: [VNFaceObservation]?, _: Bool) -> MTIImage? {
         guard let image else {
             return image
         }

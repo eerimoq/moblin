@@ -95,7 +95,7 @@ final class LutEffect: VideoEffect {
         }
     }
 
-    override func execute(_ image: CIImage, _: [VNFaceObservation]?) -> CIImage {
+    override func execute(_ image: CIImage, _: [VNFaceObservation]?, _: Bool) -> CIImage {
         let filter = lutQueue.sync {
             self.filter
         }
@@ -103,7 +103,7 @@ final class LutEffect: VideoEffect {
         return filter.outputImage ?? image
     }
 
-    override func executeMetalPetal(_ image: MTIImage?, _: [VNFaceObservation]?) -> MTIImage? {
+    override func executeMetalPetal(_ image: MTIImage?, _: [VNFaceObservation]?, _: Bool) -> MTIImage? {
         let filter = lutQueue.sync {
             self.filterMetalPetal
         }

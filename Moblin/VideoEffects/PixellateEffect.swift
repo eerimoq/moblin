@@ -10,14 +10,14 @@ final class PixellateEffect: VideoEffect {
         return "pixellate filter"
     }
 
-    override func execute(_ image: CIImage, _: [VNFaceObservation]?) -> CIImage {
+    override func execute(_ image: CIImage, _: [VNFaceObservation]?, _: Bool) -> CIImage {
         filter.inputImage = image
         filter.center = .init(x: 0, y: 0)
         filter.scale = 20 * (Float(image.extent.width) / 1920)
         return filter.outputImage?.cropped(to: image.extent) ?? image
     }
 
-    override func executeMetalPetal(_ image: MTIImage?, _: [VNFaceObservation]?) -> MTIImage? {
+    override func executeMetalPetal(_ image: MTIImage?, _: [VNFaceObservation]?, _: Bool) -> MTIImage? {
         guard let image else {
             return image
         }

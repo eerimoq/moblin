@@ -140,7 +140,7 @@ final class AudioUnit: NSObject {
         guard let sampleBuffer, selectedReplaceAudioId != nil else {
             return
         }
-        var numberOfAudioChannels = sampleBuffer.formatDescription?.audioChannelLayout?.numberOfChannels ?? 0
+        let numberOfAudioChannels = sampleBuffer.formatDescription?.audioChannelLayout?.numberOfChannels ?? 0
         prepareSampleBuffer(
             sampleBuffer: sampleBuffer,
             audioLevel: .infinity,

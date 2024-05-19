@@ -377,25 +377,39 @@ final class VideoUnit: NSObject {
     private func applyEffects(_ imageBuffer: CVImageBuffer,
                               _ sampleBuffer: CMSampleBuffer,
                               _ faceDetections: [VNFaceObservation]?,
-                              _ applyBlur: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
+                              _ applyBlur: Bool,
+                              _ isFirstAfterAttach: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
     {
         if !ioVideoUnitMetalPetal {
-            return applyEffectsCoreImage(imageBuffer, sampleBuffer, faceDetections, applyBlur)
+            return applyEffectsCoreImage(
+                imageBuffer,
+                sampleBuffer,
+                faceDetections,
+                applyBlur,
+                isFirstAfterAttach
+            )
         } else {
-            return applyEffectsMetalPetal(imageBuffer, sampleBuffer, faceDetections, applyBlur)
+            return applyEffectsMetalPetal(
+                imageBuffer,
+                sampleBuffer,
+                faceDetections,
+                applyBlur,
+                isFirstAfterAttach
+            )
         }
     }
 
     private func applyEffectsCoreImage(_ imageBuffer: CVImageBuffer,
                                        _ sampleBuffer: CMSampleBuffer,
                                        _ faceDetections: [VNFaceObservation]?,
-                                       _ applyBlur: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
+                                       _ applyBlur: Bool,
+                                       _ isFirstAfterAttach: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
     {
         var image = CIImage(cvPixelBuffer: imageBuffer)
         let extent = image.extent
         var failedEffect: String?
         for effect in effects {
-            let effectOutputImage = effect.execute(image, faceDetections)
+            let effectOutputImage = effect.execute(image, faceDetections, isFirstAfterAttach)
             if effectOutputImage.extent == extent {
                 image = effectOutputImage
             } else {
@@ -466,13 +480,14 @@ final class VideoUnit: NSObject {
     private func applyEffectsMetalPetal(_ imageBuffer: CVImageBuffer,
                                         _ sampleBuffer: CMSampleBuffer,
                                         _ faceDetections: [VNFaceObservation]?,
-                                        _ applyBlur: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
+                                        _ applyBlur: Bool,
+                                        _ isFirstAfterAttach: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
     {
         var image: MTIImage? = MTIImage(cvPixelBuffer: imageBuffer, alphaType: .alphaIsOne)
         let originalImage = image
         var failedEffect: String?
         for effect in effects {
-            let effectOutputImage = effect.executeMetalPetal(image, faceDetections)
+            let effectOutputImage = effect.executeMetalPetal(image, faceDetections, isFirstAfterAttach)
             if effectOutputImage != nil {
                 image = effectOutputImage
             } else {
@@ -753,7 +768,8 @@ final class VideoUnit: NSObject {
                 imageBuffer,
                 sampleBuffer,
                 faceDetections,
-                applyBlur
+                applyBlur,
+                isFirstAfterAttach
             )
         }
         let modImageBuffer = newImageBuffer ?? imageBuffer

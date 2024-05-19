@@ -215,7 +215,7 @@ final class BrowserEffect: VideoEffect {
         }
     }
 
-    override func execute(_ image: CIImage, _: [VNFaceObservation]?) -> CIImage {
+    override func execute(_ image: CIImage, _: [VNFaceObservation]?, _: Bool) -> CIImage {
         updateOverlay()
         filter.inputImage = overlay
         filter.backgroundImage = image
