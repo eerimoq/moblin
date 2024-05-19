@@ -468,14 +468,10 @@ final class VideoUnit: NSObject {
                                         _ faceDetections: [VNFaceObservation]?,
                                         _ applyBlur: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
     {
-        let metalPetalEffects = effects.filter { $0.supportsMetalPetal(faceDetections) }
-        guard !metalPetalEffects.isEmpty || applyBlur else {
-            return (nil, nil)
-        }
         var image: MTIImage? = MTIImage(cvPixelBuffer: imageBuffer, alphaType: .alphaIsOne)
         let originalImage = image
         var failedEffect: String?
-        for effect in metalPetalEffects {
+        for effect in effects {
             let effectOutputImage = effect.executeMetalPetal(image, faceDetections)
             if effectOutputImage != nil {
                 image = effectOutputImage

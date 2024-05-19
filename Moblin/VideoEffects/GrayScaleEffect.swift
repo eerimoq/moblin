@@ -23,8 +23,4 @@ final class GrayScaleEffect: VideoEffect {
         filter.inputImage = image
         return filter.outputImage
     }
-
-    override func supportsMetalPetal(_: [VNFaceObservation]?) -> Bool {
-        return true
-    }
 }

@@ -27,8 +27,4 @@ final class PixellateEffect: VideoEffect {
         filter.scale = .init(width: scale, height: scale)
         return filter.outputImage
     }
-
-    override func supportsMetalPetal(_: [VNFaceObservation]?) -> Bool {
-        return true
-    }
 }

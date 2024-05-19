@@ -502,10 +502,6 @@ final class FaceEffect: VideoEffect {
         return outputImage
     }
 
-    override func supportsMetalPetal(_: [VNFaceObservation]?) -> Bool {
-        return true
-    }
-
     override func removed() {
         findFace = false
         onFindFaceChanged?(findFace)

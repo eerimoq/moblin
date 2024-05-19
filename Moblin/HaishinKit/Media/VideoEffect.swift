@@ -16,12 +16,8 @@ open class VideoEffect: NSObject {
         return image
     }
 
-    open func executeMetalPetal(_: MTIImage?, _: [VNFaceObservation]?) -> MTIImage? {
-        return nil
-    }
-
-    open func supportsMetalPetal(_: [VNFaceObservation]?) -> Bool {
-        return false
+    open func executeMetalPetal(_ image: MTIImage?, _: [VNFaceObservation]?) -> MTIImage? {
+        return image
     }
 
     open func removed() {}
