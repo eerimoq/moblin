@@ -8,6 +8,10 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.280.0", date: "2024-05-20", changes: [
+        "• New filter framework.",
+        "  • Blur faces.",
+    ]),
     Version(version: "0.279.0", date: "2024-05-19", changes: [
         "• Fix RTMP server audio when streaming using SRT(LA).",
         "• Only list RTMP server mics for connected streams. 🧑‍🏭 ErAzOr",
