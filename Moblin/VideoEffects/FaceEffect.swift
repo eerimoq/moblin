@@ -253,6 +253,53 @@ final class FaceEffect: VideoEffect {
         return outputImage ?? image
     }
 
+    private func createFacesMaskImageMetalPetal(imageExtent: CGRect,
+                                                detections: [VNFaceObservation]) -> MTIImage?
+    {
+        var faceMasks: [MTILayer] = []
+        for detection in detections {
+            let faceBoundingBox = CGRect(x: detection.boundingBox.minX * imageExtent.width,
+                                         y: detection.boundingBox.minY * imageExtent.height,
+                                         width: detection.boundingBox.width * imageExtent.width,
+                                         height: detection.boundingBox.height * imageExtent.height)
+            let faceCenter = CGPoint(x: faceBoundingBox.maxX - (faceBoundingBox.width / 2),
+                                     y: imageExtent
+                                         .height - (faceBoundingBox.maxY - (faceBoundingBox.height / 2)))
+            let faceMask = MTIImage.radialGradient(size: .init(
+                width: faceBoundingBox.width * 1.3,
+                height: faceBoundingBox.height * 1.3
+            ))
+            faceMasks.append(.init(content: faceMask, position: faceCenter))
+        }
+        let filter = MTIMultilayerCompositingFilter()
+        filter.inputBackgroundImage = MTIImage(color: .black, sRGB: true, size: imageExtent.size)
+        filter.layers = faceMasks
+        return filter.outputImage
+    }
+
+    private func applyFacesMaskMetalPetal(backgroundImage: MTIImage?, image: MTIImage?,
+                                          detections: [VNFaceObservation]?) -> MTIImage?
+    {
+        guard let image, let detections else {
+            return image
+        }
+        guard let faceMasksImage = createFacesMaskImageMetalPetal(
+            imageExtent: image.extent,
+            detections: detections
+        ) else {
+            return image
+        }
+        let faceBlender = MTIMultilayerCompositingFilter()
+        faceBlender.inputBackgroundImage = backgroundImage
+        faceBlender.layers = [
+            .init(
+                content: faceMasksImage,
+                position: .init(x: image.size.width / 2, y: image.size.height / 2)
+            ),
+        ]
+        return faceBlender.outputImage
+    }
+
     private func addMouthMetalPetal(image: MTIImage?, detections: [VNFaceObservation]?) -> MTIImage? {
         guard let image, let detections, let moblinImageMetalPetal else {
             return image
@@ -398,6 +445,13 @@ final class FaceEffect: VideoEffect {
         var outputImage = image
         guard let image else {
             return image
+        }
+        if outputImage != image {
+            outputImage = applyFacesMaskMetalPetal(
+                backgroundImage: image,
+                image: image,
+                detections: faceDetections
+            )
         }
         if settings.showBeauty {
             outputImage = addBeautyMetalPetal(outputImage, faceDetections)

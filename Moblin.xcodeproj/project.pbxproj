@@ -65,6 +65,7 @@
 		032FDC022B0B11C5007BE85E /* SizeEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032FDC012B0B11C5007BE85E /* SizeEditView.swift */; };
 		0330F2B02AFAD26C001262C3 /* YouTubeLiveChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0330F2AF2AFAD26C001262C3 /* YouTubeLiveChat.swift */; };
 		0330F2B52AFADD18001262C3 /* StreamYouTubeSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0330F2B42AFADD18001262C3 /* StreamYouTubeSettingsView.swift */; };
+		033235412BFBAFD800B897A5 /* MetalPetal.metal in Sources */ = {isa = PBXBuildFile; fileRef = 033235402BFBAFD800B897A5 /* MetalPetal.metal */; };
 		0332EF5E2B3CAEE400BC3C16 /* RtmpServerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0332EF5D2B3CAEE400BC3C16 /* RtmpServerSettingsView.swift */; };
 		0332EF612B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0332EF602B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift */; };
 		03403DF62AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */; };
@@ -428,6 +429,7 @@
 		032FDC012B0B11C5007BE85E /* SizeEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SizeEditView.swift; sourceTree = "<group>"; };
 		0330F2AF2AFAD26C001262C3 /* YouTubeLiveChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YouTubeLiveChat.swift; sourceTree = "<group>"; };
 		0330F2B42AFADD18001262C3 /* StreamYouTubeSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamYouTubeSettingsView.swift; sourceTree = "<group>"; };
+		033235402BFBAFD800B897A5 /* MetalPetal.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = MetalPetal.metal; sourceTree = "<group>"; };
 		0332EF5D2B3CAEE400BC3C16 /* RtmpServerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpServerSettingsView.swift; sourceTree = "<group>"; };
 		0332EF602B3CB1E300BC3C16 /* RtmpServerStreamSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpServerStreamSettingsView.swift; sourceTree = "<group>"; };
 		03403DF52AD05CA60079D8E4 /* WidgetBrowserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBrowserSettingsView.swift; sourceTree = "<group>"; };
@@ -1017,6 +1019,15 @@
 				0330F2B42AFADD18001262C3 /* StreamYouTubeSettingsView.swift */,
 			);
 			path = YouTube;
+			sourceTree = "<group>";
+		};
+		033235442BFBB71C00B897A5 /* MetalPetal */ = {
+			isa = PBXGroup;
+			children = (
+				03DEA1F82BFA66DC00154631 /* MetalPetal.swift */,
+				033235402BFBAFD800B897A5 /* MetalPetal.metal */,
+			);
+			path = MetalPetal;
 			sourceTree = "<group>";
 		};
 		0332EF5B2B3CAED000BC3C16 /* RtmpServer */ = {
@@ -1775,6 +1786,7 @@
 		03B374052AA0EA370028DDD5 /* VideoEffects */ = {
 			isa = PBXGroup;
 			children = (
+				033235442BFBB71C00B897A5 /* MetalPetal */,
 				03EBEA622ACB4A17000DF427 /* BrowserEffect.swift */,
 				03A599192B66A94B002E7EE8 /* DrawOnStreamEffect.swift */,
 				03559E7D2BDCEB14002D0886 /* FaceEffect.swift */,
@@ -1894,7 +1906,6 @@
 				0382933A2A9A73ED008963AA /* Settings.swift */,
 				03487F252B334B63003D9ED9 /* StreamingHistory.swift */,
 				03A707BF2B8F0FAE003BB7BE /* Utils.swift */,
-				03DEA1F82BFA66DC00154631 /* MetalPetal.swift */,
 			);
 			path = Various;
 			sourceTree = "<group>";
@@ -2305,6 +2316,7 @@
 				03C088372B0AFFA8000990DA /* InlinePickerView.swift in Sources */,
 				03E95AE42ADB7B3D00DAE2DF /* TapScreenToFocusSettingsView.swift in Sources */,
 				03BC11622AE4BDA200C38FC4 /* Seventv.swift in Sources */,
+				033235412BFBAFD800B897A5 /* MetalPetal.metal in Sources */,
 				03B373FD2A9F35EF0028DDD5 /* CommonUtils.swift in Sources */,
 				03A707B82B8ED466003BB7BE /* WatchProtocol.swift in Sources */,
 				031839172AF6A03100320FB2 /* DebugAudioSettingsView.swift in Sources */,
@@ -2728,6 +2740,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.279.0;
+				MTL_HEADER_SEARCH_PATHS = "$(HEADER_SEARCH_PATHS)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -2778,6 +2791,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.279.0;
+				MTL_HEADER_SEARCH_PATHS = "$(HEADER_SEARCH_PATHS)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
