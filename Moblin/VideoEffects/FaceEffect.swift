@@ -104,7 +104,7 @@ final class FaceEffect: VideoEffect {
         return facesMask
     }
 
-    private func applyBlur(image: CIImage?) -> CIImage? {
+    private func addBlur(image: CIImage?) -> CIImage? {
         guard let image else {
             return image
         }
@@ -220,7 +220,7 @@ final class FaceEffect: VideoEffect {
         }
         var outputImage: CIImage? = image
         if settings.showBlur {
-            outputImage = applyBlur(image: outputImage)
+            outputImage = addBlur(image: outputImage)
         }
         if outputImage != image {
             outputImage = applyFacesMask(
@@ -266,14 +266,24 @@ final class FaceEffect: VideoEffect {
                                      y: imageExtent
                                          .height - (faceBoundingBox.maxY - (faceBoundingBox.height / 2)))
             let faceMask = MTIImage.radialGradient(size: .init(
-                width: faceBoundingBox.width * 1.3,
-                height: faceBoundingBox.height * 1.3
+                width: faceBoundingBox.width * 1.5,
+                height: faceBoundingBox.height * 1.5
             ))
             faceMasks.append(.init(content: faceMask, position: faceCenter))
         }
         let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = MTIImage(color: .black, sRGB: true, size: imageExtent.size)
         filter.layers = faceMasks
+        return filter.outputImage
+    }
+
+    private func addBlurMetalPetal(image: MTIImage?) -> MTIImage? {
+        guard let image else {
+            return image
+        }
+        let filter = MTIMPSGaussianBlurFilter()
+        filter.inputImage = image
+        filter.radius = Float(50 * (image.extent.height / 1080))
         return filter.outputImage
     }
 
@@ -289,15 +299,11 @@ final class FaceEffect: VideoEffect {
         ) else {
             return image
         }
-        let faceBlender = MTIMultilayerCompositingFilter()
-        faceBlender.inputBackgroundImage = backgroundImage
-        faceBlender.layers = [
-            .init(
-                content: faceMasksImage,
-                position: .init(x: image.size.width / 2, y: image.size.height / 2)
-            ),
-        ]
-        return faceBlender.outputImage
+        let filter = MTIBlendWithMaskFilter()
+        filter.inputImage = image
+        filter.inputBackgroundImage = backgroundImage
+        filter.inputMask = MTIMask(content: faceMasksImage)
+        return filter.outputImage
     }
 
     private func addMouthMetalPetal(image: MTIImage?, detections: [VNFaceObservation]?) -> MTIImage? {
@@ -446,10 +452,13 @@ final class FaceEffect: VideoEffect {
         guard let image else {
             return image
         }
+        if settings.showBlur {
+            outputImage = addBlurMetalPetal(image: outputImage)
+        }
         if outputImage != image {
             outputImage = applyFacesMaskMetalPetal(
                 backgroundImage: image,
-                image: image,
+                image: outputImage,
                 detections: faceDetections
             )
         }

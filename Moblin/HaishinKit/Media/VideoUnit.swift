@@ -448,25 +448,6 @@ final class VideoUnit: NSObject {
         return (outputImageBuffer, outputSampleBuffer)
     }
 
-    // periphery:ignore
-    private func brightness(image: MTIImage?) -> MTIImage? {
-        let filter = MTIBrightnessFilter()
-        filter.inputImage = image
-        filter.brightness = 0.0
-        return filter.outputImage
-    }
-
-    // periphery:ignore
-    private func blendWithMask(image: MTIImage?) -> MTIImage? {
-        // Not tested.
-        let filter = MTIBlendWithMaskFilter()
-        filter.inputImage = image
-        filter.inputBackgroundImage = nil
-        // filter.inputMask = MTIMask(content: RadialGradientImage.makeImage(size: image?.size))
-        filter.inputImage = image
-        return filter.outputImage
-    }
-
     private func blurImageMetalPetal(_ image: MTIImage?) -> MTIImage? {
         guard let image else {
             return nil
