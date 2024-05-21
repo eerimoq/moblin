@@ -11,7 +11,7 @@ final class BrowserEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
     let webView: WKWebView
     private var overlay: CIImage?
-    private var overlayMetalPetal: MTIImage?
+    private var layersMetalPetal: [MTILayer] = []
     private var image: UIImage?
     private let videoSize: CGSize
     private var x: Double
@@ -122,7 +122,7 @@ final class BrowserEffect: VideoEffect {
             y = .nan
             image = nil
             overlay = nil
-            overlayMetalPetal = nil
+            layersMetalPetal.removeAll()
             webView.loadHTMLString("<html></html>", baseURL: nil)
             isLoaded = false
         }
@@ -222,11 +222,23 @@ final class BrowserEffect: VideoEffect {
         }
     }
 
+    private func positionDefaultMetalPetal(image _: MTIImage) -> CGPoint {
+        if scaleToFitVideo {
+            return .init(x: videoSize.width / 2, y: videoSize.height / 2)
+        }
+        return .init(x: width / 2 + x, y: height / 2 + y)
+    }
+
     private func updateOverlayMetalPetal() {
         guard let newImage = getImage() else {
             return
         }
-        overlayMetalPetal = MTIImage(ciImage: newImage, isOpaque: true)
+        layersMetalPetal.removeAll()
+        let image = MTIImage(ciImage: newImage, isOpaque: true)
+        if defaultEnabled {
+            let position = positionDefaultMetalPetal(image: image)
+            layersMetalPetal.append(.init(content: image, position: position))
+        }
     }
 
     override func execute(_ image: CIImage, _: [VNFaceObservation]?, _: Bool) -> CIImage {
@@ -236,25 +248,14 @@ final class BrowserEffect: VideoEffect {
         return filter.outputImage ?? image
     }
 
-    private func positionDefaultMetalPetal(image _: MTIImage) -> CGPoint {
-        if scaleToFitVideo {
-            return .init(x: videoSize.width / 2, y: videoSize.height / 2)
-        }
-        return .init(x: width / 2 + x, y: height / 2 + y)
-    }
-
     override func executeMetalPetal(_ image: MTIImage?, _: [VNFaceObservation]?, _: Bool) -> MTIImage? {
         updateOverlayMetalPetal()
-        guard let image, let overlayMetalPetal else {
+        guard let image, !layersMetalPetal.isEmpty else {
             return image
         }
-        // To do: Check if default is enabled and add any crops.
-        let position = positionDefaultMetalPetal(image: overlayMetalPetal)
         let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = image
-        filter.layers = [
-            .init(content: overlayMetalPetal, position: position),
-        ]
+        filter.layers = layersMetalPetal
         return filter.outputImage
     }
 }
