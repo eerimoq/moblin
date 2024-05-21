@@ -28,6 +28,7 @@ final class BrowserEffect: VideoEffect {
     private var scale = UIScreen().scale
     private var defaultEnabled = true
     private var crops: [WidgetCrop] = []
+    private var cropsMetalPetal: [WidgetCrop] = []
     private let settingName: String
 
     init(
@@ -108,6 +109,16 @@ final class BrowserEffect: VideoEffect {
                 crop: .init(
                     x: $0.crop.origin.x,
                     y: height - $0.crop.height - $0.crop.origin.y,
+                    width: $0.crop.width,
+                    height: $0.crop.height
+                )
+            ) }
+            cropsMetalPetal = crops.map { WidgetCrop(
+                position: .init(x: (videoSize.width * $0.position.x) / 100 + $0.crop.width / 2,
+                                y: (videoSize.height * $0.position.y) / 100 + $0.crop.height / 2),
+                crop: .init(
+                    x: $0.crop.minX,
+                    y: $0.crop.minY,
                     width: $0.crop.width,
                     height: $0.crop.height
                 )
@@ -238,6 +249,12 @@ final class BrowserEffect: VideoEffect {
         if defaultEnabled {
             let position = positionDefaultMetalPetal(image: image)
             layersMetalPetal.append(.init(content: image, position: position))
+        }
+        for crop in cropsMetalPetal {
+            guard let cropped = image.cropped(to: crop.crop) else {
+                continue
+            }
+            layersMetalPetal.append(.init(content: cropped, position: crop.position))
         }
     }
 
