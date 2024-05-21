@@ -402,7 +402,8 @@ func hasAppleLog() -> Bool {
 }
 
 func factorToIso(device: AVCaptureDevice, factor: Float) -> Float {
-    var iso = device.activeFormat.minISO + (device.activeFormat.maxISO - device.activeFormat.minISO) * factor.clamped(to: 0...1)
+    var iso = device.activeFormat.minISO + (device.activeFormat.maxISO - device.activeFormat.minISO) * factor
+        .clamped(to: 0 ... 1)
     if !iso.isFinite {
         iso = 0
     }
@@ -415,7 +416,7 @@ func factorFromIso(device: AVCaptureDevice, iso: Float) -> Float {
     if !factor.isFinite {
         factor = 0
     }
-    return factor.clamped(to: 0...1)
+    return factor.clamped(to: 0 ... 1)
 }
 
 let minimumWhiteBalanceTemperature: Float = 2200
