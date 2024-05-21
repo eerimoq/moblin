@@ -3485,11 +3485,25 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func getVideoMirroredOnStream() -> Bool {
-        return cameraPosition == .front && stream.portrait!
+        if cameraPosition == .front {
+            if stream.portrait! {
+                return true
+            } else {
+                return database.mirrorFrontCameraOnStream!
+            }
+        }
+        return false
     }
 
     private func getVideoMirroredOnScreen() -> Bool {
-        return cameraPosition == .front && !stream.portrait!
+        if cameraPosition == .front {
+            if stream.portrait! {
+                return false
+            } else {
+                return !database.mirrorFrontCameraOnStream!
+            }
+        }
+        return false
     }
 
     private func hasCameraChanged(

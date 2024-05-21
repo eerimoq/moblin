@@ -204,6 +204,7 @@ struct CameraSettingsView: View {
                 }
                 VideoStabilizationSettingsView()
                 TapScreenToFocusSettingsView()
+                MirrorFrontCameraOnStreamView()
             }
             if model.supportsAppleLog {
                 Section {

@@ -1425,7 +1425,6 @@ class Database: Codable {
     var remoteControl: SettingsRemoteControl? = .init()
     var startStopRecordingConfirmations: Bool? = true
     var color: SettingsColor? = .init()
-    // periphery:ignore
     var mirrorFrontCameraOnStream: Bool? = false
     var streamButtonColor: RgbColor? = defaultStreamButtonColor
     var location: SettingsLocation? = .init()
@@ -2404,6 +2403,10 @@ final class Settings {
                     }
                 }
             }
+            store()
+        }
+        if realDatabase.mirrorFrontCameraOnStream == nil {
+            realDatabase.mirrorFrontCameraOnStream = false
             store()
         }
     }

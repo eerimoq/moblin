@@ -294,6 +294,7 @@
 		03C2C2832B5F906E00E2F30B /* SliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C2C2822B5F906E00E2F30B /* SliderView.swift */; };
 		03C380DC2BC24F7800394625 /* ChatTextToSpeech.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C380DB2BC24F7800394625 /* ChatTextToSpeech.swift */; };
 		03CB8BCD2B5090C700B96530 /* StreamGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CB8BCC2B5090C700B96530 /* StreamGridView.swift */; };
+		03CBFC752BFD3C7E0029A888 /* MirrorFrontCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CBFC742BFD3C7E0029A888 /* MirrorFrontCameraView.swift */; };
 		03D10E7A2B64099500B1E436 /* TextEditNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D10E792B64099500B1E436 /* TextEditNavigationView.swift */; };
 		03D151AF2BFA73C100D29D8E /* MetalPetal in Frameworks */ = {isa = PBXBuildFile; productRef = 03D151AE2BFA73C100D29D8E /* MetalPetal */; };
 		03D3C0512B452D61006BAEAC /* StreamRecordingSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D3C0502B452D61006BAEAC /* StreamRecordingSettingsView.swift */; };
@@ -699,6 +700,7 @@
 		03C2C2822B5F906E00E2F30B /* SliderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderView.swift; sourceTree = "<group>"; };
 		03C380DB2BC24F7800394625 /* ChatTextToSpeech.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTextToSpeech.swift; sourceTree = "<group>"; };
 		03CB8BCC2B5090C700B96530 /* StreamGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamGridView.swift; sourceTree = "<group>"; };
+		03CBFC742BFD3C7E0029A888 /* MirrorFrontCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirrorFrontCameraView.swift; sourceTree = "<group>"; };
 		03D10E792B64099500B1E436 /* TextEditNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditNavigationView.swift; sourceTree = "<group>"; };
 		03D3C0472B4493AE006BAEAC /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		03D3C0502B452D61006BAEAC /* StreamRecordingSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamRecordingSettingsView.swift; sourceTree = "<group>"; };
@@ -1708,6 +1710,7 @@
 		03B16A2A2B35D70D00E5AB07 /* Camera */ = {
 			isa = PBXGroup;
 			children = (
+				03CBFC732BFD3C650029A888 /* MirrorFrontCamera */,
 				03E95AE22ADB7B2200DAE2DF /* TapScreenToFocus */,
 				03A14BE02ACC902B00D180FF /* Zoom */,
 				031A2E0E2ADDDD62005CE350 /* VideoStabilization */,
@@ -1908,6 +1911,14 @@
 				03A707BF2B8F0FAE003BB7BE /* Utils.swift */,
 			);
 			path = Various;
+			sourceTree = "<group>";
+		};
+		03CBFC732BFD3C650029A888 /* MirrorFrontCamera */ = {
+			isa = PBXGroup;
+			children = (
+				03CBFC742BFD3C7E0029A888 /* MirrorFrontCameraView.swift */,
+			);
+			path = MirrorFrontCamera;
 			sourceTree = "<group>";
 		};
 		03D3C04F2B452D14006BAEAC /* Recording */ = {
@@ -2322,6 +2333,7 @@
 				031839172AF6A03100320FB2 /* DebugAudioSettingsView.swift in Sources */,
 				03487F262B334B63003D9ED9 /* StreamingHistory.swift in Sources */,
 				032FDBFF2B0B11B0007BE85E /* PositionEditView.swift in Sources */,
+				03CBFC752BFD3C7E0029A888 /* MirrorFrontCameraView.swift in Sources */,
 				0325D0BB2BB3D7DD007EE85B /* KickViewers.swift in Sources */,
 				03BC90B22BD580F800529987 /* StreamWizardNetworkSetupMyServersRtmpSettingsView.swift in Sources */,
 				0359F8C42BD3DA61005BFDA8 /* VTDecompressionSession+Extension.swift in Sources */,
