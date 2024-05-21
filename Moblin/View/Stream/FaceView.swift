@@ -20,7 +20,7 @@ private struct FaceButtonView: View {
             .cornerRadius(7)
             .overlay(
                 RoundedRectangle(cornerRadius: 7)
-                    .stroke(on ? .white : pickerBorderColor)
+                    .stroke(on ? .white : pickerBorderColor, lineWidth: on ? 1.5 : 1)
             )
     }
 }
