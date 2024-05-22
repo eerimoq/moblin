@@ -20,6 +20,7 @@ protocol NetStreamDelegate: AnyObject {
     func streamVideo(_ stream: NetStream, presentationTimestamp: Double)
     func streamVideo(_ stream: NetStream, failedEffect: String?)
     func streamVideo(_ stream: NetStream, lowFpsImage: Data?)
+    func streamVideo(_ stream: NetStream, findVideoFormatError: String, activeFormat: String)
     func stream(_ stream: NetStream, recorderFinishWriting writer: AVAssetWriter)
 }
 
@@ -220,6 +221,10 @@ extension NetStream: MixerDelegate {
 
     func mixerVideo(lowFpsImage: Data?) {
         delegate?.streamVideo(self, lowFpsImage: lowFpsImage)
+    }
+
+    func mixer(findVideoFormatError: String, activeFormat: String) {
+        delegate?.streamVideo(self, findVideoFormatError: findVideoFormatError, activeFormat: activeFormat)
     }
 
     func mixer(recorderFinishWriting writer: AVAssetWriter) {

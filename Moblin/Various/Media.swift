@@ -45,6 +45,7 @@ final class Media: NSObject {
     var onAudioMuteChange: (() -> Void)!
     var onVideoDeviceInUseByAnotherClient: (() -> Void)!
     var onLowFpsImage: ((Data?) -> Void)!
+    var onFindVideoFormatError: ((String, String) -> Void)!
     private var adaptiveBitrate: AdaptiveBitrate?
     private var failedVideoEffect: String?
 
@@ -769,6 +770,10 @@ extension Media: NetStreamDelegate {
 
     func streamVideo(_: NetStream, lowFpsImage: Data?) {
         onLowFpsImage(lowFpsImage)
+    }
+
+    func streamVideo(_: NetStream, findVideoFormatError: String, activeFormat: String) {
+        onFindVideoFormatError(findVideoFormatError, activeFormat)
     }
 
     func stream(_: NetStream, recorderFinishWriting _: AVAssetWriter) {

@@ -784,6 +784,7 @@ final class Model: NSObject, ObservableObject {
         media.onAudioMuteChange = updateAudioLevel
         media.onVideoDeviceInUseByAnotherClient = handleVideoDeviceInUseByAnotherClient
         media.onLowFpsImage = handleLowFpsImage
+        media.onFindVideoFormatError = handleFindVideoFormatError
         setPixelFormat()
         setMetalPetalFilters()
         setupAudioSession()
@@ -3779,6 +3780,12 @@ final class Model: NSObject, ObservableObject {
         DispatchQueue.main.async {
             self.sendPreviewToWatch(image: image)
             self.sendPreviewToRemoteControlAssistant(preview: image)
+        }
+    }
+
+    private func handleFindVideoFormatError(findVideoFormatError: String, activeFormat: String) {
+        DispatchQueue.main.async {
+            self.makeErrorToast(title: findVideoFormatError, subTitle: activeFormat)
         }
     }
 

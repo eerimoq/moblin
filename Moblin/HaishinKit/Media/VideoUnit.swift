@@ -9,6 +9,7 @@ var ioVideoUnitIgnoreFramesAfterAttachSeconds = 0.3
 var ioVideoUnitWatchInterval = 1.0
 var pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
 var ioVideoUnitMetalPetal = false
+var allowVideoRangePixelFormat = false
 private let lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.VideoIOComponent")
 private let detectionsQueue = DispatchQueue(
     label: "com.haishinkit.HaishinKit.Detections",
@@ -820,17 +821,69 @@ final class VideoUnit: NSObject {
         }
     }
 
+    private func findVideoFormat(
+        device: AVCaptureDevice,
+        width: Int32,
+        height: Int32,
+        frameRate: Float64,
+        colorSpace: AVCaptureColorSpace
+    ) -> (AVCaptureDevice.Format?, String?) {
+        var formats = device.formats
+            .filter { $0.isFrameRateSupported(frameRate) }
+            .filter { $0.formatDescription.dimensions.width == width }
+            .filter { $0.formatDescription.dimensions.height == height }
+            .filter { $0.supportedColorSpaces.contains(colorSpace) }
+        if formats.isEmpty {
+            return (nil, "No video format found matching \(height)p\(Int(frameRate)), \(colorSpace)")
+        }
+        formats = formats.filter { !$0.isVideoBinned }
+        if formats.isEmpty {
+            return (nil, "No unbinned video format found")
+        }
+        // 420v does not work with OA4.
+        formats = formats.filter {
+            $0.formatDescription.mediaSubType
+                .rawValue != kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange || allowVideoRangePixelFormat
+        }
+        if formats.isEmpty {
+            return (nil, "Unsupported video pixel format")
+        }
+        return (formats.first, nil)
+    }
+
+    private func reportFormatNotFound(_ device: AVCaptureDevice, _ error: String) {
+        let (minFps, maxFps) = device.fps
+        let activeFormat = """
+        Using default: \
+        \(device.activeFormat.formatDescription.dimensions.height)p, \
+        \(minFps)-\(maxFps) FPS, \
+        \(device.activeColorSpace), \
+        \(device.activeFormat.formatDescription.mediaSubType)
+        """
+        logger.info(error)
+        logger.info(activeFormat)
+        mixer?.delegate?.mixer(findVideoFormatError: error, activeFormat: activeFormat)
+        for format in device.formats {
+            logger.info("Available video format: \(format)")
+        }
+    }
+
     private func setDeviceFormat(frameRate: Float64, colorSpace: AVCaptureColorSpace) {
         guard let device, let mixer else {
             return
         }
-        guard let format = device.findVideoFormat(
+        let (format, error) = findVideoFormat(
+            device: device,
             width: mixer.sessionPreset.width!,
             height: mixer.sessionPreset.height!,
             frameRate: frameRate,
             colorSpace: colorSpace
-        ) else {
-            logger.info("No matching video format found")
+        )
+        if let error {
+            reportFormatNotFound(device, error)
+            return
+        }
+        guard let format else {
             return
         }
         logger.debug("Selected video format: \(format)")
