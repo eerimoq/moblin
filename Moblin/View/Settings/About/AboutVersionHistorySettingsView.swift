@@ -8,6 +8,11 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.283.0", date: "2024-05-22", changes: [
+        "• Show unsupported video format toast. 💡 JohannesLiv",
+        "• Mirror front camera on stream by default.",
+        "  • To make widgets, draw on stream and other effects non-mirrored on phone screen.",
+    ]),
     Version(version: "0.282.0", date: "2024-05-22", changes: [
         "• Toggle to mirror front camera on stream. 💡 Sahrani and others",
         "  • Settings -> Camera -> Mirror front camera on stream.",
