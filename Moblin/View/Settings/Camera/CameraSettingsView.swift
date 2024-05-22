@@ -205,6 +205,10 @@ struct CameraSettingsView: View {
                 VideoStabilizationSettingsView()
                 TapScreenToFocusSettingsView()
                 MirrorFrontCameraOnStreamView()
+            } footer: {
+                Text(
+                    "\"Mirror front camera on stream\" is only supported when streaming in landscape, not portrait."
+                )
             }
             if model.supportsAppleLog {
                 Section {

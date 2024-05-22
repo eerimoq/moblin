@@ -815,6 +815,9 @@
         }
       }
     },
+    "\"Mirror front camera on stream\" is only supported when streaming in landscape, not portrait." : {
+
+    },
     "/" : {
       "localizations" : {
         "de" : {
