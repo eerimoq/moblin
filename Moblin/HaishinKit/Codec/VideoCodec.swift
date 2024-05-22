@@ -131,33 +131,10 @@ class VideoCodec {
         invalidateSession = true
     }
 
-    @objc
-    private func didAudioSessionInterruption(_ notification: Notification) {
-        guard
-            let userInfo: [AnyHashable: Any] = notification.userInfo,
-            let value: NSNumber = userInfo[AVAudioSessionInterruptionTypeKey] as? NSNumber,
-            let type = AVAudioSession.InterruptionType(rawValue: value.uintValue)
-        else {
-            return
-        }
-        switch type {
-        case .ended:
-            invalidateSession = true
-        default:
-            break
-        }
-    }
-
     func startRunning() {
         lockQueue.async {
             self.isRunning.mutate { $0 = true }
             numberOfFailedEncodings = 0
-            NotificationCenter.default.addObserver(
-                self,
-                selector: #selector(self.didAudioSessionInterruption),
-                name: AVAudioSession.interruptionNotification,
-                object: nil
-            )
             NotificationCenter.default.addObserver(
                 self,
                 selector: #selector(self.applicationWillEnterForeground),

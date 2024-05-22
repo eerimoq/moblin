@@ -4,12 +4,6 @@ import CoreMedia
 import UIKit
 
 protocol NetStreamDelegate: AnyObject {
-    func stream(
-        _ stream: NetStream,
-        sessionWasInterrupted session: AVCaptureSession,
-        reason: AVCaptureSession.InterruptionReason?
-    )
-    func stream(_ stream: NetStream, sessionInterruptionEnded session: AVCaptureSession)
     func streamDidOpen(_ stream: NetStream)
     func stream(
         _ stream: NetStream,
@@ -191,17 +185,6 @@ open class NetStream: NSObject {
 }
 
 extension NetStream: MixerDelegate {
-    func mixer(
-        sessionWasInterrupted session: AVCaptureSession,
-        reason: AVCaptureSession.InterruptionReason?
-    ) {
-        delegate?.stream(self, sessionWasInterrupted: session, reason: reason)
-    }
-
-    func mixer(sessionInterruptionEnded session: AVCaptureSession) {
-        delegate?.stream(self, sessionInterruptionEnded: session)
-    }
-
     func mixer(audioLevel: Float, numberOfAudioChannels: Int, presentationTimestamp: Double) {
         delegate?.stream(
             self,

@@ -12,11 +12,6 @@ private func makeCaptureSession() -> AVCaptureSession {
 }
 
 protocol MixerDelegate: AnyObject {
-    func mixer(
-        sessionWasInterrupted session: AVCaptureSession,
-        reason: AVCaptureSession.InterruptionReason?
-    )
-    func mixer(sessionInterruptionEnded session: AVCaptureSession)
     func mixer(audioLevel: Float, numberOfAudioChannels: Int, presentationTimestamp: Double)
     func mixerVideo(presentationTimestamp: Double)
     func mixerVideo(failedEffect: String?)
@@ -99,9 +94,7 @@ class Mixer {
         guard !isRunning.value else {
             return
         }
-        addSessionObservers(videoSession)
         videoSession.startRunning()
-        addSessionObservers(audioSession)
         audioSession.startRunning()
         isRunning.mutate { $0 = audioSession.isRunning }
     }
@@ -110,77 +103,9 @@ class Mixer {
         guard isRunning.value else {
             return
         }
-        removeSessionObservers(videoSession)
         videoSession.stopRunning()
-        removeSessionObservers(audioSession)
         audioSession.stopRunning()
         isRunning.mutate { $0 = audioSession.isRunning }
-    }
-
-    private func addSessionObservers(_ session: AVCaptureSession) {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(sessionRuntimeError(_:)),
-            name: .AVCaptureSessionRuntimeError,
-            object: session
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(sessionInterruptionEnded(_:)),
-            name: .AVCaptureSessionInterruptionEnded,
-            object: session
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(sessionWasInterrupted(_:)),
-            name: .AVCaptureSessionWasInterrupted,
-            object: session
-        )
-    }
-
-    private func removeSessionObservers(_ session: AVCaptureSession) {
-        NotificationCenter.default.removeObserver(
-            self,
-            name: .AVCaptureSessionWasInterrupted,
-            object: session
-        )
-        NotificationCenter.default.removeObserver(
-            self,
-            name: .AVCaptureSessionInterruptionEnded,
-            object: session
-        )
-        NotificationCenter.default.removeObserver(self, name: .AVCaptureSessionRuntimeError, object: session)
-    }
-
-    @objc
-    private func sessionRuntimeError(_ notification: NSNotification) {
-        guard
-            let errorValue = notification.userInfo?[AVCaptureSessionErrorKey] as? NSError
-        else {
-            return
-        }
-        let error = AVError(_nsError: errorValue)
-        logger.info("sessionRuntimeError \(error)")
-    }
-
-    @objc
-    private func sessionWasInterrupted(_ notification: Notification) {
-        guard let session = notification.object as? AVCaptureSession else {
-            return
-        }
-        guard let userInfoValue = notification.userInfo?[AVCaptureSessionInterruptionReasonKey] as AnyObject?,
-              let reasonIntegerValue = userInfoValue.integerValue,
-              let reason = AVCaptureSession.InterruptionReason(rawValue: reasonIntegerValue)
-        else {
-            delegate?.mixer(sessionWasInterrupted: session, reason: nil)
-            return
-        }
-        delegate?.mixer(sessionWasInterrupted: session, reason: reason)
-    }
-
-    @objc
-    private func sessionInterruptionEnded(_: Notification) {
-        delegate?.mixer(sessionInterruptionEnded: videoSession)
     }
 }
 

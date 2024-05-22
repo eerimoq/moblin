@@ -43,7 +43,6 @@ final class Media: NSObject {
     var onRistConnected: (() -> Void)!
     var onRistDisconnected: (() -> Void)!
     var onAudioMuteChange: (() -> Void)!
-    var onVideoDeviceInUseByAnotherClient: (() -> Void)!
     var onLowFpsImage: ((Data?) -> Void)!
     var onFindVideoFormatError: ((String, String) -> Void)!
     private var adaptiveBitrate: AdaptiveBitrate?
@@ -703,41 +702,6 @@ final class Media: NSObject {
 }
 
 extension Media: NetStreamDelegate {
-    private func kind(_ netStream: NetStream) -> String {
-        if (netStream as? RTMPStream) != nil {
-            return "RTMP"
-        } else if (netStream as? SRTStream) != nil {
-            return "SRT"
-        } else {
-            return "Unknown"
-        }
-    }
-
-    func stream(
-        _ netStream: NetStream,
-        sessionWasInterrupted _: AVCaptureSession,
-        reason: AVCaptureSession.InterruptionReason?
-    ) {
-        if let reason {
-            logger
-                .info(
-                    "stream: \(kind(netStream)): Session was interrupted with reason: \(reason.toString())"
-                )
-            if reason == .videoDeviceInUseByAnotherClient {
-                onVideoDeviceInUseByAnotherClient()
-            }
-        } else {
-            logger
-                .info(
-                    "stream: \(kind(netStream)): Session was interrupted without reason"
-                )
-        }
-    }
-
-    func stream(_ netStream: NetStream, sessionInterruptionEnded _: AVCaptureSession) {
-        logger.info("stream: \(kind(netStream)): Session interrupted ended.")
-    }
-
     func streamDidOpen(_: NetStream) {}
 
     func stream(_: NetStream, audioLevel: Float, numberOfAudioChannels: Int, presentationTimestamp: Double) {

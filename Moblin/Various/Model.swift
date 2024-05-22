@@ -782,7 +782,6 @@ final class Model: NSObject, ObservableObject {
         media.onRistConnected = handleRistConnected
         media.onRistDisconnected = handleRistDisconnected
         media.onAudioMuteChange = updateAudioLevel
-        media.onVideoDeviceInUseByAnotherClient = handleVideoDeviceInUseByAnotherClient
         media.onLowFpsImage = handleLowFpsImage
         media.onFindVideoFormatError = handleFindVideoFormatError
         setPixelFormat()
@@ -3764,12 +3763,6 @@ final class Model: NSObject, ObservableObject {
     private func handleRistDisconnected() {
         DispatchQueue.main.async {
             self.onDisconnected(reason: "RIST disconnected")
-        }
-    }
-
-    private func handleVideoDeviceInUseByAnotherClient() {
-        DispatchQueue.main.async {
-            // self.makeErrorToast(title: "Video in use by another app")
         }
     }
 

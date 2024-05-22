@@ -149,25 +149,6 @@ func randomHumanString() -> String {
     )
 }
 
-extension AVCaptureSession.InterruptionReason {
-    func toString() -> String {
-        switch self {
-        case .videoDeviceNotAvailableInBackground:
-            return "videoDeviceNotAvailableInBackground"
-        case .audioDeviceInUseByAnotherClient:
-            return "audioDeviceInUseByAnotherClient"
-        case .videoDeviceInUseByAnotherClient:
-            return "videoDeviceInUseByAnotherClient"
-        case .videoDeviceNotAvailableWithMultipleForegroundApps:
-            return "videoDeviceNotAvailableWithMultipleForegroundApps"
-        case .videoDeviceNotAvailableDueToSystemPressure:
-            return "videoDeviceNotAvailableDueToSystemPressure"
-        default:
-            return "unknown"
-        }
-    }
-}
-
 extension RgbColor {
     private func colorScale(_ color: Int) -> Double {
         return Double(color) / 255
