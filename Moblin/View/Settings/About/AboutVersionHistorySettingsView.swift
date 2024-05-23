@@ -8,6 +8,8 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "0.284.0", date: "2024-05-23", changes: [
+    ]),
     Version(version: "0.283.0", date: "2024-05-22", changes: [
         "• Show unsupported video format toast. 💡 JohannesLiv",
         "• Mirror front camera on stream by default.",
