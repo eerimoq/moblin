@@ -816,7 +816,14 @@
       }
     },
     "\"Mirror front camera on stream\" is only supported when streaming in landscape, not portrait." : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\"Peilaa etukamera lähetyksessä\" on käytettävissä vain lähettäessä vaakatasossa. Pystykuva ei ole tuettu."
+          }
+        }
+      }
     },
     "/" : {
       "localizations" : {
@@ -5698,8 +5705,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Suositus on 128 Kpbs tai suurempi. Aseta arvoon 0 automaattista varten."
+            "state" : "translated",
+            "value" : "128 Kpbs tai suurempi on suositeltu. Aseta arvoon 0 automaattista varten."
           }
         },
         "fr" : {
@@ -14544,7 +14551,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Sumennuksen kytkin"
           }
         },
@@ -14934,8 +14941,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Liimaus"
+            "state" : "translated",
+            "value" : "Yhteyksien yhdistäminen"
           }
         },
         "fr" : {
@@ -25464,7 +25471,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ota RTMP-ääni käyttöön"
           }
         },
@@ -30664,7 +30671,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Etsi kasvot"
           }
         },
@@ -40284,7 +40291,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Väärin muotoiltu RIST-URL-osoite"
           }
         },
@@ -42364,8 +42371,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Metal Petal suodattimet"
+            "state" : "translated",
+            "value" : "MetalPetal-suodattimet"
           }
         },
         "fr" : {
@@ -42884,7 +42891,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mikrofonin suunta %@"
           }
         },
@@ -43123,7 +43130,14 @@
       }
     },
     "Mirror front camera on stream" : {
-
+      "localizations" : {
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Peilaa etukamera lähetyksessä"
+          }
+        }
+      }
     },
     "Mirrored" : {
       "localizations" : {
@@ -50687,8 +50701,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SIJOITUS"
+            "state" : "translated",
+            "value" : "SIJAINTI"
           }
         },
         "fr" : {
@@ -51857,8 +51871,8 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "SÄDE"
+            "state" : "translated",
+            "value" : "ETÄISYYS"
           }
         },
         "fr" : {
@@ -53288,7 +53302,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Etä"
+            "value" : "Etähallinta"
           }
         },
         "fr" : {
@@ -54847,7 +54861,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "RIST"
           }
         },
@@ -54977,7 +54991,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "RIST-portin numero puuttuu"
           }
         },
@@ -55107,7 +55121,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "rist://120.35.234.2:2030"
           }
         },
@@ -58227,7 +58241,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Muoto"
           }
         },
@@ -59267,7 +59281,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Sileä"
           }
         },
@@ -64077,7 +64091,7 @@
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "VAHVUUS"
           }
         },
@@ -75518,7 +75532,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Katso"
+            "value" : "Watch"
           }
         },
         "fr" : {
@@ -76168,7 +76182,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Leveä"
+            "value" : "Laaja"
           }
         },
         "fr" : {
@@ -76298,7 +76312,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Leveä tupla (automaattinen)"
+            "value" : "Laaja tupla (automaattinen)"
           }
         },
         "fr" : {
