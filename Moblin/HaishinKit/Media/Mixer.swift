@@ -1,7 +1,7 @@
 import AVFoundation
 import SwiftUI
 
-private func makeCaptureSession() -> AVCaptureSession {
+func makeCaptureSession() -> AVCaptureSession {
     let session = AVCaptureSession()
     if #available(iOS 16.0, *) {
         if session.isMultitaskingCameraAccessSupported {
@@ -22,11 +22,6 @@ protocol MixerDelegate: AnyObject {
 
 /// An object that mixies audio and video for streaming.
 class Mixer {
-    static let defaultFrameRate: Float64 = 30
-
-    var sessionPreset: AVCaptureSession.Preset = .hd1280x720
-    let videoSession = makeCaptureSession()
-    let audioSession = makeCaptureSession()
     private(set) var isRunning: Atomic<Bool> = .init(false)
     private var isEncoding = false
 
@@ -44,11 +39,11 @@ class Mixer {
     }
 
     deinit {
-        if videoSession.isRunning {
-            videoSession.stopRunning()
+        if video.session.isRunning {
+            video.session.stopRunning()
         }
-        if audioSession.isRunning {
-            audioSession.stopRunning()
+        if audio.session.isRunning {
+            audio.session.stopRunning()
         }
     }
 
@@ -94,18 +89,18 @@ class Mixer {
         guard !isRunning.value else {
             return
         }
-        videoSession.startRunning()
-        audioSession.startRunning()
-        isRunning.mutate { $0 = audioSession.isRunning }
+        video.startRunning()
+        audio.startRunning()
+        isRunning.mutate { $0 = audio.session.isRunning }
     }
 
     func stopRunning() {
         guard isRunning.value else {
             return
         }
-        videoSession.stopRunning()
-        audioSession.stopRunning()
-        isRunning.mutate { $0 = audioSession.isRunning }
+        video.stopRunning()
+        audio.stopRunning()
+        isRunning.mutate { $0 = audio.session.isRunning }
     }
 }
 

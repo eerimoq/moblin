@@ -49,7 +49,7 @@ open class NetStream: NSObject {
 
     func setSessionPreset(preset: AVCaptureSession.Preset) {
         lockQueue.async {
-            self.mixer.sessionPreset = preset
+            self.mixer.video.preset = preset
         }
     }
 

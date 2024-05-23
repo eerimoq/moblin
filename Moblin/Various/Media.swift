@@ -128,8 +128,8 @@ final class Media: NSObject {
         CapturePts: audio: \(CMClock.hostTimeClock.time.seconds - audioPts), \
         video: \(CMClock.hostTimeClock.time.seconds - videoPts)
         """)
-        if let audioClock = netStream.mixer.audioSession.synchronizationClock,
-           let videoClock = netStream.mixer.videoSession.synchronizationClock
+        if let audioClock = netStream.mixer.audio.session.synchronizationClock,
+           let videoClock = netStream.mixer.video.session.synchronizationClock
         {
             let audioRate = CMClock.hostTimeClock.rate(relativeTo: audioClock)
             let videoRate = CMClock.hostTimeClock.rate(relativeTo: videoClock)

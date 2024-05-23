@@ -826,9 +826,7 @@ class ObsWebSocket {
                 volumes.append(audioInput)
             }
             onAudioVolume?(volumes)
-        } catch {
-            print(error)
-        }
+        } catch {}
     }
 
     private func handleInputAudioSyncOffsetChanged(data _: Data?) {}

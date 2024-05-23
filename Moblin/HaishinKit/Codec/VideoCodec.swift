@@ -31,9 +31,8 @@ class VideoCodec {
     }
 
     private(set) var isRunning: Atomic<Bool> = .init(false)
-
     private let lockQueue: DispatchQueue
-    var expectedFrameRate = Mixer.defaultFrameRate
+    var expectedFrameRate = VideoUnit.defaultFrameRate
     var formatDescription: CMFormatDescription? {
         didSet {
             guard !CMFormatDescriptionEqual(formatDescription, otherFormatDescription: oldValue) else {
@@ -68,7 +67,7 @@ class VideoCodec {
         }
     }
 
-    private var invalidateSession = true
+    var invalidateSession = true
 
     func appendImageBuffer(_ imageBuffer: CVImageBuffer, presentationTimeStamp: CMTime, duration: CMTime) {
         guard isRunning.value else {
@@ -77,7 +76,7 @@ class VideoCodec {
         if invalidateSession {
             session = makeVideoCompressionSession(self)
         }
-        _ = session?.encodeFrame(
+        let err = session?.encodeFrame(
             imageBuffer,
             presentationTimeStamp: presentationTimeStamp,
             duration: duration
@@ -89,6 +88,10 @@ class VideoCodec {
             }
             formatDescription = sampleBuffer.formatDescription
             delegate?.videoCodecOutputSampleBuffer(self, sampleBuffer)
+        }
+        if err == kVTInvalidSessionErr {
+            logger.debug("Video encode failed. Resetting session.")
+            invalidateSession = true
         }
     }
 
@@ -103,44 +106,36 @@ class VideoCodec {
         if sampleBuffer.isKeyFrame {
             needsSync.mutate { $0 = false }
         }
-        _ = session?
-            .decodeFrame(sampleBuffer) { [
-                unowned self
-            ] status, _, imageBuffer, presentationTimeStamp, duration in
-                guard let imageBuffer, status == noErr else {
-                    logger.info("Failed to decode frame status \(status)")
-                    return
-                }
-                guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: imageBuffer) else {
-                    return
-                }
-                guard let sampleBuffer = CMSampleBuffer.create(imageBuffer,
-                                                               formatDescription,
-                                                               duration,
-                                                               presentationTimeStamp,
-                                                               sampleBuffer.decodeTimeStamp)
-                else {
-                    return
-                }
-                delegate?.videoCodecOutputSampleBuffer(self, sampleBuffer)
+        let err = session?.decodeFrame(sampleBuffer) { [
+            unowned self
+        ] status, _, imageBuffer, presentationTimeStamp, duration in
+            guard let imageBuffer, status == noErr else {
+                logger.info("Failed to decode frame status \(status)")
+                return
             }
-    }
-
-    @objc
-    private func applicationWillEnterForeground(_: Notification) {
-        invalidateSession = true
+            guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: imageBuffer) else {
+                return
+            }
+            guard let sampleBuffer = CMSampleBuffer.create(imageBuffer,
+                                                           formatDescription,
+                                                           duration,
+                                                           presentationTimeStamp,
+                                                           sampleBuffer.decodeTimeStamp)
+            else {
+                return
+            }
+            delegate?.videoCodecOutputSampleBuffer(self, sampleBuffer)
+        }
+        if err == kVTInvalidSessionErr {
+            logger.debug("Video decode failed. Resetting session.")
+            invalidateSession = true
+        }
     }
 
     func startRunning() {
         lockQueue.async {
             self.isRunning.mutate { $0 = true }
             numberOfFailedEncodings = 0
-            NotificationCenter.default.addObserver(
-                self,
-                selector: #selector(self.applicationWillEnterForeground),
-                name: UIApplication.willEnterForegroundNotification,
-                object: nil
-            )
         }
     }
 
@@ -150,16 +145,6 @@ class VideoCodec {
             self.invalidateSession = true
             self.needsSync.mutate { $0 = true }
             self.formatDescription = nil
-            NotificationCenter.default.removeObserver(
-                self,
-                name: AVAudioSession.interruptionNotification,
-                object: nil
-            )
-            NotificationCenter.default.removeObserver(
-                self,
-                name: UIApplication.willEnterForegroundNotification,
-                object: nil
-            )
             self.isRunning.mutate { $0 = false }
         }
     }

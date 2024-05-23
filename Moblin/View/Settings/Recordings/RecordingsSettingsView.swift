@@ -76,7 +76,7 @@ struct RecordingsSettingsView: View {
                                         }
                                 }
                             case let .failure(error):
-                                print(error)
+                                logger.debug("Recording error: \(error)")
                             }
                         }
                     }

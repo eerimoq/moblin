@@ -51,6 +51,7 @@ final class AudioUnit: NSObject {
     weak var mixer: Mixer?
     private var selectedReplaceAudioId: UUID?
     private var replaceAudios: [UUID: ReplaceAudio] = [:]
+    let session = makeCaptureSession()
 
     private var inputSourceFormat: AudioStreamBasicDescription? {
         didSet {
@@ -61,19 +62,23 @@ final class AudioUnit: NSObject {
         }
     }
 
+    func startRunning() {
+        session.startRunning()
+    }
+
+    func stopRunning() {
+        session.stopRunning()
+    }
+
     func attach(_ device: AVCaptureDevice?, _ replaceAudio: UUID?) throws {
         lockQueue.sync {
             self.selectedReplaceAudioId = replaceAudio
         }
-        guard let mixer else {
-            return
-        }
-        let captureSession = mixer.audioSession
         output?.setSampleBufferDelegate(nil, queue: lockQueue)
-        try attachDevice(device, captureSession)
+        try attachDevice(device, session)
         self.device = device
         output?.setSampleBufferDelegate(self, queue: lockQueue)
-        captureSession.automaticallyConfiguresApplicationAudioSession = false
+        session.automaticallyConfiguresApplicationAudioSession = false
     }
 
     func appendSampleBuffer(
@@ -215,8 +220,8 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
 private func syncTimeToVideo(mixer: Mixer, sampleBuffer: CMSampleBuffer) -> CMTime {
     var presentationTimeStamp = sampleBuffer.presentationTimeStamp
     if #available(iOS 16.0, *) {
-        if let audioClock = mixer.audioSession.synchronizationClock,
-           let videoClock = mixer.videoSession.synchronizationClock
+        if let audioClock = mixer.audio.session.synchronizationClock,
+           let videoClock = mixer.video.session.synchronizationClock
         {
             let audioTimescale = sampleBuffer.presentationTimeStamp.timescale
             let seconds = audioClock.convertTime(presentationTimeStamp, to: videoClock).seconds

@@ -1145,16 +1145,23 @@ final class Model: NSObject, ObservableObject {
     }
 
     @objc func handleDidEnterBackgroundNotification() {
-        stopRtmpServer()
         if isRecording {
             suspendRecording()
+        }
+        if !isLive {
+            stopRtmpServer()
+            teardownAudioSession()
         }
     }
 
     @objc func handleWillEnterForegroundNotification() {
-        reloadConnections()
-        reloadRtmpServer()
-        chatTextToSpeech.reset()
+        if !isLive {
+            setupAudioSession()
+            media.attachAudio(device: AVCaptureDevice.default(for: .audio))
+            reloadConnections()
+            reloadRtmpServer()
+            chatTextToSpeech.reset()
+        }
         if isRecording {
             resumeRecording()
         }
@@ -4991,6 +4998,14 @@ extension Model {
             logger.error("app: Session error \(error)")
         }
         setAllowHapticsAndSystemSoundsDuringRecording()
+    }
+
+    private func teardownAudioSession() {
+        do {
+            try AVAudioSession.sharedInstance().setActive(false)
+        } catch {
+            logger.info("Failed to stop audio session with error: \(error)")
+        }
     }
 
     @objc func handleAudioRouteChange(notification _: Notification) {

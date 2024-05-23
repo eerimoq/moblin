@@ -103,6 +103,7 @@ private class ReplaceVideo {
 }
 
 final class VideoUnit: NSObject {
+    static let defaultFrameRate: Float64 = 30
     private(set) var device: AVCaptureDevice?
     private var input: AVCaptureInput?
     private var output: AVCaptureVideoDataOutput?
@@ -115,6 +116,8 @@ final class VideoUnit: NSObject {
     private var nextFaceDetectionsSequenceNumber: UInt64 = 0
     private var nextCompletedFaceDetectionsSequenceNumber: UInt64 = 0
     private var completedFaceDetections: [UInt64: FaceDetectionsCompletion] = [:]
+    var preset: AVCaptureSession.Preset = .hd1280x720
+    let session = makeCaptureSession()
 
     var formatDescription: CMVideoFormatDescription? {
         didSet {
@@ -127,7 +130,7 @@ final class VideoUnit: NSObject {
     private var effects: [VideoEffect] = []
     private var pendingAfterAttachEffects: [VideoEffect]?
 
-    var frameRate = Mixer.defaultFrameRate {
+    var frameRate = VideoUnit.defaultFrameRate {
         didSet {
             setDeviceFormat(frameRate: frameRate, colorSpace: colorSpace)
         }
@@ -196,6 +199,15 @@ final class VideoUnit: NSObject {
         stopGapFillerTimer()
     }
 
+    func startRunning() {
+        session.startRunning()
+    }
+
+    func stopRunning() {
+        removeSessionObservers()
+        session.stopRunning()
+    }
+
     func getHistograms() -> (Histogram, Histogram) {
         return lockQueue.sync {
             (detectionsHistogram, filterHistogram)
@@ -251,9 +263,6 @@ final class VideoUnit: NSObject {
             self.selectedReplaceVideoCameraId = replaceVideo
             return replaceVideo != oldReplaceVideo
         }
-        guard let mixer else {
-            return
-        }
         if self.device == device {
             if isOtherReplaceVideo {
                 lockQueue.async {
@@ -263,17 +272,16 @@ final class VideoUnit: NSObject {
             return
         }
         output?.setSampleBufferDelegate(nil, queue: lockQueue)
-        let captureSession = mixer.videoSession
-        captureSession.beginConfiguration()
+        session.beginConfiguration()
         defer {
-            captureSession.commitConfiguration()
+            session.commitConfiguration()
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 if self.torch, let device = self.device {
                     self.setTorchMode(device, .on)
                 }
             }
         }
-        try attachDevice(device, captureSession)
+        try attachDevice(device, session)
         if device != nil {
             lockQueue.async {
                 self.prepareFirstFrame()
@@ -796,6 +804,7 @@ final class VideoUnit: NSObject {
     }
 
     func startEncoding(_ delegate: any AudioCodecDelegate & VideoCodecDelegate) {
+        addSessionObservers()
         codec.delegate = delegate
         codec.startRunning()
     }
@@ -803,6 +812,48 @@ final class VideoUnit: NSObject {
     func stopEncoding() {
         codec.stopRunning()
         codec.delegate = nil
+        removeSessionObservers()
+    }
+
+    private func addSessionObservers() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(sessionWasInterrupted),
+            name: .AVCaptureSessionWasInterrupted,
+            object: session
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(sessionInterruptionEnded),
+            name: .AVCaptureSessionInterruptionEnded,
+            object: session
+        )
+    }
+
+    private func removeSessionObservers() {
+        NotificationCenter.default.removeObserver(
+            self,
+            name: .AVCaptureSessionWasInterrupted,
+            object: session
+        )
+        NotificationCenter.default.removeObserver(
+            self,
+            name: .AVCaptureSessionInterruptionEnded,
+            object: session
+        )
+    }
+
+    @objc
+    private func sessionWasInterrupted(_: Notification) {
+        logger.info("Video session interruption started")
+        lockQueue.async {
+            self.prepareFirstFrame()
+        }
+    }
+
+    @objc
+    private func sessionInterruptionEnded(_: Notification) {
+        logger.info("Video session interruption ended")
     }
 
     var isVideoMirrored = false {
@@ -869,13 +920,13 @@ final class VideoUnit: NSObject {
     }
 
     private func setDeviceFormat(frameRate: Float64, colorSpace: AVCaptureColorSpace) {
-        guard let device, let mixer else {
+        guard let device else {
             return
         }
         let (format, error) = findVideoFormat(
             device: device,
-            width: mixer.sessionPreset.width!,
-            height: mixer.sessionPreset.height!,
+            width: preset.width!,
+            height: preset.height!,
             frameRate: frameRate,
             colorSpace: colorSpace
         )
