@@ -817,10 +817,130 @@
     },
     "\"Mirror front camera on stream\" is only supported when streaming in landscape, not portrait." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "„Frontkamera beim Streamen spiegeln“ wird nur beim Streaming im Querformat unterstützt, nicht beim Hochformat."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Το \"Mirror μπροστινή κάμερα σε ροή\" υποστηρίζεται μόνο κατά τη ροή σε οριζόντιο προσανατολισμό και όχι σε κατακόρυφο."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "La \"cámara frontal espejo en transmisión\" solo se admite cuando se transmite en formato horizontal, no vertical."
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "\"Peilaa etukamera lähetyksessä\" on käytettävissä vain lähettäessä vaakatasossa. Pystykuva ei ole tuettu."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "\"Caméra frontale miroir en flux\" n'est pris en charge que lors de la diffusion en mode paysage et non en mode portrait."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "\"मिरर फ्रंट कैमरा ऑन स्ट्रीम\" केवल लैंडस्केप में स्ट्रीमिंग करते समय समर्थित है, पोर्ट्रेट में नहीं।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "\"Kamera depan cermin saat streaming\" hanya didukung saat streaming dalam lanskap, bukan potret."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "La \"fotocamera frontale a specchio in streaming\" è supportata solo durante lo streaming in orizzontale, non in verticale."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "「ストリーム上のフロントカメラのミラーリング」は、ポートレートではなく、ランドスケープでストリーミングする場合にのみサポートされます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "\"스트림 시 미러 전면 카메라\"는 세로 방향이 아닌 가로 방향으로 스트리밍할 때만 지원됩니다."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "\"Spiegelcamera aan de voorkant op stream\" wordt alleen ondersteund bij streaming in landschap, niet in portret."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Opcja „Odbij przednią kamerę podczas transmisji” jest obsługiwana tylko podczas przesyłania strumieniowego w orientacji poziomej, a nie pionowej."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "\"Espelhar câmera frontal na transmissão\" só é compatível ao transmitir em paisagem, não em retrato."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "\"Espelhar câmera frontal na transmissão\" só é compatível ao transmitir em paisagem, não em retrato."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "«Зеркальная передняя камера в потоке» поддерживается только при потоковой передаче в альбомной, а не в портретной ориентации."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\"Spegelvänd främre kamera på stream\" stöds endast vid streaming i landskap, inte porträtt."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "\"Akışta ön kamerayı yansıt\" yalnızca yatay akışta desteklenir, portrede değil."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "«Дзеркальна передня камера під час потоку» підтримується лише під час потокового передавання в альбомній, а не портретній орієнтації."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "\"Camera trước phản chiếu khi phát trực tiếp\" chỉ được hỗ trợ khi phát trực tiếp ở chế độ ngang chứ không phải dọc."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "仅在横向流式传输时才支持“流式传输镜像前置摄像头”，而不是纵向流式传输。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "僅在橫向串流時支援“串流鏡像前置鏡頭”，而不是縱向串流。"
           }
         }
       }
@@ -43131,10 +43251,130 @@
     },
     "Mirror front camera on stream" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Spiegelfrontkamera im Stream"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Καθρέφτης μπροστινή κάμερα σε ροή"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cámara frontal espejo en transmisión"
+          }
+        },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Peilaa etukamera lähetyksessä"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Caméra frontale miroir en flux"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "स्ट्रीम पर मिरर फ्रंट कैमरा"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cerminkan kamera depan saat streaming"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Fotocamera frontale a specchio in streaming"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "ストリーム中のフロントカメラをミラーリングする"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "스트리밍 시 전면 카메라 미러링"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Spiegelcamera aan de voorkant op stream"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Lustrzana kamera przednia w strumieniu"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Câmera frontal espelhada em transmissão"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Câmera frontal espelhada em transmissão"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Зеркальная передняя камера на стриме"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spegelvänd främre kamera på stream"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Akışta ön kamerayı yansıt"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Дзеркало фронтальної камери на потоці"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Gương trước camera trên luồng"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "镜面前置摄像头正在直播"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "鏡面前置鏡頭正在直播"
           }
         }
       }
