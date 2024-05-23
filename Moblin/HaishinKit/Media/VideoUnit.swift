@@ -119,6 +119,7 @@ final class VideoUnit: NSObject {
     private var latestSampleBuffer: CMSampleBuffer?
     private var latestSampleBufferDate: Date?
     private var gapFillerTimer: DispatchSourceTimer?
+    private var blackImageTimer: DispatchSourceTimer?
     private var firstFrameDate: Date?
     private var isFirstAfterAttach = false
     private var latestSampleBufferAppendTime = CMTime.zero
@@ -141,6 +142,7 @@ final class VideoUnit: NSObject {
 
     deinit {
         stopGapFillerTimer()
+        stopBlackImageTimer()
     }
 
     func startRunning() {
@@ -174,6 +176,9 @@ final class VideoUnit: NSObject {
     }
 
     private func handleGapFillerTimer() {
+        guard selectedReplaceVideoCameraId == nil else {
+            return
+        }
         guard let latestSampleBufferDate else {
             return
         }
@@ -193,6 +198,45 @@ final class VideoUnit: NSObject {
         else {
             return
         }
+        guard mixer?
+            .useSampleBuffer(sampleBuffer.presentationTimeStamp, mediaType: AVMediaType.video) == true
+        else {
+            return
+        }
+        _ = appendSampleBuffer(sampleBuffer, isFirstAfterAttach: false, applyBlur: ioVideoBlurSceneSwitch)
+    }
+
+    private func startBlackImageTimer() {
+        blackImageTimer = DispatchSource.makeTimerSource(queue: lockQueue)
+        let frameInterval = 1 / frameRate
+        blackImageTimer!.schedule(deadline: .now() + frameInterval, repeating: frameInterval)
+        blackImageTimer!.setEventHandler { [weak self] in
+            self?.handleBlackImageTimer()
+        }
+        blackImageTimer!.activate()
+    }
+
+    private func stopBlackImageTimer() {
+        blackImageTimer?.cancel()
+        blackImageTimer = nil
+    }
+
+    private func handleBlackImageTimer() {
+        guard selectedReplaceVideoCameraId != nil else {
+            return
+        }
+        guard let latestSampleBufferDate else {
+            return
+        }
+        let delta = Date().timeIntervalSince(latestSampleBufferDate)
+        guard delta > 0.05 else {
+            return
+        }
+        guard let latestSampleBuffer else {
+            return
+        }
+        let timeDelta = CMTime(seconds: delta, preferredTimescale: 1000)
+        let sampleBuffer = makeBlackSampleBuffer(realSampleBuffer: latestSampleBuffer, timeDelta: timeDelta)
         guard mixer?
             .useSampleBuffer(sampleBuffer.presentationTimeStamp, mediaType: AVMediaType.video) == true
         else {
@@ -233,6 +277,7 @@ final class VideoUnit: NSObject {
         } else {
             lockQueue.async {
                 self.stopGapFillerTimer()
+                self.stopBlackImageTimer()
             }
         }
         self.device = device
@@ -255,6 +300,7 @@ final class VideoUnit: NSObject {
         firstFrameDate = nil
         isFirstAfterAttach = true
         startGapFillerTimer()
+        startBlackImageTimer()
     }
 
     private func getBufferPool(formatDescription: CMFormatDescription) -> CVPixelBufferPool? {
@@ -535,7 +581,6 @@ final class VideoUnit: NSObject {
     }
 
     private func addReplaceVideoSampleBufferInner(id: UUID, _ sampleBuffer: CMSampleBuffer) {
-        // add code for black image at a later time
         guard selectedReplaceVideoCameraId == id else {
             return
         }
@@ -564,7 +609,9 @@ final class VideoUnit: NSObject {
         replaceVideos.removeValue(forKey: cameraId)
     }
 
-    private func makeBlackSampleBuffer(realSampleBuffer: CMSampleBuffer) -> CMSampleBuffer {
+    private func makeBlackSampleBuffer(realSampleBuffer: CMSampleBuffer,
+                                       timeDelta: CMTime) -> CMSampleBuffer
+    {
         if blackImageBuffer == nil || blackFormatDescription == nil {
             let width = 1280
             let height = 720
@@ -598,8 +645,8 @@ final class VideoUnit: NSObject {
         guard let sampleBuffer = CMSampleBuffer.create(blackImageBuffer!,
                                                        blackFormatDescription!,
                                                        realSampleBuffer.duration,
-                                                       realSampleBuffer.presentationTimeStamp,
-                                                       realSampleBuffer.decodeTimeStamp)
+                                                       realSampleBuffer.presentationTimeStamp + timeDelta,
+                                                       realSampleBuffer.decodeTimeStamp + timeDelta)
         else {
             return realSampleBuffer
         }
@@ -612,7 +659,7 @@ final class VideoUnit: NSObject {
         guard let imageBuffer = sampleBuffer.imageBuffer else {
             return false
         }
-        if sampleBuffer.presentationTimeStamp <= latestSampleBufferAppendTime {
+        if sampleBuffer.presentationTimeStamp < latestSampleBufferAppendTime {
             logger.info(
                 """
                 Discarding frame: \(sampleBuffer.presentationTimeStamp.seconds) \
@@ -971,6 +1018,7 @@ final class VideoUnit: NSObject {
             isFirstAfterAttach = false
         }
         stopGapFillerTimer()
+        stopBlackImageTimer()
     }
 }
 
