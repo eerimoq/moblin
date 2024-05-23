@@ -620,8 +620,8 @@ final class Media: NSObject {
         netStream.addReplaceVideoSampleBuffer(id: cameraId, sampleBuffer)
     }
 
-    func addRtmpAudioBuffer(cameraId: UUID, audioBuffer: AVAudioPCMBuffer) {
-        netStream.addAudioPCMBuffer(id: cameraId, audioBuffer)
+    func addRtmpAudioSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
+        netStream.addAudioSampleBuffer(id: cameraId, sampleBuffer)
     }
 
     func addRtmpCamera(cameraId: UUID, latency: Double) {

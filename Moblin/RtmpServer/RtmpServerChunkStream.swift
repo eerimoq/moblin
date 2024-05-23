@@ -307,25 +307,6 @@ class RtmpServerChunkStream {
             client.stopInternal(reason: "Unsupported audio codec \(codec)")
             return
         }
-        var duration = Int64(messageTimestamp)
-        if isMessageType0 {
-            if audioTimestampZero == -1 {
-                audioTimestampZero = Double(messageTimestamp)
-            }
-            duration -= Int64(audioTimestamp)
-            audioTimestamp = Double(messageTimestamp) - audioTimestampZero
-        } else {
-            audioTimestamp += Double(messageTimestamp)
-        }
-        _ = makeTimingInfo(duration: duration, presentationTimeStamp: Int64(audioTimestamp),
-                           decodeTimeStamp: Int64(audioTimestamp))
-        /* logger.info("""
-         rtmp-server: client: Created audio sample buffer \
-         MTS: \(messageTimestamp * messageTimestampScaling) \
-         DUR: \(timing.duration.seconds), \
-         PTS: \(timing.presentationTimeStamp.seconds), \
-         DTS: \(timing.decodeTimeStamp.seconds)
-         """) */
         switch FLVAACPacketType(rawValue: messageData[1]) {
         case .seq:
             processMessageAudioTypeSeq(client: client, codec: codec)
@@ -403,7 +384,10 @@ class RtmpServerChunkStream {
         if let error {
             logger.info("rtmp-server: client: Error \(error)")
         } else {
-            client?.handleAudioBuffer(audioBuffer: outputBuffer)
+            let sampleBuffer = makeAudioSampleBuffer(audioBuffer: outputBuffer)
+            if sampleBuffer != nil {
+                client?.handleAudioBuffer(sampleBuffer: sampleBuffer!)
+            }
         }
     }
 
@@ -471,7 +455,7 @@ class RtmpServerChunkStream {
             logger.info("rtmp-server: client: Dropping short packet with data \(messageData.hexString())")
             return
         }
-        if let sampleBuffer = makeSampleBuffer(client: client) {
+        if let sampleBuffer = makeVideoSampleBuffer(client: client) {
             videoDecoder?.appendSampleBuffer(sampleBuffer)
         } else {
             client.stopInternal(reason: "Make sample buffer failed")
@@ -480,7 +464,7 @@ class RtmpServerChunkStream {
 
     var videoPresentationTimeStamp: CMTime = .zero
 
-    private func makeSampleBuffer(client: RtmpServerClient) -> CMSampleBuffer? {
+    private func makeVideoSampleBuffer(client: RtmpServerClient) -> CMSampleBuffer? {
         if videoPresentationTimeStamp == CMTime.zero {
             videoPresentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
         }
@@ -524,6 +508,30 @@ class RtmpServerChunkStream {
             return nil
         }
         sampleBuffer?.isKeyFrame = messageData[0] >> 4 & 0b0111 == FLVFrameType.key.rawValue
+        return sampleBuffer
+    }
+
+    var audioPresentationTimeStamp: CMTime = .zero
+
+    private func makeAudioSampleBuffer(audioBuffer: AVAudioPCMBuffer) -> CMSampleBuffer? {
+        if audioPresentationTimeStamp == CMTime.zero {
+            audioPresentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
+        }
+        /* logger.info("""
+         rtmp-server: client: Created audio sample buffer \
+         MTS: \(messageTimestamp * messageTimestampScaling) \
+         DUR: \(timing.duration.seconds), \
+         PTS: \(timing.presentationTimeStamp.seconds), \
+         DTS: \(timing.decodeTimeStamp.seconds)
+         """) */
+        let sampleBuffer = audioBuffer.makeSampleBuffer(presentationTimeStamp: audioPresentationTimeStamp)
+        audioPresentationTimeStamp = CMTimeAdd(
+            audioPresentationTimeStamp,
+            CMTime(
+                value: CMTimeValue(audioBuffer.frameLength),
+                timescale: CMTimeScale(audioBuffer.format.sampleRate)
+            )
+        )
         return sampleBuffer
     }
 }

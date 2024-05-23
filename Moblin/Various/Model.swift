@@ -1227,12 +1227,12 @@ final class Model: NSObject, ObservableObject {
         media.addRtmpSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
-    func handleRtmpServerAudioBuffer(streamKey: String, audioBuffer: AVAudioPCMBuffer) {
+    func handleRtmpServerAudioBuffer(streamKey: String, sampleBuffer: CMSampleBuffer) {
         guard let cameraId = getRtmpStream(streamKey: streamKey)?.id else {
             return
         }
         if database.debug!.enableRtmpAudio! {
-            media.addRtmpAudioBuffer(cameraId: cameraId, audioBuffer: audioBuffer)
+            media.addRtmpAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
         }
     }
 

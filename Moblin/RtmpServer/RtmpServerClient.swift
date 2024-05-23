@@ -88,8 +88,8 @@ class RtmpServerClient {
         server?.onFrame(streamKey, sampleBuffer)
     }
 
-    func handleAudioBuffer(audioBuffer: AVAudioPCMBuffer) {
-        server?.onAudioBuffer(streamKey, audioBuffer)
+    func handleAudioBuffer(sampleBuffer: CMSampleBuffer) {
+        server?.onAudioBuffer(streamKey, sampleBuffer)
     }
 
     private func handleData(data: Data) {

@@ -119,8 +119,8 @@ open class NetStream: NSObject {
         mixer.video.addReplaceVideoSampleBuffer(id: id, sampleBuffer)
     }
 
-    func addAudioPCMBuffer(id: UUID, _ audioBuffer: AVAudioPCMBuffer) {
-        mixer.audio.addReplaceAudioPCMBuffer(id: id, audioBuffer)
+    func addAudioSampleBuffer(id: UUID, _ sampleBuffer: CMSampleBuffer) {
+        mixer.audio.addReplaceAudioSampleBuffer(id: id, sampleBuffer)
     }
 
     func addReplaceVideo(cameraId: UUID, latency: Double) {

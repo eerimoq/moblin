@@ -20,26 +20,7 @@ func makeChannelMap(
 }
 
 private class ReplaceAudio {
-    var nextPresentationTimeStamp: CMTime = .zero
-
-    func createSampleBuffer(audioPCMBuffer: AVAudioPCMBuffer) -> CMSampleBuffer? {
-        if nextPresentationTimeStamp == CMTime.zero {
-            nextPresentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
-        }
-        guard let sampleBuffer = audioPCMBuffer
-            .makeSampleBuffer(presentationTimeStamp: nextPresentationTimeStamp)
-        else {
-            return nil
-        }
-        nextPresentationTimeStamp = CMTimeAdd(
-            nextPresentationTimeStamp,
-            CMTime(
-                value: CMTimeValue(Double(audioPCMBuffer.frameLength)),
-                timescale: CMTimeScale(audioPCMBuffer.format.sampleRate)
-            )
-        )
-        return sampleBuffer
-    }
+    // Add code for latency at a later time
 }
 
 final class AudioUnit: NSObject {
@@ -131,20 +112,17 @@ final class AudioUnit: NSObject {
         }
     }
 
-    func addReplaceAudioPCMBuffer(id: UUID, _ audioBuffer: AVAudioPCMBuffer) {
+    func addReplaceAudioSampleBuffer(id: UUID, _ sampleBuffer: CMSampleBuffer) {
         lockQueue.async {
-            self.addReplaceAudioPCMBufferInner(id: id, audioBuffer)
+            self.addReplaceAudioSampleBufferInner(id: id, sampleBuffer)
         }
     }
 
-    func addReplaceAudioPCMBufferInner(id: UUID, _ audioBuffer: AVAudioPCMBuffer) {
-        guard let replaceAudio = replaceAudios[id] else {
+    func addReplaceAudioSampleBufferInner(id: UUID, _ sampleBuffer: CMSampleBuffer) {
+        guard selectedReplaceAudioId == id else {
             return
         }
-        let sampleBuffer = replaceAudio.createSampleBuffer(audioPCMBuffer: audioBuffer)
-        guard let sampleBuffer, selectedReplaceAudioId != nil else {
-            return
-        }
+        logger.info("RTMP Audio TimeStamp: \(sampleBuffer.presentationTimeStamp.seconds)")
         let numberOfAudioChannels = sampleBuffer.formatDescription?.audioChannelLayout?.numberOfChannels ?? 0
         prepareSampleBuffer(
             sampleBuffer: sampleBuffer,
@@ -198,6 +176,7 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
         didOutput sampleBuffer: CMSampleBuffer,
         from connection: AVCaptureConnection
     ) {
+        logger.info("Int. Audio TimeStamp: \(sampleBuffer.presentationTimeStamp.seconds)")
         guard selectedReplaceAudioId == nil else {
             return
         }
