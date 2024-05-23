@@ -2,16 +2,6 @@ import AVFoundation
 import Foundation
 import Network
 
-private func makeTimingInfo(duration: Int64, presentationTimeStamp: Int64,
-                            decodeTimeStamp: Int64) -> CMSampleTimingInfo
-{
-    return CMSampleTimingInfo(
-        duration: CMTimeMake(value: duration, timescale: 1000),
-        presentationTimeStamp: CMTimeMake(value: presentationTimeStamp, timescale: 1000),
-        decodeTimeStamp: CMTimeMake(value: decodeTimeStamp, timescale: 1000)
-    )
-}
-
 class RtmpServerChunkStream {
     private var messageData: Data
     var messageLength: Int
