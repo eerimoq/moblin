@@ -85,6 +85,8 @@
 		03507F6B2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03507F6A2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift */; };
 		035192E02B53EF2C00B09E3B /* GlobalQuickButtonsButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035192DF2B53EF2C00B09E3B /* GlobalQuickButtonsButtonSettingsView.swift */; };
 		0352679E2B99A00C00B49B72 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03F853B22B151FA700719B89 /* Localizable.xcstrings */; };
+		0352DDF32BFFCAA60079AC7B /* SampleBufferTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0352DDF22BFFCAA60079AC7B /* SampleBufferTransfer.swift */; };
+		0352DDF42BFFCAA60079AC7B /* SampleBufferTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0352DDF22BFFCAA60079AC7B /* SampleBufferTransfer.swift */; };
 		03559E7E2BDCEB14002D0886 /* FaceEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03559E7D2BDCEB14002D0886 /* FaceEffect.swift */; };
 		035735802BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0357357F2BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift */; };
 		035735822BC6303F00F4E87D /* WatchDisplaySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035735812BC6303F00F4E87D /* WatchDisplaySettingsView.swift */; };
@@ -450,6 +452,7 @@
 		034FC8512B2B6D4A00EF0C62 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		03507F6A2B45DD5A0075648B /* GameControllersControllerButtonSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllersControllerButtonSettingsView.swift; sourceTree = "<group>"; };
 		035192DF2B53EF2C00B09E3B /* GlobalQuickButtonsButtonSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalQuickButtonsButtonSettingsView.swift; sourceTree = "<group>"; };
+		0352DDF22BFFCAA60079AC7B /* SampleBufferTransfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleBufferTransfer.swift; sourceTree = "<group>"; };
 		03559E7D2BDCEB14002D0886 /* FaceEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceEffect.swift; sourceTree = "<group>"; };
 		0357357F2BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchLocalOverlaysSettingsView.swift; sourceTree = "<group>"; };
 		035735812BC6303F00F4E87D /* WatchDisplaySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchDisplaySettingsView.swift; sourceTree = "<group>"; };
@@ -1811,6 +1814,7 @@
 				03B373FC2A9F35EF0028DDD5 /* CommonUtils.swift */,
 				03A707B72B8ED466003BB7BE /* WatchProtocol.swift */,
 				03B77AD92B9446210053F106 /* WatchSettings.swift */,
+				0352DDF22BFFCAA60079AC7B /* SampleBufferTransfer.swift */,
 			);
 			path = Various;
 			sourceTree = "<group>";
@@ -2451,6 +2455,7 @@
 				030A8B672BC2D38300F149AF /* WebBrowserView.swift in Sources */,
 				034D2EC22B351715003C6D14 /* RecordingsStorage.swift in Sources */,
 				031F91EB2B38A27D00C898E1 /* StreamWizardObsRemoteControlSettingsView.swift in Sources */,
+				0352DDF32BFFCAA60079AC7B /* SampleBufferTransfer.swift in Sources */,
 				032815DF2AC9885C001F8A85 /* TripleEffect.swift in Sources */,
 				0359F8B82BD3DA61005BFDA8 /* AVCaptureSession.Preset+Extension.swift in Sources */,
 				0359F8B02BD3DA61005BFDA8 /* VideoSize.swift in Sources */,
@@ -2530,6 +2535,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				031C15C02B9336D700BA967D /* ControlView.swift in Sources */,
+				0352DDF42BFFCAA60079AC7B /* SampleBufferTransfer.swift in Sources */,
 				03B77ADB2B9446210053F106 /* WatchSettings.swift in Sources */,
 				03B89D972B92DD670022EAE7 /* PreviewView.swift in Sources */,
 				031C15C82B93425200BA967D /* StreamOverlayTextView.swift in Sources */,
