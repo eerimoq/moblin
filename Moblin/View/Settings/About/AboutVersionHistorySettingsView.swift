@@ -9,6 +9,9 @@ struct Version {
 // swiftlint:disable line_length
 private let versions = [
     Version(version: "0.284.0", date: "2024-05-23", changes: [
+        "• Keep stream running when in background mode.",
+        "  • Audio works, but video is a freeze frame as video is not available in background.",
+        "• Chat text to speech should also work when in background mode.",
     ]),
     Version(version: "0.283.0", date: "2024-05-22", changes: [
         "• Show unsupported video format toast. 💡 JohannesLiv",
