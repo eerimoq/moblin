@@ -38,68 +38,12 @@ private struct FaceDetectionsCompletion {
 }
 
 private class ReplaceVideo {
-    var sampleBuffers: [CMSampleBuffer] = []
-    var firstPresentationTimeStamp: Double = .nan
-    var currentSampleBuffer: CMSampleBuffer?
     var latency: Double
 
     init(latency: Double) {
         self.latency = latency
     }
-
-    func updateSampleBuffer(_ realPresentationTimeStamp: Double) {
-        var sampleBuffer = currentSampleBuffer
-        while !sampleBuffers.isEmpty {
-            let replaceSampleBuffer = sampleBuffers.first!
-            // Get first frame quickly
-            if currentSampleBuffer == nil {
-                sampleBuffer = replaceSampleBuffer
-            }
-            // Just for sanity. Should depend on FPS and latency.
-            if sampleBuffers.count > 200 {
-                // logger.info("Over 200 frames buffered. Dropping oldest frame.")
-                sampleBuffer = replaceSampleBuffer
-                sampleBuffers.remove(at: 0)
-                continue
-            }
-            let presentationTimeStamp = replaceSampleBuffer.presentationTimeStamp.seconds
-            if firstPresentationTimeStamp.isNaN {
-                firstPresentationTimeStamp = realPresentationTimeStamp - presentationTimeStamp
-            }
-            if firstPresentationTimeStamp + presentationTimeStamp + latency > realPresentationTimeStamp {
-                break
-            }
-            sampleBuffer = replaceSampleBuffer
-            sampleBuffers.remove(at: 0)
-        }
-        currentSampleBuffer = sampleBuffer
-    }
-
-    func getSampleBuffer(_ realSampleBuffer: CMSampleBuffer) -> CMSampleBuffer? {
-        if let currentSampleBuffer {
-            return makeSampleBuffer(
-                realSampleBuffer: realSampleBuffer,
-                replaceSampleBuffer: currentSampleBuffer
-            )
-        } else {
-            return nil
-        }
-    }
-
-    private func makeSampleBuffer(realSampleBuffer: CMSampleBuffer,
-                                  replaceSampleBuffer: CMSampleBuffer) -> CMSampleBuffer?
-    {
-        guard let sampleBuffer = CMSampleBuffer.create(replaceSampleBuffer.imageBuffer!,
-                                                       replaceSampleBuffer.formatDescription!,
-                                                       realSampleBuffer.duration,
-                                                       realSampleBuffer.presentationTimeStamp,
-                                                       realSampleBuffer.decodeTimeStamp)
-        else {
-            return nil
-        }
-        sampleBuffer.isKeyFrame = replaceSampleBuffer.isKeyFrame
-        return sampleBuffer
-    }
+    // Add code for latency at a later time
 }
 
 final class VideoUnit: NSObject {
@@ -591,13 +535,12 @@ final class VideoUnit: NSObject {
     }
 
     private func addReplaceVideoSampleBufferInner(id: UUID, _ sampleBuffer: CMSampleBuffer) {
-        guard let replaceVideo = replaceVideos[id] else {
+        // add code for black image at a later time
+        guard selectedReplaceVideoCameraId == id else {
             return
         }
-        replaceVideo.sampleBuffers.append(sampleBuffer)
-        replaceVideo.sampleBuffers.sort { sampleBuffer1, sampleBuffer2 in
-            sampleBuffer1.presentationTimeStamp < sampleBuffer2.presentationTimeStamp
-        }
+        logger.info("RTMP Video TimeStamp: \(sampleBuffer.presentationTimeStamp.seconds)")
+        prepareSampleBuffer(sampleBuffer: sampleBuffer)
     }
 
     func addReplaceVideo(cameraId: UUID, latency: Double) {
@@ -669,7 +612,7 @@ final class VideoUnit: NSObject {
         guard let imageBuffer = sampleBuffer.imageBuffer else {
             return false
         }
-        if sampleBuffer.presentationTimeStamp < latestSampleBufferAppendTime {
+        if sampleBuffer.presentationTimeStamp <= latestSampleBufferAppendTime {
             logger.info(
                 """
                 Discarding frame: \(sampleBuffer.presentationTimeStamp.seconds) \
@@ -1008,22 +951,8 @@ final class VideoUnit: NSObject {
             logger.error("while setting torch: \(error)")
         }
     }
-}
 
-extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
-    func captureOutput(
-        _: AVCaptureOutput,
-        didOutput sampleBuffer: CMSampleBuffer,
-        from _: AVCaptureConnection
-    ) {
-        for replaceVideo in replaceVideos.values {
-            replaceVideo.updateSampleBuffer(sampleBuffer.presentationTimeStamp.seconds)
-        }
-        var sampleBuffer = sampleBuffer
-        if let selectedReplaceVideoCameraId {
-            sampleBuffer = replaceVideos[selectedReplaceVideoCameraId]?
-                .getSampleBuffer(sampleBuffer) ?? makeBlackSampleBuffer(realSampleBuffer: sampleBuffer)
-        }
+    func prepareSampleBuffer(sampleBuffer: CMSampleBuffer) {
         let now = Date()
         if firstFrameDate == nil {
             firstFrameDate = now
@@ -1042,6 +971,20 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
             isFirstAfterAttach = false
         }
         stopGapFillerTimer()
+    }
+}
+
+extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
+    func captureOutput(
+        _: AVCaptureOutput,
+        didOutput sampleBuffer: CMSampleBuffer,
+        from _: AVCaptureConnection
+    ) {
+        logger.info("Int. Video TimeStamp: \(sampleBuffer.presentationTimeStamp.seconds)")
+        guard selectedReplaceVideoCameraId == nil else {
+            return
+        }
+        prepareSampleBuffer(sampleBuffer: sampleBuffer)
     }
 }
 

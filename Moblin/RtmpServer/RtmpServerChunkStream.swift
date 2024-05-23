@@ -478,33 +478,24 @@ class RtmpServerChunkStream {
         }
     }
 
+    var videoPresentationTimeStamp: CMTime = .zero
+
     private func makeSampleBuffer(client: RtmpServerClient) -> CMSampleBuffer? {
-        var compositionTime = Int32(data: [0] + messageData[2 ..< 5]).bigEndian
-        compositionTime <<= 8
-        compositionTime /= 256
-        var duration = Int64(messageTimestamp)
-        if isMessageType0 {
-            if videoTimestampZero == -1 {
-                videoTimestampZero = Double(messageTimestamp)
-            }
-            duration -= Int64(videoTimestamp)
-            videoTimestamp = Double(messageTimestamp) - videoTimestampZero
-        } else {
-            videoTimestamp += Double(messageTimestamp)
+        if videoPresentationTimeStamp == CMTime.zero {
+            videoPresentationTimeStamp = CMClockGetTime(CMClockGetHostTimeClock())
         }
-        var presentationTimeStamp: Int64
-        var decodeTimeStamp: Int64
-        if client.fps == 0 {
-            presentationTimeStamp = Int64(videoTimestamp) + Int64(compositionTime)
-            decodeTimeStamp = Int64(videoTimestamp)
-        } else {
-            duration = Int64(1000 / client.fps)
-            presentationTimeStamp = Int64(1000 * Double(numberOfFrames) / client.fps)
-            decodeTimeStamp = presentationTimeStamp
-            numberOfFrames += 1
-        }
-        var timing = makeTimingInfo(duration: duration, presentationTimeStamp: presentationTimeStamp,
-                                    decodeTimeStamp: decodeTimeStamp)
+        var timing = CMSampleTimingInfo(
+            duration: .invalid,
+            presentationTimeStamp: videoPresentationTimeStamp,
+            decodeTimeStamp: .invalid
+        )
+        videoPresentationTimeStamp = CMTimeAdd(
+            videoPresentationTimeStamp,
+            CMTime(
+                value: CMTimeValue(1),
+                timescale: CMTimeScale(client.fps)
+            )
+        )
         /* logger.info("""
          rtmp-server: client: Created sample buffer \
          MTS: \(messageTimestamp * messageTimestampScaling) \
