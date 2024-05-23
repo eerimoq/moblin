@@ -462,7 +462,7 @@ class RtmpServerChunkStream {
         }
     }
 
-    var videoPresentationTimeStamp: CMTime = .zero
+    private var videoPresentationTimeStamp: CMTime = .zero
 
     private func makeVideoSampleBuffer(client: RtmpServerClient) -> CMSampleBuffer? {
         if videoPresentationTimeStamp == CMTime.zero {
@@ -511,7 +511,7 @@ class RtmpServerChunkStream {
         return sampleBuffer
     }
 
-    var audioPresentationTimeStamp: CMTime = .zero
+    private var audioPresentationTimeStamp: CMTime = .zero
 
     private func makeAudioSampleBuffer(audioBuffer: AVAudioPCMBuffer) -> CMSampleBuffer? {
         if audioPresentationTimeStamp == CMTime.zero {
