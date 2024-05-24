@@ -449,6 +449,9 @@ final class Model: NSObject, ObservableObject {
 
     @Published var remoteControlStatus = noValue
 
+    private let sampleBufferReceiver = SampleBufferReceiver()
+    private let sampleBufferSender = SampleBufferSender()
+
     override init() {
         super.init()
         showLoadSettingsFailed = !settings.load()
@@ -894,6 +897,17 @@ final class Model: NSObject, ObservableObject {
         AppDelegate.orientationLock = .landscape
         updateOrientationLock()
         updateFaceFilterSettings()
+        setupSampleBufferReceiver()
+    }
+
+    private func setupSampleBufferReceiver() {
+        sampleBufferReceiver.delegate = self
+        sampleBufferReceiver.start(appGroup: "group.com.eerimoq.Mobs")
+        sampleBufferSender.start(appGroup: "group.com.eerimoq.Mobs")
+        logger.debug("sample-buffer: Sending")
+        if !sampleBufferSender.send(sampleBuffer: nil) {
+            logger.debug("sample-buffer: Failed to send")
+        }
     }
 
     func updateFaceFilterSettings() {
@@ -5666,5 +5680,11 @@ extension Model {
 
     func stopObservingWhiteBalance() {
         whiteBalanceObservation = nil
+    }
+}
+
+extension Model: SampleBufferReceiverDelegate {
+    func handleSampleBuffer(sampleBuffer _: CMSampleBuffer?) {
+        logger.debug("sample-buffer: Got buffer")
     }
 }

@@ -10,12 +10,33 @@ private struct Header: Codable {
     var height: Int
 }
 
-private func createAddr(path: String) -> sockaddr_un? {
+private func createContainerDir(appGroup: String) throws -> URL {
+    guard let containerDir = FileManager.default
+        .containerURL(forSecurityApplicationGroupIdentifier: appGroup)
+    else {
+        throw "Failed to create container directory"
+    }
+    try FileManager.default.createDirectory(at: containerDir, withIntermediateDirectories: true)
+    return containerDir
+}
+
+private func createSocketPath(containerDir: URL) -> URL {
+    return containerDir.appendingPathComponent("sb.sock")
+}
+
+private func removeFile(path: URL) {
+    do {
+        try FileManager.default.removeItem(at: path)
+    } catch {}
+}
+
+private func createAddr(path: URL) throws -> sockaddr_un {
+    let path = path.path
     var addr = sockaddr_un()
     addr.sun_family = sa_family_t(AF_UNIX)
     let pathLength = path.withCString { Int(strlen($0)) }
-    guard pathLength < MemoryLayout.size(ofValue: addr.sun_path) else {
-        return nil
+    guard MemoryLayout.size(ofValue: addr.sun_path) > pathLength else {
+        throw "sample-buffer: unix socket path \(path) too long"
     }
     _ = withUnsafeMutablePointer(to: &addr.sun_path.0) { addrPtr in
         path.withCString {
@@ -25,29 +46,57 @@ private func createAddr(path: String) -> sockaddr_un? {
     return addr
 }
 
-private func setIgnoreSigPipe(fd: Int32) -> Bool {
-    var on: Int32 = 1
-    return setsockopt(fd, SOL_SOCKET, SO_NOSIGPIPE, &on, socklen_t(MemoryLayout<Int32>.size)) != -1
+private func socket() throws -> Int32 {
+    let fd = Darwin.socket(AF_UNIX, SOCK_STREAM, 0)
+    if fd == -1 {
+        throw "Failed to create unix socket"
+    }
+    return fd
 }
 
-private func connect(fd: Int32, addr: sockaddr_un) -> Bool {
+private func setIgnoreSigPipe(fd: Int32) throws {
+    var on: Int32 = 1
+    if setsockopt(fd, SOL_SOCKET, SO_NOSIGPIPE, &on, socklen_t(MemoryLayout<Int32>.size)) == -1 {
+        throw "Failed to set ignore sigpipe"
+    }
+}
+
+private func connect(fd: Int32, addr: sockaddr_un) throws {
     var addr = addr
     let res = withUnsafePointer(to: &addr) {
         $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {
             Darwin.connect(fd, $0, UInt32(MemoryLayout<sockaddr_un>.stride))
         }
     }
-    return res != -1
+    if res == -1 {
+        throw "Failed to connect"
+    }
 }
 
-private func bind(fd: Int32, addr: sockaddr_un) -> Bool {
+private func bind(fd: Int32, addr: sockaddr_un) throws {
     var addr = addr
     let res = withUnsafePointer(to: &addr) {
         $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {
             Darwin.bind(fd, $0, UInt32(MemoryLayout<sockaddr_un>.stride))
         }
     }
-    return res != -1
+    if res == -1 {
+        throw "Failed to bind"
+    }
+}
+
+private func listen(fd: Int32) throws {
+    if Darwin.listen(fd, 5) == -1 {
+        throw "Failed to listen"
+    }
+}
+
+private func accept(fd: Int32) throws -> Int32 {
+    let senderFd = Darwin.accept(fd, nil, nil)
+    if senderFd == -1 {
+        throw "Failed to accept"
+    }
+    return senderFd
 }
 
 // periphery:ignore
@@ -58,34 +107,34 @@ class SampleBufferSender {
         fd = -1
     }
 
-    func start(path: String) {
-        fd = Darwin.socket(AF_UNIX, SOCK_STREAM, 0)
-        if fd == -1 {
-            logger.info("sample-buffer-sender: Failed to create unix socket")
-            return
-        }
-        if !setIgnoreSigPipe(fd: fd) {
-            logger.info("sample-buffer-sender: Failed to set ignore sigpipe")
-            return
-        }
-        guard let addr = createAddr(path: path) else {
-            logger.info("sample-buffer-sender: Failed to create socket address")
-            return
-        }
-        if !connect(fd: fd, addr: addr) {
-            logger.info("sample-buffer-sender: Failed to connect")
-            return
+    func start(appGroup: String) {
+        do {
+            fd = try socket()
+            try setIgnoreSigPipe(fd: fd)
+            let containerDir = try createContainerDir(appGroup: appGroup)
+            let path = createSocketPath(containerDir: containerDir)
+            let addr = try createAddr(path: path)
+            try connect(fd: fd, addr: addr)
+            logger.debug("sample-buffer-sender: Connected")
+        } catch {
+            logger.info("sample-buffer-sender: \(error)")
         }
     }
 
-    func stop() {}
+    func stop() {
+        logger.info("sample-buffer-sender: Should stop")
+    }
 
-    func send(sampleBuffer _: CMSampleBuffer) {}
+    func send(sampleBuffer _: CMSampleBuffer?) -> Bool {
+        let data = Data([5, 6, 7])
+        return data.withUnsafeBytes { (pointer: UnsafeRawBufferPointer) in
+            Darwin.write(fd, pointer.baseAddress, pointer.count) != -1
+        }
+    }
 }
 
-// periphery:ignore
 protocol SampleBufferReceiverDelegate: AnyObject {
-    func handleSampleBuffer(sampleBuffer: CMSampleBuffer)
+    func handleSampleBuffer(sampleBuffer: CMSampleBuffer?)
 }
 
 // periphery:ignore
@@ -97,43 +146,54 @@ class SampleBufferReceiver {
         listenerFd = -1
     }
 
-    func start(path: String) {
-        listenerFd = Darwin.socket(AF_UNIX, SOCK_STREAM, 0)
-        if listenerFd == -1 {
-            logger.info("sample-buffer-receiver: Failed to create unix socket")
-            return
-        }
-        if !setIgnoreSigPipe(fd: listenerFd) {
-            logger.info("sample-buffer-receiver: Failed to set ignore sigpipe")
-            return
-        }
-        guard let addr = createAddr(path: path) else {
-            logger.info("sample-buffer-receiver: Failed to create socket address")
-            return
-        }
-        if !bind(fd: listenerFd, addr: addr) {
-            logger.info("sample-buffer-receiver: Failed to bind")
-            return
-        }
-        if Darwin.listen(listenerFd, 5) == -1 {
-            logger.info("sample-buffer-receiver: Failed to listen")
+    func start(appGroup: String) {
+        do {
+            listenerFd = try socket()
+            try setIgnoreSigPipe(fd: listenerFd)
+            let containerDir = try createContainerDir(appGroup: appGroup)
+            let path = createSocketPath(containerDir: containerDir)
+            removeFile(path: path)
+            let addr = try createAddr(path: path)
+            try bind(fd: listenerFd, addr: addr)
+            try listen(fd: listenerFd)
+        } catch {
+            logger.info("sample-buffer-receiver: \(error)")
             return
         }
         DispatchQueue.global(qos: .userInteractive).async {
-            while true {
-                let senderFd = Darwin.accept(self.listenerFd, nil, nil)
-                if senderFd == -1 {
-                    logger.info("sample-buffer-receiver: Failed to accept")
-                    break
-                }
-                if !setIgnoreSigPipe(fd: senderFd) {
-                    logger.info("sample-buffer-receiver: Failed to set ignore sigpipe")
-                    break
-                }
-                logger.info("sample-buffer-receiver: Sender connected")
+            do {
+                try self.acceptLoop()
+            } catch {
+                logger.info("sample-buffer-receiver: Loop stopped with error \(error)")
             }
+        }
+        logger.info("sample-buffer-receiver: Started")
+    }
+
+    func stop() {
+        logger.info("sample-buffer-receiver: Should stop")
+    }
+
+    private func acceptLoop() throws {
+        while true {
+            let senderFd = try accept(fd: listenerFd)
+            try setIgnoreSigPipe(fd: senderFd)
+            logger.debug("sample-buffer-receiver: Sender connected")
+            readLoop(senderFd: senderFd)
+            logger.debug("sample-buffer-receiver: Sender disconnected")
         }
     }
 
-    func stop() {}
+    private func readLoop(senderFd: Int32) {
+        while true {
+            var data = Data(count: 1)
+            let readCount = data.withUnsafeMutableBytes { (pointer: UnsafeMutableRawBufferPointer) in
+                Darwin.read(senderFd, pointer.baseAddress, pointer.count)
+            }
+            if readCount != data.count {
+                break
+            }
+            delegate?.handleSampleBuffer(sampleBuffer: nil)
+        }
+    }
 }
