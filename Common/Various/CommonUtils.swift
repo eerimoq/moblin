@@ -407,34 +407,6 @@ func formatAudioLevelChannels(channels: Int) -> String {
 
 let noValue = ""
 
-extension WatchProtocolColor {
-    static func fromHex(value: String) -> WatchProtocolColor? {
-        if let colorNumber = Int(value.suffix(6), radix: 16) {
-            return WatchProtocolColor(
-                red: (colorNumber >> 16) & 0xFF,
-                green: (colorNumber >> 8) & 0xFF,
-                blue: colorNumber & 0xFF
-            )
-        } else {
-            return nil
-        }
-    }
-
-    // periphery:ignore
-    private func colorScale(_ color: Int) -> Double {
-        return Double(color) / 255
-    }
-
-    // periphery:ignore
-    func color() -> Color {
-        return Color(
-            red: colorScale(red),
-            green: colorScale(green),
-            blue: colorScale(blue)
-        )
-    }
-}
-
 func urlImage(interfaceType: NWInterface.InterfaceType) -> String {
     switch interfaceType {
     case .other:
@@ -459,3 +431,5 @@ func sleep(seconds: Int) async throws {
 func sleep(milliSeconds: Int) async throws {
     try await Task.sleep(nanoseconds: UInt64(milliSeconds) * 1_000_000)
 }
+
+let moblinAppGroup = "group.com.eerimoq.Mobs"

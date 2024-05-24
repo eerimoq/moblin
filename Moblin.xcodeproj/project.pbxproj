@@ -20,6 +20,11 @@
 		030EFE722BDA2D9E004208B6 /* MpegTsVideoConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030EFE712BDA2D9E004208B6 /* MpegTsVideoConfig.swift */; };
 		030EFE752BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030EFE742BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift */; };
 		030EFE782BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030EFE772BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift */; };
+		0312E4302C00F24E00C6F878 /* ReplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0312E42F2C00F24E00C6F878 /* ReplayKit.framework */; };
+		0312E4332C00F24E00C6F878 /* SampleHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0312E4322C00F24E00C6F878 /* SampleHandler.swift */; };
+		0312E4372C00F24E00C6F878 /* Moblin Capture.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0312E42E2C00F24E00C6F878 /* Moblin Capture.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		0312E43D2C00F62400C6F878 /* SampleBufferTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0352DDF22BFFCAA60079AC7B /* SampleBufferTransfer.swift */; };
+		0312E4422C00F75A00C6F878 /* CommonUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B373FC2A9F35EF0028DDD5 /* CommonUtils.swift */; };
 		0315A33B2AA2FA7100295443 /* LocalListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33A2AA2FA7100295443 /* LocalListener.swift */; };
 		0315A33D2AA2FA7D00295443 /* RemoteConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */; };
 		0315A3462AA31E9000295443 /* StreamTwitchSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0315A3452AA31E9000295443 /* StreamTwitchSettingsView.swift */; };
@@ -86,7 +91,6 @@
 		035192E02B53EF2C00B09E3B /* GlobalQuickButtonsButtonSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035192DF2B53EF2C00B09E3B /* GlobalQuickButtonsButtonSettingsView.swift */; };
 		0352679E2B99A00C00B49B72 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 03F853B22B151FA700719B89 /* Localizable.xcstrings */; };
 		0352DDF32BFFCAA60079AC7B /* SampleBufferTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0352DDF22BFFCAA60079AC7B /* SampleBufferTransfer.swift */; };
-		0352DDF42BFFCAA60079AC7B /* SampleBufferTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0352DDF22BFFCAA60079AC7B /* SampleBufferTransfer.swift */; };
 		03559E7E2BDCEB14002D0886 /* FaceEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03559E7D2BDCEB14002D0886 /* FaceEffect.swift */; };
 		035735802BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0357357F2BC62FDC00F4E87D /* WatchLocalOverlaysSettingsView.swift */; };
 		035735822BC6303F00F4E87D /* WatchDisplaySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035735812BC6303F00F4E87D /* WatchDisplaySettingsView.swift */; };
@@ -337,6 +341,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		0312E4352C00F24E00C6F878 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 035E9E2B2A9A02D6009D4F5A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0312E42D2C00F24E00C6F878;
+			remoteInfo = "Moblin Capture";
+		};
 		0376F7022B9511040056B3D2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 035E9E2B2A9A02D6009D4F5A /* Project object */;
@@ -354,6 +365,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		0312E4382C00F24E00C6F878 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				0312E4372C00F24E00C6F878 /* Moblin Capture.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		0376F7082B9511040056B3D2 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -391,6 +413,11 @@
 		030EFE712BDA2D9E004208B6 /* MpegTsVideoConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MpegTsVideoConfig.swift; sourceTree = "<group>"; };
 		030EFE742BDAD7C7004208B6 /* SwipeLeftToDeleteHelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeLeftToDeleteHelpView.swift; sourceTree = "<group>"; };
 		030EFE772BDADBC6004208B6 /* SwipeLeftToRemoveHelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeLeftToRemoveHelpView.swift; sourceTree = "<group>"; };
+		0312E42E2C00F24E00C6F878 /* Moblin Capture.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Moblin Capture.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0312E42F2C00F24E00C6F878 /* ReplayKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ReplayKit.framework; path = System/Library/Frameworks/ReplayKit.framework; sourceTree = SDKROOT; };
+		0312E4322C00F24E00C6F878 /* SampleHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleHandler.swift; sourceTree = "<group>"; };
+		0312E4342C00F24E00C6F878 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0312E4472C00FA5900C6F878 /* Moblin Capture.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Moblin Capture.entitlements"; sourceTree = "<group>"; };
 		0315A33A2AA2FA7100295443 /* LocalListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalListener.swift; sourceTree = "<group>"; };
 		0315A33C2AA2FA7D00295443 /* RemoteConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteConnection.swift; sourceTree = "<group>"; };
 		0315A3452AA31E9000295443 /* StreamTwitchSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamTwitchSettingsView.swift; sourceTree = "<group>"; };
@@ -743,6 +770,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		0312E42B2C00F24E00C6F878 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0312E4302C00F24E00C6F878 /* ReplayKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		035E9E302A9A02D6009D4F5A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -822,6 +857,34 @@
 				0330F2AE2AFAD24F001262C3 /* YouTube */,
 			);
 			path = Platforms;
+			sourceTree = "<group>";
+		};
+		0312E4312C00F24E00C6F878 /* Moblin Capture */ = {
+			isa = PBXGroup;
+			children = (
+				0312E4472C00FA5900C6F878 /* Moblin Capture.entitlements */,
+				0312E4462C00F80D00C6F878 /* Shared */,
+				0312E4322C00F24E00C6F878 /* SampleHandler.swift */,
+				0312E4342C00F24E00C6F878 /* Info.plist */,
+			);
+			path = "Moblin Capture";
+			sourceTree = "<group>";
+		};
+		0312E4442C00F7F500C6F878 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				03A707B72B8ED466003BB7BE /* WatchProtocol.swift */,
+				03B77AD92B9446210053F106 /* WatchSettings.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		0312E4462C00F80D00C6F878 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				0352DDF22BFFCAA60079AC7B /* SampleBufferTransfer.swift */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 		0315A3392AA2FA0A00295443 /* Srtla */ = {
@@ -1351,6 +1414,7 @@
 				030786992AEC23FB0061FDE2 /* StoreKit.framework */,
 				0376F6F82B9511030056B3D2 /* WidgetKit.framework */,
 				0376F6FA2B9511030056B3D2 /* SwiftUI.framework */,
+				0312E42F2C00F24E00C6F878 /* ReplayKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1362,6 +1426,7 @@
 				035E9E352A9A02D6009D4F5A /* Moblin */,
 				03ECDF472B8E4E5F00BD920E /* Moblin Watch */,
 				0376F6FC2B9511030056B3D2 /* Moblin Widget */,
+				0312E4312C00F24E00C6F878 /* Moblin Capture */,
 				035E9E342A9A02D6009D4F5A /* Products */,
 				035D372A2AB103E600045B92 /* Frameworks */,
 			);
@@ -1373,6 +1438,7 @@
 				035E9E332A9A02D6009D4F5A /* Moblin.app */,
 				03ECDF462B8E4E5E00BD920E /* Moblin.app */,
 				0376F6F72B9511030056B3D2 /* MoblinWidget.appex */,
+				0312E42E2C00F24E00C6F878 /* Moblin Capture.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1812,9 +1878,6 @@
 			isa = PBXGroup;
 			children = (
 				03B373FC2A9F35EF0028DDD5 /* CommonUtils.swift */,
-				03A707B72B8ED466003BB7BE /* WatchProtocol.swift */,
-				03B77AD92B9446210053F106 /* WatchSettings.swift */,
-				0352DDF22BFFCAA60079AC7B /* SampleBufferTransfer.swift */,
 			);
 			path = Various;
 			sourceTree = "<group>";
@@ -1977,11 +2040,12 @@
 		03ECDF472B8E4E5F00BD920E /* Moblin Watch */ = {
 			isa = PBXGroup;
 			children = (
-				0346B5EB2B9AD1BF00999109 /* MoblinWatch-InfoPlist.xcstrings */,
+				0312E4442C00F7F500C6F878 /* Shared */,
 				03ECDF632B8E797200BD920E /* View */,
 				03ECDF652B8E798000BD920E /* Various */,
 				03ECDF4E2B8E4E6000BD920E /* Preview Content */,
 				03ECDF482B8E4E5F00BD920E /* MoblinWatchApp.swift */,
+				0346B5EB2B9AD1BF00999109 /* MoblinWatch-InfoPlist.xcstrings */,
 				03ECDF4C2B8E4E6000BD920E /* Assets.xcassets */,
 			);
 			path = "Moblin Watch";
@@ -2053,6 +2117,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		0312E42D2C00F24E00C6F878 /* Moblin Capture */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0312E43B2C00F24E00C6F878 /* Build configuration list for PBXNativeTarget "Moblin Capture" */;
+			buildPhases = (
+				0312E42A2C00F24E00C6F878 /* Sources */,
+				0312E42B2C00F24E00C6F878 /* Frameworks */,
+				0312E42C2C00F24E00C6F878 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Moblin Capture";
+			productName = "Moblin Capture";
+			productReference = 0312E42E2C00F24E00C6F878 /* Moblin Capture.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		035E9E322A9A02D6009D4F5A /* Moblin */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 035E9E412A9A02D7009D4F5A /* Build configuration list for PBXNativeTarget "Moblin" */;
@@ -2061,12 +2142,14 @@
 				035E9E302A9A02D6009D4F5A /* Frameworks */,
 				035E9E312A9A02D6009D4F5A /* Resources */,
 				03ECDF572B8E4E6000BD920E /* Embed Watch Content */,
+				0312E4382C00F24E00C6F878 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				032815D72AC855B1001F8A85 /* PBXTargetDependency */,
 				03ECDF522B8E4E6000BD920E /* PBXTargetDependency */,
+				0312E4362C00F24E00C6F878 /* PBXTargetDependency */,
 			);
 			name = Moblin;
 			packageProductDependencies = (
@@ -2133,9 +2216,12 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1520;
+				LastSwiftUpdateCheck = 1540;
 				LastUpgradeCheck = 1510;
 				TargetAttributes = {
+					0312E42D2C00F24E00C6F878 = {
+						CreatedOnToolsVersion = 15.4;
+					};
 					035E9E322A9A02D6009D4F5A = {
 						CreatedOnToolsVersion = 14.3.1;
 					};
@@ -2198,11 +2284,19 @@
 				035E9E322A9A02D6009D4F5A /* Moblin */,
 				03ECDF452B8E4E5E00BD920E /* MoblinWatch */,
 				0376F6F62B9511030056B3D2 /* MoblinWidget */,
+				0312E42D2C00F24E00C6F878 /* Moblin Capture */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		0312E42C2C00F24E00C6F878 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		035E9E312A9A02D6009D4F5A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2243,6 +2337,16 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		0312E42A2C00F24E00C6F878 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0312E43D2C00F62400C6F878 /* SampleBufferTransfer.swift in Sources */,
+				0312E4422C00F75A00C6F878 /* CommonUtils.swift in Sources */,
+				0312E4332C00F24E00C6F878 /* SampleHandler.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		035E9E2F2A9A02D6009D4F5A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2535,7 +2639,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				031C15C02B9336D700BA967D /* ControlView.swift in Sources */,
-				0352DDF42BFFCAA60079AC7B /* SampleBufferTransfer.swift in Sources */,
 				03B77ADB2B9446210053F106 /* WatchSettings.swift in Sources */,
 				03B89D972B92DD670022EAE7 /* PreviewView.swift in Sources */,
 				031C15C82B93425200BA967D /* StreamOverlayTextView.swift in Sources */,
@@ -2559,6 +2662,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		0312E4362C00F24E00C6F878 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0312E42D2C00F24E00C6F878 /* Moblin Capture */;
+			targetProxy = 0312E4352C00F24E00C6F878 /* PBXContainerItemProxy */;
+		};
 		032815D72AC855B1001F8A85 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			productRef = 032815D62AC855B1001F8A85 /* PrepareLicenseList */;
@@ -2592,6 +2700,67 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		0312E4392C00F24E00C6F878 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Moblin Capture/Moblin Capture.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L82N7LD4N5;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Moblin Capture/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Moblin Capture";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.eerimoq.Mobs.Moblin-Capture";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		0312E43A2C00F24E00C6F878 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Moblin Capture/Moblin Capture.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L82N7LD4N5;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Moblin Capture/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Moblin Capture";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.eerimoq.Mobs.Moblin-Capture";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		035E9E3F2A9A02D7009D4F5A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2977,6 +3146,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		0312E43B2C00F24E00C6F878 /* Build configuration list for PBXNativeTarget "Moblin Capture" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0312E4392C00F24E00C6F878 /* Debug */,
+				0312E43A2C00F24E00C6F878 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		035E9E2E2A9A02D6009D4F5A /* Build configuration list for PBXProject "Moblin" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

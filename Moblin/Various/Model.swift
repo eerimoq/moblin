@@ -450,7 +450,6 @@ final class Model: NSObject, ObservableObject {
     @Published var remoteControlStatus = noValue
 
     private let sampleBufferReceiver = SampleBufferReceiver()
-    private let sampleBufferSender = SampleBufferSender()
 
     override init() {
         super.init()
@@ -902,12 +901,7 @@ final class Model: NSObject, ObservableObject {
 
     private func setupSampleBufferReceiver() {
         sampleBufferReceiver.delegate = self
-        sampleBufferReceiver.start(appGroup: "group.com.eerimoq.Mobs")
-        sampleBufferSender.start(appGroup: "group.com.eerimoq.Mobs")
-        logger.debug("sample-buffer: Sending")
-        if !sampleBufferSender.send(sampleBuffer: nil) {
-            logger.debug("sample-buffer: Failed to send")
-        }
+        sampleBufferReceiver.start(appGroup: moblinAppGroup)
     }
 
     func updateFaceFilterSettings() {

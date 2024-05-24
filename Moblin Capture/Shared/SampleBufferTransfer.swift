@@ -115,17 +115,18 @@ class SampleBufferSender {
             let path = createSocketPath(containerDir: containerDir)
             let addr = try createAddr(path: path)
             try connect(fd: fd, addr: addr)
-            logger.debug("sample-buffer-sender: Connected")
+            print("sample-buffer-sender: Connected")
         } catch {
-            logger.info("sample-buffer-sender: \(error)")
+            print("sample-buffer-sender: \(error)")
         }
     }
 
     func stop() {
-        logger.info("sample-buffer-sender: Should stop")
+        print("sample-buffer-sender: Should stop")
+        Darwin.close(fd)
     }
 
-    func send(sampleBuffer _: CMSampleBuffer?) -> Bool {
+    func send(sampleBuffer _: CMSampleBuffer?) {
         // guard let imageBuffer = sampleBuffer?.imageBuffer else {
         //     return false
         // }
@@ -133,9 +134,9 @@ class SampleBufferSender {
         // defer { CVPixelBufferUnlockBaseAddress(imageBuffer, .readOnly) }
         // let pointer = CVPixelBufferGetBaseAddress(imageBuffer)
         // let size = CVPixelBufferGetDataSize(imageBuffer)
-        let data = Data([5, 6, 7])
-        return data.withUnsafeBytes { (pointer: UnsafeRawBufferPointer) in
-            Darwin.write(fd, pointer.baseAddress, pointer.count) != -1
+        let data = Data([5])
+        _ = data.withUnsafeBytes { (pointer: UnsafeRawBufferPointer) in
+            Darwin.write(fd, pointer.baseAddress, pointer.count)
         }
     }
 }
@@ -164,30 +165,30 @@ class SampleBufferReceiver {
             try bind(fd: listenerFd, addr: addr)
             try listen(fd: listenerFd)
         } catch {
-            logger.info("sample-buffer-receiver: \(error)")
+            print("sample-buffer-receiver: \(error)")
             return
         }
         DispatchQueue.global(qos: .userInteractive).async {
             do {
                 try self.acceptLoop()
             } catch {
-                logger.info("sample-buffer-receiver: Loop stopped with error \(error)")
+                print("sample-buffer-receiver: Loop stopped with error \(error)")
             }
         }
-        logger.info("sample-buffer-receiver: Started")
+        print("sample-buffer-receiver: Started")
     }
 
     func stop() {
-        logger.info("sample-buffer-receiver: Should stop")
+        print("sample-buffer-receiver: Should stop")
     }
 
     private func acceptLoop() throws {
         while true {
             let senderFd = try accept(fd: listenerFd)
             try setIgnoreSigPipe(fd: senderFd)
-            logger.debug("sample-buffer-receiver: Sender connected")
+            print("sample-buffer-receiver: Sender connected")
             readLoop(senderFd: senderFd)
-            logger.debug("sample-buffer-receiver: Sender disconnected")
+            print("sample-buffer-receiver: Sender disconnected")
         }
     }
 
