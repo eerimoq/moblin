@@ -819,8 +819,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "„Frontkamera beim Streamen spiegeln“ wird nur beim Streaming im Querformat unterstützt, nicht beim Hochformat."
+            "state" : "translated",
+            "value" : "„Frontkamera beim Streamen spiegeln“ wird nur beim Streaming im Querformat unterstützt, nicht im Hochformat."
           }
         },
         "el" : {
@@ -5807,7 +5807,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "128 Kpbs oder höher werden empfohlen. Für automatisch auf 0 stellen."
           }
         },
@@ -14653,7 +14653,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Unschärfe-Szenenwechsel"
           }
         },
@@ -15043,8 +15043,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Verbindung"
+            "state" : "translated",
+            "value" : "Bonding"
           }
         },
         "el" : {
@@ -25573,8 +25573,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Aktivieren Sie RTMP-Audio"
+            "state" : "translated",
+            "value" : "Aktiviere RTMP-Audio"
           }
         },
         "el" : {
@@ -30773,7 +30773,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Finde ein Gesicht"
           }
         },
@@ -40393,7 +40393,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Ungültige RIST-URL"
           }
         },
@@ -42473,7 +42473,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "MetalPetal-Filter"
           }
         },
@@ -42993,7 +42993,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mikrofonausrichtung %@"
           }
         },
@@ -43253,8 +43253,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Spiegelfrontkamera im Stream"
+            "state" : "translated",
+            "value" : "Frontkamera im Stream spiegeln"
           }
         },
         "el" : {
@@ -50923,7 +50923,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "POSITION"
           }
         },
@@ -52093,7 +52093,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "RADIUS"
           }
         },
@@ -52743,7 +52743,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Aufzeichnung gestartet"
           }
         },
@@ -52873,8 +52873,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Die Aufnahme wurde gestoppt"
+            "state" : "translated",
+            "value" : "Aufnahme gestoppt"
           }
         },
         "el" : {
@@ -55083,7 +55083,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "RIST"
           }
         },
@@ -55213,7 +55213,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "RIST-Portnummer fehlt"
           }
         },
@@ -55343,7 +55343,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "rist://120.35.234.2:2030"
           }
         },
@@ -58463,7 +58463,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Form"
           }
         },
@@ -59503,7 +59503,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Glatt"
           }
         },
@@ -64313,7 +64313,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "STÄRKE"
           }
         },
@@ -69253,7 +69253,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Zu viele Aufnahmen. Die älteste Aufnahme wird gelöscht."
           }
         },
